@@ -1,0 +1,48 @@
+####################################
+
+######## OS generated files ########
+
+####################################
+
+.DS_Store
+
+.DS_Store?
+
+*.swp
+
+._*
+
+.Spotlight-V100
+
+.Trashes
+
+Icon?
+
+ehthumbs.db
+
+Thumbs.db
+
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
