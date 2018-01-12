@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.BaseAeraDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.obj.BaseAeraDO">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code_id" jdbcType="BIGINT" property="codeId" />
+    <result column="parent_code_id" jdbcType="BIGINT" property="parentCodeId" />
+    <result column="position_name" jdbcType="VARCHAR" property="positionName" />
+    <result column="level" jdbcType="TINYINT" property="level" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, code_id, parent_code_id, position_name, level
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from base_area
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from base_area
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.obj.BaseAeraDO">
+    insert into base_area (id, code_id, parent_code_id, 
+      position_name, level)
+    values (#{id,jdbcType=INTEGER}, #{codeId,jdbcType=BIGINT}, #{parentCodeId,jdbcType=BIGINT}, 
+      #{positionName,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.obj.BaseAeraDO">
+    insert into base_area
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="codeId != null">
+        code_id,
+      </if>
+      <if test="parentCodeId != null">
+        parent_code_id,
+      </if>
+      <if test="positionName != null">
+        position_name,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="codeId != null">
+        #{codeId,jdbcType=BIGINT},
+      </if>
+      <if test="parentCodeId != null">
+        #{parentCodeId,jdbcType=BIGINT},
+      </if>
+      <if test="positionName != null">
+        #{positionName,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.obj.BaseAeraDO">
+    update base_area
+    <set>
+      <if test="codeId != null">
+        code_id = #{codeId,jdbcType=BIGINT},
+      </if>
+      <if test="parentCodeId != null">
+        parent_code_id = #{parentCodeId,jdbcType=BIGINT},
+      </if>
+      <if test="positionName != null">
+        position_name = #{positionName,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.obj.BaseAeraDO">
+    update base_area
+    set code_id = #{codeId,jdbcType=BIGINT},
+      parent_code_id = #{parentCodeId,jdbcType=BIGINT},
+      position_name = #{positionName,jdbcType=VARCHAR},
+      level = #{level,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
