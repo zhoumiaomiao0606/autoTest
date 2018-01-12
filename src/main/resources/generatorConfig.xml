@@ -11,9 +11,9 @@
         </commentGenerator>
         <!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/biz?useSSL=false"
-                        userId="root"
-                        password="root">
+                        connectionURL="jdbc:mysql://rm-bp1uk11f20h4i65u9ao.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useSSL=false"
+                        userId="yuncheadmin"
+                        password="Yunche_2018">
         </jdbcConnection>
 
 
