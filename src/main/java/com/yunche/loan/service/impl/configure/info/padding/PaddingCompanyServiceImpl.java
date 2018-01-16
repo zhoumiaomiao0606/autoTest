@@ -1,0 +1,97 @@
+package com.yunche.loan.service.impl.configure.info.padding;
+
+import com.google.common.base.Preconditions;
+import com.yunche.loan.common.BaseExceptionEnum;
+import com.yunche.loan.dto.configure.info.padding.PaddingCompanyDTO;
+import com.yunche.loan.mapper.configure.info.padding.PaddingCompanyDOMapper;
+import com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO;
+import com.yunche.loan.query.configure.info.address.BaseAreaQuery;
+import com.yunche.loan.result.ResultBean;
+import com.yunche.loan.service.configure.info.padding.PaddingCompanyService;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+/**
+ * @author liuzhe
+ * @date 2018/1/15
+ */
+@Service
+public class PaddingCompanyServiceImpl implements PaddingCompanyService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PaddingCompanyServiceImpl.class);
+
+    @Autowired
+    PaddingCompanyDOMapper paddingCompanyDOMapper;
+
+    @Override
+    public ResultBean<Void> create(PaddingCompanyDO paddingCompanyDO) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getName()), "名称不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getOfficePhone()), "办公室电话不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getFax()), "传真不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBank()), "开户行不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBankAccount()), "银行账号不能为空");
+
+        int count = paddingCompanyDOMapper.insertSelective(paddingCompanyDO);
+        Preconditions.checkArgument(count > 1, "创建失败");
+        return ResultBean.ofSuccess(null, "创建成功");
+    }
+
+    @Override
+    public ResultBean<Void> update(PaddingCompanyDO paddingCompanyDO) {
+        Preconditions.checkNotNull(paddingCompanyDO.getId(), "id不能为空");
+
+        int count = paddingCompanyDOMapper.updateByPrimaryKeyWithBLOBs(paddingCompanyDO);
+        Preconditions.checkArgument(count > 1, "编辑失败");
+        return ResultBean.ofSuccess(null, "编辑成功");
+    }
+
+    @Override
+    public ResultBean<Void> delete(Integer id) {
+        Preconditions.checkNotNull(id, "id不能为空");
+
+        int count = paddingCompanyDOMapper.deleteByPrimaryKey(id);
+        Preconditions.checkArgument(count > 1, "删除失败");
+        return ResultBean.ofSuccess(null, "删除成功");
+    }
+
+    @Override
+    public ResultBean<PaddingCompanyDTO> getById(Integer id) {
+        Preconditions.checkNotNull(id, "id不能为空");
+
+        PaddingCompanyDO paddingCompanyDO = paddingCompanyDOMapper.selectByPrimaryKey(id);
+        Preconditions.checkNotNull(paddingCompanyDO, "id有误，数据不存在");
+
+        PaddingCompanyDTO paddingCompanyDTO = new PaddingCompanyDTO();
+        BeanUtils.copyProperties(paddingCompanyDO, paddingCompanyDTO);
+
+        return ResultBean.ofSuccess(paddingCompanyDTO);
+    }
+
+    @Override
+    public ResultBean<List<PaddingCompanyDTO>> query(BaseAreaQuery query) {
+
+        int count = paddingCompanyDOMapper.count(query);
+        Preconditions.checkArgument(count > 0, "无符合条件的数据");
+
+        List<PaddingCompanyDO> paddingCompanyDOS = paddingCompanyDOMapper.query(query);
+
+        List<PaddingCompanyDTO> paddingCompanyDTOS = paddingCompanyDOS.parallelStream()
+                .filter(Objects::nonNull)
+                .map(e -> {
+                    PaddingCompanyDTO paddingCompanyDTO = new PaddingCompanyDTO();
+                    BeanUtils.copyProperties(e, paddingCompanyDTO);
+                    return paddingCompanyDTO;
+                })
+                .collect(Collectors.toList());
+
+        return ResultBean.of(paddingCompanyDTOS, true, BaseExceptionEnum.EC00000200, count, query.getPageIndex(), query.getPageSize());
+    }
+}

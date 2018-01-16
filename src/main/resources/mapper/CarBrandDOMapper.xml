@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.configure.info.car.CarBrandDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.car.CarBrandDO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="initial" jdbcType="VARCHAR" property="initial"/>
+        <result column="logo" jdbcType="VARCHAR" property="logo"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, name, initial, logo
+  </sql>
+
+    <select id="getAllId" resultType="java.lang.Integer">
+        select id from car_brand
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from car_brand
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from car_brand
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.car.CarBrandDO">
+    insert into car_brand (id, name, initial, 
+      logo)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{initial,jdbcType=VARCHAR}, 
+      #{logo,jdbcType=VARCHAR})
+  </insert>
+
+    <!-- batchInsert -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        <selectKey resultType="java.lang.Integer" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into car_brand (id, name, initial, logo)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id,jdbcType=INTEGER},
+            #{item.name,jdbcType=VARCHAR},
+            #{item.initial,jdbcType=VARCHAR},
+            #{item.logo,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.car.CarBrandDO">
+        insert into car_brand
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="initial != null">
+                initial,
+            </if>
+            <if test="logo != null">
+                logo,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="initial != null">
+                #{initial,jdbcType=VARCHAR},
+            </if>
+            <if test="logo != null">
+                #{logo,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.yunche.loan.obj.configure.info.car.CarBrandDO">
+        update car_brand
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="initial != null">
+                initial = #{initial,jdbcType=VARCHAR},
+            </if>
+            <if test="logo != null">
+                logo = #{logo,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.car.CarBrandDO">
+    update car_brand
+    set name = #{name,jdbcType=VARCHAR},
+      initial = #{initial,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.configure.info.padding.PaddingCompanyDOMapper">
+
+    <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode"/>
+        <result column="contact" jdbcType="VARCHAR" property="contact"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
+        <result column="office_phone" jdbcType="VARCHAR" property="officePhone"/>
+        <result column="fax" jdbcType="VARCHAR" property="fax"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="business_insurance_rebate" jdbcType="DOUBLE" property="businessInsuranceRebate"/>
+        <result column="traffic_insurance_rebate" jdbcType="DOUBLE" property="trafficInsuranceRebate"/>
+        <result column="bank" jdbcType="VARCHAR" property="bank"/>
+        <result column="account_name" jdbcType="VARCHAR" property="accountName"/>
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
+        <result column="file" jdbcType="VARCHAR" property="file"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+               type="com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO">
+        <result column="cooperation_policy" jdbcType="LONGVARCHAR" property="cooperationPolicy"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, name, mnemonic_code, contact, tel, office_phone, fax, address, business_insurance_rebate, 
+    traffic_insurance_rebate, bank, account_name, bank_account, file
+  </sql>
+
+    <sql id="Blob_Column_List">
+    cooperation_policy
+  </sql>
+
+    <sql id="Base_Query_List">
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="name != null and name != '' ">
+            AND name LIKE #{name}
+        </if>
+        <if test="mnemonicCode != null and mnemonicCode != '' ">
+            AND mnemonic_code = #{mnemonicCode}
+        </if>
+        <if test="contact != null and contact != '' ">
+            AND contact LIKE CONCAT(CONCAT('%',#{contact}),'%')
+        </if>
+        <if test="tel != null and tel != '' ">
+            AND tel = #{tel}
+        </if>
+        <if test="officePhone != null and officePhone != '' ">
+            AND office_phone = #{officePhone}
+        </if>
+        <if test="fax != null and fax != '' ">
+            AND fax = #{fax}
+        </if>
+        <if test="address != null and address != '' ">
+            AND address LIKE CONCAT(CONCAT('%',#{address}),'%')
+        </if>
+        <if test="businessInsuranceRebate != null and businessInsuranceRebate != '' ">
+            AND business_insurance_rebate = #{businessInsuranceRebate}
+        </if>
+        <if test="trafficInsuranceRebate != null and trafficInsuranceRebate != '' ">
+            AND traffic_insurance_rebate = #{trafficInsuranceRebate}
+        </if>
+        <if test="bank != null and bank != '' ">
+            AND bank LIKE CONCAT(CONCAT('%',#{bank}),'%')
+        </if>
+        <if test="accountName != null and accountName != '' ">
+            AND account_name LIKE CONCAT(CONCAT('%',#{account_name}),'%')
+        </if>
+        <if test="bankAccount != null and bankAccount != '' ">
+            AND bank_account LIKE CONCAT(CONCAT('%',#{bankAccount}),'%')
+        </if>
+    </sql>
+
+    <!--count-->
+    <select id="count" parameterType="com.yunche.loan.query.configure.info.padding.PaddingCompanyQuery"
+            resultType="java.lang.Integer">
+        count(*)
+        from padding_company
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+    </select>
+
+    <!-- query -->
+    <select id="query" parameterType="com.yunche.loan.query.configure.info.padding.PaddingCompanyQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from padding_company
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+        limit startRow, pageSize
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from padding_company
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from padding_company
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO">
+        <selectKey resultType="java.lang.Integer" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into padding_company (id, name, mnemonic_code,
+        contact, tel, office_phone,
+        fax, address, business_insurance_rebate,
+        traffic_insurance_rebate, bank, account_name,
+        bank_account, file, cooperation_policy
+        )
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{mnemonicCode,jdbcType=VARCHAR},
+        #{contact,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{officePhone,jdbcType=VARCHAR},
+        #{fax,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{businessInsuranceRebate,jdbcType=DOUBLE},
+        #{trafficInsuranceRebate,jdbcType=DOUBLE}, #{bank,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR},
+        #{bankAccount,jdbcType=VARCHAR}, #{file,jdbcType=VARCHAR}, #{cooperationPolicy,jdbcType=LONGVARCHAR}
+        )
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO">
+        <selectKey resultType="java.lang.Integer" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into padding_company
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="mnemonicCode != null">
+                mnemonic_code,
+            </if>
+            <if test="contact != null">
+                contact,
+            </if>
+            <if test="tel != null">
+                tel,
+            </if>
+            <if test="officePhone != null">
+                office_phone,
+            </if>
+            <if test="fax != null">
+                fax,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="businessInsuranceRebate != null">
+                business_insurance_rebate,
+            </if>
+            <if test="trafficInsuranceRebate != null">
+                traffic_insurance_rebate,
+            </if>
+            <if test="bank != null">
+                bank,
+            </if>
+            <if test="accountName != null">
+                account_name,
+            </if>
+            <if test="bankAccount != null">
+                bank_account,
+            </if>
+            <if test="file != null">
+                file,
+            </if>
+            <if test="cooperationPolicy != null">
+                cooperation_policy,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="mnemonicCode != null">
+                #{mnemonicCode,jdbcType=VARCHAR},
+            </if>
+            <if test="contact != null">
+                #{contact,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null">
+                #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="officePhone != null">
+                #{officePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="fax != null">
+                #{fax,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="businessInsuranceRebate != null">
+                #{businessInsuranceRebate,jdbcType=DOUBLE},
+            </if>
+            <if test="trafficInsuranceRebate != null">
+                #{trafficInsuranceRebate,jdbcType=DOUBLE},
+            </if>
+            <if test="bank != null">
+                #{bank,jdbcType=VARCHAR},
+            </if>
+            <if test="accountName != null">
+                #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="file != null">
+                #{file,jdbcType=VARCHAR},
+            </if>
+            <if test="cooperationPolicy != null">
+                #{cooperationPolicy,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO">
+        update padding_company
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="mnemonicCode != null">
+                mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+            </if>
+            <if test="contact != null">
+                contact = #{contact,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null">
+                tel = #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="officePhone != null">
+                office_phone = #{officePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="fax != null">
+                fax = #{fax,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="businessInsuranceRebate != null">
+                business_insurance_rebate = #{businessInsuranceRebate,jdbcType=DOUBLE},
+            </if>
+            <if test="trafficInsuranceRebate != null">
+                traffic_insurance_rebate = #{trafficInsuranceRebate,jdbcType=DOUBLE},
+            </if>
+            <if test="bank != null">
+                bank = #{bank,jdbcType=VARCHAR},
+            </if>
+            <if test="accountName != null">
+                account_name = #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                bank_account = #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="file != null">
+                file = #{file,jdbcType=VARCHAR},
+            </if>
+            <if test="cooperationPolicy != null">
+                cooperation_policy = #{cooperationPolicy,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKeyWithBLOBs"
+            parameterType="com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO">
+    update padding_company
+    set name = #{name,jdbcType=VARCHAR},
+      mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+      contact = #{contact,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      office_phone = #{officePhone,jdbcType=VARCHAR},
+      fax = #{fax,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      business_insurance_rebate = #{businessInsuranceRebate,jdbcType=DOUBLE},
+      traffic_insurance_rebate = #{trafficInsuranceRebate,jdbcType=DOUBLE},
+      bank = #{bank,jdbcType=VARCHAR},
+      account_name = #{accountName,jdbcType=VARCHAR},
+      bank_account = #{bankAccount,jdbcType=VARCHAR},
+      file = #{file,jdbcType=VARCHAR},
+      cooperation_policy = #{cooperationPolicy,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO">
+    update padding_company
+    set name = #{name,jdbcType=VARCHAR},
+      mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+      contact = #{contact,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      office_phone = #{officePhone,jdbcType=VARCHAR},
+      fax = #{fax,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      business_insurance_rebate = #{businessInsuranceRebate,jdbcType=DOUBLE},
+      traffic_insurance_rebate = #{trafficInsuranceRebate,jdbcType=DOUBLE},
+      bank = #{bank,jdbcType=VARCHAR},
+      account_name = #{accountName,jdbcType=VARCHAR},
+      bank_account = #{bankAccount,jdbcType=VARCHAR},
+      file = #{file,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>

@@ -4,8 +4,9 @@ package com.yunche.loan.common;
  * @author liuzhe
  * @date 2018/1/11
  */
-public enum ExceptionEnum {
+public enum BaseExceptionEnum {
 
+    EC00000200("EC00000200", "success"),
     EC00000404("EC00000404", "该接口不存在"),
     EC00000500("EC00000500", "系统异常"),
     EC00000000("EC00000000", "无法加载切点对象"),
@@ -34,14 +35,13 @@ public enum ExceptionEnum {
     EL00000003("EL00000003", "调用API失败"),
     EL00000004("EL00000004", "参数名不能为空"),
     EL00000005("EL00000005", "参数不能为空"),
-
     EA00000001("EA00000001", "签名认证失败");
 
     private String code;
 
     private String message;
 
-    private ExceptionEnum(String code, String message) {
+    private BaseExceptionEnum(String code, String message) {
         this.code = code;
         this.message = message;
     }

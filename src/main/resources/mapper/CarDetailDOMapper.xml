@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.configure.info.car.CarDetailDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.car.CarDetailDO">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="model_id" jdbcType="INTEGER" property="modelId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="initial" jdbcType="VARCHAR" property="initial"/>
+        <result column="logo" jdbcType="VARCHAR" property="logo"/>
+        <result column="price" jdbcType="VARCHAR" property="price"/>
+        <result column="sale_price" jdbcType="VARCHAR" property="salePrice"/>
+        <result column="seat_num" jdbcType="INTEGER" property="seatNum"/>
+        <result column="door_num" jdbcType="INTEGER" property="doorNum"/>
+        <result column="year_type" jdbcType="VARCHAR" property="yearType"/>
+        <result column="production_state" jdbcType="TINYINT" property="productionState"/>
+        <result column="sale_state" jdbcType="TINYINT" property="saleState"/>
+        <result column="size_type" jdbcType="VARCHAR" property="sizeType"/>
+        <result column="fuel_type" jdbcType="TINYINT" property="fuelType"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, model_id, name, initial, logo, price, sale_price, seat_num, door_num, year_type, 
+    production_state, sale_state, size_type, fuel_type
+  </sql>
+
+    <select id="getAllId" resultType="java.lang.Integer">
+        select id from car_detail
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from car_detail
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from car_detail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.car.CarDetailDO">
+        <selectKey resultType="java.lang.Integer" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into car_detail (id, model_id, name,
+        initial, logo, price,
+        sale_price, seat_num, door_num,
+        year_type, production_state, sale_state,
+        size_type, fuel_type
+        )
+        values (#{id,jdbcType=INTEGER}, #{modelId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
+        #{initial,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR},
+        #{salePrice,jdbcType=VARCHAR}, #{seatNum,jdbcType=INTEGER}, #{doorNum,jdbcType=INTEGER},
+        #{yearType,jdbcType=VARCHAR}, #{productionState,jdbcType=TINYINT}, #{saleState,jdbcType=TINYINT},
+        #{sizeType,jdbcType=VARCHAR}, #{fuelType,jdbcType=TINYINT}
+        )
+    </insert>
+
+    <!-- batchInsert -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        <selectKey resultType="java.lang.Integer" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into car_detail (id, model_id, name,
+        initial, logo, price,
+        sale_price, seat_num, door_num,
+        year_type, production_state, sale_state,
+        size_type, fuel_type
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            #{item.id,jdbcType=INTEGER}, #{item.modelId,jdbcType=INTEGER}, #{item.name,jdbcType=VARCHAR},
+            #{item.initial,jdbcType=VARCHAR}, #{item.logo,jdbcType=VARCHAR}, #{item.price,jdbcType=VARCHAR},
+            #{item.salePrice,jdbcType=VARCHAR}, #{item.seatNum,jdbcType=INTEGER}, #{item.doorNum,jdbcType=INTEGER},
+            #{item.yearType,jdbcType=VARCHAR}, #{item.productionState,jdbcType=TINYINT},
+            #{item.saleState,jdbcType=TINYINT},
+            #{item.sizeType,jdbcType=VARCHAR}, #{item.fuelType,jdbcType=TINYINT}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.car.CarDetailDO">
+        <selectKey resultType="java.lang.Integer" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into car_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="modelId != null">
+                model_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="initial != null">
+                initial,
+            </if>
+            <if test="logo != null">
+                logo,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="salePrice != null">
+                sale_price,
+            </if>
+            <if test="seatNum != null">
+                seat_num,
+            </if>
+            <if test="doorNum != null">
+                door_num,
+            </if>
+            <if test="yearType != null">
+                year_type,
+            </if>
+            <if test="productionState != null">
+                production_state,
+            </if>
+            <if test="saleState != null">
+                sale_state,
+            </if>
+            <if test="sizeType != null">
+                size_type,
+            </if>
+            <if test="fuelType != null">
+                fuel_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="modelId != null">
+                #{modelId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="initial != null">
+                #{initial,jdbcType=VARCHAR},
+            </if>
+            <if test="logo != null">
+                #{logo,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=VARCHAR},
+            </if>
+            <if test="salePrice != null">
+                #{salePrice,jdbcType=VARCHAR},
+            </if>
+            <if test="seatNum != null">
+                #{seatNum,jdbcType=INTEGER},
+            </if>
+            <if test="doorNum != null">
+                #{doorNum,jdbcType=INTEGER},
+            </if>
+            <if test="yearType != null">
+                #{yearType,jdbcType=VARCHAR},
+            </if>
+            <if test="productionState != null">
+                #{productionState,jdbcType=TINYINT},
+            </if>
+            <if test="saleState != null">
+                #{saleState,jdbcType=TINYINT},
+            </if>
+            <if test="sizeType != null">
+                #{sizeType,jdbcType=VARCHAR},
+            </if>
+            <if test="fuelType != null">
+                #{fuelType,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.obj.configure.info.car.CarDetailDO">
+        update car_detail
+        <set>
+            <if test="modelId != null">
+                model_id = #{modelId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="initial != null">
+                initial = #{initial,jdbcType=VARCHAR},
+            </if>
+            <if test="logo != null">
+                logo = #{logo,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=VARCHAR},
+            </if>
+            <if test="salePrice != null">
+                sale_price = #{salePrice,jdbcType=VARCHAR},
+            </if>
+            <if test="seatNum != null">
+                seat_num = #{seatNum,jdbcType=INTEGER},
+            </if>
+            <if test="doorNum != null">
+                door_num = #{doorNum,jdbcType=INTEGER},
+            </if>
+            <if test="yearType != null">
+                year_type = #{yearType,jdbcType=VARCHAR},
+            </if>
+            <if test="productionState != null">
+                production_state = #{productionState,jdbcType=TINYINT},
+            </if>
+            <if test="saleState != null">
+                sale_state = #{saleState,jdbcType=TINYINT},
+            </if>
+            <if test="sizeType != null">
+                size_type = #{sizeType,jdbcType=VARCHAR},
+            </if>
+            <if test="fuelType != null">
+                fuel_type = #{fuelType,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.car.CarDetailDO">
+    update car_detail
+    set model_id = #{modelId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      initial = #{initial,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=VARCHAR},
+      price = #{price,jdbcType=VARCHAR},
+      sale_price = #{salePrice,jdbcType=VARCHAR},
+      seat_num = #{seatNum,jdbcType=INTEGER},
+      door_num = #{doorNum,jdbcType=INTEGER},
+      year_type = #{yearType,jdbcType=VARCHAR},
+      production_state = #{productionState,jdbcType=TINYINT},
+      sale_state = #{saleState,jdbcType=TINYINT},
+      size_type = #{sizeType,jdbcType=VARCHAR},
+      fuel_type = #{fuelType,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>

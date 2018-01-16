@@ -1,13 +1,14 @@
-package com.yunche.loan.bo;
+package com.yunche.loan.query.configure.info.address;
 
+import com.yunche.loan.query.BaseQuery;
 import lombok.Data;
 
 /**
  * @author liuzhe
- * @date 2018/1/12
+ * @date 2018/1/15
  */
 @Data
-public class BaseAreaBO {
+public class BaseAreaQuery extends BaseQuery {
 
     private Integer id;
 
@@ -18,5 +19,4 @@ public class BaseAreaBO {
     private String positionName;
 
     private Byte level;
-
 }
