@@ -1,7 +1,6 @@
 package com.yunche.loan.service.configure.info.insurance;
 
-import com.yunche.loan.dto.configure.info.insurance.InsuranceCompanyDTO;
-import com.yunche.loan.dto.configure.info.padding.PaddingCompanyDTO;
+import com.yunche.loan.vo.configure.info.insurance.InsuranceCompanyVO;
 import com.yunche.loan.obj.configure.info.insurance.InsuranceCompanyDO;
 import com.yunche.loan.query.configure.info.insurance.InsuranceCompanyQuery;
 import com.yunche.loan.result.ResultBean;
@@ -20,7 +19,7 @@ public interface InsuranceCompanyService {
 
     ResultBean<Void> delete(Integer id);
 
-    ResultBean<InsuranceCompanyDTO> getById(Integer id);
+    ResultBean<InsuranceCompanyVO> getById(Integer id);
 
-    ResultBean<List<InsuranceCompanyDTO>> query(InsuranceCompanyQuery query);
+    ResultBean<List<InsuranceCompanyVO>> query(InsuranceCompanyQuery query);
 }

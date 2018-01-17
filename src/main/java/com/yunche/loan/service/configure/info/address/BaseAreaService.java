@@ -1,6 +1,6 @@
 package com.yunche.loan.service.configure.info.address;
 
-import com.yunche.loan.dto.configure.info.address.BaseAreaDTO;
+import com.yunche.loan.vo.configure.info.address.BaseAreaVO;
 import com.yunche.loan.obj.configure.info.address.BaseAreaDO;
 import com.yunche.loan.query.configure.info.address.BaseAreaQuery;
 import com.yunche.loan.result.ResultBean;
@@ -11,13 +11,13 @@ import com.yunche.loan.result.ResultBean;
  */
 public interface BaseAreaService {
 
-    ResultBean<BaseAreaDTO> getById(Integer id);
+    ResultBean<BaseAreaVO> getById(Long areaId);
 
     ResultBean<Void> create(BaseAreaDO baseAreaDO);
 
     ResultBean<Void> update(BaseAreaDO baseAreaBO);
 
-    ResultBean<Void> delete(Integer id);
+    ResultBean<Void> delete(Long areaId);
 
-    ResultBean<BaseAreaDTO> query(BaseAreaQuery queryJObj);
+    ResultBean<BaseAreaVO> query(BaseAreaQuery queryJObj);
 }

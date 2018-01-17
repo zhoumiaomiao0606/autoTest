@@ -7,8 +7,10 @@ import lombok.Data;
  */
 @Data
 public class BaseAreaDO {
-    private Integer id;
-
+    /**
+     * 区域ID
+     * 也是主键ID
+     */
     private Long areaId;
 
     private Long parentAreaId;

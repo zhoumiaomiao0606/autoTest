@@ -2,20 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.configure.info.address.BaseAeraDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="area_id" jdbcType="BIGINT" property="areaId"/>
+        <id column="area_id" jdbcType="BIGINT" property="areaId"/>
         <result column="parent_area_id" jdbcType="BIGINT" property="parentAreaId"/>
         <result column="area_name" jdbcType="VARCHAR" property="areaName"/>
         <result column="level" jdbcType="TINYINT" property="level"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, area_id, parent_area_id, area_name, level
-  </sql>
+        area_id, parent_area_id, area_name, level
+    </sql>
 
     <sql id="Base_Query_List">
-        <if test="id != null">
-            AND id = #{id}
-        </if>
         <if test="areaId != null">
             AND area_id = #{areaId}
         </if>
@@ -42,28 +38,25 @@
         limit startRow, pageSize
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from base_area
-        where id = #{id,jdbcType=INTEGER}
+        where area_id = #{areaId,jdbcType=BIGINT}
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from base_area
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from base_area
+        where area_id = #{areaId,jdbcType=BIGINT}
+    </delete>
     <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
-    insert into base_area (id, area_id, parent_area_id, 
-      area_name, level)
-    values (#{id,jdbcType=INTEGER}, #{areaId,jdbcType=BIGINT}, #{parentAreaId,jdbcType=BIGINT}, 
-      #{areaName,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT})
-  </insert>
+        insert into base_area (area_id, parent_area_id, area_name,
+        level)
+        values (#{areaId,jdbcType=BIGINT}, #{parentAreaId,jdbcType=BIGINT}, #{areaName,jdbcType=VARCHAR},
+        #{level,jdbcType=TINYINT})
+    </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
         insert into base_area
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                id,
-            </if>
             <if test="areaId != null">
                 area_id,
             </if>
@@ -78,9 +71,6 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                #{id,jdbcType=INTEGER},
-            </if>
             <if test="areaId != null">
                 #{areaId,jdbcType=BIGINT},
             </if>
@@ -98,9 +88,6 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
         update base_area
         <set>
-            <if test="areaId != null">
-                area_id = #{areaId,jdbcType=BIGINT},
-            </if>
             <if test="parentAreaId != null">
                 parent_area_id = #{parentAreaId,jdbcType=BIGINT},
             </if>
@@ -111,14 +98,13 @@
                 level = #{level,jdbcType=TINYINT},
             </if>
         </set>
-        where id = #{id,jdbcType=INTEGER}
+        where area_id = #{areaId,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
     update base_area
-    set area_id = #{areaId,jdbcType=BIGINT},
-      parent_area_id = #{parentAreaId,jdbcType=BIGINT},
+    set parent_area_id = #{parentAreaId,jdbcType=BIGINT},
       area_name = #{areaName,jdbcType=VARCHAR},
       level = #{level,jdbcType=TINYINT}
-    where id = #{id,jdbcType=INTEGER}
+    where area_id = #{areaId,jdbcType=BIGINT}
   </update>
 </mapper>

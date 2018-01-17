@@ -2,11 +2,9 @@ package com.yunche.loan.service.impl.configure.info.insurance;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.common.BaseExceptionEnum;
-import com.yunche.loan.dto.configure.info.insurance.InsuranceCompanyDTO;
-import com.yunche.loan.dto.configure.info.padding.PaddingCompanyDTO;
+import com.yunche.loan.vo.configure.info.insurance.InsuranceCompanyVO;
 import com.yunche.loan.mapper.configure.info.insurance.InsuranceCompanyDOMapper;
 import com.yunche.loan.obj.configure.info.insurance.InsuranceCompanyDO;
-import com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO;
 import com.yunche.loan.query.configure.info.insurance.InsuranceCompanyQuery;
 import com.yunche.loan.result.ResultBean;
 import com.yunche.loan.service.configure.info.insurance.InsuranceCompanyService;
@@ -66,35 +64,35 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
     }
 
     @Override
-    public ResultBean<InsuranceCompanyDTO> getById(Integer id) {
+    public ResultBean<InsuranceCompanyVO> getById(Integer id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
         InsuranceCompanyDO insuranceCompanyDO = insuranceCompanyDOMapper.selectByPrimaryKey(id);
         Preconditions.checkNotNull(insuranceCompanyDO, "id有误，数据不存在");
 
-        InsuranceCompanyDTO insuranceCompanyDTO = new InsuranceCompanyDTO();
-        BeanUtils.copyProperties(insuranceCompanyDO, insuranceCompanyDTO);
+        InsuranceCompanyVO insuranceCompanyVO = new InsuranceCompanyVO();
+        BeanUtils.copyProperties(insuranceCompanyDO, insuranceCompanyVO);
 
-        return ResultBean.ofSuccess(insuranceCompanyDTO);
+        return ResultBean.ofSuccess(insuranceCompanyVO);
     }
 
     @Override
-    public ResultBean<List<InsuranceCompanyDTO>> query(InsuranceCompanyQuery query) {
+    public ResultBean<List<InsuranceCompanyVO>> query(InsuranceCompanyQuery query) {
 
         int count = insuranceCompanyDOMapper.count(query);
         Preconditions.checkArgument(count > 0, "无符合条件的数据");
 
         List<InsuranceCompanyDO> insuranceCompanyDOS = insuranceCompanyDOMapper.query(query);
 
-        List<InsuranceCompanyDTO> insuranceCompanyDTOS = insuranceCompanyDOS.parallelStream()
+        List<InsuranceCompanyVO> insuranceCompanyVOS = insuranceCompanyDOS.parallelStream()
                 .filter(Objects::nonNull)
                 .map(e -> {
-                    InsuranceCompanyDTO insuranceCompanyDTO = new InsuranceCompanyDTO();
-                    BeanUtils.copyProperties(e, insuranceCompanyDTO);
-                    return insuranceCompanyDTO;
+                    InsuranceCompanyVO insuranceCompanyVO = new InsuranceCompanyVO();
+                    BeanUtils.copyProperties(e, insuranceCompanyVO);
+                    return insuranceCompanyVO;
                 })
                 .collect(Collectors.toList());
 
-        return ResultBean.of(insuranceCompanyDTOS, true, BaseExceptionEnum.EC00000200, count, query.getPageIndex(), query.getPageSize());
+        return ResultBean.of(insuranceCompanyVOS, true, BaseExceptionEnum.EC00000200, count, query.getPageIndex(), query.getPageSize());
     }
 }

@@ -2,7 +2,7 @@ package com.yunche.loan.service.impl.configure.info.padding;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.common.BaseExceptionEnum;
-import com.yunche.loan.dto.configure.info.padding.PaddingCompanyDTO;
+import com.yunche.loan.vo.configure.info.padding.PaddingCompanyVO;
 import com.yunche.loan.mapper.configure.info.padding.PaddingCompanyDOMapper;
 import com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO;
 import com.yunche.loan.query.configure.info.address.BaseAreaQuery;
@@ -63,35 +63,35 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     }
 
     @Override
-    public ResultBean<PaddingCompanyDTO> getById(Integer id) {
+    public ResultBean<PaddingCompanyVO> getById(Integer id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
         PaddingCompanyDO paddingCompanyDO = paddingCompanyDOMapper.selectByPrimaryKey(id);
         Preconditions.checkNotNull(paddingCompanyDO, "id有误，数据不存在");
 
-        PaddingCompanyDTO paddingCompanyDTO = new PaddingCompanyDTO();
-        BeanUtils.copyProperties(paddingCompanyDO, paddingCompanyDTO);
+        PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();
+        BeanUtils.copyProperties(paddingCompanyDO, paddingCompanyVO);
 
-        return ResultBean.ofSuccess(paddingCompanyDTO);
+        return ResultBean.ofSuccess(paddingCompanyVO);
     }
 
     @Override
-    public ResultBean<List<PaddingCompanyDTO>> query(BaseAreaQuery query) {
+    public ResultBean<List<PaddingCompanyVO>> query(BaseAreaQuery query) {
 
         int count = paddingCompanyDOMapper.count(query);
         Preconditions.checkArgument(count > 0, "无符合条件的数据");
 
         List<PaddingCompanyDO> paddingCompanyDOS = paddingCompanyDOMapper.query(query);
 
-        List<PaddingCompanyDTO> paddingCompanyDTOS = paddingCompanyDOS.parallelStream()
+        List<PaddingCompanyVO> paddingCompanyVOS = paddingCompanyDOS.parallelStream()
                 .filter(Objects::nonNull)
                 .map(e -> {
-                    PaddingCompanyDTO paddingCompanyDTO = new PaddingCompanyDTO();
-                    BeanUtils.copyProperties(e, paddingCompanyDTO);
-                    return paddingCompanyDTO;
+                    PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();
+                    BeanUtils.copyProperties(e, paddingCompanyVO);
+                    return paddingCompanyVO;
                 })
                 .collect(Collectors.toList());
 
-        return ResultBean.of(paddingCompanyDTOS, true, BaseExceptionEnum.EC00000200, count, query.getPageIndex(), query.getPageSize());
+        return ResultBean.of(paddingCompanyVOS, true, BaseExceptionEnum.EC00000200, count, query.getPageIndex(), query.getPageSize());
     }
 }

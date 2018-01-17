@@ -1,4 +1,4 @@
-package com.yunche.loan.dto.configure.info.address;
+package com.yunche.loan.vo.configure.info.address;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2018/1/12
  */
 @Data
-public class BaseAreaDTO {
+public class BaseAreaVO {
 
     private Integer id;
 

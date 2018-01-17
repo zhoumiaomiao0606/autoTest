@@ -1,4 +1,4 @@
-package com.yunche.loan.dto.configure.info.padding;
+package com.yunche.loan.vo.configure.info.padding;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2018/1/15
  */
 @Data
-public class PaddingCompanyDTO {
+public class PaddingCompanyVO {
     private Integer id;
 
     private String name;

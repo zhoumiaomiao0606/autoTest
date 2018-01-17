@@ -1,4 +1,4 @@
-package com.yunche.loan.dto.configure.info.insurance;
+package com.yunche.loan.vo.configure.info.insurance;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2018/1/15
  */
 @Data
-public class InsuranceCompanyDTO {
+public class InsuranceCompanyVO {
     private Integer id;
 
     private String name;

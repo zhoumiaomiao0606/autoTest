@@ -1,7 +1,7 @@
 package com.yunche.loan.service.impl.configure.info.address;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.dto.configure.info.address.BaseAreaDTO;
+import com.yunche.loan.vo.configure.info.address.BaseAreaVO;
 import com.yunche.loan.mapper.configure.info.address.BaseAeraDOMapper;
 import com.yunche.loan.obj.configure.info.address.BaseAreaDO;
 import com.yunche.loan.query.configure.info.address.BaseAreaQuery;
@@ -24,20 +24,22 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     private BaseAeraDOMapper baseAeraDOMapper;
 
     @Override
-    public ResultBean<BaseAreaDTO> getById(Integer id) {
-        Preconditions.checkArgument(null != id, "id不能为空");
+    public ResultBean<BaseAreaVO> getById(Long areaId) {
+        Preconditions.checkNotNull(areaId, "areaId不能为空");
 
-        BaseAreaDO baseAreaDO = baseAeraDOMapper.selectByPrimaryKey(id);
-        if (null == baseAreaDO) {
-            return ResultBean.ofSuccess(null);
-        }
-        BaseAreaDTO baseAreaDTO = new BaseAreaDTO();
-        BeanUtils.copyProperties(baseAreaDO, baseAreaDTO);
-        return ResultBean.ofSuccess(baseAreaDTO);
+        BaseAreaDO baseAreaDO = baseAeraDOMapper.selectByPrimaryKey(areaId);
+        Preconditions.checkNotNull(baseAreaDO, "areaId有误，数据不存在.");
+
+        BaseAreaVO baseAreaVO = new BaseAreaVO();
+        BeanUtils.copyProperties(baseAreaDO, baseAreaVO);
+
+        return ResultBean.ofSuccess(baseAreaVO);
     }
 
     @Override
     public ResultBean<Void> create(BaseAreaDO baseAreaDO) {
+        Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getAreaId(), "areaId不能为空");
+
         int count = baseAeraDOMapper.insert(baseAreaDO);
         Preconditions.checkArgument(count > 1, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
@@ -45,7 +47,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
 
     @Override
     public ResultBean<Void> update(BaseAreaDO baseAreaDO) {
-        Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getId(), "id不能为空");
+        Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getAreaId(), "areaId不能为空");
 
         int count = baseAeraDOMapper.updateByPrimaryKeySelective(baseAreaDO);
         Preconditions.checkArgument(count > 1, "更新失败");
@@ -53,16 +55,16 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     }
 
     @Override
-    public ResultBean<Void> delete(Integer id) {
-        Preconditions.checkNotNull(id, "id不能为空");
+    public ResultBean<Void> delete(Long areaId) {
+        Preconditions.checkNotNull(areaId, "areaId不能为空");
 
-        int count = baseAeraDOMapper.deleteByPrimaryKey(id);
+        int count = baseAeraDOMapper.deleteByPrimaryKey(areaId);
         Preconditions.checkArgument(count > 1, "删除失败");
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
     @Override
-    public ResultBean<BaseAreaDTO> query(BaseAreaQuery query) {
+    public ResultBean<BaseAreaVO> query(BaseAreaQuery query) {
 
         List<BaseAreaDO> baseAreaDOS = baseAeraDOMapper.query(query);
 

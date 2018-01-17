@@ -8,13 +8,13 @@ import java.util.List;
 
 @Mapper
 public interface BaseAeraDOMapper {
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(Long id);
 
     int insert(BaseAreaDO record);
 
     int insertSelective(BaseAreaDO record);
 
-    BaseAreaDO selectByPrimaryKey(Integer id);
+    BaseAreaDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(BaseAreaDO record);
 

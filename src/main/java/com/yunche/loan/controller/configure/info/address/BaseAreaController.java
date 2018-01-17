@@ -1,7 +1,7 @@
 package com.yunche.loan.controller.configure.info.address;
 
 import com.alibaba.fastjson.JSON;
-import com.yunche.loan.dto.configure.info.address.BaseAreaDTO;
+import com.yunche.loan.vo.configure.info.address.BaseAreaVO;
 import com.yunche.loan.obj.configure.info.address.BaseAreaDO;
 import com.yunche.loan.query.configure.info.address.BaseAreaQuery;
 import com.yunche.loan.result.ResultBean;
@@ -42,19 +42,19 @@ public class BaseAreaController {
     }
 
     @GetMapping(value = "/delete")
-    public ResultBean<Void> delete(@RequestParam("id") Integer id) {
-        logger.info(Arrays.asList("delete", id.toString()).stream().collect(Collectors.joining("-")));
-        return baseAreaService.delete(id);
+    public ResultBean<Void> delete(@RequestParam("id") Long areaId) {
+        logger.info(Arrays.asList("delete", areaId.toString()).stream().collect(Collectors.joining("-")));
+        return baseAreaService.delete(areaId);
     }
 
     @GetMapping("/getById")
-    public ResultBean<BaseAreaDTO> getById(@RequestParam("id") Integer id) {
-        logger.info(Arrays.asList("getById", id.toString()).stream().collect(Collectors.joining("-")));
-        return baseAreaService.getById(id);
+    public ResultBean<BaseAreaVO> getById(@RequestParam("id") Long areaId) {
+        logger.info(Arrays.asList("getById", areaId.toString()).stream().collect(Collectors.joining("-")));
+        return baseAreaService.getById(areaId);
     }
 
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<BaseAreaDTO> query(@RequestBody BaseAreaQuery query) {
+    public ResultBean<BaseAreaVO> query(@RequestBody BaseAreaQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return baseAreaService.query(query);
     }

@@ -1,7 +1,7 @@
 package com.yunche.loan.controller.configure.info.padding;
 
 import com.alibaba.fastjson.JSON;
-import com.yunche.loan.dto.configure.info.padding.PaddingCompanyDTO;
+import com.yunche.loan.vo.configure.info.padding.PaddingCompanyVO;
 import com.yunche.loan.obj.configure.info.padding.PaddingCompanyDO;
 import com.yunche.loan.query.configure.info.address.BaseAreaQuery;
 import com.yunche.loan.result.ResultBean;
@@ -49,13 +49,13 @@ public class PaddingCompanyController {
     }
 
     @GetMapping("/getById")
-    public ResultBean<PaddingCompanyDTO> getById(@RequestParam("id") Integer id) {
+    public ResultBean<PaddingCompanyVO> getById(@RequestParam("id") Integer id) {
         logger.info(Arrays.asList("getById", id.toString()).stream().collect(Collectors.joining("-")));
         return paddingCompanyService.getById(id);
     }
 
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<List<PaddingCompanyDTO>> query(@RequestBody BaseAreaQuery query) {
+    public ResultBean<List<PaddingCompanyVO>> query(@RequestBody BaseAreaQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return paddingCompanyService.query(query);
     }
