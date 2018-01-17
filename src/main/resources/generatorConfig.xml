@@ -24,7 +24,7 @@
         </javaTypeResolver>
 
         <!-- targetProject:生成PO类的位置 -->
-        <javaModelGenerator targetPackage="com.yunche.loan.obj.configure.info.padding"
+        <javaModelGenerator targetPackage="com.yunche.loan.obj.configure.info.address"
                             targetProject="./src">
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false"/>
@@ -39,7 +39,7 @@
         </sqlMapGenerator>
         <!-- targetPackage：mapper接口生成的位置 -->
         <javaClientGenerator type="XMLMAPPER"
-                             targetPackage="com.yunche.loan.mapper.configure.info.padding"
+                             targetPackage="com.yunche.loan.mapper.configure.info.address"
                              targetProject="./src">
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false"/>
@@ -49,10 +49,11 @@
         <!-- 指定数据库表 -->
         <!-- schema即为数据库名 tableName为对应的数据库表 domainObjectName是要生成的实体类 enable*ByExample : 是否生成 example类   -->
 
-        <!--
         <table tableName="base_area" domainObjectName="BaseAreaDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <!--
 
         <table tableName="car_brand" domainObjectName="CarBrandDO"
                 enableCountByExample="false" enableUpdateByExample="false"
@@ -66,7 +67,7 @@
                 enableCountByExample="false" enableUpdateByExample="false"
                 enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
-         -->
+
 
         <table tableName="padding_company" domainObjectName="PaddingCompanyDO"
                enableCountByExample="false" enableUpdateByExample="false"
@@ -76,6 +77,7 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
+        -->
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

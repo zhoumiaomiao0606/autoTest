@@ -28,9 +28,11 @@ public class BaseAreaServiceImpl implements BaseAreaService {
         Preconditions.checkArgument(null != id, "id不能为空");
 
         BaseAreaDO baseAreaDO = baseAeraDOMapper.selectByPrimaryKey(id);
+        if (null == baseAreaDO) {
+            return ResultBean.ofSuccess(null);
+        }
         BaseAreaDTO baseAreaDTO = new BaseAreaDTO();
         BeanUtils.copyProperties(baseAreaDO, baseAreaDTO);
-
         return ResultBean.ofSuccess(baseAreaDTO);
     }
 

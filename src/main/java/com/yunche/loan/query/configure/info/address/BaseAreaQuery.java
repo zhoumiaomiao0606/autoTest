@@ -12,11 +12,11 @@ public class BaseAreaQuery extends BaseQuery {
 
     private Integer id;
 
-    private Long codeId;
+    private Long areaId;
 
-    private Long parentCodeId;
+    private Long parentAreaId;
 
-    private String positionName;
+    private String areaName;
 
     private Byte level;
 }
