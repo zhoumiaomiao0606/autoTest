@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.mapper.configure.info.car.CarModelDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.car.CarModelDO">
+<mapper namespace="com.yunche.loan.dao.mapper.CarModelDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.CarModelDO">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="brand_id" jdbcType="INTEGER" property="brandId"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
@@ -38,7 +38,7 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.car.CarModelDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
         <selectKey resultType="java.lang.Integer" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -77,7 +77,7 @@
         </foreach>
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.car.CarModelDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
         <selectKey resultType="java.lang.Integer" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -167,7 +167,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.obj.configure.info.car.CarModelDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
         update car_model
         <set>
             <if test="brandId != null">
@@ -210,7 +210,7 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.car.CarModelDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
     update car_model
     set brand_id = #{brandId,jdbcType=INTEGER},
       name = #{name,jdbcType=VARCHAR},

@@ -11,9 +11,9 @@
         </commentGenerator>
         <!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/yunche_loan_biz?useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;tinyInt1isBit=false"
-                        userId="root"
-                        password="root">
+                        connectionURL="jdbc:mysql://rm-bp1uk11f20h4i65u9ao.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;tinyInt1isBit=false"
+                        userId="yuncheadmin"
+                        password="Yunche_2018">
         </jdbcConnection>
 
 
@@ -49,9 +49,9 @@
         <!-- 指定数据库表 -->
         <!-- schema即为数据库名 tableName为对应的数据库表 domainObjectName是要生成的实体类 enable*ByExample : 是否生成 example类   -->
 
-        <table tableName="base_area" domainObjectName="BaseAreaDO"
+        <!--<table tableName="base_area" domainObjectName="BaseAreaDO"
                enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
 
         <!--
 
@@ -78,6 +78,35 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
         -->
+
+        <!--<table tableName="financial_product" domainObjectName="FinancialProductDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
+
+        <table tableName="biz_model" domainObjectName="BizModelDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="biz_model_rela_financial_prod" domainObjectName="BizModelRelaFinancialProdDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="biz_model_rela_partners" domainObjectName="BizModelRelaPartnersDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="biz_model_rela_area" domainObjectName="BizModelRelaAreaDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="user_group" domainObjectName="UserGroupDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="user_group_rela_area" domainObjectName="UserGroupRelaAreaDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

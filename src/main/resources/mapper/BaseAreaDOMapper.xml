@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.mapper.configure.info.address.BaseAeraDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
+<mapper namespace="com.yunche.loan.dao.mapper.BaseAeraDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BaseAreaDO">
         <id column="area_id" jdbcType="BIGINT" property="areaId"/>
         <result column="parent_area_id" jdbcType="BIGINT" property="parentAreaId"/>
         <result column="area_name" jdbcType="VARCHAR" property="areaName"/>
@@ -27,7 +27,7 @@
     </sql>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.query.configure.info.address.BaseAreaQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.BaseAreaQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -48,13 +48,13 @@
         delete from base_area
         where area_id = #{areaId,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
         insert into base_area (area_id, parent_area_id, area_name,
         level)
         values (#{areaId,jdbcType=BIGINT}, #{parentAreaId,jdbcType=BIGINT}, #{areaName,jdbcType=VARCHAR},
         #{level,jdbcType=TINYINT})
     </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
         insert into base_area
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="areaId != null">
@@ -85,7 +85,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
         update base_area
         <set>
             <if test="parentAreaId != null">
@@ -100,7 +100,7 @@
         </set>
         where area_id = #{areaId,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.address.BaseAreaDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
     update base_area
     set parent_area_id = #{parentAreaId,jdbcType=BIGINT},
       area_name = #{areaName,jdbcType=VARCHAR},

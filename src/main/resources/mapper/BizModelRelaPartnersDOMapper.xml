@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.configure.info.address.BizModelRelaPartnersDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.address.BizModelRelaPartnersDOKey">
+    <id column="biz_id" jdbcType="BIGINT" property="bizId" />
+    <id column="group_id" jdbcType="INTEGER" property="groupId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.address.BizModelRelaPartnersDOKey">
+    delete from biz_model_rela_partners
+    where biz_id = #{bizId,jdbcType=BIGINT}
+      and group_id = #{groupId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.address.BizModelRelaPartnersDOKey">
+    insert into biz_model_rela_partners (biz_id, group_id)
+    values (#{bizId,jdbcType=BIGINT}, #{groupId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.address.BizModelRelaPartnersDOKey">
+    insert into biz_model_rela_partners
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="bizId != null">
+        biz_id,
+      </if>
+      <if test="groupId != null">
+        group_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="bizId != null">
+        #{bizId,jdbcType=BIGINT},
+      </if>
+      <if test="groupId != null">
+        #{groupId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+</mapper>
