@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.mapper.configure.info.address.UserGroupDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.address.UserGroupDO">
+<mapper namespace="com.yunche.loan.dao.mapper.UserGroupDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.UserGroupDO">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="department_id" jdbcType="INTEGER" property="departmentId" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.obj.configure.info.address.UserGroupDO">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.dataObj.UserGroupDO">
     <result column="description" jdbcType="LONGVARCHAR" property="description" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -27,13 +27,13 @@
     delete from user_group
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.address.UserGroupDO">
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
     insert into user_group (id, name, department_id, 
       description)
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{departmentId,jdbcType=INTEGER}, 
       #{description,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.address.UserGroupDO">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
     insert into user_group
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -64,7 +64,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.obj.configure.info.address.UserGroupDO">
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
     update user_group
     <set>
       <if test="name != null">
@@ -79,14 +79,14 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.obj.configure.info.address.UserGroupDO">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
     update user_group
     set name = #{name,jdbcType=VARCHAR},
       department_id = #{departmentId,jdbcType=INTEGER},
       description = #{description,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.address.UserGroupDO">
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
     update user_group
     set name = #{name,jdbcType=VARCHAR},
       department_id = #{departmentId,jdbcType=INTEGER}

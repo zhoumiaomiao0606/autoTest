@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.mapper.configure.info.address.BizModelDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.address.BizModelDO">
+<mapper namespace="com.yunche.loan.dao.mapper.BizModelDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelDO">
     <id column="biz_id" jdbcType="BIGINT" property="bizId" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="desc" jdbcType="VARCHAR" property="desc" />
@@ -25,7 +25,7 @@
     delete from biz_model
     where biz_id = #{bizId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.address.BizModelDO">
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
     insert into biz_model (biz_id, title, desc, 
       scene, cust_target, car_type, 
       status, gmt_create, gmt_modify
@@ -35,7 +35,7 @@
       #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.address.BizModelDO">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
     insert into biz_model
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="bizId != null">
@@ -96,7 +96,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.obj.configure.info.address.BizModelDO">
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
     update biz_model
     <set>
       <if test="title != null">
@@ -126,7 +126,7 @@
     </set>
     where biz_id = #{bizId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.address.BizModelDO">
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
     update biz_model
     set title = #{title,jdbcType=VARCHAR},
       desc = #{desc,jdbcType=VARCHAR},

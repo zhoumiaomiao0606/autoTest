@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.configure.info.address.BizModelRelaFinancialProdDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.address.BizModelRelaFinancialProdDOKey">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDOKey">
     <id column="biz_id" jdbcType="BIGINT" property="bizId" />
     <id column="prod_id" jdbcType="BIGINT" property="prodId" />
   </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.address.BizModelRelaFinancialProdDOKey">
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDOKey">
     delete from biz_model_rela_financial_prod
     where biz_id = #{bizId,jdbcType=BIGINT}
       and prod_id = #{prodId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.address.BizModelRelaFinancialProdDOKey">
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDOKey">
     insert into biz_model_rela_financial_prod (biz_id, prod_id)
     values (#{bizId,jdbcType=BIGINT}, #{prodId,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.address.BizModelRelaFinancialProdDOKey">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDOKey">
     insert into biz_model_rela_financial_prod
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="bizId != null">

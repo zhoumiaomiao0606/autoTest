@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.mapper.configure.info.address.BizModelRelaAreaDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.obj.configure.info.address.BizModelRelaAreaDOKey">
+<mapper namespace="com.yunche.loan.dao.mapper.BizModelRelaAreaDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaAreaDOKey">
     <id column="biz_id" jdbcType="BIGINT" property="bizId" />
     <id column="area_id" jdbcType="BIGINT" property="areaId" />
   </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.obj.configure.info.address.BizModelRelaAreaDOKey">
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaDOKey">
     delete from biz_model_rela_area
     where biz_id = #{bizId,jdbcType=BIGINT}
       and area_id = #{areaId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.obj.configure.info.address.BizModelRelaAreaDOKey">
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaDOKey">
     insert into biz_model_rela_area (biz_id, area_id)
     values (#{bizId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.obj.configure.info.address.BizModelRelaAreaDOKey">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaDOKey">
     insert into biz_model_rela_area
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="bizId != null">

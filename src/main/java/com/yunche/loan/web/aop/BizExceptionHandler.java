@@ -26,7 +26,7 @@ public class BizExceptionHandler {
     /**
      * 捕获所有controller层的方法
      */
-    @Pointcut("execution(* com.yunche.loan.controller.*.*(..))")
+    @Pointcut("execution(* com.yunche.loan.web.controller.*.*(..))")
     public void controller() {
     }
 
