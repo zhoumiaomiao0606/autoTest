@@ -42,4 +42,11 @@ public class CarModelServiceImpl implements CarModelService {
         Preconditions.checkArgument(count > 0, "编辑失败");
         return count;
     }
+
+    @Override
+    public CarModelDO getById(Integer id) {
+        Preconditions.checkNotNull(id, "id不能为空");
+        CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(id);
+        return carModelDO;
+    }
 }

@@ -30,6 +30,26 @@ public class CarController {
         return carService.importCar();
     }
 
+    /**
+     * car_model表补偿任务
+     * <p>
+     * price：  取car_detail的两极值          格式：10-15万
+     * seatNum：取car_detail的所有座位数      格式：5/7/9
+     *
+     * @return
+     */
+    @GetMapping("/fillModel")
+    public ResultBean<Void> fillModel() {
+        logger.info("fillModel");
+        return carService.fillModel();
+    }
+
+    @GetMapping("/count")
+    public ResultBean<String> count() {
+        logger.info("count");
+        return carService.count();
+    }
+
 }
 
 

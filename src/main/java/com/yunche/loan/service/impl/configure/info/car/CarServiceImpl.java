@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.yunche.loan.common.HttpUtils;
 import com.yunche.loan.obj.configure.info.car.CarBrandDO;
 import com.yunche.loan.obj.configure.info.car.CarDetailDO;
@@ -23,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.constant.configure.info.car.CarConst.fuelTypeMap;
@@ -64,30 +67,231 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public ResultBean<Void> importCar() {
-        // 车型ID-车款ID列表映射  ——  k/v : modelId / detailIdList
+        long startTime = System.currentTimeMillis();
+
+        // 车系ID-车型ID列表映射  ——  k/v : modelId / detailIdList
         Map<Integer, List<Integer>> modelIdDetailIdsMap = Maps.newHashMap();
 
         // 获取品牌数据
-        logger.info("查询品牌开始" + NEW_LINE);
+        logger.info("查询品牌开始   >>>>>   ");
         List<CarBrandDO> carBrandDOS = getCarBrand();
-        logger.info("查询品牌完成" + NEW_LINE);
+        logger.info("查询品牌完成   >>>>>   ");
 
         logger.info("插入品牌数据开始   >>>>>   ");
         insertBrand(carBrandDOS);
         logger.info("插入品牌数据完成   >>>>>   ");
 
 
-        // 获取车型数据
-        logger.info("查询车型开始   >>>>>   ");
+        // 获取车系数据
+        logger.info("查询&插入车系开始   >>>>>   ");
         List<CarModelDO> needFillCarModelDOS = insertAndGetCarModel(carBrandDOS, modelIdDetailIdsMap);
-        logger.info("查询车型完成   >>>>>   ");
+        logger.info("查询&插入车系完成   >>>>>   ");
 
-        // 获取车款数据，并补充车型数据(price、seatNum)
-        logger.info("查询车款开始   >>>>>   ");
+        // 获取车型数据，并补充车系数据(price、seatNum)
+        logger.info("查询&插入车型开始   >>>>>   ");
         insertCarDetailAndFillCarModel(needFillCarModelDOS, modelIdDetailIdsMap);
-        logger.info("查询车款完成   >>>>>   ");
+        logger.info("查询&插入车型完成   >>>>>   ");
+
+        long totalTime = System.currentTimeMillis() - startTime;
+        logger.info("/car/import：导入车型库总耗时 : {}h", new BigDecimal(totalTime).doubleValue() / 3600);
 
         return ResultBean.ofSuccess(null, "导入成功");
+    }
+
+    @Override
+    public ResultBean<Void> fillModel() {
+        long startTime = System.currentTimeMillis();
+
+        // 获取所有 model_id —— detail_id
+        List<CarDetailDO> carDetailDOS = carDetailService.getAllIdAndModelId();
+        logger.info("car_detail表数据总量为 : " + carDetailDOS.size());
+        if (CollectionUtils.isEmpty(carDetailDOS)) {
+            return ResultBean.ofSuccess(null, "car_detail表为空表,无可更新数据.");
+        }
+
+        // 梳理id映射关系： model_id —— detail_id列表
+        ConcurrentMap<Integer, List<Integer>> modelIdDetailIdsMap = getModelIdDetailIdsMapping(carDetailDOS);
+
+        // 执行补偿任务
+        execFillModel(modelIdDetailIdsMap);
+
+        long totalTime = System.currentTimeMillis() - startTime;
+        logger.info("/car/fillModel：车系表补偿任务总耗时 : {}h", new BigDecimal(totalTime).doubleValue() / 3600);
+
+        return ResultBean.ofSuccess(null, "补偿任务执行完成");
+    }
+
+    @Override
+    public ResultBean<String> count() {
+        // 获取品牌数据
+        logger.info("查询品牌开始   >>>>>   ");
+        List<CarBrandDO> carBrandDOS = getCarBrand();
+        logger.info("查询品牌完成   >>>>>   ");
+
+        logger.info("统计数量开始   >>>>>   ");
+        Map<String, Integer> countMap = countTotal(carBrandDOS);
+        logger.info("统计数量完成   >>>>>   ");
+
+        return ResultBean.ofSuccess(JSON.toJSONString(countMap));
+    }
+
+    /**
+     * 统计数目
+     *
+     * @param carBrandDOS
+     */
+    private Map<String, Integer> countTotal(List<CarBrandDO> carBrandDOS) {
+
+        Map<String, Integer> countMap = Maps.newHashMap();
+        countMap.put("car_brand_count", carBrandDOS.size());
+        countMap.put("car_model_count", 0);
+        countMap.put("car_detail_count", 0);
+
+        String path = "/car/carlist";
+        String method = "GET";
+
+        // headers
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "APPCODE " + appcode);
+
+        // query
+        Map<String, String> querys = new HashMap<>();
+
+        carBrandDOS.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    querys.put("parentid", e.getId().toString());
+
+                    requestAndParseThenCount(host, path, method, headers, querys, countMap);
+
+                    wait_();
+                });
+
+        return countMap;
+    }
+
+    /**
+     * 请求/car/carlist接口，解析数据，然后统计数量
+     *
+     * @param host
+     * @param path
+     * @param method
+     * @param headers
+     * @param querys
+     * @param countMap
+     */
+    private void requestAndParseThenCount(String host, String path, String method, Map<String, String> headers, Map<String, String> querys, Map<String, Integer> countMap) {
+
+        try {
+
+            JSONObject bodyObj = requestAndCheckThenReturnResult(host, path, method, headers, querys);
+            if (CollectionUtils.isEmpty(bodyObj)) {
+                return;
+            }
+
+            JSONArray resultJsonArr = bodyObj.getJSONArray("result");
+            if (CollectionUtils.isEmpty(resultJsonArr)) {
+                return;
+            }
+
+            resultJsonArr.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        // 子公司   depth = 2
+                        JSONObject eObj = (JSONObject) e;
+
+                        // 车系列表    carlist : depth = 3
+                        JSONArray modelList = eObj.getJSONArray("carlist");
+                        if (!CollectionUtils.isEmpty(modelList)) {
+                            countMap.put("car_model_count", countMap.get("car_model_count") + modelList.size());
+
+                            modelList.stream()
+                                    .filter(Objects::nonNull)
+                                    .forEach(m -> {
+                                        JSONObject mObj = (JSONObject) m;
+                                        // 车系列表     list : depth = 4
+                                        JSONArray detailList = mObj.getJSONArray("list");
+                                        if (!CollectionUtils.isEmpty(detailList)) {
+                                            countMap.put("car_detail_count", countMap.get("car_detail_count") + detailList.size());
+                                        }
+                                    });
+                        }
+
+
+                    });
+
+        } catch (Exception e) {
+            logger.error(path + ": 接口调用失败", e);
+        }
+    }
+
+    /**
+     * 执行车系（car_model表）的price、seatNum补偿任务
+     *
+     * @param modelIdDetailIdsMap
+     */
+    private void execFillModel(ConcurrentMap<Integer, List<Integer>> modelIdDetailIdsMap) {
+        // 容器
+        ArrayList<Double> minMaxPrice = Lists.newArrayList();
+        Set<Integer> seatNumSet = Sets.newTreeSet();
+
+        modelIdDetailIdsMap.forEach((modelId, detailIds) -> {
+
+            detailIds.parallelStream()
+                    .forEach(detailId -> {
+
+                        CarDetailDO carDetailDO = carDetailService.getById(detailId);
+                        if (null != carDetailDO) {
+                            // 统计price
+                            statisticsPrice(carDetailDO.getPrice(), minMaxPrice);
+                            // 统计seatNum
+                            statisticsSeatNum(carDetailDO.getSeatNum(), seatNumSet);
+                        }
+
+                    });
+
+            // 获取当前要补偿数据的CarModelDO
+            CarModelDO carModelDO = carModelService.getById(modelId);
+            if (null != carModelDO) {
+                // 补充price
+                fillCarModelPrice(carModelDO, minMaxPrice);
+                // 补充seatNum
+                fillCarModelSeatNum(carModelDO, seatNumSet);
+            }
+            // 清空容器
+            minMaxPrice.clear();
+            seatNumSet.clear();
+
+        });
+    }
+
+    /**
+     * 梳理id映射关系： model_id——detail_id列表  映射
+     *
+     * @param carDetailDOS
+     * @return
+     */
+    private ConcurrentMap<Integer, List<Integer>> getModelIdDetailIdsMapping(List<CarDetailDO> carDetailDOS) {
+        ConcurrentMap<Integer, List<Integer>> modelIdDetailIdsMap = Maps.newConcurrentMap();
+
+        carDetailDOS.parallelStream()
+                .filter(e -> null != e && null != e.getId() && null != e.getModelId())
+                .forEach(e -> {
+
+                    Integer modelId = e.getModelId();
+                    Integer detailId = e.getId();
+
+                    if (!modelIdDetailIdsMap.containsKey(modelId)) {
+                        modelIdDetailIdsMap.put(modelId, Lists.newArrayList(detailId));
+                    } else {
+                        modelIdDetailIdsMap.get(modelId).add(detailId);
+                    }
+
+                });
+
+        return modelIdDetailIdsMap;
     }
 
     private void insertBrand(List<CarBrandDO> carBrandDOS) {
@@ -121,7 +325,7 @@ public class CarServiceImpl implements CarService {
     }
 
     /**
-     * 获取车款数据，并补充车型数据(price、seatNum)
+     * 获取车型数据，并补充车系数据(price、seatNum)
      *
      * @param needFillCarModelDOS
      * @param modelIdDetailIdsMap
@@ -136,8 +340,8 @@ public class CarServiceImpl implements CarService {
         List<Integer> existCarDetailIds = carDetailService.getAllId();
 
         // 极值容器
-        Double[] minMaxPriceArr = new Double[2];
-        Integer[] minMaxSeatNumArr = new Integer[2];
+        List<Double> minMaxPrice = Lists.newArrayList();
+        Set<Integer> seatNumSet = Sets.newHashSet();
 
         needFillCarModelDOS.stream()
                 .filter(m -> null != m && null != m.getId())
@@ -152,7 +356,7 @@ public class CarServiceImpl implements CarService {
 
                                     // 不存在，则插入
                                     if (!existCarDetailIds.contains(detailId)) {
-                                        // 获取车款数据
+                                        // 获取车型数据
                                         CarDetailDO carDetailDO = getCarDetail(modelId, detailId);
 
                                         if (null != carDetailDO) {
@@ -160,10 +364,10 @@ public class CarServiceImpl implements CarService {
                                             carDetailService.insert(carDetailDO);
 
                                             // 统计price
-                                            statisticsPrice(carDetailDO.getPrice(), minMaxPriceArr);
+                                            statisticsPrice(carDetailDO.getPrice(), minMaxPrice);
 
                                             // 统计seatNum
-                                            statisticsSeatNum(carDetailDO.getSeatNum(), minMaxSeatNumArr);
+                                            statisticsSeatNum(carDetailDO.getSeatNum(), seatNumSet);
                                         }
                                     }
 
@@ -171,10 +375,14 @@ public class CarServiceImpl implements CarService {
                                 });
 
                         // 补充price
-                        fillCarModelPrice(m, minMaxPriceArr);
+                        fillCarModelPrice(m, minMaxPrice);
 
                         // 补充seatNum
-                        fillCarModelSeatNum(m, minMaxSeatNumArr);
+                        fillCarModelSeatNum(m, seatNumSet);
+
+                        // 清空容器
+                        minMaxPrice.clear();
+                        seatNumSet.clear();
                     }
 
                 });
@@ -185,62 +393,54 @@ public class CarServiceImpl implements CarService {
      * 统计price（min/max）
      *
      * @param currentPrice
-     * @param minMaxPriceArr
+     * @param minMaxPriceList
      */
-    private void statisticsPrice(String currentPrice, Double[] minMaxPriceArr) {
+    private void statisticsPrice(String currentPrice, List<Double> minMaxPriceList) {
         if (StringUtils.isNotBlank(currentPrice) && !currentPrice.contains("无")) {
             Double price = Double.valueOf(currentPrice.split("万")[0]);
 
-            if (null == minMaxPriceArr[0]) {
-                minMaxPriceArr[0] = price;
-                minMaxPriceArr[1] = price;
+            if (CollectionUtils.isEmpty(minMaxPriceList)) {
+                minMaxPriceList.add(price);
+                minMaxPriceList.add(price);
             } else {
-                Double minPrice = minMaxPriceArr[0];
-                Double maxPrice = minMaxPriceArr[1];
+                Double minPrice = minMaxPriceList.get(0);
+                Double maxPrice = minMaxPriceList.get(1);
 
-                minMaxPriceArr[0] = price < minPrice ? price : minPrice;
-                minMaxPriceArr[1] = price > maxPrice ? price : minPrice;
+                minPrice = price < minPrice ? price : minPrice;
+                maxPrice = price > maxPrice ? price : minPrice;
+
+                minMaxPriceList.set(0, minPrice);
+                minMaxPriceList.set(1, maxPrice);
             }
         }
-
     }
 
     /**
-     * 统计座位数（min/max）
+     * 统计座位数 （子车型所有座位数）
      *
      * @param currentSeatNum
-     * @param minMaxSeatNumArr
+     * @param seatNumSet
      */
-    private void statisticsSeatNum(Integer currentSeatNum, Integer[] minMaxSeatNumArr) {
-
+    private void statisticsSeatNum(Integer currentSeatNum, Set<Integer> seatNumSet) {
         if (null != currentSeatNum) {
-            if (null == minMaxSeatNumArr[0]) {
-                minMaxSeatNumArr[0] = currentSeatNum;
-                minMaxSeatNumArr[1] = currentSeatNum;
-            } else {
-                Integer minSeatNum = minMaxSeatNumArr[0];
-                Integer maxSeatNum = minMaxSeatNumArr[1];
-
-                minMaxSeatNumArr[0] = currentSeatNum < minSeatNum ? currentSeatNum : minSeatNum;
-                minMaxSeatNumArr[1] = currentSeatNum > maxSeatNum ? currentSeatNum : maxSeatNum;
-            }
+            seatNumSet.add(currentSeatNum);
         }
     }
 
 
     /**
-     * 补充车型price（官方指导价）
+     * 补充车系price（官方指导价）
      *
      * @param carModelDO
-     * @param minMaxPriceArr
+     * @param minMaxPriceList
      */
-    private void fillCarModelPrice(CarModelDO carModelDO, Double[] minMaxPriceArr) {
-        if (null != minMaxPriceArr[0]) {
+    private void fillCarModelPrice(CarModelDO carModelDO, List<Double> minMaxPriceList) {
+        if (!CollectionUtils.isEmpty(minMaxPriceList)) {
             CarModelDO updateCarModelDO = new CarModelDO();
             updateCarModelDO.setId(carModelDO.getId());
 
-            Double minPrice = minMaxPriceArr[0];
-            Double maxPrice = minMaxPriceArr[1];
+            Double minPrice = minMaxPriceList.get(0);
+            Double maxPrice = minMaxPriceList.get(1);
 
             if (minPrice.equals(maxPrice)) {
                 updateCarModelDO.setPrice(minPrice + "万");
@@ -254,24 +454,23 @@ public class CarServiceImpl implements CarService {
     }
 
     /**
-     * 补充车型seatNum
+     * 补充车系seatNum
      *
      * @param carModelDO
-     * @param minMaxSeatNumArr
+     * @param seatNumSet
      */
-    private void fillCarModelSeatNum(CarModelDO carModelDO, Integer[] minMaxSeatNumArr) {
-        if (null != minMaxSeatNumArr[0]) {
+    private void fillCarModelSeatNum(CarModelDO carModelDO, Set<Integer> seatNumSet) {
+        if (!CollectionUtils.isEmpty(seatNumSet)) {
             CarModelDO updateCarModelDO = new CarModelDO();
             updateCarModelDO.setId(carModelDO.getId());
 
-            Integer minSeatNum = minMaxSeatNumArr[0];
-            Integer maxSeatNum = minMaxSeatNumArr[1];
+            String seatNumStr = seatNumSet.stream()
+                    .map(e -> {
+                        return e.toString();
+                    })
+                    .collect(Collectors.joining("/"));
 
-            if (minSeatNum.equals(maxSeatNum)) {
-                updateCarModelDO.setSeatNum(minSeatNum.toString());
-            } else {
-                updateCarModelDO.setPrice(minSeatNum + "/" + maxSeatNum);
-            }
+            updateCarModelDO.setSeatNum(seatNumStr);
 
             // 编辑price
             carModelService.updateSelective(updateCarModelDO);
@@ -301,10 +500,10 @@ public class CarServiceImpl implements CarService {
 
 
     /**
-     * 插入，并获取车型数据
+     * 插入，并获取车系数据
      *
      * @param carBrandDOS
-     * @param modelIdDetailIdsMap 车型ID-车款ID列表映射
+     * @param modelIdDetailIdsMap 车系ID-车型ID列表映射
      */
     public List<CarModelDO> insertAndGetCarModel(List<CarBrandDO> carBrandDOS, Map<Integer, List<Integer>> modelIdDetailIdsMap) {
 
@@ -355,14 +554,14 @@ public class CarServiceImpl implements CarService {
     }
 
     /**
-     * 请求并解析车型数据
+     * 请求并解析车系数据
      *
      * @param host
      * @param path
      * @param method
      * @param headers
      * @param querys
-     * @param modelIdDetailIdsMap 车型ID-车款ID列表映射
+     * @param modelIdDetailIdsMap 车系ID-车型ID列表映射
      * @param existModelIdList
      * @return
      */
@@ -377,7 +576,7 @@ public class CarServiceImpl implements CarService {
             }
 
             Integer brandId = Integer.valueOf(querys.get("parentid"));
-            // 车型列表容器
+            // 车系列表容器
             List<CarModelDO> carModelDOS = Lists.newArrayList();
 
             JSONArray resultJsonArr = bodyObj.getJSONArray("result");
@@ -394,7 +593,7 @@ public class CarServiceImpl implements CarService {
                         // 子公司名称(生产厂商)
                         String productionFirm = eObj.getString("name");
 
-                        // 车型列表    carlist : depth = 3
+                        // 车系列表    carlist : depth = 3
                         JSONArray modelList = eObj.getJSONArray("carlist");
 
                         if (!CollectionUtils.isEmpty(modelList)) {
@@ -429,7 +628,7 @@ public class CarServiceImpl implements CarService {
             return carModelDOS;
 
         } catch (Exception e) {
-            logger.error(path + "：获取车型品牌接口调用失败！", e);
+            logger.error(path + "：接口调用失败！", e);
 //            throw new RuntimeException(path + "：获取车型品牌接口调用失败！", e);
             return null;
         }
@@ -482,10 +681,10 @@ public class CarServiceImpl implements CarService {
      */
     private void recordIdMapping(JSONObject mObj, Integer modelId, Map<Integer, List<Integer>> modelIdDetailIdsMap) {
 
-        // 车款列表     list : depth = 4
+        // 车系列表     list : depth = 4
         JSONArray detailList = mObj.getJSONArray("list");
 
-        // 记录车型-车款ID映射
+        // 记录车系-车型ID映射
         if (!CollectionUtils.isEmpty(detailList)) {
             detailList.stream()
                     .filter(Objects::nonNull)
@@ -506,7 +705,7 @@ public class CarServiceImpl implements CarService {
     }
 
     /**
-     * 请求车型大全API服务，并校验结果，返回有效结果
+     * 请求车系大全API服务，并校验结果，返回有效结果
      *
      * @param host
      * @param path
@@ -548,10 +747,10 @@ public class CarServiceImpl implements CarService {
 
 
     /**
-     * 获取车款详情
+     * 获取车型详情
      *
-     * @param modelId  车型ID
-     * @param detailId 车款ID
+     * @param modelId  车系ID
+     * @param detailId 车型ID
      */
     public CarDetailDO getCarDetail(Integer modelId, Integer detailId) {
 
@@ -574,7 +773,7 @@ public class CarServiceImpl implements CarService {
     }
 
     /**
-     * 请求并解析车款数据
+     * 请求并解析车型数据
      *
      * @param host
      * @param path
@@ -614,7 +813,7 @@ public class CarServiceImpl implements CarService {
 
             String salePrice = resultJObj.getJSONObject("basic").getString("saleprice");
             carDetailDO.setSalePrice(salePrice);
-
+            //String
             Integer seatNum = resultJObj.getJSONObject("basic").getInteger("seatnum");
             carDetailDO.setSeatNum(seatNum);
 
@@ -627,8 +826,8 @@ public class CarServiceImpl implements CarService {
             return carDetailDO;
 
         } catch (Exception e) {
-            logger.error(path + "：获取车款详情接口调用失败！", e);
-//            throw new RuntimeException(path + "：获取车款详情接口调用失败！", e);
+            logger.error(path + "：接口调用失败！", e);
+//            throw new RuntimeException(path + "：获取车型详情接口调用失败！", e);
             return null;
         }
 
@@ -667,12 +866,11 @@ public class CarServiceImpl implements CarService {
             return carBrandDOS;
 
         } catch (Exception e) {
-            logger.error(path + "：获取车型品牌接口调用失败！", e);
+            logger.error(path + "：接口调用失败！", e);
 //            throw new RuntimeException(path + "：获取车型品牌接口调用失败！", e);
             return null;
         }
 
     }
-
 
 }

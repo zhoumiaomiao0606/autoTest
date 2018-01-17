@@ -15,4 +15,13 @@ public interface CarDetailService {
     Integer insert(CarDetailDO carDetailDO);
 
     List<Integer> getAllId();
+
+    CarDetailDO getById(Integer id);
+
+    /**
+     * 获取所有的 detail_id（ID）--- model_id   仅获取这两个字段
+     *
+     * @return
+     */
+    List<CarDetailDO> getAllIdAndModelId();
 }

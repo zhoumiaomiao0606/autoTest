@@ -31,4 +31,12 @@ public interface CarModelService {
      * @return
      */
     Integer updateSelective(CarModelDO updateCarModelDO);
+
+    /**
+     * 根据ID查询
+     *
+     * @param id
+     * @return
+     */
+    CarModelDO getById(Integer id);
 }

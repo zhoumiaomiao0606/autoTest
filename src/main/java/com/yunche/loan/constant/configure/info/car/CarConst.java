@@ -11,7 +11,7 @@ import java.util.Map;
 public class CarConst {
 
     /**
-     * 生产类型（1:国产;2:合资）
+     * 生产类型（1:国产;2:进口）
      */
     public static Map<String, Byte> productionTypeMap = Maps.newHashMap();
     /**
@@ -29,7 +29,7 @@ public class CarConst {
 
     static {
         productionTypeMap.put("国产", (byte) 1);
-        productionTypeMap.put("合资", (byte) 2);
+        productionTypeMap.put("进口", (byte) 2);
 
         saleStateMap.put("在销", (byte) 1);
         saleStateMap.put("停销", (byte) 2);

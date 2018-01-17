@@ -41,4 +41,17 @@ public class CarDetailServiceImpl implements CarDetailService {
         List<Integer> allId = carDetailDOMapper.getAllId();
         return allId;
     }
+
+    @Override
+    public CarDetailDO getById(Integer id) {
+        Preconditions.checkNotNull(id, "id不能为空");
+        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(id);
+        return carDetailDO;
+    }
+
+    @Override
+    public List<CarDetailDO> getAllIdAndModelId() {
+        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getAllIdAndModelId();
+        return carDetailDOS;
+    }
 }

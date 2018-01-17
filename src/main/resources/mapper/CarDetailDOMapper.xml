@@ -23,8 +23,14 @@
     production_state, sale_state, size_type, fuel_type
   </sql>
 
+    <!--getAllId-->
     <select id="getAllId" resultType="java.lang.Integer">
         select id from car_detail
+    </select>
+
+    <!--getAllIdAndModelId-->
+    <select id="getAllIdAndModelId" resultMap="BaseResultMap">
+        select id,model_id from car_detail
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">

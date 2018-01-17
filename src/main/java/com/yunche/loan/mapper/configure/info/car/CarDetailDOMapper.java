@@ -22,4 +22,6 @@ public interface CarDetailDOMapper {
     int batchInsert(List<CarDetailDO> carDetailDOS);
 
     List<Integer> getAllId();
+
+    List<CarDetailDO> getAllIdAndModelId();
 }

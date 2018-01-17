@@ -10,4 +10,7 @@ public interface CarService {
 
     ResultBean<Void> importCar();
 
+    ResultBean<Void> fillModel();
+
+    ResultBean<String> count();
 }
