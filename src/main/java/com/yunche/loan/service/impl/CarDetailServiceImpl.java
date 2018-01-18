@@ -1,7 +1,6 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.common.BaseExceptionEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.CarDetailDOMapper;
 import com.yunche.loan.domain.QueryObj.CarDetailQuery;
@@ -99,6 +98,8 @@ public class CarDetailServiceImpl implements CarDetailService {
 
     @Override
     public ResultBean<List<CarDetailVO>> query(CarDetailQuery query) {
+        Preconditions.checkNotNull(query.getModelId(), "车系ID不能为空");
+
         int totalNum = carDetailDOMapper.count(query);
         Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
 

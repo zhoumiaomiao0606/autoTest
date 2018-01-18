@@ -14,7 +14,7 @@ public class BaseQuery {
     private Integer pageSize = 10;
 
     public Integer getStartRow() {
-        Integer startRow = pageSize * pageIndex - 1;
+        Integer startRow = (pageIndex - 1) * pageSize;
         return startRow;
     }
 

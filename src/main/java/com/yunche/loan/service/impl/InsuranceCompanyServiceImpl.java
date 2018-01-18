@@ -1,7 +1,6 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.common.BaseExceptionEnum;
 import com.yunche.loan.domain.valueObj.InsuranceCompanyVO;
 import com.yunche.loan.dao.mapper.InsuranceCompanyDOMapper;
 import com.yunche.loan.domain.dataObj.InsuranceCompanyDO;

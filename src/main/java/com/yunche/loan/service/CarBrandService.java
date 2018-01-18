@@ -1,6 +1,8 @@
 package com.yunche.loan.service;
 
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.dataObj.CarBrandDO;
+import com.yunche.loan.domain.valueObj.CarBrandVO;
 
 import java.util.List;
 
@@ -10,9 +12,13 @@ import java.util.List;
  */
 public interface CarBrandService {
 
-    Integer batchInsert(List<CarBrandDO> carBrandDOS);
+    ResultBean<Long> create(CarBrandDO carBrandDO);
 
-    Integer insert(CarBrandDO carBrandDO);
+    ResultBean<Void> update(CarBrandDO carBrandDO);
 
-    List<Integer> getAllId();
+    ResultBean<Void> delete(Long id);
+
+    ResultBean<CarBrandVO> getById(Long id);
+
+    ResultBean<List<CarBrandVO>> listAll();
 }

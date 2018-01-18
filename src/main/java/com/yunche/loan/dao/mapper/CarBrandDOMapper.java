@@ -7,13 +7,13 @@ import java.util.List;
 
 @Mapper
 public interface CarBrandDOMapper {
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(Long id);
 
     int insert(CarBrandDO record);
 
     int insertSelective(CarBrandDO record);
 
-    CarBrandDO selectByPrimaryKey(Integer id);
+    CarBrandDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(CarBrandDO record);
 
@@ -22,4 +22,6 @@ public interface CarBrandDOMapper {
     int batchInsert(List<CarBrandDO> carBrandDOS);
 
     List<Integer> getAllId();
+
+    List<CarBrandDO> getAll();
 }

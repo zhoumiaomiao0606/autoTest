@@ -1,6 +1,9 @@
 package com.yunche.loan.service;
 
+import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.QueryObj.CarModelQuery;
 import com.yunche.loan.domain.dataObj.CarModelDO;
+import com.yunche.loan.domain.valueObj.CarModelVO;
 
 import java.util.List;
 
@@ -9,34 +12,22 @@ import java.util.List;
  * @date 2018/1/12
  */
 public interface CarModelService {
-    /**
-     * 批量插入
-     *
-     * @param carModelDOS
-     * @return
-     */
-    Integer batchInsert(List<CarModelDO> carModelDOS);
 
-    /**
-     * 获取所有ID
-     *
-     * @return
-     */
-    List<Long> getAllId();
+    ResultBean<Long> create(CarModelDO carModelDO);
 
     /**
      * 编辑选中的(需要编辑的字段)
      *
-     * @param updateCarModelDO
+     * @param carModelDO
      * @return
      */
-    Integer updateSelective(CarModelDO updateCarModelDO);
+    ResultBean<Void> update(CarModelDO carModelDO);
 
-    /**
-     * 根据ID查询
-     *
-     * @param id
-     * @return
-     */
-    CarModelDO getById(Long id);
+    ResultBean<Void> delete(Long id);
+
+    ResultBean<CarModelVO> getById(Long id);
+
+    ResultBean<List<CarModelVO>> query(CarModelQuery query);
+
+    ResultBean<CarModelVO> getByBrandId(Long brandId);
 }
