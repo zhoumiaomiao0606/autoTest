@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/config/financialproduct")
+@RequestMapping("/financialProduct")
 public class FinancialProductController {
 
     private static final Logger logger = LoggerFactory.getLogger(FinancialProductController.class);
@@ -56,7 +56,7 @@ public class FinancialProductController {
         return financialProductService.getById(prodId);
     }
 
-    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/getByCondition", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResultBean<List<FinancialProductDO>> query(@RequestBody FinancialQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return financialProductService.getByCondition(query);

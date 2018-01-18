@@ -11,12 +11,14 @@ import com.yunche.loan.service.FinancialProductService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * Created by zhouguoliang on 2018/1/18.
  */
+@Service
 public class FinancialProductServiceImpl implements FinancialProductService {
 
     @Autowired

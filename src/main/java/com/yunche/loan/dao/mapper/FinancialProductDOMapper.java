@@ -2,9 +2,11 @@ package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.QueryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+@Mapper
 public interface FinancialProductDOMapper {
     int deleteByPrimaryKey(Long prodId);
 
