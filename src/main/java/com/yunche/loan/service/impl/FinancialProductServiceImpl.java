@@ -49,6 +49,14 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     }
 
     @Override
+    public ResultBean<Void> delete(Long prodId) {
+        Preconditions.checkArgument(prodId != null, "prodId");
+        int count = financialProductDOMapper.deleteByPrimaryKey(prodId);
+        Preconditions.checkArgument(count > 1, "删除失败");
+        return ResultBean.ofSuccess(null, "删除成功");
+    }
+
+    @Override
     public ResultBean<FinancialProductDO> getById(Long prodId) {
         Preconditions.checkNotNull(prodId, "prodId");
 

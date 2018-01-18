@@ -17,6 +17,8 @@ public interface FinancialProductService {
 
     ResultBean<Void> update(FinancialProductDO financialProductDO);
 
+    ResultBean<Void> delete(Long prodId);
+
     ResultBean<FinancialProductDO> getById(Long prodId);
 
     ResultBean<List<FinancialProductDO>> getByCondition(FinancialQuery financialQuery);
