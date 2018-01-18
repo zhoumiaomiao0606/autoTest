@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.mapper.configure.info.address.BizModelRelaPartnersDOMapper">
+<mapper namespace="com.yunche.loan.dao.mapper.BizModelRelaPartnersDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDOKey">
     <id column="biz_id" jdbcType="BIGINT" property="bizId" />
-    <id column="group_id" jdbcType="INTEGER" property="groupId" />
+    <id column="group_id" jdbcType="BIGINT" property="groupId" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDOKey">
     delete from biz_model_rela_partners
     where biz_id = #{bizId,jdbcType=BIGINT}
-      and group_id = #{groupId,jdbcType=INTEGER}
+      and group_id = #{groupId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDOKey">
     insert into biz_model_rela_partners (biz_id, group_id)
-    values (#{bizId,jdbcType=BIGINT}, #{groupId,jdbcType=INTEGER})
+    values (#{bizId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDOKey">
     insert into biz_model_rela_partners
@@ -29,7 +29,7 @@
         #{bizId,jdbcType=BIGINT},
       </if>
       <if test="groupId != null">
-        #{groupId,jdbcType=INTEGER},
+        #{groupId,jdbcType=BIGINT },
       </if>
     </trim>
   </insert>
