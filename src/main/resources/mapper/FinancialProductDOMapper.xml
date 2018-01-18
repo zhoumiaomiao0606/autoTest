@@ -20,10 +20,39 @@
     category_superior, category_junior, rate, mortgage_term, area_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from financial_product
     where prod_id = #{prodId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByCondition" parameterType="com.yunche.loan.domain.QueryObj.FinancialQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from financial_product
+    where
+    <if test="bankName != null">
+      bank_name = #{bankName,jdbcType=VARCHAR}
+      AND
+    </if>
+    <if test="bizType != null">
+      biz_type = #{bizType,jdbcType=TINYINT}
+      AND
+    </if>
+    <if test="categorySuperior != null">
+      category_superior = #{category_superior,jdbcType=VARCHAR}
+      AND
+    </if>
+    <if test="categoryJunior != null">
+      category_junior = #{category_junior,jdbcType=VARCHAR}
+      AND
+    </if>
+    <if test="rate != null">
+      rate = #{rate,jdbcType=VARCHAR}
+      AND
+    </if>
+    <if test="areaId != null">
+      area_id = #{area_id,jdbcType=BIGINT}
+    </if>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from financial_product
