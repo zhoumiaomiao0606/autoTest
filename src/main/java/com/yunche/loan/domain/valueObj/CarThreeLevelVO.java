@@ -3,6 +3,7 @@ package com.yunche.loan.domain.valueObj;
 import com.google.common.collect.Lists;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,6 +35,10 @@ public class CarThreeLevelVO {
         private String initial;
 
         private String logo;
+
+        private Date gmtCreate;
+
+        private Date gmtModify;
         /**
          * 子车系
          */
@@ -90,6 +95,10 @@ public class CarThreeLevelVO {
          * 生产类型（1:国产;2:合资）
          */
         private Byte productionType;
+
+        private Date gmtCreate;
+
+        private Date gmtModify;
         /**
          * 子车型
          */
@@ -151,6 +160,10 @@ public class CarThreeLevelVO {
          * 燃油类型（1:汽油;2:柴油）
          */
         private Byte fuelType;
+
+        private Date gmtCreate;
+
+        private Date gmtModify;
     }
 
 }

@@ -44,13 +44,13 @@ public class CarModelController {
 
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("delete", id.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("delete", JSON.toJSONString(id)).stream().collect(Collectors.joining("-")));
         return carModelService.delete(id);
     }
 
     @GetMapping("/getById")
     public ResultBean<CarModelVO> getById(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("getById", id.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("getById", JSON.toJSONString(id)).stream().collect(Collectors.joining("-")));
         return carModelService.getById(id);
     }
 
@@ -66,16 +66,6 @@ public class CarModelController {
     public ResultBean<List<CarModelVO>> query(@RequestBody CarModelQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return carModelService.query(query);
-    }
-
-    /**
-     * @param brandId
-     * @return
-     */
-    @GetMapping("/getByBrandId")
-    public ResultBean<CarModelVO> getByBrandId(@RequestParam("brandId") Long brandId) {
-        logger.info(Arrays.asList("getByBrandId", brandId.toString()).stream().collect(Collectors.joining("-")));
-        return carModelService.getByBrandId(brandId);
     }
 
 }

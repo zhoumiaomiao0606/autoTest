@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,6 +32,12 @@ public class CarBrandServiceImpl implements CarBrandService {
     public ResultBean<Long> create(CarBrandDO carBrandDO) {
         Preconditions.checkArgument(null != carBrandDO && StringUtils.isNotBlank(carBrandDO.getName()), "品牌名称不能为空");
 
+        // 品牌名已存在校验
+        List<String> brandNameList = carBrandDOMapper.getAllName();
+        Preconditions.checkArgument(!brandNameList.contains(carBrandDO.getName().trim()), "品牌名已存在");
+
+        carBrandDO.setGmtCreate(new Date());
+        carBrandDO.setGmtModify(new Date());
         int count = carBrandDOMapper.insertSelective(carBrandDO);
         Preconditions.checkArgument(count > 0, "创建失败");
 
@@ -51,6 +58,7 @@ public class CarBrandServiceImpl implements CarBrandService {
     public ResultBean<Void> update(CarBrandDO carBrandDO) {
         Preconditions.checkArgument(null != carBrandDO && null != carBrandDO.getId(), "id不能为空");
 
+        carBrandDO.setGmtModify(new Date());
         int count = carBrandDOMapper.updateByPrimaryKeySelective(carBrandDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 

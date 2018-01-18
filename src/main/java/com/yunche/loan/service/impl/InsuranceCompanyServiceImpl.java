@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBank()), "开户行不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBankAccount()), "银行账号不能为空");
 
+        paddingCompanyDO.setGmtCreate(new Date());
+        paddingCompanyDO.setGmtModify(new Date());
         int count = insuranceCompanyDOMapper.insertSelective(paddingCompanyDO);
         Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
@@ -49,6 +52,7 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
     public ResultBean<Void> update(InsuranceCompanyDO paddingCompanyDO) {
         Preconditions.checkNotNull(paddingCompanyDO.getId(), "id不能为空");
 
+        paddingCompanyDO.setGmtModify(new Date());
         int count = insuranceCompanyDOMapper.updateByPrimaryKeyWithBLOBs(paddingCompanyDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
         return ResultBean.ofSuccess(null, "编辑成功");

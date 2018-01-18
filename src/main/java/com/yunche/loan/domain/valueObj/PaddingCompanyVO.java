@@ -2,6 +2,8 @@ package com.yunche.loan.domain.valueObj;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author liuzhe
  * @date 2018/1/15
@@ -37,4 +39,8 @@ public class PaddingCompanyVO {
     private String file;
 
     private String cooperationPolicy;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
 }

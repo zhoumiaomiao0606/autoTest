@@ -2,6 +2,8 @@ package com.yunche.loan.domain.dataObj;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class InsuranceCompanyDO {
     private Integer id;
@@ -33,4 +35,8 @@ public class InsuranceCompanyDO {
     private String file;
 
     private String cooperationPolicy;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
 }

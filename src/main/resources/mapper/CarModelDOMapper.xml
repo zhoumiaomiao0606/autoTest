@@ -15,12 +15,13 @@
         <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode"/>
         <result column="production_firm" jdbcType="VARCHAR" property="productionFirm"/>
         <result column="production_type" jdbcType="TINYINT" property="productionType"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
     </resultMap>
-
     <sql id="Base_Column_List">
-    id, brand_id, name, full_name, initial, logo, price, seat_num, sale_state, series_code,
-    mnemonic_code, production_firm, production_type
-  </sql>
+        id, brand_id, name, full_name, initial, logo, price, seat_num, sale_state, series_code,
+        mnemonic_code, production_firm, production_type, gmt_create, gmt_modify
+    </sql>
 
     <sql id="Base_Query_List">
         <if test="id != null">
@@ -88,6 +89,11 @@
         select id from car_model
     </select>
 
+    <!--getNameListByBrandId-->
+    <select id="getNameListByBrandId" resultType="java.lang.String">
+        select name from car_model WHERE brand_id = #{brandId}
+    </select>
+
     <!--getModelListByBrandId-->
     <select id="getModelListByBrandId" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -95,35 +101,6 @@
         from car_model
         where brand_id = #{brandId,jdbcType=BIGINT}
     </select>
-
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from car_model
-        where id = #{id,jdbcType=BIGINT}
-    </select>
-
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from car_model
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id"
-                   order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
-        insert into car_model (id, brand_id, name,
-        full_name, initial, logo,
-        price, seat_num, sale_state,
-        series_code, mnemonic_code, production_firm,
-        production_type)
-        values (#{id,jdbcType=BIGINT}, #{brandId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
-        #{fullName,jdbcType=VARCHAR}, #{initial,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR},
-        #{price,jdbcType=VARCHAR}, #{seatNum,jdbcType=VARCHAR}, #{saleState,jdbcType=TINYINT},
-        #{seriesCode,jdbcType=VARCHAR}, #{mnemonicCode,jdbcType=VARCHAR}, #{productionFirm,jdbcType=VARCHAR},
-        #{productionType,jdbcType=TINYINT})
-    </insert>
 
     <!-- batchInsert -->
     <insert id="batchInsert" parameterType="java.util.List">
@@ -147,11 +124,31 @@
         </foreach>
     </insert>
 
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from car_model
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from car_model
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
+        insert into car_model (id, brand_id, name,
+        full_name, initial, logo,
+        price, seat_num, sale_state,
+        series_code, mnemonic_code, production_firm,
+        production_type, gmt_create, gmt_modify
+        )
+        values (#{id,jdbcType=BIGINT}, #{brandId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
+        #{fullName,jdbcType=VARCHAR}, #{initial,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR},
+        #{price,jdbcType=VARCHAR}, #{seatNum,jdbcType=VARCHAR}, #{saleState,jdbcType=TINYINT},
+        #{seriesCode,jdbcType=VARCHAR}, #{mnemonicCode,jdbcType=VARCHAR}, #{productionFirm,jdbcType=VARCHAR},
+        #{productionType,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
+        )
+    </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id"
-                   order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into car_model
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -192,6 +189,12 @@
             </if>
             <if test="productionType != null">
                 production_type,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -234,9 +237,14 @@
             <if test="productionType != null">
                 #{productionType,jdbcType=TINYINT},
             </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
         </trim>
     </insert>
-
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
         update car_model
         <set>
@@ -276,25 +284,31 @@
             <if test="productionType != null">
                 production_type = #{productionType,jdbcType=TINYINT},
             </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
-    update car_model
-    set brand_id = #{brandId,jdbcType=BIGINT},
-      name = #{name,jdbcType=VARCHAR},
-      full_name = #{fullName,jdbcType=VARCHAR},
-      initial = #{initial,jdbcType=VARCHAR},
-      logo = #{logo,jdbcType=VARCHAR},
-      price = #{price,jdbcType=VARCHAR},
-      seat_num = #{seatNum,jdbcType=VARCHAR},
-      sale_state = #{saleState,jdbcType=TINYINT},
-      series_code = #{seriesCode,jdbcType=VARCHAR},
-      mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
-      production_firm = #{productionFirm,jdbcType=VARCHAR},
-      production_type = #{productionType,jdbcType=TINYINT}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-
+        update car_model
+        set brand_id = #{brandId,jdbcType=BIGINT},
+        name = #{name,jdbcType=VARCHAR},
+        full_name = #{fullName,jdbcType=VARCHAR},
+        initial = #{initial,jdbcType=VARCHAR},
+        logo = #{logo,jdbcType=VARCHAR},
+        price = #{price,jdbcType=VARCHAR},
+        seat_num = #{seatNum,jdbcType=VARCHAR},
+        sale_state = #{saleState,jdbcType=TINYINT},
+        series_code = #{seriesCode,jdbcType=VARCHAR},
+        mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+        production_firm = #{productionFirm,jdbcType=VARCHAR},
+        production_type = #{productionType,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>

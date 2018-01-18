@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -70,6 +71,8 @@ public class CarDetailServiceImpl implements CarDetailService {
     public ResultBean<Long> create(CarDetailDO carDetailDO) {
         Preconditions.checkArgument(null != carDetailDO && null != carDetailDO.getModelId(), "车系不能为空");
 
+        carDetailDO.setGmtCreate(new Date());
+        carDetailDO.setGmtModify(new Date());
         int count = carDetailDOMapper.insertSelective(carDetailDO);
         Preconditions.checkArgument(count > 0, "创建失败");
 
@@ -80,6 +83,7 @@ public class CarDetailServiceImpl implements CarDetailService {
     public ResultBean<Void> update(CarDetailDO carDetailDO) {
         Preconditions.checkArgument(null != carDetailDO && null != carDetailDO.getId(), "id不能为空");
 
+        carDetailDO.setGmtModify(new Date());
         int count = carDetailDOMapper.updateByPrimaryKeySelective(carDetailDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 

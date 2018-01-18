@@ -2,6 +2,8 @@ package com.yunche.loan.domain.valueObj;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author liuzhe
  * @date 2018/1/17
@@ -13,21 +15,9 @@ public class CarDetailVO {
      */
     private Long id;
     /**
-     * 所属品牌ID
-     */
-    private Integer brandId;
-    /**
-     * 品牌名称
-     */
-    private String brandName;
-    /**
      * 所属车系ID
      */
-    private Integer modelId;
-    /**
-     * 车系名称
-     */
-    private String modelName;
+    private Long modelId;
     /**
      * 车款名称
      */
@@ -77,4 +67,8 @@ public class CarDetailVO {
      * 燃油类型（1:汽油;2:柴油）
      */
     private Byte fuelType;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
 }

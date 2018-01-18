@@ -3,11 +3,8 @@ package com.yunche.loan.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.CarDetailQuery;
-import com.yunche.loan.domain.QueryObj.InsuranceCompanyQuery;
 import com.yunche.loan.domain.dataObj.CarDetailDO;
-import com.yunche.loan.domain.dataObj.InsuranceCompanyDO;
 import com.yunche.loan.domain.valueObj.CarDetailVO;
-import com.yunche.loan.domain.valueObj.InsuranceCompanyVO;
 import com.yunche.loan.service.CarDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +44,13 @@ public class CarDetailController {
 
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("delete", id.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("delete", JSON.toJSONString(id)).stream().collect(Collectors.joining("-")));
         return carDetailService.delete(id);
     }
 
     @GetMapping("/getById")
     public ResultBean<CarDetailVO> getById(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("getById", id.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("getById", JSON.toJSONString(id)).stream().collect(Collectors.joining("-")));
         return carDetailService.getById(id);
     }
 

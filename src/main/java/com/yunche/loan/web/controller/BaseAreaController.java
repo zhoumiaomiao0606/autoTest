@@ -43,13 +43,13 @@ public class BaseAreaController {
 
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long areaId) {
-        logger.info(Arrays.asList("delete", areaId.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("delete", JSON.toJSONString(areaId)).stream().collect(Collectors.joining("-")));
         return baseAreaService.delete(areaId);
     }
 
     @GetMapping("/getById")
     public ResultBean<BaseAreaVO> getById(@RequestParam("id") Long areaId) {
-        logger.info(Arrays.asList("getById", areaId.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("getById", JSON.toJSONString(areaId)).stream().collect(Collectors.joining("-")));
         return baseAreaService.getById(areaId);
     }
 

@@ -24,4 +24,6 @@ public interface CarBrandDOMapper {
     List<Integer> getAllId();
 
     List<CarBrandDO> getAll();
+
+    List<String> getAllName();
 }

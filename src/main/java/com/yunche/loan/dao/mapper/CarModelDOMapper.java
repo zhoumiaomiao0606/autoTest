@@ -29,4 +29,6 @@ public interface CarModelDOMapper {
     int count(CarModelQuery query);
 
     List<CarModelDO> query(CarModelQuery query);
+
+    List<String> getNameListByBrandId(Long brandId);
 }

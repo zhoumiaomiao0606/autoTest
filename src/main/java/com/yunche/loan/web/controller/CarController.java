@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.valueObj.CarThreeLevelVO;
 import com.yunche.loan.domain.valueObj.CarTwoLevelVO;
@@ -89,7 +90,7 @@ public class CarController {
      */
     @GetMapping("/list")
     public ResultBean<CarThreeLevelVO.CarOneBrandThreeLevelVO> list(@RequestParam("brandId") Long brandId) {
-        logger.info(Arrays.asList("list", brandId.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("list", JSON.toJSONString(brandId)).stream().collect(Collectors.joining("-")));
         return carService.list(brandId);
     }
 

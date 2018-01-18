@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,6 +34,12 @@ public class CarModelServiceImpl implements CarModelService {
         Preconditions.checkArgument(null != carModelDO && null != carModelDO.getBrandId(), "所属品牌不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(carModelDO.getName()), "车系名称不能为空");
 
+        // name校验
+        List<String> modelNameList = carModelDOMapper.getNameListByBrandId(carModelDO.getBrandId());
+        Preconditions.checkArgument(!modelNameList.contains(carModelDO.getName().trim()), "当前品牌下，此车系名称已存在");
+
+        carModelDO.setGmtCreate(new Date());
+        carModelDO.setGmtModify(new Date());
         int count = carModelDOMapper.insertSelective(carModelDO);
         Preconditions.checkArgument(count > 0, "创建失败");
 
@@ -43,6 +50,7 @@ public class CarModelServiceImpl implements CarModelService {
     public ResultBean<Void> update(CarModelDO carModelDO) {
         Preconditions.checkArgument(null != carModelDO && null != carModelDO.getId(), "id不能为空");
 
+        carModelDO.setGmtModify(new Date());
         int count = carModelDOMapper.updateByPrimaryKeySelective(carModelDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 
@@ -93,11 +101,6 @@ public class CarModelServiceImpl implements CarModelService {
                 .collect(Collectors.toList());
 
         return ResultBean.ofSuccess(carModelVOS, totalNum, query.getPageIndex(), query.getPageSize());
-    }
-
-    @Override
-    public ResultBean<CarModelVO> getByBrandId(Long brandId) {
-        return null;
     }
 
 }

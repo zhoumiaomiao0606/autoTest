@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,6 +42,8 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBank()), "开户行不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBankAccount()), "银行账号不能为空");
 
+        paddingCompanyDO.setGmtCreate(new Date());
+        paddingCompanyDO.setGmtModify(new Date());
         int count = paddingCompanyDOMapper.insertSelective(paddingCompanyDO);
         Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
@@ -50,6 +53,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     public ResultBean<Void> update(PaddingCompanyDO paddingCompanyDO) {
         Preconditions.checkNotNull(paddingCompanyDO.getId(), "id不能为空");
 
+        paddingCompanyDO.setGmtModify(new Date());
         int count = paddingCompanyDOMapper.updateByPrimaryKeyWithBLOBs(paddingCompanyDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
         return ResultBean.ofSuccess(null, "编辑成功");

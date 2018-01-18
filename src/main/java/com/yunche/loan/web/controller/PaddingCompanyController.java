@@ -44,13 +44,13 @@ public class PaddingCompanyController {
 
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("delete", id.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("delete", JSON.toJSONString(id)).stream().collect(Collectors.joining("-")));
         return paddingCompanyService.delete(id);
     }
 
     @GetMapping("/getById")
     public ResultBean<PaddingCompanyVO> getById(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("getById", id.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("getById", JSON.toJSONString(id)).stream().collect(Collectors.joining("-")));
         return paddingCompanyService.getById(id);
     }
 

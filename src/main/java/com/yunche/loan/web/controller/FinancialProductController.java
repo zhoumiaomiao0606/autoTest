@@ -46,13 +46,13 @@ public class FinancialProductController {
 
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long prodId) {
-        logger.info(Arrays.asList("delete", prodId.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("delete", JSON.toJSONString(prodId)).stream().collect(Collectors.joining("-")));
         return financialProductService.delete(prodId);
     }
 
     @GetMapping("/getById")
     public ResultBean<FinancialProductDO> getById(@RequestParam("id") Long prodId) {
-        logger.info(Arrays.asList("getById", prodId.toString()).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("getById", JSON.toJSONString(prodId)).stream().collect(Collectors.joining("-")));
         return financialProductService.getById(prodId);
     }
 

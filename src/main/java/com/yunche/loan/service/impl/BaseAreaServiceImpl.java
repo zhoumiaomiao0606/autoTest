@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +41,8 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     public ResultBean<Void> create(BaseAreaDO baseAreaDO) {
         Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getAreaId(), "areaId不能为空");
 
+        baseAreaDO.setGmtCreate(new Date());
+        baseAreaDO.setGmtModify(new Date());
         int count = baseAeraDOMapper.insert(baseAreaDO);
         Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
@@ -49,6 +52,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     public ResultBean<Void> update(BaseAreaDO baseAreaDO) {
         Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getAreaId(), "areaId不能为空");
 
+        baseAreaDO.setGmtModify(new Date());
         int count = baseAeraDOMapper.updateByPrimaryKeySelective(baseAreaDO);
         Preconditions.checkArgument(count > 0, "更新失败");
         return ResultBean.ofSuccess(null, "更新成功");

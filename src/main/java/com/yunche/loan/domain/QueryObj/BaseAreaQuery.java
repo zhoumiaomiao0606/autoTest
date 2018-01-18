@@ -9,8 +9,6 @@ import lombok.Data;
 @Data
 public class BaseAreaQuery extends BaseQuery {
 
-    private Long id;
-
     private Long areaId;
 
     private Long parentAreaId;

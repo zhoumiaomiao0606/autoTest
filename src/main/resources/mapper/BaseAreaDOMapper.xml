@@ -61,12 +61,20 @@
         where area_id = #{areaId,jdbcType=BIGINT}
     </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into base_area (area_id, parent_area_id, area_name,
         level)
         values (#{areaId,jdbcType=BIGINT}, #{parentAreaId,jdbcType=BIGINT}, #{areaName,jdbcType=VARCHAR},
         #{level,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into base_area
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="areaId != null">

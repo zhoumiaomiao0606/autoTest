@@ -2,6 +2,8 @@ package com.yunche.loan.domain.dataObj;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class CarDetailDO {
     /**
@@ -61,4 +63,8 @@ public class CarDetailDO {
      * 燃油类型（1:汽油;2:柴油）
      */
     private Byte fuelType;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
 }

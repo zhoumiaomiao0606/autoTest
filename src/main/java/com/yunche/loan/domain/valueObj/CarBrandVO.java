@@ -2,6 +2,8 @@ package com.yunche.loan.domain.valueObj;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author liuzhe
  * @date 2018/1/18
@@ -15,4 +17,8 @@ public class CarBrandVO {
     private String initial;
 
     private String logo;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
 }

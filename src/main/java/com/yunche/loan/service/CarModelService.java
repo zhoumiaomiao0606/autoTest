@@ -29,5 +29,4 @@ public interface CarModelService {
 
     ResultBean<List<CarModelVO>> query(CarModelQuery query);
 
-    ResultBean<CarModelVO> getByBrandId(Long brandId);
 }

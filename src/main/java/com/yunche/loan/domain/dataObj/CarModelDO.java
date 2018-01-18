@@ -2,6 +2,8 @@ package com.yunche.loan.domain.dataObj;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class CarModelDO {
     /**
@@ -56,4 +58,8 @@ public class CarModelDO {
      * 生产类型（1:国产;2:合资）
      */
     private Byte productionType;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
 }
