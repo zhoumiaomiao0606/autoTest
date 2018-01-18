@@ -1,14 +1,16 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.valueObj.CarThreeLevelVO;
+import com.yunche.loan.domain.valueObj.CarTwoLevelVO;
 import com.yunche.loan.service.CarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * @author liuzhe
@@ -44,10 +46,51 @@ public class CarController {
         return carService.fillModel();
     }
 
+    /**
+     * 统计API服务车型总量
+     *
+     * @return
+     */
     @GetMapping("/count")
     public ResultBean<String> count() {
         logger.info("count");
         return carService.count();
+    }
+
+    /**
+     * 三级联动关系  -All
+     *
+     * @return
+     */
+    @GetMapping("/list/threeLevel")
+    public ResultBean<CarThreeLevelVO> listThreeLevel() {
+        logger.info("/listThreeLevel");
+        return carService.listAll();
+    }
+
+    /**
+     * 两级联动 -All
+     *
+     * @return
+     */
+    @GetMapping("/list/twoLevel")
+    public ResultBean<CarTwoLevelVO> listTwoLevel() {
+        logger.info("/listTwoLevel");
+        return carService.listTwoLevel();
+    }
+
+    /**
+     * 三级联动关系   -ONE
+     * <p>
+     * 单个品牌下
+     *
+     * @param brandId
+     * @return
+     */
+    @GetMapping("/list")
+    public ResultBean<CarThreeLevelVO.CarOneBrandThreeLevelVO> list(@RequestParam("brandId") Long brandId) {
+        logger.info(Arrays.asList("list", brandId.toString()).stream().collect(Collectors.joining("-")));
+        return carService.list(brandId);
     }
 
 }

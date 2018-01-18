@@ -28,6 +28,16 @@
         </if>
     </sql>
 
+    <!--  count -->
+    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.BaseAreaQuery"
+            resultType="java.lang.Long">
+        select COUNT(*)
+        from base_area
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+    </select>
+
     <!-- query -->
     <select id="query" parameterType="com.yunche.loan.domain.QueryObj.BaseAreaQuery"
             resultMap="BaseResultMap">

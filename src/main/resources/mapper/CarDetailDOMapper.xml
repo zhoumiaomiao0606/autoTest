@@ -19,9 +19,76 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, model_id, name, initial, logo, price, sale_price, seat_num, door_num, year_type, 
+    id, model_id, name, initial, logo, price, sale_price, seat_num, door_num, year_type,
     production_state, sale_state, size_type, fuel_type
   </sql>
+
+    <sql id="Base_Query_List">
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="modelId != null">
+            AND model_id = #{modelId}
+        </if>
+        <if test="name != null and name != '' ">
+            AND name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="initial != null and initial != '' ">
+            AND initial = #{initial}
+        </if>
+        <if test="logo != null">
+            AND logo = #{logo}
+        </if>
+        <if test="price != null">
+            AND price = #{price}
+        </if>
+        <if test="salePrice != null">
+            AND sale_price = #{salePrice}
+        </if>
+        <if test="seatNum != null and seatNum != '' ">
+            AND seat_num LIKE CONCAT('%',#{seatNum},'%')
+        </if>
+        <if test="doorNum != null and doorNum != '' ">
+            AND door_num LIKE CONCAT('%',#{doorNum},'%')
+        </if>
+        <if test="yearType != null">
+            AND year_type = #{yearType}
+        </if>
+        <if test="productionState != null">
+            AND production_state = #{productionState}
+        </if>
+        <if test="saleState != null">
+            AND sale_state = #{saleState}
+        </if>
+        <if test="sizeType != null ">
+            AND size_type = #{sizeType}
+        </if>
+        <if test="fuelType != null">
+            AND fuel_type = #{fuelType}
+        </if>
+    </sql>
+
+    <!--  count -->
+    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.CarDetailQuery"
+            resultType="java.lang.Integer">
+        select COUNT(*)
+        from car_detail
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+    </select>
+
+    <!-- query -->
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.CarModelQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from car_detail
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+        limit #{startRow}, #{pageSize}
+    </select>
 
     <!--getAllId-->
     <select id="getAllId" resultType="java.lang.Integer">
@@ -31,6 +98,14 @@
     <!--getAllIdAndModelId-->
     <select id="getAllIdAndModelId" resultMap="BaseResultMap">
         select id,model_id from car_detail
+    </select>
+
+    <!--getDetailListByModelId-->
+    <select id="getDetailListByModelId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from car_detail
+        where model_id = #{modelId,jdbcType=BIGINT}
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">

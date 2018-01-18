@@ -29,4 +29,6 @@ public interface CarDetailDOMapper {
     int count(CarDetailQuery query);
 
     List<CarDetailDO> query(CarDetailQuery query);
+
+    List<CarDetailDO> getDetailListByModelId(Long modelId);
 }

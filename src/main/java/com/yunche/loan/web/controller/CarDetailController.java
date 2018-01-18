@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/car/series")
+@RequestMapping("/car/detail")
 public class CarDetailController {
 
     private static final Logger logger = LoggerFactory.getLogger(CarDetailController.class);
@@ -62,6 +62,5 @@ public class CarDetailController {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return carDetailService.query(query);
     }
-
 
 }

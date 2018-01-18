@@ -14,12 +14,15 @@ import com.yunche.loan.domain.dataObj.CarBrandDO;
 import com.yunche.loan.domain.dataObj.CarDetailDO;
 import com.yunche.loan.domain.dataObj.CarModelDO;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.valueObj.CarThreeLevelVO;
+import com.yunche.loan.domain.valueObj.CarTwoLevelVO;
 import com.yunche.loan.service.CarService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -133,6 +136,290 @@ public class CarServiceImpl implements CarService {
         logger.info("统计数量完成   >>>>>   ");
 
         return ResultBean.ofSuccess(JSON.toJSONString(countMap));
+    }
+
+    /**
+     * 三级联动关系 -All
+     *
+     * @return
+     */
+    @Override
+    public ResultBean<CarThreeLevelVO> listAll() {
+        CarThreeLevelVO carThreeLevelVO = new CarThreeLevelVO();
+
+        // 获取并填充所有品牌
+        getAndFillAllCarBrand(carThreeLevelVO);
+
+        // 获取并填充所有子车系及子车型
+        getAndFillAllCarModelAndDetail(carThreeLevelVO);
+
+        return ResultBean.ofSuccess(carThreeLevelVO);
+    }
+
+    /**
+     * 三级联动关系  -One
+     * <p>
+     * 单个品牌下
+     *
+     * @param brandId
+     * @return
+     */
+    @Override
+    public ResultBean<CarThreeLevelVO.CarOneBrandThreeLevelVO> list(Long brandId) {
+        CarThreeLevelVO.CarOneBrandThreeLevelVO carOneBrandThreeLevelVO = new CarThreeLevelVO.CarOneBrandThreeLevelVO();
+
+        // 跟前品牌ID,获取并填充当前品牌
+        getAndFillOneCarBrand(carOneBrandThreeLevelVO, brandId);
+
+        // 获取并填充所有子车系及子车型
+        getAndFillOneCarModelAndDetail(carOneBrandThreeLevelVO);
+
+        return ResultBean.ofSuccess(carOneBrandThreeLevelVO);
+    }
+
+    /**
+     * 品牌-车系  两级联动
+     *
+     * @return
+     */
+    @Override
+    public ResultBean<CarTwoLevelVO> listTwoLevel() {
+
+        CarTwoLevelVO carTwoLevelVO = new CarTwoLevelVO();
+
+        // 获取并填充所有品牌
+        getAndFillAllCarBrand(carTwoLevelVO);
+
+        // 获取并填充所有子车系及子车型
+        getAndFillAllCarModelAndDetail(carTwoLevelVO);
+
+        return ResultBean.ofSuccess(carTwoLevelVO);
+    }
+
+    /**
+     * 获取并填充所有子车系及子车型   -两级联动
+     *
+     * @param carTwoLevelVO
+     */
+    private void getAndFillAllCarModelAndDetail(CarTwoLevelVO carTwoLevelVO) {
+        List<CarTwoLevelVO.Brand> carBrandList = carTwoLevelVO.getCarBrand();
+        if (CollectionUtils.isEmpty(carBrandList)) {
+            return;
+        }
+
+        carBrandList.parallelStream()
+                .filter(b -> null != b && null != b.getId())
+                .forEach(b -> {
+
+                    // 根据品牌ID获取所有子车系
+                    List<CarTwoLevelVO.Model> carModelList = getAllCarModel(b.getId());
+                    // fill
+                    b.setCarModel(carModelList);
+
+                });
+
+    }
+
+    /**
+     * 根据品牌ID获取所有子车系
+     *
+     * @param brandId
+     * @return
+     */
+    private List<CarTwoLevelVO.Model> getAllCarModel(Long brandId) {
+        // 获取所有子车系
+        List<CarModelDO> carModelDOS = carModelDOMapper.getModelListByBrandId(brandId);
+        if (CollectionUtils.isEmpty(carModelDOS)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        // 填充所有子车系
+        List<CarTwoLevelVO.Model> carModelList = carModelDOS.stream()
+                .filter(m -> null != m && null != m.getBrandId())
+                .map(m -> {
+
+                    CarTwoLevelVO.Model model = new CarTwoLevelVO.Model();
+                    BeanUtils.copyProperties(m, model);
+
+                    return model;
+                })
+                .collect(Collectors.toList());
+
+        return carModelList;
+    }
+
+    /**
+     * 获取并填充所有汽车品牌对象  -All  两级联动
+     *
+     * @param carTwoLevelVO
+     */
+    private void getAndFillAllCarBrand(CarTwoLevelVO carTwoLevelVO) {
+        // getAll
+        List<CarBrandDO> carBrandDOS = carBrandDOMapper.getAll();
+
+        if (!CollectionUtils.isEmpty(carBrandDOS)) {
+            List<CarTwoLevelVO.Brand> carBrandList = carBrandDOS.stream()
+                    .filter(e -> null != e && null != e.getId())
+                    .map(e -> {
+
+                        CarTwoLevelVO.Brand brand = new CarTwoLevelVO.Brand();
+                        BeanUtils.copyProperties(e, brand);
+
+                        return brand;
+                    })
+                    .filter(Objects::nonNull)
+//                    .sorted(CarThreeLevelVO.Brand::getInitial)
+                    .collect(Collectors.toList());
+
+            carTwoLevelVO.setCarBrand(carBrandList);
+        }
+
+    }
+
+    /**
+     * 跟前品牌ID,获取并填充当前品牌   -ONE
+     *
+     * @param carOneBrandThreeLevelVO
+     * @param brandId
+     */
+    private void getAndFillOneCarBrand(CarThreeLevelVO.CarOneBrandThreeLevelVO carOneBrandThreeLevelVO, Long brandId) {
+        // getAll
+        CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(brandId);
+        // fill
+        if (null != carBrandDO) {
+            CarThreeLevelVO.Brand brand = new CarThreeLevelVO.Brand();
+            BeanUtils.copyProperties(carBrandDO, brand);
+            carOneBrandThreeLevelVO.setCarBrand(brand);
+        }
+    }
+
+
+    /**
+     * 获取并填充所有汽车品牌对象  -All
+     *
+     * @param carThreeLevelVO
+     * @return
+     */
+    public void getAndFillAllCarBrand(CarThreeLevelVO carThreeLevelVO) {
+        // getAll
+        List<CarBrandDO> carBrandDOS = carBrandDOMapper.getAll();
+
+        if (!CollectionUtils.isEmpty(carBrandDOS)) {
+            List<CarThreeLevelVO.Brand> carBrandList = carBrandDOS.stream()
+                    .filter(e -> null != e && null != e.getId())
+                    .map(e -> {
+
+                        CarThreeLevelVO.Brand brand = new CarThreeLevelVO.Brand();
+                        BeanUtils.copyProperties(e, brand);
+
+                        return brand;
+                    })
+                    .filter(Objects::nonNull)
+//                    .sorted(CarThreeLevelVO.Brand::getInitial)
+                    .collect(Collectors.toList());
+
+            carThreeLevelVO.setCarBrand(carBrandList);
+        }
+
+    }
+
+    /**
+     * 获取品牌的所有子车系 -One
+     *
+     * @param carOneBrandThreeLevelVO
+     */
+    private void getAndFillOneCarModelAndDetail(CarThreeLevelVO.CarOneBrandThreeLevelVO carOneBrandThreeLevelVO) {
+        CarThreeLevelVO.Brand brand = carOneBrandThreeLevelVO.getCarBrand();
+        if (null == brand) {
+            return;
+        }
+
+        // getModel
+        List<CarThreeLevelVO.Model> carModelList = getAllCarModelAndDetail(brand.getId());
+
+        brand.setCarModel(carModelList);
+    }
+
+    /**
+     * 获取所有子车系（及车系下的车型，并填充车型到车车系下）
+     *
+     * @param brandId
+     * @return
+     */
+    private List<CarThreeLevelVO.Model> getAllCarModelAndDetail(Long brandId) {
+        // 获取所有子车系
+        List<CarModelDO> carModelDOS = carModelDOMapper.getModelListByBrandId(brandId);
+        if (CollectionUtils.isEmpty(carModelDOS)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        // 填充所有子车系
+        List<CarThreeLevelVO.Model> carModelList = carModelDOS.stream()
+                .filter(m -> null != m && null != m.getBrandId())
+                .map(m -> {
+
+                    CarThreeLevelVO.Model model = new CarThreeLevelVO.Model();
+                    BeanUtils.copyProperties(m, model);
+
+                    // 获取所有子车型
+                    List<CarThreeLevelVO.Detail> carDetailList = getCarDetailList(m.getId());
+                    // 填充所有子车型
+                    model.setCarDetail(carDetailList);
+
+                    return model;
+                })
+                .collect(Collectors.toList());
+
+        return carModelList;
+    }
+
+
+    /**
+     * 获取品牌的所有子车系 -All
+     *
+     * @param carThreeLevelVO
+     */
+    private void getAndFillAllCarModelAndDetail(CarThreeLevelVO carThreeLevelVO) {
+        List<CarThreeLevelVO.Brand> carBrandList = carThreeLevelVO.getCarBrand();
+        if (CollectionUtils.isEmpty(carBrandList)) {
+            return;
+        }
+
+        carBrandList.parallelStream()
+                .filter(b -> null != b && null != b.getId())
+                .forEach(b -> {
+
+                    // getModel
+                    List<CarThreeLevelVO.Model> carModelList = getAllCarModelAndDetail(b.getId());
+                    b.setCarModel(carModelList);
+
+                });
+
+    }
+
+    /**
+     * 根据车系ID获取所有子车型
+     *
+     * @param modelId
+     * @return
+     */
+    private List<CarThreeLevelVO.Detail> getCarDetailList(Long modelId) {
+        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getDetailListByModelId(modelId);
+        if (!CollectionUtils.isEmpty(carDetailDOS)) {
+            List<CarThreeLevelVO.Detail> carDetailList = carDetailDOS.stream()
+                    .filter(d -> null != d && null != d.getId())
+                    .map(d -> {
+
+                        CarThreeLevelVO.Detail detail = new CarThreeLevelVO.Detail();
+                        BeanUtils.copyProperties(d, detail);
+
+                        return detail;
+
+                    })
+                    .collect(Collectors.toList());
+            return carDetailList;
+        }
+        return Collections.EMPTY_LIST;
     }
 
     /**

@@ -41,7 +41,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
         Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getAreaId(), "areaId不能为空");
 
         int count = baseAeraDOMapper.insert(baseAreaDO);
-        Preconditions.checkArgument(count > 1, "创建失败");
+        Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
     }
 
@@ -50,7 +50,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
         Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getAreaId(), "areaId不能为空");
 
         int count = baseAeraDOMapper.updateByPrimaryKeySelective(baseAreaDO);
-        Preconditions.checkArgument(count > 1, "更新失败");
+        Preconditions.checkArgument(count > 0, "更新失败");
         return ResultBean.ofSuccess(null, "更新成功");
     }
 
@@ -59,7 +59,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
         Preconditions.checkNotNull(areaId, "areaId不能为空");
 
         int count = baseAeraDOMapper.deleteByPrimaryKey(areaId);
-        Preconditions.checkArgument(count > 1, "删除失败");
+        Preconditions.checkArgument(count > 0, "删除失败");
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
