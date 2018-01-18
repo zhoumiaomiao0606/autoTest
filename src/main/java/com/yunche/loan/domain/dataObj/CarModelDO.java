@@ -7,11 +7,11 @@ public class CarModelDO {
     /**
      * 车型ID
      */
-    private Integer id;
+    private Long id;
     /**
      * 所属品牌ID
      */
-    private Integer brandId;
+    private Long brandId;
     /**
      * 车型简称 eg：A3
      */

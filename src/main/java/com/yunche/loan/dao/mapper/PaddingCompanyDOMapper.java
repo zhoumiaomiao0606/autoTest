@@ -8,13 +8,13 @@ import java.util.List;
 
 @Mapper
 public interface PaddingCompanyDOMapper {
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(Long id);
 
     int insert(PaddingCompanyDO record);
 
     int insertSelective(PaddingCompanyDO record);
 
-    PaddingCompanyDO selectByPrimaryKey(Integer id);
+    PaddingCompanyDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(PaddingCompanyDO record);
 

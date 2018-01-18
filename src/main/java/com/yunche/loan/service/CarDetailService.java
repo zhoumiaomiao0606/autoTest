@@ -1,6 +1,9 @@
 package com.yunche.loan.service;
 
+import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.QueryObj.CarDetailQuery;
 import com.yunche.loan.domain.dataObj.CarDetailDO;
+import com.yunche.loan.domain.valueObj.CarDetailVO;
 
 import java.util.List;
 
@@ -14,9 +17,9 @@ public interface CarDetailService {
 
     Integer insert(CarDetailDO carDetailDO);
 
-    List<Integer> getAllId();
+    List<Long> getAllId();
 
-    CarDetailDO getById(Integer id);
+    ResultBean<CarDetailVO> getById(Long id);
 
     /**
      * 获取所有的 detail_id（ID）--- model_id   仅获取这两个字段
@@ -24,4 +27,12 @@ public interface CarDetailService {
      * @return
      */
     List<CarDetailDO> getAllIdAndModelId();
+
+    ResultBean<Long> create(CarDetailDO carDetailDO);
+
+    ResultBean<Void> update(CarDetailDO carDetailDO);
+
+    ResultBean<Void> delete(Long id);
+
+    ResultBean<List<CarDetailVO>> query(CarDetailQuery query);
 }

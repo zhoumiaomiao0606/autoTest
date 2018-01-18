@@ -1,7 +1,9 @@
 package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.dataObj.UserGroupDO;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface UserGroupDOMapper {
     int deleteByPrimaryKey(Integer id);
 

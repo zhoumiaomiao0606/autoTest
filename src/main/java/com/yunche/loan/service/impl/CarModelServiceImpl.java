@@ -30,8 +30,8 @@ public class CarModelServiceImpl implements CarModelService {
     }
 
     @Override
-    public List<Integer> getAllId() {
-        List<Integer> allId = carModelDOMapper.getAllId();
+    public List<Long> getAllId() {
+        List<Long> allId = carModelDOMapper.getAllId();
         return allId;
     }
 
@@ -44,7 +44,7 @@ public class CarModelServiceImpl implements CarModelService {
     }
 
     @Override
-    public CarModelDO getById(Integer id) {
+    public CarModelDO getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
         CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(id);
         return carModelDO;

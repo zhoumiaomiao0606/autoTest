@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
  * @date 2018/1/15
  */
 @Service
+@Transactional
 public class PaddingCompanyServiceImpl implements PaddingCompanyService {
 
     private static final Logger logger = LoggerFactory.getLogger(PaddingCompanyServiceImpl.class);
@@ -40,7 +43,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBankAccount()), "银行账号不能为空");
 
         int count = paddingCompanyDOMapper.insertSelective(paddingCompanyDO);
-        Preconditions.checkArgument(count > 1, "创建失败");
+        Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
     }
 
@@ -49,21 +52,21 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
         Preconditions.checkNotNull(paddingCompanyDO.getId(), "id不能为空");
 
         int count = paddingCompanyDOMapper.updateByPrimaryKeyWithBLOBs(paddingCompanyDO);
-        Preconditions.checkArgument(count > 1, "编辑失败");
+        Preconditions.checkArgument(count > 0, "编辑失败");
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
     @Override
-    public ResultBean<Void> delete(Integer id) {
+    public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
         int count = paddingCompanyDOMapper.deleteByPrimaryKey(id);
-        Preconditions.checkArgument(count > 1, "删除失败");
+        Preconditions.checkArgument(count > 0, "删除失败");
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
     @Override
-    public ResultBean<PaddingCompanyVO> getById(Integer id) {
+    public ResultBean<PaddingCompanyVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
         PaddingCompanyDO paddingCompanyDO = paddingCompanyDOMapper.selectByPrimaryKey(id);
@@ -77,13 +80,13 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
 
     @Override
     public ResultBean<List<PaddingCompanyVO>> query(BaseAreaQuery query) {
-
-        int count = paddingCompanyDOMapper.count(query);
-        Preconditions.checkArgument(count > 0, "无符合条件的数据");
+        int totalNum = paddingCompanyDOMapper.count(query);
+        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
 
         List<PaddingCompanyDO> paddingCompanyDOS = paddingCompanyDOMapper.query(query);
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(paddingCompanyDOS), "无符合条件的数据");
 
-        List<PaddingCompanyVO> paddingCompanyVOS = paddingCompanyDOS.parallelStream()
+        List<PaddingCompanyVO> paddingCompanyVOS = paddingCompanyDOS.stream()
                 .filter(Objects::nonNull)
                 .map(e -> {
                     PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();
@@ -92,6 +95,6 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
                 })
                 .collect(Collectors.toList());
 
-        return ResultBean.of(paddingCompanyVOS, true, BaseExceptionEnum.EC00000200, count, query.getPageIndex(), query.getPageSize());
+        return ResultBean.ofSuccess(paddingCompanyVOS, totalNum, query.getPageIndex(), query.getPageSize());
     }
 }

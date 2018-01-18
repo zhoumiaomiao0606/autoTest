@@ -68,7 +68,6 @@
                 enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
 
-
         <table tableName="padding_company" domainObjectName="PaddingCompanyDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
@@ -77,11 +76,10 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
-        -->
 
-        <!--<table tableName="financial_product" domainObjectName="FinancialProductDO"
+        <table tableName="financial_product" domainObjectName="FinancialProductDO"
                enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
         <table tableName="biz_model" domainObjectName="BizModelDO"
                enableCountByExample="false" enableUpdateByExample="false"
@@ -99,11 +97,12 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
-        <table tableName="user_group" domainObjectName="UserGroupDO"
+        <table tableName="user_group_rela_area" domainObjectName="UserGroupRelaAreaDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+        -->
 
-        <table tableName="user_group_rela_area" domainObjectName="UserGroupRelaAreaDO"
+        <table tableName="user_group" domainObjectName="UserGroupDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 

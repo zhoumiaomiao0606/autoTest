@@ -43,13 +43,13 @@ public class InsuranceCompanyController {
     }
 
     @GetMapping(value = "/delete")
-    public ResultBean<Void> delete(@RequestParam("id") Integer id) {
+    public ResultBean<Void> delete(@RequestParam("id") Long id) {
         logger.info(Arrays.asList("delete", id.toString()).stream().collect(Collectors.joining("-")));
         return insuranceCompanyService.delete(id);
     }
 
     @GetMapping("/getById")
-    public ResultBean<InsuranceCompanyVO> getById(@RequestParam("id") Integer id) {
+    public ResultBean<InsuranceCompanyVO> getById(@RequestParam("id") Long id) {
         logger.info(Arrays.asList("getById", id.toString()).stream().collect(Collectors.joining("-")));
         return insuranceCompanyService.getById(id);
     }

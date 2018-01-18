@@ -8,13 +8,13 @@ import java.util.List;
 
 @Mapper
 public interface InsuranceCompanyDOMapper {
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(Long id);
 
     int insert(InsuranceCompanyDO record);
 
     int insertSelective(InsuranceCompanyDO record);
 
-    InsuranceCompanyDO selectByPrimaryKey(Integer id);
+    InsuranceCompanyDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(InsuranceCompanyDO record);
 

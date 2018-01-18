@@ -7,13 +7,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.HttpUtils;
+import com.yunche.loan.dao.mapper.CarBrandDOMapper;
+import com.yunche.loan.dao.mapper.CarDetailDOMapper;
+import com.yunche.loan.dao.mapper.CarModelDOMapper;
 import com.yunche.loan.domain.dataObj.CarBrandDO;
 import com.yunche.loan.domain.dataObj.CarDetailDO;
 import com.yunche.loan.domain.dataObj.CarModelDO;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.service.CarBrandService;
-import com.yunche.loan.service.CarModelService;
-import com.yunche.loan.service.CarDetailService;
 import com.yunche.loan.service.CarService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -59,18 +59,18 @@ public class CarServiceImpl implements CarService {
 
 
     @Autowired
-    CarBrandService carBrandService;
+    private CarBrandDOMapper carBrandDOMapper;
     @Autowired
-    CarModelService carModelService;
+    private CarModelDOMapper carModelDOMapper;
     @Autowired
-    CarDetailService carDetailService;
+    private CarDetailDOMapper carDetailDOMapper;
 
     @Override
     public ResultBean<Void> importCar() {
         long startTime = System.currentTimeMillis();
 
         // 车系ID-车型ID列表映射  ——  k/v : modelId / detailIdList
-        Map<Integer, List<Integer>> modelIdDetailIdsMap = Maps.newHashMap();
+        Map<Long, List<Long>> modelIdDetailIdsMap = Maps.newHashMap();
 
         // 获取品牌数据
         logger.info("查询品牌开始   >>>>>   ");
@@ -103,14 +103,14 @@ public class CarServiceImpl implements CarService {
         long startTime = System.currentTimeMillis();
 
         // 获取所有 model_id —— detail_id
-        List<CarDetailDO> carDetailDOS = carDetailService.getAllIdAndModelId();
+        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getAllIdAndModelId();
         logger.info("car_detail表数据总量为 : " + carDetailDOS.size());
         if (CollectionUtils.isEmpty(carDetailDOS)) {
             return ResultBean.ofSuccess(null, "car_detail表为空表,无可更新数据.");
         }
 
         // 梳理id映射关系： model_id —— detail_id列表
-        ConcurrentMap<Integer, List<Integer>> modelIdDetailIdsMap = getModelIdDetailIdsMapping(carDetailDOS);
+        ConcurrentMap<Long, List<Long>> modelIdDetailIdsMap = getModelIdDetailIdsMapping(carDetailDOS);
 
         // 执行补偿任务
         execFillModel(modelIdDetailIdsMap);
@@ -232,17 +232,17 @@ public class CarServiceImpl implements CarService {
      *
      * @param modelIdDetailIdsMap
      */
-    private void execFillModel(ConcurrentMap<Integer, List<Integer>> modelIdDetailIdsMap) {
+    private void execFillModel(ConcurrentMap<Long, List<Long>> modelIdDetailIdsMap) {
         // 容器
         ArrayList<Double> minMaxPrice = Lists.newArrayList();
         Set<Integer> seatNumSet = Sets.newTreeSet();
 
         modelIdDetailIdsMap.forEach((modelId, detailIds) -> {
 
-            detailIds.parallelStream()
+            detailIds.stream()
                     .forEach(detailId -> {
 
-                        CarDetailDO carDetailDO = carDetailService.getById(detailId);
+                        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(detailId);
                         if (null != carDetailDO) {
                             // 统计price
                             statisticsPrice(carDetailDO.getPrice(), minMaxPrice);
@@ -253,7 +253,7 @@ public class CarServiceImpl implements CarService {
                     });
 
             // 获取当前要补偿数据的CarModelDO
-            CarModelDO carModelDO = carModelService.getById(modelId);
+            CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(modelId);
             if (null != carModelDO) {
                 // 补充price
                 fillCarModelPrice(carModelDO, minMaxPrice);
@@ -273,15 +273,15 @@ public class CarServiceImpl implements CarService {
      * @param carDetailDOS
      * @return
      */
-    private ConcurrentMap<Integer, List<Integer>> getModelIdDetailIdsMapping(List<CarDetailDO> carDetailDOS) {
-        ConcurrentMap<Integer, List<Integer>> modelIdDetailIdsMap = Maps.newConcurrentMap();
+    private ConcurrentMap<Long, List<Long>> getModelIdDetailIdsMapping(List<CarDetailDO> carDetailDOS) {
+        ConcurrentMap<Long, List<Long>> modelIdDetailIdsMap = Maps.newConcurrentMap();
 
         carDetailDOS.parallelStream()
                 .filter(e -> null != e && null != e.getId() && null != e.getModelId())
                 .forEach(e -> {
 
-                    Integer modelId = e.getModelId();
-                    Integer detailId = e.getId();
+                    Long modelId = e.getModelId();
+                    Long detailId = e.getId();
 
                     if (!modelIdDetailIdsMap.containsKey(modelId)) {
                         modelIdDetailIdsMap.put(modelId, Lists.newArrayList(detailId));
@@ -299,7 +299,7 @@ public class CarServiceImpl implements CarService {
         int totalNum = carBrandDOS.size();
 
         // 获取已存在
-        List<Integer> existBrandIdList = carBrandService.getAllId();
+        List<Integer> existBrandIdList = carBrandDOMapper.getAllId();
         int existNum = CollectionUtils.isEmpty(existBrandIdList) ? 0 : existBrandIdList.size();
         logger.info("获取已存在的品牌ID列表   >>>>>   已存在的品牌总量：" + existNum);
 
@@ -319,7 +319,7 @@ public class CarServiceImpl implements CarService {
 
         logger.info("插入剩余品牌开始   >>>>>   ");
         if (!CollectionUtils.isEmpty(notExistCarBrandDOS)) {
-            Integer count = carBrandService.batchInsert(notExistCarBrandDOS);
+            Integer count = carBrandDOMapper.batchInsert(notExistCarBrandDOS);
             logger.info("插入剩余品牌结束   >>>>>   成功新插入品牌数量 : {}", count);
         }
     }
@@ -331,13 +331,13 @@ public class CarServiceImpl implements CarService {
      * @param modelIdDetailIdsMap
      * @return
      */
-    private void insertCarDetailAndFillCarModel(List<CarModelDO> needFillCarModelDOS, Map<Integer, List<Integer>> modelIdDetailIdsMap) {
+    private void insertCarDetailAndFillCarModel(List<CarModelDO> needFillCarModelDOS, Map<Long, List<Long>> modelIdDetailIdsMap) {
         if (CollectionUtils.isEmpty(modelIdDetailIdsMap)) {
             return;
         }
 
         // exist
-        List<Integer> existCarDetailIds = carDetailService.getAllId();
+        List<Long> existCarDetailIds = carDetailDOMapper.getAllId();
 
         // 极值容器
         List<Double> minMaxPrice = Lists.newArrayList();
@@ -347,8 +347,8 @@ public class CarServiceImpl implements CarService {
                 .filter(m -> null != m && null != m.getId())
                 .forEach(m -> {
 
-                    Integer modelId = m.getId();
-                    List<Integer> detailIds = modelIdDetailIdsMap.get(modelId);
+                    Long modelId = m.getId();
+                    List<Long> detailIds = modelIdDetailIdsMap.get(modelId);
                     if (!CollectionUtils.isEmpty(detailIds)) {
 
                         detailIds.stream()
@@ -361,7 +361,7 @@ public class CarServiceImpl implements CarService {
 
                                         if (null != carDetailDO) {
                                             // 读一次，写一次
-                                            carDetailService.insert(carDetailDO);
+                                            carDetailDOMapper.insert(carDetailDO);
 
                                             // 统计price
                                             statisticsPrice(carDetailDO.getPrice(), minMaxPrice);
@@ -449,7 +449,7 @@ public class CarServiceImpl implements CarService {
             }
 
             // 编辑price
-            carModelService.updateSelective(updateCarModelDO);
+            carModelDOMapper.updateByPrimaryKeySelective(updateCarModelDO);
         }
     }
 
@@ -473,7 +473,7 @@ public class CarServiceImpl implements CarService {
             updateCarModelDO.setSeatNum(seatNumStr);
 
             // 编辑price
-            carModelService.updateSelective(updateCarModelDO);
+            carModelDOMapper.updateByPrimaryKeySelective(updateCarModelDO);
         }
     }
 
@@ -505,7 +505,7 @@ public class CarServiceImpl implements CarService {
      * @param carBrandDOS
      * @param modelIdDetailIdsMap 车系ID-车型ID列表映射
      */
-    public List<CarModelDO> insertAndGetCarModel(List<CarBrandDO> carBrandDOS, Map<Integer, List<Integer>> modelIdDetailIdsMap) {
+    public List<CarModelDO> insertAndGetCarModel(List<CarBrandDO> carBrandDOS, Map<Long, List<Long>> modelIdDetailIdsMap) {
 
         String path = "/car/carlist";
         String method = "GET";
@@ -519,7 +519,7 @@ public class CarServiceImpl implements CarService {
 
 
         // exist
-        List<Integer> existModelIdList = carModelService.getAllId();
+        List<Long> existModelIdList = carModelDOMapper.getAllId();
 
         List<CarModelDO> carModelDOList = new ArrayList<>();
         carBrandDOS.stream()
@@ -531,7 +531,7 @@ public class CarServiceImpl implements CarService {
                     List<CarModelDO> carModelDOS = requestAndParseModel(host, path, method, headers, querys, modelIdDetailIdsMap, existModelIdList);
                     if (!CollectionUtils.isEmpty(carModelDOS)) {
                         // 读一次，写一次
-                        carModelService.batchInsert(carModelDOS);
+                        carModelDOMapper.batchInsert(carModelDOS);
                         // 记录，待更新price、seatNum
                         carModelDOList.addAll(carModelDOS);
                     }
@@ -566,8 +566,8 @@ public class CarServiceImpl implements CarService {
      * @return
      */
     private List<CarModelDO> requestAndParseModel(String host, String path, String method, Map<String, String> headers,
-                                                  Map<String, String> querys, Map<Integer, List<Integer>> modelIdDetailIdsMap,
-                                                  List<Integer> existModelIdList) {
+                                                  Map<String, String> querys, Map<Long, List<Long>> modelIdDetailIdsMap,
+                                                  List<Long> existModelIdList) {
         try {
 
             JSONObject bodyObj = requestAndCheckThenReturnResult(host, path, method, headers, querys);
@@ -575,7 +575,7 @@ public class CarServiceImpl implements CarService {
                 return null;
             }
 
-            Integer brandId = Integer.valueOf(querys.get("parentid"));
+            Long brandId = Long.valueOf(querys.get("parentid"));
             // 车系列表容器
             List<CarModelDO> carModelDOS = Lists.newArrayList();
 
@@ -603,7 +603,7 @@ public class CarServiceImpl implements CarService {
                                     .forEach(m -> {
 
                                         JSONObject mObj = (JSONObject) m;
-                                        Integer modelId = mObj.getInteger("id");
+                                        Long modelId = mObj.getLong("id");
 
                                         // 不存在，才解析加入
                                         if (!existModelIdList.contains(modelId)) {
@@ -644,7 +644,7 @@ public class CarServiceImpl implements CarService {
      * @param productionFirm
      * @return
      */
-    private CarModelDO parseAndFillModel(JSONObject mObj, Integer brandId, Integer modelId, String productionFirm) {
+    private CarModelDO parseAndFillModel(JSONObject mObj, Long brandId, Long modelId, String productionFirm) {
         CarModelDO carModelDO = new CarModelDO();
         carModelDO.setBrandId(brandId);
         carModelDO.setProductionFirm(productionFirm);
@@ -679,7 +679,7 @@ public class CarServiceImpl implements CarService {
      * @param modelId
      * @param modelIdDetailIdsMap
      */
-    private void recordIdMapping(JSONObject mObj, Integer modelId, Map<Integer, List<Integer>> modelIdDetailIdsMap) {
+    private void recordIdMapping(JSONObject mObj, Long modelId, Map<Long, List<Long>> modelIdDetailIdsMap) {
 
         // 车系列表     list : depth = 4
         JSONArray detailList = mObj.getJSONArray("list");
@@ -692,9 +692,9 @@ public class CarServiceImpl implements CarService {
 
                         JSONObject dObj = (JSONObject) d;
 
-                        Integer detailId = dObj.getInteger("id");
+                        Long detailId = dObj.getLong("id");
                         if (!modelIdDetailIdsMap.containsKey(modelId)) {
-                            List<Integer> detailIds = Lists.newArrayList(detailId);
+                            List<Long> detailIds = Lists.newArrayList(detailId);
                             modelIdDetailIdsMap.put(modelId, detailIds);
                         } else {
                             modelIdDetailIdsMap.get(modelId).add(detailId);
@@ -752,7 +752,7 @@ public class CarServiceImpl implements CarService {
      * @param modelId  车系ID
      * @param detailId 车型ID
      */
-    public CarDetailDO getCarDetail(Integer modelId, Integer detailId) {
+    public CarDetailDO getCarDetail(Long modelId, Long detailId) {
 
         String path = "/car/detail";
         String method = "GET";
@@ -784,7 +784,7 @@ public class CarServiceImpl implements CarService {
      * @return
      */
     private CarDetailDO requestAndParseDetail(String host, String path, String method, Map<String, String> headers,
-                                              Map<String, String> querys, Integer modelId) {
+                                              Map<String, String> querys, Long modelId) {
 
         try {
 
@@ -799,7 +799,7 @@ public class CarServiceImpl implements CarService {
 
             CarDetailDO carDetailDO = new CarDetailDO();
             carDetailDO.setModelId(modelId);
-            carDetailDO.setId(resultJObj.getInteger("id"));
+            carDetailDO.setId(resultJObj.getLong("id"));
             carDetailDO.setName(resultJObj.getString("name"));
             carDetailDO.setInitial(resultJObj.getString("initial"));
             carDetailDO.setLogo(resultJObj.getString("logo"));
@@ -854,7 +854,7 @@ public class CarServiceImpl implements CarService {
                         JSONObject eObj = (JSONObject) e;
 
                         CarBrandDO carBrandDO = new CarBrandDO();
-                        carBrandDO.setId(eObj.getInteger("id"));
+                        carBrandDO.setId(eObj.getLong("id"));
                         carBrandDO.setName(eObj.getString("name"));
                         carBrandDO.setInitial(eObj.getString("initial"));
                         carBrandDO.setLogo(eObj.getString("logo"));

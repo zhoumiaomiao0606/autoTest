@@ -17,9 +17,9 @@ public interface PaddingCompanyService {
 
     ResultBean<Void> update(PaddingCompanyDO paddingCompanyDO);
 
-    ResultBean<Void> delete(Integer id);
+    ResultBean<Void> delete(Long id);
 
-    ResultBean<PaddingCompanyVO> getById(Integer id);
+    ResultBean<PaddingCompanyVO> getById(Long id);
 
     ResultBean<List<PaddingCompanyVO>> query(BaseAreaQuery query);
 }

@@ -85,6 +85,10 @@ public class ResultBean<T> implements Serializable {
         return of(data, true, BaseExceptionEnum.EC00000200);
     }
 
+    public static <T> ResultBean<T> ofSuccess(T data, Integer totalNum, Integer pageIndex, Integer pageSize) {
+        return of(data, true, BaseExceptionEnum.EC00000200, totalNum, pageIndex, pageSize);
+    }
+
     public static <T> ResultBean<T> ofSuccess(T data, BaseExceptionEnum baseExceptionEnum) {
         return of(data, true, baseExceptionEnum);
     }

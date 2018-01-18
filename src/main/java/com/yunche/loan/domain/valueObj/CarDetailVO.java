@@ -1,17 +1,33 @@
-package com.yunche.loan.domain.dataObj;
+package com.yunche.loan.domain.valueObj;
 
 import lombok.Data;
 
+/**
+ * @author liuzhe
+ * @date 2018/1/17
+ */
 @Data
-public class CarDetailDO {
+public class CarDetailVO {
     /**
      * 车款ID
      */
     private Long id;
     /**
-     * 所属模型ID
+     * 所属品牌ID
      */
-    private Long modelId;
+    private Integer brandId;
+    /**
+     * 品牌名称
+     */
+    private String brandName;
+    /**
+     * 所属车系ID
+     */
+    private Integer modelId;
+    /**
+     * 车系名称
+     */
+    private String modelName;
     /**
      * 车款名称
      */

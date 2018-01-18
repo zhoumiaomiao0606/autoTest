@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,7 +42,7 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBankAccount()), "银行账号不能为空");
 
         int count = insuranceCompanyDOMapper.insertSelective(paddingCompanyDO);
-        Preconditions.checkArgument(count > 1, "创建失败");
+        Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
     }
 
@@ -50,21 +51,21 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
         Preconditions.checkNotNull(paddingCompanyDO.getId(), "id不能为空");
 
         int count = insuranceCompanyDOMapper.updateByPrimaryKeyWithBLOBs(paddingCompanyDO);
-        Preconditions.checkArgument(count > 1, "编辑失败");
+        Preconditions.checkArgument(count > 0, "编辑失败");
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
     @Override
-    public ResultBean<Void> delete(Integer id) {
+    public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
         int count = insuranceCompanyDOMapper.deleteByPrimaryKey(id);
-        Preconditions.checkArgument(count > 1, "删除失败");
+        Preconditions.checkArgument(count > 0, "删除失败");
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
     @Override
-    public ResultBean<InsuranceCompanyVO> getById(Integer id) {
+    public ResultBean<InsuranceCompanyVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
         InsuranceCompanyDO insuranceCompanyDO = insuranceCompanyDOMapper.selectByPrimaryKey(id);
@@ -78,13 +79,13 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
 
     @Override
     public ResultBean<List<InsuranceCompanyVO>> query(InsuranceCompanyQuery query) {
-
-        int count = insuranceCompanyDOMapper.count(query);
-        Preconditions.checkArgument(count > 0, "无符合条件的数据");
+        int totalNum = insuranceCompanyDOMapper.count(query);
+        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
 
         List<InsuranceCompanyDO> insuranceCompanyDOS = insuranceCompanyDOMapper.query(query);
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(insuranceCompanyDOS), "无符合条件的数据");
 
-        List<InsuranceCompanyVO> insuranceCompanyVOS = insuranceCompanyDOS.parallelStream()
+        List<InsuranceCompanyVO> insuranceCompanyVOS = insuranceCompanyDOS.stream()
                 .filter(Objects::nonNull)
                 .map(e -> {
                     InsuranceCompanyVO insuranceCompanyVO = new InsuranceCompanyVO();
@@ -93,6 +94,6 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
                 })
                 .collect(Collectors.toList());
 
-        return ResultBean.of(insuranceCompanyVOS, true, BaseExceptionEnum.EC00000200, count, query.getPageIndex(), query.getPageSize());
+        return ResultBean.ofSuccess(insuranceCompanyVOS, totalNum, query.getPageIndex(), query.getPageSize());
     }
 }

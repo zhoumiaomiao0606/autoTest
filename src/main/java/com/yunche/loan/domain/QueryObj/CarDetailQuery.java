@@ -1,17 +1,21 @@
-package com.yunche.loan.domain.dataObj;
+package com.yunche.loan.domain.QueryObj;
 
 import lombok.Data;
 
+/**
+ * @author liuzhe
+ * @date 2018/1/17
+ */
 @Data
-public class CarDetailDO {
+public class CarDetailQuery extends BaseQuery {
     /**
      * 车款ID
      */
     private Long id;
     /**
-     * 所属模型ID
+     * 所属车系ID
      */
-    private Long modelId;
+    private Integer modelId;
     /**
      * 车款名称
      */

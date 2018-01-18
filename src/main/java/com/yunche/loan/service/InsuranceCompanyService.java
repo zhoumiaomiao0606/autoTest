@@ -17,9 +17,9 @@ public interface InsuranceCompanyService {
 
     ResultBean<Void> update(InsuranceCompanyDO paddingCompanyDO);
 
-    ResultBean<Void> delete(Integer id);
+    ResultBean<Void> delete(Long id);
 
-    ResultBean<InsuranceCompanyVO> getById(Integer id);
+    ResultBean<InsuranceCompanyVO> getById(Long id);
 
     ResultBean<List<InsuranceCompanyVO>> query(InsuranceCompanyQuery query);
 }

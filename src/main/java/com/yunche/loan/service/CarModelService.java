@@ -22,7 +22,7 @@ public interface CarModelService {
      *
      * @return
      */
-    List<Integer> getAllId();
+    List<Long> getAllId();
 
     /**
      * 编辑选中的(需要编辑的字段)
@@ -38,5 +38,5 @@ public interface CarModelService {
      * @param id
      * @return
      */
-    CarModelDO getById(Integer id);
+    CarModelDO getById(Long id);
 }

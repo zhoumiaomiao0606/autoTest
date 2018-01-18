@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.dao.mapper.CarDetailDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.CarDetailDO">
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="model_id" jdbcType="INTEGER" property="modelId"/>
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="model_id" jdbcType="BIGINT" property="modelId"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="initial" jdbcType="VARCHAR" property="initial"/>
         <result column="logo" jdbcType="VARCHAR" property="logo"/>
@@ -33,20 +33,20 @@
         select id,model_id from car_detail
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from car_detail
-        where id = #{id,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from car_detail
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
   </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CarDetailDO">
-        <selectKey resultType="java.lang.Integer" keyProperty="id"
+        <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
@@ -56,7 +56,7 @@
         year_type, production_state, sale_state,
         size_type, fuel_type
         )
-        values (#{id,jdbcType=INTEGER}, #{modelId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
+        values (#{id,jdbcType=BIGINT}, #{modelId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
         #{initial,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR},
         #{salePrice,jdbcType=VARCHAR}, #{seatNum,jdbcType=INTEGER}, #{doorNum,jdbcType=INTEGER},
         #{yearType,jdbcType=VARCHAR}, #{productionState,jdbcType=TINYINT}, #{saleState,jdbcType=TINYINT},
@@ -66,7 +66,7 @@
 
     <!-- batchInsert -->
     <insert id="batchInsert" parameterType="java.util.List">
-        <selectKey resultType="java.lang.Integer" keyProperty="id"
+        <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
@@ -78,7 +78,7 @@
         )
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            #{item.id,jdbcType=INTEGER}, #{item.modelId,jdbcType=INTEGER}, #{item.name,jdbcType=VARCHAR},
+            #{item.id,jdbcType=BIGINT}, #{item.modelId,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR},
             #{item.initial,jdbcType=VARCHAR}, #{item.logo,jdbcType=VARCHAR}, #{item.price,jdbcType=VARCHAR},
             #{item.salePrice,jdbcType=VARCHAR}, #{item.seatNum,jdbcType=INTEGER}, #{item.doorNum,jdbcType=INTEGER},
             #{item.yearType,jdbcType=VARCHAR}, #{item.productionState,jdbcType=TINYINT},
@@ -89,7 +89,7 @@
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CarDetailDO">
-        <selectKey resultType="java.lang.Integer" keyProperty="id"
+        <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
@@ -140,10 +140,10 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
-                #{id,jdbcType=INTEGER},
+                #{id,jdbcType=BIGINT},
             </if>
             <if test="modelId != null">
-                #{modelId,jdbcType=INTEGER},
+                #{modelId,jdbcType=BIGINT},
             </if>
             <if test="name != null">
                 #{name,jdbcType=VARCHAR},
@@ -188,7 +188,7 @@
         update car_detail
         <set>
             <if test="modelId != null">
-                model_id = #{modelId,jdbcType=INTEGER},
+                model_id = #{modelId,jdbcType=BIGINT},
             </if>
             <if test="name != null">
                 name = #{name,jdbcType=VARCHAR},
@@ -227,12 +227,12 @@
                 fuel_type = #{fuelType,jdbcType=TINYINT},
             </if>
         </set>
-        where id = #{id,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.CarDetailDO">
     update car_detail
-    set model_id = #{modelId,jdbcType=INTEGER},
+    set model_id = #{modelId,jdbcType=BIGINT},
       name = #{name,jdbcType=VARCHAR},
       initial = #{initial,jdbcType=VARCHAR},
       logo = #{logo,jdbcType=VARCHAR},
@@ -245,7 +245,7 @@
       sale_state = #{saleState,jdbcType=TINYINT},
       size_type = #{sizeType,jdbcType=VARCHAR},
       fuel_type = #{fuelType,jdbcType=TINYINT}
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
   </update>
 
 </mapper>
