@@ -12,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
  * Created by zhouguoliang on 2018/1/18.
  */
 @Service
+@Transactional
 public class FinancialProductServiceImpl implements FinancialProductService {
 
     @Autowired
@@ -29,7 +31,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(financialProductDOs), "financialProductDOs不能为空");
         for (FinancialProductDO financialProductDO : financialProductDOs) {
             int count = financialProductDOMapper.insert(financialProductDO);
-            Preconditions.checkArgument(count > 1, "创建失败");
+//            Preconditions.checkArgument(count > 1, "创建失败");
         }
         return ResultBean.ofSuccess(null, "创建成功");
     }
@@ -38,7 +40,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     public ResultBean<Void> insert(FinancialProductDO financialProductDO) {
         Preconditions.checkArgument(financialProductDO != null && financialProductDO.getProdId() != null, "financialProductDOs不能为空");
         int count = financialProductDOMapper.insert(financialProductDO);
-        Preconditions.checkArgument(count > 1, "创建失败");
+//        Preconditions.checkArgument(count > 1, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
     }
 
@@ -46,7 +48,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     public ResultBean<Void> update(FinancialProductDO financialProductDO) {
         Preconditions.checkArgument(financialProductDO != null && financialProductDO.getProdId() != null, "financialProductDOs不能为空");
         int count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
-        Preconditions.checkArgument(count > 1, "更新失败");
+//        Preconditions.checkArgument(count > 1, "更新失败");
         return ResultBean.ofSuccess(null, "更新成功");
     }
 
@@ -54,7 +56,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     public ResultBean<Void> delete(Long prodId) {
         Preconditions.checkArgument(prodId != null, "prodId");
         int count = financialProductDOMapper.deleteByPrimaryKey(prodId);
-        Preconditions.checkArgument(count > 1, "删除失败");
+//        Preconditions.checkArgument(count > 1, "删除失败");
         return ResultBean.ofSuccess(null, "删除成功");
     }
 

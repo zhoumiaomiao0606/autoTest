@@ -3,26 +3,17 @@ package com.yunche.loan;
 import com.yunche.loan.web.controller.FinancialProductController;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 /**
  * Created by zhouguoliang on 2018/1/18.
  */
-@RunWith(SpringRunner.class)    // SpringJUnit支持，由此引入Spring-Test框架支持！
-@SpringBootTest(classes = App.class)    // 指定我们SpringBoot工程的Application启动类
-@Transactional
-@Rollback
-public class FinancialProductTest extends MockMvcResultMatchers {
+public class FinancialProductTest extends BaseTest {
 
     private MockMvc mvc;
 
@@ -73,9 +64,9 @@ public class FinancialProductTest extends MockMvcResultMatchers {
 //                .andExpect(MockMvcResultMatchers.content().string("success"));
 //
         // 5、get一个id为1的user
-        request = MockMvcRequestBuilders.get("/financialProduct/getById/1");
+        request = get("/financialProduct/getById?id=1");
         mvc.perform(request)
-                .andExpect(MockMvcResultMatchers.content().string("{\"id\":1,\"name\":\"测试终极大师\",\"age\":30}"));
+                .andExpect(content().string("{\"id\":1,\"name\":\"测试终极大师\",\"age\":30}"));
 //
 //        // 6、del删除id为1的user
 //        request = MockMvcRequestBuilders.delete("/users/1");

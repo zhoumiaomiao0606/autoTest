@@ -64,13 +64,13 @@
     insert into financial_product (prod_id, bank_name, mnemonic_code, 
       account, sign_phone, sign_bank_code, 
       biz_type, category_superior, category_junior, 
-      rate, mortgage_term, area_id, 
+      rate, mortgage_term, area_id,
       gmt_create, gmt_modify)
     values (#{prodId,jdbcType=BIGINT}, #{bankName,jdbcType=VARCHAR}, #{mnemonicCode,jdbcType=VARCHAR}, 
       #{account,jdbcType=VARCHAR}, #{signPhone,jdbcType=VARCHAR}, #{signBankCode,jdbcType=VARCHAR}, 
       #{bizType,jdbcType=TINYINT}, #{categorySuperior,jdbcType=VARCHAR}, #{categoryJunior,jdbcType=VARCHAR}, 
-      #{rate,jdbcType=VARCHAR}, #{mortgageTerm,jdbcType=TINYINT}, #{areaId,jdbcType=BIGINT}, 
-      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
+      #{rate,jdbcType=VARCHAR}, #{mortgageTerm,jdbcType=TINYINT}, #{areaId,jdbcType=BIGINT},
+      now(), now())
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.FinancialProductDO">
     insert into financial_product
@@ -199,9 +199,6 @@
       <if test="areaId != null">
         area_id = #{areaId,jdbcType=BIGINT},
       </if>
-      <if test="gmtCreate != null">
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
       <if test="gmtModify != null">
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
       </if>
@@ -221,7 +218,6 @@
       rate = #{rate,jdbcType=VARCHAR},
       mortgage_term = #{mortgageTerm,jdbcType=TINYINT},
       area_id = #{areaId,jdbcType=BIGINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where prod_id = #{prodId,jdbcType=BIGINT}
   </update>

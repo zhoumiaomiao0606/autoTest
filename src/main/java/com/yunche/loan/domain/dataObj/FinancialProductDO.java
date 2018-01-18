@@ -15,7 +15,7 @@ public class FinancialProductDO {
 
     private String signBankCode;
 
-    private Byte bizType;
+    private Integer bizType;
 
     private String categorySuperior;
 
@@ -23,7 +23,7 @@ public class FinancialProductDO {
 
     private String rate;
 
-    private Byte mortgageTerm;
+    private Integer mortgageTerm;
 
     private Long areaId;
 
@@ -95,14 +95,6 @@ public class FinancialProductDO {
         this.signBankCode = signBankCode == null ? null : signBankCode.trim();
     }
 
-    public Byte getBizType() {
-        return bizType;
-    }
-
-    public void setBizType(Byte bizType) {
-        this.bizType = bizType;
-    }
-
     public String getCategorySuperior() {
         return categorySuperior;
     }
@@ -127,11 +119,19 @@ public class FinancialProductDO {
         this.rate = rate == null ? null : rate.trim();
     }
 
-    public Byte getMortgageTerm() {
+    public Integer getBizType() {
+        return bizType;
+    }
+
+    public void setBizType(Integer bizType) {
+        this.bizType = bizType;
+    }
+
+    public Integer getMortgageTerm() {
         return mortgageTerm;
     }
 
-    public void setMortgageTerm(Byte mortgageTerm) {
+    public void setMortgageTerm(Integer mortgageTerm) {
         this.mortgageTerm = mortgageTerm;
     }
 
