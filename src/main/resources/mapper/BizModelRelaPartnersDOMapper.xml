@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.dao.mapper.BizModelRelaPartnersDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDOKey">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDO">
     <id column="biz_id" jdbcType="BIGINT" property="bizId" />
     <id column="group_id" jdbcType="BIGINT" property="groupId" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDOKey">
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDO">
     delete from biz_model_rela_partners
     where biz_id = #{bizId,jdbcType=BIGINT}
       and group_id = #{groupId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDOKey">
-    insert into biz_model_rela_partners (biz_id, group_id)
-    values (#{bizId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT})
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDO">
+    insert into biz_model_rela_partners (biz_id, group_id, gmt_create, 
+      gmt_modify)
+    values (#{bizId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDOKey">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaPartnersDO">
     insert into biz_model_rela_partners
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="bizId != null">
@@ -23,6 +27,12 @@
       <if test="groupId != null">
         group_id,
       </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="bizId != null">
@@ -30,6 +40,12 @@
       </if>
       <if test="groupId != null">
         #{groupId,jdbcType=BIGINT },
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>

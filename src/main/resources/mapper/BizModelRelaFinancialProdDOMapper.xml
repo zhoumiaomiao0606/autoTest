@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.configure.info.address.BizModelRelaFinancialProdDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDOKey">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDO">
     <id column="biz_id" jdbcType="BIGINT" property="bizId" />
     <id column="prod_id" jdbcType="BIGINT" property="prodId" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDOKey">
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDO">
     delete from biz_model_rela_financial_prod
     where biz_id = #{bizId,jdbcType=BIGINT}
       and prod_id = #{prodId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDOKey">
-    insert into biz_model_rela_financial_prod (biz_id, prod_id)
-    values (#{bizId,jdbcType=BIGINT}, #{prodId,jdbcType=BIGINT})
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDO">
+    insert into biz_model_rela_financial_prod (biz_id, prod_id, gmt_create, 
+      gmt_modify)
+    values (#{bizId,jdbcType=BIGINT}, #{prodId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDOKey">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDO">
     insert into biz_model_rela_financial_prod
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="bizId != null">
@@ -23,6 +27,12 @@
       <if test="prodId != null">
         prod_id,
       </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="bizId != null">
@@ -30,6 +40,12 @@
       </if>
       <if test="prodId != null">
         #{prodId,jdbcType=BIGINT},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>

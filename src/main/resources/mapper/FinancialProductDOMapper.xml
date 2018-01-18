@@ -14,10 +14,12 @@
     <result column="rate" jdbcType="VARCHAR" property="rate" />
     <result column="mortgage_term" jdbcType="TINYINT" property="mortgageTerm" />
     <result column="area_id" jdbcType="BIGINT" property="areaId" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
     prod_id, bank_name, mnemonic_code, account, sign_phone, sign_bank_code, biz_type, 
-    category_superior, category_junior, rate, mortgage_term, area_id
+    category_superior, category_junior, rate, mortgage_term, area_id, gmt_create, gmt_modify
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
@@ -62,13 +64,13 @@
     insert into financial_product (prod_id, bank_name, mnemonic_code, 
       account, sign_phone, sign_bank_code, 
       biz_type, category_superior, category_junior, 
-      rate, mortgage_term, area_id
-      )
+      rate, mortgage_term, area_id, 
+      gmt_create, gmt_modify)
     values (#{prodId,jdbcType=BIGINT}, #{bankName,jdbcType=VARCHAR}, #{mnemonicCode,jdbcType=VARCHAR}, 
       #{account,jdbcType=VARCHAR}, #{signPhone,jdbcType=VARCHAR}, #{signBankCode,jdbcType=VARCHAR}, 
       #{bizType,jdbcType=TINYINT}, #{categorySuperior,jdbcType=VARCHAR}, #{categoryJunior,jdbcType=VARCHAR}, 
-      #{rate,jdbcType=VARCHAR}, #{mortgageTerm,jdbcType=TINYINT}, #{areaId,jdbcType=BIGINT}
-      )
+      #{rate,jdbcType=VARCHAR}, #{mortgageTerm,jdbcType=TINYINT}, #{areaId,jdbcType=BIGINT}, 
+      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.FinancialProductDO">
     insert into financial_product
@@ -109,6 +111,12 @@
       <if test="areaId != null">
         area_id,
       </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="prodId != null">
@@ -146,6 +154,12 @@
       </if>
       <if test="areaId != null">
         #{areaId,jdbcType=BIGINT},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -185,6 +199,12 @@
       <if test="areaId != null">
         area_id = #{areaId,jdbcType=BIGINT},
       </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where prod_id = #{prodId,jdbcType=BIGINT}
   </update>
@@ -200,7 +220,9 @@
       category_junior = #{categoryJunior,jdbcType=VARCHAR},
       rate = #{rate,jdbcType=VARCHAR},
       mortgage_term = #{mortgageTerm,jdbcType=TINYINT},
-      area_id = #{areaId,jdbcType=BIGINT}
+      area_id = #{areaId,jdbcType=BIGINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where prod_id = #{prodId,jdbcType=BIGINT}
   </update>
 </mapper>

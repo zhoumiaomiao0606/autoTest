@@ -1,5 +1,7 @@
 package com.yunche.loan.domain.dataObj;
 
+import java.util.Date;
+
 public class FinancialProductDO {
     private Long prodId;
 
@@ -24,6 +26,26 @@ public class FinancialProductDO {
     private Byte mortgageTerm;
 
     private Long areaId;
+
+    public Date getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(Date gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public Date getGmtModify() {
+        return gmtModify;
+    }
+
+    public void setGmtModify(Date gmtModify) {
+        this.gmtModify = gmtModify;
+    }
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
 
     public Long getProdId() {
         return prodId;

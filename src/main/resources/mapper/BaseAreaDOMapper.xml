@@ -6,9 +6,11 @@
         <result column="parent_area_id" jdbcType="BIGINT" property="parentAreaId"/>
         <result column="area_name" jdbcType="VARCHAR" property="areaName"/>
         <result column="level" jdbcType="TINYINT" property="level"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     </resultMap>
     <sql id="Base_Column_List">
-        area_id, parent_area_id, area_name, level
+        area_id, parent_area_id, area_name, level, gmt_create, gmt_modify
     </sql>
 
     <sql id="Base_Query_List">
@@ -52,7 +54,7 @@
         insert into base_area (area_id, parent_area_id, area_name,
         level)
         values (#{areaId,jdbcType=BIGINT}, #{parentAreaId,jdbcType=BIGINT}, #{areaName,jdbcType=VARCHAR},
-        #{level,jdbcType=TINYINT})
+        #{level,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
         insert into base_area

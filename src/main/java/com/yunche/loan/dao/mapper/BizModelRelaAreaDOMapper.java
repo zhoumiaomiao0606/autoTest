@@ -1,11 +1,11 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.dataObj.BizModelRelaAreaDOKey;
+import com.yunche.loan.domain.dataObj.BizModelRelaAreaDO;
 
 public interface BizModelRelaAreaDOMapper {
-    int deleteByPrimaryKey(BizModelRelaAreaDOKey key);
+    int deleteByPrimaryKey(BizModelRelaAreaDO key);
 
-    int insert(BizModelRelaAreaDOKey record);
+    int insert(BizModelRelaAreaDO record);
 
-    int insertSelective(BizModelRelaAreaDOKey record);
+    int insertSelective(BizModelRelaAreaDO record);
 }

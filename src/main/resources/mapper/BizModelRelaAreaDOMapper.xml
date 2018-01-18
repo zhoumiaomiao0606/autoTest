@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.dao.mapper.BizModelRelaAreaDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaAreaDOKey">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaAreaDO">
     <id column="biz_id" jdbcType="BIGINT" property="bizId" />
     <id column="area_id" jdbcType="BIGINT" property="areaId" />
   </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaDOKey">
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaDO">
     delete from biz_model_rela_area
     where biz_id = #{bizId,jdbcType=BIGINT}
       and area_id = #{areaId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaDOKey">
-    insert into biz_model_rela_area (biz_id, area_id)
-    values (#{bizId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT})
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaDO">
+    insert into biz_model_rela_area (biz_id, area_id, gmt_create, 
+      gmt_modify)
+    values (#{bizId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaDOKey">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaDO">
     insert into biz_model_rela_area
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="bizId != null">
@@ -23,6 +25,12 @@
       <if test="areaId != null">
         area_id,
       </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="bizId != null">
@@ -30,6 +38,12 @@
       </if>
       <if test="areaId != null">
         #{areaId,jdbcType=BIGINT},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>

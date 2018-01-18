@@ -1,11 +1,11 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDOKey;
+import com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDO;
 
 public interface BizModelRelaFinancialProdDOMapper {
-    int deleteByPrimaryKey(BizModelRelaFinancialProdDOKey key);
+    int deleteByPrimaryKey(BizModelRelaFinancialProdDO key);
 
-    int insert(BizModelRelaFinancialProdDOKey record);
+    int insert(BizModelRelaFinancialProdDO record);
 
-    int insertSelective(BizModelRelaFinancialProdDOKey record);
+    int insertSelective(BizModelRelaFinancialProdDO record);
 }
