@@ -1,6 +1,9 @@
 package com.yunche.loan.dao.mapper;
 
+import com.yunche.loan.domain.QueryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
+
+import java.util.List;
 
 public interface FinancialProductDOMapper {
     int deleteByPrimaryKey(Long prodId);
@@ -10,6 +13,8 @@ public interface FinancialProductDOMapper {
     int insertSelective(FinancialProductDO record);
 
     FinancialProductDO selectByPrimaryKey(Long prodId);
+
+    List<FinancialProductDO> selectByCondition(FinancialQuery financialQuery);
 
     int updateByPrimaryKeySelective(FinancialProductDO record);
 
