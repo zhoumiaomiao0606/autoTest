@@ -60,23 +60,27 @@ public class CarController {
 
     /**
      * 三级联动关系  -All
+     * <p>
+     * 品牌-车系-车型
      *
      * @return
      */
-    @GetMapping("/list/threeLevel")
+    @GetMapping("/list/allBrand")
     public ResultBean<CarThreeLevelVO> listThreeLevel() {
-        logger.info("/listThreeLevel");
+        logger.info("/list/allBrand");
         return carService.listAll();
     }
 
     /**
      * 两级联动 -All
+     * <p>
+     * 品牌-车系
      *
      * @return
      */
-    @GetMapping("/list/twoLevel")
+    @GetMapping("/list")
     public ResultBean<CarTwoLevelVO> listTwoLevel() {
-        logger.info("/listTwoLevel");
+        logger.info("/list");
         return carService.listTwoLevel();
     }
 
@@ -84,13 +88,15 @@ public class CarController {
      * 三级联动关系   -ONE
      * <p>
      * 单个品牌下
+     * <p>
+     * 品牌-车系-车型
      *
      * @param brandId
      * @return
      */
-    @GetMapping("/list")
+    @GetMapping("/list/brand")
     public ResultBean<CarThreeLevelVO.CarOneBrandThreeLevelVO> list(@RequestParam("brandId") Long brandId) {
-        logger.info(Arrays.asList("list", JSON.toJSONString(brandId)).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("/list/brand", JSON.toJSONString(brandId)).stream().collect(Collectors.joining("-")));
         return carService.list(brandId);
     }
 

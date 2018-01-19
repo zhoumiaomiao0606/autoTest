@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface PaddingCompanyService {
 
-    ResultBean<Void> create(PaddingCompanyDO paddingCompanyDO);
+    ResultBean<Long> create(PaddingCompanyDO paddingCompanyDO);
 
     ResultBean<Void> update(PaddingCompanyDO paddingCompanyDO);
 

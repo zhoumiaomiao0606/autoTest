@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.yunche.loan.domain.dataObj.AreaVO;
 import com.yunche.loan.domain.valueObj.BaseAreaVO;
 import com.yunche.loan.domain.dataObj.BaseAreaDO;
 import com.yunche.loan.domain.QueryObj.BaseAreaQuery;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -29,13 +31,13 @@ public class BaseAreaController {
     @Autowired
     private BaseAreaService baseAreaService;
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> create(@RequestBody BaseAreaDO baseAreaDO) {
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> create(@RequestBody BaseAreaDO baseAreaDO) {
         logger.info(Arrays.asList("create", JSON.toJSONString(baseAreaDO)).stream().collect(Collectors.joining("-")));
         return baseAreaService.create(baseAreaDO);
     }
 
-    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody BaseAreaDO baseAreaDO) {
         logger.info(Arrays.asList("update", JSON.toJSONString(baseAreaDO)).stream().collect(Collectors.joining("-")));
         return baseAreaService.update(baseAreaDO);
@@ -53,10 +55,16 @@ public class BaseAreaController {
         return baseAreaService.getById(areaId);
     }
 
-    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<BaseAreaVO> query(@RequestBody BaseAreaQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return baseAreaService.query(query);
+    }
+
+    @GetMapping("/list")
+    public ResultBean<List<AreaVO>> list() {
+        logger.info("list");
+        return baseAreaService.list();
     }
 
 }

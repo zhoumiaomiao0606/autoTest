@@ -30,13 +30,13 @@ public class CarModelController {
     @Autowired
     private CarModelService carModelService;
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> create(@RequestBody CarModelDO carModelDO) {
         logger.info(Arrays.asList("create", JSON.toJSONString(carModelDO)).stream().collect(Collectors.joining("-")));
         return carModelService.create(carModelDO);
     }
 
-    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody CarModelDO carModelDO) {
         logger.info(Arrays.asList("update", JSON.toJSONString(carModelDO)).stream().collect(Collectors.joining("-")));
         return carModelService.update(carModelDO);
@@ -62,7 +62,7 @@ public class CarModelController {
      * @param query
      * @return
      */
-    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<CarModelVO>> query(@RequestBody CarModelQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return carModelService.query(query);

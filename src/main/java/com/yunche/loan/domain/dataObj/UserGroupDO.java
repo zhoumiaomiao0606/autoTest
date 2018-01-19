@@ -12,7 +12,7 @@ public class UserGroupDO {
 
     private Integer departmentId;
 
-    private String description;
+    private String info;
 
     private Date gmtCreate;
 

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
  * @date 2018/1/15
  */
 @Service
+@Transactional
 public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
 
     private static final Logger logger = LoggerFactory.getLogger(InsuranceCompanyServiceImpl.class);
@@ -34,7 +36,7 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
 
 
     @Override
-    public ResultBean<Void> create(InsuranceCompanyDO paddingCompanyDO) {
+    public ResultBean<Long> create(InsuranceCompanyDO paddingCompanyDO) {
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getName()), "名称不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getOfficePhone()), "办公室电话不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getFax()), "传真不能为空");
@@ -45,7 +47,7 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
         paddingCompanyDO.setGmtModify(new Date());
         int count = insuranceCompanyDOMapper.insertSelective(paddingCompanyDO);
         Preconditions.checkArgument(count > 0, "创建失败");
-        return ResultBean.ofSuccess(null, "创建成功");
+        return ResultBean.ofSuccess(paddingCompanyDO.getId(), "创建成功");
     }
 
     @Override

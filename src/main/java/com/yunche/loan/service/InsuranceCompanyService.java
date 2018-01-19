@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface InsuranceCompanyService {
 
-    ResultBean<Void> create(InsuranceCompanyDO paddingCompanyDO);
+    ResultBean<Long> create(InsuranceCompanyDO paddingCompanyDO);
 
     ResultBean<Void> update(InsuranceCompanyDO paddingCompanyDO);
 

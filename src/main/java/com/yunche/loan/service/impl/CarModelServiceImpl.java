@@ -82,8 +82,6 @@ public class CarModelServiceImpl implements CarModelService {
 
     @Override
     public ResultBean<List<CarModelVO>> query(CarModelQuery query) {
-        Preconditions.checkNotNull(query.getBrandId(), "品牌ID不能为空");
-
         int totalNum = carModelDOMapper.count(query);
         Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
 

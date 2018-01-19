@@ -30,13 +30,13 @@ public class InsuranceCompanyController {
     @Autowired
     private InsuranceCompanyService insuranceCompanyService;
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> create(@RequestBody InsuranceCompanyDO insuranceCompanyDO) {
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> create(@RequestBody InsuranceCompanyDO insuranceCompanyDO) {
         logger.info(Arrays.asList("create", JSON.toJSONString(insuranceCompanyDO)).stream().collect(Collectors.joining("-")));
         return insuranceCompanyService.create(insuranceCompanyDO);
     }
 
-    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody InsuranceCompanyDO insuranceCompanyDO) {
         logger.info(Arrays.asList("update", JSON.toJSONString(insuranceCompanyDO)).stream().collect(Collectors.joining("-")));
         return insuranceCompanyService.update(insuranceCompanyDO);
@@ -54,7 +54,7 @@ public class InsuranceCompanyController {
         return insuranceCompanyService.getById(id);
     }
 
-    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<InsuranceCompanyVO>> query(@RequestBody InsuranceCompanyQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return insuranceCompanyService.query(query);

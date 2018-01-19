@@ -18,7 +18,9 @@ public class BaseAreaDO {
     private Long parentAreaId;
 
     private String areaName;
-
+    /**
+     * 0:全国; 1:省; 2:市
+     */
     private Byte level;
 
     private Date gmtCreate;

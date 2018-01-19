@@ -5,16 +5,18 @@
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="department_id" jdbcType="INTEGER" property="departmentId"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.dataObj.UserGroupDO">
-        <result column="description" jdbcType="LONGVARCHAR" property="description"/>
+        <result column="info" jdbcType="LONGVARCHAR" property="info"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, name, department_id
-  </sql>
+        id, name, department_id, gmt_create, gmt_modify
+    </sql>
     <sql id="Blob_Column_List">
-    description
-  </sql>
+        info
+    </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>
@@ -24,15 +26,17 @@
         where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from user_group
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+        delete from user_group
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
-    insert into user_group (id, name, department_id,
-    description)
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{departmentId,jdbcType=INTEGER},
-    #{description,jdbcType=LONGVARCHAR})
-  </insert>
+        insert into user_group (id, name, department_id,
+        gmt_create, gmt_modify, info
+        )
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{departmentId,jdbcType=INTEGER},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{info,jdbcType=LONGVARCHAR}
+        )
+    </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
         insert into user_group
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -45,8 +49,14 @@
             <if test="departmentId != null">
                 department_id,
             </if>
-            <if test="description != null">
-                description,
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="info != null">
+                info,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -59,8 +69,14 @@
             <if test="departmentId != null">
                 #{departmentId,jdbcType=INTEGER},
             </if>
-            <if test="description != null">
-                #{description,jdbcType=LONGVARCHAR},
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="info != null">
+                #{info,jdbcType=LONGVARCHAR},
             </if>
         </trim>
     </insert>
@@ -73,23 +89,33 @@
             <if test="departmentId != null">
                 department_id = #{departmentId,jdbcType=INTEGER},
             </if>
-            <if test="description != null">
-                description = #{description,jdbcType=LONGVARCHAR},
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="info != null">
+                info = #{info,jdbcType=LONGVARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
-    update user_group
-    set name = #{name,jdbcType=VARCHAR},
-    department_id = #{departmentId,jdbcType=INTEGER},
-    description = #{description,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update user_group
+        set name = #{name,jdbcType=VARCHAR},
+        department_id = #{departmentId,jdbcType=INTEGER},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        info = #{info,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
-    update user_group
-    set name = #{name,jdbcType=VARCHAR},
-      department_id = #{departmentId,jdbcType=INTEGER}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update user_group
+        set name = #{name,jdbcType=VARCHAR},
+        department_id = #{departmentId,jdbcType=INTEGER},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>

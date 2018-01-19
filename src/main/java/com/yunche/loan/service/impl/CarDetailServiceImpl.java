@@ -102,8 +102,6 @@ public class CarDetailServiceImpl implements CarDetailService {
 
     @Override
     public ResultBean<List<CarDetailVO>> query(CarDetailQuery query) {
-        Preconditions.checkNotNull(query.getModelId(), "车系ID不能为空");
-
         int totalNum = carDetailDOMapper.count(query);
         Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
 

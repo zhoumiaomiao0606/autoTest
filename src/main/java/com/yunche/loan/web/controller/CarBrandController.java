@@ -29,13 +29,13 @@ public class CarBrandController {
     @Autowired
     private CarBrandService carBrandService;
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> create(@RequestBody CarBrandDO carBrandDO) {
         logger.info(Arrays.asList("create", JSON.toJSONString(carBrandDO)).stream().collect(Collectors.joining("-")));
         return carBrandService.create(carBrandDO);
     }
 
-    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody CarBrandDO carBrandDO) {
         logger.info(Arrays.asList("update", JSON.toJSONString(carBrandDO)).stream().collect(Collectors.joining("-")));
         return carBrandService.update(carBrandDO);

@@ -9,10 +9,6 @@ import lombok.Data;
 @Data
 public class CarDetailQuery extends BaseQuery {
     /**
-     * 车款ID
-     */
-    private Long id;
-    /**
      * 所属车系ID
      */
     private Integer modelId;

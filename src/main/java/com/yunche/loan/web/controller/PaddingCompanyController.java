@@ -30,13 +30,13 @@ public class PaddingCompanyController {
     @Autowired
     private PaddingCompanyService paddingCompanyService;
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> create(@RequestBody PaddingCompanyDO paddingCompanyDO) {
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> create(@RequestBody PaddingCompanyDO paddingCompanyDO) {
         logger.info(Arrays.asList("create", JSON.toJSONString(paddingCompanyDO)).stream().collect(Collectors.joining("-")));
         return paddingCompanyService.create(paddingCompanyDO);
     }
 
-    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody PaddingCompanyDO paddingCompanyDO) {
         logger.info(Arrays.asList("update", JSON.toJSONString(paddingCompanyDO)).stream().collect(Collectors.joining("-")));
         return paddingCompanyService.update(paddingCompanyDO);
@@ -54,7 +54,7 @@ public class PaddingCompanyController {
         return paddingCompanyService.getById(id);
     }
 
-    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<PaddingCompanyVO>> query(@RequestBody BaseAreaQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return paddingCompanyService.query(query);

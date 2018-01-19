@@ -35,7 +35,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     PaddingCompanyDOMapper paddingCompanyDOMapper;
 
     @Override
-    public ResultBean<Void> create(PaddingCompanyDO paddingCompanyDO) {
+    public ResultBean<Long> create(PaddingCompanyDO paddingCompanyDO) {
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getName()), "名称不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getOfficePhone()), "办公室电话不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getFax()), "传真不能为空");
@@ -46,7 +46,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
         paddingCompanyDO.setGmtModify(new Date());
         int count = paddingCompanyDOMapper.insertSelective(paddingCompanyDO);
         Preconditions.checkArgument(count > 0, "创建失败");
-        return ResultBean.ofSuccess(null, "创建成功");
+        return ResultBean.ofSuccess(paddingCompanyDO.getId(), "创建成功");
     }
 
     @Override

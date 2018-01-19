@@ -1,0 +1,24 @@
+package com.yunche.loan.config.constant;
+
+/**
+ * @author liuzhe
+ * @date 2018/1/19
+ */
+public class AreaConst {
+    /**
+     * 全国
+     */
+    public static final Byte LEVEL_COUNTRY = 0;
+    /**
+     * 省
+     */
+    public static final Byte LEVEL_PROV = 1;
+    /**
+     * 市
+     */
+    public static final Byte LEVEL_CITY = 2;
+    /**
+     * 全国
+     */
+    public static final String COUNTRY = "全国";
+}

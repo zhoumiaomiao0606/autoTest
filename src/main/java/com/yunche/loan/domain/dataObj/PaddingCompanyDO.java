@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 public class PaddingCompanyDO {
-    private Integer id;
+    private Long id;
 
     private String name;
 

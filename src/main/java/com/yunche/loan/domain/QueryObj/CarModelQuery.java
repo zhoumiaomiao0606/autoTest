@@ -9,19 +9,15 @@ import lombok.Data;
 @Data
 public class CarModelQuery extends BaseQuery {
     /**
-     * 车型ID
-     */
-    private Long id;
-    /**
      * 所属品牌ID
      */
     private Long brandId;
     /**
-     * 车型简称 eg：A3
+     * 车系简称 eg：A3
      */
     private String name;
     /**
-     * 车型全称 eg：奥迪A3
+     * 车系全称 eg：奥迪A3
      */
     private String fullName;
     /**

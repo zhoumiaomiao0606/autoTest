@@ -24,9 +24,6 @@
     </sql>
 
     <sql id="Base_Query_List">
-        <if test="id != null">
-            AND id = #{id}
-        </if>
         <if test="brandId != null">
             AND brand_id = #{brandId}
         </if>

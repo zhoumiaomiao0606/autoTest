@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.BaseAeraDOMapper">
+<mapper namespace="com.yunche.loan.dao.mapper.BaseAreaDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BaseAreaDO">
         <id column="area_id" jdbcType="BIGINT" property="areaId"/>
         <result column="parent_area_id" jdbcType="BIGINT" property="parentAreaId"/>
         <result column="area_name" jdbcType="VARCHAR" property="areaName"/>
         <result column="level" jdbcType="TINYINT" property="level"/>
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
     </resultMap>
     <sql id="Base_Column_List">
         area_id, parent_area_id, area_name, level, gmt_create, gmt_modify
@@ -47,7 +47,14 @@
         <where>
             <include refid="Base_Query_List"/>
         </where>
-        limit startRow, pageSize
+        limit #{startRow}, #{pageSize}
+    </select>
+
+    <!--getAll-->
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from base_area
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
