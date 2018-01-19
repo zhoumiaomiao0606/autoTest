@@ -23,14 +23,6 @@ public class BizModelDO {
 
     private String feature;
 
-    public String getFeature() {
-        return feature;
-    }
-
-    public void setFeature(String feature) {
-        this.feature = feature;
-    }
-
     public Long getBizId() {
         return bizId;
     }
@@ -101,5 +93,13 @@ public class BizModelDO {
 
     public void setGmtModify(Date gmtModify) {
         this.gmtModify = gmtModify;
+    }
+
+    public String getFeature() {
+        return feature;
+    }
+
+    public void setFeature(String feature) {
+        this.feature = feature == null ? null : feature.trim();
     }
 }

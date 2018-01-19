@@ -5,8 +5,6 @@ import java.util.Date;
 public class FinancialProductDO {
     private Long prodId;
 
-    private String prodName;
-
     private String bankName;
 
     private String mnemonicCode;
@@ -17,7 +15,7 @@ public class FinancialProductDO {
 
     private String signBankCode;
 
-    private Integer bizType;
+    private Byte bizType;
 
     private String categorySuperior;
 
@@ -25,57 +23,19 @@ public class FinancialProductDO {
 
     private String rate;
 
-    private Integer mortgageTerm;
+    private Byte mortgageTerm;
 
     private Long areaId;
-
-    private String feature;
-
-    private Integer status;
-
-    public String getProdName() {
-        return prodName;
-    }
-
-    public void setProdName(String prodName) {
-        this.prodName = prodName;
-    }
-
-    public String getFeature() {
-        return feature;
-    }
-
-    public void setFeature(String feature) {
-        this.feature = feature;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Date getGmtCreate() {
-        return gmtCreate;
-    }
-
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
-    public Date getGmtModify() {
-        return gmtModify;
-    }
-
-    public void setGmtModify(Date gmtModify) {
-        this.gmtModify = gmtModify;
-    }
 
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String prodName;
+
+    private String feature;
+
+    private Byte status;
 
     public Long getProdId() {
         return prodId;
@@ -125,6 +85,14 @@ public class FinancialProductDO {
         this.signBankCode = signBankCode == null ? null : signBankCode.trim();
     }
 
+    public Byte getBizType() {
+        return bizType;
+    }
+
+    public void setBizType(Byte bizType) {
+        this.bizType = bizType;
+    }
+
     public String getCategorySuperior() {
         return categorySuperior;
     }
@@ -149,19 +117,11 @@ public class FinancialProductDO {
         this.rate = rate == null ? null : rate.trim();
     }
 
-    public Integer getBizType() {
-        return bizType;
-    }
-
-    public void setBizType(Integer bizType) {
-        this.bizType = bizType;
-    }
-
-    public Integer getMortgageTerm() {
+    public Byte getMortgageTerm() {
         return mortgageTerm;
     }
 
-    public void setMortgageTerm(Integer mortgageTerm) {
+    public void setMortgageTerm(Byte mortgageTerm) {
         this.mortgageTerm = mortgageTerm;
     }
 
@@ -171,5 +131,45 @@ public class FinancialProductDO {
 
     public void setAreaId(Long areaId) {
         this.areaId = areaId;
+    }
+
+    public Date getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(Date gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public Date getGmtModify() {
+        return gmtModify;
+    }
+
+    public void setGmtModify(Date gmtModify) {
+        this.gmtModify = gmtModify;
+    }
+
+    public String getProdName() {
+        return prodName;
+    }
+
+    public void setProdName(String prodName) {
+        this.prodName = prodName == null ? null : prodName.trim();
+    }
+
+    public String getFeature() {
+        return feature;
+    }
+
+    public void setFeature(String feature) {
+        this.feature = feature == null ? null : feature.trim();
+    }
+
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
     }
 }
