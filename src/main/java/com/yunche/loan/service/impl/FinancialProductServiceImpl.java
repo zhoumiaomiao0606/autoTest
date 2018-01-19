@@ -38,7 +38,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
 
     @Override
     public ResultBean<Void> insert(FinancialProductDO financialProductDO) {
-        Preconditions.checkArgument(financialProductDO != null && financialProductDO.getProdId() != null, "financialProductDOs不能为空");
+        Preconditions.checkArgument(financialProductDO != null, "financialProductDOs不能为空");
         int count = financialProductDOMapper.insert(financialProductDO);
 //        Preconditions.checkArgument(count > 1, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
