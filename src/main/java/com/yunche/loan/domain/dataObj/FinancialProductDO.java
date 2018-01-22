@@ -29,9 +29,29 @@ public class FinancialProductDO {
 
     private Long areaId;
 
+    private String prov;
+
+    private String city;
+
     private String feature;
 
     private Integer status;
+
+    public String getProv() {
+        return prov;
+    }
+
+    public void setProv(String prov) {
+        this.prov = prov;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public String getProdName() {
         return prodName;

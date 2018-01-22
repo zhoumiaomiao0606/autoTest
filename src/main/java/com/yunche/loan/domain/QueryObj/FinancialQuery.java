@@ -1,6 +1,9 @@
 package com.yunche.loan.domain.QueryObj;
 
+import com.google.common.collect.Lists;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * Created by zhouguoliang on 2018/1/18.
@@ -9,7 +12,7 @@ import lombok.Data;
 public class FinancialQuery extends BaseQuery {
     private String bankName;
 
-    private Byte bizType;
+    private Integer bizType;
 
     private String categorySuperior;
 
@@ -19,6 +22,36 @@ public class FinancialQuery extends BaseQuery {
 
     private Long areaId;
 
+    private String prov;
+
+    private String city;
+
+    private List<Long> cascadeAreaIdList;
+
+    public String getProv() {
+        return prov;
+    }
+
+    public void setProv(String prov) {
+        this.prov = prov;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public List<Long> getCascadeAreaIdList() {
+        return cascadeAreaIdList;
+    }
+
+    public void setCascadeAreaIdList(List<Long> cascadeAreaIdList) {
+        this.cascadeAreaIdList = cascadeAreaIdList;
+    }
+
     public String getBankName() {
         return bankName;
     }
@@ -27,11 +60,11 @@ public class FinancialQuery extends BaseQuery {
         this.bankName = bankName;
     }
 
-    public Byte getBizType() {
+    public Integer getBizType() {
         return bizType;
     }
 
-    public void setBizType(Byte bizType) {
+    public void setBizType(Integer bizType) {
         this.bizType = bizType;
     }
 

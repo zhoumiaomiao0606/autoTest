@@ -1,12 +1,15 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.FinancialProductDOMapper;
 import com.yunche.loan.domain.QueryObj.FinancialQuery;
+import com.yunche.loan.domain.dataObj.AreaVO;
 import com.yunche.loan.domain.dataObj.BaseAreaDO;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
 import com.yunche.loan.domain.valueObj.BaseAreaVO;
+import com.yunche.loan.service.BaseAreaService;
 import com.yunche.loan.service.FinancialProductService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +28,9 @@ public class FinancialProductServiceImpl implements FinancialProductService {
 
     @Autowired
     private FinancialProductDOMapper financialProductDOMapper;
+
+    @Autowired
+    private BaseAreaService baseAreaService;
 
     @Override
     public ResultBean<Void> batchInsert(List<FinancialProductDO> financialProductDOs) {
@@ -73,7 +79,31 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     @Override
     public ResultBean<List<FinancialProductDO>> getByCondition(FinancialQuery financialQuery) {
 //        Preconditions.checkNotNull(financialQuery, financialQuery);
-
+        List<Long> list = Lists.newArrayList();
+        if (financialQuery.getAreaId() != null && financialQuery.getProv() != null && financialQuery.getCity() == null) {   // 省级区域
+            ResultBean<List<AreaVO>> resultBean = baseAreaService.list();
+            List<AreaVO> areaVOList = resultBean.getData();
+            for (AreaVO areaVO : areaVOList) {
+                if(areaVO.getId().longValue() == financialQuery.getAreaId().longValue()) {
+                    List<AreaVO.City> cityList = areaVO.getCityList();
+                    if (CollectionUtils.isNotEmpty(cityList)) {
+                        for (AreaVO.City city : cityList) {
+                            list.add(city.getId());
+                        }
+                    }
+                }
+            }
+            list.add(financialQuery.getAreaId());
+            financialQuery.setCascadeAreaIdList(list);
+        }
+        if (financialQuery.getAreaId() != null && financialQuery.getProv() != null && financialQuery.getCity() != null) {   // 市级区域
+            list.add(financialQuery.getAreaId());
+            financialQuery.setCascadeAreaIdList(list);
+        }
+        if (financialQuery.getAreaId() == 100000000000L){   // 全国区域
+            financialQuery.setCascadeAreaIdList(null);
+        }
+        financialQuery.setAreaId(null);
         List<FinancialProductDO> financialProductDOList = financialProductDOMapper.selectByCondition(financialQuery);
 //        Preconditions.checkNotNull(financialProductDOList, "，数据不存在.");
 
