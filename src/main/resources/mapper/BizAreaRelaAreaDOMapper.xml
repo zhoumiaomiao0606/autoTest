@@ -44,7 +44,7 @@
 
     <!-- batchInsert -->
     <insert id="batchInsert" parameterType="java.util.List">
-        insert into car_model (biz_area_id, area_id, gmt_create, gmt_modify)
+        insert into biz_area_rela_area (biz_area_id, area_id, gmt_create, gmt_modify)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.bizAreaId,jdbcType=BIGINT}, #{item.areaId,jdbcType=BIGINT}, #{item.gmtCreate,jdbcType=TIMESTAMP},

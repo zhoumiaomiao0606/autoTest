@@ -1,6 +1,7 @@
 package com.yunche.loan.domain.viewObj;
 
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -42,7 +43,19 @@ public class BizAreaVO {
 
         private String name;
 
+        private Integer level;
+
+        private boolean hasChild;
+
         private List<BizArea> childList;
+
+        public boolean getHasChild() {
+            if (CollectionUtils.isEmpty(childList)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 
 }

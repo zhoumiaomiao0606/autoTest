@@ -223,94 +223,6 @@ public class BizAreaServiceImpl implements BizAreaService {
         return ResultBean.ofSuccess(bizAreaList);
     }
 
-    /**
-     * 分级递归解析
-     *
-     * @param parentIdDOMap
-     * @return
-     */
-    private List<BizAreaVO.BizArea> parseLevelByLevel(ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap) {
-        if (!CollectionUtils.isEmpty(parentIdDOMap)) {
-            List<BizAreaDO> parentBizAreaDOS = parentIdDOMap.get(-1);
-            if (!CollectionUtils.isEmpty(parentBizAreaDOS)) {
-                List<BizAreaVO.BizArea> bizAreaList = parentBizAreaDOS.stream()
-                        .map(p -> {
-                            BizAreaVO.BizArea parent = new BizAreaVO.BizArea();
-                            parent.setId(p.getId());
-                            parent.setName(p.getName());
-
-                            // 递归填充子列表
-                            fillChilds(p.getId(), parentIdDOMap, parent);
-                            return parent;
-                        })
-                        .collect(Collectors.toList());
-
-                return bizAreaList;
-
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * parentId - DOS 映射
-     *
-     * @param bizAreaDOS
-     * @return
-     */
-    private ConcurrentMap<Long, List<BizAreaDO>> getParentIdDOSMapping(List<BizAreaDO> bizAreaDOS) {
-        ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap = Maps.newConcurrentMap();
-
-        bizAreaDOS.parallelStream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
-
-                    Long parentId = e.getParentId();
-                    // 为null,用-1标记
-                    parentId = null == parentId ? -1 : parentId;
-                    if (!parentIdDOMap.containsKey(parentId)) {
-                        parentIdDOMap.put(parentId, Lists.newArrayList(e));
-                    } else {
-                        parentIdDOMap.get(parentId).add(e);
-                    }
-
-                });
-
-        return parentIdDOMap;
-    }
-
-
-    /**
-     * 递归填充子列表
-     *
-     * @param parentId
-     * @param parentIdDOMap
-     * @param parent
-     */
-
-    private void fillChilds(Long parentId, ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap, BizAreaVO.BizArea parent) {
-        List<BizAreaDO> childBizAreaDOS = parentIdDOMap.get(parentId);
-        if (!CollectionUtils.isEmpty(childBizAreaDOS)) {
-            childBizAreaDOS.stream()
-                    .forEach(c -> {
-
-                        BizAreaVO.BizArea child = new BizAreaVO.BizArea();
-                        child.setId(c.getId());
-                        child.setName(c.getName());
-
-                        List<BizAreaVO.BizArea> childList = parent.getChildList();
-                        if (CollectionUtils.isEmpty(childList)) {
-                            parent.setChildList(Lists.newArrayList(child));
-                        } else {
-                            parent.getChildList().add(child);
-                        }
-
-                        fillChilds(c.getId(), parentIdDOMap, child);
-
-                    });
-        }
-    }
 
     /**
      * insert
@@ -330,6 +242,8 @@ public class BizAreaServiceImpl implements BizAreaService {
             Preconditions.checkNotNull(parentBizAreaDO, "上一级区域不存在");
             bizAreaDO.setLevel(parentBizAreaDO.getLevel() + 1);
         }
+        // status
+        bizAreaDO.setStatus(VALID_STATUS);
         // date
         bizAreaDO.setGmtCreate(new Date());
         bizAreaDO.setGmtModify(new Date());
@@ -420,6 +334,91 @@ public class BizAreaServiceImpl implements BizAreaService {
             head.setEmployeeId(employeeDO.getId());
             head.setEmployeeName(employeeDO.getName());
             bizAreaVO.setHead(head);
+        }
+    }
+
+    /**
+     * parentId - DOS 映射
+     *
+     * @param bizAreaDOS
+     * @return
+     */
+    private ConcurrentMap<Long, List<BizAreaDO>> getParentIdDOSMapping(List<BizAreaDO> bizAreaDOS) {
+        ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap = Maps.newConcurrentMap();
+
+        bizAreaDOS.parallelStream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    Long parentId = e.getParentId();
+                    // 为null,用-1标记
+                    parentId = null == parentId ? -1L : parentId;
+                    if (!parentIdDOMap.containsKey(parentId)) {
+                        parentIdDOMap.put(parentId, Lists.newArrayList(e));
+                    } else {
+                        parentIdDOMap.get(parentId).add(e);
+                    }
+
+                });
+
+        return parentIdDOMap;
+    }
+
+    /**
+     * 分级递归解析
+     *
+     * @param parentIdDOMap
+     * @return
+     */
+    private List<BizAreaVO.BizArea> parseLevelByLevel(ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap) {
+        if (!CollectionUtils.isEmpty(parentIdDOMap)) {
+            List<BizAreaDO> parentBizAreaDOS = parentIdDOMap.get(-1L);
+            if (!CollectionUtils.isEmpty(parentBizAreaDOS)) {
+                List<BizAreaVO.BizArea> bizAreaList = parentBizAreaDOS.stream()
+                        .map(p -> {
+                            BizAreaVO.BizArea parent = new BizAreaVO.BizArea();
+                            BeanUtils.copyProperties(p, parent);
+
+                            // 递归填充子列表
+                            fillChilds(p.getId(), parentIdDOMap, parent);
+                            return parent;
+                        })
+                        .collect(Collectors.toList());
+
+                return bizAreaList;
+
+            }
+        }
+
+        return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * 递归填充子列表
+     *
+     * @param parentId
+     * @param parentIdDOMap
+     * @param parent
+     */
+    private void fillChilds(Long parentId, ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap, BizAreaVO.BizArea parent) {
+        List<BizAreaDO> childBizAreaDOS = parentIdDOMap.get(parentId);
+        if (!CollectionUtils.isEmpty(childBizAreaDOS)) {
+            childBizAreaDOS.stream()
+                    .forEach(c -> {
+
+                        BizAreaVO.BizArea child = new BizAreaVO.BizArea();
+                        BeanUtils.copyProperties(c, child);
+
+                        List<BizAreaVO.BizArea> childList = parent.getChildList();
+                        if (CollectionUtils.isEmpty(childList)) {
+                            parent.setChildList(Lists.newArrayList(child));
+                        } else {
+                            parent.getChildList().add(child);
+                        }
+
+                        fillChilds(c.getId(), parentIdDOMap, child);
+
+                    });
         }
     }
 
