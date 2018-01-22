@@ -101,7 +101,7 @@
 
     <!-- batchInsert -->
     <insert id="batchInsert" parameterType="java.util.List">
-        <selectKey resultType="java.lang.Integer" keyProperty="id"
+        <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
@@ -132,6 +132,10 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into car_model (id, brand_id, name,
         full_name, initial, logo,
         price, seat_num, sale_state,
@@ -146,6 +150,10 @@
         )
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CarModelDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into car_model
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

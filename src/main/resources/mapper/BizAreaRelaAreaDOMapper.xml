@@ -42,6 +42,23 @@
         limit #{startRow}, #{pageSize}
     </select>
 
+    <!-- batchInsert -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into car_model (biz_area_id, area_id, gmt_create, gmt_modify)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.bizAreaId,jdbcType=BIGINT}, #{item.areaId,jdbcType=BIGINT}, #{item.gmtCreate,jdbcType=TIMESTAMP},
+            #{item.gmtModify,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--getAreaIdListByBizAreaId-->
+    <select id="getAreaIdListByBizAreaId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select  area_id
+        from biz_area_rela_area
+        where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDOKey"
             resultMap="BaseResultMap">
         select
@@ -50,7 +67,6 @@
         where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
         and area_id = #{areaId,jdbcType=BIGINT}
     </select>
-
 
     <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDOKey">
     delete from biz_area_rela_area

@@ -32,11 +32,11 @@ public class CarModelServiceImpl implements CarModelService {
     @Override
     public ResultBean<Long> create(CarModelDO carModelDO) {
         Preconditions.checkArgument(null != carModelDO && null != carModelDO.getBrandId(), "所属品牌不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(carModelDO.getName()), "车系名称不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(carModelDO.getFullName()), "车系名称不能为空");
 
         // name校验
         List<String> modelNameList = carModelDOMapper.getNameListByBrandId(carModelDO.getBrandId());
-        Preconditions.checkArgument(!modelNameList.contains(carModelDO.getName().trim()), "当前品牌下，此车系名称已存在");
+        Preconditions.checkArgument(!modelNameList.contains(carModelDO.getFullName().trim()), "当前品牌下，此车系名称已存在");
 
         carModelDO.setGmtCreate(new Date());
         carModelDO.setGmtModify(new Date());

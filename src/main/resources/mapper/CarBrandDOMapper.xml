@@ -56,6 +56,10 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CarBrandDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into car_brand (id, name, initial,
         logo, gmt_create, gmt_modify
         )
@@ -64,6 +68,10 @@
         )
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CarBrandDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into car_brand
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

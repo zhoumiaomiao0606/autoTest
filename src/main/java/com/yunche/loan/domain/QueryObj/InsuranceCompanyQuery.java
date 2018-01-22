@@ -2,6 +2,9 @@ package com.yunche.loan.domain.QueryObj;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 /**
  * @author liuzhe
  * @date 2018/1/15
@@ -9,7 +12,7 @@ import lombok.Data;
 @Data
 public class InsuranceCompanyQuery extends BaseQuery {
 
-    private Integer id;
+    private Long id;
 
     private String name;
 
@@ -25,9 +28,9 @@ public class InsuranceCompanyQuery extends BaseQuery {
 
     private String address;
 
-    private Double businessInsuranceRebate;
+    private BigDecimal businessInsuranceRebate;
 
-    private Double trafficInsuranceRebate;
+    private BigDecimal trafficInsuranceRebate;
 
     private String bank;
 
@@ -36,6 +39,12 @@ public class InsuranceCompanyQuery extends BaseQuery {
     private String bankAccount;
 
     private String file;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
+
+    private String feature;
 
     private String cooperationPolicy;
 }

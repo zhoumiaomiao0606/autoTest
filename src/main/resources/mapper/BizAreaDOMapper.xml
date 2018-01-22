@@ -6,22 +6,20 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
         <result column="employee_id" jdbcType="BIGINT" property="employeeId"/>
-        <result column="area_id" jdbcType="BIGINT" property="areaId"/>
         <result column="level" jdbcType="INTEGER" property="level"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.dataObj.BizAreaDO">
         <result column="info" jdbcType="LONGVARCHAR" property="info"/>
     </resultMap>
-
     <sql id="Base_Column_List">
-    id, name, parent_id, employee_id, area_id, level, gmt_create, gmt_modify
-  </sql>
+        id, name, parent_id, employee_id, level, gmt_create, gmt_modify, feature
+    </sql>
     <sql id="Blob_Column_List">
-    info
-  </sql>
-
+        info
+    </sql>
     <sql id="Base_Query_List">
         <if test="name != null and name != '' ">
             AND name LIKE CONCAT('%',#{name},'%')
@@ -31,9 +29,6 @@
         </if>
         <if test="employeeId != null">
             AND employee_id = #{employeeId}
-        </if>
-        <if test="areaId != null">
-            AND area_id = #{areaId}
         </if>
         <if test="level != null">
             AND level = #{level}
@@ -69,6 +64,14 @@
         select name from biz_area
     </select>
 
+    <!--getByParentId-->
+    <select id="getByParentId" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_area
+        where parentId = #{parentId,jdbcType=BIGINT}
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>
@@ -79,22 +82,30 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from biz_area
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+        delete from biz_area
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizAreaDO">
-    insert into biz_area (id, name, parent_id,
-    employee_id, area_id, level,
-    gmt_create, gmt_modify, info
-    )
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT},
-    #{employeeId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{level,jdbcType=INTEGER},
-    #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{info,jdbcType=LONGVARCHAR}
-    )
-  </insert>
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into biz_area (id, name, parent_id,
+        employee_id, level, gmt_create,
+        gmt_modify, feature, info
+        )
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT},
+        #{employeeId,jdbcType=BIGINT}, #{level,jdbcType=INTEGER}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{info,jdbcType=LONGVARCHAR}
+        )
+    </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizAreaDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into biz_area
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -109,9 +120,6 @@
             <if test="employeeId != null">
                 employee_id,
             </if>
-            <if test="areaId != null">
-                area_id,
-            </if>
             <if test="level != null">
                 level,
             </if>
@@ -120,6 +128,9 @@
             </if>
             <if test="gmtModify != null">
                 gmt_modify,
+            </if>
+            <if test="feature != null">
+                feature,
             </if>
             <if test="info != null">
                 info,
@@ -138,9 +149,6 @@
             <if test="employeeId != null">
                 #{employeeId,jdbcType=BIGINT},
             </if>
-            <if test="areaId != null">
-                #{areaId,jdbcType=BIGINT},
-            </if>
             <if test="level != null">
                 #{level,jdbcType=INTEGER},
             </if>
@@ -149,6 +157,9 @@
             </if>
             <if test="gmtModify != null">
                 #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
             </if>
             <if test="info != null">
                 #{info,jdbcType=LONGVARCHAR},
@@ -168,9 +179,6 @@
             <if test="employeeId != null">
                 employee_id = #{employeeId,jdbcType=BIGINT},
             </if>
-            <if test="areaId != null">
-                area_id = #{areaId,jdbcType=BIGINT},
-            </if>
             <if test="level != null">
                 level = #{level,jdbcType=INTEGER},
             </if>
@@ -180,6 +188,9 @@
             <if test="gmtModify != null">
                 gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
             </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
             <if test="info != null">
                 info = #{info,jdbcType=LONGVARCHAR},
             </if>
@@ -188,28 +199,27 @@
     </update>
 
     <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.dataObj.BizAreaDO">
-    update biz_area
-    set name = #{name,jdbcType=VARCHAR},
-    parent_id = #{parentId,jdbcType=BIGINT},
-    employee_id = #{employeeId,jdbcType=BIGINT},
-    area_id = #{areaId,jdbcType=BIGINT},
-    level = #{level,jdbcType=INTEGER},
-    gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-    gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-    info = #{info,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update biz_area
+        set name = #{name,jdbcType=VARCHAR},
+        parent_id = #{parentId,jdbcType=BIGINT},
+        employee_id = #{employeeId,jdbcType=BIGINT},
+        level = #{level,jdbcType=INTEGER},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        info = #{info,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizAreaDO">
-    update biz_area
-    set name = #{name,jdbcType=VARCHAR},
-      parent_id = #{parentId,jdbcType=BIGINT},
-      employee_id = #{employeeId,jdbcType=BIGINT},
-      area_id = #{areaId,jdbcType=BIGINT},
-      level = #{level,jdbcType=INTEGER},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-
+        update biz_area
+        set name = #{name,jdbcType=VARCHAR},
+        parent_id = #{parentId,jdbcType=BIGINT},
+        employee_id = #{employeeId,jdbcType=BIGINT},
+        level = #{level,jdbcType=INTEGER},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>

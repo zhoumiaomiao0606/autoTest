@@ -3,7 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yunche.loan.domain.dataObj.AreaVO;
+import com.yunche.loan.domain.valueObj.AreaVO;
 import com.yunche.loan.domain.valueObj.BaseAreaVO;
 import com.yunche.loan.dao.mapper.BaseAreaDOMapper;
 import com.yunche.loan.domain.dataObj.BaseAreaDO;
@@ -18,7 +18,6 @@ import org.springframework.util.CollectionUtils;
 import java.text.Collator;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AreaConst.*;
 
@@ -86,15 +85,33 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     @Override
     public ResultBean<List<AreaVO>> list() {
 
+        // 获取所有行政区
         List<BaseAreaDO> allArea = baseAreaDOMapper.getAll();
         if (CollectionUtils.isEmpty(allArea)) {
             return ResultBean.ofSuccess(null);
         }
 
-        // 省-市映射
+        // 省-市映射容器
         ConcurrentMap<Long, AreaVO> provCityMap = Maps.newConcurrentMap();
 
         // 省（全国）
+        fillProv(allArea, provCityMap);
+        // 市
+        fillCity(allArea, provCityMap);
+
+        // 中文排序,并返回结果
+        List<AreaVO> areaVOList = sortAndGet(provCityMap);
+
+        return ResultBean.ofSuccess(areaVOList);
+    }
+
+    /**
+     * 解析并填充省
+     *
+     * @param allArea
+     * @param provCityMap
+     */
+    private void fillProv(List<BaseAreaDO> allArea, ConcurrentMap<Long, AreaVO> provCityMap) {
         allArea.parallelStream()
                 .filter(e -> null != e && null != e.getAreaId() && LEVEL_COUNTRY.equals(e.getLevel()) || LEVEL_PROV.equals(e.getLevel()))
                 .forEach(e -> {
@@ -104,15 +121,22 @@ public class BaseAreaServiceImpl implements BaseAreaService {
                         AreaVO areaVO = new AreaVO();
                         areaVO.setId(e.getAreaId());
                         areaVO.setName(e.getAreaName());
-                        areaVO.setLevel(Integer.valueOf(e.getLevel()));
+                        areaVO.setLevel(e.getLevel());
                         areaVO.setCityList(Lists.newArrayList());
 
                         provCityMap.put(e.getAreaId(), areaVO);
                     }
 
                 });
+    }
 
-        // 市
+    /**
+     * 解析并补充市
+     *
+     * @param allArea
+     * @param provCityMap
+     */
+    private void fillCity(List<BaseAreaDO> allArea, ConcurrentMap<Long, AreaVO> provCityMap) {
         allArea.stream()
                 .filter(e -> null != e && null != e.getAreaId() && LEVEL_CITY.equals(e.getLevel()))
                 .forEach(e -> {
@@ -122,21 +146,29 @@ public class BaseAreaServiceImpl implements BaseAreaService {
                         AreaVO.City city = new AreaVO.City();
                         city.setId(e.getAreaId());
                         city.setName(e.getAreaName());
-                        city.setLevel(Integer.valueOf(e.getLevel()));
+                        city.setLevel(e.getLevel());
 
                         provCityMap.get(e.getParentAreaId()).getCityList().add(city);
                     }
 
                 });
+    }
 
+    /**
+     * 排序并返回结果
+     *
+     * @param provCityMap
+     * @return
+     */
+    private List<AreaVO> sortAndGet(ConcurrentMap<Long, AreaVO> provCityMap) {
         // 根据中文拼音排序
-        Comparator<Object> CHINA_COMPARE = Collator.getInstance(java.util.Locale.CHINA);
+        Comparator<Object> chinaComparator = Collator.getInstance(java.util.Locale.CHINA);
 
         List<AreaVO> tmpAreaVOList = Lists.newArrayList();
         List<AreaVO> areaVOList = Lists.newArrayList();
 
         provCityMap.values().stream()
-                .sorted(Comparator.comparing(AreaVO::getName, CHINA_COMPARE))
+                .sorted(Comparator.comparing(AreaVO::getName, chinaComparator))
                 .forEach(e -> {
                     // 全国拿出来放到第一位
                     if (COUNTRY.equals(e.getName())) {
@@ -147,7 +179,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
                 });
         areaVOList.addAll(tmpAreaVOList);
 
-        return ResultBean.ofSuccess(areaVOList);
+        return areaVOList;
     }
 
 

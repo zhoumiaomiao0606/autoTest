@@ -2,6 +2,7 @@ package com.yunche.loan.domain.valueObj;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Date;
  */
 @Data
 public class InsuranceCompanyVO {
-    private Integer id;
+    private Long id;
 
     private String name;
 
@@ -26,9 +27,9 @@ public class InsuranceCompanyVO {
 
     private String address;
 
-    private Double businessInsuranceRebate;
+    private BigDecimal businessInsuranceRebate;
 
-    private Double trafficInsuranceRebate;
+    private BigDecimal trafficInsuranceRebate;
 
     private String bank;
 
@@ -38,9 +39,11 @@ public class InsuranceCompanyVO {
 
     private String file;
 
-    private String cooperationPolicy;
-
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String feature;
+
+    private String cooperationPolicy;
 }

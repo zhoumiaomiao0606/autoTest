@@ -24,4 +24,8 @@ public interface BizAreaRelaAreaDOMapper {
     int count(BizAreaQuery query);
 
     List<BizAreaRelaAreaDO> query(BizAreaQuery query);
+
+    int batchInsert(List<BizAreaRelaAreaDO> bizAreaRelaAreaDOS);
+
+    List<Long> getAreaIdListByBizAreaId(Long bizAreaId);
 }

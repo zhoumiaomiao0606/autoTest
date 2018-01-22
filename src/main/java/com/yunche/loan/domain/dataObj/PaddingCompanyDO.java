@@ -2,6 +2,7 @@ package com.yunche.loan.domain.dataObj;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -22,9 +23,9 @@ public class PaddingCompanyDO {
 
     private String address;
 
-    private Double businessInsuranceRebate;
+    private BigDecimal businessInsuranceRebate;
 
-    private Double trafficInsuranceRebate;
+    private BigDecimal trafficInsuranceRebate;
 
     private String bank;
 
@@ -34,9 +35,11 @@ public class PaddingCompanyDO {
 
     private String file;
 
-    private String cooperationPolicy;
-
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String feature;
+
+    private String cooperationPolicy;
 }

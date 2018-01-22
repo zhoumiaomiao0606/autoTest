@@ -27,4 +27,6 @@ public interface BizAreaDOMapper {
     int count(BizAreaQuery query);
 
     List<BizAreaDO> query(BizAreaQuery query);
+
+    List<BizAreaDO> getByParentId(Long parentId);
 }
