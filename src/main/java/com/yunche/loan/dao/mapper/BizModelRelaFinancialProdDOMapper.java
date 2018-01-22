@@ -1,7 +1,9 @@
 package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDO;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface BizModelRelaFinancialProdDOMapper {
     int deleteByPrimaryKey(BizModelRelaFinancialProdDO key);
 

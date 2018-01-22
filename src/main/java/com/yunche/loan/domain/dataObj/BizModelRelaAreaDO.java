@@ -7,9 +7,29 @@ public class BizModelRelaAreaDO {
 
     private Long areaId;
 
+    private String prov;
+
+    private String city;
+
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public String getProv() {
+        return prov;
+    }
+
+    public void setProv(String prov) {
+        this.prov = prov;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public Date getGmtCreate() {
         return gmtCreate;

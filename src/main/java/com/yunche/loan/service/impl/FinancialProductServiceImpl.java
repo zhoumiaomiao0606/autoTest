@@ -7,9 +7,12 @@ import com.yunche.loan.dao.mapper.FinancialProductDOMapper;
 import com.yunche.loan.domain.QueryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
 import com.yunche.loan.domain.viewObj.AreaVO;
+import com.yunche.loan.domain.viewObj.BaseAreaVO;
+import com.yunche.loan.domain.viewObj.FinancialProductVO;
 import com.yunche.loan.service.BaseAreaService;
 import com.yunche.loan.service.FinancialProductService;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,17 +67,38 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     }
 
     @Override
-    public ResultBean<FinancialProductDO> getById(Long prodId) {
+    public ResultBean<FinancialProductVO> getById(Long prodId) {
         Preconditions.checkNotNull(prodId, "prodId");
 
         FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
         Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
 
-        return ResultBean.ofSuccess(financialProductDO);
+        FinancialProductVO financialProductVO = getFinancialProductVO(financialProductDO);
+
+        return ResultBean.ofSuccess(financialProductVO);
+    }
+
+    private FinancialProductVO getFinancialProductVO(FinancialProductDO financialProductDO) {
+        FinancialProductVO financialProductVO = new FinancialProductVO();
+        BeanUtils.copyProperties(financialProductDO, financialProductVO);
+
+        ResultBean<BaseAreaVO> resultBean = baseAreaService.getById(financialProductVO.getAreaId());
+        BaseAreaVO baseAreaVO = resultBean.getData();
+        if (baseAreaVO.getLevel() == 2) {
+            Long provId = baseAreaVO.getParentAreaId();
+            Long cityId = baseAreaVO.getAreaId();
+            financialProductVO.setProvId(provId);
+            financialProductVO.setCityId(cityId);
+        }
+        if (baseAreaVO.getLevel() == 1 || baseAreaVO.getLevel() == 0) {
+            Long provId = baseAreaVO.getAreaId();
+            financialProductVO.setProvId(provId);
+        }
+        return financialProductVO;
     }
 
     @Override
-    public ResultBean<List<FinancialProductDO>> getByCondition(FinancialQuery financialQuery) {
+    public ResultBean<List<FinancialProductVO>> getByCondition(FinancialQuery financialQuery) {
 //        Preconditions.checkNotNull(financialQuery, financialQuery);
         List<Long> list = Lists.newArrayList();
         if (financialQuery.getAreaId() != null && financialQuery.getProv() != null && financialQuery.getCity() == null) {   // 省级区域
@@ -102,8 +126,12 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         }
         financialQuery.setAreaId(null);
         List<FinancialProductDO> financialProductDOList = financialProductDOMapper.selectByCondition(financialQuery);
-//        Preconditions.checkNotNull(financialProductDOList, "，数据不存在.");
+        Preconditions.checkNotNull(financialProductDOList, "，数据不存在.");
 
-        return ResultBean.ofSuccess(financialProductDOList);
+        List<FinancialProductVO> financialProductVOList = Lists.newArrayList();
+        for (FinancialProductDO financialProductDO : financialProductDOList) {
+            financialProductVOList.add(getFinancialProductVO(financialProductDO));
+        }
+        return ResultBean.ofSuccess(financialProductVOList);
     }
 }

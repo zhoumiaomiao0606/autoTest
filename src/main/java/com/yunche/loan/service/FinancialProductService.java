@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
+import com.yunche.loan.domain.viewObj.FinancialProductVO;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface FinancialProductService {
 
     ResultBean<Void> delete(Long prodId);
 
-    ResultBean<FinancialProductDO> getById(Long prodId);
+    ResultBean<FinancialProductVO> getById(Long prodId);
 
-    ResultBean<List<FinancialProductDO>> getByCondition(FinancialQuery financialQuery);
+    ResultBean<List<FinancialProductVO>> getByCondition(FinancialQuery financialQuery);
 }

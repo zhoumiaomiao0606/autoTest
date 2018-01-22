@@ -1,8 +1,10 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.QueryObj.BizModelQuery;
 import com.yunche.loan.domain.QueryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
+import com.yunche.loan.domain.viewObj.BizModelVO;
 
 import java.util.List;
 
@@ -11,15 +13,13 @@ import java.util.List;
  */
 public interface BizModelService {
 
-    ResultBean<Void> batchInsert(List<FinancialProductDO> financialProductDOs);
+    ResultBean<Void> insert(BizModelVO bizModelVO);
 
-    ResultBean<Void> insert(FinancialProductDO financialProductDO);
+    ResultBean<Void> update(BizModelVO bizModelVO);
 
-    ResultBean<Void> update(FinancialProductDO financialProductDO);
+    ResultBean<Void> delete(Long bizId);
 
-    ResultBean<Void> delete(Long prodId);
+    ResultBean<FinancialProductDO> getById(Long bizId);
 
-    ResultBean<FinancialProductDO> getById(Long prodId);
-
-    ResultBean<List<FinancialProductDO>> getByCondition(FinancialQuery financialQuery);
+    ResultBean<List<FinancialProductDO>> getByCondition(BizModelQuery bizModelQuery);
 }

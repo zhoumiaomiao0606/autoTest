@@ -17,9 +17,11 @@ public class BaseAreaVO {
 
     private String areaName;
 
-    private Byte level;
+    private Byte level; // 地区等级(0:全国;1:省;2:市)
 
     private Date gmtCreate;
 
     private Date gmtModify;
+
+
 }
