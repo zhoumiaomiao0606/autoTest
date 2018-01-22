@@ -1,10 +1,8 @@
-package com.yunche.loan.domain.valueObj;
+package com.yunche.loan.domain.viewObj;
 
-import com.google.common.collect.Lists;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author liuzhe

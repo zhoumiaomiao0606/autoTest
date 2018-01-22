@@ -5,7 +5,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.CarModelDOMapper;
 import com.yunche.loan.domain.QueryObj.CarModelQuery;
 import com.yunche.loan.domain.dataObj.CarModelDO;
-import com.yunche.loan.domain.valueObj.CarModelVO;
+import com.yunche.loan.domain.viewObj.CarModelVO;
 import com.yunche.loan.service.CarModelService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;

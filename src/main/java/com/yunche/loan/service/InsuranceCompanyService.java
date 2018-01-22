@@ -1,6 +1,6 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.domain.valueObj.InsuranceCompanyVO;
+import com.yunche.loan.domain.viewObj.InsuranceCompanyVO;
 import com.yunche.loan.domain.dataObj.InsuranceCompanyDO;
 import com.yunche.loan.domain.QueryObj.InsuranceCompanyQuery;
 import com.yunche.loan.config.result.ResultBean;

@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.CarBrandDOMapper;
 import com.yunche.loan.domain.dataObj.CarBrandDO;
-import com.yunche.loan.domain.valueObj.CarBrandVO;
+import com.yunche.loan.domain.viewObj.CarBrandVO;
 import com.yunche.loan.service.CarBrandService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;

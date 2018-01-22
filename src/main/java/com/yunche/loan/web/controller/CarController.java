@@ -2,8 +2,8 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.valueObj.CarThreeLevelVO;
-import com.yunche.loan.domain.valueObj.CarTwoLevelVO;
+import com.yunche.loan.domain.viewObj.CarThreeLevelVO;
+import com.yunche.loan.domain.viewObj.CarTwoLevelVO;
 import com.yunche.loan.service.CarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

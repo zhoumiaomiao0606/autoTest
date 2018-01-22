@@ -3,7 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.CarDetailQuery;
 import com.yunche.loan.domain.dataObj.CarDetailDO;
-import com.yunche.loan.domain.valueObj.CarDetailVO;
+import com.yunche.loan.domain.viewObj.CarDetailVO;
 
 import java.util.List;
 

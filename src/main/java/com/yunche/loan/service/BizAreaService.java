@@ -3,8 +3,8 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.BizAreaQuery;
 import com.yunche.loan.domain.param.BizAreaParam;
-import com.yunche.loan.domain.valueObj.AreaVO;
-import com.yunche.loan.domain.valueObj.BizAreaVO;
+import com.yunche.loan.domain.viewObj.AreaVO;
+import com.yunche.loan.domain.viewObj.BizAreaVO;
 
 import java.util.List;
 

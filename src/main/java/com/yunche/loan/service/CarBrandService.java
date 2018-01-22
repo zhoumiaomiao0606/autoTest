@@ -2,7 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.dataObj.CarBrandDO;
-import com.yunche.loan.domain.valueObj.CarBrandVO;
+import com.yunche.loan.domain.viewObj.CarBrandVO;
 
 import java.util.List;
 

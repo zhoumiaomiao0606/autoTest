@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.valueObj;
+package com.yunche.loan.domain.viewObj;
 
 import lombok.Data;
 

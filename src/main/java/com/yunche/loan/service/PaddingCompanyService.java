@@ -1,6 +1,6 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.domain.valueObj.PaddingCompanyVO;
+import com.yunche.loan.domain.viewObj.PaddingCompanyVO;
 import com.yunche.loan.domain.dataObj.PaddingCompanyDO;
 import com.yunche.loan.domain.QueryObj.BaseAreaQuery;
 import com.yunche.loan.config.result.ResultBean;

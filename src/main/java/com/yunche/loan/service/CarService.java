@@ -1,8 +1,8 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.valueObj.CarThreeLevelVO;
-import com.yunche.loan.domain.valueObj.CarTwoLevelVO;
+import com.yunche.loan.domain.viewObj.CarThreeLevelVO;
+import com.yunche.loan.domain.viewObj.CarTwoLevelVO;
 
 /**
  * @author liuzhe
