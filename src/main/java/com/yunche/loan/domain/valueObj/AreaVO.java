@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 全国-省-市  两级联动
+ * 省-市 二级关系
  *
  * @author liuzhe
  * @date 2018/1/19
@@ -18,7 +18,9 @@ public class AreaVO {
 
     private String name;
 
-    private List<Prov> provs = Lists.newArrayList();
+    private Byte level;
+
+    private List<City> cityList = Lists.newArrayList();
 
     @Data
     public static class Prov {
@@ -27,7 +29,9 @@ public class AreaVO {
 
         private String name;
 
-        private List<City> citys = Lists.newArrayList();
+        private Byte level;
+
+        private City city;
 
     }
 
@@ -38,7 +42,8 @@ public class AreaVO {
 
         private String name;
 
-    }
+        private Byte level;
 
+    }
 
 }

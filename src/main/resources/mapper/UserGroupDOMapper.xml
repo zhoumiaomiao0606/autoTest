@@ -30,6 +30,10 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into user_group (id, name, department_id,
         gmt_create, gmt_modify, info
         )
@@ -38,6 +42,10 @@
         )
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into user_group
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

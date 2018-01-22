@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.QueryObj;
+package com.yunche.loan.domain.param;
 
 import lombok.Data;
 
@@ -7,15 +7,16 @@ import java.util.List;
 
 /**
  * @author liuzhe
- * @date 2018/1/19
+ * @date 2018/1/20
  */
 @Data
-public class BizAreaQuery extends BaseQuery {
+public class BizAreaParam {
 
     private Long id;
-    private Long areaId;
 
     private String name;
+
+    private String info;
     /**
      * 绑定的父级ID
      */
@@ -24,6 +25,10 @@ public class BizAreaQuery extends BaseQuery {
      * 绑定的负责人ID
      */
     private Long employeeId;
+    /**
+     * 绑定的城市列表
+     */
+    private List<Long> areaIdList;
     /**
      * 等级
      */

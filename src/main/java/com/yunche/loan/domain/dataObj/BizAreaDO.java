@@ -14,8 +14,6 @@ public class BizAreaDO {
 
     private Long employeeId;
 
-    private Long areaId;
-
     private Integer level;
 
     private String info;
@@ -23,4 +21,6 @@ public class BizAreaDO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String feature;
 }

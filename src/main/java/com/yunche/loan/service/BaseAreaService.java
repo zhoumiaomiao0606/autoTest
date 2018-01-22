@@ -1,6 +1,6 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.domain.dataObj.AreaVO;
+import com.yunche.loan.domain.valueObj.AreaVO;
 import com.yunche.loan.domain.valueObj.BaseAreaVO;
 import com.yunche.loan.domain.dataObj.BaseAreaDO;
 import com.yunche.loan.domain.QueryObj.BaseAreaQuery;
