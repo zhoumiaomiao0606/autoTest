@@ -3,6 +3,7 @@ package com.yunche.loan.dao.mapper;
 import com.yunche.loan.domain.QueryObj.BizAreaQuery;
 import com.yunche.loan.domain.dataObj.BizAreaDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface BizAreaDOMapper {
 
     int insertSelective(BizAreaDO record);
 
-    BizAreaDO selectByPrimaryKey(Long id);
+    BizAreaDO selectByPrimaryKey(@Param("id") Long id, @Param("status") Byte status);
 
     int updateByPrimaryKeySelective(BizAreaDO record);
 
@@ -22,11 +23,13 @@ public interface BizAreaDOMapper {
 
     int updateByPrimaryKey(BizAreaDO record);
 
-    List<String> getAllName();
+    List<String> getAllName(@Param("status") Byte status);
 
     int count(BizAreaQuery query);
 
     List<BizAreaDO> query(BizAreaQuery query);
 
-    List<BizAreaDO> getByParentId(Long parentId);
+    List<BizAreaDO> getByParentId(@Param("parentId") Long parentId, @Param("status") Byte status);
+
+    List<BizAreaDO> getAll(@Param("status") Byte status);
 }

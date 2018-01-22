@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.fuelTypeMap;
 import static com.yunche.loan.config.constant.CarConst.productionStateMap;
 import static com.yunche.loan.config.constant.CarConst.saleStateMap;
@@ -106,7 +107,7 @@ public class CarServiceImpl implements CarService {
         long startTime = System.currentTimeMillis();
 
         // 获取所有 model_id —— detail_id
-        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getAllIdAndModelId();
+        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getAllIdAndModelId(null);
         logger.info("car_detail表数据总量为 : " + carDetailDOS.size());
         if (CollectionUtils.isEmpty(carDetailDOS)) {
             return ResultBean.ofSuccess(null, "car_detail表为空表,无可更新数据.");
@@ -228,7 +229,7 @@ public class CarServiceImpl implements CarService {
      */
     private List<CarTwoLevelVO.Model> getAllCarModel(Long brandId) {
         // 获取所有子车系
-        List<CarModelDO> carModelDOS = carModelDOMapper.getModelListByBrandId(brandId);
+        List<CarModelDO> carModelDOS = carModelDOMapper.getModelListByBrandId(brandId, VALID_STATUS);
         if (CollectionUtils.isEmpty(carModelDOS)) {
             return Collections.EMPTY_LIST;
         }
@@ -255,7 +256,7 @@ public class CarServiceImpl implements CarService {
      */
     private void getAndFillAllCarBrand(CarTwoLevelVO carTwoLevelVO) {
         // getAll
-        List<CarBrandDO> carBrandDOS = carBrandDOMapper.getAll();
+        List<CarBrandDO> carBrandDOS = carBrandDOMapper.getAll(VALID_STATUS);
 
         if (!CollectionUtils.isEmpty(carBrandDOS)) {
             List<CarTwoLevelVO.Brand> carBrandList = carBrandDOS.stream()
@@ -284,7 +285,7 @@ public class CarServiceImpl implements CarService {
      */
     private void getAndFillOneCarBrand(CarThreeLevelVO.CarOneBrandThreeLevelVO carOneBrandThreeLevelVO, Long brandId) {
         // getAll
-        CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(brandId);
+        CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(brandId, VALID_STATUS);
         // fill
         if (null != carBrandDO) {
             CarThreeLevelVO.Brand brand = new CarThreeLevelVO.Brand();
@@ -302,7 +303,7 @@ public class CarServiceImpl implements CarService {
      */
     public void getAndFillAllCarBrand(CarThreeLevelVO carThreeLevelVO) {
         // getAll
-        List<CarBrandDO> carBrandDOS = carBrandDOMapper.getAll();
+        List<CarBrandDO> carBrandDOS = carBrandDOMapper.getAll(VALID_STATUS);
 
         if (!CollectionUtils.isEmpty(carBrandDOS)) {
             List<CarThreeLevelVO.Brand> carBrandList = carBrandDOS.stream()
@@ -348,7 +349,7 @@ public class CarServiceImpl implements CarService {
      */
     private List<CarThreeLevelVO.Model> getAllCarModelAndDetail(Long brandId) {
         // 获取所有子车系
-        List<CarModelDO> carModelDOS = carModelDOMapper.getModelListByBrandId(brandId);
+        List<CarModelDO> carModelDOS = carModelDOMapper.getModelListByBrandId(brandId, VALID_STATUS);
         if (CollectionUtils.isEmpty(carModelDOS)) {
             return Collections.EMPTY_LIST;
         }
@@ -404,7 +405,7 @@ public class CarServiceImpl implements CarService {
      * @return
      */
     private List<CarThreeLevelVO.Detail> getCarDetailList(Long modelId) {
-        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getDetailListByModelId(modelId);
+        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getDetailListByModelId(modelId, null);
         if (!CollectionUtils.isEmpty(carDetailDOS)) {
             List<CarThreeLevelVO.Detail> carDetailList = carDetailDOS.stream()
                     .filter(d -> null != d && null != d.getId())
@@ -529,7 +530,7 @@ public class CarServiceImpl implements CarService {
             detailIds.stream()
                     .forEach(detailId -> {
 
-                        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(detailId);
+                        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(detailId, VALID_STATUS);
                         if (null != carDetailDO) {
                             // 统计price
                             statisticsPrice(carDetailDO.getPrice(), minMaxPrice);
@@ -540,7 +541,7 @@ public class CarServiceImpl implements CarService {
                     });
 
             // 获取当前要补偿数据的CarModelDO
-            CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(modelId);
+            CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(modelId, VALID_STATUS);
             if (null != carModelDO) {
                 // 补充price
                 fillCarModelPrice(carModelDO, minMaxPrice);
@@ -586,7 +587,7 @@ public class CarServiceImpl implements CarService {
         int totalNum = carBrandDOS.size();
 
         // 获取已存在
-        List<Integer> existBrandIdList = carBrandDOMapper.getAllId();
+        List<Integer> existBrandIdList = carBrandDOMapper.getAllId(null);
         int existNum = CollectionUtils.isEmpty(existBrandIdList) ? 0 : existBrandIdList.size();
         logger.info("获取已存在的品牌ID列表   >>>>>   已存在的品牌总量：" + existNum);
 
@@ -624,7 +625,7 @@ public class CarServiceImpl implements CarService {
         }
 
         // exist
-        List<Long> existCarDetailIds = carDetailDOMapper.getAllId();
+        List<Long> existCarDetailIds = carDetailDOMapper.getAllId(null);
 
         // 极值容器
         List<Double> minMaxPrice = Lists.newArrayList();
@@ -806,7 +807,7 @@ public class CarServiceImpl implements CarService {
 
 
         // exist
-        List<Long> existModelIdList = carModelDOMapper.getAllId();
+        List<Long> existModelIdList = carModelDOMapper.getAllId(VALID_STATUS);
 
         List<CarModelDO> carModelDOList = new ArrayList<>();
         carBrandDOS.stream()

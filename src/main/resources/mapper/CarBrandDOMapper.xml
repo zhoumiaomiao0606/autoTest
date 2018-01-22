@@ -8,23 +8,37 @@
         <result column="logo" jdbcType="VARCHAR" property="logo"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, name, initial, logo, gmt_create, gmt_modify
+        id, name, initial, logo, gmt_create, gmt_modify, feature, status
     </sql>
 
+    <!--getAllId-->
     <select id="getAllId" resultType="java.lang.Long">
         select id from car_brand
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
     </select>
 
+    <!--getAllName-->
     <select id="getAllName" resultType="java.lang.String">
         select name from car_brand
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
     </select>
 
+    <!--getAll-->
     <select id="getAll" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from car_brand
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
     </select>
 
     <!-- batchInsert -->
@@ -50,23 +64,29 @@
         <include refid="Base_Column_List"/>
         from car_brand
         where id = #{id,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from car_brand
         where id = #{id,jdbcType=BIGINT}
     </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CarBrandDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into car_brand (id, name, initial,
-        logo, gmt_create, gmt_modify
-        )
+        logo, gmt_create, gmt_modify,
+        feature, status)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{initial,jdbcType=VARCHAR},
-        #{logo,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
-        )
+        #{logo,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
     </insert>
+
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CarBrandDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
@@ -92,6 +112,12 @@
             <if test="gmtModify != null">
                 gmt_modify,
             </if>
+            <if test="feature != null">
+                feature,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -112,8 +138,15 @@
             <if test="gmtModify != null">
                 #{gmtModify,jdbcType=TIMESTAMP},
             </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.CarBrandDO">
         update car_brand
         <set>
@@ -132,16 +165,26 @@
             <if test="gmtModify != null">
                 gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
             </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.CarBrandDO">
-    update car_brand
-    set name = #{name,jdbcType=VARCHAR},
-      initial = #{initial,jdbcType=VARCHAR},
-      logo = #{logo,jdbcType=VARCHAR},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update car_brand
+        set name = #{name,jdbcType=VARCHAR},
+        initial = #{initial,jdbcType=VARCHAR},
+        logo = #{logo,jdbcType=VARCHAR},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
 </mapper>

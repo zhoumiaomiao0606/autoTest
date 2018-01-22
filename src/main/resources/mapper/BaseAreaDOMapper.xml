@@ -8,9 +8,11 @@
         <result column="level" jdbcType="TINYINT" property="level"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
     </resultMap>
     <sql id="Base_Column_List">
-        area_id, parent_area_id, area_name, level, gmt_create, gmt_modify
+        area_id, parent_area_id, area_name, level, gmt_create, gmt_modify, status, feature
     </sql>
 
     <sql id="Base_Query_List">
@@ -21,10 +23,13 @@
             AND parent_area_id = #{parentAreaId}
         </if>
         <if test="areaName != null and areaName != '' ">
-            AND area_name = #{areaName}
+            AND area_name LIKE CONCAT('%',#{areaName},'%')
         </if>
         <if test="level != null">
             AND level = #{level}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
         </if>
     </sql>
 
@@ -55,6 +60,11 @@
         select
         <include refid="Base_Column_List"/>
         from base_area
+        <where>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -62,26 +72,26 @@
         <include refid="Base_Column_List"/>
         from base_area
         where area_id = #{areaId,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from base_area
         where area_id = #{areaId,jdbcType=BIGINT}
     </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id"
-                   order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into base_area (area_id, parent_area_id, area_name,
-        level)
+        level, gmt_create, gmt_modify,
+        status, feature)
         values (#{areaId,jdbcType=BIGINT}, #{parentAreaId,jdbcType=BIGINT}, #{areaName,jdbcType=VARCHAR},
-        #{level,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
+        #{level,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR})
     </insert>
+
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id"
-                   order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into base_area
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="areaId != null">
@@ -95,6 +105,18 @@
             </if>
             <if test="level != null">
                 level,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="feature != null">
+                feature,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -110,8 +132,21 @@
             <if test="level != null">
                 #{level,jdbcType=TINYINT},
             </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
         update base_area
         <set>
@@ -124,14 +159,31 @@
             <if test="level != null">
                 level = #{level,jdbcType=TINYINT},
             </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
         </set>
         where area_id = #{areaId,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
     update base_area
     set parent_area_id = #{parentAreaId,jdbcType=BIGINT},
       area_name = #{areaName,jdbcType=VARCHAR},
-      level = #{level,jdbcType=TINYINT}
+      level = #{level,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      feature = #{feature,jdbcType=VARCHAR}
     where area_id = #{areaId,jdbcType=BIGINT}
   </update>
 </mapper>

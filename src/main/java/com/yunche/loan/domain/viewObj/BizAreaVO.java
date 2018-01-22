@@ -3,6 +3,7 @@ package com.yunche.loan.domain.viewObj;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -32,6 +33,16 @@ public class BizAreaVO {
     public static class Head {
         private Long employeeId;
         private String employeeName;
+    }
+
+    @Data
+    public static class BizArea {
+
+        private Long id;
+
+        private String name;
+
+        private List<BizArea> childList;
     }
 
 }

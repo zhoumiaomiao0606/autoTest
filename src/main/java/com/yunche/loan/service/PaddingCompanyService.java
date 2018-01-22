@@ -1,8 +1,8 @@
 package com.yunche.loan.service;
 
+import com.yunche.loan.domain.QueryObj.PaddingCompanyQuery;
 import com.yunche.loan.domain.viewObj.PaddingCompanyVO;
 import com.yunche.loan.domain.dataObj.PaddingCompanyDO;
-import com.yunche.loan.domain.QueryObj.BaseAreaQuery;
 import com.yunche.loan.config.result.ResultBean;
 
 import java.util.List;
@@ -21,5 +21,5 @@ public interface PaddingCompanyService {
 
     ResultBean<PaddingCompanyVO> getById(Long id);
 
-    ResultBean<List<PaddingCompanyVO>> query(BaseAreaQuery query);
+    ResultBean<List<PaddingCompanyVO>> query(PaddingCompanyQuery query);
 }

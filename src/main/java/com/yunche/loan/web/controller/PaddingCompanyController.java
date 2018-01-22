@@ -1,9 +1,9 @@
 package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.yunche.loan.domain.QueryObj.PaddingCompanyQuery;
 import com.yunche.loan.domain.viewObj.PaddingCompanyVO;
 import com.yunche.loan.domain.dataObj.PaddingCompanyDO;
-import com.yunche.loan.domain.QueryObj.BaseAreaQuery;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.service.PaddingCompanyService;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class PaddingCompanyController {
     }
 
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<PaddingCompanyVO>> query(@RequestBody BaseAreaQuery query) {
+    public ResultBean<List<PaddingCompanyVO>> query(@RequestBody PaddingCompanyQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return paddingCompanyService.query(query);
     }

@@ -2,44 +2,114 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.dao.mapper.PaddingCompanyDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
-        <id column="id" jdbcType="BIGINT" property="id" />
-        <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode" />
-        <result column="contact" jdbcType="VARCHAR" property="contact" />
-        <result column="tel" jdbcType="VARCHAR" property="tel" />
-        <result column="office_phone" jdbcType="VARCHAR" property="officePhone" />
-        <result column="fax" jdbcType="VARCHAR" property="fax" />
-        <result column="address" jdbcType="VARCHAR" property="address" />
-        <result column="business_insurance_rebate" jdbcType="DECIMAL" property="businessInsuranceRebate" />
-        <result column="traffic_insurance_rebate" jdbcType="DECIMAL" property="trafficInsuranceRebate" />
-        <result column="bank" jdbcType="VARCHAR" property="bank" />
-        <result column="account_name" jdbcType="VARCHAR" property="accountName" />
-        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount" />
-        <result column="file" jdbcType="VARCHAR" property="file" />
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-        <result column="feature" jdbcType="VARCHAR" property="feature" />
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode"/>
+        <result column="contact" jdbcType="VARCHAR" property="contact"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
+        <result column="office_phone" jdbcType="VARCHAR" property="officePhone"/>
+        <result column="fax" jdbcType="VARCHAR" property="fax"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="business_insurance_rebate" jdbcType="DECIMAL" property="businessInsuranceRebate"/>
+        <result column="traffic_insurance_rebate" jdbcType="DECIMAL" property="trafficInsuranceRebate"/>
+        <result column="bank" jdbcType="VARCHAR" property="bank"/>
+        <result column="account_name" jdbcType="VARCHAR" property="accountName"/>
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
+        <result column="file" jdbcType="VARCHAR" property="file"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
-        <result column="cooperation_policy" jdbcType="LONGVARCHAR" property="cooperationPolicy" />
+        <result column="cooperation_policy" jdbcType="LONGVARCHAR" property="cooperationPolicy"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id, name, mnemonic_code, contact, tel, office_phone, fax, address, business_insurance_rebate,
         traffic_insurance_rebate, bank, account_name, bank_account, file, gmt_create, gmt_modify,
-        feature
+        feature, status
     </sql>
     <sql id="Blob_Column_List">
         cooperation_policy
     </sql>
 
+    <sql id="Base_Query_List">
+        <if test="name != null and name != '' ">
+            AND name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="mnemonicCode != null and mnemonicCode != '' ">
+            AND mnemonic_code LIKE CONCAT('%',#{mnemonicCode},'%')
+        </if>
+        <if test="contact != null and contact != '' ">
+            AND contact LIKE CONCAT('%',#{contact},'%')
+        </if>
+        <if test="tel != null and tel != '' ">
+            AND tel = #{tel}
+        </if>
+        <if test="officePhone != null and officePhone != '' ">
+            AND office_phone = #{officePhone}
+        </if>
+        <if test="fax != null and fax != '' ">
+            AND fax = #{fax}
+        </if>
+        <if test="address != null and address != '' ">
+            AND address = #{address}
+        </if>
+        <if test="businessInsuranceRebate != null ">
+            AND business_insurance_rebate = #{businessInsuranceRebate}
+        </if>
+        <if test="trafficInsuranceRebate != null">
+            AND traffic_insurance_rebate = #{trafficInsuranceRebate}
+        </if>
+        <if test="bank != null and bank != ''  ">
+            AND bank LIKE CONCAT('%',#{bank},'%')
+        </if>
+        <if test="accountName != null and accountName != '' ">
+            AND account_name = #{accountName}
+        </if>
+        <if test="bankAccount != null and bankAccount != '' ">
+            AND bank_account = #{bankAccount}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </sql>
+
+    <!--  count -->
+    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.PaddingCompanyQuery"
+            resultType="java.lang.Integer">
+        select COUNT(*)
+        from insurance_company
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+    </select>
+
+    <!-- query -->
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.PaddingCompanyQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from insurance_company
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+        limit #{startRow}, #{pageSize}
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         ,
-        <include refid="Blob_Column_List" />
+        <include refid="Blob_Column_List"/>
         from padding_company
         where id = #{id,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -48,23 +118,31 @@
     </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into padding_company (id, name, mnemonic_code,
         contact, tel, office_phone,
         fax, address, business_insurance_rebate,
         traffic_insurance_rebate, bank, account_name,
         bank_account, file, gmt_create,
-        gmt_modify, feature, cooperation_policy
-        )
+        gmt_modify, feature, status,
+        cooperation_policy)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{mnemonicCode,jdbcType=VARCHAR},
         #{contact,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{officePhone,jdbcType=VARCHAR},
         #{fax,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{businessInsuranceRebate,jdbcType=DECIMAL},
         #{trafficInsuranceRebate,jdbcType=DECIMAL}, #{bank,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR},
         #{bankAccount,jdbcType=VARCHAR}, #{file,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{cooperationPolicy,jdbcType=LONGVARCHAR}
-        )
+        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
+        #{cooperationPolicy,jdbcType=LONGVARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into padding_company
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -117,6 +195,9 @@
             </if>
             <if test="feature != null">
                 feature,
+            </if>
+            <if test="status != null">
+                status,
             </if>
             <if test="cooperationPolicy != null">
                 cooperation_policy,
@@ -173,6 +254,9 @@
             </if>
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
             </if>
             <if test="cooperationPolicy != null">
                 #{cooperationPolicy,jdbcType=LONGVARCHAR},
@@ -231,6 +315,9 @@
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
             <if test="cooperationPolicy != null">
                 cooperation_policy = #{cooperationPolicy,jdbcType=LONGVARCHAR},
             </if>
@@ -256,28 +343,31 @@
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         feature = #{feature,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT},
         cooperation_policy = #{cooperationPolicy,jdbcType=LONGVARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
-    update padding_company
-    set name = #{name,jdbcType=VARCHAR},
-      mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
-      contact = #{contact,jdbcType=VARCHAR},
-      tel = #{tel,jdbcType=VARCHAR},
-      office_phone = #{officePhone,jdbcType=VARCHAR},
-      fax = #{fax,jdbcType=VARCHAR},
-      address = #{address,jdbcType=VARCHAR},
-      business_insurance_rebate = #{businessInsuranceRebate,jdbcType=DECIMAL},
-      traffic_insurance_rebate = #{trafficInsuranceRebate,jdbcType=DECIMAL},
-      bank = #{bank,jdbcType=VARCHAR},
-      account_name = #{accountName,jdbcType=VARCHAR},
-      bank_account = #{bankAccount,jdbcType=VARCHAR},
-      file = #{file,jdbcType=VARCHAR},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      feature = #{feature,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update padding_company
+        set name = #{name,jdbcType=VARCHAR},
+        mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+        contact = #{contact,jdbcType=VARCHAR},
+        tel = #{tel,jdbcType=VARCHAR},
+        office_phone = #{officePhone,jdbcType=VARCHAR},
+        fax = #{fax,jdbcType=VARCHAR},
+        address = #{address,jdbcType=VARCHAR},
+        business_insurance_rebate = #{businessInsuranceRebate,jdbcType=DECIMAL},
+        traffic_insurance_rebate = #{trafficInsuranceRebate,jdbcType=DECIMAL},
+        bank = #{bank,jdbcType=VARCHAR},
+        account_name = #{accountName,jdbcType=VARCHAR},
+        bank_account = #{bankAccount,jdbcType=VARCHAR},
+        file = #{file,jdbcType=VARCHAR},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
 </mapper>

@@ -67,4 +67,8 @@ public class CarDetailDO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private Byte status;
+
+    private String feature;
 }

@@ -1,8 +1,9 @@
 package com.yunche.loan.dao.mapper;
 
+import com.yunche.loan.domain.QueryObj.PaddingCompanyQuery;
 import com.yunche.loan.domain.dataObj.PaddingCompanyDO;
-import com.yunche.loan.domain.QueryObj.BaseAreaQuery;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface PaddingCompanyDOMapper {
 
     int insertSelective(PaddingCompanyDO record);
 
-    PaddingCompanyDO selectByPrimaryKey(Long id);
+    PaddingCompanyDO selectByPrimaryKey(@Param("id") Long id, @Param("status") Byte status);
 
     int updateByPrimaryKeySelective(PaddingCompanyDO record);
 
@@ -22,7 +23,7 @@ public interface PaddingCompanyDOMapper {
 
     int updateByPrimaryKey(PaddingCompanyDO record);
 
-    int count(BaseAreaQuery query);
+    int count(PaddingCompanyQuery query);
 
-    List<PaddingCompanyDO> query(BaseAreaQuery query);
+    List<PaddingCompanyDO> query(PaddingCompanyQuery query);
 }

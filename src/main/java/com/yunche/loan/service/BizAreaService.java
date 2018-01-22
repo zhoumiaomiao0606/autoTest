@@ -26,4 +26,6 @@ public interface BizAreaService {
     ResultBean<List<AreaVO.Prov>> listCity(BizAreaQuery query);
 
     ResultBean<Void> deleteRelaArea(Long id, Long areaId);
+
+    ResultBean<List<BizAreaVO.BizArea>> listAll();
 }

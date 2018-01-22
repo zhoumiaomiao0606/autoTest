@@ -35,11 +35,13 @@ public class PaddingCompanyDO {
 
     private String file;
 
+    private String cooperationPolicy;
+
     private Date gmtCreate;
 
     private Date gmtModify;
 
-    private String feature;
+    private Byte status;
 
-    private String cooperationPolicy;
+    private String feature;
 }

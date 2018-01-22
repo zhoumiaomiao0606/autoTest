@@ -3,18 +3,19 @@ package com.yunche.loan.dao.mapper;
 import com.yunche.loan.domain.dataObj.BaseAreaDO;
 import com.yunche.loan.domain.QueryObj.BaseAreaQuery;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface BaseAreaDOMapper {
-    int deleteByPrimaryKey(Long id);
+    int deleteByPrimaryKey(Long areaId);
 
     int insert(BaseAreaDO record);
 
     int insertSelective(BaseAreaDO record);
 
-    BaseAreaDO selectByPrimaryKey(Long id);
+    BaseAreaDO selectByPrimaryKey(@Param("areaId") Long areaId, @Param("status") Byte status);
 
     int updateByPrimaryKeySelective(BaseAreaDO record);
 
@@ -22,5 +23,5 @@ public interface BaseAreaDOMapper {
 
     List<BaseAreaDO> query(BaseAreaQuery query);
 
-    List<BaseAreaDO> getAll();
+    List<BaseAreaDO> getAll(@Param("status") Byte status);
 }
