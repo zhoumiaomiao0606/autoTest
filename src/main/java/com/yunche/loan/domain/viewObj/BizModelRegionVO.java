@@ -13,7 +13,7 @@ public class BizModelRegionVO {
 
     private String city;
 
-    private List<UserGroupDO> userGroupDOList = Lists.newArrayList();
+    private List<UserGroupVO> userGroupVOList = Lists.newArrayList();
 
     public Long getAreaId() {
         return areaId;
@@ -39,11 +39,11 @@ public class BizModelRegionVO {
         this.city = city;
     }
 
-    public List<UserGroupDO> getUserGroupDOList() {
-        return userGroupDOList;
+    public List<UserGroupVO> getUserGroupVOList() {
+        return userGroupVOList;
     }
 
-    public void setUserGroupDOList(List<UserGroupDO> userGroupDOList) {
-        this.userGroupDOList = userGroupDOList;
+    public void setUserGroupVOList(List<UserGroupVO> userGroupVOList) {
+        this.userGroupVOList = userGroupVOList;
     }
 }

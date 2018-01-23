@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface BizModelDOMapper {
     int deleteByPrimaryKey(Long bizId);
 
-    int insert(BizModelDO record);
+    long insert(BizModelDO record);
 
     int insertSelective(BizModelDO record);
 

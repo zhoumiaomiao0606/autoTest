@@ -70,7 +70,7 @@ public class FinancialProductDO {
     }
 
     public Integer getStatus() {
-        return status;
+        return status == null ? 0 : status;
     }
 
     public void setStatus(Integer status) {

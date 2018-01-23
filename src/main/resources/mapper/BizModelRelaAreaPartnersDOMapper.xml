@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.dao.mapper.BizModelRelaAreaPartnersDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
+    <id column="biz_id" jdbcType="BIGINT" property="bizId" />
+    <id column="area_id" jdbcType="BIGINT" property="areaId" />
+    <id column="group_id" jdbcType="BIGINT" property="groupId" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    biz_id, area_id, group_id, gmt_create, gmt_modify
+  </sql>
+  <select id="select" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from biz_model_rela_area_partners
+    where biz_id = #{bizId,jdbcType=BIGINT}
+      and area_id = #{areaId,jdbcType=BIGINT}
+      and group_id = #{groupId,jdbcType=BIGINT}
+  </select>
+  <delete id="delete" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
+    delete from biz_model_rela_area_partners
+    where biz_id = #{bizId,jdbcType=BIGINT}
+      and area_id = #{areaId,jdbcType=BIGINT}
+      and group_id = #{groupId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
+    insert into biz_model_rela_area_partners (biz_id, area_id, group_id, 
+      gmt_create, gmt_modify)
+    values (#{bizId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT}, 
+      now(), now())
+  </insert>
+  <update id="update" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
+    update biz_model_rela_area_partners
+    set gmt_modify = now()
+    where biz_id = #{bizId,jdbcType=BIGINT}
+      and area_id = #{areaId,jdbcType=BIGINT}
+      and group_id = #{groupId,jdbcType=BIGINT}
+  </update>
+</mapper>

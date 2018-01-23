@@ -12,7 +12,7 @@ public class BizModelVO {
 
     private String title;
 
-    private String desc;
+    private String description;
 
     private String scene;
 
@@ -30,13 +30,13 @@ public class BizModelVO {
 
     private List<BizModelRegionVO> bizModelRegionVOList;
 
-    private List<FinancialProductDO> financialProductDOList;
+    private List<BizRelaFinancialProductVO> financialProductDOList;
 
-    public List<FinancialProductDO> getFinancialProductDOList() {
+    public List<BizRelaFinancialProductVO> getFinancialProductDOList() {
         return financialProductDOList;
     }
 
-    public void setFinancialProductDOList(List<FinancialProductDO> financialProductDOList) {
+    public void setFinancialProductDOList(List<BizRelaFinancialProductVO> financialProductDOList) {
         this.financialProductDOList = financialProductDOList;
     }
 
@@ -72,12 +72,12 @@ public class BizModelVO {
         this.title = title == null ? null : title.trim();
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc == null ? null : desc.trim();
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getScene() {

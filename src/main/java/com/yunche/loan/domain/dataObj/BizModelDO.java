@@ -1,13 +1,15 @@
 package com.yunche.loan.domain.dataObj;
 
-import java.util.Date;
+import lombok.Data;
 
+import java.util.Date;
+@Data
 public class BizModelDO {
     private Long bizId;
 
     private String title;
 
-    private String desc;
+    private String description;
 
     private String scene;
 
@@ -47,12 +49,12 @@ public class BizModelDO {
         this.title = title == null ? null : title.trim();
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc == null ? null : desc.trim();
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getScene() {
@@ -80,7 +82,7 @@ public class BizModelDO {
     }
 
     public Byte getStatus() {
-        return status;
+        return status == null ? 0 : status;
     }
 
     public void setStatus(Byte status) {
