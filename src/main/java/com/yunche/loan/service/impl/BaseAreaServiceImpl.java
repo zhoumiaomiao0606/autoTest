@@ -46,6 +46,23 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     }
 
     @Override
+    public ResultBean<List<BaseAreaVO>> getByIdList(List<Long> areaIdList) {
+        Preconditions.checkNotNull(areaIdList, "areaIdList不能为空");
+
+        List<BaseAreaDO> baseAreaDOList = baseAreaDOMapper.selectByIdList(areaIdList, VALID_STATUS);
+        Preconditions.checkNotNull(baseAreaDOList, "areaId有误，数据不存在.");
+
+        List<BaseAreaVO> baseAreaVOList = Lists.newArrayList();
+        for (BaseAreaDO baseAreaDO : baseAreaDOList) {
+            BaseAreaVO baseAreaVO = new BaseAreaVO();
+            BeanUtils.copyProperties(baseAreaDO, baseAreaVO);
+            baseAreaVOList.add(baseAreaVO);
+        }
+
+        return ResultBean.ofSuccess(baseAreaVOList);
+    }
+
+    @Override
     public ResultBean<Long> create(BaseAreaDO baseAreaDO) {
         Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getAreaId(), "areaId不能为空");
 

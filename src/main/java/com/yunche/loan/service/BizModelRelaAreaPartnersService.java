@@ -16,8 +16,12 @@ public interface BizModelRelaAreaPartnersService {
 
     ResultBean<Void> update(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
+    ResultBean<Void> batchUpdate(List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList);
+
     ResultBean<Void> delete(Long bizId);
 
     ResultBean<List<BizModelRelaAreaPartnersDO>> getById(Long bizId);
+
+    ResultBean<BizModelRelaAreaPartnersDO> getByAllId(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
 }

@@ -40,73 +40,32 @@
       #{status,jdbcType=TINYINT}, now(), now(),
       #{feature,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
-    insert into biz_model
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="bizId != null">
-        biz_id,
-      </if>
-      <if test="title != null">
-        title,
-      </if>
-      <if test="description != null">
-        description,
-      </if>
-      <if test="scene != null">
-        scene,
-      </if>
-      <if test="custTarget != null">
-        cust_target,
-      </if>
-      <if test="carType != null">
-        car_type,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-      <if test="gmtCreate != null">
-        gmt_create,
-      </if>
-      <if test="gmtModify != null">
-        gmt_modify,
-      </if>
-      <if test="feature != null">
-        feature,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="bizId != null">
-        #{bizId,jdbcType=BIGINT},
-      </if>
-      <if test="title != null">
-        #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null">
-        #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="scene != null">
-        #{scene,jdbcType=VARCHAR},
-      </if>
-      <if test="custTarget != null">
-        #{custTarget,jdbcType=VARCHAR},
-      </if>
-      <if test="carType != null">
-        #{carType,jdbcType=TINYINT},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null">
-        #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null">
-        #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-      <if test="feature != null">
-        #{feature,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
+  <select id="selectByCondition" parameterType="com.yunche.loan.domain.QueryObj.BizModelQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from biz_model
+    where 1=1
+    <if test="scene != null">
+      AND
+      scene = #{scene,jdbcType=VARCHAR},
+    </if>
+    <if test="custTarget != null">
+      AND
+      cust_target = #{custTarget,jdbcType=VARCHAR},
+    </if>
+    <if test="carType != null">
+      AND
+      car_type = #{carType,jdbcType=TINYINT},
+    </if>
+    <if test="cascadeAreaIdList != null">
+      AND
+      area_id IN
+      <foreach item="item" index="index" collection="cascadeAreaIdList"
+               open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </select>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
     update biz_model
     <set>

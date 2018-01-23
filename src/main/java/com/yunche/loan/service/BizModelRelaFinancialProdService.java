@@ -16,6 +16,8 @@ public interface BizModelRelaFinancialProdService {
 
     ResultBean<Void> update(BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO);
 
+    ResultBean<Void> batchUpdate(List<BizModelRelaFinancialProdDO> bizModelRelaAreaDOList);
+
     ResultBean<Void> delete(Long bizId);
 
     ResultBean<List<BizModelRelaFinancialProdDO>> getById(Long bizId);

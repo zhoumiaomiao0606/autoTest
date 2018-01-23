@@ -22,6 +22,38 @@ public class AreaVO {
 
     private List<City> cityList = Lists.newArrayList();
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Byte getLevel() {
+        return level;
+    }
+
+    public void setLevel(Byte level) {
+        this.level = level;
+    }
+
+    public List<City> getCityList() {
+        return cityList;
+    }
+
+    public void setCityList(List<City> cityList) {
+        this.cityList = cityList;
+    }
+
     @Data
     public static class Prov {
 
@@ -32,6 +64,38 @@ public class AreaVO {
         private Byte level;
 
         private City city;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Byte getLevel() {
+            return level;
+        }
+
+        public void setLevel(Byte level) {
+            this.level = level;
+        }
+
+        public City getCity() {
+            return city;
+        }
+
+        public void setCity(City city) {
+            this.city = city;
+        }
     }
 
     @Data
@@ -42,6 +106,30 @@ public class AreaVO {
         private String name;
 
         private Byte level;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Byte getLevel() {
+            return level;
+        }
+
+        public void setLevel(Byte level) {
+            this.level = level;
+        }
     }
 
 }

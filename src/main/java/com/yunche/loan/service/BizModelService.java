@@ -19,7 +19,7 @@ public interface BizModelService {
 
     ResultBean<Void> delete(Long bizId);
 
-    ResultBean<FinancialProductDO> getById(Long bizId);
+    ResultBean<BizModelVO> getById(Long bizId);
 
-    ResultBean<List<FinancialProductDO>> getByCondition(BizModelQuery bizModelQuery);
+    ResultBean<List<BizModelVO>> getByCondition(BizModelQuery bizModelQuery);
 }

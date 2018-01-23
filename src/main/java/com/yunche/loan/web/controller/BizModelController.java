@@ -50,13 +50,13 @@ public class BizModelController {
     }
 
     @GetMapping("/getById")
-    public ResultBean<FinancialProductDO> getById(@RequestParam("id") Long prodId) {
-        logger.info(Arrays.asList("getById", JSON.toJSONString(prodId)).stream().collect(Collectors.joining("-")));
-        return bizModelService.getById(prodId);
+    public ResultBean<BizModelVO> getById(@RequestParam("id") Long bizId) {
+        logger.info(Arrays.asList("getById", JSON.toJSONString(bizId)).stream().collect(Collectors.joining("-")));
+        return bizModelService.getById(bizId);
     }
 
     @PostMapping(value = "/getByCondition", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<List<FinancialProductDO>> query(@RequestBody BizModelQuery query) {
+    public ResultBean<List<BizModelVO>> query(@RequestBody BizModelQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return bizModelService.getByCondition(query);
     }

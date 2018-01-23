@@ -77,6 +77,20 @@
         </if>
     </select>
 
+    <select id="selectByIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from base_area
+        where area_id IN
+        <foreach item="areaId" index="index" collection="areaIdList"
+                 open="(" separator="," close=")">
+            #{areaId}
+        </foreach>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from base_area
         where area_id = #{areaId,jdbcType=BIGINT}

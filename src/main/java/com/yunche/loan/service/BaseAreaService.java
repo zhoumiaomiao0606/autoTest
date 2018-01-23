@@ -16,6 +16,8 @@ public interface BaseAreaService {
 
     ResultBean<BaseAreaVO> getById(Long areaId);
 
+    ResultBean<List<BaseAreaVO>> getByIdList(List<Long> areaIdList);
+
     ResultBean<Long> create(BaseAreaDO baseAreaDO);
 
     ResultBean<Void> update(BaseAreaDO baseAreaBO);

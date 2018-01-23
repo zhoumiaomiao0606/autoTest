@@ -11,13 +11,19 @@
   <sql id="Base_Column_List">
     biz_id, area_id, group_id, gmt_create, gmt_modify
   </sql>
-  <select id="select" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO" resultMap="BaseResultMap">
+  <select id="query" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from biz_model_rela_area_partners
     where biz_id = #{bizId,jdbcType=BIGINT}
       and area_id = #{areaId,jdbcType=BIGINT}
       and group_id = #{groupId,jdbcType=BIGINT}
+  </select>
+  <select id="queryById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from biz_model_rela_area_partners
+    where biz_id = #{bizId,jdbcType=BIGINT}
   </select>
   <delete id="delete" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
     delete from biz_model_rela_area_partners

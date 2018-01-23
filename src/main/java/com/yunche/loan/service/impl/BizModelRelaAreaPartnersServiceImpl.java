@@ -6,6 +6,7 @@ import com.yunche.loan.dao.mapper.BizAreaRelaAreaDOMapper;
 import com.yunche.loan.dao.mapper.BizModelRelaAreaPartnersDOMapper;
 import com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
+import com.yunche.loan.domain.viewObj.FinancialProductVO;
 import com.yunche.loan.service.BizModelRelaAreaPartnersService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,20 @@ public class BizModelRelaAreaPartnersServiceImpl implements BizModelRelaAreaPart
 
     @Override
     public ResultBean<Void> update(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO) {
-        return null;
+        Preconditions.checkArgument(bizModelRelaAreaPartnersDO != null, "bizModelRelaAreaPartnersDO不能为空");
+        int count = bizModelRelaAreaPartnersDOMapper.update(bizModelRelaAreaPartnersDO);
+//        Preconditions.checkArgument(count > 1, "创建失败");
+        return ResultBean.ofSuccess(null, "更新成功");
+    }
+
+    @Override
+    public ResultBean<Void> batchUpdate(List<BizModelRelaAreaPartnersDO>  bizModelRelaAreaPartnersDOList) {
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(bizModelRelaAreaPartnersDOList), "bizModelRelaAreaPartnersDOList不能为空");
+        for (BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO : bizModelRelaAreaPartnersDOList) {
+            int count = bizModelRelaAreaPartnersDOMapper.update(bizModelRelaAreaPartnersDO);
+//            Preconditions.checkArgument(count > 1, "创建失败");
+        }
+        return ResultBean.ofSuccess(null, "更新成功");
     }
 
     @Override
@@ -53,6 +67,21 @@ public class BizModelRelaAreaPartnersServiceImpl implements BizModelRelaAreaPart
 
     @Override
     public ResultBean<List<BizModelRelaAreaPartnersDO>> getById(Long bizId) {
-        return null;
+        Preconditions.checkNotNull(bizId, "bizId");
+
+        List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = bizModelRelaAreaPartnersDOMapper.queryById(bizId);
+        Preconditions.checkNotNull(bizModelRelaAreaPartnersDOList, "bizModelRelaAreaPartnersDOList，数据不存在.");
+
+        return ResultBean.ofSuccess(bizModelRelaAreaPartnersDOList);
+    }
+
+    @Override
+    public ResultBean<BizModelRelaAreaPartnersDO> getByAllId(BizModelRelaAreaPartnersDO paramDO) {
+        Preconditions.checkNotNull(paramDO, "bizModelRelaAreaPartnersDO");
+
+        BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = bizModelRelaAreaPartnersDOMapper.query(paramDO);
+        Preconditions.checkNotNull(bizModelRelaAreaPartnersDO, "bizModelRelaAreaPartnersDO，数据不存在.");
+
+        return ResultBean.ofSuccess(bizModelRelaAreaPartnersDO);
     }
 }

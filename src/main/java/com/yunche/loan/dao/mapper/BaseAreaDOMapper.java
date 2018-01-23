@@ -17,6 +17,8 @@ public interface BaseAreaDOMapper {
 
     BaseAreaDO selectByPrimaryKey(@Param("areaId") Long areaId, @Param("status") Byte status);
 
+    List<BaseAreaDO> selectByIdList(@Param("areaIdList")List<Long> areaIdList, @Param("status") Byte status);
+
     int updateByPrimaryKeySelective(BaseAreaDO record);
 
     int updateByPrimaryKey(BaseAreaDO record);

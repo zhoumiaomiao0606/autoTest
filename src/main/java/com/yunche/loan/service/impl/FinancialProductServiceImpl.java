@@ -121,7 +121,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
             list.add(financialQuery.getAreaId());
             financialQuery.setCascadeAreaIdList(list);
         }
-        if (financialQuery.getAreaId() == 100000000000L){   // 全国区域
+        if (financialQuery.getAreaId() != null && financialQuery.getAreaId() == 100000000000L){   // 全国区域
             financialQuery.setCascadeAreaIdList(null);
         }
         financialQuery.setAreaId(null);

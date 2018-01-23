@@ -42,7 +42,20 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
 
     @Override
     public ResultBean<Void> update(BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO) {
-        return null;
+        Preconditions.checkArgument(bizModelRelaFinancialProdDO != null, "bizModelRelaFinancialProdDO不能为空");
+        int count = bizModelRelaFinancialProdDOMapper.update(bizModelRelaFinancialProdDO);
+//        Preconditions.checkArgument(count > 1, "创建失败");
+        return ResultBean.ofSuccess(null, "更新成功");
+    }
+
+    @Override
+    public ResultBean<Void> batchUpdate(List<BizModelRelaFinancialProdDO> bizModelRelaAreaDOList) {
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(bizModelRelaAreaDOList), "bizModelRelaAreaDOList不能为空");
+        for (BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO : bizModelRelaAreaDOList) {
+            int count = bizModelRelaFinancialProdDOMapper.update(bizModelRelaFinancialProdDO);
+//            Preconditions.checkArgument(count > 1, "创建失败");
+        }
+        return ResultBean.ofSuccess(null, "更新成功");
     }
 
     @Override
@@ -52,6 +65,11 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
 
     @Override
     public ResultBean<List<BizModelRelaFinancialProdDO>> getById(Long bizId) {
-        return null;
+        Preconditions.checkNotNull(bizId, "bizId");
+
+        List<BizModelRelaFinancialProdDO> bizModelRelaFinancialProdDOList = bizModelRelaFinancialProdDOMapper.queryById(bizId);
+        Preconditions.checkNotNull(bizModelRelaFinancialProdDOList, "bizModelRelaFinancialProdDOList，数据不存在.");
+
+        return ResultBean.ofSuccess(bizModelRelaFinancialProdDOList);
     }
 }

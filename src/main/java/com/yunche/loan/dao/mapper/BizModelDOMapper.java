@@ -1,7 +1,10 @@
 package com.yunche.loan.dao.mapper;
 
+import com.yunche.loan.domain.QueryObj.BizModelQuery;
 import com.yunche.loan.domain.dataObj.BizModelDO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 @Mapper
 public interface BizModelDOMapper {
@@ -16,4 +19,6 @@ public interface BizModelDOMapper {
     int updateByPrimaryKeySelective(BizModelDO record);
 
     int updateByPrimaryKey(BizModelDO record);
+
+    List<BizModelDO> selectByCondition(BizModelQuery bizModelQuery);
 }

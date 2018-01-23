@@ -11,9 +11,29 @@ public class BizModelRegionVO {
 
     private String prov;
 
+    private Long provId;
+
     private String city;
 
+    private Long cityId;
+
     private List<UserGroupVO> userGroupVOList = Lists.newArrayList();
+
+    public Long getProvId() {
+        return provId;
+    }
+
+    public void setProvId(Long provId) {
+        this.provId = provId;
+    }
+
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
 
     public Long getAreaId() {
         return areaId;

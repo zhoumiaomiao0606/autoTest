@@ -3,13 +3,17 @@ package com.yunche.loan.dao.mapper;
 import com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface BizModelRelaAreaPartnersDOMapper {
     int delete(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
     int insert(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
-    BizModelRelaAreaPartnersDO query(Long bizId, Long areaId, Long groupId);
+    BizModelRelaAreaPartnersDO query(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
+
+    List<BizModelRelaAreaPartnersDO> queryById(Long bizId);
 
     int update(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 }

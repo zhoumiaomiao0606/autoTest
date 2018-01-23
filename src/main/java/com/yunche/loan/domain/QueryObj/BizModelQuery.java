@@ -9,21 +9,23 @@ import java.util.List;
  */
 @Data
 public class BizModelQuery extends BaseQuery {
-    private String bankName;
+    private String scene;
 
-    private Integer bizType;
+    private String custTarget;
 
-    private String categorySuperior;
-
-    private String categoryJunior;
-
-    private String rate;
+    private Integer carType;
 
     private Long areaId;
 
     private String prov;
 
     private String city;
+
+    private Long prodId;
+
+    private String partnerName;
+
+    private String partnerPhone;
 
     private List<Long> cascadeAreaIdList;
 
@@ -51,44 +53,28 @@ public class BizModelQuery extends BaseQuery {
         this.cascadeAreaIdList = cascadeAreaIdList;
     }
 
-    public String getBankName() {
-        return bankName;
+    public String getScene() {
+        return scene;
     }
 
-    public void setBankName(String bankName) {
-        this.bankName = bankName;
+    public void setScene(String scene) {
+        this.scene = scene;
     }
 
-    public Integer getBizType() {
-        return bizType;
+    public String getCustTarget() {
+        return custTarget;
     }
 
-    public void setBizType(Integer bizType) {
-        this.bizType = bizType;
+    public void setCustTarget(String custTarget) {
+        this.custTarget = custTarget;
     }
 
-    public String getCategorySuperior() {
-        return categorySuperior;
+    public Integer getCarType() {
+        return carType;
     }
 
-    public void setCategorySuperior(String categorySuperior) {
-        this.categorySuperior = categorySuperior;
-    }
-
-    public String getCategoryJunior() {
-        return categoryJunior;
-    }
-
-    public void setCategoryJunior(String categoryJunior) {
-        this.categoryJunior = categoryJunior;
-    }
-
-    public String getRate() {
-        return rate;
-    }
-
-    public void setRate(String rate) {
-        this.rate = rate;
+    public void setCarType(Integer carType) {
+        this.carType = carType;
     }
 
     public Long getAreaId() {
@@ -97,5 +83,29 @@ public class BizModelQuery extends BaseQuery {
 
     public void setAreaId(Long areaId) {
         this.areaId = areaId;
+    }
+
+    public Long getProdId() {
+        return prodId;
+    }
+
+    public void setProdId(Long prodId) {
+        this.prodId = prodId;
+    }
+
+    public String getPartnerName() {
+        return partnerName;
+    }
+
+    public void setPartnerName(String partnerName) {
+        this.partnerName = partnerName;
+    }
+
+    public String getPartnerPhone() {
+        return partnerPhone;
+    }
+
+    public void setPartnerPhone(String partnerPhone) {
+        this.partnerPhone = partnerPhone;
     }
 }
