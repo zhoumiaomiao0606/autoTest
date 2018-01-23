@@ -14,9 +14,29 @@ public class UserGroupDO {
 
     private String info;
 
+    private Byte status;
+
+    private String feature;
+
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
+
+    public String getFeature() {
+        return feature;
+    }
+
+    public void setFeature(String feature) {
+        this.feature = feature;
+    }
 
     public Long getId() {
         return id;
@@ -65,4 +85,5 @@ public class UserGroupDO {
     public void setGmtModify(Date gmtModify) {
         this.gmtModify = gmtModify;
     }
+
 }

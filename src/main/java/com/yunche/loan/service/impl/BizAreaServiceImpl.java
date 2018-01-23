@@ -1,6 +1,8 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.BaseAreaDOMapper;
@@ -21,10 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_PROV;
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
  * @author liuzhe
@@ -50,7 +54,7 @@ public class BizAreaServiceImpl implements BizAreaService {
         Preconditions.checkNotNull(bizAreaParam.getEmployeeId(), "部门负责人不能为空");
 
         // 名称已存在校验
-        List<String> nameList = bizAreaDOMapper.getAllName();
+        List<String> nameList = bizAreaDOMapper.getAllName(VALID_STATUS);
         Preconditions.checkArgument(!nameList.contains(bizAreaParam.getName().trim()), "名称已存在");
 
         // insert
@@ -97,7 +101,7 @@ public class BizAreaServiceImpl implements BizAreaService {
     public ResultBean<BizAreaVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id);
+        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id, VALID_STATUS);
         Preconditions.checkNotNull(bizAreaDO, "id有误，数据不存在.");
 
         BizAreaVO bizAreaVO = new BizAreaVO();
@@ -145,7 +149,7 @@ public class BizAreaServiceImpl implements BizAreaService {
                 .map(e -> {
 
                     // 关联的区域
-                    BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e.getAreaId());
+                    BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e.getAreaId(), VALID_STATUS);
                     if (null != baseAreaDO) {
 
                         AreaVO.Prov province = new AreaVO.Prov();
@@ -163,7 +167,7 @@ public class BizAreaServiceImpl implements BizAreaService {
                             province.setCity(city);
 
                             // 补充省
-                            BaseAreaDO parentBaseAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId());
+                            BaseAreaDO parentBaseAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), VALID_STATUS);
                             if (null != parentBaseAreaDO) {
                                 province.setId(parentBaseAreaDO.getAreaId());
                                 province.setName(parentBaseAreaDO.getAreaName());
@@ -204,12 +208,29 @@ public class BizAreaServiceImpl implements BizAreaService {
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
+    @Override
+    public ResultBean<List<BizAreaVO.BizArea>> listAll() {
+
+        List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getAll(VALID_STATUS);
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "无有效业务区域数据");
+
+        // parentId - DOS
+        ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap = getParentIdDOSMapping(bizAreaDOS);
+
+        // 分级递归解析
+        List<BizAreaVO.BizArea> bizAreaList = parseLevelByLevel(parentIdDOMap);
+
+        return ResultBean.ofSuccess(bizAreaList);
+    }
+
+
     /**
      * insert
      *
      * @param bizAreaDO
      * @param bizAreaParam
      */
+
     private void insert(BizAreaDO bizAreaDO, BizAreaParam bizAreaParam) {
         BeanUtils.copyProperties(bizAreaParam, bizAreaDO);
         // level
@@ -217,10 +238,12 @@ public class BizAreaServiceImpl implements BizAreaService {
         if (null == parentId) {
             bizAreaDO.setLevel(1);
         } else {
-            BizAreaDO parentBizAreaDO = bizAreaDOMapper.selectByPrimaryKey(parentId);
+            BizAreaDO parentBizAreaDO = bizAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             Preconditions.checkNotNull(parentBizAreaDO, "上一级区域不存在");
             bizAreaDO.setLevel(parentBizAreaDO.getLevel() + 1);
         }
+        // status
+        bizAreaDO.setStatus(VALID_STATUS);
         // date
         bizAreaDO.setGmtCreate(new Date());
         bizAreaDO.setGmtModify(new Date());
@@ -291,7 +314,7 @@ public class BizAreaServiceImpl implements BizAreaService {
      * @param parentId
      */
     private void checkHasChilds(Long parentId) {
-        List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getByParentId(parentId);
+        List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getByParentId(parentId, VALID_STATUS);
         Preconditions.checkArgument(CollectionUtils.isEmpty(bizAreaDOS), "请先删除所有下级区域");
     }
 
@@ -311,6 +334,91 @@ public class BizAreaServiceImpl implements BizAreaService {
             head.setEmployeeId(employeeDO.getId());
             head.setEmployeeName(employeeDO.getName());
             bizAreaVO.setHead(head);
+        }
+    }
+
+    /**
+     * parentId - DOS 映射
+     *
+     * @param bizAreaDOS
+     * @return
+     */
+    private ConcurrentMap<Long, List<BizAreaDO>> getParentIdDOSMapping(List<BizAreaDO> bizAreaDOS) {
+        ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap = Maps.newConcurrentMap();
+
+        bizAreaDOS.parallelStream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    Long parentId = e.getParentId();
+                    // 为null,用-1标记
+                    parentId = null == parentId ? -1L : parentId;
+                    if (!parentIdDOMap.containsKey(parentId)) {
+                        parentIdDOMap.put(parentId, Lists.newArrayList(e));
+                    } else {
+                        parentIdDOMap.get(parentId).add(e);
+                    }
+
+                });
+
+        return parentIdDOMap;
+    }
+
+    /**
+     * 分级递归解析
+     *
+     * @param parentIdDOMap
+     * @return
+     */
+    private List<BizAreaVO.BizArea> parseLevelByLevel(ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap) {
+        if (!CollectionUtils.isEmpty(parentIdDOMap)) {
+            List<BizAreaDO> parentBizAreaDOS = parentIdDOMap.get(-1L);
+            if (!CollectionUtils.isEmpty(parentBizAreaDOS)) {
+                List<BizAreaVO.BizArea> bizAreaList = parentBizAreaDOS.stream()
+                        .map(p -> {
+                            BizAreaVO.BizArea parent = new BizAreaVO.BizArea();
+                            BeanUtils.copyProperties(p, parent);
+
+                            // 递归填充子列表
+                            fillChilds(p.getId(), parentIdDOMap, parent);
+                            return parent;
+                        })
+                        .collect(Collectors.toList());
+
+                return bizAreaList;
+
+            }
+        }
+
+        return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * 递归填充子列表
+     *
+     * @param parentId
+     * @param parentIdDOMap
+     * @param parent
+     */
+    private void fillChilds(Long parentId, ConcurrentMap<Long, List<BizAreaDO>> parentIdDOMap, BizAreaVO.BizArea parent) {
+        List<BizAreaDO> childBizAreaDOS = parentIdDOMap.get(parentId);
+        if (!CollectionUtils.isEmpty(childBizAreaDOS)) {
+            childBizAreaDOS.stream()
+                    .forEach(c -> {
+
+                        BizAreaVO.BizArea child = new BizAreaVO.BizArea();
+                        BeanUtils.copyProperties(c, child);
+
+                        List<BizAreaVO.BizArea> childList = parent.getChildList();
+                        if (CollectionUtils.isEmpty(childList)) {
+                            parent.setChildList(Lists.newArrayList(child));
+                        } else {
+                            parent.getChildList().add(child);
+                        }
+
+                        fillChilds(c.getId(), parentIdDOMap, child);
+
+                    });
         }
     }
 

@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.yunche.loan.config.constant.AreaConst.*;
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
  * @author liuzhe
@@ -35,7 +36,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     public ResultBean<BaseAreaVO> getById(Long areaId) {
         Preconditions.checkNotNull(areaId, "areaId不能为空");
 
-        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId);
+        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
         Preconditions.checkNotNull(baseAreaDO, "areaId有误，数据不存在.");
 
         BaseAreaVO baseAreaVO = new BaseAreaVO();
@@ -48,6 +49,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     public ResultBean<Long> create(BaseAreaDO baseAreaDO) {
         Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getAreaId(), "areaId不能为空");
 
+        baseAreaDO.setStatus(VALID_STATUS);
         baseAreaDO.setGmtCreate(new Date());
         baseAreaDO.setGmtModify(new Date());
         int count = baseAreaDOMapper.insert(baseAreaDO);
@@ -86,7 +88,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     public ResultBean<List<AreaVO>> list() {
 
         // 获取所有行政区
-        List<BaseAreaDO> allArea = baseAreaDOMapper.getAll();
+        List<BaseAreaDO> allArea = baseAreaDOMapper.getAll(VALID_STATUS);
         if (CollectionUtils.isEmpty(allArea)) {
             return ResultBean.ofSuccess(null);
         }

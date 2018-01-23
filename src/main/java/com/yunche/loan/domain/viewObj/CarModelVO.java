@@ -19,6 +19,10 @@ public class CarModelVO {
      */
     private Long brandId;
     /**
+     * 所属品牌名称
+     */
+    private String brandName;
+    /**
      * 车型简称 eg：A3
      */
     private String name;

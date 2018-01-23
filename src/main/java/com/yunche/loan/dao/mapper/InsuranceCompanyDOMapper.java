@@ -3,6 +3,7 @@ package com.yunche.loan.dao.mapper;
 import com.yunche.loan.domain.dataObj.InsuranceCompanyDO;
 import com.yunche.loan.domain.QueryObj.InsuranceCompanyQuery;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface InsuranceCompanyDOMapper {
 
     int insertSelective(InsuranceCompanyDO record);
 
-    InsuranceCompanyDO selectByPrimaryKey(Long id);
+    InsuranceCompanyDO selectByPrimaryKey(@Param("id") Long id, @Param("status") Byte status);
 
     int updateByPrimaryKeySelective(InsuranceCompanyDO record);
 

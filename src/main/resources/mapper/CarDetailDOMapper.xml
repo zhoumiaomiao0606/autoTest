@@ -18,10 +18,13 @@
         <result column="fuel_type" jdbcType="TINYINT" property="fuelType"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, model_id, name, initial, logo, price, sale_price, seat_num, door_num, year_type,
-        production_state, sale_state, size_type, fuel_type, gmt_create, gmt_modify
+        production_state, sale_state, size_type, fuel_type, gmt_create, gmt_modify, feature,
+        status
     </sql>
 
     <sql id="Base_Query_List">
@@ -64,6 +67,9 @@
         <if test="fuelType != null">
             AND fuel_type = #{fuelType}
         </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </sql>
 
     <!--  count -->
@@ -91,11 +97,17 @@
     <!--getAllId-->
     <select id="getAllId" resultType="java.lang.Integer">
         select id from car_detail
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
     </select>
 
     <!--getAllIdAndModelId-->
     <select id="getAllIdAndModelId" resultMap="BaseResultMap">
         select id,model_id from car_detail
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
     </select>
 
     <!--getDetailListByModelId-->
@@ -104,6 +116,9 @@
         <include refid="Base_Column_List"/>
         from car_detail
         where model_id = #{modelId,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
 
     <!-- batchInsert -->
@@ -135,11 +150,16 @@
         <include refid="Base_Column_List"/>
         from car_detail
         where id = #{id,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from car_detail
         where id = #{id,jdbcType=BIGINT}
     </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CarDetailDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
@@ -150,15 +170,22 @@
         sale_price, seat_num, door_num,
         year_type, production_state, sale_state,
         size_type, fuel_type, gmt_create,
-        gmt_modify)
+        gmt_modify, feature, status
+        )
         values (#{id,jdbcType=BIGINT}, #{modelId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
         #{initial,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR},
         #{salePrice,jdbcType=VARCHAR}, #{seatNum,jdbcType=INTEGER}, #{doorNum,jdbcType=INTEGER},
         #{yearType,jdbcType=VARCHAR}, #{productionState,jdbcType=TINYINT}, #{saleState,jdbcType=TINYINT},
         #{sizeType,jdbcType=VARCHAR}, #{fuelType,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP})
+        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}
+        )
     </insert>
+
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CarDetailDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into car_detail
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -208,6 +235,12 @@
             </if>
             <if test="gmtModify != null">
                 gmt_modify,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+            <if test="status != null">
+                status,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -259,8 +292,15 @@
             <if test="gmtModify != null">
                 #{gmtModify,jdbcType=TIMESTAMP},
             </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.CarDetailDO">
         update car_detail
         <set>
@@ -309,9 +349,16 @@
             <if test="gmtModify != null">
                 gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
             </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.CarDetailDO">
         update car_detail
         set model_id = #{modelId,jdbcType=BIGINT},
@@ -328,7 +375,10 @@
         size_type = #{sizeType,jdbcType=VARCHAR},
         fuel_type = #{fuelType,jdbcType=TINYINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
+
 </mapper>

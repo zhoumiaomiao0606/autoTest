@@ -1,10 +1,10 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.domain.QueryObj.PaddingCompanyQuery;
 import com.yunche.loan.domain.viewObj.PaddingCompanyVO;
 import com.yunche.loan.dao.mapper.PaddingCompanyDOMapper;
 import com.yunche.loan.domain.dataObj.PaddingCompanyDO;
-import com.yunche.loan.domain.QueryObj.BaseAreaQuery;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.service.PaddingCompanyService;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
  * @author liuzhe
@@ -72,7 +74,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     public ResultBean<PaddingCompanyVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        PaddingCompanyDO paddingCompanyDO = paddingCompanyDOMapper.selectByPrimaryKey(id);
+        PaddingCompanyDO paddingCompanyDO = paddingCompanyDOMapper.selectByPrimaryKey(id, VALID_STATUS);
         Preconditions.checkNotNull(paddingCompanyDO, "id有误，数据不存在");
 
         PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();
@@ -82,7 +84,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     }
 
     @Override
-    public ResultBean<List<PaddingCompanyVO>> query(BaseAreaQuery query) {
+    public ResultBean<List<PaddingCompanyVO>> query(PaddingCompanyQuery query) {
         int totalNum = paddingCompanyDOMapper.count(query);
         Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
 

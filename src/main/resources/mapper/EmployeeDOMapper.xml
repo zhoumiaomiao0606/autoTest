@@ -15,21 +15,25 @@
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, name, id_card, phone, email, ding_ding, department_id, leader, title, entry_date, 
-    gmt_create, gmt_modify, feature
-  </sql>
+        id, name, id_card, phone, email, ding_ding, department_id, leader, title, entry_date,
+        gmt_create, gmt_modify, feature, status
+    </sql>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from employee
         where id = #{id,jdbcType=BIGINT}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from employee
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+        delete from employee
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
@@ -39,13 +43,14 @@
         phone, email, ding_ding,
         department_id, leader, title,
         entry_date, gmt_create, gmt_modify,
-        feature)
+        feature, status)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{idCard,jdbcType=CHAR},
         #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{dingDing,jdbcType=VARCHAR},
         #{departmentId,jdbcType=VARCHAR}, #{leader,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR},
         #{entryDate,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{feature,jdbcType=VARCHAR})
+        #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
     </insert>
+
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
@@ -92,6 +97,9 @@
             <if test="feature != null">
                 feature,
             </if>
+            <if test="status != null">
+                status,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -132,6 +140,9 @@
             </if>
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
@@ -174,23 +185,29 @@
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
-    update employee
-    set name = #{name,jdbcType=VARCHAR},
-      id_card = #{idCard,jdbcType=CHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      ding_ding = #{dingDing,jdbcType=VARCHAR},
-      department_id = #{departmentId,jdbcType=VARCHAR},
-      leader = #{leader,jdbcType=VARCHAR},
-      title = #{title,jdbcType=VARCHAR},
-      entry_date = #{entryDate,jdbcType=TIMESTAMP},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      feature = #{feature,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update employee
+        set name = #{name,jdbcType=VARCHAR},
+        id_card = #{idCard,jdbcType=CHAR},
+        phone = #{phone,jdbcType=VARCHAR},
+        email = #{email,jdbcType=VARCHAR},
+        ding_ding = #{dingDing,jdbcType=VARCHAR},
+        department_id = #{departmentId,jdbcType=VARCHAR},
+        leader = #{leader,jdbcType=VARCHAR},
+        title = #{title,jdbcType=VARCHAR},
+        entry_date = #{entryDate,jdbcType=TIMESTAMP},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
 </mapper>

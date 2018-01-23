@@ -2,8 +2,10 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.dao.mapper.CarBrandDOMapper;
 import com.yunche.loan.dao.mapper.CarModelDOMapper;
 import com.yunche.loan.domain.QueryObj.CarModelQuery;
+import com.yunche.loan.domain.dataObj.CarBrandDO;
 import com.yunche.loan.domain.dataObj.CarModelDO;
 import com.yunche.loan.domain.viewObj.CarModelVO;
 import com.yunche.loan.service.CarModelService;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 /**
  * @author liuzhe
  * @date 2018/1/12
@@ -27,6 +31,8 @@ public class CarModelServiceImpl implements CarModelService {
 
     @Autowired
     private CarModelDOMapper carModelDOMapper;
+    @Autowired
+    private CarBrandDOMapper carBrandDOMapper;
 
 
     @Override
@@ -35,7 +41,7 @@ public class CarModelServiceImpl implements CarModelService {
         Preconditions.checkArgument(StringUtils.isNotBlank(carModelDO.getFullName()), "车系名称不能为空");
 
         // name校验
-        List<String> modelNameList = carModelDOMapper.getNameListByBrandId(carModelDO.getBrandId());
+        List<String> modelNameList = carModelDOMapper.getNameListByBrandId(carModelDO.getBrandId(), VALID_STATUS);
         Preconditions.checkArgument(!modelNameList.contains(carModelDO.getFullName().trim()), "当前品牌下，此车系名称已存在");
 
         carModelDO.setGmtCreate(new Date());
@@ -71,11 +77,20 @@ public class CarModelServiceImpl implements CarModelService {
     public ResultBean<CarModelVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(id);
+        CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(id, VALID_STATUS);
         Preconditions.checkNotNull(carModelDO, "id有误，数据不存在.");
 
         CarModelVO carModelVO = new CarModelVO();
         BeanUtils.copyProperties(carModelDO, carModelVO);
+
+        // 补充品牌名称
+        Long brandId = carModelVO.getBrandId();
+        if (null != brandId) {
+            CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(brandId, VALID_STATUS);
+            if (null != carBrandDO) {
+                carModelVO.setBrandName(carBrandDO.getName());
+            }
+        }
 
         return ResultBean.ofSuccess(carModelVO);
     }

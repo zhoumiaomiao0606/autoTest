@@ -2,6 +2,7 @@ package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.dataObj.CarBrandDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface CarBrandDOMapper {
 
     int insertSelective(CarBrandDO record);
 
-    CarBrandDO selectByPrimaryKey(Long id);
+    CarBrandDO selectByPrimaryKey(@Param("id") Long id, @Param("status") Byte status);
 
     int updateByPrimaryKeySelective(CarBrandDO record);
 
@@ -21,9 +22,9 @@ public interface CarBrandDOMapper {
 
     int batchInsert(List<CarBrandDO> carBrandDOS);
 
-    List<Integer> getAllId();
+    List<Integer> getAllId(@Param("status") Byte status);
 
-    List<CarBrandDO> getAll();
+    List<CarBrandDO> getAll(@Param("status") Byte status);
 
-    List<String> getAllName();
+    List<String> getAllName(@Param("status") Byte status);
 }

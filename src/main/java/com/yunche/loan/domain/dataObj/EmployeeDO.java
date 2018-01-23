@@ -30,5 +30,7 @@ public class EmployeeDO {
 
     private Date gmtModify;
 
+    private Byte status;
+
     private String feature;
 }

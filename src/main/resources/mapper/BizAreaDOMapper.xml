@@ -20,6 +20,7 @@
     <sql id="Blob_Column_List">
         info
     </sql>
+
     <sql id="Base_Query_List">
         <if test="name != null and name != '' ">
             AND name LIKE CONCAT('%',#{name},'%')
@@ -32,6 +33,9 @@
         </if>
         <if test="level != null">
             AND level = #{level}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
         </if>
     </sql>
 
@@ -59,26 +63,45 @@
         limit #{startRow}, #{pageSize}
     </select>
 
+    <!--getAll-->
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_area
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
+    </select>
+
     <!--getAllName-->
     <select id="getAllName" resultType="java.lang.String">
         select name from biz_area
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
     </select>
 
     <!--getByParentId-->
-    <select id="getByParentId" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    <select id="getByParentId" resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>
         from biz_area
         where parentId = #{parentId,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>
         ,
         <include refid="Blob_Column_List"/>
         from biz_area
         where id = #{id,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">

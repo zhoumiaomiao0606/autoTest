@@ -44,7 +44,7 @@
 
     <!-- batchInsert -->
     <insert id="batchInsert" parameterType="java.util.List">
-        insert into car_model (biz_area_id, area_id, gmt_create, gmt_modify)
+        insert into biz_area_rela_area (biz_area_id, area_id, gmt_create, gmt_modify)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.bizAreaId,jdbcType=BIGINT}, #{item.areaId,jdbcType=BIGINT}, #{item.gmtCreate,jdbcType=TIMESTAMP},
@@ -69,16 +69,18 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDOKey">
-    delete from biz_area_rela_area
-    where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
-      and area_id = #{areaId,jdbcType=BIGINT}
-  </delete>
+        delete from biz_area_rela_area
+        where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
+        and area_id = #{areaId,jdbcType=BIGINT}
+    </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDO">
-    insert into biz_area_rela_area (biz_area_id, area_id, gmt_create, 
-      gmt_modify)
-    values (#{bizAreaId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
-      #{gmtModify,jdbcType=TIMESTAMP})
-  </insert>
+        insert into biz_area_rela_area (biz_area_id, area_id, gmt_create,
+        gmt_modify)
+        values (#{bizAreaId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP})
+    </insert>
+
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDO">
         insert into biz_area_rela_area
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -110,6 +112,7 @@
             </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDO">
         update biz_area_rela_area
         <set>
@@ -123,11 +126,13 @@
         where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
         and area_id = #{areaId,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDO">
-    update biz_area_rela_area
-    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
-      and area_id = #{areaId,jdbcType=BIGINT}
-  </update>
+        update biz_area_rela_area
+        set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
+        and area_id = #{areaId,jdbcType=BIGINT}
+    </update>
+
 </mapper>

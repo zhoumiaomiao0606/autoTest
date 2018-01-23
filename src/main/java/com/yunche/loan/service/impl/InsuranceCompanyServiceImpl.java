@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 /**
  * @author liuzhe
  * @date 2018/1/15
@@ -73,7 +75,7 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
     public ResultBean<InsuranceCompanyVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        InsuranceCompanyDO insuranceCompanyDO = insuranceCompanyDOMapper.selectByPrimaryKey(id);
+        InsuranceCompanyDO insuranceCompanyDO = insuranceCompanyDOMapper.selectByPrimaryKey(id, VALID_STATUS);
         Preconditions.checkNotNull(insuranceCompanyDO, "id有误，数据不存在");
 
         InsuranceCompanyVO insuranceCompanyVO = new InsuranceCompanyVO();

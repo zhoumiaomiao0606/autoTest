@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 /**
  * @author liuzhe
  * @date 2018/1/12
@@ -45,14 +47,14 @@ public class CarDetailServiceImpl implements CarDetailService {
 
     @Override
     public List<Long> getAllId() {
-        List<Long> allId = carDetailDOMapper.getAllId();
+        List<Long> allId = carDetailDOMapper.getAllId(VALID_STATUS);
         return allId;
     }
 
     @Override
     public ResultBean<CarDetailVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
-        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(id);
+        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(id, VALID_STATUS);
         Preconditions.checkNotNull(carDetailDO, "id有误，数据不存在.");
 
         CarDetailVO carDetailVO = new CarDetailVO();
@@ -63,7 +65,7 @@ public class CarDetailServiceImpl implements CarDetailService {
 
     @Override
     public List<CarDetailDO> getAllIdAndModelId() {
-        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getAllIdAndModelId();
+        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getAllIdAndModelId(VALID_STATUS);
         return carDetailDOS;
     }
 
@@ -71,6 +73,7 @@ public class CarDetailServiceImpl implements CarDetailService {
     public ResultBean<Long> create(CarDetailDO carDetailDO) {
         Preconditions.checkArgument(null != carDetailDO && null != carDetailDO.getModelId(), "车系不能为空");
 
+        carDetailDO.setStatus(VALID_STATUS);
         carDetailDO.setGmtCreate(new Date());
         carDetailDO.setGmtModify(new Date());
         int count = carDetailDOMapper.insertSelective(carDetailDO);

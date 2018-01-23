@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 /**
  * @author liuzhe
  * @date 2018/1/12
@@ -33,9 +35,10 @@ public class CarBrandServiceImpl implements CarBrandService {
         Preconditions.checkArgument(null != carBrandDO && StringUtils.isNotBlank(carBrandDO.getName()), "品牌名称不能为空");
 
         // 品牌名已存在校验
-        List<String> brandNameList = carBrandDOMapper.getAllName();
+        List<String> brandNameList = carBrandDOMapper.getAllName(VALID_STATUS);
         Preconditions.checkArgument(!brandNameList.contains(carBrandDO.getName().trim()), "品牌名已存在");
 
+        carBrandDO.setStatus(VALID_STATUS);
         carBrandDO.setGmtCreate(new Date());
         carBrandDO.setGmtModify(new Date());
         int count = carBrandDOMapper.insertSelective(carBrandDO);
@@ -69,7 +72,7 @@ public class CarBrandServiceImpl implements CarBrandService {
     public ResultBean<CarBrandVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(id);
+        CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(id, VALID_STATUS);
         Preconditions.checkNotNull(carBrandDO, "id有误，数据不存在.");
 
         CarBrandVO carBrandVO = new CarBrandVO();
@@ -81,7 +84,7 @@ public class CarBrandServiceImpl implements CarBrandService {
     @Override
     public ResultBean<List<CarBrandVO>> listAll() {
 
-        List<CarBrandDO> carBrandDOS = carBrandDOMapper.getAll();
+        List<CarBrandDO> carBrandDOS = carBrandDOMapper.getAll(VALID_STATUS);
 
         List<CarBrandVO> carBrandVOS = carBrandDOS.stream()
                 .filter(Objects::nonNull)

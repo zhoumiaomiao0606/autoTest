@@ -111,4 +111,15 @@ public class BizAreaController {
         return bizAreaService.listCity(query);
     }
 
+    /**
+     * 获取所有业务区域对象
+     *
+     * @return
+     */
+    @GetMapping(value = "/list")
+    public ResultBean<List<BizAreaVO.BizArea>> listAll() {
+        logger.info("list");
+        return bizAreaService.listAll();
+    }
+
 }
