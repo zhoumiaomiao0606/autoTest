@@ -12,7 +12,9 @@ import java.util.List;
 @Data
 public class BizAreaQuery extends BaseQuery {
 
-    private Long id;
+    /**
+     *
+     */
     private Long areaId;
 
     private String name;
@@ -28,9 +30,4 @@ public class BizAreaQuery extends BaseQuery {
      * 等级
      */
     private Integer level;
-
-    private Date gmtCreate;
-
-    private Date gmtModify;
-
 }

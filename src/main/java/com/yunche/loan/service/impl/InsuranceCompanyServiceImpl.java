@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -88,10 +89,14 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
     @Override
     public ResultBean<List<InsuranceCompanyVO>> query(InsuranceCompanyQuery query) {
         int totalNum = insuranceCompanyDOMapper.count(query);
-        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
+        if (totalNum < 1) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<InsuranceCompanyDO> insuranceCompanyDOS = insuranceCompanyDOMapper.query(query);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(insuranceCompanyDOS), "无符合条件的数据");
+        if (CollectionUtils.isEmpty(insuranceCompanyDOS)) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<InsuranceCompanyVO> insuranceCompanyVOS = insuranceCompanyDOS.stream()
                 .filter(Objects::nonNull)

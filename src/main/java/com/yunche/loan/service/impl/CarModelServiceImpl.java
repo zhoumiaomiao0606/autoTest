@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -98,11 +99,15 @@ public class CarModelServiceImpl implements CarModelService {
     @Override
     public ResultBean<List<CarModelVO>> query(CarModelQuery query) {
         int totalNum = carModelDOMapper.count(query);
-        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
+        if (totalNum < 1) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         // 根据座位数、生产方式、品牌查询
         List<CarModelDO> carModelDOS = carModelDOMapper.query(query);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(carModelDOS), "无符合条件的数据");
+        if (CollectionUtils.isEmpty(carModelDOS)) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<CarModelVO> carModelVOS = carModelDOS.stream()
                 .filter(Objects::nonNull)

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +36,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
 
     @Autowired
     PaddingCompanyDOMapper paddingCompanyDOMapper;
+
 
     @Override
     public ResultBean<Long> create(PaddingCompanyDO paddingCompanyDO) {
@@ -86,10 +88,14 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     @Override
     public ResultBean<List<PaddingCompanyVO>> query(PaddingCompanyQuery query) {
         int totalNum = paddingCompanyDOMapper.count(query);
-        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
+        if (totalNum < 1) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<PaddingCompanyDO> paddingCompanyDOS = paddingCompanyDOMapper.query(query);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(paddingCompanyDOS), "无符合条件的数据");
+        if (CollectionUtils.isEmpty(paddingCompanyDOS)) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<PaddingCompanyVO> paddingCompanyVOS = paddingCompanyDOS.stream()
                 .filter(Objects::nonNull)

@@ -26,4 +26,6 @@ public interface DepartmentDOMapper {
     List<DepartmentDO> query(DepartmentQuery query);
 
     List<DepartmentDO> getAll(@Param("status") Byte status);
+
+    List<String> getAllName(@Param("status") Byte status);
 }

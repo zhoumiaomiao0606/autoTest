@@ -3,6 +3,7 @@ package com.yunche.loan.domain.viewObj;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,17 +16,21 @@ import java.util.List;
  */
 @Data
 public class LevelVO {
-
-    private Long id;
-
-    private String name;
+    /**
+     * id
+     */
+    private Long value;
+    /**
+     * name
+     */
+    private String label;
 
     private boolean hasChild;
 
-    private List<LevelVO> childList;
+    private List<LevelVO> children;
 
     public boolean getHasChild() {
-        if (CollectionUtils.isEmpty(childList)) {
+        if (CollectionUtils.isEmpty(children)) {
             return false;
         } else {
             return true;

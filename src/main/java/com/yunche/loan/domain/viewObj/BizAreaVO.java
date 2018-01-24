@@ -1,10 +1,8 @@
 package com.yunche.loan.domain.viewObj;
 
 import lombok.Data;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author liuzhe
@@ -15,25 +13,39 @@ public class BizAreaVO {
     private Long id;
 
     private String name;
-
-    private Long parentId;
-
+    /**
+     * 父业务区域
+     */
+    private Parent parent;
+    /**
+     * 部门负责人
+     */
+    private Leader leader;
+    /**
+     * 业务区域等级
+     * 根据父level自动+1计算
+     */
     private Integer level;
-
+    /**
+     * 说明
+     */
     private String info;
 
     private Date gmtCreate;
 
     private Date gmtModify;
-    /**
-     * 部门负责人
-     */
-    private Leader leader;
+
+
+    @Data
+    public static class Parent {
+        private Long id;
+        private String name;
+    }
 
     @Data
     public static class Leader {
-        private Long employeeId;
-        private String employeeName;
+        private Long id;
+        private String name;
     }
 
     /**
@@ -43,5 +55,4 @@ public class BizAreaVO {
     public static class Level extends LevelVO {
         private Integer level;
     }
-
 }

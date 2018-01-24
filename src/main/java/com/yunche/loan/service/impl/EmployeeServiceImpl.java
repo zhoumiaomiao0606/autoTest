@@ -89,10 +89,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ResultBean<List<EmployeeVO>> query(EmployeeQuery query) {
         int totalNum = employeeDOMapper.count(query);
-        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
+        if (totalNum < 1) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<EmployeeDO> employeeDOS = employeeDOMapper.query(query);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(employeeDOS), "无符合条件的数据");
+        if (CollectionUtils.isEmpty(employeeDOS)) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<EmployeeVO> employeeVOS = employeeDOS.stream()
                 .filter(Objects::nonNull)
@@ -162,7 +166,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 List<LevelVO> topLevelList = parentDOS.stream()
                         .map(p -> {
                             LevelVO parent = new LevelVO();
-                            BeanUtils.copyProperties(p, parent);
+                            parent.setValue(p.getId());
+                            parent.setLabel(p.getName());
 
                             // 递归填充子列表
                             fillChilds(parent, parentIdDOMap);
@@ -183,7 +188,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param parentIdDOMap
      */
     private void fillChilds(LevelVO parent, Map<Long, List<EmployeeDO>> parentIdDOMap) {
-        List<EmployeeDO> childs = parentIdDOMap.get(parent.getId());
+        List<EmployeeDO> childs = parentIdDOMap.get(parent.getValue());
         if (CollectionUtils.isEmpty(childs)) {
             return;
         }
@@ -191,13 +196,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         childs.stream()
                 .forEach(c -> {
                     LevelVO child = new LevelVO();
-                    BeanUtils.copyProperties(c, child);
+                    child.setValue(c.getId());
+                    child.setLabel(c.getName());
 
-                    List<LevelVO> childList = parent.getChildList();
+                    List<LevelVO> childList = parent.getChildren();
                     if (CollectionUtils.isEmpty(childList)) {
-                        parent.setChildList(Lists.newArrayList(child));
+                        parent.setChildren(Lists.newArrayList(child));
                     } else {
-                        parent.getChildList().add(child);
+                        parent.getChildren().add(child);
                     }
 
                     // 递归填充子列表

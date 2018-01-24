@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.dao.mapper.PartnerDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.PartnerDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="department_id" jdbcType="BIGINT" property="departmentId"/>
+        <result column="leader_name" jdbcType="VARCHAR" property="leaderName"/>
+        <result column="leader_mobile" jdbcType="VARCHAR" property="leaderMobile"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
+        <result column="fax" jdbcType="VARCHAR" property="fax"/>
+        <result column="area_id" jdbcType="BIGINT" property="areaId"/>
+        <result column="biz_type" jdbcType="TINYINT" property="bizType"/>
+        <result column="sign" jdbcType="TINYINT" property="sign"/>
+        <result column="cooperation_scale" jdbcType="VARCHAR" property="cooperationScale"/>
+        <result column="exec_rate" jdbcType="DECIMAL" property="execRate"/>
+        <result column="cooperation_insurance_company" jdbcType="VARCHAR" property="cooperationInsuranceCompany"/>
+        <result column="open_bank" jdbcType="VARCHAR" property="openBank"/>
+        <result column="account_name" jdbcType="VARCHAR" property="accountName"/>
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
+        <result column="open_bank_two" jdbcType="VARCHAR" property="openBankTwo"/>
+        <result column="account_name_two" jdbcType="VARCHAR" property="accountNameTwo"/>
+        <result column="bank_account_two" jdbcType="VARCHAR" property="bankAccountTwo"/>
+        <result column="pay_month" jdbcType="TINYINT" property="payMonth"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, name, department_id, leader_name, leader_mobile, tel, fax, area_id, biz_type, 
+    sign, cooperation_scale, exec_rate, cooperation_insurance_company, open_bank, account_name, 
+    bank_account, open_bank_two, account_name_two, bank_account_two, pay_month, gmt_create, 
+    gmt_modify, status, feature
+  </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from partner
+        where id = #{id,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from partner
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.PartnerDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into partner (id, name, department_id,
+        leader_name, leader_mobile, tel,
+        fax, area_id, biz_type,
+        sign, cooperation_scale, exec_rate,
+        cooperation_insurance_company, open_bank,
+        account_name, bank_account, open_bank_two,
+        account_name_two, bank_account_two, pay_month,
+        gmt_create, gmt_modify, status,
+        feature)
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT},
+        #{leaderName,jdbcType=VARCHAR}, #{leaderMobile,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR},
+        #{fax,jdbcType=VARCHAR}, #{areaId,jdbcType=BIGINT}, #{bizType,jdbcType=TINYINT},
+        #{sign,jdbcType=TINYINT}, #{cooperationScale,jdbcType=VARCHAR}, #{execRate,jdbcType=DECIMAL},
+        #{cooperationInsuranceCompany,jdbcType=VARCHAR}, #{openBank,jdbcType=VARCHAR},
+        #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{openBankTwo,jdbcType=VARCHAR},
+        #{accountNameTwo,jdbcType=VARCHAR}, #{bankAccountTwo,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT},
+        #{feature,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.PartnerDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into partner
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="departmentId != null">
+                department_id,
+            </if>
+            <if test="leaderName != null">
+                leader_name,
+            </if>
+            <if test="leaderMobile != null">
+                leader_mobile,
+            </if>
+            <if test="tel != null">
+                tel,
+            </if>
+            <if test="fax != null">
+                fax,
+            </if>
+            <if test="areaId != null">
+                area_id,
+            </if>
+            <if test="bizType != null">
+                biz_type,
+            </if>
+            <if test="sign != null">
+                sign,
+            </if>
+            <if test="cooperationScale != null">
+                cooperation_scale,
+            </if>
+            <if test="execRate != null">
+                exec_rate,
+            </if>
+            <if test="cooperationInsuranceCompany != null">
+                cooperation_insurance_company,
+            </if>
+            <if test="openBank != null">
+                open_bank,
+            </if>
+            <if test="accountName != null">
+                account_name,
+            </if>
+            <if test="bankAccount != null">
+                bank_account,
+            </if>
+            <if test="openBankTwo != null">
+                open_bank_two,
+            </if>
+            <if test="accountNameTwo != null">
+                account_name_two,
+            </if>
+            <if test="bankAccountTwo != null">
+                bank_account_two,
+            </if>
+            <if test="payMonth != null">
+                pay_month,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentId != null">
+                #{departmentId,jdbcType=BIGINT},
+            </if>
+            <if test="leaderName != null">
+                #{leaderName,jdbcType=VARCHAR},
+            </if>
+            <if test="leaderMobile != null">
+                #{leaderMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null">
+                #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="fax != null">
+                #{fax,jdbcType=VARCHAR},
+            </if>
+            <if test="areaId != null">
+                #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="bizType != null">
+                #{bizType,jdbcType=TINYINT},
+            </if>
+            <if test="sign != null">
+                #{sign,jdbcType=TINYINT},
+            </if>
+            <if test="cooperationScale != null">
+                #{cooperationScale,jdbcType=VARCHAR},
+            </if>
+            <if test="execRate != null">
+                #{execRate,jdbcType=DECIMAL},
+            </if>
+            <if test="cooperationInsuranceCompany != null">
+                #{cooperationInsuranceCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="openBank != null">
+                #{openBank,jdbcType=VARCHAR},
+            </if>
+            <if test="accountName != null">
+                #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="openBankTwo != null">
+                #{openBankTwo,jdbcType=VARCHAR},
+            </if>
+            <if test="accountNameTwo != null">
+                #{accountNameTwo,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccountTwo != null">
+                #{bankAccountTwo,jdbcType=VARCHAR},
+            </if>
+            <if test="payMonth != null">
+                #{payMonth,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.PartnerDO">
+        update partner
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentId != null">
+                department_id = #{departmentId,jdbcType=BIGINT},
+            </if>
+            <if test="leaderName != null">
+                leader_name = #{leaderName,jdbcType=VARCHAR},
+            </if>
+            <if test="leaderMobile != null">
+                leader_mobile = #{leaderMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null">
+                tel = #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="fax != null">
+                fax = #{fax,jdbcType=VARCHAR},
+            </if>
+            <if test="areaId != null">
+                area_id = #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="bizType != null">
+                biz_type = #{bizType,jdbcType=TINYINT},
+            </if>
+            <if test="sign != null">
+                sign = #{sign,jdbcType=TINYINT},
+            </if>
+            <if test="cooperationScale != null">
+                cooperation_scale = #{cooperationScale,jdbcType=VARCHAR},
+            </if>
+            <if test="execRate != null">
+                exec_rate = #{execRate,jdbcType=DECIMAL},
+            </if>
+            <if test="cooperationInsuranceCompany != null">
+                cooperation_insurance_company = #{cooperationInsuranceCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="openBank != null">
+                open_bank = #{openBank,jdbcType=VARCHAR},
+            </if>
+            <if test="accountName != null">
+                account_name = #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                bank_account = #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="openBankTwo != null">
+                open_bank_two = #{openBankTwo,jdbcType=VARCHAR},
+            </if>
+            <if test="accountNameTwo != null">
+                account_name_two = #{accountNameTwo,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccountTwo != null">
+                bank_account_two = #{bankAccountTwo,jdbcType=VARCHAR},
+            </if>
+            <if test="payMonth != null">
+                pay_month = #{payMonth,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.PartnerDO">
+    update partner
+    set name = #{name,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=BIGINT},
+      leader_name = #{leaderName,jdbcType=VARCHAR},
+      leader_mobile = #{leaderMobile,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      fax = #{fax,jdbcType=VARCHAR},
+      area_id = #{areaId,jdbcType=BIGINT},
+      biz_type = #{bizType,jdbcType=TINYINT},
+      sign = #{sign,jdbcType=TINYINT},
+      cooperation_scale = #{cooperationScale,jdbcType=VARCHAR},
+      exec_rate = #{execRate,jdbcType=DECIMAL},
+      cooperation_insurance_company = #{cooperationInsuranceCompany,jdbcType=VARCHAR},
+      open_bank = #{openBank,jdbcType=VARCHAR},
+      account_name = #{accountName,jdbcType=VARCHAR},
+      bank_account = #{bankAccount,jdbcType=VARCHAR},
+      open_bank_two = #{openBankTwo,jdbcType=VARCHAR},
+      account_name_two = #{accountNameTwo,jdbcType=VARCHAR},
+      bank_account_two = #{bankAccountTwo,jdbcType=VARCHAR},
+      pay_month = #{payMonth,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      feature = #{feature,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

@@ -6,23 +6,45 @@ import java.util.Date;
 
 @Data
 public class UserGroupVO {
+
     private Long id;
 
     private String name;
 
-    public Long getId() {
-        return id;
+    private String info;
+    /**
+     * 部门
+     */
+    private Department department;
+    /**
+     * 城市
+     */
+    private Area area;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
+
+    private Byte status;
+
+    @Data
+    public static class Department {
+        private Long id;
+        private String name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    @Data
+    public static class Area {
+        private Long id;
+        private String name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * 用户组关联的用户(员工)列表
+     */
+    @Data
+    public static class RelaEmployeeVO {
+        private Long id;
+        private String name;
     }
 }

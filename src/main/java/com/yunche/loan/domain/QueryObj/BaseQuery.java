@@ -16,7 +16,10 @@ public class BaseQuery {
      * 单页最大记录数
      */
     private static final Integer PAGE_SIZE_MAX = 50;
-
+    /**
+     * 主键ID
+     */
+    private Long id;
     /**
      * 当前页数  默认值：1
      */
@@ -25,12 +28,10 @@ public class BaseQuery {
      * 页面大小  默认值：10
      */
     private Integer pageSize = 10;
-
     /**
      * 状态（0：有效; 1：无效;）  默认值：0
      */
     private Byte status = VALID_STATUS;
-
     /**
      * 创建开始时间
      */
@@ -48,18 +49,26 @@ public class BaseQuery {
      */
     private Date gmtModifyEnd;
 
-
+    /**
+     * 分页开始行号
+     *
+     * @return
+     */
     public Integer getStartRow() {
         Integer startRow = (pageIndex - 1) * pageSize;
         return startRow;
     }
 
+    /**
+     * 页面大小最大为：PAGE_SIZE_MAX
+     *
+     * @return
+     */
     public Integer getPageSize() {
         if (pageSize > PAGE_SIZE_MAX) {
             return PAGE_SIZE_MAX;
         }
         return pageSize;
     }
-
 }
 

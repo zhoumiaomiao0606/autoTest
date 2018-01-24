@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -31,25 +32,6 @@ public class CarDetailServiceImpl implements CarDetailService {
     @Autowired
     private CarDetailDOMapper carDetailDOMapper;
 
-    @Override
-    public Integer batchInsert(List<CarDetailDO> carSeriesDOS) {
-        int count = carDetailDOMapper.batchInsert(carSeriesDOS);
-        Preconditions.checkArgument(count > 0, "批量插入失败");
-        return count;
-    }
-
-    @Override
-    public Integer insert(CarDetailDO carDetailDO) {
-        int count = carDetailDOMapper.insert(carDetailDO);
-        Preconditions.checkArgument(count > 0, "插入失败");
-        return count;
-    }
-
-    @Override
-    public List<Long> getAllId() {
-        List<Long> allId = carDetailDOMapper.getAllId(VALID_STATUS);
-        return allId;
-    }
 
     @Override
     public ResultBean<CarDetailVO> getById(Long id) {
@@ -61,12 +43,6 @@ public class CarDetailServiceImpl implements CarDetailService {
         BeanUtils.copyProperties(carDetailDO, carDetailVO);
 
         return ResultBean.ofSuccess(carDetailVO);
-    }
-
-    @Override
-    public List<CarDetailDO> getAllIdAndModelId() {
-        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getAllIdAndModelId(VALID_STATUS);
-        return carDetailDOS;
     }
 
     @Override
@@ -106,10 +82,14 @@ public class CarDetailServiceImpl implements CarDetailService {
     @Override
     public ResultBean<List<CarDetailVO>> query(CarDetailQuery query) {
         int totalNum = carDetailDOMapper.count(query);
-        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
+        if (totalNum < 1) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<CarDetailDO> carDetailDOS = carDetailDOMapper.query(query);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(carDetailDOS), "无符合条件的数据");
+        if (CollectionUtils.isEmpty(carDetailDOS)) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<CarDetailVO> carDetailVOS = carDetailDOS.stream()
                 .filter(Objects::nonNull)

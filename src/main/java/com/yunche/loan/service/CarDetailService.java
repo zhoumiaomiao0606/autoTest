@@ -13,20 +13,7 @@ import java.util.List;
  */
 public interface CarDetailService {
 
-    Integer batchInsert(List<CarDetailDO> carSeriesDOS);
-
-    Integer insert(CarDetailDO carDetailDO);
-
-    List<Long> getAllId();
-
     ResultBean<CarDetailVO> getById(Long id);
-
-    /**
-     * 获取所有的 detail_id（ID）--- model_id   仅获取这两个字段
-     *
-     * @return
-     */
-    List<CarDetailDO> getAllIdAndModelId();
 
     ResultBean<Long> create(CarDetailDO carDetailDO);
 

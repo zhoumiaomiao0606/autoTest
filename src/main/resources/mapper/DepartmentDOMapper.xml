@@ -80,6 +80,15 @@
         limit #{startRow}, #{pageSize}
     </select>
 
+    <!--getAllName-->
+    <select id="getAllName" resultType="java.lang.String">
+        select name
+        from department
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
+    </select>
+
     <!--getAll-->
     <select id="getAll" resultMap="BaseResultMap">
         select

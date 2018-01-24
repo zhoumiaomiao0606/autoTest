@@ -85,10 +85,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public ResultBean<List<DepartmentVO>> query(DepartmentQuery query) {
         int totalNum = departmentDOMapper.count(query);
-        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
+        if (totalNum < 1) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<DepartmentDO> departmentDOS = departmentDOMapper.query(query);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(departmentDOS), "无符合条件的数据");
+        if (CollectionUtils.isEmpty(departmentDOS)) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<DepartmentVO> departmentVOS = departmentDOS.stream()
                 .filter(Objects::nonNull)
@@ -159,7 +163,8 @@ public class DepartmentServiceImpl implements DepartmentService {
                 List<LevelVO> topLevelList = parentDOS.stream()
                         .map(p -> {
                             LevelVO parent = new LevelVO();
-                            BeanUtils.copyProperties(p, parent);
+                            parent.setValue(p.getId());
+                            parent.setLabel(p.getName());
 
                             // 递归填充子列表
                             fillChilds(parent, parentIdDOMap);
@@ -182,7 +187,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @param parentIdDOMap
      */
     private void fillChilds(LevelVO parent, Map<Long, List<DepartmentDO>> parentIdDOMap) {
-        List<DepartmentDO> childs = parentIdDOMap.get(parent.getId());
+        List<DepartmentDO> childs = parentIdDOMap.get(parent.getValue());
         if (CollectionUtils.isEmpty(childs)) {
             return;
         }
@@ -190,13 +195,14 @@ public class DepartmentServiceImpl implements DepartmentService {
         childs.stream()
                 .forEach(c -> {
                     LevelVO child = new LevelVO();
-                    BeanUtils.copyProperties(c, child);
+                    child.setValue(c.getId());
+                    child.setLabel(c.getName());
 
-                    List<LevelVO> childList = parent.getChildList();
+                    List<LevelVO> childList = parent.getChildren();
                     if (CollectionUtils.isEmpty(childList)) {
-                        parent.setChildList(Lists.newArrayList(child));
+                        parent.setChildren(Lists.newArrayList(child));
                     } else {
-                        parent.getChildList().add(child);
+                        parent.getChildren().add(child);
                     }
 
                     // 递归填充子列表
@@ -211,13 +217,18 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @return
      */
     private Long insertAndGetId(DepartmentParam departmentParam) {
+        List<String> nameList = departmentDOMapper.getAllName(VALID_STATUS);
+        Preconditions.checkArgument(!nameList.contains(departmentParam.getName()), "部门名称已存在");
+
         DepartmentDO departmentDO = new DepartmentDO();
         BeanUtils.copyProperties(departmentParam, departmentDO);
         departmentDO.setStatus(VALID_STATUS);
         departmentDO.setGmtCreate(new Date());
         departmentDO.setGmtModify(new Date());
+
         int count = departmentDOMapper.insertSelective(departmentDO);
         Preconditions.checkArgument(count > 0, "创建失败");
+
         return departmentDO.getId();
     }
 

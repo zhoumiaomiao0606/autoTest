@@ -27,8 +27,6 @@ public class EmployeeVO {
 
     private Long departmentId;
 
-    private Long leaderId;
-
     private String title;
 
     private Date entryDate;
@@ -40,4 +38,14 @@ public class EmployeeVO {
     private Byte status;
 
     private String feature;
+    /**
+     * 直接上级
+     */
+    private Leader leader;
+
+    @Data
+    public static class Leader {
+        private Long employeeId;
+        private Long employeeName;
+    }
 }

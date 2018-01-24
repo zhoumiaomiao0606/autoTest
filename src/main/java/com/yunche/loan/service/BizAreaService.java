@@ -2,10 +2,10 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.BizAreaQuery;
+import com.yunche.loan.domain.dataObj.BizAreaDO;
 import com.yunche.loan.domain.param.BizAreaParam;
 import com.yunche.loan.domain.viewObj.AreaVO;
 import com.yunche.loan.domain.viewObj.BizAreaVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
 public interface BizAreaService {
     ResultBean<Long> create(BizAreaParam bizAreaParam);
 
-    ResultBean<Void> update(BizAreaParam bizAreaParam);
+    ResultBean<Void> update(BizAreaDO bizAreaDO);
 
     ResultBean<Void> delete(Long id);
 
@@ -28,5 +28,5 @@ public interface BizAreaService {
 
     ResultBean<Void> deleteRelaArea(Long id, Long areaId);
 
-    ResultBean<List<LevelVO>> listAll();
+    ResultBean<List<BizAreaVO.Level>> listAll();
 }

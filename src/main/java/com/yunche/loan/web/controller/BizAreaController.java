@@ -3,10 +3,10 @@ package com.yunche.loan.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.BizAreaQuery;
+import com.yunche.loan.domain.dataObj.BizAreaDO;
 import com.yunche.loan.domain.param.BizAreaParam;
 import com.yunche.loan.domain.viewObj.AreaVO;
 import com.yunche.loan.domain.viewObj.BizAreaVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
 import com.yunche.loan.service.BizAreaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +48,9 @@ public class BizAreaController {
     }
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> update(@RequestBody BizAreaParam bizAreaParam) {
-        logger.info(Arrays.asList("update", JSON.toJSONString(bizAreaParam)).stream().collect(Collectors.joining("-")));
-        return bizAreaService.update(bizAreaParam);
+    public ResultBean<Void> update(@RequestBody BizAreaDO bizAreaDO) {
+        logger.info(Arrays.asList("update", JSON.toJSONString(bizAreaDO)).stream().collect(Collectors.joining("-")));
+        return bizAreaService.update(bizAreaDO);
     }
 
     @GetMapping(value = "/delete")
@@ -69,7 +69,7 @@ public class BizAreaController {
     @GetMapping(value = "/delete/relaArea")
     public ResultBean<Void> deleteRelaArea(@RequestParam("id") Long id,
                                            @RequestParam("areaId") Long areaId) {
-        logger.info(Arrays.asList("delete", JSON.toJSONString(id), JSON.toJSONString(areaId)).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("/delete/relaArea", JSON.toJSONString(id), JSON.toJSONString(areaId)).stream().collect(Collectors.joining("-")));
         return bizAreaService.deleteRelaArea(id, areaId);
     }
 
@@ -108,7 +108,7 @@ public class BizAreaController {
      */
     @PostMapping(value = "/listCity", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<AreaVO.Prov>> listCity(@RequestBody BizAreaQuery query) {
-        logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
+        logger.info(Arrays.asList("listCity", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return bizAreaService.listCity(query);
     }
 
@@ -118,9 +118,8 @@ public class BizAreaController {
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultBean<List<LevelVO>> listAll() {
+    public ResultBean<List<BizAreaVO.Level>> listAll() {
         logger.info("list");
         return bizAreaService.listAll();
     }
-
 }

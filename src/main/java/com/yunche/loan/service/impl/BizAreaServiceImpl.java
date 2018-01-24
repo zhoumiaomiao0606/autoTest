@@ -80,18 +80,13 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     @Override
-    public ResultBean<Void> update(BizAreaParam bizAreaParam) {
-        Preconditions.checkArgument(null != bizAreaParam && null != bizAreaParam.getId(), "id不能为空");
+    public ResultBean<Void> update(BizAreaDO bizAreaDO) {
+        Preconditions.checkArgument(null != bizAreaDO && null != bizAreaDO.getId(), "id不能为空");
 
         // update
-        BizAreaDO bizAreaDO = new BizAreaDO();
-        BeanUtils.copyProperties(bizAreaParam, bizAreaDO);
         bizAreaDO.setGmtModify(new Date());
         int count = bizAreaDOMapper.updateByPrimaryKeySelective(bizAreaDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
-
-        // TODO  编辑关联城市列表
-        updateRelaAreas(bizAreaParam.getId(), bizAreaParam.getAreaIdList());
 
         return ResultBean.ofSuccess(null, "编辑成功");
     }
@@ -106,7 +101,9 @@ public class BizAreaServiceImpl implements BizAreaService {
         BizAreaVO bizAreaVO = new BizAreaVO();
         BeanUtils.copyProperties(bizAreaDO, bizAreaVO);
 
-        // 补充大区负责人
+        // 补充上级业务区域
+        fillParent(bizAreaDO.getParentId(), bizAreaVO);
+        // 补充负责人
         fillLeader(bizAreaDO.getEmployeeId(), bizAreaVO);
 
         return ResultBean.ofSuccess(bizAreaVO);
@@ -115,10 +112,14 @@ public class BizAreaServiceImpl implements BizAreaService {
     @Override
     public ResultBean<List<BizAreaVO>> query(BizAreaQuery query) {
         int totalNum = bizAreaDOMapper.count(query);
-        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
+        if (totalNum < 1) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.query(query);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "无符合条件的数据");
+        if (CollectionUtils.isEmpty(bizAreaDOS)) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<BizAreaVO> bizAreaVOS = bizAreaDOS.stream()
                 .filter(Objects::nonNull)
@@ -208,7 +209,7 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     @Override
-    public ResultBean<List<LevelVO>> listAll() {
+    public ResultBean<List<BizAreaVO.Level>> listAll() {
 
         List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getAll(VALID_STATUS);
         Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "无有效业务区域数据");
@@ -217,7 +218,7 @@ public class BizAreaServiceImpl implements BizAreaService {
         Map<Long, List<BizAreaDO>> parentIdDOMap = getParentIdDOSMapping(bizAreaDOS);
 
         // 分级递归解析
-        List<LevelVO> topLevelList = parseLevelByLevel(parentIdDOMap);
+        List<BizAreaVO.Level> topLevelList = parseLevelByLevel(parentIdDOMap);
 
         return ResultBean.ofSuccess(topLevelList);
     }
@@ -304,17 +305,6 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     /**
-     * 编辑关联城市列表
-     *
-     * @param bizAreaId
-     * @param areaIdList
-     */
-    private void updateRelaAreas(Long bizAreaId, List<Long> areaIdList) {
-
-
-    }
-
-    /**
      * 校验是否存在子级区域
      *
      * @param parentId
@@ -325,21 +315,36 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     /**
-     * 补充大区负责人
+     * 补充上级业务区域
+     *
+     * @param parentId
+     * @param bizAreaVO
+     */
+    private void fillParent(Long parentId, BizAreaVO bizAreaVO) {
+        if (null != parentId) {
+            BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != bizAreaDO) {
+                BizAreaVO.Parent parent = new BizAreaVO.Parent();
+                BeanUtils.copyProperties(bizAreaDO, parent);
+                bizAreaVO.setParent(parent);
+            }
+        }
+    }
+
+    /**
+     * 补充负责人
      *
      * @param employeeId
      * @param bizAreaVO
      */
     private void fillLeader(Long employeeId, BizAreaVO bizAreaVO) {
-        if (null == employeeId) {
-            return;
-        }
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeId, VALID_STATUS);
-        if (null != employeeDO) {
-            BizAreaVO.Leader leader = new BizAreaVO.Leader();
-            leader.setEmployeeId(employeeDO.getId());
-            leader.setEmployeeName(employeeDO.getName());
-            bizAreaVO.setLeader(leader);
+        if (null != employeeId) {
+            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeId, VALID_STATUS);
+            if (null != employeeDO) {
+                BizAreaVO.Leader leader = new BizAreaVO.Leader();
+                BeanUtils.copyProperties(employeeDO, leader);
+                bizAreaVO.setLeader(leader);
+            }
         }
     }
 
@@ -379,14 +384,16 @@ public class BizAreaServiceImpl implements BizAreaService {
      * @param parentIdDOMap
      * @return
      */
-    private List<LevelVO> parseLevelByLevel(Map<Long, List<BizAreaDO>> parentIdDOMap) {
+    private List<BizAreaVO.Level> parseLevelByLevel(Map<Long, List<BizAreaDO>> parentIdDOMap) {
         if (!CollectionUtils.isEmpty(parentIdDOMap)) {
             List<BizAreaDO> parentBizAreaDOS = parentIdDOMap.get(-1L);
             if (!CollectionUtils.isEmpty(parentBizAreaDOS)) {
-                List<LevelVO> topLevelList = parentBizAreaDOS.stream()
+                List<BizAreaVO.Level> topLevelList = parentBizAreaDOS.stream()
                         .map(p -> {
-                            LevelVO parent = new LevelVO();
-                            BeanUtils.copyProperties(p, parent);
+                            BizAreaVO.Level parent = new BizAreaVO.Level();
+                            parent.setValue(p.getId());
+                            parent.setLabel(p.getName());
+                            parent.setLevel(p.getLevel());
 
                             // 递归填充子列表
                             fillChilds(parent, parentIdDOMap);
@@ -409,7 +416,7 @@ public class BizAreaServiceImpl implements BizAreaService {
      * @param parentIdDOMap
      */
     private void fillChilds(LevelVO parent, Map<Long, List<BizAreaDO>> parentIdDOMap) {
-        List<BizAreaDO> childs = parentIdDOMap.get(parent.getId());
+        List<BizAreaDO> childs = parentIdDOMap.get(parent.getValue());
         if (CollectionUtils.isEmpty(childs)) {
             return;
         }
@@ -417,13 +424,15 @@ public class BizAreaServiceImpl implements BizAreaService {
         childs.stream()
                 .forEach(c -> {
                     BizAreaVO.Level child = new BizAreaVO.Level();
-                    BeanUtils.copyProperties(c, child);
+                    child.setValue(c.getId());
+                    child.setLabel(c.getName());
+                    child.setLevel(c.getLevel());
 
-                    List<LevelVO> childList = parent.getChildList();
+                    List<LevelVO> childList = parent.getChildren();
                     if (CollectionUtils.isEmpty(childList)) {
-                        parent.setChildList(Lists.newArrayList(child));
+                        parent.setChildren(Lists.newArrayList(child));
                     } else {
-                        parent.getChildList().add(child);
+                        parent.getChildren().add(child);
                     }
 
                     // 递归填充子列表
