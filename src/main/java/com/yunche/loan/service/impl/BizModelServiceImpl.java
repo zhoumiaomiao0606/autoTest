@@ -119,14 +119,21 @@ public class BizModelServiceImpl implements BizModelService {
             bizModelRelaFinancialProdDO.setProdId(bizRelaFinancialProductVO.getProdId());
             bizModelRelaFinancialProdDOList.add(bizModelRelaFinancialProdDO);
         }
-        bizModelRelaFinancialProdService.batchInsert(bizModelRelaFinancialProdDOList);
+        bizModelRelaFinancialProdService.batchUpdate(bizModelRelaFinancialProdDOList);
 
-        return ResultBean.ofSuccess(null, "创建成功");
+        return ResultBean.ofSuccess(null, "修改成功");
     }
 
     @Override
     public ResultBean<Void> delete(Long bizId) {
-        return null;
+        Preconditions.checkNotNull(bizId, "bizId");
+
+        BizModelDO bizModelDO = bizModelDOMapper.selectByPrimaryKey(bizId);
+        Preconditions.checkNotNull(bizModelDO, "bizId，数据不存在.");
+
+        bizModelDO.setStatus(1);
+        long count = bizModelDOMapper.updateByPrimaryKeySelective(bizModelDO);
+        return ResultBean.ofSuccess(null, "删除成功");
     }
 
     @Override

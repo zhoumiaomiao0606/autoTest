@@ -47,15 +47,15 @@
     where 1=1
     <if test="scene != null">
       AND
-      scene = #{scene,jdbcType=VARCHAR},
+      scene = #{scene,jdbcType=VARCHAR}
     </if>
     <if test="custTarget != null">
       AND
-      cust_target = #{custTarget,jdbcType=VARCHAR},
+      cust_target = #{custTarget,jdbcType=VARCHAR}
     </if>
     <if test="carType != null">
       AND
-      car_type = #{carType,jdbcType=TINYINT},
+      car_type = #{carType,jdbcType=TINYINT}
     </if>
     <if test="cascadeAreaIdList != null">
       AND
@@ -86,9 +86,6 @@
       </if>
       <if test="status != null">
         status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null">
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       </if>
       <if test="gmtModify != null">
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
