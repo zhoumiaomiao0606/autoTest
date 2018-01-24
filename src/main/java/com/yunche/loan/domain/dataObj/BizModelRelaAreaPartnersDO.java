@@ -9,9 +9,29 @@ public class BizModelRelaAreaPartnersDO {
 
     private Long groupId;
 
+    private String prov;
+
+    private String city;
+
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public String getProv() {
+        return prov;
+    }
+
+    public void setProv(String prov) {
+        this.prov = prov;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public Long getBizId() {
         return bizId;

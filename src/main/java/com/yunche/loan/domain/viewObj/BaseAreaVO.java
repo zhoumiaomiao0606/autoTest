@@ -17,11 +17,21 @@ public class BaseAreaVO {
 
     private String areaName;
 
+    private String parentAreaName;
+
     private Byte level; // 地区等级(0:全国;1:省;2:市)
 
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public String getParentAreaName() {
+        return parentAreaName;
+    }
+
+    public void setParentAreaName(String parentAreaName) {
+        this.parentAreaName = parentAreaName;
+    }
 
     public Long getAreaId() {
         return areaId;

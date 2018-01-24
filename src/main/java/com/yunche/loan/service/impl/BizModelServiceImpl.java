@@ -38,6 +38,9 @@ public class BizModelServiceImpl implements BizModelService {
     @Autowired
     private BaseAreaService baseAreaService;
 
+    @Autowired
+    private FinancialProductService financialProductService;
+
     @Override
     public ResultBean<Void> insert(BizModelVO bizModelVO) {
         Preconditions.checkArgument(bizModelVO != null, "bizModelVO");
@@ -56,6 +59,8 @@ public class BizModelServiceImpl implements BizModelService {
                     bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
                     bizModelRelaAreaPartnersDO.setBizId(bizModelDO.getBizId());
                     bizModelRelaAreaPartnersDO.setGroupId(userGroupVO.getId());
+                    bizModelRelaAreaPartnersDO.setProv(bizModelRegionVO.getProv());
+                    bizModelRelaAreaPartnersDO.setCity(bizModelRegionVO.getCity());
                     bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
                 }
             } else {
@@ -99,6 +104,8 @@ public class BizModelServiceImpl implements BizModelService {
                     bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
                     bizModelRelaAreaPartnersDO.setBizId(bizModelDO.getBizId());
                     bizModelRelaAreaPartnersDO.setGroupId(userGroupVO.getId());
+                    bizModelRelaAreaPartnersDO.setProv(bizModelRegionVO.getProv());
+                    bizModelRelaAreaPartnersDO.setCity(bizModelRegionVO.getCity());
                     bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
                 }
             } else {
@@ -167,17 +174,19 @@ public class BizModelServiceImpl implements BizModelService {
                     Long provId = baseAreaVO.getParentAreaId();
                     Long cityId = baseAreaVO.getAreaId();
                     bizModelRegionVO.setProvId(provId);
+                    bizModelRegionVO.setProv(baseAreaVO.getParentAreaName());
                     bizModelRegionVO.setCityId(cityId);
+                    bizModelRegionVO.setCity(baseAreaVO.getAreaName());
                 }
                 if (baseAreaVO.getLevel() == 1 || baseAreaVO.getLevel() == 0) {
                     Long provId = baseAreaVO.getAreaId();
                     bizModelRegionVO.setProvId(provId);
+                    bizModelRegionVO.setProv(baseAreaVO.getAreaName());
                 }
 
                 List<Long> parterGroupIdList = areaWithPartnerMap.get(baseAreaVO.getAreaId());
                 List<UserGroupVO> userGroupVOList = Lists.newArrayList();
                 for (Long groupId : parterGroupIdList) {
-                    // TODO 根据groupId查询UserGroupDO详情
                     UserGroupVO userGroupVO = new UserGroupVO();
                     userGroupVO.setId(groupId);
                     userGroupVOList.add(userGroupVO);
@@ -190,8 +199,9 @@ public class BizModelServiceImpl implements BizModelService {
         List<BizModelRelaFinancialProdDO> bizModelRelaFinancialProdDOList = bizModelRelaFinancialProdService.getById(bizId).getData();
         List<BizRelaFinancialProductVO> financialProductDOList = Lists.newArrayList();
         for (BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO : bizModelRelaFinancialProdDOList) {
+            FinancialProductVO financialProductVO = financialProductService.getById(bizModelRelaFinancialProdDO.getProdId()).getData();
             BizRelaFinancialProductVO bizRelaFinancialProductVO = new BizRelaFinancialProductVO();
-            bizRelaFinancialProductVO.setProdId(bizModelRelaFinancialProdDO.getProdId());
+            BeanUtils.copyProperties(financialProductVO, bizRelaFinancialProductVO);
             financialProductDOList.add(bizRelaFinancialProductVO);
         }
         bizModelVO.setFinancialProductDOList(financialProductDOList);

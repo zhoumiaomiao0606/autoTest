@@ -5,6 +5,7 @@
         <id column="area_id" jdbcType="BIGINT" property="areaId"/>
         <result column="parent_area_id" jdbcType="BIGINT" property="parentAreaId"/>
         <result column="area_name" jdbcType="VARCHAR" property="areaName"/>
+        <result column="parent_area_name" jdbcType="VARCHAR" property="parentAreaName"/>
         <result column="level" jdbcType="TINYINT" property="level"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
@@ -12,7 +13,7 @@
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
     </resultMap>
     <sql id="Base_Column_List">
-        area_id, parent_area_id, area_name, level, gmt_create, gmt_modify, status, feature
+        area_id, parent_area_id, area_name, parent_area_name, level, gmt_create, gmt_modify, status, feature
     </sql>
 
     <sql id="Base_Query_List">
@@ -24,6 +25,9 @@
         </if>
         <if test="areaName != null and areaName != '' ">
             AND area_name LIKE CONCAT('%',#{areaName},'%')
+        </if>
+        <if test="parentAreaName != null and parentAreaName != '' ">
+            AND parent_area_name LIKE CONCAT('%',#{parentAreaName},'%')
         </if>
         <if test="level != null">
             AND level = #{level}
@@ -98,10 +102,10 @@
     </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BaseAreaDO">
-        insert into base_area (area_id, parent_area_id, area_name,
+        insert into base_area (area_id, parent_area_id, area_name, parent_area_name,
         level, gmt_create, gmt_modify,
         status, feature)
-        values (#{areaId,jdbcType=BIGINT}, #{parentAreaId,jdbcType=BIGINT}, #{areaName,jdbcType=VARCHAR},
+        values (#{areaId,jdbcType=BIGINT}, #{parentAreaId,jdbcType=BIGINT}, #{areaName,jdbcType=VARCHAR}, #{parentAreaName,jdbcType=VARCHAR},
         #{level,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
         #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR})
     </insert>
@@ -117,6 +121,9 @@
             </if>
             <if test="areaName != null">
                 area_name,
+            </if>
+            <if test="parentAreaName != null">
+                parent_area_name,
             </if>
             <if test="level != null">
                 level,
@@ -143,6 +150,9 @@
             </if>
             <if test="areaName != null">
                 #{areaName,jdbcType=VARCHAR},
+            </if>
+            <if test="parentAreaName != null">
+                #{parentAreaName,jdbcType=VARCHAR},
             </if>
             <if test="level != null">
                 #{level,jdbcType=TINYINT},
@@ -171,6 +181,9 @@
             <if test="areaName != null">
                 area_name = #{areaName,jdbcType=VARCHAR},
             </if>
+            <if test="parentAreaName != null">
+                parent_area_name = #{areaName,jdbcType=VARCHAR},
+            </if>
             <if test="level != null">
                 level = #{level,jdbcType=TINYINT},
             </if>
@@ -194,6 +207,7 @@
     update base_area
     set parent_area_id = #{parentAreaId,jdbcType=BIGINT},
       area_name = #{areaName,jdbcType=VARCHAR},
+      parent_area_name = #{parentAreaName,jdbcType=VARCHAR},
       level = #{level,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},

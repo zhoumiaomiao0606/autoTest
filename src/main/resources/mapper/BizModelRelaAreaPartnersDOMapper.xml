@@ -9,7 +9,7 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
-    biz_id, area_id, group_id, gmt_create, gmt_modify
+    biz_id, area_id, group_id, prov, city, gmt_create, gmt_modify
   </sql>
   <select id="query" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO" resultMap="BaseResultMap">
     select 
@@ -32,10 +32,10 @@
       and group_id = #{groupId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
-    insert into biz_model_rela_area_partners (biz_id, area_id, group_id, 
+    insert into biz_model_rela_area_partners (biz_id, area_id, group_id, prov, city,
       gmt_create, gmt_modify)
     values (#{bizId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT}, 
-      now(), now())
+      prov, city, now(), now())
   </insert>
   <update id="update" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
     update biz_model_rela_area_partners
