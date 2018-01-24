@@ -5,11 +5,11 @@
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="id_card" jdbcType="CHAR" property="idCard"/>
-        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
         <result column="email" jdbcType="VARCHAR" property="email"/>
         <result column="ding_ding" jdbcType="VARCHAR" property="dingDing"/>
-        <result column="department_id" jdbcType="VARCHAR" property="departmentId"/>
-        <result column="leader" jdbcType="VARCHAR" property="leader"/>
+        <result column="department_id" jdbcType="BIGINT" property="departmentId"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="entry_date" jdbcType="TIMESTAMP" property="entryDate"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
@@ -17,16 +17,98 @@
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
+
     <sql id="Base_Column_List">
-        id, name, id_card, phone, email, ding_ding, department_id, leader, title, entry_date,
+        id, name, id_card, mobile, email, ding_ding, department_id, parent_id, title, entry_date,
         gmt_create, gmt_modify, feature, status
     </sql>
+
+    <sql id="Base_Query_List">
+        <if test="name != null and name != '' ">
+            AND name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="idCard != null and idCard != '' ">
+            AND id_card = #{idCard}
+        </if>
+        <if test="mobile != null and mobile != '' ">
+            AND mobile = #{mobile}
+        </if>
+        <if test="dingDing != null and dingDing != '' ">
+            AND ding_ding = #{dingDing}
+        </if>
+        <if test="departmentId != null">
+            AND department_id = #{departmentId}
+        </if>
+        <if test="leaderId != null">
+            AND leader_id = #{leaderId}
+        </if>
+        <if test="title != null and title != '' ">
+            AND title = #{title}
+        </if>
+        <if test="entryDateStart != null">
+            <![CDATA[ AND entryDate >= #{entryDateStart} ]]>
+        </if>
+        <if test="entryDateEnd != null">
+            <![CDATA[ AND entryDate <= #{entryDateEnd} ]]>
+        </if>
+        <if test="gmtCreateStart != null">
+            <![CDATA[ AND gmt_create >= #{gmtCreateStart} ]]>
+        </if>
+        <if test="gmtCreateEnd != null">
+            <![CDATA[ AND gmt_create <= #{gmtCreateEnd} ]]>
+        </if>
+        <if test="gmtModifyStart != null">
+            <![CDATA[ AND gmt_modify >= #{gmtModifyStart} ]]>
+        </if>
+        <if test="gmtModifyEnd != null">
+            <![CDATA[ AND gmt_modify <= #{gmtModifyEnd} ]]>
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </sql>
+
+    <!--  count -->
+    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+            resultType="java.lang.Integer">
+        select COUNT(*)
+        from employee
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+    </select>
+
+    <!-- query -->
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from employee
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+        ORDER BY gmt_modify DESC
+        limit #{startRow}, #{pageSize}
+    </select>
+
+    <!--getAll-->
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from employee
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
+    </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from employee
         where id = #{id,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -40,13 +122,13 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into employee (id, name, id_card,
-        phone, email, ding_ding,
-        department_id, leader, title,
+        mobile, email, ding_ding,
+        department_id, parent_id, title,
         entry_date, gmt_create, gmt_modify,
         feature, status)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{idCard,jdbcType=CHAR},
-        #{phone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{dingDing,jdbcType=VARCHAR},
-        #{departmentId,jdbcType=VARCHAR}, #{leader,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR},
+        #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{dingDing,jdbcType=VARCHAR},
+        #{departmentId,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR},
         #{entryDate,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
         #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
     </insert>
@@ -67,8 +149,8 @@
             <if test="idCard != null">
                 id_card,
             </if>
-            <if test="phone != null">
-                phone,
+            <if test="mobile != null">
+                mobile,
             </if>
             <if test="email != null">
                 email,
@@ -79,8 +161,8 @@
             <if test="departmentId != null">
                 department_id,
             </if>
-            <if test="leader != null">
-                leader,
+            <if test="parentId != null">
+                parent_id,
             </if>
             <if test="title != null">
                 title,
@@ -111,8 +193,8 @@
             <if test="idCard != null">
                 #{idCard,jdbcType=CHAR},
             </if>
-            <if test="phone != null">
-                #{phone,jdbcType=VARCHAR},
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
             </if>
             <if test="email != null">
                 #{email,jdbcType=VARCHAR},
@@ -121,10 +203,10 @@
                 #{dingDing,jdbcType=VARCHAR},
             </if>
             <if test="departmentId != null">
-                #{departmentId,jdbcType=VARCHAR},
+                #{departmentId,jdbcType=BIGINT},
             </if>
-            <if test="leader != null">
-                #{leader,jdbcType=VARCHAR},
+            <if test="parentId != null">
+                #{parentId,jdbcType=BIGINT},
             </if>
             <if test="title != null">
                 #{title,jdbcType=VARCHAR},
@@ -146,6 +228,7 @@
             </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
         update employee
         <set>
@@ -155,8 +238,8 @@
             <if test="idCard != null">
                 id_card = #{idCard,jdbcType=CHAR},
             </if>
-            <if test="phone != null">
-                phone = #{phone,jdbcType=VARCHAR},
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
             </if>
             <if test="email != null">
                 email = #{email,jdbcType=VARCHAR},
@@ -165,10 +248,10 @@
                 ding_ding = #{dingDing,jdbcType=VARCHAR},
             </if>
             <if test="departmentId != null">
-                department_id = #{departmentId,jdbcType=VARCHAR},
+                department_id = #{departmentId,jdbcType=BIGINT},
             </if>
-            <if test="leader != null">
-                leader = #{leader,jdbcType=VARCHAR},
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=BIGINT},
             </if>
             <if test="title != null">
                 title = #{title,jdbcType=VARCHAR},
@@ -193,21 +276,21 @@
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
-        update employee
-        set name = #{name,jdbcType=VARCHAR},
-        id_card = #{idCard,jdbcType=CHAR},
-        phone = #{phone,jdbcType=VARCHAR},
-        email = #{email,jdbcType=VARCHAR},
-        ding_ding = #{dingDing,jdbcType=VARCHAR},
-        department_id = #{departmentId,jdbcType=VARCHAR},
-        leader = #{leader,jdbcType=VARCHAR},
-        title = #{title,jdbcType=VARCHAR},
-        entry_date = #{entryDate,jdbcType=TIMESTAMP},
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        feature = #{feature,jdbcType=VARCHAR},
-        status = #{status,jdbcType=TINYINT}
-        where id = #{id,jdbcType=BIGINT}
-    </update>
+    update employee
+    set name = #{name,jdbcType=VARCHAR},
+      id_card = #{idCard,jdbcType=CHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      ding_ding = #{dingDing,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=BIGINT},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      title = #{title,jdbcType=VARCHAR},
+      entry_date = #{entryDate,jdbcType=TIMESTAMP},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      feature = #{feature,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 
 </mapper>

@@ -1,11 +1,18 @@
-package com.yunche.loan.domain.dataObj;
+package com.yunche.loan.domain.viewObj;
 
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
+import java.util.List;
 
+/**
+ * @author liuzhe
+ * @date 2018/1/23
+ */
 @Data
-public class EmployeeDO {
+public class EmployeeVO {
+
     private Long id;
 
     private String name;
@@ -19,10 +26,8 @@ public class EmployeeDO {
     private String dingDing;
 
     private Long departmentId;
-    /**
-     * 直接主管ID
-     */
-    private Long parentId;
+
+    private Long leaderId;
 
     private String title;
 

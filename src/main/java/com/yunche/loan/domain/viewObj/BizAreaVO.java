@@ -28,34 +28,20 @@ public class BizAreaVO {
     /**
      * 部门负责人
      */
-    private Head head;
+    private Leader leader;
 
     @Data
-    public static class Head {
+    public static class Leader {
         private Long employeeId;
         private String employeeName;
     }
 
+    /**
+     * 级联对象
+     */
     @Data
-    public static class BizArea {
-
-        private Long id;
-
-        private String name;
-
+    public static class Level extends LevelVO {
         private Integer level;
-
-        private boolean hasChild;
-
-        private List<BizArea> childList;
-
-        public boolean getHasChild() {
-            if (CollectionUtils.isEmpty(childList)) {
-                return false;
-            } else {
-                return true;
-            }
-        }
     }
 
 }

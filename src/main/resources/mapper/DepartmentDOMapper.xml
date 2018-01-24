@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.dao.mapper.DepartmentDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.DepartmentDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <result column="employee_id" jdbcType="BIGINT" property="employeeId"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
+        <result column="fax" jdbcType="VARCHAR" property="fax"/>
+        <result column="area_id" jdbcType="BIGINT" property="areaId"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="open_bank" jdbcType="VARCHAR" property="openBank"/>
+        <result column="receive_unit" jdbcType="VARCHAR" property="receiveUnit"/>
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, name, parent_id, employee_id, tel, fax, area_id, address, open_bank, receive_unit,
+    bank_account, gmt_create, gmt_modify, feature, status
+  </sql>
+
+    <sql id="Base_Query_List">
+        <if test="name != null and name != '' ">
+            AND name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="parentId != null">
+            AND parent_id = #{parentId}
+        </if>
+        <if test="employeeId != null">
+            AND employee_id = #{employeeId}
+        </if>
+        <if test="tel != null and tel != '' ">
+            AND tel = #{tel}
+        </if>
+        <if test="fax != null and fax != '' ">
+            AND fax = #{fax}
+        </if>
+        <if test="areaId != null">
+            AND area_id = #{areaId}
+        </if>
+        <if test="openBank != null and openBank != '' ">
+            AND open_bank LIKE CONCAT('%',#{openBank},'%')
+        </if>
+        <if test="receiveUnit != null and receiveUnit != '' ">
+            AND receive_unit LIKE CONCAT('%',#{receiveUnit},'%')
+        </if>
+        <if test="bankAccount != null and bankAccount != '' ">
+            AND bank_account = #{bankAccount}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </sql>
+
+    <!--  count -->
+    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+            resultType="java.lang.Integer">
+        select COUNT(*)
+        from department
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+    </select>
+
+    <!-- query -->
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from department
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+        ORDER BY gmt_modify DESC
+        limit #{startRow}, #{pageSize}
+    </select>
+
+    <!--getAll-->
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from department
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from department
+        where id = #{id,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from department
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into department (id, name, parent_id,
+        employee_id, tel, fax,
+        area_id, address, open_bank,
+        receive_unit, bank_account, gmt_create,
+        gmt_modify, feature, status
+        )
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT},
+        #{employeeId,jdbcType=BIGINT}, #{tel,jdbcType=VARCHAR}, #{fax,jdbcType=VARCHAR},
+        #{areaId,jdbcType=BIGINT}, #{address,jdbcType=VARCHAR}, #{openBank,jdbcType=VARCHAR},
+        #{receiveUnit,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}
+        )
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into department
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="employeeId != null">
+                employee_id,
+            </if>
+            <if test="tel != null">
+                tel,
+            </if>
+            <if test="fax != null">
+                fax,
+            </if>
+            <if test="areaId != null">
+                area_id,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="openBank != null">
+                open_bank,
+            </if>
+            <if test="receiveUnit != null">
+                receive_unit,
+            </if>
+            <if test="bankAccount != null">
+                bank_account,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="employeeId != null">
+                #{employeeId,jdbcType=BIGINT},
+            </if>
+            <if test="tel != null">
+                #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="fax != null">
+                #{fax,jdbcType=VARCHAR},
+            </if>
+            <if test="areaId != null">
+                #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="openBank != null">
+                #{openBank,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveUnit != null">
+                #{receiveUnit,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
+        update department
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="employeeId != null">
+                employee_id = #{employeeId,jdbcType=BIGINT},
+            </if>
+            <if test="tel != null">
+                tel = #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="fax != null">
+                fax = #{fax,jdbcType=VARCHAR},
+            </if>
+            <if test="areaId != null">
+                area_id = #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="openBank != null">
+                open_bank = #{openBank,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveUnit != null">
+                receive_unit = #{receiveUnit,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                bank_account = #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
+    update department
+    set name = #{name,jdbcType=VARCHAR},
+    parent_id = #{parentId,jdbcType=BIGINT},
+    employee_id = #{employeeId,jdbcType=BIGINT},
+    tel = #{tel,jdbcType=VARCHAR},
+    fax = #{fax,jdbcType=VARCHAR},
+    area_id = #{areaId,jdbcType=BIGINT},
+    address = #{address,jdbcType=VARCHAR},
+    open_bank = #{openBank,jdbcType=VARCHAR},
+    receive_unit = #{receiveUnit,jdbcType=VARCHAR},
+    bank_account = #{bankAccount,jdbcType=VARCHAR},
+    gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+    gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+    feature = #{feature,jdbcType=VARCHAR},
+    status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

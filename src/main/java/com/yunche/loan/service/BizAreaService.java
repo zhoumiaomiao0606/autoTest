@@ -5,6 +5,7 @@ import com.yunche.loan.domain.QueryObj.BizAreaQuery;
 import com.yunche.loan.domain.param.BizAreaParam;
 import com.yunche.loan.domain.viewObj.AreaVO;
 import com.yunche.loan.domain.viewObj.BizAreaVO;
+import com.yunche.loan.domain.viewObj.LevelVO;
 
 import java.util.List;
 
@@ -27,5 +28,5 @@ public interface BizAreaService {
 
     ResultBean<Void> deleteRelaArea(Long id, Long areaId);
 
-    ResultBean<List<BizAreaVO.BizArea>> listAll();
+    ResultBean<List<LevelVO>> listAll();
 }

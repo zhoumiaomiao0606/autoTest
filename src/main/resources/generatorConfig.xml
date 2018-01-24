@@ -49,6 +49,7 @@
         <!-- 指定数据库表 -->
         <!-- schema即为数据库名 tableName为对应的数据库表 domainObjectName是要生成的实体类 enable*ByExample : 是否生成 example类   -->
 
+        <!--
 
         <table tableName="base_area" domainObjectName="BaseAreaDO"
                enableCountByExample="false" enableUpdateByExample="false"
@@ -65,7 +66,7 @@
         <table tableName="car_detail" domainObjectName="CarDetailDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
-        <!--
+
 
         <table tableName="financial_product" domainObjectName="FinancialProductDO"
                enableCountByExample="false" enableUpdateByExample="false"
@@ -87,7 +88,6 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
-        -->
 
         <table tableName="user_group_rela_area" domainObjectName="UserGroupRelaAreaDO"
                enableCountByExample="false" enableUpdateByExample="false"
@@ -115,6 +115,16 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
         <table tableName="insurance_company" domainObjectName="InsuranceCompanyDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="department" domainObjectName="DepartmentDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+        -->
+
+
+        <table tableName="employee" domainObjectName="EmployeeDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 

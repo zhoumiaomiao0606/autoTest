@@ -5,24 +5,28 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class BizAreaDO {
+public class DepartmentDO {
     private Long id;
 
     private String name;
-    /**
-     * 绑定的父级ID
-     */
-    private Long parentId;
-    /**
-     * 绑定的负责人ID
-     */
-    private Long employeeId;
-    /**
-     * 等级
-     */
-    private Integer level;
 
-    private String info;
+    private Long parentId;
+
+    private Long employeeId;
+
+    private String tel;
+
+    private String fax;
+
+    private Long areaId;
+
+    private String address;
+
+    private String openBank;
+
+    private String receiveUnit;
+
+    private String bankAccount;
 
     private Date gmtCreate;
 

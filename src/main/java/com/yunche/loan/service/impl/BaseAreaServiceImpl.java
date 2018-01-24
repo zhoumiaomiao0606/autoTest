@@ -13,6 +13,7 @@ import com.yunche.loan.service.BaseAreaService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.text.Collator;
@@ -27,6 +28,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  * @date 2018/1/12
  */
 @Service
+@Transactional
 public class BaseAreaServiceImpl implements BaseAreaService {
 
     @Autowired

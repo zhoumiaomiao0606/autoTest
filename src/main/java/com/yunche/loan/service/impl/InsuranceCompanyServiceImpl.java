@@ -45,6 +45,7 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBank()), "开户行不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBankAccount()), "银行账号不能为空");
 
+        paddingCompanyDO.setStatus(VALID_STATUS);
         paddingCompanyDO.setGmtCreate(new Date());
         paddingCompanyDO.setGmtModify(new Date());
         int count = insuranceCompanyDOMapper.insertSelective(paddingCompanyDO);
@@ -57,7 +58,7 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
         Preconditions.checkNotNull(paddingCompanyDO.getId(), "id不能为空");
 
         paddingCompanyDO.setGmtModify(new Date());
-        int count = insuranceCompanyDOMapper.updateByPrimaryKeyWithBLOBs(paddingCompanyDO);
+        int count = insuranceCompanyDOMapper.updateByPrimaryKeySelective(paddingCompanyDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
         return ResultBean.ofSuccess(null, "编辑成功");
     }

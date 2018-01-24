@@ -80,7 +80,7 @@
     <select id="count" parameterType="com.yunche.loan.domain.QueryObj.PaddingCompanyQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
-        from insurance_company
+        from padding_company
         <where>
             <include refid="Base_Query_List"/>
         </where>
@@ -93,10 +93,11 @@
         <include refid="Base_Column_List"/>
         ,
         <include refid="Blob_Column_List"/>
-        from insurance_company
+        from padding_company
         <where>
             <include refid="Base_Query_List"/>
         </where>
+        ORDER BY gmt_modify DESC
         limit #{startRow}, #{pageSize}
     </select>
 

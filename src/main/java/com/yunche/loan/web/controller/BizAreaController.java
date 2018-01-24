@@ -6,6 +6,7 @@ import com.yunche.loan.domain.QueryObj.BizAreaQuery;
 import com.yunche.loan.domain.param.BizAreaParam;
 import com.yunche.loan.domain.viewObj.AreaVO;
 import com.yunche.loan.domain.viewObj.BizAreaVO;
+import com.yunche.loan.domain.viewObj.LevelVO;
 import com.yunche.loan.service.BizAreaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,12 +113,12 @@ public class BizAreaController {
     }
 
     /**
-     * 获取所有业务区域对象
+     * 获取所有业务区域对象  -级联列表展示
      *
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultBean<List<BizAreaVO.BizArea>> listAll() {
+    public ResultBean<List<LevelVO>> listAll() {
         logger.info("list");
         return bizAreaService.listAll();
     }
