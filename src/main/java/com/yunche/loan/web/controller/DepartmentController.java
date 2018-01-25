@@ -2,11 +2,13 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.DepartmentQuery;
 import com.yunche.loan.domain.dataObj.DepartmentDO;
 import com.yunche.loan.domain.param.DepartmentParam;
 import com.yunche.loan.domain.viewObj.DepartmentVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.DepartmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +66,7 @@ public class DepartmentController {
     }
 
     /**
-     * 级联列表
+     * 部门级联列表
      *
      * @return
      */
@@ -72,5 +74,45 @@ public class DepartmentController {
     public ResultBean<List<LevelVO>> listAll() {
         logger.info("list");
         return departmentService.listAll();
+    }
+
+    /**
+     * 已绑定的用户组列表
+     *
+     * @param query id、pageIndex、pageSize
+     * @return
+     */
+    @PostMapping("/listUserGroup")
+    public ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query) {
+        logger.info(Arrays.asList("listUserGroup", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
+        return departmentService.listUserGroup(query);
+    }
+
+    /**
+     * 绑定用户组列表
+     *
+     * @param id
+     * @param userGroupIds
+     * @return
+     */
+    @GetMapping("/bindUserGroup")
+    public ResultBean<Void> bindUserGroup(@RequestParam("id") Long id,
+                                          @RequestParam("userGroupIds") String userGroupIds) {
+        logger.info(Arrays.asList("bindUserGroup", JSON.toJSONString(id), JSON.toJSONString(userGroupIds)).stream().collect(Collectors.joining("\u0001")));
+        return departmentService.bindUserGroup(id, userGroupIds);
+    }
+
+    /**
+     * 解绑用户组列表
+     *
+     * @param id
+     * @param userGroupIds
+     * @return
+     */
+    @GetMapping("/unbindUserGroup")
+    public ResultBean<Void> unbindUserGroup(@RequestParam("id") Long id,
+                                            @RequestParam("userGroupIds") String userGroupIds) {
+        logger.info(Arrays.asList("unbindUserGroup", JSON.toJSONString(id), JSON.toJSONString(userGroupIds)).stream().collect(Collectors.joining("\u0001")));
+        return departmentService.unbindUserGroup(id, userGroupIds);
     }
 }

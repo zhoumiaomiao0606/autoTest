@@ -41,6 +41,12 @@ public class CarBrandController {
         return carBrandService.update(carBrandDO);
     }
 
+    /**
+     * 逻辑删除
+     *
+     * @param id
+     * @return
+     */
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long id) {
         logger.info(Arrays.asList("delete", JSON.toJSONString(id)).stream().collect(Collectors.joining("-")));

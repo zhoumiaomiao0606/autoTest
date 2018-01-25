@@ -8,13 +8,14 @@ import lombok.Data;
  */
 @Data
 public class DepartmentQuery extends BaseQuery {
-    private Long id;
 
     private String name;
 
     private Long parentId;
 
     private Long employeeId;
+
+    private Integer level;
 
     private String tel;
 
@@ -30,7 +31,10 @@ public class DepartmentQuery extends BaseQuery {
 
     private String bankAccount;
 
-    private Byte status;
-
     private String feature;
+
+    /**
+     * 用户组ID
+     */
+    private Long userGroupId;
 }

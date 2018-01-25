@@ -11,8 +11,6 @@ import java.util.Date;
 @Data
 public class EmployeeQuery extends BaseQuery {
 
-    private Long id;
-
     private String name;
 
     private String idCard;

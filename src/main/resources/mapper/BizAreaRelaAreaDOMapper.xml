@@ -39,6 +39,7 @@
         <where>
             <include refid="Base_Query_List"/>
         </where>
+        ORDER BY gmt_modify DESC
         limit #{startRow}, #{pageSize}
     </select>
 

@@ -2,6 +2,7 @@ package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.QueryObj.DepartmentQuery;
 import com.yunche.loan.domain.dataObj.DepartmentDO;
+import com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,4 +29,6 @@ public interface DepartmentDOMapper {
     List<DepartmentDO> getAll(@Param("status") Byte status);
 
     List<String> getAllName(@Param("status") Byte status);
+
+    List<DepartmentDO> getByParentId(@Param("parentId") Long parentId, @Param("status") Byte status);
 }

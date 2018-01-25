@@ -6,6 +6,7 @@ import com.yunche.loan.domain.dataObj.BizAreaDO;
 import com.yunche.loan.domain.param.BizAreaParam;
 import com.yunche.loan.domain.viewObj.AreaVO;
 import com.yunche.loan.domain.viewObj.BizAreaVO;
+import com.yunche.loan.domain.viewObj.LevelVO;
 
 import java.util.List;
 
@@ -24,9 +25,11 @@ public interface BizAreaService {
 
     ResultBean<List<BizAreaVO>> query(BizAreaQuery query);
 
-    ResultBean<List<AreaVO.Prov>> listCity(BizAreaQuery query);
+    ResultBean<List<LevelVO>> listAll();
 
-    ResultBean<Void> deleteRelaArea(Long id, Long areaId);
+    ResultBean<List<AreaVO.Prov>> listArea(BizAreaQuery query);
 
-    ResultBean<List<BizAreaVO.Level>> listAll();
+    ResultBean<Void> bindArea(Long id, String areaIds);
+
+    ResultBean<Void> unbindArea(Long id, String areaIds);
 }

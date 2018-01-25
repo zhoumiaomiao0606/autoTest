@@ -6,6 +6,7 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
         <result column="employee_id" jdbcType="BIGINT" property="employeeId"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
         <result column="tel" jdbcType="VARCHAR" property="tel"/>
         <result column="fax" jdbcType="VARCHAR" property="fax"/>
         <result column="area_id" jdbcType="BIGINT" property="areaId"/>
@@ -20,9 +21,9 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, name, parent_id, employee_id, tel, fax, area_id, address, open_bank, receive_unit,
-    bank_account, gmt_create, gmt_modify, feature, status
-  </sql>
+        id, name, parent_id, employee_id, level, tel, fax, area_id, address, open_bank, receive_unit,
+        bank_account, gmt_create, gmt_modify, feature, status
+    </sql>
 
     <sql id="Base_Query_List">
         <if test="name != null and name != '' ">
@@ -51,6 +52,9 @@
         </if>
         <if test="bankAccount != null and bankAccount != '' ">
             AND bank_account = #{bankAccount}
+        </if>
+        <if test="level != null">
+            AND level = #{level}
         </if>
         <if test="status != null">
             AND status = #{status}
@@ -99,6 +103,17 @@
         </if>
     </select>
 
+    <!--getByParentId-->
+    <select id="getByParentId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from department
+        where parent_id = #{parentId,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -110,9 +125,9 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from department
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+        delete from department
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
@@ -120,17 +135,17 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into department (id, name, parent_id,
-        employee_id, tel, fax,
-        area_id, address, open_bank,
-        receive_unit, bank_account, gmt_create,
-        gmt_modify, feature, status
-        )
+        employee_id, level, tel,
+        fax, area_id, address,
+        open_bank, receive_unit, bank_account,
+        gmt_create, gmt_modify, feature,
+        status)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT},
-        #{employeeId,jdbcType=BIGINT}, #{tel,jdbcType=VARCHAR}, #{fax,jdbcType=VARCHAR},
-        #{areaId,jdbcType=BIGINT}, #{address,jdbcType=VARCHAR}, #{openBank,jdbcType=VARCHAR},
-        #{receiveUnit,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}
-        )
+        #{employeeId,jdbcType=BIGINT}, #{level,jdbcType=INTEGER}, #{tel,jdbcType=VARCHAR},
+        #{fax,jdbcType=VARCHAR}, #{areaId,jdbcType=BIGINT}, #{address,jdbcType=VARCHAR},
+        #{openBank,jdbcType=VARCHAR}, #{receiveUnit,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
@@ -151,6 +166,9 @@
             </if>
             <if test="employeeId != null">
                 employee_id,
+            </if>
+            <if test="level != null">
+                level,
             </if>
             <if test="tel != null">
                 tel,
@@ -198,6 +216,9 @@
             </if>
             <if test="employeeId != null">
                 #{employeeId,jdbcType=BIGINT},
+            </if>
+            <if test="level != null">
+                #{level,jdbcType=INTEGER},
             </if>
             <if test="tel != null">
                 #{tel,jdbcType=VARCHAR},
@@ -247,6 +268,9 @@
             <if test="employeeId != null">
                 employee_id = #{employeeId,jdbcType=BIGINT},
             </if>
+            <if test="level != null">
+                level = #{level,jdbcType=INTEGER},
+            </if>
             <if test="tel != null">
                 tel = #{tel,jdbcType=VARCHAR},
             </if>
@@ -285,21 +309,23 @@
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
-    update department
-    set name = #{name,jdbcType=VARCHAR},
-    parent_id = #{parentId,jdbcType=BIGINT},
-    employee_id = #{employeeId,jdbcType=BIGINT},
-    tel = #{tel,jdbcType=VARCHAR},
-    fax = #{fax,jdbcType=VARCHAR},
-    area_id = #{areaId,jdbcType=BIGINT},
-    address = #{address,jdbcType=VARCHAR},
-    open_bank = #{openBank,jdbcType=VARCHAR},
-    receive_unit = #{receiveUnit,jdbcType=VARCHAR},
-    bank_account = #{bankAccount,jdbcType=VARCHAR},
-    gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-    gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-    feature = #{feature,jdbcType=VARCHAR},
-    status = #{status,jdbcType=TINYINT}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update department
+        set name = #{name,jdbcType=VARCHAR},
+        parent_id = #{parentId,jdbcType=BIGINT},
+        employee_id = #{employeeId,jdbcType=BIGINT},
+        level = #{level,jdbcType=INTEGER},
+        tel = #{tel,jdbcType=VARCHAR},
+        fax = #{fax,jdbcType=VARCHAR},
+        area_id = #{areaId,jdbcType=BIGINT},
+        address = #{address,jdbcType=VARCHAR},
+        open_bank = #{openBank,jdbcType=VARCHAR},
+        receive_unit = #{receiveUnit,jdbcType=VARCHAR},
+        bank_account = #{bankAccount,jdbcType=VARCHAR},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
 </mapper>

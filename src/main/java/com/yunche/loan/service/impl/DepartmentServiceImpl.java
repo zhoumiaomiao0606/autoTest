@@ -4,12 +4,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.mapper.DepartmentDOMapper;
+import com.yunche.loan.dao.mapper.*;
+import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.DepartmentQuery;
-import com.yunche.loan.domain.dataObj.DepartmentDO;
+import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.DepartmentParam;
 import com.yunche.loan.domain.viewObj.DepartmentVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.DepartmentService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
@@ -33,6 +36,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private DepartmentDOMapper departmentDOMapper;
+    @Autowired
+    private DepartmentRelaUserGroupDOMapper departmentRelaUserGroupDOMapper;
+    @Autowired
+    private UserGroupDOMapper userGroupDOMapper;
+    @Autowired
+    private EmployeeDOMapper employeeDOMapper;
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
 
 
     @Override
@@ -51,22 +62,27 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public ResultBean<Void> delete(Long id) {
+        Preconditions.checkNotNull(id, "id不能为空");
+
+        checkHasChilds(id);
+
+        int count = departmentDOMapper.deleteByPrimaryKey(id);
+        Preconditions.checkArgument(count > 0, "删除失败");
+        return ResultBean.ofSuccess(null, "删除成功");
+    }
+
+    @Override
     public ResultBean<Void> update(DepartmentDO departmentDO) {
         Preconditions.checkNotNull(departmentDO.getId(), "id不能为空");
+
+        // 校验是否是删除操作
+        checkIfDel(departmentDO);
 
         departmentDO.setGmtModify(new Date());
         int count = departmentDOMapper.updateByPrimaryKeySelective(departmentDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
         return ResultBean.ofSuccess(null, "编辑成功");
-    }
-
-    @Override
-    public ResultBean<Void> delete(Long id) {
-        Preconditions.checkNotNull(id, "id不能为空");
-
-        int count = departmentDOMapper.deleteByPrimaryKey(id);
-        Preconditions.checkArgument(count > 0, "删除失败");
-        return ResultBean.ofSuccess(null, "删除成功");
     }
 
     @Override
@@ -78,6 +94,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         DepartmentVO departmentVO = new DepartmentVO();
         BeanUtils.copyProperties(departmentDO, departmentVO);
+        // 补充信息
+        fillMsg(departmentDO, departmentVO);
 
         return ResultBean.ofSuccess(departmentVO);
     }
@@ -90,18 +108,20 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         List<DepartmentDO> departmentDOS = departmentDOMapper.query(query);
-        if (CollectionUtils.isEmpty(departmentDOS)) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
-        }
+        List<DepartmentVO> departmentVOS = Collections.EMPTY_LIST;
+        if (!CollectionUtils.isEmpty(departmentDOS)) {
+            departmentVOS = departmentDOS.stream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
+                        DepartmentVO departmentVO = new DepartmentVO();
+                        BeanUtils.copyProperties(e, departmentVO);
+                        // 补充信息
+                        fillMsg(e, departmentVO);
 
-        List<DepartmentVO> departmentVOS = departmentDOS.stream()
-                .filter(Objects::nonNull)
-                .map(e -> {
-                    DepartmentVO departmentVO = new DepartmentVO();
-                    BeanUtils.copyProperties(e, departmentVO);
-                    return departmentVO;
-                })
-                .collect(Collectors.toList());
+                        return departmentVO;
+                    })
+                    .collect(Collectors.toList());
+        }
 
         return ResultBean.ofSuccess(departmentVOS, totalNum, query.getPageIndex(), query.getPageSize());
     }
@@ -117,6 +137,69 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<LevelVO> topLevelList = parseLevelByLevel(parentIdDOMap);
 
         return ResultBean.ofSuccess(topLevelList);
+    }
+
+    @Override
+    public ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query) {
+        Preconditions.checkNotNull(query.getId(), "部门ID不能为空");
+
+        int totalNum = departmentRelaUserGroupDOMapper.count(query);
+        if (totalNum > 0) {
+            List<DepartmentRelaUserGroupDO> departmentRelaUserGroupDOS = departmentRelaUserGroupDOMapper.query(query);
+            List<UserGroupVO> userGroupVOS = Collections.EMPTY_LIST;
+            if (!CollectionUtils.isEmpty(departmentRelaUserGroupDOS)) {
+                userGroupVOS = departmentRelaUserGroupDOS.stream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+
+                            UserGroupDO userGroupDO = userGroupDOMapper.selectByPrimaryKey(e.getUserGroupId(), VALID_STATUS);
+                            if (null != userGroupDO) {
+                                UserGroupVO userGroupVO = new UserGroupVO();
+                                BeanUtils.copyProperties(userGroupDO, userGroupVO);
+                                return userGroupVO;
+                            }
+                            return null;
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+            }
+            return ResultBean.ofSuccess(userGroupVOS, totalNum, query.getPageIndex(), query.getPageSize());
+        }
+
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+    }
+
+    @Override
+    public ResultBean<Void> bindUserGroup(Long id, String userGroupIds) {
+        Preconditions.checkNotNull(id, "部门ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(userGroupIds), "用户组ID不能为空");
+
+        List<Long> userGroupIdList = Arrays.asList(userGroupIds.split(",")).stream()
+                .map(e -> {
+                    return Long.valueOf(e);
+                })
+                .collect(Collectors.toList());
+        bindUserGroup(id, userGroupIdList);
+
+        return ResultBean.ofSuccess(null, "关联成功");
+    }
+
+    @Override
+    public ResultBean<Void> unbindUserGroup(Long id, String userGroupIds) {
+        Preconditions.checkNotNull(id, "部门ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(userGroupIds), "用户组ID不能为空");
+
+        Arrays.asList(userGroupIds.split(",")).stream()
+                .distinct()
+                .forEach(userGroupId -> {
+                    DepartmentRelaUserGroupDOKey departmentRelaUserGroupDOKey = new DepartmentRelaUserGroupDOKey();
+                    departmentRelaUserGroupDOKey.setDepartmentId(id);
+                    departmentRelaUserGroupDOKey.setUserGroupId(Long.valueOf(userGroupId));
+                    int count = departmentRelaUserGroupDOMapper.deleteByPrimaryKey(departmentRelaUserGroupDOKey);
+                    Preconditions.checkArgument(count > 0, "删除失败");
+                });
+
+        return ResultBean.ofSuccess(null, "删除成功");
     }
 
 
@@ -165,6 +248,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                             LevelVO parent = new LevelVO();
                             parent.setValue(p.getId());
                             parent.setLabel(p.getName());
+                            parent.setLevel(p.getLevel());
 
                             // 递归填充子列表
                             fillChilds(parent, parentIdDOMap);
@@ -173,7 +257,6 @@ public class DepartmentServiceImpl implements DepartmentService {
                         .collect(Collectors.toList());
 
                 return topLevelList;
-
             }
         }
 
@@ -197,6 +280,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                     LevelVO child = new LevelVO();
                     child.setValue(c.getId());
                     child.setLabel(c.getName());
+                    child.setLevel(c.getLevel());
 
                     List<LevelVO> childList = parent.getChildren();
                     if (CollectionUtils.isEmpty(childList)) {
@@ -222,7 +306,20 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         DepartmentDO departmentDO = new DepartmentDO();
         BeanUtils.copyProperties(departmentParam, departmentDO);
+        // level
+        Long parentId = departmentParam.getParentId();
+        if (null != parentId) {
+            DepartmentDO parentDepartmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            Preconditions.checkNotNull(parentDepartmentDO, "上级部门不存在");
+            Integer parentLevel = parentDepartmentDO.getLevel();
+            Integer level = parentLevel == null ? null : parentLevel + 1;
+            departmentDO.setLevel(level);
+        } else {
+            departmentDO.setLevel(1);
+        }
+        // status
         departmentDO.setStatus(VALID_STATUS);
+        // date
         departmentDO.setGmtCreate(new Date());
         departmentDO.setGmtModify(new Date());
 
@@ -233,7 +330,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     /**
-     * TODO 绑定用户组(角色)列表
+     * 绑定用户组(角色)列表
      *
      * @param id
      * @param userGroupIdList
@@ -244,8 +341,121 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         // 去重
+        List<Long> existUserGroupIdList = departmentRelaUserGroupDOMapper.getUserGroupIdListByDepartmentId(id);
+        if (!CollectionUtils.isEmpty(existUserGroupIdList)) {
+
+            userGroupIdList = existUserGroupIdList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .map(e -> {
+                        if (!existUserGroupIdList.contains(e)) {
+                            return e;
+                        }
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+        }
 
         // 绑定
+        if (!CollectionUtils.isEmpty(userGroupIdList)) {
+            List<DepartmentRelaUserGroupDO> departmentRelaUserGroupDOS = userGroupIdList.parallelStream()
+                    .map(e -> {
+                        DepartmentRelaUserGroupDO departmentRelaUserGroupDO = new DepartmentRelaUserGroupDO();
+                        departmentRelaUserGroupDO.setDepartmentId(id);
+                        departmentRelaUserGroupDO.setUserGroupId(e);
+                        departmentRelaUserGroupDO.setGmtCreate(new Date());
+                        departmentRelaUserGroupDO.setGmtModify(new Date());
 
+                        return departmentRelaUserGroupDO;
+                    })
+                    .collect(Collectors.toList());
+
+            int count = departmentRelaUserGroupDOMapper.batchInsert(departmentRelaUserGroupDOS);
+            Preconditions.checkArgument(count == departmentRelaUserGroupDOS.size(), "关联业务范围失败");
+        }
+
+    }
+
+    /**
+     * 校验是否是删除操作
+     *
+     * @param departmentDO
+     */
+    private void checkIfDel(DepartmentDO departmentDO) {
+        if (INVALID_STATUS.equals(departmentDO.getStatus())) {
+            // 校验是否存在子部门
+            checkHasChilds(departmentDO.getId());
+        }
+    }
+
+    /**
+     * 校验是否存在子部门
+     *
+     * @param parentId
+     */
+    private void checkHasChilds(Long parentId) {
+        List<DepartmentDO> departmentDOS = departmentDOMapper.getByParentId(parentId, VALID_STATUS);
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(departmentDOS), "请先删除所有下级部门");
+    }
+
+    /**
+     * 补充对象信息
+     * id-name
+     *
+     * @param departmentDO
+     * @param departmentVO
+     */
+    private void fillMsg(DepartmentDO departmentDO, DepartmentVO departmentVO) {
+        fillParent(departmentDO.getParentId(), departmentVO);
+        fillLeader(departmentDO.getEmployeeId(), departmentVO);
+        fillArea(departmentDO.getAreaId(), departmentVO);
+        // 填充部门人数
+        fillNum(departmentVO);
+    }
+
+    /**
+     * 填充parent
+     *
+     * @param parentId
+     * @param departmentVO
+     */
+    private void fillParent(Long parentId, DepartmentVO departmentVO) {
+        DepartmentDO parentDepartmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+        if (null != parentDepartmentDO) {
+            DepartmentVO.Parent parent = new DepartmentVO.Parent();
+            BeanUtils.copyProperties(parentDepartmentDO, parent);
+            departmentVO.setParent(parent);
+        }
+    }
+
+    private void fillLeader(Long employeeId, DepartmentVO departmentVO) {
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeId, VALID_STATUS);
+        if (null != employeeDO) {
+            DepartmentVO.Leader leader = new DepartmentVO.Leader();
+            BeanUtils.copyProperties(employeeDO, leader);
+            departmentVO.setLeader(leader);
+        }
+    }
+
+    private void fillArea(Long areaId, DepartmentVO departmentVO) {
+        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
+        if (null != baseAreaDO) {
+            DepartmentVO.Area area = new DepartmentVO.Area();
+            area.setId(baseAreaDO.getAreaId());
+            area.setName(baseAreaDO.getAreaName());
+            departmentVO.setArea(area);
+        }
+    }
+
+    /**
+     * todo 填充部门人数
+     *
+     * @param departmentVO
+     */
+    private void fillNum(DepartmentVO departmentVO) {
+
+        departmentVO.setNum(10);
     }
 }

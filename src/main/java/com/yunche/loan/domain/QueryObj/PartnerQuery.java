@@ -12,8 +12,6 @@ import java.util.Date;
 @Data
 public class PartnerQuery extends BaseQuery {
 
-    private Long id;
-
     private String name;
 
     private String leaderName;
@@ -55,10 +53,4 @@ public class PartnerQuery extends BaseQuery {
     private String bankAccountTwo;
 
     private Byte payMonth;
-
-    private Date gmtCreate;
-
-    private Date gmtModify;
-
-    private Byte status;
 }

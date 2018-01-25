@@ -2,6 +2,9 @@ package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.dataObj.PartnerDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface PartnerDOMapper {
@@ -11,9 +14,11 @@ public interface PartnerDOMapper {
 
     int insertSelective(PartnerDO record);
 
-    PartnerDO selectByPrimaryKey(Long id);
+    PartnerDO selectByPrimaryKey(@Param("id") Long id, @Param("status") Byte status);
 
     int updateByPrimaryKeySelective(PartnerDO record);
 
     int updateByPrimaryKey(PartnerDO record);
+
+    List<String> getAllName(@Param("status") Byte status);
 }

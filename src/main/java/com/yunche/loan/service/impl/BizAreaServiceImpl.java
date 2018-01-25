@@ -25,9 +25,12 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_PROV;
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
@@ -73,6 +76,7 @@ public class BizAreaServiceImpl implements BizAreaService {
         // 校验是否存在子级区域
         checkHasChilds(id);
 
+        // del
         int count = bizAreaDOMapper.deleteByPrimaryKey(id);
         Preconditions.checkArgument(count > 0, "删除失败");
 
@@ -82,6 +86,9 @@ public class BizAreaServiceImpl implements BizAreaService {
     @Override
     public ResultBean<Void> update(BizAreaDO bizAreaDO) {
         Preconditions.checkArgument(null != bizAreaDO && null != bizAreaDO.getId(), "id不能为空");
+
+        // 校验是否是删除操作
+        checkIfDel(bizAreaDO);
 
         // update
         bizAreaDO.setGmtModify(new Date());
@@ -134,15 +141,19 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     @Override
-    public ResultBean<List<AreaVO.Prov>> listCity(BizAreaQuery query) {
+    public ResultBean<List<AreaVO.Prov>> listArea(BizAreaQuery query) {
         // 业务区域ID不能为空
         Preconditions.checkNotNull(query.getId(), "id不能为空");
 
         int totalNum = bizAreaRelaAreaDOMapper.count(query);
-        Preconditions.checkArgument(totalNum > 0, "无符合条件的数据");
+        if (totalNum < 1) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<BizAreaRelaAreaDO> bizAreaRelaAreaDOS = bizAreaRelaAreaDOMapper.query(query);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaRelaAreaDOS), "无符合条件的数据");
+        if (CollectionUtils.isEmpty(bizAreaRelaAreaDOS)) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
 
         List<AreaVO.Prov> bizAreaVOS = bizAreaRelaAreaDOS.stream()
                 .filter(e -> null != e && null != e.getAreaId())
@@ -195,21 +206,40 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     @Override
-    public ResultBean<Void> deleteRelaArea(Long id, Long areaId) {
+    public ResultBean<Void> bindArea(Long id, String areaIds) {
         Preconditions.checkNotNull(id, "业务区域ID不能为空");
-        Preconditions.checkNotNull(areaId, "城市ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(areaIds), "城市ID不能为空");
 
-        BizAreaRelaAreaDOKey bizAreaRelaAreaDOKey = new BizAreaRelaAreaDOKey();
-        bizAreaRelaAreaDOKey.setBizAreaId(id);
-        bizAreaRelaAreaDOKey.setAreaId(areaId);
-        int count = bizAreaRelaAreaDOMapper.deleteByPrimaryKey(bizAreaRelaAreaDOKey);
-        Preconditions.checkArgument(count > 0, "删除失败");
+        List<Long> areaIdList = Arrays.asList(areaIds.split(",")).stream()
+                .map(e -> {
+                    return Long.valueOf(e);
+                })
+                .collect(Collectors.toList());
+        bindAreas(id, areaIdList);
+
+        return ResultBean.ofSuccess(null, "关联成功");
+    }
+
+    @Override
+    public ResultBean<Void> unbindArea(Long id, String areaIds) {
+        Preconditions.checkNotNull(id, "业务区域ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(areaIds), "城市ID不能为空");
+
+        Arrays.asList(areaIds.split(",")).stream()
+                .distinct()
+                .forEach(areaId -> {
+                    BizAreaRelaAreaDOKey bizAreaRelaAreaDOKey = new BizAreaRelaAreaDOKey();
+                    bizAreaRelaAreaDOKey.setBizAreaId(id);
+                    bizAreaRelaAreaDOKey.setAreaId(Long.valueOf(areaId));
+                    int count = bizAreaRelaAreaDOMapper.deleteByPrimaryKey(bizAreaRelaAreaDOKey);
+                    Preconditions.checkArgument(count > 0, "删除失败");
+                });
 
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
     @Override
-    public ResultBean<List<BizAreaVO.Level>> listAll() {
+    public ResultBean<List<LevelVO>> listAll() {
 
         List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getAll(VALID_STATUS);
         Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "无有效业务区域数据");
@@ -218,7 +248,7 @@ public class BizAreaServiceImpl implements BizAreaService {
         Map<Long, List<BizAreaDO>> parentIdDOMap = getParentIdDOSMapping(bizAreaDOS);
 
         // 分级递归解析
-        List<BizAreaVO.Level> topLevelList = parseLevelByLevel(parentIdDOMap);
+        List<LevelVO> topLevelList = parseLevelByLevel(parentIdDOMap);
 
         return ResultBean.ofSuccess(topLevelList);
     }
@@ -305,13 +335,25 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     /**
+     * 如果是做删除操作
+     *
+     * @param bizAreaDO
+     */
+    private void checkIfDel(BizAreaDO bizAreaDO) {
+        if (INVALID_STATUS.equals(bizAreaDO.getStatus())) {
+            // 校验是否存在子级区域
+            checkHasChilds(bizAreaDO.getId());
+        }
+    }
+
+    /**
      * 校验是否存在子级区域
      *
      * @param parentId
      */
     private void checkHasChilds(Long parentId) {
         List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getByParentId(parentId, VALID_STATUS);
-        Preconditions.checkArgument(CollectionUtils.isEmpty(bizAreaDOS), "请先删除所有下级区域");
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "请先删除所有下级区域");
     }
 
     /**
@@ -384,13 +426,13 @@ public class BizAreaServiceImpl implements BizAreaService {
      * @param parentIdDOMap
      * @return
      */
-    private List<BizAreaVO.Level> parseLevelByLevel(Map<Long, List<BizAreaDO>> parentIdDOMap) {
+    private List<LevelVO> parseLevelByLevel(Map<Long, List<BizAreaDO>> parentIdDOMap) {
         if (!CollectionUtils.isEmpty(parentIdDOMap)) {
             List<BizAreaDO> parentBizAreaDOS = parentIdDOMap.get(-1L);
             if (!CollectionUtils.isEmpty(parentBizAreaDOS)) {
-                List<BizAreaVO.Level> topLevelList = parentBizAreaDOS.stream()
+                List<LevelVO> topLevelList = parentBizAreaDOS.stream()
                         .map(p -> {
-                            BizAreaVO.Level parent = new BizAreaVO.Level();
+                            LevelVO parent = new LevelVO();
                             parent.setValue(p.getId());
                             parent.setLabel(p.getName());
                             parent.setLevel(p.getLevel());

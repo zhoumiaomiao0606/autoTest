@@ -1,10 +1,8 @@
 package com.yunche.loan.domain.viewObj;
 
 import lombok.Data;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author liuzhe
@@ -15,16 +13,26 @@ public class DepartmentVO {
     private Long id;
 
     private String name;
-
-    private Long parentId;
-
-    private Long employeeId;
+    /**
+     * 上级部门
+     */
+    private Parent parent;
+    /**
+     * 部门负责人
+     */
+    private Leader leader;
+    /**
+     * 区域
+     */
+    private Area area;
+    /**
+     * 部门人数
+     */
+    private Integer num;
 
     private String tel;
 
     private String fax;
-
-    private Long areaId;
 
     private String address;
 
@@ -40,5 +48,21 @@ public class DepartmentVO {
 
     private Byte status;
 
-    private String feature;
+    @Data
+    public static class Parent {
+        private Long id;
+        private String name;
+    }
+
+    @Data
+    public static class Leader {
+        private Long id;
+        private String name;
+    }
+
+    @Data
+    public static class Area {
+        private Long id;
+        private String name;
+    }
 }

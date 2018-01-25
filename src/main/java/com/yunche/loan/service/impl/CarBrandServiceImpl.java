@@ -3,7 +3,9 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.CarBrandDOMapper;
+import com.yunche.loan.dao.mapper.CarModelDOMapper;
 import com.yunche.loan.domain.dataObj.CarBrandDO;
+import com.yunche.loan.domain.dataObj.CarModelDO;
 import com.yunche.loan.domain.viewObj.CarBrandVO;
 import com.yunche.loan.service.CarBrandService;
 import org.apache.commons.lang3.StringUtils;
@@ -11,12 +13,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
@@ -29,6 +33,9 @@ public class CarBrandServiceImpl implements CarBrandService {
 
     @Autowired
     private CarBrandDOMapper carBrandDOMapper;
+    @Autowired
+    private CarModelDOMapper carModelDOMapper;
+
 
     @Override
     public ResultBean<Long> create(CarBrandDO carBrandDO) {
@@ -51,7 +58,13 @@ public class CarBrandServiceImpl implements CarBrandService {
     public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        int count = carBrandDOMapper.deleteByPrimaryKey(id);
+        // 校验是否存在子车系
+        checkHasChilds(id);
+
+        CarBrandDO carBrandDO = new CarBrandDO();
+        carBrandDO.setStatus(INVALID_STATUS);
+        carBrandDO.setGmtModify(new Date());
+        int count = carBrandDOMapper.updateByPrimaryKeySelective(carBrandDO);
         Preconditions.checkArgument(count > 0, "删除失败");
 
         return ResultBean.ofSuccess(null, "删除成功");
@@ -60,6 +73,9 @@ public class CarBrandServiceImpl implements CarBrandService {
     @Override
     public ResultBean<Void> update(CarBrandDO carBrandDO) {
         Preconditions.checkArgument(null != carBrandDO && null != carBrandDO.getId(), "id不能为空");
+
+        // 校验是否是删除操作
+        checkIfDel(carBrandDO);
 
         carBrandDO.setGmtModify(new Date());
         int count = carBrandDOMapper.updateByPrimaryKeySelective(carBrandDO);
@@ -96,6 +112,28 @@ public class CarBrandServiceImpl implements CarBrandService {
                 .collect(Collectors.toList());
 
         return ResultBean.ofSuccess(carBrandVOS);
+    }
+
+    /**
+     * 校验是否是删除操作
+     *
+     * @param carBrandDO
+     */
+    private void checkIfDel(CarBrandDO carBrandDO) {
+        if (INVALID_STATUS.equals(carBrandDO.getStatus())) {
+            // 校验是否存在子级区域
+            checkHasChilds(carBrandDO.getId());
+        }
+    }
+
+    /**
+     * 校验是否存在子车系
+     *
+     * @param brandId
+     */
+    private void checkHasChilds(Long brandId) {
+        List<CarModelDO> carModelDOS = carModelDOMapper.getModelListByBrandId(brandId, VALID_STATUS);
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(carModelDOS), "请先删除所有子车系");
     }
 
 }

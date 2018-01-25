@@ -3,9 +3,11 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.CarBrandDOMapper;
+import com.yunche.loan.dao.mapper.CarDetailDOMapper;
 import com.yunche.loan.dao.mapper.CarModelDOMapper;
 import com.yunche.loan.domain.QueryObj.CarModelQuery;
 import com.yunche.loan.domain.dataObj.CarBrandDO;
+import com.yunche.loan.domain.dataObj.CarDetailDO;
 import com.yunche.loan.domain.dataObj.CarModelDO;
 import com.yunche.loan.domain.viewObj.CarModelVO;
 import com.yunche.loan.service.CarModelService;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
@@ -31,9 +34,11 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 public class CarModelServiceImpl implements CarModelService {
 
     @Autowired
+    private CarBrandDOMapper carBrandDOMapper;
+    @Autowired
     private CarModelDOMapper carModelDOMapper;
     @Autowired
-    private CarBrandDOMapper carBrandDOMapper;
+    private CarDetailDOMapper carDetailDOMapperl;
 
 
     @Override
@@ -57,6 +62,9 @@ public class CarModelServiceImpl implements CarModelService {
     public ResultBean<Void> update(CarModelDO carModelDO) {
         Preconditions.checkArgument(null != carModelDO && null != carModelDO.getId(), "id不能为空");
 
+        // 校验是否是删除操作
+        checkIfDel(carModelDO);
+
         carModelDO.setGmtModify(new Date());
         int count = carModelDOMapper.updateByPrimaryKeySelective(carModelDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
@@ -68,7 +76,12 @@ public class CarModelServiceImpl implements CarModelService {
     public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        int count = carModelDOMapper.deleteByPrimaryKey(id);
+        // 校验是否存在子车型
+        checkHasChilds(id);
+
+        CarModelDO carModelDO = new CarModelDO();
+        carModelDO.setGmtModify(new Date());
+        int count = carModelDOMapper.updateByPrimaryKeySelective(carModelDO);
         Preconditions.checkArgument(count > 0, "删除失败");
 
         return ResultBean.ofSuccess(null, "删除成功");
@@ -119,6 +132,28 @@ public class CarModelServiceImpl implements CarModelService {
                 .collect(Collectors.toList());
 
         return ResultBean.ofSuccess(carModelVOS, totalNum, query.getPageIndex(), query.getPageSize());
+    }
+
+    /**
+     * 校验是否是删除操作
+     *
+     * @param carModelDO
+     */
+    private void checkIfDel(CarModelDO carModelDO) {
+        if (INVALID_STATUS.equals(carModelDO.getStatus())) {
+            // 校验是否存在子级区域
+            checkHasChilds(carModelDO.getId());
+        }
+    }
+
+    /**
+     * 校验是否存在子车型
+     *
+     * @param modelId
+     */
+    private void checkHasChilds(Long modelId) {
+        List<CarDetailDO> carDetailDOS = carDetailDOMapperl.getDetailListByModelId(modelId, VALID_STATUS);
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(carDetailDOS), "请先删除所有子车型");
     }
 
 }

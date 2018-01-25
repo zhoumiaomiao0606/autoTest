@@ -7,6 +7,7 @@ import com.yunche.loan.domain.dataObj.BizAreaDO;
 import com.yunche.loan.domain.param.BizAreaParam;
 import com.yunche.loan.domain.viewObj.AreaVO;
 import com.yunche.loan.domain.viewObj.BizAreaVO;
+import com.yunche.loan.domain.viewObj.LevelVO;
 import com.yunche.loan.service.BizAreaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,30 +48,16 @@ public class BizAreaController {
         return bizAreaService.create(bizAreaParam);
     }
 
-    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> update(@RequestBody BizAreaDO bizAreaDO) {
-        logger.info(Arrays.asList("update", JSON.toJSONString(bizAreaDO)).stream().collect(Collectors.joining("-")));
-        return bizAreaService.update(bizAreaDO);
-    }
-
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long id) {
         logger.info(Arrays.asList("delete", JSON.toJSONString(id)).stream().collect(Collectors.joining("-")));
         return bizAreaService.delete(id);
     }
 
-    /**
-     * 删除关联的城市
-     *
-     * @param id
-     * @param areaId
-     * @return
-     */
-    @GetMapping(value = "/delete/relaArea")
-    public ResultBean<Void> deleteRelaArea(@RequestParam("id") Long id,
-                                           @RequestParam("areaId") Long areaId) {
-        logger.info(Arrays.asList("/delete/relaArea", JSON.toJSONString(id), JSON.toJSONString(areaId)).stream().collect(Collectors.joining("-")));
-        return bizAreaService.deleteRelaArea(id, areaId);
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> update(@RequestBody BizAreaDO bizAreaDO) {
+        logger.info(Arrays.asList("update", JSON.toJSONString(bizAreaDO)).stream().collect(Collectors.joining("-")));
+        return bizAreaService.update(bizAreaDO);
     }
 
     /**
@@ -101,25 +88,53 @@ public class BizAreaController {
     }
 
     /**
-     * 当前业务区域所覆盖的城市列表   -分页查询
-     *
-     * @param query id、pageIndex、pageSize
-     * @return
-     */
-    @PostMapping(value = "/listCity", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<AreaVO.Prov>> listCity(@RequestBody BizAreaQuery query) {
-        logger.info(Arrays.asList("listCity", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
-        return bizAreaService.listCity(query);
-    }
-
-    /**
      * 获取所有业务区域对象  -级联列表展示
      *
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultBean<List<BizAreaVO.Level>> listAll() {
+    public ResultBean<List<LevelVO>> listAll() {
         logger.info("list");
         return bizAreaService.listAll();
+    }
+
+    /**
+     * 当前业务区域所覆盖的城市列表   -分页查询
+     *
+     * @param query id、pageIndex、pageSize
+     * @return
+     */
+    @PostMapping(value = "/listArea", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<AreaVO.Prov>> listArea(@RequestBody BizAreaQuery query) {
+        logger.info(Arrays.asList("listArea", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
+        return bizAreaService.listArea(query);
+    }
+
+    /**
+     * 绑定关联的城市列表
+     *
+     * @param id
+     * @param areaIds
+     * @return
+     */
+    @GetMapping(value = "/bindArea")
+    public ResultBean<Void> bindArea(@RequestParam("id") Long id,
+                                     @RequestParam("areaIds") String areaIds) {
+        logger.info(Arrays.asList("bindArea", JSON.toJSONString(id), JSON.toJSONString(areaIds)).stream().collect(Collectors.joining("-")));
+        return bizAreaService.bindArea(id, areaIds);
+    }
+
+    /**
+     * 解绑关联的城市列表
+     *
+     * @param id
+     * @param areaIds
+     * @return
+     */
+    @GetMapping(value = "/unbindArea")
+    public ResultBean<Void> deleteRelaArea(@RequestParam("id") Long id,
+                                           @RequestParam("areaIds") String areaIds) {
+        logger.info(Arrays.asList("unbindArea", JSON.toJSONString(id), JSON.toJSONString(areaIds)).stream().collect(Collectors.joining("-")));
+        return bizAreaService.unbindArea(id, areaIds);
     }
 }

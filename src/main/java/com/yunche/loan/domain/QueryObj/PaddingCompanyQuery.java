@@ -11,7 +11,6 @@ import java.util.Date;
  */
 @Data
 public class PaddingCompanyQuery extends BaseQuery {
-    private Long id;
 
     private String name;
 
@@ -36,14 +35,6 @@ public class PaddingCompanyQuery extends BaseQuery {
     private String accountName;
 
     private String bankAccount;
-
-    private String file;
-
-    private Date gmtCreate;
-
-    private Date gmtModify;
-
-    private String feature;
 
     private String cooperationPolicy;
 }

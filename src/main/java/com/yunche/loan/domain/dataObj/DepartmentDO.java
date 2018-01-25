@@ -14,6 +14,8 @@ public class DepartmentDO {
 
     private Long employeeId;
 
+    private Integer level;
+
     private String tel;
 
     private String fax;

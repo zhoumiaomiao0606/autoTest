@@ -24,6 +24,10 @@ public class LevelVO {
      * name
      */
     private String label;
+    /**
+     * 等级
+     */
+    private Integer level;
 
     private boolean hasChild;
 
