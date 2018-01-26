@@ -6,7 +6,7 @@
     <groupId>com.yunche.loan</groupId>
     <artifactId>yunche-biz</artifactId>
     <version>1.0</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>yunche-biz</name>
 
