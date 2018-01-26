@@ -3,8 +3,8 @@
   <signal id="cancelApplication" name="cancelApplication"></signal>
   <process id="loanProcess" name="消费贷流程" isExecutable="true" isClosed="false" processType="None">
     <startEvent id="startevent3" name="Start"></startEvent>
-    <userTask id="usertask_bank_credit_record" name="银行征信" activiti:candidateGroups="bank_credit_user_group"></userTask>
-    <userTask id="usertask_social_credit_record" name="社会征信" activiti:candidateGroups="social_credit_user_group"></userTask>
+    <userTask id="usertask_bank_credit_record" name="银行征信录入" activiti:candidateGroups="bank_credit_user_group"></userTask>
+    <userTask id="usertask_social_credit_record" name="社会征信录入" activiti:candidateGroups="social_credit_user_group"></userTask>
     <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow4" sourceRef="parallelgateway1" targetRef="usertask_bank_credit_record"></sequenceFlow>
     <sequenceFlow id="flow5" sourceRef="parallelgateway1" targetRef="usertask_social_credit_record"></sequenceFlow>
@@ -36,143 +36,16 @@
     <userTask id="usertask_telephone_verify_review" name="电审复审信息"></userTask>
     <sequenceFlow id="flow35" sourceRef="usertask_telephone_verify_review" targetRef="parallelgateway3"></sequenceFlow>
     <sequenceFlow id="flow36" sourceRef="usertask_telephone_verify" targetRef="usertask_telephone_verify_review"></sequenceFlow>
-    <endEvent id="endevent2" name="End"></endEvent>
-    <sequenceFlow id="flow37" sourceRef="usertask_loan_approve" targetRef="endevent2"></sequenceFlow>
+    <userTask id="usertask_credit_apply" name="征信申请" activiti:candidateGroups="partner_group"></userTask>
+    <sequenceFlow id="flow38" sourceRef="startevent3" targetRef="usertask_credit_apply"></sequenceFlow>
+    <sequenceFlow id="flow39" sourceRef="usertask_credit_apply" targetRef="parallelgateway1"></sequenceFlow>
+    <parallelGateway id="parallelgateway6" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow40" sourceRef="usertask_bank_credit_record" targetRef="parallelgateway6"></sequenceFlow>
+    <sequenceFlow id="flow41" sourceRef="usertask_social_credit_record" targetRef="parallelgateway6"></sequenceFlow>
+    <sequenceFlow id="flow42" sourceRef="parallelgateway6" targetRef="usertask_loan_approve"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow43" sourceRef="usertask_loan_approve" targetRef="exclusivegateway1"></sequenceFlow>
+    <sequenceFlow id="flow44" sourceRef="exclusivegateway1" targetRef="usertask_telephone_verify"></sequenceFlow>
+    <sequenceFlow id="flow45" sourceRef="exclusivegateway1" targetRef="usertask_visit_verify"></sequenceFlow>
   </process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_loanProcess">
-    <bpmndi:BPMNPlane bpmnElement="loanProcess" id="BPMNPlane_loanProcess">
-      <bpmndi:BPMNShape bpmnElement="startevent3" id="BPMNShape_startevent3">
-        <omgdc:Bounds height="35.0" width="35.0" x="1.0" y="303.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_bank_credit_record" id="BPMNShape_usertask_bank_credit_record">
-        <omgdc:Bounds height="80.0" width="100.0" x="381.0" y="171.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_social_credit_record" id="BPMNShape_usertask_social_credit_record">
-        <omgdc:Bounds height="80.0" width="100.0" x="381.0" y="391.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
-        <omgdc:Bounds height="40.0" width="40.0" x="291.0" y="300.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_loan_approve" id="BPMNShape_usertask_loan_approve">
-        <omgdc:Bounds height="80.0" width="100.0" x="632.0" y="281.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_telephone_verify" id="BPMNShape_usertask_telephone_verify">
-        <omgdc:Bounds height="80.0" width="100.0" x="972.0" y="280.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_visit_verify" id="BPMNShape_usertask_visit_verify">
-        <omgdc:Bounds height="80.0" width="100.0" x="878.0" y="432.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_car_insurance_record" id="BPMNShape_usertask_car_insurance_record">
-        <omgdc:Bounds height="80.0" width="100.0" x="1568.0" y="150.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_gps_install" id="BPMNShape_usertask_gps_install">
-        <omgdc:Bounds height="80.0" width="100.0" x="1568.0" y="280.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="parallelgateway3" id="BPMNShape_parallelgateway3">
-        <omgdc:Bounds height="40.0" width="40.0" x="1458.0" y="299.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_pay_approve" id="BPMNShape_usertask_pay_approve">
-        <omgdc:Bounds height="80.0" width="100.0" x="1568.0" y="450.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="parallelgateway4" id="BPMNShape_parallelgateway4">
-        <omgdc:Bounds height="40.0" width="40.0" x="1758.0" y="232.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_contract_print" id="BPMNShape_usertask_contract_print">
-        <omgdc:Bounds height="80.0" width="100.0" x="1868.0" y="213.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_license_mortgage" id="BPMNShape_usertask_license_mortgage">
-        <omgdc:Bounds height="80.0" width="100.0" x="2048.0" y="213.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_pay_process" id="BPMNShape_usertask_pay_process">
-        <omgdc:Bounds height="80.0" width="100.0" x="1750.0" y="450.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="parallelgateway5" id="BPMNShape_parallelgateway5">
-        <omgdc:Bounds height="40.0" width="40.0" x="2077.0" y="470.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="2162.0" y="472.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_telephone_verify_review" id="BPMNShape_usertask_telephone_verify_review">
-        <omgdc:Bounds height="79.0" width="105.0" x="1209.0" y="280.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
-        <omgdc:Bounds height="35.0" width="35.0" x="767.0" y="173.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
-        <omgdi:waypoint x="311.0" y="300.0"></omgdi:waypoint>
-        <omgdi:waypoint x="311.0" y="210.0"></omgdi:waypoint>
-        <omgdi:waypoint x="381.0" y="211.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
-        <omgdi:waypoint x="311.0" y="340.0"></omgdi:waypoint>
-        <omgdi:waypoint x="311.0" y="431.0"></omgdi:waypoint>
-        <omgdi:waypoint x="381.0" y="431.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
-        <omgdi:waypoint x="978.0" y="472.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1022.0" y="471.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1022.0" y="360.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
-        <omgdi:waypoint x="1478.0" y="299.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1478.0" y="190.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1568.0" y="190.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
-        <omgdi:waypoint x="1498.0" y="319.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1568.0" y="320.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
-        <omgdi:waypoint x="1478.0" y="339.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1478.0" y="490.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1568.0" y="490.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
-        <omgdi:waypoint x="1668.0" y="190.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1778.0" y="190.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1778.0" y="232.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
-        <omgdi:waypoint x="1668.0" y="320.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1778.0" y="320.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1778.0" y="272.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
-        <omgdi:waypoint x="1798.0" y="252.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1868.0" y="253.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
-        <omgdi:waypoint x="1968.0" y="253.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2048.0" y="253.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
-        <omgdi:waypoint x="1668.0" y="490.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1750.0" y="490.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
-        <omgdi:waypoint x="2098.0" y="293.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2097.0" y="470.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
-        <omgdi:waypoint x="1850.0" y="490.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2077.0" y="490.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
-        <omgdi:waypoint x="2117.0" y="490.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2162.0" y="489.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow35" id="BPMNEdge_flow35">
-        <omgdi:waypoint x="1314.0" y="319.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1458.0" y="319.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow36" id="BPMNEdge_flow36">
-        <omgdi:waypoint x="1072.0" y="320.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1209.0" y="319.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow37" id="BPMNEdge_flow37">
-        <omgdi:waypoint x="682.0" y="281.0"></omgdi:waypoint>
-        <omgdi:waypoint x="784.0" y="208.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-    </bpmndi:BPMNPlane>
-  </bpmndi:BPMNDiagram>
 </definitions>

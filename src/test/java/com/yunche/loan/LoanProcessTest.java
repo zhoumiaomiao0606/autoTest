@@ -99,7 +99,8 @@ public class LoanProcessTest extends BaseTest{
 
         // Verify process completed
 //        Assert.assertEquals(1, historyService.createHistoricProcessInstanceQuery().finished().count());
-
+        long count = historyService.createHistoricProcessInstanceQuery().finished().count();
+        System.out.println(count);
     }
 
 }
