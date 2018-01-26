@@ -82,8 +82,8 @@ public class DepartmentController {
      * @param query id、pageIndex、pageSize
      * @return
      */
-    @PostMapping("/listUserGroup")
-    public ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query) {
+    @PostMapping(value = "/listUserGroup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<UserGroupVO>> listUserGroup(@RequestBody BaseQuery query) {
         logger.info(Arrays.asList("listUserGroup", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return departmentService.listUserGroup(query);
     }

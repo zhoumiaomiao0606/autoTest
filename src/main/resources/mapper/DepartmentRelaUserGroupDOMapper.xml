@@ -50,6 +50,38 @@
         where department_id = #{departmentId,jdbcType=BIGINT}
     </select>
 
+    <!--getDepartmentIdListByUserGroupId-->
+    <select id="getDepartmentIdListByUserGroupId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select  department_id
+        from department_rela_user_group
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+    </select>
+
+    <!--getByUserGroupId-->
+    <select id="getByUserGroupId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from department_rela_user_group
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+    </select>
+
+    <!--updateByUserGroupId-->
+    <update id="updateByUserGroupId" parameterType="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDO">
+        update department_rela_user_group
+        <set>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="department_id != null">
+                department_id = #{departmentId,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+    </update>
+
     <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDOKey"
             resultMap="BaseResultMap">
         select

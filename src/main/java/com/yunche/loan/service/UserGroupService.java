@@ -6,6 +6,7 @@ import com.yunche.loan.domain.QueryObj.UserGroupQuery;
 import com.yunche.loan.domain.dataObj.UserGroupDO;
 import com.yunche.loan.domain.param.UserGroupParam;
 import com.yunche.loan.domain.viewObj.AuthVO;
+import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 public interface UserGroupService {
     ResultBean<Long> create(UserGroupParam userGroupParam);
 
-    ResultBean<Void> update(UserGroupDO userGroupDO);
+    ResultBean<Void> update(UserGroupParam userGroupParam);
 
     ResultBean<Void> delete(Long id);
 
@@ -27,9 +28,13 @@ public interface UserGroupService {
 
     ResultBean<List<AuthVO>> listAuth(BaseQuery query);
 
-    ResultBean<List<UserGroupVO.RelaEmployeeVO>> listEmployee(BaseQuery query);
+    ResultBean<List<EmployeeVO>> listEmployee(BaseQuery query);
 
-    ResultBean<Void> deleteRelaAuths(Long id, String authIds);
+    ResultBean<Void> bindEmployee(Long id, String employeeIds);
 
-    ResultBean<Void> deleteRelaEmployees(Long id, String employeeIds);
+    ResultBean<Void> unbindEmployee(Long id, String employeeIds);
+
+    ResultBean<Void> bindAuth(Long id, String authIds);
+
+    ResultBean<Void> unbindAuth(Long id, String authIds);
 }

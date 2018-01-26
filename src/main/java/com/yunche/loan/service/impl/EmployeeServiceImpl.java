@@ -5,9 +5,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.EmployeeDOMapper;
+import com.yunche.loan.dao.mapper.EmployeeRelaUserGroupDOMapper;
 import com.yunche.loan.domain.QueryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.DepartmentDO;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
+import com.yunche.loan.domain.dataObj.EmployeeRelaUserGroupDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.viewObj.DepartmentVO;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
@@ -36,6 +38,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
+    @Autowired
+    private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
 
 
     @Override
@@ -57,6 +61,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ResultBean<Void> update(EmployeeDO employeeDO) {
         Preconditions.checkNotNull(employeeDO.getId(), "id不能为空");
+
+        // TODO if 删除员工 -> 绑定的部门、用户组...
 
         employeeDO.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
@@ -82,6 +88,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         EmployeeVO employeeVO = new EmployeeVO();
         BeanUtils.copyProperties(employeeDO, employeeVO);
+
+
 
         return ResultBean.ofSuccess(employeeVO);
     }
@@ -230,19 +238,50 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * TODO 绑定用户组(角色)列表
+     * 绑定用户组(角色)列表
      *
-     * @param id
+     * @param employeeId
      * @param userGroupIdList
      */
-    private void bindUserGroup(Long id, List<Long> userGroupIdList) {
+    private void bindUserGroup(Long employeeId, List<Long> userGroupIdList) {
         if (CollectionUtils.isEmpty(userGroupIdList)) {
             return;
         }
 
         // 去重
+        List<Long> existUserGroupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(employeeId);
+        if (!CollectionUtils.isEmpty(existUserGroupIdList)) {
+
+            userGroupIdList = userGroupIdList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .map(e -> {
+                        if (!existUserGroupIdList.contains(e)) {
+                            return e;
+                        }
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+        }
 
         // 绑定
+        if (!CollectionUtils.isEmpty(userGroupIdList)) {
+            List<EmployeeRelaUserGroupDO> employeeRelaUserGroupDOS = userGroupIdList.parallelStream()
+                    .map(userGroupId -> {
+                        EmployeeRelaUserGroupDO employeeRelaUserGroupDO = new EmployeeRelaUserGroupDO();
+                        employeeRelaUserGroupDO.setEmployeeId(employeeId);
+                        employeeRelaUserGroupDO.setUserGroupId(userGroupId);
+                        employeeRelaUserGroupDO.setGmtCreate(new Date());
+                        employeeRelaUserGroupDO.setGmtModify(new Date());
 
+                        return employeeRelaUserGroupDO;
+                    })
+                    .collect(Collectors.toList());
+
+            int count = employeeRelaUserGroupDOMapper.batchInsert(employeeRelaUserGroupDOS);
+            Preconditions.checkArgument(count == employeeRelaUserGroupDOS.size(), "关联员工失败");
+        }
     }
 }

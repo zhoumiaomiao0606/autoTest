@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.UserGroupQuery;
-import com.yunche.loan.domain.dataObj.UserGroupDO;
 import com.yunche.loan.domain.param.UserGroupParam;
 import com.yunche.loan.domain.viewObj.*;
 import com.yunche.loan.service.UserGroupService;
@@ -49,9 +48,9 @@ public class UserGroupController {
     }
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> update(@RequestBody UserGroupDO userGroupDO) {
-        logger.info(Arrays.asList("update", JSON.toJSONString(userGroupDO)).stream().collect(Collectors.joining("\u0001")));
-        return userGroupService.update(userGroupDO);
+    public ResultBean<Void> update(@RequestBody UserGroupParam userGroupParam) {
+        logger.info(Arrays.asList("update", JSON.toJSONString(userGroupParam)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.update(userGroupParam);
     }
 
     @GetMapping(value = "/delete")
@@ -88,54 +87,82 @@ public class UserGroupController {
     }
 
     /**
-     * 当前用户组的权限列表   -分页查询
+     * 当前用户组已绑定的员工列表   -分页查询
      *
      * @param query id、pageIndex、pageSize
      * @return
      */
-    @GetMapping(value = "/listAuth")
+    @PostMapping(value = "/listEmployee", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<EmployeeVO>> listEmployee(@RequestBody BaseQuery query) {
+        logger.info(Arrays.asList("listEmployee", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.listEmployee(query);
+    }
+
+    /**
+     * 当前用户组已绑定的权限列表   -分页查询
+     *
+     * @param query id、pageIndex、pageSize
+     * @return
+     */
+    @PostMapping(value = "/listAuth", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<AuthVO>> listAuth(@RequestBody BaseQuery query) {
         logger.info(Arrays.asList("listAuth", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.listAuth(query);
     }
 
     /**
-     * 当前用户组的权限列表   -分页查询
-     *
-     * @param query id、pageIndex、pageSize
-     * @return
-     */
-    @GetMapping(value = "/listEmployee")
-    public ResultBean<List<UserGroupVO.RelaEmployeeVO>> listEmployee(@RequestBody BaseQuery query) {
-        logger.info(Arrays.asList("listEmployee", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
-        return userGroupService.listEmployee(query);
-    }
-
-    /**
-     * 删除关联的权限      -支持列表删除
-     *
-     * @param id      用户组ID
-     * @param authIds 权限ID列表 逗号分隔
-     * @return
-     */
-    @GetMapping(value = "/delete/relaAuths")
-    public ResultBean<Void> deleteRelaAuths(@RequestParam("id") Long id,
-                                            @RequestParam("authIds") String authIds) {
-        logger.info(Arrays.asList("/delete/relaEmployees", JSON.toJSONString(id), JSON.toJSONString(authIds)).stream().collect(Collectors.joining("\u0001")));
-        return userGroupService.deleteRelaAuths(id, authIds);
-    }
-
-    /**
-     * 删除关联的员工      -支持列表删除
+     * 绑定员工列表      -支持列表
      *
      * @param id          用户组ID
      * @param employeeIds 员工ID列表 逗号分隔
      * @return
      */
-    @GetMapping(value = "/delete/relaEmployees")
-    public ResultBean<Void> deleteRelaEmployees(@RequestParam("id") Long id,
-                                                @RequestParam("employeeIds") String employeeIds) {
-        logger.info(Arrays.asList("/delete/relaEmployees", JSON.toJSONString(id), JSON.toJSONString(employeeIds)).stream().collect(Collectors.joining("\u0001")));
-        return userGroupService.deleteRelaEmployees(id, employeeIds);
+    @GetMapping(value = "/bindEmployee")
+    public ResultBean<Void> bindEmployee(@RequestParam("id") Long id,
+                                         @RequestParam("employeeIds") String employeeIds) {
+        logger.info(Arrays.asList("bindEmployee", JSON.toJSONString(id), JSON.toJSONString(employeeIds)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.bindEmployee(id, employeeIds);
+    }
+
+    /**
+     * 解绑员工列表      -支持列表
+     *
+     * @param id          用户组ID
+     * @param employeeIds 员工ID列表 逗号分隔
+     * @return
+     */
+    @GetMapping(value = "/unbindEmployee")
+    public ResultBean<Void> unbindEmployee(@RequestParam("id") Long id,
+                                           @RequestParam("employeeIds") String employeeIds) {
+        logger.info(Arrays.asList("unbindEmployee", JSON.toJSONString(id), JSON.toJSONString(employeeIds)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.unbindEmployee(id, employeeIds);
+    }
+
+    /**
+     * 绑定权限列表      -支持列表
+     *
+     * @param id      用户组ID
+     * @param authIds 权限ID列表 逗号分隔
+     * @return
+     */
+    @GetMapping(value = "/bindAuth")
+    public ResultBean<Void> bindAuth(@RequestParam("id") Long id,
+                                     @RequestParam("authIds") String authIds) {
+        logger.info(Arrays.asList("bindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.bindAuth(id, authIds);
+    }
+
+    /**
+     * 解绑权限列表      -支持列表
+     *
+     * @param id      用户组ID
+     * @param authIds 权限ID列表 逗号分隔
+     * @return
+     */
+    @GetMapping(value = "/unbindAuth")
+    public ResultBean<Void> unbindAuth(@RequestParam("id") Long id,
+                                       @RequestParam("authIds") String authIds) {
+        logger.info(Arrays.asList("unbindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.unbindAuth(id, authIds);
     }
 }

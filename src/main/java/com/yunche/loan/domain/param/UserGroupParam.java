@@ -12,6 +12,14 @@ import java.util.List;
 @Data
 public class UserGroupParam extends UserGroupDO {
     /**
+     * 部门ID
+     */
+    private Long departmentId;
+    /**
+     * 区域(城市)ID
+     */
+    private Long areaId;
+    /**
      * 权限ID列表
      */
     private List<Long> authIdList;

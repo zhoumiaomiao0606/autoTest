@@ -4,8 +4,6 @@
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.UserGroupDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
-        <result column="department_id" jdbcType="BIGINT" property="departmentId"/>
-        <result column="area_id" jdbcType="BIGINT" property="areaId"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
@@ -16,7 +14,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, department_id, area_id, gmt_create, gmt_modify, feature, status
+        id, name, gmt_create, gmt_modify, feature, status
     </sql>
     <sql id="Blob_Column_List">
         info
@@ -25,12 +23,6 @@
     <sql id="Base_Query_List">
         <if test="name != null and name != '' ">
             AND name LIKE CONCAT('%',#{name},'%')
-        </if>
-        <if test="departmentId != null">
-            AND department_id = #{departmentId}
-        </if>
-        <if test="areaId != null">
-            AND area_id = #{areaId}
         </if>
         <if test="gmtCreateStart != null">
             <![CDATA[ AND gmt_create >= #{gmtCreateStart} ]]>
@@ -50,7 +42,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.UserGroupQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from user_group
@@ -60,7 +52,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.UserGroupQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -103,12 +95,11 @@
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into user_group (id, name, department_id,
-        area_id, gmt_create, gmt_modify,
+        insert into user_group (id, name, gmt_create, gmt_modify,
         feature, status, info
         )
-        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT},
-        #{areaId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP},
         #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{info,jdbcType=LONGVARCHAR}
         )
     </insert>
@@ -125,12 +116,6 @@
             </if>
             <if test="name != null">
                 name,
-            </if>
-            <if test="departmentId != null">
-                department_id,
-            </if>
-            <if test="areaId != null">
-                area_id,
             </if>
             <if test="gmtCreate != null">
                 gmt_create,
@@ -154,12 +139,6 @@
             </if>
             <if test="name != null">
                 #{name,jdbcType=VARCHAR},
-            </if>
-            <if test="departmentId != null">
-                #{departmentId,jdbcType=BIGINT},
-            </if>
-            <if test="areaId != null">
-                #{areaId,jdbcType=BIGINT},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -185,12 +164,6 @@
             <if test="name != null">
                 name = #{name,jdbcType=VARCHAR},
             </if>
-            <if test="departmentId != null">
-                department_id = #{departmentId,jdbcType=BIGINT},
-            </if>
-            <if test="areaId != null">
-                area_id = #{areaId,jdbcType=BIGINT},
-            </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -213,8 +186,6 @@
     <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
         update user_group
         set name = #{name,jdbcType=VARCHAR},
-        department_id = #{departmentId,jdbcType=BIGINT},
-        area_id = #{areaId,jdbcType=BIGINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         feature = #{feature,jdbcType=VARCHAR},
@@ -226,8 +197,6 @@
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
     update user_group
     set name = #{name,jdbcType=VARCHAR},
-      department_id = #{departmentId,jdbcType=BIGINT},
-      area_id = #{areaId,jdbcType=BIGINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
       feature = #{feature,jdbcType=VARCHAR},

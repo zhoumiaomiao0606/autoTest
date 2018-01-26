@@ -25,8 +25,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_PROV;

@@ -140,9 +140,26 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
+        <table tableName="department_rela_user_group" domainObjectName="DepartmentRelaUserGroupDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+
+        <table tableName="employee_rela_user_group" domainObjectName="EmployeeRelaUserGroupDO"
+                       enableCountByExample="false" enableUpdateByExample="false"
+                       enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="employee_rela_department" domainObjectName="EmployeeRelaDepartmentDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+        <table tableName="user_group_rela_area" domainObjectName="UserGroupRelaAreaDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
         -->
 
-        <table tableName="department_rela_user_group" domainObjectName="DepartmentRelaUserGroupDO"
+
+        <table tableName="user_group" domainObjectName="UserGroupDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 

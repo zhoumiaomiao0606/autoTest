@@ -15,36 +15,15 @@ public class UserGroupVO {
     /**
      * 部门
      */
-    private Department department;
+    private BaseVO department;
     /**
-     * 城市
+     * 区域(城市)
      */
-    private Area area;
+    private BaseVO area;
 
     private Date gmtCreate;
 
     private Date gmtModify;
 
     private Byte status;
-
-    @Data
-    public static class Department {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    public static class Area {
-        private Long id;
-        private String name;
-    }
-
-    /**
-     * 用户组关联的用户(员工)列表
-     */
-    @Data
-    public static class RelaEmployeeVO {
-        private Long id;
-        private String name;
-    }
 }

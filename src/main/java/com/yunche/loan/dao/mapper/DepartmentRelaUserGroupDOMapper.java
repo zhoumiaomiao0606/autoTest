@@ -25,7 +25,13 @@ public interface DepartmentRelaUserGroupDOMapper {
 
     List<DepartmentRelaUserGroupDO> query(BaseQuery query);
 
-    List<Long> getUserGroupIdListByDepartmentId(Long id);
+    List<Long> getUserGroupIdListByDepartmentId(Long departmentId);
 
     int batchInsert(List<DepartmentRelaUserGroupDO> departmentRelaUserGroupDOS);
+
+    List<Long> getDepartmentIdListByUserGroupId(Long id);
+
+    List<DepartmentRelaUserGroupDO> getByUserGroupId(Long userGroupId);
+
+    int updateByUserGroupId(DepartmentRelaUserGroupDO departmentRelaUserGroupDO);
 }

@@ -196,10 +196,10 @@ public class DepartmentServiceImpl implements DepartmentService {
                     departmentRelaUserGroupDOKey.setDepartmentId(id);
                     departmentRelaUserGroupDOKey.setUserGroupId(Long.valueOf(userGroupId));
                     int count = departmentRelaUserGroupDOMapper.deleteByPrimaryKey(departmentRelaUserGroupDOKey);
-                    Preconditions.checkArgument(count > 0, "删除失败");
+                    Preconditions.checkArgument(count > 0, "取消关联失败");
                 });
 
-        return ResultBean.ofSuccess(null, "删除成功");
+        return ResultBean.ofSuccess(null, "取消关联成功");
     }
 
 
@@ -332,19 +332,19 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * 绑定用户组(角色)列表
      *
-     * @param id
+     * @param departmentId
      * @param userGroupIdList
      */
-    private void bindUserGroup(Long id, List<Long> userGroupIdList) {
+    private void bindUserGroup(Long departmentId, List<Long> userGroupIdList) {
         if (CollectionUtils.isEmpty(userGroupIdList)) {
             return;
         }
 
         // 去重
-        List<Long> existUserGroupIdList = departmentRelaUserGroupDOMapper.getUserGroupIdListByDepartmentId(id);
+        List<Long> existUserGroupIdList = departmentRelaUserGroupDOMapper.getUserGroupIdListByDepartmentId(departmentId);
         if (!CollectionUtils.isEmpty(existUserGroupIdList)) {
 
-            userGroupIdList = existUserGroupIdList.parallelStream()
+            userGroupIdList = userGroupIdList.parallelStream()
                     .filter(Objects::nonNull)
                     .distinct()
                     .map(e -> {
@@ -363,7 +363,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             List<DepartmentRelaUserGroupDO> departmentRelaUserGroupDOS = userGroupIdList.parallelStream()
                     .map(e -> {
                         DepartmentRelaUserGroupDO departmentRelaUserGroupDO = new DepartmentRelaUserGroupDO();
-                        departmentRelaUserGroupDO.setDepartmentId(id);
+                        departmentRelaUserGroupDO.setDepartmentId(departmentId);
                         departmentRelaUserGroupDO.setUserGroupId(e);
                         departmentRelaUserGroupDO.setGmtCreate(new Date());
                         departmentRelaUserGroupDO.setGmtModify(new Date());
@@ -375,7 +375,6 @@ public class DepartmentServiceImpl implements DepartmentService {
             int count = departmentRelaUserGroupDOMapper.batchInsert(departmentRelaUserGroupDOS);
             Preconditions.checkArgument(count == departmentRelaUserGroupDOS.size(), "关联业务范围失败");
         }
-
     }
 
     /**

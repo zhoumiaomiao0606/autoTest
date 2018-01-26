@@ -10,10 +10,6 @@ public class UserGroupDO {
 
     private String name;
 
-    private Long departmentId;
-
-    private Long areaId;
-
     private String info;
 
     private Date gmtCreate;

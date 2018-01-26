@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.dao.mapper.UserGroupRelaAreaDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+        <id column="user_group_id" jdbcType="BIGINT" property="userGroupId"/>
+        <id column="area_id" jdbcType="BIGINT" property="areaId"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    user_group_id, area_id, gmt_create, gmt_modify
+  </sql>
+
+    <!--getByUserGroupId-->
+    <select id="getByUserGroupId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_group_rela_area
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+    </select>
+
+    <!--getAreaIdListByUserGroupId-->
+    <select id="getAreaIdListByUserGroupId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select area_id
+        from user_group_rela_area
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+    </select>
+
+    <!--updateByUserGroupId-->
+    <update id="updateByUserGroupId" parameterType="java.lang.Long">
+        update user_group_rela_area
+        <set>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="areaId != null">
+                area_id = #{areaId,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDOKey"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_group_rela_area
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+        and area_id = #{areaId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDOKey">
+    delete from user_group_rela_area
+    where user_group_id = #{userGroupId,jdbcType=BIGINT}
+      and area_id = #{areaId,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+    insert into user_group_rela_area (user_group_id, area_id, gmt_create, 
+      gmt_modify)
+    values (#{userGroupId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+        insert into user_group_rela_area
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userGroupId != null">
+                user_group_id,
+            </if>
+            <if test="areaId != null">
+                area_id,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userGroupId != null">
+                #{userGroupId,jdbcType=BIGINT},
+            </if>
+            <if test="areaId != null">
+                #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+        update user_group_rela_area
+        <set>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+        and area_id = #{areaId,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+    update user_group_rela_area
+    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where user_group_id = #{userGroupId,jdbcType=BIGINT}
+      and area_id = #{areaId,jdbcType=BIGINT}
+  </update>
+
+</mapper>
