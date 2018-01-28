@@ -40,12 +40,14 @@ public class CarBrandServiceImpl implements CarBrandService {
     @Override
     public ResultBean<Long> create(CarBrandDO carBrandDO) {
         Preconditions.checkArgument(null != carBrandDO && StringUtils.isNotBlank(carBrandDO.getName()), "品牌名称不能为空");
+        Preconditions.checkNotNull(carBrandDO.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(carBrandDO.getStatus()) || INVALID_STATUS.equals(carBrandDO.getStatus()),
+                "状态非法");
 
         // 品牌名已存在校验
         List<String> brandNameList = carBrandDOMapper.getAllName(VALID_STATUS);
         Preconditions.checkArgument(!brandNameList.contains(carBrandDO.getName().trim()), "品牌名已存在");
 
-        carBrandDO.setStatus(VALID_STATUS);
         carBrandDO.setGmtCreate(new Date());
         carBrandDO.setGmtModify(new Date());
         int count = carBrandDOMapper.insertSelective(carBrandDO);

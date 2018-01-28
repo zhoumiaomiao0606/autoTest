@@ -30,6 +30,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -121,23 +127,7 @@
         <!-- log4j2 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions><!-- 去掉默认配置 -->
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency> <!-- 引入log4j2依赖 -->
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- log4j2 -->
 
@@ -198,25 +188,25 @@
             <version>${activiti.version}</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.activiti</groupId>-->
-            <!--<artifactId>activiti-spring-boot-starter-rest-api</artifactId>-->
-            <!--<version>${activiti.version}</version>-->
+        <!--<groupId>org.activiti</groupId>-->
+        <!--<artifactId>activiti-spring-boot-starter-rest-api</artifactId>-->
+        <!--<version>${activiti.version}</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>org.activiti</groupId>-->
-            <!--<artifactId>activiti-spring-boot-starter-actuator</artifactId>-->
-            <!--<version>${activiti.version}</version>-->
+        <!--<groupId>org.activiti</groupId>-->
+        <!--<artifactId>activiti-spring-boot-starter-actuator</artifactId>-->
+        <!--<version>${activiti.version}</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>org.activiti</groupId>-->
-            <!--<artifactId>activiti-modeler</artifactId>-->
-            <!--<version>${activiti.version}</version>-->
+        <!--<groupId>org.activiti</groupId>-->
+        <!--<artifactId>activiti-modeler</artifactId>-->
+        <!--<version>${activiti.version}</version>-->
         <!--</dependency>-->
 
         <!--<dependency>-->
-            <!--<groupId>org.activiti</groupId>-->
-            <!--<artifactId>activiti-diagram-rest</artifactId>-->
-            <!--<version>${activiti.version}</version>-->
+        <!--<groupId>org.activiti</groupId>-->
+        <!--<artifactId>activiti-diagram-rest</artifactId>-->
+        <!--<version>${activiti.version}</version>-->
         <!--</dependency>-->
         <!-- activiti -->
 

@@ -12,6 +12,7 @@
         <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="entry_date" jdbcType="TIMESTAMP" property="entryDate"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
@@ -20,7 +21,7 @@
 
     <sql id="Base_Column_List">
         id, name, id_card, mobile, email, ding_ding, department_id, parent_id, title, entry_date,
-        gmt_create, gmt_modify, feature, status
+        type, gmt_create, gmt_modify, feature, status
     </sql>
 
     <sql id="Base_Query_List">
@@ -39,17 +40,17 @@
         <if test="departmentId != null">
             AND department_id = #{departmentId}
         </if>
-        <if test="leaderId != null">
-            AND leader_id = #{leaderId}
+        <if test="parentId != null">
+            AND parent_id = #{parentId}
         </if>
         <if test="title != null and title != '' ">
-            AND title = #{title}
+            AND title LIKE CONCAT('%',#{title},'%')
         </if>
         <if test="entryDateStart != null">
-            <![CDATA[ AND entryDate >= #{entryDateStart} ]]>
+            <![CDATA[ AND entry_date >= #{entryDateStart} ]]>
         </if>
         <if test="entryDateEnd != null">
-            <![CDATA[ AND entryDate <= #{entryDateEnd} ]]>
+            <![CDATA[ AND entry_date <= #{entryDateEnd} ]]>
         </if>
         <if test="gmtCreateStart != null">
             <![CDATA[ AND gmt_create >= #{gmtCreateStart} ]]>
@@ -63,13 +64,16 @@
         <if test="gmtModifyEnd != null">
             <![CDATA[ AND gmt_modify <= #{gmtModifyEnd} ]]>
         </if>
+        <if test="type != null">
+            AND type = #{type}
+        </if>
         <if test="status != null">
             AND status = #{status}
         </if>
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.EmployeeQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from employee
@@ -79,7 +83,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.EmployeeQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -89,6 +93,38 @@
         </where>
         ORDER BY gmt_modify DESC
         limit #{startRow}, #{pageSize}
+    </select>
+
+    <!-- countListEmployeeByUserGroupId -->
+    <select id="countListEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+            resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM employee_rela_user_group AS a
+        JOIN employee AS b
+        ON a.`employee_id` = b.`id`
+        <if test="id != null">
+            AND a.user_group_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+    </select>
+
+    <!-- listEmployeeByUserGroupId -->
+    <select id="listEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+            resultMap="BaseResultMap">
+        SELECT b.*
+        FROM employee_rela_user_group AS a
+        JOIN employee AS b
+        ON a.`employee_id` = b.`id`
+        <if test="id != null">
+            AND a.user_group_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+        ORDER BY a.`gmt_modify` DESC
+        LIMIT #{startRow}, #{pageSize}
     </select>
 
     <!--getAll-->
@@ -124,13 +160,15 @@
         insert into employee (id, name, id_card,
         mobile, email, ding_ding,
         department_id, parent_id, title,
-        entry_date, gmt_create, gmt_modify,
-        feature, status)
+        entry_date, type, gmt_create,
+        gmt_modify, feature, status
+        )
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{idCard,jdbcType=CHAR},
         #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{dingDing,jdbcType=VARCHAR},
         #{departmentId,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR},
-        #{entryDate,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
+        #{entryDate,jdbcType=TIMESTAMP}, #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}
+        )
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
@@ -169,6 +207,9 @@
             </if>
             <if test="entryDate != null">
                 entry_date,
+            </if>
+            <if test="type != null">
+                type,
             </if>
             <if test="gmtCreate != null">
                 gmt_create,
@@ -213,6 +254,9 @@
             </if>
             <if test="entryDate != null">
                 #{entryDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=TINYINT},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -259,6 +303,9 @@
             <if test="entryDate != null">
                 entry_date = #{entryDate,jdbcType=TIMESTAMP},
             </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -286,6 +333,7 @@
       parent_id = #{parentId,jdbcType=BIGINT},
       title = #{title,jdbcType=VARCHAR},
       entry_date = #{entryDate,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
       feature = #{feature,jdbcType=VARCHAR},

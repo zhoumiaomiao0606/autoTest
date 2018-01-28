@@ -1,11 +1,14 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.EmployeeQuery;
+import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.UserGroupVO;
 
 import java.util.List;
 
@@ -26,4 +29,10 @@ public interface EmployeeService {
     ResultBean<List<EmployeeVO>> query(EmployeeQuery query);
 
     ResultBean<List<LevelVO>> listAll();
+
+    ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query);
+
+    ResultBean<Void> bindUserGroup(Long id, String userGroupIds);
+
+    ResultBean<Void> unbindUserGroup(Long id, String userGroupIds);
 }

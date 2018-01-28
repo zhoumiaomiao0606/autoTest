@@ -52,7 +52,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.UserGroupQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -62,6 +62,70 @@
         </where>
         ORDER BY gmt_modify DESC
         limit #{startRow}, #{pageSize}
+    </select>
+
+    <!-- countListUserGroupByEmployeeId -->
+    <select id="countListUserGroupByEmployeeId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+            resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM employee_rela_user_group AS a
+        JOIN user_group AS b
+        ON a.`user_group_id` = b.`id`
+        <if test="id != null">
+            AND a.employee_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+    </select>
+
+    <!-- listUserGroupByEmployeeId -->
+    <select id="listUserGroupByEmployeeId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+            resultMap="BaseResultMap">
+        SELECT b.*
+        FROM employee_rela_user_group AS a
+        JOIN user_group AS b
+        ON a.`user_group_id` = b.`id`
+        <if test="id != null">
+            AND a.employee_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+        ORDER BY a.`gmt_modify` DESC
+        LIMIT #{startRow}, #{pageSize}
+    </select>
+
+    <!-- countListUserGroupByDepartmentId -->
+    <select id="countListUserGroupByDepartmentId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+            resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM department_rela_user_group AS a
+        JOIN user_group AS b
+        ON a.`user_group_id` = b.`id`
+        <if test="id != null">
+            AND a.department_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+    </select>
+
+    <!-- listUserGroupByDepartmentId -->
+    <select id="listUserGroupByDepartmentId" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
+            resultMap="BaseResultMap">
+        SELECT b.*
+        FROM department_rela_user_group AS a
+        JOIN user_group AS b
+        ON a.`user_group_id` = b.`id`
+        <if test="id != null">
+            AND a.department_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+        ORDER BY a.`gmt_modify` DESC
+        LIMIT #{startRow}, #{pageSize}
     </select>
 
     <!--getAllName-->

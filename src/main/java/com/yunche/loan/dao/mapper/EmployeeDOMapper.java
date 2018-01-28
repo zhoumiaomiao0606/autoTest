@@ -1,6 +1,8 @@
 package com.yunche.loan.dao.mapper;
 
+import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.EmployeeQuery;
+import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -26,4 +28,8 @@ public interface EmployeeDOMapper {
     List<EmployeeDO> query(EmployeeQuery query);
 
     List<EmployeeDO> getAll(@Param("status") Byte status);
+
+    int countListEmployeeByUserGroupId(BaseQuery query);
+
+    List<EmployeeDO> listEmployeeByUserGroupId(BaseQuery query);
 }

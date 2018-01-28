@@ -1,6 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.QueryObj.BaseQuery;
+import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.EmployeeRelaUserGroupDO;
 import com.yunche.loan.domain.dataObj.EmployeeRelaUserGroupDOKey;
 import org.apache.ibatis.annotations.Mapper;
@@ -27,7 +27,7 @@ public interface EmployeeRelaUserGroupDOMapper {
 
     int batchInsert(List<EmployeeRelaUserGroupDO> employeeRelaUserGroupDOS);
 
-    int count(BaseQuery query);
+    int count(RelaQuery query);
 
-    List<EmployeeRelaUserGroupDO> query(BaseQuery query);
+    List<EmployeeRelaUserGroupDO> query(RelaQuery query);
 }

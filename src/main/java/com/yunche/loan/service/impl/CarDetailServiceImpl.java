@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
@@ -48,8 +49,10 @@ public class CarDetailServiceImpl implements CarDetailService {
     @Override
     public ResultBean<Long> create(CarDetailDO carDetailDO) {
         Preconditions.checkArgument(null != carDetailDO && null != carDetailDO.getModelId(), "车系不能为空");
+        Preconditions.checkNotNull(carDetailDO.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(carDetailDO.getStatus()) || INVALID_STATUS.equals(carDetailDO.getStatus()),
+                "状态非法");
 
-        carDetailDO.setStatus(VALID_STATUS);
         carDetailDO.setGmtCreate(new Date());
         carDetailDO.setGmtModify(new Date());
         int count = carDetailDOMapper.insertSelective(carDetailDO);

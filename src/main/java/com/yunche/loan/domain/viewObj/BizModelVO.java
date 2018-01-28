@@ -18,9 +18,9 @@ public class BizModelVO {
 
     private String custTarget;
 
-    private Byte carType;
+    private Integer carType;
 
-    private Byte status;
+    private Integer status;
 
     private Date gmtCreate;
 
@@ -96,19 +96,19 @@ public class BizModelVO {
         this.custTarget = custTarget == null ? null : custTarget.trim();
     }
 
-    public Byte getCarType() {
+    public Integer getCarType() {
         return carType;
     }
 
-    public void setCarType(Byte carType) {
+    public void setCarType(Integer carType) {
         this.carType = carType;
     }
 
-    public Byte getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

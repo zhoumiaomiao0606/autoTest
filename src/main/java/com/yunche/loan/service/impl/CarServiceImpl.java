@@ -191,8 +191,8 @@ public class CarServiceImpl implements CarService {
         // 获取并填充所有品牌
         getAndFillAllCarBrand(carTwoLevelVO);
 
-        // 获取并填充所有子车系及子车型
-        getAndFillAllCarModelAndDetail(carTwoLevelVO);
+        // 获取并填充所有子车系
+        getAndFillAllCarModel(carTwoLevelVO);
 
         return ResultBean.ofSuccess(carTwoLevelVO);
     }
@@ -202,7 +202,7 @@ public class CarServiceImpl implements CarService {
      *
      * @param carTwoLevelVO
      */
-    private void getAndFillAllCarModelAndDetail(CarTwoLevelVO carTwoLevelVO) {
+    private void getAndFillAllCarModel(CarTwoLevelVO carTwoLevelVO) {
         List<CarTwoLevelVO.Brand> carBrandList = carTwoLevelVO.getCarBrand();
         if (CollectionUtils.isEmpty(carBrandList)) {
             return;
@@ -269,7 +269,7 @@ public class CarServiceImpl implements CarService {
                         return brand;
                     })
                     .filter(Objects::nonNull)
-//                    .sorted(CarThreeLevelVO.Brand::getInitial)
+                    .sorted(Comparator.comparing(CarTwoLevelVO.Brand::getInitial))
                     .collect(Collectors.toList());
 
             carTwoLevelVO.setCarBrand(carBrandList);

@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.yunche.loan.config.constant.AreaConst.*;
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
@@ -67,8 +68,10 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     @Override
     public ResultBean<Long> create(BaseAreaDO baseAreaDO) {
         Preconditions.checkArgument(null != baseAreaDO && null != baseAreaDO.getAreaId(), "areaId不能为空");
+        Preconditions.checkNotNull(baseAreaDO.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(baseAreaDO.getStatus()) || INVALID_STATUS.equals(baseAreaDO.getStatus()),
+                "状态非法");
 
-        baseAreaDO.setStatus(VALID_STATUS);
         baseAreaDO.setGmtCreate(new Date());
         baseAreaDO.setGmtModify(new Date());
         int count = baseAreaDOMapper.insert(baseAreaDO);
@@ -109,7 +112,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
         // 获取所有行政区
         List<BaseAreaDO> allArea = baseAreaDOMapper.getAll(VALID_STATUS);
         if (CollectionUtils.isEmpty(allArea)) {
-            return ResultBean.ofSuccess(null);
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
         }
 
         // 省-市映射容器

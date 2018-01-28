@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.DepartmentQuery;
+import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.DepartmentDO;
 import com.yunche.loan.domain.param.DepartmentParam;
 import com.yunche.loan.domain.viewObj.DepartmentVO;

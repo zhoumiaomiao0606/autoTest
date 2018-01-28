@@ -5,9 +5,8 @@ import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.PartnerQuery;
 import com.yunche.loan.domain.dataObj.PartnerDO;
 import com.yunche.loan.domain.param.PartnerParam;
-import com.yunche.loan.domain.viewObj.AuthVO;
+import com.yunche.loan.domain.viewObj.BizModelVO;
 import com.yunche.loan.domain.viewObj.PartnerVO;
-import com.yunche.loan.domain.viewObj.UserGroupVO;
 
 import java.util.List;
 
@@ -24,9 +23,11 @@ public interface PartnerService {
 
     ResultBean<PartnerVO> getById(Long id);
 
-    ResultBean<List<UserGroupVO>> query(PartnerQuery query);
+    ResultBean<List<PartnerVO>> query(PartnerQuery query);
 
-    ResultBean<List<AuthVO>> listBizModel(BaseQuery query);
+    ResultBean<List<BizModelVO>> listBizModel(BaseQuery query);
 
-    ResultBean<Void> deleteRelaBizModels(Long id, String bizModelIds);
+    ResultBean<Void> bindBizModel(Long id, String bizModelIds);
+
+    ResultBean<Void> unbindBizModel(Long id, String bizModelIds);
 }

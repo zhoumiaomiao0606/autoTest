@@ -7,8 +7,10 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.DepartmentQuery;
+import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.DepartmentParam;
+import com.yunche.loan.domain.viewObj.BaseVO;
 import com.yunche.loan.domain.viewObj.DepartmentVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
@@ -50,7 +52,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     public ResultBean<Long> create(DepartmentParam departmentParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(departmentParam.getName()), "部门名称不能为空");
 //        Preconditions.checkNotNull(departmentParam.getParentId(), "上级部门不能为空");
-        Preconditions.checkNotNull(departmentParam.getEmployeeId(), "部门负责人不能为空");
+        Preconditions.checkNotNull(departmentParam.getLeaderId(), "部门负责人不能为空");
+        Preconditions.checkNotNull(departmentParam.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(departmentParam.getStatus()) || INVALID_STATUS.equals(departmentParam.getStatus()),
+                "状态非法");
 
         // 创建实体，并返回ID
         Long id = insertAndGetId(departmentParam);
@@ -143,30 +148,27 @@ public class DepartmentServiceImpl implements DepartmentService {
     public ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query) {
         Preconditions.checkNotNull(query.getId(), "部门ID不能为空");
 
-        int totalNum = departmentRelaUserGroupDOMapper.count(query);
+        int totalNum = userGroupDOMapper.countListUserGroupByDepartmentId(query);
         if (totalNum > 0) {
-            List<DepartmentRelaUserGroupDO> departmentRelaUserGroupDOS = departmentRelaUserGroupDOMapper.query(query);
-            List<UserGroupVO> userGroupVOS = Collections.EMPTY_LIST;
-            if (!CollectionUtils.isEmpty(departmentRelaUserGroupDOS)) {
-                userGroupVOS = departmentRelaUserGroupDOS.stream()
-                        .filter(Objects::nonNull)
-                        .map(e -> {
 
-                            UserGroupDO userGroupDO = userGroupDOMapper.selectByPrimaryKey(e.getUserGroupId(), VALID_STATUS);
-                            if (null != userGroupDO) {
-                                UserGroupVO userGroupVO = new UserGroupVO();
-                                BeanUtils.copyProperties(userGroupDO, userGroupVO);
-                                return userGroupVO;
-                            }
-                            return null;
-                        })
+            List<UserGroupDO> userGroupDOS = userGroupDOMapper.listUserGroupByDepartmentId(query);
+            if (!CollectionUtils.isEmpty(userGroupDOS)) {
+
+                List<UserGroupVO> userGroupVOS = userGroupDOS.stream()
                         .filter(Objects::nonNull)
+                        .map(userGroupDO -> {
+
+                            UserGroupVO userGroupVO = new UserGroupVO();
+                            BeanUtils.copyProperties(userGroupDO, userGroupVO);
+                            return userGroupVO;
+                        })
                         .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(userGroupVOS, totalNum, query.getPageIndex(), query.getPageSize());
             }
-            return ResultBean.ofSuccess(userGroupVOS, totalNum, query.getPageIndex(), query.getPageSize());
         }
 
-        return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
     }
 
     @Override
@@ -214,8 +216,8 @@ public class DepartmentServiceImpl implements DepartmentService {
             return null;
         }
 
-        Map<Long, List<DepartmentDO>> parentIdDOMap = Maps.newConcurrentMap();
-        departmentDOS.parallelStream()
+        Map<Long, List<DepartmentDO>> parentIdDOMap = Maps.newHashMap();
+        departmentDOS.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
@@ -302,7 +304,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     private Long insertAndGetId(DepartmentParam departmentParam) {
         List<String> nameList = departmentDOMapper.getAllName(VALID_STATUS);
-        Preconditions.checkArgument(!nameList.contains(departmentParam.getName()), "部门名称已存在");
+        Preconditions.checkArgument(!nameList.contains(departmentParam.getName().trim()), "部门名称已存在");
 
         DepartmentDO departmentDO = new DepartmentDO();
         BeanUtils.copyProperties(departmentParam, departmentDO);
@@ -317,8 +319,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         } else {
             departmentDO.setLevel(1);
         }
-        // status
-        departmentDO.setStatus(VALID_STATUS);
         // date
         departmentDO.setGmtCreate(new Date());
         departmentDO.setGmtModify(new Date());
@@ -408,7 +408,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     private void fillMsg(DepartmentDO departmentDO, DepartmentVO departmentVO) {
         fillParent(departmentDO.getParentId(), departmentVO);
-        fillLeader(departmentDO.getEmployeeId(), departmentVO);
+        fillLeader(departmentDO.getLeaderId(), departmentVO);
         fillArea(departmentDO.getAreaId(), departmentVO);
         // 填充部门人数
         fillNum(departmentVO);
@@ -421,27 +421,36 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @param departmentVO
      */
     private void fillParent(Long parentId, DepartmentVO departmentVO) {
+        if (null == parentId) {
+            return;
+        }
         DepartmentDO parentDepartmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
         if (null != parentDepartmentDO) {
-            DepartmentVO.Parent parent = new DepartmentVO.Parent();
+            BaseVO parent = new BaseVO();
             BeanUtils.copyProperties(parentDepartmentDO, parent);
             departmentVO.setParent(parent);
         }
     }
 
     private void fillLeader(Long employeeId, DepartmentVO departmentVO) {
+        if (null == employeeId) {
+            return;
+        }
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeId, VALID_STATUS);
         if (null != employeeDO) {
-            DepartmentVO.Leader leader = new DepartmentVO.Leader();
+            BaseVO leader = new BaseVO();
             BeanUtils.copyProperties(employeeDO, leader);
             departmentVO.setLeader(leader);
         }
     }
 
     private void fillArea(Long areaId, DepartmentVO departmentVO) {
+        if (null == areaId) {
+            return;
+        }
         BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
         if (null != baseAreaDO) {
-            DepartmentVO.Area area = new DepartmentVO.Area();
+            BaseVO area = new BaseVO();
             area.setId(baseAreaDO.getAreaId());
             area.setName(baseAreaDO.getAreaName());
             departmentVO.setArea(area);
@@ -455,6 +464,6 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     private void fillNum(DepartmentVO departmentVO) {
 
-        departmentVO.setNum(10);
+        departmentVO.setEmployeeNum(10);
     }
 }

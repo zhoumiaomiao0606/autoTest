@@ -1,5 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
+import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.UserGroupQuery;
 import com.yunche.loan.domain.dataObj.UserGroupDO;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,4 +29,37 @@ public interface UserGroupDOMapper {
     int count(UserGroupQuery query);
 
     List<UserGroupDO> query(UserGroupQuery query);
+
+    /**
+     * 根据员工ID统计关联的用户组总量
+     *
+     * @param query
+     * @return
+     */
+    int countListUserGroupByEmployeeId(BaseQuery query);
+
+    /**
+     * 根据员工ID分页查询关联的用户组
+     *
+     * @param query
+     * @return
+     */
+    List<UserGroupDO> listUserGroupByEmployeeId(BaseQuery query);
+
+    /**
+     * 根据部门ID统计关联的用户组总量
+     *
+     * @param query
+     * @return
+     */
+    int countListUserGroupByDepartmentId(BaseQuery query);
+
+    /**
+     * 根据部门ID分页查询关联的用户组
+     *
+     * @param query
+     * @return
+     */
+    List<UserGroupDO> listUserGroupByDepartmentId(BaseQuery query);
+
 }

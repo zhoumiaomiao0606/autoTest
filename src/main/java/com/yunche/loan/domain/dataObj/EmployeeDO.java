@@ -17,7 +17,9 @@ public class EmployeeDO {
     private String email;
 
     private String dingDing;
-
+    /**
+     * 部门ID
+     */
     private Long departmentId;
     /**
      * 直接主管ID
@@ -27,6 +29,10 @@ public class EmployeeDO {
     private String title;
 
     private Date entryDate;
+    /**
+     * 员工类型（1:正式员工; 2:外包员工）
+     */
+    private Byte type;
 
     private Date gmtCreate;
 

@@ -4,16 +4,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.mapper.EmployeeDOMapper;
-import com.yunche.loan.dao.mapper.EmployeeRelaUserGroupDOMapper;
+import com.yunche.loan.dao.mapper.*;
+import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.EmployeeQuery;
-import com.yunche.loan.domain.dataObj.DepartmentDO;
-import com.yunche.loan.domain.dataObj.EmployeeDO;
-import com.yunche.loan.domain.dataObj.EmployeeRelaUserGroupDO;
+import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.EmployeeParam;
-import com.yunche.loan.domain.viewObj.DepartmentVO;
+import com.yunche.loan.domain.viewObj.BaseVO;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -22,11 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
+import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
 
 /**
  * @author liuzhe
@@ -39,7 +40,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
     @Autowired
+    private UserGroupDOMapper userGroupDOMapper;
+    @Autowired
+    private DepartmentDOMapper departmentDOMapper;
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+    @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
+    @Autowired
+    private DepartmentRelaUserGroupDOMapper departmentRelaUserGroupDOMapper;
+    @Autowired
+    private UserGroupRelaAreaDOMapper userGroupRelaAreaDOMapper;
 
 
     @Override
@@ -48,6 +59,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getIdCard()), "身份证号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getMobile()), "手机号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getEmail()), "电子邮箱不能为空");
+        Preconditions.checkNotNull(employeeParam.getStatus(), "员工状态不能为空");
+        Preconditions.checkNotNull(employeeParam.getType(), "员工类型不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(employeeParam.getStatus()) || INVALID_STATUS.equals(employeeParam.getStatus()),
+                "员工状态非法");
+        Preconditions.checkArgument(TYPE_ZS.equals(employeeParam.getType()) || TYPE_WB.equals(employeeParam.getType()),
+                "员工类型非法");
 
         // 创建实体，并返回ID
         Long id = insertAndGetId(employeeParam);
@@ -61,8 +78,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ResultBean<Void> update(EmployeeDO employeeDO) {
         Preconditions.checkNotNull(employeeDO.getId(), "id不能为空");
-
-        // TODO if 删除员工 -> 绑定的部门、用户组...
 
         employeeDO.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
@@ -89,7 +104,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeVO employeeVO = new EmployeeVO();
         BeanUtils.copyProperties(employeeDO, employeeVO);
 
-
+        // 填充直接上级信息
+        fillParent(employeeDO.getParentId(), employeeVO);
+        // 填充所属部门信息
+        fillDepartment(employeeDO.getDepartmentId(), employeeVO);
 
         return ResultBean.ofSuccess(employeeVO);
     }
@@ -97,25 +115,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ResultBean<List<EmployeeVO>> query(EmployeeQuery query) {
         int totalNum = employeeDOMapper.count(query);
-        if (totalNum < 1) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        if (totalNum > 0) {
+            List<EmployeeDO> employeeDOS = employeeDOMapper.query(query);
+            if (!CollectionUtils.isEmpty(employeeDOS)) {
+                List<EmployeeVO> employeeVOS = employeeDOS.stream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+                            EmployeeVO employeeVO = new EmployeeVO();
+                            BeanUtils.copyProperties(e, employeeVO);
+
+                            // 填充直接上级信息
+                            fillParent(e.getParentId(), employeeVO);
+                            // 填充所属部门信息
+                            fillDepartment(e.getDepartmentId(), employeeVO);
+
+                            return employeeVO;
+                        })
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(employeeVOS, totalNum, query.getPageIndex(), query.getPageSize());
+            }
         }
-
-        List<EmployeeDO> employeeDOS = employeeDOMapper.query(query);
-        if (CollectionUtils.isEmpty(employeeDOS)) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
-        }
-
-        List<EmployeeVO> employeeVOS = employeeDOS.stream()
-                .filter(Objects::nonNull)
-                .map(e -> {
-                    EmployeeVO employeeVO = new EmployeeVO();
-                    BeanUtils.copyProperties(e, employeeVO);
-                    return employeeVO;
-                })
-                .collect(Collectors.toList());
-
-        return ResultBean.ofSuccess(employeeVOS, totalNum, query.getPageIndex(), query.getPageSize());
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
     }
 
     @Override
@@ -129,6 +150,70 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<LevelVO> topLevelList = parseLevelByLevel(parentIdDOMap);
 
         return ResultBean.ofSuccess(topLevelList);
+    }
+
+    @Override
+    public ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query) {
+        Preconditions.checkNotNull(query.getId(), "员工ID不能为空");
+
+        int totalNum = userGroupDOMapper.countListUserGroupByEmployeeId(query);
+        if (totalNum > 0) {
+
+            List<UserGroupDO> userGroupDOS = userGroupDOMapper.listUserGroupByEmployeeId(query);
+            if (!CollectionUtils.isEmpty(userGroupDOS)) {
+
+                List<UserGroupVO> userGroupVOList = userGroupDOS.parallelStream()
+                        .filter(Objects::nonNull)
+                        .map(userGroupDO -> {
+
+                            UserGroupVO userGroupVO = new UserGroupVO();
+                            BeanUtils.copyProperties(userGroupDO, userGroupVO);
+
+                            fillDepartment(userGroupVO);
+                            fillArea(userGroupVO);
+
+                            return userGroupVO;
+                        })
+                        .sorted(Comparator.comparing(UserGroupVO::getGmtModify))
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(userGroupVOList, totalNum, query.getPageIndex(), query.getPageSize());
+            }
+        }
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
+    }
+
+    @Override
+    public ResultBean<Void> bindUserGroup(Long id, String userGroupIds) {
+        Preconditions.checkNotNull(id, "员工ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(userGroupIds), "用户组ID不能为空");
+
+        List<Long> userGroupIdList = Arrays.asList(userGroupIds.split(",")).stream()
+                .map(e -> {
+                    return Long.valueOf(e);
+                })
+                .collect(Collectors.toList());
+        bindUserGroup(id, userGroupIdList);
+
+        return ResultBean.ofSuccess(null, "关联成功");
+    }
+
+    @Override
+    public ResultBean<Void> unbindUserGroup(Long id, String userGroupIds) {
+        Preconditions.checkNotNull(id, "员工ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(userGroupIds), "用户组ID不能为空");
+
+        Arrays.asList(userGroupIds.split(",")).stream()
+                .distinct()
+                .forEach(userGroupId -> {
+                    EmployeeRelaUserGroupDOKey employeeRelaUserGroupDOKey = new EmployeeRelaUserGroupDOKey();
+                    employeeRelaUserGroupDOKey.setEmployeeId(id);
+                    employeeRelaUserGroupDOKey.setUserGroupId(Long.valueOf(userGroupId));
+                    int count = employeeRelaUserGroupDOMapper.deleteByPrimaryKey(employeeRelaUserGroupDOKey);
+                    Preconditions.checkArgument(count > 0, "取消关联失败");
+                });
+
+        return ResultBean.ofSuccess(null, "取消关联成功");
     }
 
     /**
@@ -229,12 +314,111 @@ public class EmployeeServiceImpl implements EmployeeService {
     private Long insertAndGetId(EmployeeParam employeeParam) {
         EmployeeDO employeeDO = new EmployeeDO();
         BeanUtils.copyProperties(employeeParam, employeeDO);
-        employeeDO.setStatus(VALID_STATUS);
         employeeDO.setGmtCreate(new Date());
         employeeDO.setGmtModify(new Date());
         int count = employeeDOMapper.insertSelective(employeeDO);
         Preconditions.checkArgument(count > 0, "创建失败");
         return employeeDO.getId();
+    }
+
+    /**
+     * 绑定部门 -单个
+     *
+     * @param employeeId
+     * @param departmentId
+     */
+//    private void bindDepartment(Long employeeId, Long departmentId) {
+//        if (null == departmentId) {
+//            return;
+//        }
+//
+//        // check
+//        EmployeeRelaDepartmentDOKey employeeRelaDepartmentDOKey = new EmployeeRelaDepartmentDOKey();
+//        employeeRelaDepartmentDOKey.setEmployeeId(employeeId);
+//        employeeRelaDepartmentDOKey.setDepartmentId(departmentId);
+//        EmployeeRelaDepartmentDO employeeRelaDepartmentDO = employeeRelaDepartmentDOMapper.selectByPrimaryKey(employeeRelaDepartmentDOKey);
+//
+//        if (null == employeeRelaDepartmentDO) {
+//            // insert
+//            employeeRelaDepartmentDO.setEmployeeId(employeeId);
+//            employeeRelaDepartmentDO.setDepartmentId(departmentId);
+//            employeeRelaDepartmentDO.setGmtCreate(new Date());
+//            employeeRelaDepartmentDO.setGmtModify(new Date());
+//            int count = employeeRelaDepartmentDOMapper.insertSelective(employeeRelaDepartmentDO);
+//            Preconditions.checkArgument(count > 0, "关联部门失败");
+//        }
+//    }
+
+    /**
+     * 填充员工部门信息
+     *
+     * @param departmentId
+     * @param employeeVO
+     */
+    private void fillDepartment(Long departmentId, EmployeeVO employeeVO) {
+        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
+        if (null != departmentDO) {
+            BaseVO baseVO = new BaseVO();
+            BeanUtils.copyProperties(departmentDO, baseVO);
+            employeeVO.setDepartment(baseVO);
+        }
+    }
+
+    /**
+     * 填充员工直接主管信息
+     *
+     * @param parentId
+     * @param employeeVO
+     */
+    private void fillParent(Long parentId, EmployeeVO employeeVO) {
+        if (null == parentId) {
+            return;
+        }
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+        if (null != employeeDO) {
+            BaseVO baseVO = new BaseVO();
+            BeanUtils.copyProperties(employeeDO, baseVO);
+            employeeVO.setParent(baseVO);
+        }
+    }
+
+    /**
+     * 补充用户组部门信息
+     *
+     * @param userGroupVO
+     */
+    private void fillDepartment(UserGroupVO userGroupVO) {
+        List<Long> departmentIds = departmentRelaUserGroupDOMapper.getDepartmentIdListByUserGroupId(userGroupVO.getId());
+        if (CollectionUtils.isEmpty(departmentIds)) {
+            return;
+        }
+        Long departmentId = departmentIds.get(0);
+        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
+        if (null != departmentDO) {
+            BaseVO baseVO = new BaseVO();
+            BeanUtils.copyProperties(departmentDO, baseVO);
+            userGroupVO.setDepartment(baseVO);
+        }
+    }
+
+    /**
+     * 补充用户组区域信息
+     *
+     * @param userGroupVO
+     */
+    private void fillArea(UserGroupVO userGroupVO) {
+        List<Long> areaIds = userGroupRelaAreaDOMapper.getAreaIdListByUserGroupId(userGroupVO.getId());
+        if (CollectionUtils.isEmpty(areaIds)) {
+            return;
+        }
+        Long areaId = areaIds.get(0);
+        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
+        if (null != baseAreaDO) {
+            BaseVO baseVO = new BaseVO();
+            baseVO.setId(baseAreaDO.getAreaId());
+            baseVO.setName(baseAreaDO.getAreaName());
+            userGroupVO.setArea(baseVO);
+        }
     }
 
     /**
@@ -281,7 +465,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .collect(Collectors.toList());
 
             int count = employeeRelaUserGroupDOMapper.batchInsert(employeeRelaUserGroupDOS);
-            Preconditions.checkArgument(count == employeeRelaUserGroupDOS.size(), "关联员工失败");
+            Preconditions.checkArgument(count == employeeRelaUserGroupDOS.size(), "关联失败");
         }
     }
 }

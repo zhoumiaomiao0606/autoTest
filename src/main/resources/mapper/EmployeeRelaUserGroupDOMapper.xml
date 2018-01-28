@@ -12,21 +12,34 @@
     employee_id, user_group_id, gmt_create, gmt_modify
   </sql>
 
+    <sql id="Base_Query_List">
+        <if test="employeeId != null">
+            AND employee_id = #{employeeId}
+        </if>
+        <if test="userGroupId != null">
+            AND user_group_id = #{userGroupId}
+        </if>
+    </sql>
+
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from employee_rela_user_group
-        WHERE  user_group_id = #{id}
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from employee_rela_user_group
-        WHERE user_group_id = #{id}
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
         ORDER BY gmt_modify DESC
         limit #{startRow}, #{pageSize}
     </select>

@@ -1,5 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
+import com.yunche.loan.domain.QueryObj.PartnerQuery;
 import com.yunche.loan.domain.dataObj.PartnerDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,4 +22,8 @@ public interface PartnerDOMapper {
     int updateByPrimaryKey(PartnerDO record);
 
     List<String> getAllName(@Param("status") Byte status);
+
+    int count(PartnerQuery query);
+
+    List<PartnerDO> query(PartnerQuery query);
 }

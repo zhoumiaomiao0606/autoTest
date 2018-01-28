@@ -20,11 +20,21 @@ public class EmployeeQuery extends BaseQuery {
     private String email;
 
     private String dingDing;
-
+    /**
+     * 部门ID
+     */
     private Long departmentId;
-
-    private Long leaderId;
-
+    /**
+     * 上级ID（直接上级ID）
+     */
+    private Long parentId;
+    /**
+     * 员工类型（1：正式员工; 2：外包员工）
+     */
+    private Byte type;
+    /**
+     * 职位
+     */
     private String title;
     /**
      * 入职开始时间

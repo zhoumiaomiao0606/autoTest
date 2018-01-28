@@ -9,6 +9,7 @@ import java.util.Date;
  * @author liuzhe
  * @date 2018/1/24
  */
+@Data
 public class PartnerVO {
 
     private Long id;
@@ -25,11 +26,11 @@ public class PartnerVO {
     /**
      * 关联的部门
      */
-    private Department department;
+    private BaseVO department;
     /**
-     * 关联的城市
+     * 关联的区域(城市)
      */
-    private Area area;
+    private BaseVO area;
 
     private Byte bizType;
 
@@ -60,16 +61,4 @@ public class PartnerVO {
     private Date gmtModify;
 
     private Byte status;
-
-    @Data
-    public static class Department {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    public static class Area {
-        private Long id;
-        private String name;
-    }
 }

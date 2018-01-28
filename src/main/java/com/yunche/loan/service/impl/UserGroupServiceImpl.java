@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.QueryObj.BaseQuery;
@@ -40,6 +41,8 @@ public class UserGroupServiceImpl implements UserGroupService {
     private DepartmentDOMapper departmentDOMapper;
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+//    @Autowired
+//    private AuthDOMapper authDOMapper;
     @Autowired
     private DepartmentRelaUserGroupDOMapper departmentRelaUserGroupDOMapper;
     @Autowired
@@ -47,8 +50,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
     @Autowired
-    private EmployeeRelaDepartmentDOMapper employeeRelaDepartmentDOMapper;
-
+    private UserGroupRelaAreaAuthDOMapper userGroupRelaAreaAuthDOMapper;
 
     @Override
     public ResultBean<Long> create(UserGroupParam userGroupParam) {
@@ -62,10 +64,10 @@ public class UserGroupServiceImpl implements UserGroupService {
         bindDepartment(id, userGroupParam.getDepartmentId());
 
         // 绑定区域(城市)
-        bindArea(id, userGroupParam.getAreaId());
+//        bindArea(id, userGroupParam.getAreaId());
 
         // 绑定权限列表
-        bindAuth(id, userGroupParam.getAuthIdList());
+        bindAuth(id, userGroupParam.getAreaId(), userGroupParam.getAuthIdList());
 
         // 绑定员工列表
         bindEmployee(id, userGroupParam.getEmployeeIdList());
@@ -87,7 +89,7 @@ public class UserGroupServiceImpl implements UserGroupService {
         updateDepartment(userGroupParam.getId(), userGroupParam.getDepartmentId());
 
         // 编辑区域(城市)
-        updateArea(userGroupParam.getId(), userGroupParam.getAreaId());
+//        updateArea(userGroupParam.getId(), userGroupParam.getAreaId());
 
         return ResultBean.ofSuccess(null, "编辑成功");
     }
@@ -156,36 +158,29 @@ public class UserGroupServiceImpl implements UserGroupService {
 
     @Override
     public ResultBean<List<EmployeeVO>> listEmployee(BaseQuery query) {
-        Preconditions.checkNotNull(query.getId(), "id不能为空");
+        Preconditions.checkNotNull(query.getId(), "用户组ID不能为空");
 
-        int totalNum = employeeRelaUserGroupDOMapper.count(query);
+        int totalNum = employeeDOMapper.countListEmployeeByUserGroupId(query);
         if (totalNum > 0) {
-            List<EmployeeRelaUserGroupDO> employeeRelaUserGroupDOS = employeeRelaUserGroupDOMapper.query(query);
-            List<EmployeeVO> employeeVOS = Collections.EMPTY_LIST;
-            if (!CollectionUtils.isEmpty(employeeRelaUserGroupDOS)) {
-                employeeVOS = employeeRelaUserGroupDOS.stream()
+            List<EmployeeDO> employeeDOS = employeeDOMapper.listEmployeeByUserGroupId(query);
+            if (!CollectionUtils.isEmpty(employeeDOS)) {
+                List<EmployeeVO> employeeVOS = employeeDOS.stream()
                         .filter(Objects::nonNull)
                         .map(e -> {
+                            EmployeeVO employeeVO = new EmployeeVO();
+                            BeanUtils.copyProperties(e, employeeVO);
 
-                            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(e.getUserGroupId(), VALID_STATUS);
-                            if (null != employeeDO) {
-                                EmployeeVO employeeVO = new EmployeeVO();
-                                BeanUtils.copyProperties(employeeDO, employeeVO);
+                            fillDepartment(e.getDepartmentId(), employeeVO);
+                            fillLeader(e.getParentId(), employeeVO);
 
-                                fillDepartment(employeeVO);
-                                fillLeader(employeeDO.getParentId(), employeeVO);
-
-                                return employeeVO;
-                            }
-                            return null;
+                            return employeeVO;
                         })
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
+                return ResultBean.ofSuccess(employeeVOS, totalNum, query.getPageIndex(), query.getPageSize());
             }
-            return ResultBean.ofSuccess(employeeVOS, totalNum, query.getPageIndex(), query.getPageSize());
         }
-
-        return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
     }
 
     /**
@@ -262,14 +257,10 @@ public class UserGroupServiceImpl implements UserGroupService {
     /**
      * 填充员工部门信息
      *
+     * @param departmentId
      * @param employeeVO
      */
-    private void fillDepartment(EmployeeVO employeeVO) {
-        List<Long> departmentIds = employeeRelaDepartmentDOMapper.getDepartmentIdListByEmployeeId(employeeVO.getId());
-        if (CollectionUtils.isEmpty(departmentIds)) {
-            return;
-        }
-        Long departmentId = departmentIds.get(0);
+    private void fillDepartment(Long departmentId, EmployeeVO employeeVO) {
         DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
         if (null != departmentDO) {
             BaseVO baseVO = new BaseVO();
@@ -286,12 +277,11 @@ public class UserGroupServiceImpl implements UserGroupService {
      */
     private void fillLeader(Long parentId, EmployeeVO employeeVO) {
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
-        if (null == employeeDO) {
-            return;
+        if (null != employeeDO) {
+            BaseVO baseVO = new BaseVO();
+            BeanUtils.copyProperties(employeeDO, baseVO);
+            employeeVO.setParent(baseVO);
         }
-        BaseVO baseVO = new BaseVO();
-        BeanUtils.copyProperties(employeeDO, baseVO);
-        employeeVO.setLeader(baseVO);
     }
 
     @Override
@@ -307,8 +297,8 @@ public class UserGroupServiceImpl implements UserGroupService {
             List<EmployeeRelaUserGroupDO> employeeRelaUserGroupDOS = employeeIdList.parallelStream()
                     .map(employeeId -> {
                         EmployeeRelaUserGroupDO employeeRelaUserGroupDO = new EmployeeRelaUserGroupDO();
-                        employeeRelaUserGroupDO.setEmployeeId(employeeId);
                         employeeRelaUserGroupDO.setUserGroupId(id);
+                        employeeRelaUserGroupDO.setEmployeeId(employeeId);
                         employeeRelaUserGroupDO.setGmtCreate(new Date());
                         employeeRelaUserGroupDO.setGmtModify(new Date());
 
@@ -326,12 +316,12 @@ public class UserGroupServiceImpl implements UserGroupService {
     /**
      * 去重
      *
-     * @param id
+     * @param userGroupId
      * @param employeeIds
      * @return
      */
-    private List<Long> distinctEmployeeIds(Long id, String employeeIds) {
-        List<Long> existEmployeeIdList = employeeRelaUserGroupDOMapper.getEmployeeIdListByUserGroupId(id);
+    private List<Long> distinctEmployeeIds(Long userGroupId, String employeeIds) {
+        List<Long> existEmployeeIdList = employeeRelaUserGroupDOMapper.getEmployeeIdListByUserGroupId(userGroupId);
         List<Long> employeeIdList = null;
         if (!CollectionUtils.isEmpty(existEmployeeIdList)) {
 
@@ -383,7 +373,23 @@ public class UserGroupServiceImpl implements UserGroupService {
 
     @Override
     public ResultBean<Void> bindAuth(Long id, String authIds) {
-        return null;
+        Preconditions.checkNotNull(id, "用户组ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(authIds), "权限ID列表不能为空");
+
+        // convert
+        List<Long> bizModelIdList = Arrays.asList(authIds.split(",")).stream()
+                .map(e -> {
+                    return Long.valueOf(e);
+                })
+                .distinct()
+                .collect(Collectors.toList());
+
+        // getAreaId
+//        PartnerDO partnerDO = authDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+//        // bind
+//        bindAuth(id, partnerDO.getAreaId(), bizModelIdList);
+
+        return ResultBean.ofSuccess(null, "关联成功");
     }
 
     @Override
@@ -391,8 +397,24 @@ public class UserGroupServiceImpl implements UserGroupService {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(authIds), "权限ID列表不能为空");
 
+        // getAreaId
+//        AuthDO authDO = authDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+//        Preconditions.checkNotNull(authDO, "id有误,合伙人不存!");
+//        Preconditions.checkNotNull(authDO.getAreaId(), "合伙人业务区域为空，请先设置业务区域");
+//
+//        // delete
+//        Arrays.asList(authIds.split(",")).stream()
+//                .distinct()
+//                .forEach(authId -> {
+//                    UserGroupRelaAreaAuthDOKey userGroupRelaAreaAuthDOKey = new UserGroupRelaAreaAuthDOKey();
+//                    userGroupRelaAreaAuthDOKey.setUserGroupId(id);
+//                    userGroupRelaAreaAuthDOKey.setAreaId(authDO.getAreaId());
+//                    userGroupRelaAreaAuthDOKey.setAuthId(Long.valueOf(authId));
+//                    int count = userGroupRelaAreaAuthDOMapper.deleteByPrimaryKey(userGroupRelaAreaAuthDOKey);
+//                    Preconditions.checkArgument(count > 0, "取消关联失败");
+//                });
 
-        return null;
+        return ResultBean.ofSuccess(null, "取消关联成功");
     }
 
     /**
@@ -456,42 +478,111 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param userGroupId
      * @param areaId
      */
-    private void updateArea(Long userGroupId, Long areaId) {
-        // get
-        List<UserGroupRelaAreaDO> userGroupRelaAreaDOS = userGroupRelaAreaDOMapper.getByUserGroupId(userGroupId);
-        if (CollectionUtils.isEmpty(userGroupRelaAreaDOS)) {
-            // insert
-            UserGroupRelaAreaDO userGroupRelaAreaDO = new UserGroupRelaAreaDO();
-            userGroupRelaAreaDO.setUserGroupId(userGroupId);
-            userGroupRelaAreaDO.setAreaId(areaId);
-            userGroupRelaAreaDO.setGmtCreate(new Date());
-            userGroupRelaAreaDO.setGmtModify(new Date());
-            int count = userGroupRelaAreaDOMapper.insert(userGroupRelaAreaDO);
-            Preconditions.checkArgument(count > 0, "编辑区域失败");
-        } else {
-            // update : del + insert
-            // delete old
-            UserGroupRelaAreaDO userGroupRelaAreaDO = userGroupRelaAreaDOS.get(0);
-            int delCount = userGroupRelaAreaDOMapper.deleteByPrimaryKey(userGroupRelaAreaDO);
-            Preconditions.checkArgument(delCount > 0, "编辑区域失败");
+//    private void updateArea(Long userGroupId, Long areaId) {
+//        // get
+//        List<UserGroupRelaAreaDO> userGroupRelaAreaDOS = userGroupRelaAreaDOMapper.getByUserGroupId(userGroupId);
+//        if (CollectionUtils.isEmpty(userGroupRelaAreaDOS)) {
+//            // insert
+//            UserGroupRelaAreaDO userGroupRelaAreaDO = new UserGroupRelaAreaDO();
+//            userGroupRelaAreaDO.setUserGroupId(userGroupId);
+//            userGroupRelaAreaDO.setAreaId(areaId);
+//            userGroupRelaAreaDO.setGmtCreate(new Date());
+//            userGroupRelaAreaDO.setGmtModify(new Date());
+//            int count = userGroupRelaAreaDOMapper.insert(userGroupRelaAreaDO);
+//            Preconditions.checkArgument(count > 0, "编辑区域失败");
+//        } else {
+//            // update : del + insert
+//            // delete old
+//            UserGroupRelaAreaDO userGroupRelaAreaDO = userGroupRelaAreaDOS.get(0);
+//            int delCount = userGroupRelaAreaDOMapper.deleteByPrimaryKey(userGroupRelaAreaDO);
+//            Preconditions.checkArgument(delCount > 0, "编辑区域失败");
+//
+//            // insert new
+//            userGroupRelaAreaDO.setAreaId(areaId);
+//            userGroupRelaAreaDO.setGmtModify(new Date());
+//            int insertCount = userGroupRelaAreaDOMapper.insert(userGroupRelaAreaDO);
+//            Preconditions.checkArgument(insertCount > 0, "编辑区域失败");
+//        }
+//    }
 
-            // insert new
-            userGroupRelaAreaDO.setAreaId(areaId);
-            userGroupRelaAreaDO.setGmtModify(new Date());
-            int insertCount = userGroupRelaAreaDOMapper.insert(userGroupRelaAreaDO);
-            Preconditions.checkArgument(insertCount > 0, "编辑区域失败");
+    /**
+     * 绑定权限列表
+     *
+     * @param userGroupId
+     * @param areaId
+     * @param authIdList
+     */
+    private void bindAuth(Long userGroupId, Long areaId, List<Long> authIdList) {
+        if (CollectionUtils.isEmpty(authIdList)) {
+            return;
+        }
+
+        // 去重
+        distinctAuthIdList(userGroupId, areaId, authIdList);
+
+        // 执行绑定
+        execBindAuth(userGroupId, areaId, authIdList);
+    }
+
+    /**
+     * 权限ID去重
+     *
+     * @param userGroupId
+     * @param areaId
+     * @param authIdList
+     */
+    private void distinctAuthIdList(Long userGroupId, Long areaId, List<Long> authIdList) {
+        UserGroupRelaAreaAuthDOKey userGroupRelaAreaAuthDOKey = new UserGroupRelaAreaAuthDOKey();
+        userGroupRelaAreaAuthDOKey.setUserGroupId(userGroupId);
+        userGroupRelaAreaAuthDOKey.setAreaId(areaId);
+        List<UserGroupRelaAreaAuthDO> existUserGroupRelaAreaAuthDOS = userGroupRelaAreaAuthDOMapper.query(userGroupRelaAreaAuthDOKey);
+        if (!CollectionUtils.isEmpty(existUserGroupRelaAreaAuthDOS)) {
+            List<Long> existAuthIdList = existUserGroupRelaAreaAuthDOS.parallelStream()
+                    .filter(e -> null != e && null != e.getAreaId())
+                    .map(e -> {
+                        return e.getAreaId();
+                    })
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            List<Long> repeatTmp = Lists.newArrayList();
+            authIdList.parallelStream()
+                    .forEach(e -> {
+                        if (existAuthIdList.contains(e)) {
+                            repeatTmp.add(e);
+                        }
+                    });
+
+            authIdList.removeAll(repeatTmp);
         }
     }
 
     /**
-     * TODO 绑定权限列表
+     * 执行绑定
      *
      * @param userGroupId
+     * @param areaId
      * @param authIdList
      */
-    private void bindAuth(Long userGroupId, List<Long> authIdList) {
+    private void execBindAuth(Long userGroupId, Long areaId, List<Long> authIdList) {
+        List<UserGroupRelaAreaAuthDO> userGroupRelaAreaAuthDOS = authIdList.parallelStream()
+                .filter(Objects::nonNull)
+                .distinct()
+                .map(authId -> {
 
+                    UserGroupRelaAreaAuthDO userGroupRelaAreaAuthDO = new UserGroupRelaAreaAuthDO();
+                    userGroupRelaAreaAuthDO.setUserGroupId(userGroupId);
+                    userGroupRelaAreaAuthDO.setAreaId(areaId);
+                    userGroupRelaAreaAuthDO.setAuthId(authId);
+                    userGroupRelaAreaAuthDO.setGmtCreate(new Date());
+                    userGroupRelaAreaAuthDO.setGmtModify(new Date());
 
+                    return userGroupRelaAreaAuthDO;
+                })
+                .collect(Collectors.toList());
+
+        int count = userGroupRelaAreaAuthDOMapper.batchInsert(userGroupRelaAreaAuthDOS);
+        Preconditions.checkArgument(count == userGroupRelaAreaAuthDOS.size(), "关联权限失败");
     }
 
     /**

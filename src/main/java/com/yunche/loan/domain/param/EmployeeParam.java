@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class EmployeeParam extends EmployeeDO {
     /**
-     * 要绑定的用户组(角色)列表
+     * 绑定的用户组(角色)列表
      */
     private List<Long> userGroupIdList;
 }

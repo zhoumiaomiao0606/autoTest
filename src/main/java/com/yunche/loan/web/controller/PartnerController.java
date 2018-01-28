@@ -6,9 +6,8 @@ import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.PartnerQuery;
 import com.yunche.loan.domain.dataObj.PartnerDO;
 import com.yunche.loan.domain.param.PartnerParam;
-import com.yunche.loan.domain.viewObj.AuthVO;
+import com.yunche.loan.domain.viewObj.BizModelVO;
 import com.yunche.loan.domain.viewObj.PartnerVO;
-import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.PartnerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +82,7 @@ public class PartnerController {
      * @return
      */
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<UserGroupVO>> query(@RequestBody PartnerQuery query) {
+    public ResultBean<List<PartnerVO>> query(@RequestBody PartnerQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.query(query);
     }
@@ -94,23 +93,37 @@ public class PartnerController {
      * @param query id、pageIndex、pageSize
      * @return
      */
-    @GetMapping(value = "/listBizModel")
-    public ResultBean<List<AuthVO>> listBizModel(@RequestBody BaseQuery query) {
+    @PostMapping(value = "/listBizModel")
+    public ResultBean<List<BizModelVO>> listBizModel(@RequestBody BaseQuery query) {
         logger.info(Arrays.asList("listBizModel", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.listBizModel(query);
     }
 
     /**
-     * 删除关联的业务产品      -支持列表删除
+     * 解绑关联的业务产品      -支持列表
      *
      * @param id          合伙人ID
      * @param bizModelIds 业务产品ID列表 逗号分隔
      * @return
      */
-    @GetMapping(value = "/delete/relaBizModels")
+    @GetMapping(value = "/bindBizModel")
+    public ResultBean<Void> bindBizModels(@RequestParam("id") Long id,
+                                          @RequestParam("bizModelIds") String bizModelIds) {
+        logger.info(Arrays.asList("bindBizModels", JSON.toJSONString(id), JSON.toJSONString(bizModelIds)).stream().collect(Collectors.joining("\u0001")));
+        return partnerService.bindBizModel(id, bizModelIds);
+    }
+
+    /**
+     * 解绑关联的业务产品      -支持列表
+     *
+     * @param id          合伙人ID
+     * @param bizModelIds 业务产品ID列表 逗号分隔
+     * @return
+     */
+    @GetMapping(value = "/unbindBizModel")
     public ResultBean<Void> deleteRelaAuths(@RequestParam("id") Long id,
                                             @RequestParam("bizModelIds") String bizModelIds) {
-        logger.info(Arrays.asList("/delete/relaBizModels", JSON.toJSONString(id), JSON.toJSONString(bizModelIds)).stream().collect(Collectors.joining("\u0001")));
-        return partnerService.deleteRelaBizModels(id, bizModelIds);
+        logger.info(Arrays.asList("unbindBizModel", JSON.toJSONString(id), JSON.toJSONString(bizModelIds)).stream().collect(Collectors.joining("\u0001")));
+        return partnerService.unbindBizModel(id, bizModelIds);
     }
 }

@@ -1,102 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.dao.mapper.BizModelDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelDO">
-    <id column="biz_id" jdbcType="BIGINT" property="bizId" />
-    <result column="title" jdbcType="VARCHAR" property="title" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="scene" jdbcType="VARCHAR" property="scene" />
-    <result column="cust_target" jdbcType="VARCHAR" property="custTarget" />
-    <result column="car_type" jdbcType="TINYINT" property="carType" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-    <result column="feature" jdbcType="VARCHAR" property="feature" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelDO">
+        <id column="biz_id" jdbcType="BIGINT" property="bizId"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="scene" jdbcType="VARCHAR" property="scene"/>
+        <result column="cust_target" jdbcType="VARCHAR" property="custTarget"/>
+        <result column="car_type" jdbcType="TINYINT" property="carType"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
     biz_id, title, description, scene, cust_target, car_type, status, gmt_create, gmt_modify,
     feature
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from biz_model
-    where biz_id = #{bizId,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+
+    <!-- countListBizModelByPartnerId -->
+    <select id="countListBizModelByPartnerId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+            resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM biz_model_rela_area_partners AS a
+        JOIN biz_model AS b
+        ON a.`biz_id` = b.`biz_id`
+        <if test="id != null">
+            AND a.group_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+    </select>
+
+    <!-- listBizModelByPartnerId -->
+    <select id="listBizModelByPartnerId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+            resultMap="BaseResultMap">
+        SELECT b.*
+        FROM biz_model_rela_area_partners AS a
+        JOIN biz_model AS b
+        ON a.`biz_id` = b.`biz_id`
+        <if test="id != null">
+            AND a.group_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+        ORDER BY a.`gmt_modify` DESC
+        LIMIT #{startRow}, #{pageSize}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_model
+        where biz_id = #{bizId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from biz_model
     where biz_id = #{bizId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
-    <selectKey resultType="long" keyProperty="bizId" order="AFTER">
-      SELECT LAST_INSERT_ID() as bizId
-    </selectKey>
-    insert into biz_model (biz_id, title, description,
-      scene, cust_target, car_type, 
-      status, gmt_create, gmt_modify, 
-      feature)
-    values (#{bizId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
-      #{scene,jdbcType=VARCHAR}, #{custTarget,jdbcType=VARCHAR}, #{carType,jdbcType=TINYINT}, 
-      #{status,jdbcType=TINYINT}, now(), now(),
-      #{feature,jdbcType=VARCHAR})
-  </insert>
-  <select id="selectByCondition" parameterType="com.yunche.loan.domain.QueryObj.BizModelQuery" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from biz_model
-    where 1=1
-    <if test="scene != null">
-      AND
-      scene = #{scene,jdbcType=VARCHAR}
-    </if>
-    <if test="custTarget != null">
-      AND
-      cust_target = #{custTarget,jdbcType=VARCHAR}
-    </if>
-    <if test="carType != null">
-      AND
-      car_type = #{carType,jdbcType=TINYINT}
-    </if>
-    <if test="cascadeAreaIdList != null">
-      AND
-      area_id IN
-      <foreach item="item" index="index" collection="cascadeAreaIdList"
-               open="(" separator="," close=")">
-        #{item}
-      </foreach>
-    </if>
-  </select>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
-    update biz_model
-    <set>
-      <if test="title != null">
-        title = #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null">
-        description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="scene != null">
-        scene = #{scene,jdbcType=VARCHAR},
-      </if>
-      <if test="custTarget != null">
-        cust_target = #{custTarget,jdbcType=VARCHAR},
-      </if>
-      <if test="carType != null">
-        car_type = #{carType,jdbcType=TINYINT},
-      </if>
-      <if test="status != null">
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="gmtModify != null">
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-      <if test="feature != null">
-        feature = #{feature,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where biz_id = #{bizId,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
+        <selectKey resultType="long" keyProperty="bizId" order="AFTER">
+            SELECT LAST_INSERT_ID() as bizId
+        </selectKey>
+        insert into biz_model (biz_id, title, description,
+        scene, cust_target, car_type,
+        status, gmt_create, gmt_modify,
+        feature)
+        values (#{bizId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+        #{scene,jdbcType=VARCHAR}, #{custTarget,jdbcType=VARCHAR}, #{carType,jdbcType=TINYINT},
+        #{status,jdbcType=TINYINT}, now(), now(),
+        #{feature,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectByCondition" parameterType="com.yunche.loan.domain.QueryObj.BizModelQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_model
+        where 1=1
+        <if test="scene != null">
+            AND
+            scene = #{scene,jdbcType=VARCHAR}
+        </if>
+        <if test="custTarget != null">
+            AND
+            cust_target = #{custTarget,jdbcType=VARCHAR}
+        </if>
+        <if test="carType != null">
+            AND
+            car_type = #{carType,jdbcType=TINYINT}
+        </if>
+        <if test="cascadeAreaIdList != null">
+            AND
+            area_id IN
+            <foreach item="item" index="index" collection="cascadeAreaIdList"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
+        update biz_model
+        <set>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="scene != null">
+                scene = #{scene,jdbcType=VARCHAR},
+            </if>
+            <if test="custTarget != null">
+                cust_target = #{custTarget,jdbcType=VARCHAR},
+            </if>
+            <if test="carType != null">
+                car_type = #{carType,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where biz_id = #{bizId,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
     update biz_model
     set title = #{title,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
@@ -109,4 +149,5 @@
       feature = #{feature,jdbcType=VARCHAR}
     where biz_id = #{bizId,jdbcType=BIGINT}
   </update>
+
 </mapper>

@@ -2,11 +2,13 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,5 +74,45 @@ public class EmployeeController {
     public ResultBean<List<LevelVO>> listAll() {
         logger.info("list");
         return employeeService.listAll();
+    }
+
+    /**
+     * 获取当前用户已绑定的用户组(角色)列表   -分页查询
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping(value = "/listUserGroup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<UserGroupVO>> UserGroup(@RequestBody BaseQuery query) {
+        logger.info(Arrays.asList("listUserGroup", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
+        return employeeService.listUserGroup(query);
+    }
+
+    /**
+     * 绑定用户组列表      -支持列表
+     *
+     * @param id           用户ID
+     * @param userGroupIds 用户组ID列表 逗号分隔
+     * @return
+     */
+    @GetMapping(value = "/bindUserGroup")
+    public ResultBean<Void> bindUserGroup(@RequestParam("id") Long id,
+                                          @RequestParam("userGroupIds") String userGroupIds) {
+        logger.info(Arrays.asList("bindUserGroup", JSON.toJSONString(id), JSON.toJSONString(userGroupIds)).stream().collect(Collectors.joining("\u0001")));
+        return employeeService.bindUserGroup(id, userGroupIds);
+    }
+
+    /**
+     * 解绑用户组列表      -支持列表
+     *
+     * @param id           用户ID
+     * @param userGroupIds 用户组ID列表  逗号分隔
+     * @return
+     */
+    @GetMapping(value = "/unbindUserGroup")
+    public ResultBean<Void> unbindUserGroup(@RequestParam("id") Long id,
+                                            @RequestParam("userGroupIds") String userGroupIds) {
+        logger.info(Arrays.asList("unbindUserGroup", JSON.toJSONString(id), JSON.toJSONString(userGroupIds)).stream().collect(Collectors.joining("\u0001")));
+        return employeeService.unbindUserGroup(id, userGroupIds);
     }
 }

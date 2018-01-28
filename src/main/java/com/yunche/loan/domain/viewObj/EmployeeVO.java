@@ -41,5 +41,5 @@ public class EmployeeVO {
     /**
      * 直接上级
      */
-    private BaseVO leader;
+    private BaseVO parent;
 }

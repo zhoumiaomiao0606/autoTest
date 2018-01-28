@@ -35,6 +35,92 @@
     gmt_modify, status, feature
   </sql>
 
+    <sql id="Base_Query_List">
+        <if test="name != null and name != '' ">
+            AND name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="departmentId != null">
+            AND department_id = #{departmentId}
+        </if>
+        <if test="leaderName != null and leaderName != '' ">
+            AND leader_name LIKE CONCAT('%',#{leaderName},'%')
+        </if>
+        <if test="leaderMobile != null and leaderMobile != '' ">
+            AND leader_mobile = #{leaderMobile}
+        </if>
+        <if test="tel != null and tel != '' ">
+            AND tel = #{tel}
+        </if>
+        <if test="fax != null and fax != '' ">
+            AND fax = #{fax}
+        </if>
+        <if test="areaId != null">
+            AND area_id = #{areaId}
+        </if>
+        <if test="bizType != null">
+            AND biz_type = #{bizType}
+        </if>
+        <if test="sign != null">
+            AND sign = #{sign}
+        </if>
+        <if test="execRate != null">
+            AND exec_rate = #{execRate}
+        </if>
+        <if test="cooperationInsuranceCompany != null and cooperationInsuranceCompany != '' ">
+            AND cooperation_insurance_company LIKE CONCAT('%',#{cooperationInsuranceCompany},'%')
+        </if>
+        <if test="openBank != null and openBank != '' ">
+            AND open_bank LIKE CONCAT('%',#{openBank},'%')
+        </if>
+        <if test="accountName != null and accountName != '' ">
+            AND account_name LIKE CONCAT('%',#{accountName},'%')
+        </if>
+        <if test="bankAccount != null and bankAccount != '' ">
+            AND bank_account = #{bankAccount}
+        </if>
+        <if test="bankAccount != null and bankAccount != '' ">
+            AND bank_account = #{bankAccount}
+        </if>
+        <if test="accountNameTwo != null and accountNameTwo != '' ">
+            AND account_name_two LIKE CONCAT('%',#{accountNameTwo},'%')
+        </if>
+        <if test="bankAccountTwo != null and bankAccountTwo != '' ">
+            AND bank_account_two = #{bankAccountTwo}
+        </if>
+        <if test="bankAccountTwo != null and bankAccountTwo != '' ">
+            AND bank_account_two = #{bankAccountTwo}
+        </if>
+        <if test="payMonth != null">
+            AND pay_month = #{payMonth}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </sql>
+
+    <!--  count -->
+    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.PartnerQuery"
+            resultType="java.lang.Integer">
+        select COUNT(*)
+        from partner
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+    </select>
+
+    <!-- query -->
+    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.PartnerQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from partner
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+        ORDER BY gmt_modify DESC
+        limit #{startRow}, #{pageSize}
+    </select>
+
     <!--getAllName-->
     <select id="getAllName" resultType="java.lang.String">
         select name

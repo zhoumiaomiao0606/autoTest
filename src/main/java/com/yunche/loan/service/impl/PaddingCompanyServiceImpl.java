@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
@@ -45,6 +46,9 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getFax()), "传真不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBank()), "开户行不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBankAccount()), "银行账号不能为空");
+        Preconditions.checkNotNull(paddingCompanyDO.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(paddingCompanyDO.getStatus()) || INVALID_STATUS.equals(paddingCompanyDO.getStatus()),
+                "状态非法");
 
         paddingCompanyDO.setGmtCreate(new Date());
         paddingCompanyDO.setGmtModify(new Date());

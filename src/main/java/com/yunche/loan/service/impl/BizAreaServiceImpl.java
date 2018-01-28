@@ -53,6 +53,9 @@ public class BizAreaServiceImpl implements BizAreaService {
     public ResultBean<Long> create(BizAreaParam bizAreaParam) {
         Preconditions.checkArgument(null != bizAreaParam && StringUtils.isNotBlank(bizAreaParam.getName()), "名称不能为空");
         Preconditions.checkNotNull(bizAreaParam.getEmployeeId(), "部门负责人不能为空");
+        Preconditions.checkNotNull(bizAreaParam.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(bizAreaParam.getStatus()) || INVALID_STATUS.equals(bizAreaParam.getStatus()),
+                "状态非法");
 
         // 名称已存在校验
         List<String> nameList = bizAreaDOMapper.getAllName(VALID_STATUS);
@@ -272,8 +275,6 @@ public class BizAreaServiceImpl implements BizAreaService {
             bizAreaDO.setLevel(parentBizAreaDO.getLevel() + 1);
         }
 
-        // status
-        bizAreaDO.setStatus(VALID_STATUS);
         // date
         bizAreaDO.setGmtCreate(new Date());
         bizAreaDO.setGmtModify(new Date());

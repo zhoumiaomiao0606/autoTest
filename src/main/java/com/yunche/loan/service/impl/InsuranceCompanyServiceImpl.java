@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
@@ -39,19 +40,22 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
 
 
     @Override
-    public ResultBean<Long> create(InsuranceCompanyDO paddingCompanyDO) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getName()), "名称不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getOfficePhone()), "办公室电话不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getFax()), "传真不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBank()), "开户行不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(paddingCompanyDO.getBankAccount()), "银行账号不能为空");
+    public ResultBean<Long> create(InsuranceCompanyDO insuranceCompanyDO) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getName()), "名称不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getOfficePhone()), "办公室电话不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getFax()), "传真不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getBank()), "开户行不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getBankAccount()), "银行账号不能为空");
+        Preconditions.checkNotNull(insuranceCompanyDO.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(insuranceCompanyDO.getStatus()) || INVALID_STATUS.equals(insuranceCompanyDO.getStatus()),
+                "状态非法");
 
-        paddingCompanyDO.setStatus(VALID_STATUS);
-        paddingCompanyDO.setGmtCreate(new Date());
-        paddingCompanyDO.setGmtModify(new Date());
-        int count = insuranceCompanyDOMapper.insertSelective(paddingCompanyDO);
+        insuranceCompanyDO.setStatus(VALID_STATUS);
+        insuranceCompanyDO.setGmtCreate(new Date());
+        insuranceCompanyDO.setGmtModify(new Date());
+        int count = insuranceCompanyDOMapper.insertSelective(insuranceCompanyDO);
         Preconditions.checkArgument(count > 0, "创建失败");
-        return ResultBean.ofSuccess(paddingCompanyDO.getId(), "创建成功");
+        return ResultBean.ofSuccess(insuranceCompanyDO.getId(), "创建成功");
     }
 
     @Override

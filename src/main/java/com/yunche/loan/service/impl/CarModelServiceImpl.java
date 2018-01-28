@@ -45,6 +45,9 @@ public class CarModelServiceImpl implements CarModelService {
     public ResultBean<Long> create(CarModelDO carModelDO) {
         Preconditions.checkArgument(null != carModelDO && null != carModelDO.getBrandId(), "所属品牌不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(carModelDO.getFullName()), "车系名称不能为空");
+        Preconditions.checkNotNull(carModelDO.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(carModelDO.getStatus()) || INVALID_STATUS.equals(carModelDO.getStatus()),
+                "状态非法");
 
         // name校验
         List<String> modelNameList = carModelDOMapper.getNameListByBrandId(carModelDO.getBrandId(), VALID_STATUS);

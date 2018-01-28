@@ -13,15 +13,15 @@ public class DepartmentQuery extends BaseQuery {
 
     private Long parentId;
 
-    private Long employeeId;
+    private Long leaderId;
+
+    private Long areaId;
 
     private Integer level;
 
     private String tel;
 
     private String fax;
-
-    private Long areaId;
 
     private String address;
 

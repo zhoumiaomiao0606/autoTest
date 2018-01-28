@@ -23,7 +23,7 @@
 
 
     <Loggers>
-        <logger level="info" name="com.yunche.loan">
+        <logger level="debug" name="com.yunche.loan">
             <AppenderRef ref="App-File-Appender"/>
         </logger>
         <Root level="info">

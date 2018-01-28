@@ -16,4 +16,6 @@ public interface BizModelRelaAreaPartnersDOMapper {
     List<BizModelRelaAreaPartnersDO> queryById(Long bizId);
 
     int update(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
+
+    List<BizModelRelaAreaPartnersDO> listQuery(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 }

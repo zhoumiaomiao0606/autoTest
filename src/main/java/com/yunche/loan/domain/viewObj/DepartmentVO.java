@@ -16,19 +16,19 @@ public class DepartmentVO {
     /**
      * 上级部门
      */
-    private Parent parent;
+    private BaseVO parent;
     /**
      * 部门负责人
      */
-    private Leader leader;
+    private BaseVO leader;
     /**
      * 区域
      */
-    private Area area;
+    private BaseVO area;
     /**
-     * 部门人数
+     * 本部门员工总数
      */
-    private Integer num;
+    private Integer employeeNum;
 
     private String tel;
 
@@ -48,21 +48,4 @@ public class DepartmentVO {
 
     private Byte status;
 
-    @Data
-    public static class Parent {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    public static class Leader {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    public static class Area {
-        private Long id;
-        private String name;
-    }
 }

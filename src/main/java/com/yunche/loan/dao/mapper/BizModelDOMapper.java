@@ -1,5 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
+import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.BizModelQuery;
 import com.yunche.loan.domain.dataObj.BizModelDO;
 import org.apache.ibatis.annotations.Mapper;
@@ -21,4 +22,20 @@ public interface BizModelDOMapper {
     int updateByPrimaryKey(BizModelDO record);
 
     List<BizModelDO> selectByCondition(BizModelQuery bizModelQuery);
+
+    /**
+     * 根据合伙人ID统计业务产品总量
+     *
+     * @param query
+     * @return
+     */
+    int countListBizModelByPartnerId(BaseQuery query);
+
+    /**
+     * 根据合伙人ID分页查询业务产品列表
+     *
+     * @param query
+     * @return
+     */
+    List<BizModelDO> listBizModelByPartnerId(BaseQuery query);
 }

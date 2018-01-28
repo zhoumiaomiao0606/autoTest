@@ -4,8 +4,6 @@ import lombok.Data;
 
 import java.util.Date;
 
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-
 /**
  * @author liuzhe
  * @date 2018/1/15
@@ -29,9 +27,9 @@ public class BaseQuery {
      */
     private Integer pageSize = 10;
     /**
-     * 状态（0：有效; 1：无效;）  默认值：0
+     * 状态（0：有效; 1：无效;）
      */
-    private Byte status = VALID_STATUS;
+    private Byte status;
     /**
      * 创建开始时间
      */

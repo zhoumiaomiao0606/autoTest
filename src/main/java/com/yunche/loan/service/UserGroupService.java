@@ -2,8 +2,8 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.BaseQuery;
+import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.QueryObj.UserGroupQuery;
-import com.yunche.loan.domain.dataObj.UserGroupDO;
 import com.yunche.loan.domain.param.UserGroupParam;
 import com.yunche.loan.domain.viewObj.AuthVO;
 import com.yunche.loan.domain.viewObj.EmployeeVO;

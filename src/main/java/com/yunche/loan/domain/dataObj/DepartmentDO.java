@@ -12,7 +12,7 @@ public class DepartmentDO {
 
     private Long parentId;
 
-    private Long employeeId;
+    private Long leaderId;
 
     private Integer level;
 
