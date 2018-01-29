@@ -10,7 +10,7 @@ import java.util.List;
 public interface BizModelRelaFinancialProdDOMapper {
     List<BizModelRelaFinancialProdDO> queryById(Long bizId);
 
-    int deleteByPrimaryKey(BizModelRelaFinancialProdDO key);
+    int deleteByPrimaryKey(Long bizId, Long prodId);
 
     int insert(BizModelRelaFinancialProdDO record);
 

@@ -66,6 +66,14 @@ public class BizModelRelaAreaPartnersServiceImpl implements BizModelRelaAreaPart
     }
 
     @Override
+    public ResultBean<Void> deleteRelaPartner(Long bizId, Long areaId, Long groupId) {
+        Preconditions.checkArgument(bizId != null && areaId != null && groupId != null, "prodId");
+        int count = bizModelRelaAreaPartnersDOMapper.deleteByPrimaryKey(bizId, areaId, groupId);
+//        Preconditions.checkArgument(count > 1, "删除失败");
+        return ResultBean.ofSuccess(null, "删除成功");
+    }
+
+    @Override
     public ResultBean<List<BizModelRelaAreaPartnersDO>> getById(Long bizId) {
         Preconditions.checkNotNull(bizId, "bizId");
 

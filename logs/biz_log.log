@@ -165,3 +165,69 @@
 [DEBUG] 2018-01-29 11:56:08.006 [http-nio-8001-exec-5] selectByPrimaryKey - ==>  Preparing: select area_id, parent_area_id, area_name, parent_area_name, level, gmt_create, gmt_modify, status, feature from base_area where area_id = ? AND status = ? 
 [DEBUG] 2018-01-29 11:56:08.006 [http-nio-8001-exec-5] selectByPrimaryKey - ==> Parameters: 330100000000(Long), 0(Byte)
 [DEBUG] 2018-01-29 11:56:08.026 [http-nio-8001-exec-5] selectByPrimaryKey - <==      Total: 1
+[INFO ] 2018-01-29 16:28:21.622 [restartedMain] App - Starting App on zhouguoliangdeMacBook-Pro.local with PID 6076 (/Users/zhouguoliang/Documents/workspace/yunche-biz/loanBusiness/target/classes started by zhouguoliang in /Users/zhouguoliang/Documents/workspace/yunche-biz/loanBusiness)
+[DEBUG] 2018-01-29 16:28:21.630 [restartedMain] App - Running with Spring Boot v1.5.9.RELEASE, Spring v4.3.13.RELEASE
+[INFO ] 2018-01-29 16:28:21.631 [restartedMain] App - The following profiles are active: prepub
+[INFO ] 2018-01-29 16:32:53.891 [restartedMain] App - Starting App on zhouguoliangdeMacBook-Pro.local with PID 6084 (/Users/zhouguoliang/Documents/workspace/yunche-biz/loanBusiness/target/classes started by zhouguoliang in /Users/zhouguoliang/Documents/workspace/yunche-biz/loanBusiness)
+[DEBUG] 2018-01-29 16:32:53.895 [restartedMain] App - Running with Spring Boot v1.5.9.RELEASE, Spring v4.3.13.RELEASE
+[INFO ] 2018-01-29 16:32:53.896 [restartedMain] App - The following profiles are active: prepub
+[INFO ] 2018-01-29 16:34:18.338 [restartedMain] App - Starting App on zhouguoliangdeMacBook-Pro.local with PID 6091 (/Users/zhouguoliang/Documents/workspace/yunche-biz/loanBusiness/target/classes started by zhouguoliang in /Users/zhouguoliang/Documents/workspace/yunche-biz/loanBusiness)
+[DEBUG] 2018-01-29 16:34:18.348 [restartedMain] App - Running with Spring Boot v1.5.9.RELEASE, Spring v4.3.13.RELEASE
+[INFO ] 2018-01-29 16:34:18.348 [restartedMain] App - The following profiles are active: prepub
+[INFO ] 2018-01-29 16:38:43.229 [restartedMain] App - Starting App on zhouguoliangdeMacBook-Pro.local with PID 6125 (/Users/zhouguoliang/Documents/workspace/yunche-biz/loanBusiness/target/classes started by zhouguoliang in /Users/zhouguoliang/Documents/workspace/yunche-biz/loanBusiness)
+[DEBUG] 2018-01-29 16:38:43.247 [restartedMain] App - Running with Spring Boot v1.5.9.RELEASE, Spring v4.3.13.RELEASE
+[INFO ] 2018-01-29 16:38:43.247 [restartedMain] App - The following profiles are active: prepub
+[INFO ] 2018-01-29 16:38:53.943 [restartedMain] App - Started App in 11.306 seconds (JVM running for 12.975)
+[INFO ] 2018-01-29 16:39:02.430 [http-nio-8001-exec-1] BizModelController - getById-17
+[DEBUG] 2018-01-29 16:39:02.445 [http-nio-8001-exec-1] selectByPrimaryKey - ==>  Preparing: select biz_id, title, description, scene, cust_target, car_type, status, gmt_create, gmt_modify, feature from biz_model where biz_id = ? 
+[DEBUG] 2018-01-29 16:39:02.453 [http-nio-8001-exec-1] selectByPrimaryKey - ==> Parameters: 17(Long)
+[DEBUG] 2018-01-29 16:39:02.480 [http-nio-8001-exec-1] selectByPrimaryKey - <==      Total: 1
+[DEBUG] 2018-01-29 16:39:02.513 [http-nio-8001-exec-1] queryById - ==>  Preparing: select biz_id, area_id, group_id, prov, city, gmt_create, gmt_modify from biz_model_rela_area_partners where biz_id = ? 
+[DEBUG] 2018-01-29 16:39:02.513 [http-nio-8001-exec-1] queryById - ==> Parameters: 17(Long)
+[DEBUG] 2018-01-29 16:39:02.532 [http-nio-8001-exec-1] queryById - <==      Total: 5
+[DEBUG] 2018-01-29 16:39:02.651 [http-nio-8001-exec-1] selectByIdList - ==>  Preparing: select area_id, parent_area_id, area_name, parent_area_name, level, gmt_create, gmt_modify, status, feature from base_area where area_id IN ( ? , ? , ? ) AND status = ? 
+[DEBUG] 2018-01-29 16:39:02.652 [http-nio-8001-exec-1] selectByIdList - ==> Parameters: 100000000000(Long), 140000000000(Long), 410000000000(Long), 0(Byte)
+[DEBUG] 2018-01-29 16:39:02.676 [http-nio-8001-exec-1] selectByIdList - <==      Total: 3
+[DEBUG] 2018-01-29 16:39:02.751 [http-nio-8001-exec-1] queryById - ==>  Preparing: select biz_id, prod_id, gmt_create, gmt_modify from biz_model_rela_financial_prod where biz_id = ? 
+[DEBUG] 2018-01-29 16:39:02.752 [http-nio-8001-exec-1] queryById - ==> Parameters: 17(Long)
+[DEBUG] 2018-01-29 16:39:02.785 [http-nio-8001-exec-1] queryById - <==      Total: 1
+[DEBUG] 2018-01-29 16:39:02.867 [http-nio-8001-exec-1] selectByPrimaryKey - ==>  Preparing: select prod_id, prod_name, bank_name, mnemonic_code, account, sign_phone, sign_bank_code, biz_type, category_superior, category_junior, rate, mortgage_term, area_id, prov, city, gmt_create, gmt_modify, feature, status from financial_product where prod_id = ? 
+[DEBUG] 2018-01-29 16:39:02.868 [http-nio-8001-exec-1] selectByPrimaryKey - ==> Parameters: 100015(Long)
+[DEBUG] 2018-01-29 16:39:02.885 [http-nio-8001-exec-1] selectByPrimaryKey - <==      Total: 1
+[DEBUG] 2018-01-29 16:39:02.893 [http-nio-8001-exec-1] selectByPrimaryKey - ==>  Preparing: select area_id, parent_area_id, area_name, parent_area_name, level, gmt_create, gmt_modify, status, feature from base_area where area_id = ? AND status = ? 
+[DEBUG] 2018-01-29 16:39:02.894 [http-nio-8001-exec-1] selectByPrimaryKey - ==> Parameters: 330100000000(Long), 0(Byte)
+[DEBUG] 2018-01-29 16:39:02.912 [http-nio-8001-exec-1] selectByPrimaryKey - <==      Total: 1
+[INFO ] 2018-01-29 16:44:57.445 [http-nio-8001-exec-3] BizModelController - deleteRelaFinancialProd-17
+[DEBUG] 2018-01-29 16:44:57.486 [http-nio-8001-exec-3] deleteByPrimaryKey - ==>  Preparing: delete from biz_model_rela_financial_prod where biz_id = ? and prod_id = ? 
+[DEBUG] 2018-01-29 16:44:57.489 [http-nio-8001-exec-3] deleteByPrimaryKey - ==> Parameters: 17(Long), 100015(Long)
+[DEBUG] 2018-01-29 16:44:57.535 [http-nio-8001-exec-3] deleteByPrimaryKey - <==    Updates: 1
+[INFO ] 2018-01-29 16:45:03.810 [http-nio-8001-exec-4] BizModelController - getById-17
+[DEBUG] 2018-01-29 16:45:03.813 [http-nio-8001-exec-4] selectByPrimaryKey - ==>  Preparing: select biz_id, title, description, scene, cust_target, car_type, status, gmt_create, gmt_modify, feature from biz_model where biz_id = ? 
+[DEBUG] 2018-01-29 16:45:03.813 [http-nio-8001-exec-4] selectByPrimaryKey - ==> Parameters: 17(Long)
+[DEBUG] 2018-01-29 16:45:03.831 [http-nio-8001-exec-4] selectByPrimaryKey - <==      Total: 1
+[DEBUG] 2018-01-29 16:45:03.842 [http-nio-8001-exec-4] queryById - ==>  Preparing: select biz_id, area_id, group_id, prov, city, gmt_create, gmt_modify from biz_model_rela_area_partners where biz_id = ? 
+[DEBUG] 2018-01-29 16:45:03.843 [http-nio-8001-exec-4] queryById - ==> Parameters: 17(Long)
+[DEBUG] 2018-01-29 16:45:03.859 [http-nio-8001-exec-4] queryById - <==      Total: 5
+[DEBUG] 2018-01-29 16:45:03.908 [http-nio-8001-exec-4] selectByIdList - ==>  Preparing: select area_id, parent_area_id, area_name, parent_area_name, level, gmt_create, gmt_modify, status, feature from base_area where area_id IN ( ? , ? , ? ) AND status = ? 
+[DEBUG] 2018-01-29 16:45:03.909 [http-nio-8001-exec-4] selectByIdList - ==> Parameters: 100000000000(Long), 140000000000(Long), 410000000000(Long), 0(Byte)
+[DEBUG] 2018-01-29 16:45:03.930 [http-nio-8001-exec-4] selectByIdList - <==      Total: 3
+[DEBUG] 2018-01-29 16:45:03.983 [http-nio-8001-exec-4] queryById - ==>  Preparing: select biz_id, prod_id, gmt_create, gmt_modify from biz_model_rela_financial_prod where biz_id = ? 
+[DEBUG] 2018-01-29 16:45:03.985 [http-nio-8001-exec-4] queryById - ==> Parameters: 17(Long)
+[DEBUG] 2018-01-29 16:45:03.999 [http-nio-8001-exec-4] queryById - <==      Total: 0
+[INFO ] 2018-01-29 16:45:57.445 [http-nio-8001-exec-5] BizModelController - deleteRelaPartner-17
+[DEBUG] 2018-01-29 16:45:57.479 [http-nio-8001-exec-5] deleteByPrimaryKey - ==>  Preparing: delete from biz_model_rela_area_partners where biz_id = ? and area_id = ? and group_id = ? 
+[DEBUG] 2018-01-29 16:45:57.479 [http-nio-8001-exec-5] deleteByPrimaryKey - ==> Parameters: 17(Long), 140000000000(Long), 4(Long)
+[DEBUG] 2018-01-29 16:45:57.514 [http-nio-8001-exec-5] deleteByPrimaryKey - <==    Updates: 1
+[INFO ] 2018-01-29 16:46:03.925 [http-nio-8001-exec-6] BizModelController - getById-17
+[DEBUG] 2018-01-29 16:46:03.933 [http-nio-8001-exec-6] selectByPrimaryKey - ==>  Preparing: select biz_id, title, description, scene, cust_target, car_type, status, gmt_create, gmt_modify, feature from biz_model where biz_id = ? 
+[DEBUG] 2018-01-29 16:46:03.933 [http-nio-8001-exec-6] selectByPrimaryKey - ==> Parameters: 17(Long)
+[DEBUG] 2018-01-29 16:46:03.953 [http-nio-8001-exec-6] selectByPrimaryKey - <==      Total: 1
+[DEBUG] 2018-01-29 16:46:03.970 [http-nio-8001-exec-6] queryById - ==>  Preparing: select biz_id, area_id, group_id, prov, city, gmt_create, gmt_modify from biz_model_rela_area_partners where biz_id = ? 
+[DEBUG] 2018-01-29 16:46:03.970 [http-nio-8001-exec-6] queryById - ==> Parameters: 17(Long)
+[DEBUG] 2018-01-29 16:46:03.988 [http-nio-8001-exec-6] queryById - <==      Total: 4
+[DEBUG] 2018-01-29 16:46:04.064 [http-nio-8001-exec-6] selectByIdList - ==>  Preparing: select area_id, parent_area_id, area_name, parent_area_name, level, gmt_create, gmt_modify, status, feature from base_area where area_id IN ( ? , ? ) AND status = ? 
+[DEBUG] 2018-01-29 16:46:04.064 [http-nio-8001-exec-6] selectByIdList - ==> Parameters: 100000000000(Long), 410000000000(Long), 0(Byte)
+[DEBUG] 2018-01-29 16:46:04.082 [http-nio-8001-exec-6] selectByIdList - <==      Total: 2
+[DEBUG] 2018-01-29 16:46:04.154 [http-nio-8001-exec-6] queryById - ==>  Preparing: select biz_id, prod_id, gmt_create, gmt_modify from biz_model_rela_financial_prod where biz_id = ? 
+[DEBUG] 2018-01-29 16:46:04.155 [http-nio-8001-exec-6] queryById - ==> Parameters: 17(Long)
+[DEBUG] 2018-01-29 16:46:04.176 [http-nio-8001-exec-6] queryById - <==      Total: 0

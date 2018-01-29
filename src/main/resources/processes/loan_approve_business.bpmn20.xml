@@ -49,7 +49,7 @@
     <sequenceFlow id="flow45" sourceRef="exclusivegateway1" targetRef="usertask_visit_verify"></sequenceFlow>
     <userTask id="usertask_credit_apply" name="发起征信申请" activiti:candidateGroups="partner_group"></userTask>
     <sequenceFlow id="flow46" sourceRef="usertask_credit_apply" targetRef="credit_save"></sequenceFlow>
-    <serviceTask id="credit_save" name="征信申请存储"></serviceTask>
+    <serviceTask id="credit_save" name="征信申请存储" activiti:expression="${creditService.test(execution)}"></serviceTask>
     <sequenceFlow id="flow47" sourceRef="credit_save" targetRef="usertask_credit_verify"></sequenceFlow>
   </process>
 </definitions>

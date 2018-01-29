@@ -6,6 +6,8 @@ import com.yunche.loan.domain.QueryObj.BizModelQuery;
 import com.yunche.loan.domain.QueryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
 import com.yunche.loan.domain.viewObj.BizModelVO;
+import com.yunche.loan.service.BizModelRelaAreaPartnersService;
+import com.yunche.loan.service.BizModelRelaFinancialProdService;
 import com.yunche.loan.service.BizModelService;
 import com.yunche.loan.service.FinancialProductService;
 import org.slf4j.Logger;
@@ -30,6 +32,12 @@ public class BizModelController {
 
     @Autowired
     private BizModelService bizModelService;
+
+    @Autowired
+    private BizModelRelaFinancialProdService bizModelRelaFinancialProdService;
+
+    @Autowired
+    private BizModelRelaAreaPartnersService bizModelRelaAreaPartnersService;
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResultBean<Void> create(@RequestBody BizModelVO bizModelVO) {
@@ -59,6 +67,18 @@ public class BizModelController {
     public ResultBean<List<BizModelVO>> query(@RequestBody BizModelQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return bizModelService.getByCondition(query);
+    }
+
+    @GetMapping(value = "/deleteRelaFinancialProd")
+    public ResultBean<Void> deleteRelaFinancialProd(@RequestParam("bizId") Long bizId, @RequestParam("prodId") Long prodId) {
+        logger.info(Arrays.asList("deleteRelaFinancialProd", JSON.toJSONString(bizId)).stream().collect(Collectors.joining("-")));
+        return bizModelRelaFinancialProdService.deleteRelaFinancialProd(bizId, prodId);
+    }
+
+    @GetMapping(value = "/deleteRelaPartner")
+    public ResultBean<Void> deleteRelaPartner(@RequestParam("bizId") Long bizId, @RequestParam("areaId") Long areaId, @RequestParam("groupId") Long groupId) {
+        logger.info(Arrays.asList("deleteRelaPartner", JSON.toJSONString(bizId)).stream().collect(Collectors.joining("-")));
+        return bizModelRelaAreaPartnersService.deleteRelaPartner(bizId, areaId, groupId);
     }
 }
 

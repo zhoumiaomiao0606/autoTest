@@ -64,6 +64,14 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     }
 
     @Override
+    public ResultBean<Void> deleteRelaFinancialProd(Long bizId, Long prodId) {
+        Preconditions.checkArgument(bizId != null && prodId != null, "prodId");
+        int count = bizModelRelaFinancialProdDOMapper.deleteByPrimaryKey(bizId, prodId);
+//        Preconditions.checkArgument(count > 1, "删除失败");
+        return ResultBean.ofSuccess(null, "删除成功");
+    }
+
+    @Override
     public ResultBean<List<BizModelRelaFinancialProdDO>> getById(Long bizId) {
         Preconditions.checkNotNull(bizId, "bizId");
 

@@ -46,11 +46,11 @@
         from biz_model_rela_area_partners
         where biz_id = #{bizId,jdbcType=BIGINT}
     </select>
-    <delete id="delete" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
+    <delete id="deleteByPrimaryKey">
     delete from biz_model_rela_area_partners
-    where biz_id = #{bizId,jdbcType=BIGINT}
-      and area_id = #{areaId,jdbcType=BIGINT}
-      and group_id = #{groupId,jdbcType=BIGINT}
+    where biz_id = #{0, jdbcType=BIGINT}
+      and area_id = #{1, jdbcType=BIGINT}
+      and group_id = #{2, jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
     insert into biz_model_rela_area_partners (biz_id, area_id, group_id, prov, city,

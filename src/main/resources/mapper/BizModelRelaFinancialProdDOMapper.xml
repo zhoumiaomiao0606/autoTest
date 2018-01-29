@@ -16,10 +16,10 @@
     from biz_model_rela_financial_prod
     where biz_id = #{bizId,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDO">
+  <delete id="deleteByPrimaryKey">
     delete from biz_model_rela_financial_prod
-    where biz_id = #{bizId,jdbcType=BIGINT}
-      and prod_id = #{prodId,jdbcType=BIGINT}
+    where biz_id = #{0, jdbcType=BIGINT}
+      and prod_id = #{1, jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDO">
     insert into biz_model_rela_financial_prod (biz_id, prod_id, gmt_create, 

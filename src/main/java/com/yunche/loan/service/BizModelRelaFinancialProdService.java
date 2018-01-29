@@ -20,6 +20,8 @@ public interface BizModelRelaFinancialProdService {
 
     ResultBean<Void> delete(Long bizId);
 
+    ResultBean<Void> deleteRelaFinancialProd(Long bizId, Long prodId);
+
     ResultBean<List<BizModelRelaFinancialProdDO>> getById(Long bizId);
 
 }

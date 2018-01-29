@@ -9,6 +9,8 @@ import java.util.List;
 public interface BizModelRelaAreaPartnersDOMapper {
     int delete(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
+    int deleteByPrimaryKey(Long bizId, Long areaId, Long groupId);
+
     int insert(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
     BizModelRelaAreaPartnersDO query(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);

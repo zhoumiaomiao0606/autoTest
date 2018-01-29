@@ -20,6 +20,8 @@ public interface BizModelRelaAreaPartnersService {
 
     ResultBean<Void> delete(Long bizId);
 
+    ResultBean<Void> deleteRelaPartner(Long bizId, Long areaId, Long groupId);
+
     ResultBean<List<BizModelRelaAreaPartnersDO>> getById(Long bizId);
 
     ResultBean<BizModelRelaAreaPartnersDO> getByAllId(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
