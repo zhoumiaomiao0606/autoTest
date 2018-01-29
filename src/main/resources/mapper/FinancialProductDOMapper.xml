@@ -44,8 +44,8 @@
     </if>
     <if test="bizType != null">
       AND
-      <if test="bizType = 2">
-        biz_type IN (0, 1)
+      <if test="bizType == 2">
+        biz_type IN (0, 1, 2)
       </if>
       <if test="bizType != 2">
         biz_type = #{bizType,jdbcType=TINYINT}
