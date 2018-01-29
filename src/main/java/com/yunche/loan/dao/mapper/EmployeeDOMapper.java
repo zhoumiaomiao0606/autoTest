@@ -32,4 +32,6 @@ public interface EmployeeDOMapper {
     int countListEmployeeByUserGroupId(BaseQuery query);
 
     List<EmployeeDO> listEmployeeByUserGroupId(BaseQuery query);
+
+    List<String> listTitle();
 }

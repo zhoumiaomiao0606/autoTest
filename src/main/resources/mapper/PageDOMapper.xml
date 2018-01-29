@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.dao.mapper.PageDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.PageDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="uri" jdbcType="VARCHAR" property="uri"/>
+        <result column="menu_id" jdbcType="BIGINT" property="menuId"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, name, uri, menu_id, gmt_create, gmt_modify, feature, status
+  </sql>
+
+    <resultMap id="menuPageAndOperationResultMap" type="com.yunche.loan.domain.dataObj.PageDO">
+        <!--page-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="uri" jdbcType="VARCHAR" property="uri"/>
+        <result column="menu_id" jdbcType="BIGINT" property="menuId"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+
+        <!--menu-->
+        <association property="menu" javaType="com.yunche.loan.domain.dataObj.MenuDO">
+            <id column="menu_id" jdbcType="BIGINT" property="id"/>
+            <result column="menu_name" jdbcType="VARCHAR" property="name"/>
+            <result column="menu_parent_id" jdbcType="BIGINT" property="parentId"/>
+            <result column="menu_uri" jdbcType="VARCHAR" property="uri"/>
+            <result column="menu_level" jdbcType="INTEGER" property="level"/>
+        </association>
+
+        <!--operation-->
+        <collection property="operations" ofType="com.yunche.loan.domain.dataObj.OperationDO">
+            <id column="operation_id" jdbcType="BIGINT" property="id"/>
+            <result column="operation_name" jdbcType="VARCHAR" property="name"/>
+            <result column="operation_uri" jdbcType="VARCHAR" property="uri"/>
+        </collection>
+
+    </resultMap>
+
+    <!--countMenuPageAndOperation-->
+    <select id="countMenuPageAndOperation" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
+            resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT(page.id))
+        FROM
+        `user_group_rela_area_auth`,
+        `auth` ,
+        `menu` ,
+        `page` ,
+        `operation`
+
+        WHERE user_group_rela_area_auth.auth_id = auth.id
+
+        AND auth.type = 2
+
+        AND auth.source_id = menu.id
+
+        AND page.menu_id = menu.id
+
+        AND operation.page_id = page.id
+
+        AND user_group_rela_area_auth.user_group_id = #{userGroupId}
+
+        AND menu.id = #{menuId}
+    </select>
+
+    <!--getMenuPageAndOperation-->
+    <select id="getMenuPageAndOperation" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
+            resultMap="menuPageAndOperationResultMap">
+        SELECT
+        menu.id AS menu_id,
+        menu.name AS menu_name,
+        menu.uri AS menu_uri,
+        menu.parent_id AS menu_parent_id,
+        menu.level AS menu_level,
+        `page`.* ,
+        operation.id AS operation_id,
+        operation.name AS operation_name,
+        operation.uri AS operation_uri
+        FROM
+        `user_group_rela_area_auth`,
+        `auth` ,
+        `menu` ,
+        `page` ,
+        `operation`
+
+        WHERE user_group_rela_area_auth.auth_id = auth.id
+
+        AND auth.type = 2
+
+        AND auth.source_id = menu.id
+
+        AND page.menu_id = menu.id
+
+        AND operation.page_id = page.id
+
+        AND user_group_rela_area_auth.user_group_id = #{userGroupId}
+
+        AND menu.id = #{menuId}
+
+        ORDER BY gmt_modify DESC
+        limit #{startRow}, #{pageSize}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from page
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from page
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.PageDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into page (id, name, uri,
+        menu_id, gmt_create, gmt_modify,
+        feature, status)
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{uri,jdbcType=VARCHAR},
+        #{menuId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.PageDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into page
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="uri != null">
+                uri,
+            </if>
+            <if test="menuId != null">
+                menu_id,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="uri != null">
+                #{uri,jdbcType=VARCHAR},
+            </if>
+            <if test="menuId != null">
+                #{menuId,jdbcType=BIGINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.PageDO">
+        update page
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="uri != null">
+                uri = #{uri,jdbcType=VARCHAR},
+            </if>
+            <if test="menuId != null">
+                menu_id = #{menuId,jdbcType=BIGINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.PageDO">
+    update page
+    set name = #{name,jdbcType=VARCHAR},
+      uri = #{uri,jdbcType=VARCHAR},
+      menu_id = #{menuId,jdbcType=BIGINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      feature = #{feature,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

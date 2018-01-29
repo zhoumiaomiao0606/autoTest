@@ -159,12 +159,28 @@
         <table tableName="user_group" domainObjectName="UserGroupDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
-        -->
 
-        <table tableName="user_group_rela_area_auth" domainObjectName="UserGroupRelaAreaAuthDO"
+        <table tableName="auth" domainObjectName="AuthDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
+        <table tableName="menu" domainObjectName="MenuDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="page" domainObjectName="PageDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="operation" domainObjectName="OperationDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        -->
+
+        <table tableName="menu" domainObjectName="MenuDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

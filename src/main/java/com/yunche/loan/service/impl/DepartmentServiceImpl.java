@@ -7,7 +7,6 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.DepartmentQuery;
-import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.DepartmentParam;
 import com.yunche.loan.domain.viewObj.BaseVO;
@@ -108,27 +107,28 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public ResultBean<List<DepartmentVO>> query(DepartmentQuery query) {
         int totalNum = departmentDOMapper.count(query);
-        if (totalNum < 1) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        if (totalNum > 0) {
+
+            List<DepartmentDO> departmentDOS = departmentDOMapper.query(query);
+            if (!CollectionUtils.isEmpty(departmentDOS)) {
+
+                List<DepartmentVO> departmentVOS = departmentDOS.stream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+                            DepartmentVO departmentVO = new DepartmentVO();
+                            BeanUtils.copyProperties(e, departmentVO);
+                            // 补充信息
+                            fillMsg(e, departmentVO);
+
+                            return departmentVO;
+                        })
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(departmentVOS, totalNum, query.getPageIndex(), query.getPageSize());
+            }
         }
 
-        List<DepartmentDO> departmentDOS = departmentDOMapper.query(query);
-        List<DepartmentVO> departmentVOS = Collections.EMPTY_LIST;
-        if (!CollectionUtils.isEmpty(departmentDOS)) {
-            departmentVOS = departmentDOS.stream()
-                    .filter(Objects::nonNull)
-                    .map(e -> {
-                        DepartmentVO departmentVO = new DepartmentVO();
-                        BeanUtils.copyProperties(e, departmentVO);
-                        // 补充信息
-                        fillMsg(e, departmentVO);
-
-                        return departmentVO;
-                    })
-                    .collect(Collectors.toList());
-        }
-
-        return ResultBean.ofSuccess(departmentVOS, totalNum, query.getPageIndex(), query.getPageSize());
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
     }
 
     @Override
@@ -355,7 +355,6 @@ public class DepartmentServiceImpl implements DepartmentService {
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-
         }
 
         // 绑定

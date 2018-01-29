@@ -316,12 +316,11 @@ public class CarServiceImpl implements CarService {
                         return brand;
                     })
                     .filter(Objects::nonNull)
-//                    .sorted(CarThreeLevelVO.Brand::getInitial)
+                    .sorted(Comparator.comparing(CarThreeLevelVO.Brand::getInitial))
                     .collect(Collectors.toList());
 
             carThreeLevelVO.setCarBrand(carBrandList);
         }
-
     }
 
     /**

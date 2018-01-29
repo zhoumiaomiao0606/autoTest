@@ -153,6 +153,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public ResultBean<List<String>> listTitle() {
+        List<String> listTitle = employeeDOMapper.listTitle();
+        return ResultBean.ofSuccess(listTitle);
+    }
+
+    @Override
     public ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query) {
         Preconditions.checkNotNull(query.getId(), "员工ID不能为空");
 

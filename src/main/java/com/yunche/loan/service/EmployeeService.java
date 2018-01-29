@@ -30,6 +30,8 @@ public interface EmployeeService {
 
     ResultBean<List<LevelVO>> listAll();
 
+    ResultBean<List<String>> listTitle();
+
     ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query);
 
     ResultBean<Void> bindUserGroup(Long id, String userGroupIds);

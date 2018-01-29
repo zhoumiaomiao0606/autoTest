@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.dataObj;
+package com.yunche.loan.domain;
 
 import com.google.common.collect.Lists;
 import lombok.Data;

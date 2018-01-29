@@ -41,7 +41,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     private DepartmentDOMapper departmentDOMapper;
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
-//    @Autowired
+    //    @Autowired
 //    private AuthDOMapper authDOMapper;
     @Autowired
     private DepartmentRelaUserGroupDOMapper departmentRelaUserGroupDOMapper;
@@ -150,7 +150,10 @@ public class UserGroupServiceImpl implements UserGroupService {
 
     @Override
     public ResultBean<List<AuthVO>> listAuth(BaseQuery query) {
-        Preconditions.checkNotNull(query.getId(), "id不能为空");
+        Preconditions.checkNotNull(query.getId(), "用户组ID不能为空");
+
+
+
 
 
         return ResultBean.ofSuccess(Collections.EMPTY_LIST);

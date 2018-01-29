@@ -137,6 +137,12 @@
         </if>
     </select>
 
+    <!--listTitle-->
+    <select id="listTitle" resultType="java.lang.String">
+        select DISTINCT(title)
+        from employee
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

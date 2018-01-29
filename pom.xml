@@ -6,7 +6,8 @@
     <groupId>com.yunche.loan</groupId>
     <artifactId>yunche-biz</artifactId>
     <version>1.0</version>
-    <packaging>war</packaging>
+    <!--<packaging>war</packaging>-->
+    <packaging>jar</packaging>
 
     <name>yunche-biz</name>
 
@@ -286,18 +287,18 @@
             </plugin>
 
             <!--打war包 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
-                <configuration>
-                    <!--指定web.xml的路径  -->
-                    <!--<webXml>WebRoot\WEB-INF\web.xml</webXml>-->
-                    <!--指定jsp、js、css的路劲  -->
-                    <!--<warSourceDirectory>WebRoot</warSourceDirectory>-->
-                    <warName>loanBizSystem</warName>
-                </configuration>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-war-plugin</artifactId>-->
+                <!--<version>2.1.1</version>-->
+                <!--<configuration>-->
+                    <!--&lt;!&ndash;指定web.xml的路径  &ndash;&gt;-->
+                    <!--&lt;!&ndash;<webXml>WebRoot\WEB-INF\web.xml</webXml>&ndash;&gt;-->
+                    <!--&lt;!&ndash;指定jsp、js、css的路劲  &ndash;&gt;-->
+                    <!--&lt;!&ndash;<warSourceDirectory>WebRoot</warSourceDirectory>&ndash;&gt;-->
+                    <!--<warName>loanBizSystem</warName>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
             <!--打war包到指定的目录下 -->
             <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>

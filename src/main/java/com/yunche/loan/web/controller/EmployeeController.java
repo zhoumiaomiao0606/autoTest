@@ -77,6 +77,17 @@ public class EmployeeController {
     }
 
     /**
+     * 职位列表
+     *
+     * @return
+     */
+    @GetMapping("/listTitle")
+    public ResultBean<List<String>> listTitle() {
+        logger.info("listTitle");
+        return employeeService.listTitle();
+    }
+
+    /**
      * 获取当前用户已绑定的用户组(角色)列表   -分页查询
      *
      * @param query
