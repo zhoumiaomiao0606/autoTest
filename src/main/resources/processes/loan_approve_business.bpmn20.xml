@@ -36,9 +36,9 @@
     <userTask id="usertask_telephone_verify_review" name="电审复审信息"></userTask>
     <sequenceFlow id="flow35" sourceRef="usertask_telephone_verify_review" targetRef="parallelgateway3"></sequenceFlow>
     <sequenceFlow id="flow36" sourceRef="usertask_telephone_verify" targetRef="usertask_telephone_verify_review"></sequenceFlow>
-    <userTask id="usertask_credit_apply" name="征信申请" activiti:candidateGroups="partner_group"></userTask>
+    <userTask id="usertask_credit_verify" name="征信申请审核" activiti:candidateGroups="partner_group"></userTask>
     <sequenceFlow id="flow38" sourceRef="startevent3" targetRef="usertask_credit_apply"></sequenceFlow>
-    <sequenceFlow id="flow39" sourceRef="usertask_credit_apply" targetRef="parallelgateway1"></sequenceFlow>
+    <sequenceFlow id="flow39" sourceRef="usertask_credit_verify" targetRef="parallelgateway1"></sequenceFlow>
     <parallelGateway id="parallelgateway6" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow40" sourceRef="usertask_bank_credit_record" targetRef="parallelgateway6"></sequenceFlow>
     <sequenceFlow id="flow41" sourceRef="usertask_social_credit_record" targetRef="parallelgateway6"></sequenceFlow>
@@ -47,5 +47,9 @@
     <sequenceFlow id="flow43" sourceRef="usertask_loan_approve" targetRef="exclusivegateway1"></sequenceFlow>
     <sequenceFlow id="flow44" sourceRef="exclusivegateway1" targetRef="usertask_telephone_verify"></sequenceFlow>
     <sequenceFlow id="flow45" sourceRef="exclusivegateway1" targetRef="usertask_visit_verify"></sequenceFlow>
+    <userTask id="usertask_credit_apply" name="发起征信申请" activiti:candidateGroups="partner_group"></userTask>
+    <sequenceFlow id="flow46" sourceRef="usertask_credit_apply" targetRef="credit_save"></sequenceFlow>
+    <serviceTask id="credit_save" name="征信申请存储"></serviceTask>
+    <sequenceFlow id="flow47" sourceRef="credit_save" targetRef="usertask_credit_verify"></sequenceFlow>
   </process>
 </definitions>
