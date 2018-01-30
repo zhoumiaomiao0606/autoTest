@@ -127,6 +127,38 @@
         LIMIT #{startRow}, #{pageSize}
     </select>
 
+    <!-- countListEmployeeByPartnerId -->
+    <select id="countListEmployeeByPartnerId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+            resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM partner_rela_employee AS a
+        JOIN employee AS b
+        ON a.`employee_id` = b.`id`
+        <if test="id != null">
+            AND a.partner_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+    </select>
+
+    <!-- listEmployeeByPartnerId -->
+    <select id="listEmployeeByPartnerId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+            resultMap="BaseResultMap">
+        SELECT b.*
+        FROM partner_rela_employee AS a
+        JOIN employee AS b
+        ON a.`employee_id` = b.`id`
+        <if test="id != null">
+            AND a.partner_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+        ORDER BY a.`gmt_modify` DESC
+        LIMIT #{startRow}, #{pageSize}
+    </select>
+
     <!--getAll-->
     <select id="getAll" resultMap="BaseResultMap">
         select

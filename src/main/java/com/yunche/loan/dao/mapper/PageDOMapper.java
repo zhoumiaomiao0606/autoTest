@@ -31,10 +31,10 @@ public interface PageDOMapper {
     int countMenuPageAndOperation(RelaQuery query);
 
     /**
-     * 分页条件查询page列表 和 page所属的menu、及page下的Operation列表
+     * 分页条件查询：page列表 和 page所属的menu、及page下的Operation列表
      *
      * @param query
      * @return
      */
-    List<PageDO> getMenuPageAndOperation(RelaQuery query);
+    List<PageDO> queryMenuPageAndOperation(RelaQuery query);
 }

@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.PartnerQuery;
+import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.PartnerDO;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.viewObj.BizModelVO;
+import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.PartnerVO;
 import com.yunche.loan.service.PartnerService;
 import org.slf4j.Logger;
@@ -100,16 +102,16 @@ public class PartnerController {
     }
 
     /**
-     * 解绑关联的业务产品      -支持列表
+     * 绑定业务产品      -支持列表
      *
      * @param id          合伙人ID
      * @param bizModelIds 业务产品ID列表 逗号分隔
      * @return
      */
     @GetMapping(value = "/bindBizModel")
-    public ResultBean<Void> bindBizModels(@RequestParam("id") Long id,
-                                          @RequestParam("bizModelIds") String bizModelIds) {
-        logger.info(Arrays.asList("bindBizModels", JSON.toJSONString(id), JSON.toJSONString(bizModelIds)).stream().collect(Collectors.joining("\u0001")));
+    public ResultBean<Void> bindBizModel(@RequestParam("id") Long id,
+                                         @RequestParam("bizModelIds") String bizModelIds) {
+        logger.info(Arrays.asList("bindBizModel", JSON.toJSONString(id), JSON.toJSONString(bizModelIds)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.bindBizModel(id, bizModelIds);
     }
 
@@ -121,9 +123,49 @@ public class PartnerController {
      * @return
      */
     @GetMapping(value = "/unbindBizModel")
-    public ResultBean<Void> deleteRelaAuths(@RequestParam("id") Long id,
-                                            @RequestParam("bizModelIds") String bizModelIds) {
+    public ResultBean<Void> unbindBizModel(@RequestParam("id") Long id,
+                                           @RequestParam("bizModelIds") String bizModelIds) {
         logger.info(Arrays.asList("unbindBizModel", JSON.toJSONString(id), JSON.toJSONString(bizModelIds)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.unbindBizModel(id, bizModelIds);
+    }
+
+    /**
+     * 当前合伙人关联的业务产品列表   -分页查询
+     *
+     * @param query id、pageIndex、pageSize
+     * @return
+     */
+    @PostMapping(value = "/listEmployee")
+    public ResultBean<List<EmployeeVO>> listEmployee(@RequestBody RelaQuery query) {
+        logger.info(Arrays.asList("listEmployee", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
+        return partnerService.listEmployee(query);
+    }
+
+    /**
+     * 绑定(外包)员工列表      -支持列表
+     *
+     * @param id          合伙人ID
+     * @param employeeIds (外包)员工ID列表 逗号分隔
+     * @return
+     */
+    @GetMapping(value = "/bindEmployee")
+    public ResultBean<Void> bindEmployee(@RequestParam("id") Long id,
+                                         @RequestParam("employeeIds") String employeeIds) {
+        logger.info(Arrays.asList("bindEmployee", JSON.toJSONString(id), JSON.toJSONString(employeeIds)).stream().collect(Collectors.joining("\u0001")));
+        return partnerService.bindEmployee(id, employeeIds);
+    }
+
+    /**
+     * 解绑(外包)员工列表      -支持列表
+     *
+     * @param id          合伙人ID
+     * @param employeeIds (外包)员工ID列表 逗号分隔
+     * @return
+     */
+    @GetMapping(value = "/unbindEmployee")
+    public ResultBean<Void> unbindEmployee(@RequestParam("id") Long id,
+                                           @RequestParam("employeeIds") String employeeIds) {
+        logger.info(Arrays.asList("unbindEmployee", JSON.toJSONString(id), JSON.toJSONString(employeeIds)).stream().collect(Collectors.joining("\u0001")));
+        return partnerService.unbindEmployee(id, employeeIds);
     }
 }

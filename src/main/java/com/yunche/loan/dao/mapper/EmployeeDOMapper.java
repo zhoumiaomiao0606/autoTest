@@ -29,9 +29,25 @@ public interface EmployeeDOMapper {
 
     List<EmployeeDO> getAll(@Param("status") Byte status);
 
+    List<String> listTitle();
+
     int countListEmployeeByUserGroupId(BaseQuery query);
 
     List<EmployeeDO> listEmployeeByUserGroupId(BaseQuery query);
 
-    List<String> listTitle();
+    /**
+     * 根据合伙人 统计关联的(外包)员工总数
+     *
+     * @param query
+     * @return
+     */
+    int countListEmployeeByPartnerId(RelaQuery query);
+
+    /**
+     * 根据合伙人 分页查询关联的(外包)员工详情
+     *
+     * @param query
+     * @return
+     */
+    List<EmployeeDO> listEmployeeByPartnerId(RelaQuery query);
 }

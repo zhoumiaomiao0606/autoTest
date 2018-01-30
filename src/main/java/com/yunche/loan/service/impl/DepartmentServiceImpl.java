@@ -9,7 +9,6 @@ import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.DepartmentQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.DepartmentParam;
-import com.yunche.loan.domain.viewObj.BaseVO;
 import com.yunche.loan.domain.viewObj.DepartmentVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
@@ -425,8 +424,21 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         DepartmentDO parentDepartmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
         if (null != parentDepartmentDO) {
-            BaseVO parent = new BaseVO();
-            BeanUtils.copyProperties(parentDepartmentDO, parent);
+            // 递归填充所有上层父级部门
+            fillSupperDepartmentId(parentDepartmentDO.getParentId(), Lists.newArrayList(parentDepartmentDO.getId()), departmentVO);
+        }
+    }
+
+    private void fillSupperDepartmentId(Long parentId, List<Long> parent, DepartmentVO departmentVO) {
+        if (null != parentId) {
+            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != departmentDO) {
+                parent.add(parentId);
+                fillSupperDepartmentId(departmentDO.getParentId(), parent, departmentVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(parent);
             departmentVO.setParent(parent);
         }
     }
@@ -437,11 +449,25 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeId, VALID_STATUS);
         if (null != employeeDO) {
-            BaseVO leader = new BaseVO();
-            BeanUtils.copyProperties(employeeDO, leader);
+            // 递归填充所有上层父级leader
+            fillSupperLeaderId(employeeDO.getParentId(), Lists.newArrayList(employeeDO.getId()), departmentVO);
+        }
+    }
+
+    private void fillSupperLeaderId(Long parentId, List<Long> leader, DepartmentVO departmentVO) {
+        if (null != parentId) {
+            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != employeeDO) {
+                leader.add(parentId);
+                fillSupperLeaderId(employeeDO.getParentId(), leader, departmentVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(leader);
             departmentVO.setLeader(leader);
         }
     }
+
 
     private void fillArea(Long areaId, DepartmentVO departmentVO) {
         if (null == areaId) {
@@ -449,12 +475,30 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
         if (null != baseAreaDO) {
-            BaseVO area = new BaseVO();
-            area.setId(baseAreaDO.getAreaId());
-            area.setName(baseAreaDO.getAreaName());
+            // 递归填充所有上层父级部门
+            fillSupperAreaId(baseAreaDO.getParentAreaId(), Lists.newArrayList(baseAreaDO.getAreaId()), departmentVO);
+        }
+    }
+
+    /**
+     * @param parentId
+     * @param area
+     * @param departmentVO
+     */
+    private void fillSupperAreaId(Long parentId, List<Long> area, DepartmentVO departmentVO) {
+        if (null != parentId) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != baseAreaDO) {
+                area.add(parentId);
+                fillSupperAreaId(baseAreaDO.getParentAreaId(), area, departmentVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(area);
             departmentVO.setArea(area);
         }
     }
+
 
     /**
      * todo 填充部门人数

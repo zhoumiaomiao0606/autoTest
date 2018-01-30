@@ -6,11 +6,10 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.PartnerQuery;
+import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.PartnerParam;
-import com.yunche.loan.domain.viewObj.BaseVO;
-import com.yunche.loan.domain.viewObj.BizModelVO;
-import com.yunche.loan.domain.viewObj.PartnerVO;
+import com.yunche.loan.domain.viewObj.*;
 import com.yunche.loan.service.PartnerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -38,9 +37,13 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private DepartmentDOMapper departmentDOMapper;
     @Autowired
+    private EmployeeDOMapper employeeDOMapper;
+    @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
     @Autowired
     private BizModelDOMapper bizModelDOMapper;
+    @Autowired
+    private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
     @Autowired
     private BizModelRelaAreaPartnersDOMapper bizModelRelaAreaPartnersDOMapper;
 
@@ -81,46 +84,6 @@ public class PartnerServiceImpl implements PartnerService {
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
-    /**
-     * 编辑绑定业务产品的限制区域
-     *
-     * @param id
-     * @param areaId
-     */
-    private void updateRelaBizModelArea(Long id, Long areaId) {
-        if (null == areaId) {
-            return;
-        }
-        // check
-        BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
-        bizModelRelaAreaPartnersDO.setGroupId(id);
-        List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOS = bizModelRelaAreaPartnersDOMapper.listQuery(bizModelRelaAreaPartnersDO);
-        if (CollectionUtils.isEmpty(bizModelRelaAreaPartnersDOS)) {
-            return;
-        }
-
-        // update
-        bizModelRelaAreaPartnersDOS.parallelStream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
-
-                    if (areaId.equals(e.getAreaId())) {
-                        return;
-                    } else {
-                        // delete
-                        int delCount = bizModelRelaAreaPartnersDOMapper.delete(e);
-                        Preconditions.checkArgument(delCount > 0, "编辑业务区域失败");
-
-                        // insert
-                        e.setAreaId(areaId);
-                        e.setGmtModify(new Date());
-                        int insertCount = bizModelRelaAreaPartnersDOMapper.insert(e);
-                        Preconditions.checkArgument(insertCount > 0, "编辑业务区域失败");
-                    }
-
-                });
-    }
-
     @Override
     public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
@@ -143,6 +106,7 @@ public class PartnerServiceImpl implements PartnerService {
         // fillMsg
         fillDepartment(partnerDO.getDepartmentId(), partnerVO);
         fillArea(partnerDO.getAreaId(), partnerVO);
+        fillEmployeeNum(partnerVO);
 
         return ResultBean.ofSuccess(partnerVO);
     }
@@ -161,6 +125,7 @@ public class PartnerServiceImpl implements PartnerService {
 
                             fillDepartment(e.getDepartmentId(), partnerVO);
                             fillArea(e.getAreaId(), partnerVO);
+                            fillEmployeeNum(partnerVO);
 
                             return partnerVO;
                         })
@@ -171,44 +136,6 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
-    }
-
-
-    /**
-     * 填充部门信息
-     *
-     * @param departmentId
-     * @param partnerVO
-     */
-    private void fillDepartment(Long departmentId, PartnerVO partnerVO) {
-        if (null == departmentId) {
-            return;
-        }
-        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
-        if (null != departmentDO) {
-            BaseVO baseVO = new BaseVO();
-            BeanUtils.copyProperties(departmentDO, baseVO);
-            partnerVO.setDepartment(baseVO);
-        }
-    }
-
-    /**
-     * 填充区域(城市)信息
-     *
-     * @param areaId
-     * @param partnerVO
-     */
-    private void fillArea(Long areaId, PartnerVO partnerVO) {
-        if (null == areaId) {
-            return;
-        }
-        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
-        if (null != baseAreaDO) {
-            BaseVO baseVO = new BaseVO();
-            baseVO.setId(baseAreaDO.getAreaId());
-            baseVO.setName(baseAreaDO.getAreaName());
-            partnerVO.setArea(baseVO);
-        }
     }
 
     @Override
@@ -284,12 +211,79 @@ public class PartnerServiceImpl implements PartnerService {
         return ResultBean.ofSuccess(null, "取消关联成功");
     }
 
+    @Override
+    public ResultBean<List<EmployeeVO>> listEmployee(RelaQuery query) {
+        Preconditions.checkNotNull(query.getId(), "合伙人ID不能为空");
+
+        int totalNum = employeeDOMapper.countListEmployeeByPartnerId(query);
+        if (totalNum > 0) {
+
+            List<EmployeeDO> employeeDOS = employeeDOMapper.listEmployeeByPartnerId(query);
+            if (!CollectionUtils.isEmpty(employeeDOS)) {
+
+                List<EmployeeVO> employeeVOList = employeeDOS.parallelStream()
+                        .filter(Objects::nonNull)
+                        .map(employeeDO -> {
+
+                            EmployeeVO employeeVO = new EmployeeVO();
+                            BeanUtils.copyProperties(employeeDO, employeeVO);
+
+                            return employeeVO;
+                        })
+                        .sorted(Comparator.comparing(EmployeeVO::getGmtModify))
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(employeeVOList, totalNum, query.getPageIndex(), query.getPageSize());
+            }
+        }
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
+    }
+
+    @Override
+    public ResultBean<Void> bindEmployee(Long id, String employeeIds) {
+        Preconditions.checkNotNull(id, "合伙人ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(employeeIds), "员工ID不能为空");
+
+        // convert
+        List<Long> employeeIdList = Arrays.asList(employeeIds.split(",")).stream()
+                .map(e -> {
+                    return Long.valueOf(e);
+                })
+                .distinct()
+                .collect(Collectors.toList());
+
+        // bind
+        bindEmployee(id, employeeIdList);
+
+        return ResultBean.ofSuccess(null, "关联成功");
+    }
+
+    @Override
+    public ResultBean<Void> unbindEmployee(Long id, String employeeIds) {
+        Preconditions.checkNotNull(id, "合伙人ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(employeeIds), "员工ID不能为空");
+
+        Arrays.asList(employeeIds.split(",")).stream()
+                .distinct()
+                .forEach(employeeId -> {
+                    PartnerRelaEmployeeDOKey partnerRelaEmployeeDOKey = new PartnerRelaEmployeeDOKey();
+                    partnerRelaEmployeeDOKey.setPartnerId(id);
+                    partnerRelaEmployeeDOKey.setEmployeeId(Long.valueOf(employeeId));
+                    int count = partnerRelaEmployeeDOMapper.deleteByPrimaryKey(partnerRelaEmployeeDOKey);
+                    Preconditions.checkArgument(count > 0, "取消关联失败");
+                });
+
+        return ResultBean.ofSuccess(null, "取消关联成功");
+    }
+
+
     /**
      * 创建实体，并返回主键ID
      *
      * @param partnerParam
      * @return
      */
+
     private Long insertAndGetId(PartnerParam partnerParam) {
         List<String> nameList = partnerDOMapper.getAllName(VALID_STATUS);
         Preconditions.checkArgument(!nameList.contains(partnerParam.getName()), "团队名称已存在");
@@ -303,6 +297,185 @@ public class PartnerServiceImpl implements PartnerService {
         Preconditions.checkArgument(count > 0, "创建失败");
 
         return partnerDO.getId();
+    }
+
+    /**
+     * 编辑绑定业务产品的限制区域
+     *
+     * @param id
+     * @param areaId
+     */
+    private void updateRelaBizModelArea(Long id, Long areaId) {
+        if (null == areaId) {
+            return;
+        }
+        // check
+        BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
+        bizModelRelaAreaPartnersDO.setGroupId(id);
+        List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOS = bizModelRelaAreaPartnersDOMapper.listQuery(bizModelRelaAreaPartnersDO);
+        if (CollectionUtils.isEmpty(bizModelRelaAreaPartnersDOS)) {
+            return;
+        }
+
+        // update
+        bizModelRelaAreaPartnersDOS.parallelStream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+                    if (areaId.equals(e.getAreaId())) {
+                        return;
+                    } else {
+                        // delete
+                        int delCount = bizModelRelaAreaPartnersDOMapper.delete(e);
+                        Preconditions.checkArgument(delCount > 0, "编辑业务区域失败");
+
+                        // insert
+                        e.setAreaId(areaId);
+                        e.setGmtModify(new Date());
+                        int insertCount = bizModelRelaAreaPartnersDOMapper.insert(e);
+                        Preconditions.checkArgument(insertCount > 0, "编辑业务区域失败");
+                    }
+                });
+    }
+
+    /**
+     * 填充部门信息
+     *
+     * @param departmentId
+     * @param partnerVO
+     */
+    private void fillDepartment(Long departmentId, PartnerVO partnerVO) {
+        if (null == departmentId) {
+            return;
+        }
+        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
+        if (null != departmentDO) {
+            // 部门
+//            PartnerVO.Department department_ = new PartnerVO.Department();
+//            BeanUtils.copyProperties(departmentDO, department_);
+
+            // 递归填充所有上层父级部门
+//            fillParentDepartment(departmentDO.getParentId(), department_, partnerVO);
+
+            // 递归填充所有上层父级部门ID
+            fillParentDepartmentIds(departmentDO.getParentId(), Lists.newArrayList(departmentDO.getId()), partnerVO);
+
+            // 部门负责人
+            Long departmentLeaderId = departmentDO.getLeaderId();
+            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(departmentLeaderId, VALID_STATUS);
+            if (null != employeeDO) {
+                // 递归填充所有上层父级leader
+                fillSupperDepartmentLeaderId(employeeDO.getParentId(), Lists.newArrayList(employeeDO.getId()), partnerVO);
+            }
+        }
+    }
+
+    private void fillSupperDepartmentLeaderId(Long parentId, List<Long> departmentLeader, PartnerVO partnerVO) {
+        if (null != parentId) {
+            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != employeeDO) {
+                departmentLeader.add(parentId);
+                fillSupperDepartmentLeaderId(employeeDO.getParentId(), departmentLeader, partnerVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(departmentLeader);
+            partnerVO.setDepartmentLeader(departmentLeader);
+        }
+    }
+
+    /**
+     * 递归填充所有上层父级部门ID
+     * <p>
+     * 前端需求：仅需要层级ID即可
+     *
+     * @param parentId
+     * @param department
+     * @param partnerVO
+     */
+    private void fillParentDepartmentIds(Long parentId, List<Long> department, PartnerVO partnerVO) {
+        if (null != parentId) {
+            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != departmentDO) {
+                department.add(parentId);
+                fillParentDepartmentIds(departmentDO.getParentId(), department, partnerVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(department);
+            partnerVO.setDepartment(department);
+        }
+    }
+
+    /**
+     * 递归填充所有上层父级部门
+     *
+     * @param parentId
+     * @param childDepartment
+     * @param partnerVO
+     */
+//    private void fillParentDepartment(Long parentId, PartnerVO.Department childDepartment, PartnerVO partnerVO) {
+//        if (null != parentId) {
+//            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+//            if (null != departmentDO) {
+//
+//                PartnerVO.Department parentDepartment = new PartnerVO.Department();
+//                BeanUtils.copyProperties(departmentDO, parentDepartment);
+//
+//                parentDepartment.setChild(childDepartment);
+//                fillParentDepartment(departmentDO.getParentId(), parentDepartment, partnerVO);
+//            }
+//        } else {
+//            // null时为最顶级
+//            partnerVO.setDepartment_(childDepartment);
+//        }
+//    }
+
+    /**
+     * 填充区域(城市)信息
+     *
+     * @param areaId
+     * @param partnerVO
+     */
+    private void fillArea(Long areaId, PartnerVO partnerVO) {
+        if (null == areaId) {
+            return;
+        }
+        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
+        if (null != baseAreaDO) {
+            // 递归填充所有上层父级区域ID
+            fillSupperAreaId(baseAreaDO.getParentAreaId(), Lists.newArrayList(baseAreaDO.getAreaId()), partnerVO);
+        }
+    }
+
+    /**
+     * @param parentId
+     * @param area
+     * @param partnerVO
+     */
+    private void fillSupperAreaId(Long parentId, List<Long> area, PartnerVO partnerVO) {
+        if (null != parentId) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != baseAreaDO) {
+                area.add(parentId);
+                fillSupperAreaId(baseAreaDO.getParentAreaId(), area, partnerVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(area);
+            partnerVO.setArea(area);
+        }
+    }
+
+    /**
+     * 填充合伙人绑定的员工总数
+     *
+     * @param partnerVO
+     */
+    private void fillEmployeeNum(PartnerVO partnerVO) {
+        RelaQuery query = new RelaQuery();
+        query.setId(partnerVO.getId());
+        int employeeNum = employeeDOMapper.countListEmployeeByPartnerId(query);
+        partnerVO.setEmployeeNum(employeeNum);
     }
 
     /**
@@ -380,5 +553,49 @@ public class PartnerServiceImpl implements PartnerService {
                     int count = bizModelRelaAreaPartnersDOMapper.insert(bizModelRelaAreaPartnersDO);
                     Preconditions.checkArgument(count > 0, "关联业务产品失败");
                 });
+    }
+
+    /**
+     * 合伙人绑定员工列表
+     *
+     * @param partnerId
+     * @param employeeIdList
+     */
+    private void bindEmployee(Long partnerId, List<Long> employeeIdList) {
+        // 去重
+        List<Long> existEmployeeIdList = partnerRelaEmployeeDOMapper.getEmployeeIdListByPartnerId(partnerId);
+        if (!CollectionUtils.isEmpty(existEmployeeIdList)) {
+            employeeIdList = employeeIdList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
+                        if (!existEmployeeIdList.contains(e)) {
+                            return e;
+                        }
+                        return null;
+                    })
+                    .distinct()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        // 执行绑定
+        if (!CollectionUtils.isEmpty(employeeIdList)) {
+
+            List<PartnerRelaEmployeeDO> partnerRelaEmployeeDOS = employeeIdList.parallelStream()
+                    .map(employeeId -> {
+
+                        PartnerRelaEmployeeDO partnerRelaEmployeeDO = new PartnerRelaEmployeeDO();
+                        partnerRelaEmployeeDO.setPartnerId(partnerId);
+                        partnerRelaEmployeeDO.setEmployeeId(employeeId);
+                        partnerRelaEmployeeDO.setGmtCreate(new Date());
+                        partnerRelaEmployeeDO.setGmtModify(new Date());
+
+                        return partnerRelaEmployeeDO;
+                    })
+                    .collect(Collectors.toList());
+
+            int count = partnerRelaEmployeeDOMapper.batchInsert(partnerRelaEmployeeDOS);
+            Preconditions.checkArgument(count == partnerRelaEmployeeDOS.size(), "关联失败");
+        }
     }
 }

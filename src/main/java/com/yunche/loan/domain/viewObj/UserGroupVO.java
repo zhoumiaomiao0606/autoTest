@@ -3,6 +3,7 @@ package com.yunche.loan.domain.viewObj;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class UserGroupVO {
@@ -13,13 +14,13 @@ public class UserGroupVO {
 
     private String info;
     /**
-     * 部门
+     * 部门层级ID
      */
-    private BaseVO department;
+    private List<Long> department;
     /**
      * 区域(城市)
      */
-    private BaseVO area;
+    private List<Long> area;
 
     private Date gmtCreate;
 

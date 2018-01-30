@@ -3,6 +3,7 @@ package com.yunche.loan.domain.viewObj;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -16,15 +17,15 @@ public class DepartmentVO {
     /**
      * 上级部门
      */
-    private BaseVO parent;
+    private List<Long> parent;
     /**
      * 部门负责人
      */
-    private BaseVO leader;
+    private List<Long> leader;
     /**
      * 区域
      */
-    private BaseVO area;
+    private List<Long> area;
     /**
      * 本部门员工总数
      */

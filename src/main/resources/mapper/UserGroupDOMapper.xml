@@ -4,17 +4,18 @@
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.UserGroupDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="department_id" jdbcType="BIGINT" property="departmentId"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-        <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.dataObj.UserGroupDO">
         <result column="info" jdbcType="LONGVARCHAR" property="info"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, gmt_create, gmt_modify, feature, status
+        id, name, department_id, gmt_create, gmt_modify, feature, status
     </sql>
     <sql id="Blob_Column_List">
         info
@@ -159,13 +160,12 @@
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into user_group (id, name, gmt_create, gmt_modify,
-        feature, status, info
-        )
-        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP},
-        #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{info,jdbcType=LONGVARCHAR}
-        )
+        insert into user_group (id, name, department_id,
+        gmt_create, gmt_modify, feature,
+        status, info)
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT}, #{info,jdbcType=LONGVARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
@@ -180,6 +180,9 @@
             </if>
             <if test="name != null">
                 name,
+            </if>
+            <if test="departmentId != null">
+                department_id,
             </if>
             <if test="gmtCreate != null">
                 gmt_create,
@@ -203,6 +206,9 @@
             </if>
             <if test="name != null">
                 #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentId != null">
+                #{departmentId,jdbcType=BIGINT},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -228,6 +234,9 @@
             <if test="name != null">
                 name = #{name,jdbcType=VARCHAR},
             </if>
+            <if test="departmentId != null">
+                department_id = #{departmentId,jdbcType=BIGINT},
+            </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -250,6 +259,7 @@
     <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
         update user_group
         set name = #{name,jdbcType=VARCHAR},
+        department_id = #{departmentId,jdbcType=BIGINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         feature = #{feature,jdbcType=VARCHAR},
@@ -261,6 +271,7 @@
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupDO">
     update user_group
     set name = #{name,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=BIGINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
       feature = #{feature,jdbcType=VARCHAR},

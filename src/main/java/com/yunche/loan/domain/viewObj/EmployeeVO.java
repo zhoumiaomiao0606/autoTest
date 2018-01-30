@@ -1,7 +1,6 @@
 package com.yunche.loan.domain.viewObj;
 
 import lombok.Data;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -37,9 +36,9 @@ public class EmployeeVO {
     /**
      * 所属部门
      */
-    private BaseVO department;
+    private List<Long> department;
     /**
      * 直接上级
      */
-    private BaseVO parent;
+    private List<Long> parent;
 }

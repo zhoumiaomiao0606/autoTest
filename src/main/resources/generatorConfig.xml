@@ -115,7 +115,7 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
-        <table tableName="department" domainObjectName="DepartmentDO"
+        <table tableName="department_" domainObjectName="DepartmentDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
@@ -136,7 +136,7 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
-        <table tableName="department" domainObjectName="DepartmentDO"
+        <table tableName="department_" domainObjectName="DepartmentDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
@@ -178,7 +178,7 @@
 
         -->
 
-        <table tableName="menu" domainObjectName="MenuDO"
+        <table tableName="user_group" domainObjectName="UserGroupDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 

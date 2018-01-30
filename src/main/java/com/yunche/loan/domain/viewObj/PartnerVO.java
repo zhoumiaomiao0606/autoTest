@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -24,13 +25,17 @@ public class PartnerVO {
 
     private String fax;
     /**
-     * 关联的部门
+     * 关联的部门详情
      */
-    private BaseVO department;
+    private List<Long> department;
     /**
-     * 关联的区域(城市)
+     * 部门负责人详情
      */
-    private BaseVO area;
+    private List<Long> departmentLeader;
+    /**
+     * 关联的区域(城市)详情
+     */
+    private List<Long> area;
 
     private Byte bizType;
 
@@ -61,4 +66,21 @@ public class PartnerVO {
     private Date gmtModify;
 
     private Byte status;
+    /**
+     * 团队员工人数
+     */
+    private Integer employeeNum;
+
+//    private Department department;
+
+//    @Data
+//    public static class Department {
+//        private Long id;
+//
+//        private String name;
+//
+//        private Integer level;
+//
+//        private Department child;
+//    }
 }
