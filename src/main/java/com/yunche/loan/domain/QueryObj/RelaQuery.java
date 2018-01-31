@@ -40,4 +40,8 @@ public class RelaQuery extends BaseQuery {
      * 类型（员工类型...）
      */
     private Byte type;
+    /**
+     * 绑定状态
+     */
+    private Integer bindStatus;
 }

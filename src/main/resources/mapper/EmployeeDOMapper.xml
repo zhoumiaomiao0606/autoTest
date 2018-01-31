@@ -12,6 +12,7 @@
         <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="entry_date" jdbcType="TIMESTAMP" property="entryDate"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
         <result column="type" jdbcType="TINYINT" property="type"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
@@ -21,7 +22,7 @@
 
     <sql id="Base_Column_List">
         id, name, id_card, mobile, email, ding_ding, department_id, parent_id, title, entry_date,
-        type, gmt_create, gmt_modify, feature, status
+        level, type, gmt_create, gmt_modify, feature, status
     </sql>
 
     <sql id="Base_Query_List">
@@ -63,6 +64,9 @@
         </if>
         <if test="gmtModifyEnd != null">
             <![CDATA[ AND gmt_modify <= #{gmtModifyEnd} ]]>
+        </if>
+        <if test="level != null">
+            AND level = #{level}
         </if>
         <if test="type != null">
             AND type = #{type}
@@ -198,15 +202,15 @@
         insert into employee (id, name, id_card,
         mobile, email, ding_ding,
         department_id, parent_id, title,
-        entry_date, type, gmt_create,
-        gmt_modify, feature, status
-        )
+        entry_date, level, type,
+        gmt_create, gmt_modify, feature,
+        status)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{idCard,jdbcType=CHAR},
         #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{dingDing,jdbcType=VARCHAR},
         #{departmentId,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR},
-        #{entryDate,jdbcType=TIMESTAMP}, #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}
-        )
+        #{entryDate,jdbcType=TIMESTAMP}, #{level,jdbcType=INTEGER}, #{type,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
@@ -245,6 +249,9 @@
             </if>
             <if test="entryDate != null">
                 entry_date,
+            </if>
+            <if test="level != null">
+                level,
             </if>
             <if test="type != null">
                 type,
@@ -292,6 +299,9 @@
             </if>
             <if test="entryDate != null">
                 #{entryDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="level != null">
+                #{level,jdbcType=INTEGER},
             </if>
             <if test="type != null">
                 #{type,jdbcType=TINYINT},
@@ -341,6 +351,9 @@
             <if test="entryDate != null">
                 entry_date = #{entryDate,jdbcType=TIMESTAMP},
             </if>
+            <if test="level != null">
+                level = #{level,jdbcType=INTEGER},
+            </if>
             <if test="type != null">
                 type = #{type,jdbcType=TINYINT},
             </if>
@@ -371,6 +384,7 @@
       parent_id = #{parentId,jdbcType=BIGINT},
       title = #{title,jdbcType=VARCHAR},
       entry_date = #{entryDate,jdbcType=TIMESTAMP},
+      level = #{level,jdbcType=INTEGER},
       type = #{type,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},

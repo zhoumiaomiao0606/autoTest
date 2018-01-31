@@ -27,15 +27,15 @@ public class PartnerVO {
     /**
      * 关联的部门详情
      */
-    private List<Long> department;
+    private List<BaseVO> department;
     /**
      * 部门负责人详情
      */
-    private List<Long> departmentLeader;
+    private List<BaseVO> departmentLeader;
     /**
      * 关联的区域(城市)详情
      */
-    private List<Long> area;
+    private List<BaseVO> area;
 
     private Byte bizType;
 
@@ -70,17 +70,4 @@ public class PartnerVO {
      * 团队员工人数
      */
     private Integer employeeNum;
-
-//    private Department department;
-
-//    @Data
-//    public static class Department {
-//        private Long id;
-//
-//        private String name;
-//
-//        private Integer level;
-//
-//        private Department child;
-//    }
 }

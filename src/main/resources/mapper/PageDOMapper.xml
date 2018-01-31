@@ -59,7 +59,7 @@
                 user_group_rela_area_auth.auth_id = auth.id
                 AND auth.type = 2
                 AND auth.source_id = menu.id
-                AND page.menu_id = menu.id
+--                 AND page.menu_id = menu.id
                 AND operation.page_id = page.id
                 <if test="userGroupId != null">
                     AND user_group_rela_area_auth.user_group_id = #{userGroupId}
@@ -101,7 +101,7 @@
                 user_group_rela_area_auth.auth_id = auth.id
                 AND auth.type = 2
                 AND auth.source_id = menu.id
-                AND page.menu_id = menu.id
+--                 AND page.menu_id = menu.id
                 AND operation.page_id = page.id
                 <if test="userGroupId != null">
                     AND user_group_rela_area_auth.user_group_id = #{userGroupId}

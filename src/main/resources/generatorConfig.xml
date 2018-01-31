@@ -178,7 +178,7 @@
 
         -->
 
-        <table tableName="user_group" domainObjectName="UserGroupDO"
+        <table tableName="employee" domainObjectName="EmployeeDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 

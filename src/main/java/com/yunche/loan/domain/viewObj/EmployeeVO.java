@@ -36,9 +36,9 @@ public class EmployeeVO {
     /**
      * 所属部门
      */
-    private List<Long> department;
+    private List<BaseVO> department;
     /**
      * 直接上级
      */
-    private List<Long> parent;
+    private List<BaseVO> parent;
 }

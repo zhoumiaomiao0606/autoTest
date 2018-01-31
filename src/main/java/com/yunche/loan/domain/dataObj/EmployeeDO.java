@@ -33,6 +33,10 @@ public class EmployeeDO {
      * 员工类型（1:正式员工; 2:外包员工）
      */
     private Byte type;
+    /**
+     * 员工等级
+     */
+    private Integer level;
 
     private Date gmtCreate;
 

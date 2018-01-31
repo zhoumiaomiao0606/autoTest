@@ -267,6 +267,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                             LevelVO parent = new LevelVO();
                             parent.setValue(p.getId());
                             parent.setLabel(p.getName());
+                            parent.setLevel(p.getLevel());
 
                             // 递归填充子列表
                             fillChilds(parent, parentIdDOMap);
@@ -297,6 +298,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     LevelVO child = new LevelVO();
                     child.setValue(c.getId());
                     child.setLabel(c.getName());
+                    child.setLevel(c.getLevel());
 
                     List<LevelVO> childList = parent.getChildren();
                     if (CollectionUtils.isEmpty(childList)) {
@@ -320,40 +322,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     private Long insertAndGetId(EmployeeParam employeeParam) {
         EmployeeDO employeeDO = new EmployeeDO();
         BeanUtils.copyProperties(employeeParam, employeeDO);
+
+        // level
+        Long parentId = employeeParam.getParentId();
+        if (null != parentId) {
+            EmployeeDO parentEmployeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            Preconditions.checkNotNull(parentEmployeeDO, "直接主管不存在");
+            Integer parentLevel = parentEmployeeDO.getLevel();
+            Integer level = parentLevel == null ? null : parentLevel + 1;
+            employeeDO.setLevel(level);
+        } else {
+            employeeDO.setLevel(1);
+        }
+
+        // date
         employeeDO.setGmtCreate(new Date());
         employeeDO.setGmtModify(new Date());
+
         int count = employeeDOMapper.insertSelective(employeeDO);
         Preconditions.checkArgument(count > 0, "创建失败");
+
         return employeeDO.getId();
     }
-
-    /**
-     * 绑定部门 -单个
-     *
-     * @param employeeId
-     * @param departmentId
-     */
-//    private void bindDepartment(Long employeeId, Long departmentId) {
-//        if (null == departmentId) {
-//            return;
-//        }
-//
-//        // check
-//        EmployeeRelaDepartmentDOKey employeeRelaDepartmentDOKey = new EmployeeRelaDepartmentDOKey();
-//        employeeRelaDepartmentDOKey.setEmployeeId(employeeId);
-//        employeeRelaDepartmentDOKey.setDepartmentId(departmentId);
-//        EmployeeRelaDepartmentDO employeeRelaDepartmentDO = employeeRelaDepartmentDOMapper.selectByPrimaryKey(employeeRelaDepartmentDOKey);
-//
-//        if (null == employeeRelaDepartmentDO) {
-//            // insert
-//            employeeRelaDepartmentDO.setEmployeeId(employeeId);
-//            employeeRelaDepartmentDO.setDepartmentId(departmentId);
-//            employeeRelaDepartmentDO.setGmtCreate(new Date());
-//            employeeRelaDepartmentDO.setGmtModify(new Date());
-//            int count = employeeRelaDepartmentDOMapper.insertSelective(employeeRelaDepartmentDO);
-//            Preconditions.checkArgument(count > 0, "关联部门失败");
-//        }
-//    }
 
     /**
      * 填充员工部门信息
@@ -367,22 +357,26 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
         if (null != departmentDO) {
+            BaseVO parentDepartment = new BaseVO();
+            BeanUtils.copyProperties(departmentDO, parentDepartment);
             // 递归填充所有上层父级部门
-            fillParentDepartmentIds(departmentDO.getParentId(), Lists.newArrayList(departmentDO.getId()), employeeVO);
+            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), employeeVO);
         }
     }
 
-    private void fillParentDepartmentIds(Long parentId, List<Long> department, EmployeeVO employeeVO) {
+    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, EmployeeVO employeeVO) {
         if (null != parentId) {
             DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != departmentDO) {
-                department.add(parentId);
-                fillParentDepartmentIds(departmentDO.getParentId(), department, employeeVO);
+                BaseVO parentDepartment = new BaseVO();
+                BeanUtils.copyProperties(departmentDO, parentDepartment);
+                superDepartmentList.add(parentDepartment);
+                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, employeeVO);
             }
         } else {
             // null时为最顶级
-            Collections.reverse(department);
-            employeeVO.setDepartment(department);
+            Collections.reverse(superDepartmentList);
+            employeeVO.setDepartment(superDepartmentList);
         }
     }
 
@@ -399,28 +393,33 @@ public class EmployeeServiceImpl implements EmployeeService {
         Long areaId = areaIds.get(0);
         BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
         if (null != baseAreaDO) {
-
+            BaseVO parentArea = new BaseVO();
+            parentArea.setId(baseAreaDO.getAreaId());
+            parentArea.setName(baseAreaDO.getAreaName());
             // 递归填充所有上层父级部门
-            fillAreaIds(baseAreaDO.getParentAreaId(), Lists.newArrayList(baseAreaDO.getAreaId()), userGroupVO);
+            fillSuperArea(baseAreaDO.getParentAreaId(), Lists.newArrayList(parentArea), userGroupVO);
         }
     }
 
     /**
      * @param parentId
-     * @param area
+     * @param superAreaList
      * @param userGroupVO
      */
-    private void fillAreaIds(Long parentId, List<Long> area, UserGroupVO userGroupVO) {
+    private void fillSuperArea(Long parentId, List<BaseVO> superAreaList, UserGroupVO userGroupVO) {
         if (null != parentId) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != baseAreaDO) {
-                area.add(parentId);
-                fillAreaIds(baseAreaDO.getParentAreaId(), area, userGroupVO);
+                BaseVO parentArea = new BaseVO();
+                parentArea.setId(baseAreaDO.getAreaId());
+                parentArea.setName(baseAreaDO.getAreaName());
+                superAreaList.add(parentArea);
+                fillSuperArea(baseAreaDO.getParentAreaId(), superAreaList, userGroupVO);
             }
         } else {
             // null时为最顶级
-            Collections.reverse(area);
-            userGroupVO.setArea(area);
+            Collections.reverse(superAreaList);
+            userGroupVO.setArea(superAreaList);
         }
     }
 
@@ -436,8 +435,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
         if (null != departmentDO) {
+            BaseVO parentDepartment = new BaseVO();
+            BeanUtils.copyProperties(departmentDO, parentDepartment);
             // 递归填充所有上层父级部门
-            fillParentDepartmentIds(departmentDO.getParentId(), Lists.newArrayList(departmentDO.getId()), userGroupVO);
+            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), userGroupVO);
         }
     }
 
@@ -447,20 +448,22 @@ public class EmployeeServiceImpl implements EmployeeService {
      * 前端需求：仅需要层级ID即可
      *
      * @param parentId
-     * @param department
+     * @param superDepartmentList
      * @param userGroupVO
      */
-    private void fillParentDepartmentIds(Long parentId, List<Long> department, UserGroupVO userGroupVO) {
+    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, UserGroupVO userGroupVO) {
         if (null != parentId) {
             DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != departmentDO) {
-                department.add(parentId);
-                fillParentDepartmentIds(departmentDO.getParentId(), department, userGroupVO);
+                BaseVO parentDepartment = new BaseVO();
+                BeanUtils.copyProperties(departmentDO, parentDepartment);
+                superDepartmentList.add(parentDepartment);
+                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, userGroupVO);
             }
         } else {
             // null时为最顶级
-            Collections.reverse(department);
-            userGroupVO.setDepartment(department);
+            Collections.reverse(superDepartmentList);
+            userGroupVO.setDepartment(superDepartmentList);
         }
     }
 
@@ -476,22 +479,26 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
         if (null != employeeDO) {
+            BaseVO parentEmployee = new BaseVO();
+            BeanUtils.copyProperties(employeeDO, parentEmployee);
             // 递归填充所有上层父级leader
-            fillSupperParentId(employeeDO.getParentId(), Lists.newArrayList(employeeDO.getId()), employeeVO);
+            fillSupperEmployee(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), employeeVO);
         }
     }
 
-    private void fillSupperParentId(Long parentId, List<Long> parent, EmployeeVO employeeVO) {
+    private void fillSupperEmployee(Long parentId, List<BaseVO> supperEmployeeList, EmployeeVO employeeVO) {
         if (null != parentId) {
             EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != employeeDO) {
-                parent.add(parentId);
-                fillSupperParentId(employeeDO.getParentId(), parent, employeeVO);
+                BaseVO parentEmployee = new BaseVO();
+                BeanUtils.copyProperties(employeeDO, parentEmployee);
+                supperEmployeeList.add(parentEmployee);
+                fillSupperEmployee(employeeDO.getParentId(), supperEmployeeList, employeeVO);
             }
         } else {
             // null时为最顶级
-            Collections.reverse(parent);
-            employeeVO.setParent(parent);
+            Collections.reverse(supperEmployeeList);
+            employeeVO.setParent(supperEmployeeList);
         }
     }
 

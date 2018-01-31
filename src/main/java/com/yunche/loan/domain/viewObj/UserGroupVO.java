@@ -16,11 +16,11 @@ public class UserGroupVO {
     /**
      * 部门层级ID
      */
-    private List<Long> department;
+    private List<BaseVO> department;
     /**
      * 区域(城市)
      */
-    private List<Long> area;
+    private List<BaseVO> area;
 
     private Date gmtCreate;
 

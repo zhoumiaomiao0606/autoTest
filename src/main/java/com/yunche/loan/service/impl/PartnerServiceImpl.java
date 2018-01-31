@@ -104,9 +104,7 @@ public class PartnerServiceImpl implements PartnerService {
         BeanUtils.copyProperties(partnerDO, partnerVO);
 
         // fillMsg
-        fillDepartment(partnerDO.getDepartmentId(), partnerVO);
-        fillArea(partnerDO.getAreaId(), partnerVO);
-        fillEmployeeNum(partnerVO);
+        fillMsg(partnerDO, partnerVO);
 
         return ResultBean.ofSuccess(partnerVO);
     }
@@ -115,17 +113,18 @@ public class PartnerServiceImpl implements PartnerService {
     public ResultBean<List<PartnerVO>> query(PartnerQuery query) {
         int totalNum = partnerDOMapper.count(query);
         if (totalNum > 0) {
+
             List<PartnerDO> partnerDOS = partnerDOMapper.query(query);
             if (!CollectionUtils.isEmpty(partnerDOS)) {
+
                 List<PartnerVO> partnerVOS = partnerDOS.stream()
                         .filter(Objects::nonNull)
                         .map(e -> {
                             PartnerVO partnerVO = new PartnerVO();
                             BeanUtils.copyProperties(e, partnerVO);
 
-                            fillDepartment(e.getDepartmentId(), partnerVO);
-                            fillArea(e.getAreaId(), partnerVO);
-                            fillEmployeeNum(partnerVO);
+                            // fillMsg
+                            fillMsg(e, partnerVO);
 
                             return partnerVO;
                         })
@@ -134,7 +133,6 @@ public class PartnerServiceImpl implements PartnerService {
                 return ResultBean.ofSuccess(partnerVOS, totalNum, query.getPageIndex(), query.getPageSize());
             }
         }
-
         return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
     }
 
@@ -338,6 +336,18 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     /**
+     * fillMsg
+     *
+     * @param partnerDO
+     * @param partnerVO
+     */
+    private void fillMsg(PartnerDO partnerDO, PartnerVO partnerVO) {
+        fillDepartment(partnerDO.getDepartmentId(), partnerVO);
+        fillArea(partnerDO.getAreaId(), partnerVO);
+        fillEmployeeNum(partnerVO);
+    }
+
+    /**
      * 填充部门信息
      *
      * @param departmentId
@@ -349,86 +359,81 @@ public class PartnerServiceImpl implements PartnerService {
         }
         DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
         if (null != departmentDO) {
-            // 部门
-//            PartnerVO.Department department_ = new PartnerVO.Department();
-//            BeanUtils.copyProperties(departmentDO, department_);
-
+            BaseVO parentDepartment = new BaseVO();
+            BeanUtils.copyProperties(departmentDO, parentDepartment);
             // 递归填充所有上层父级部门
-//            fillParentDepartment(departmentDO.getParentId(), department_, partnerVO);
+            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), partnerVO);
 
-            // 递归填充所有上层父级部门ID
-            fillParentDepartmentIds(departmentDO.getParentId(), Lists.newArrayList(departmentDO.getId()), partnerVO);
-
-            // 部门负责人
-            Long departmentLeaderId = departmentDO.getLeaderId();
-            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(departmentLeaderId, VALID_STATUS);
-            if (null != employeeDO) {
-                // 递归填充所有上层父级leader
-                fillSupperDepartmentLeaderId(employeeDO.getParentId(), Lists.newArrayList(employeeDO.getId()), partnerVO);
-            }
-        }
-    }
-
-    private void fillSupperDepartmentLeaderId(Long parentId, List<Long> departmentLeader, PartnerVO partnerVO) {
-        if (null != parentId) {
-            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
-            if (null != employeeDO) {
-                departmentLeader.add(parentId);
-                fillSupperDepartmentLeaderId(employeeDO.getParentId(), departmentLeader, partnerVO);
-            }
-        } else {
-            // null时为最顶级
-            Collections.reverse(departmentLeader);
-            partnerVO.setDepartmentLeader(departmentLeader);
-        }
-    }
-
-    /**
-     * 递归填充所有上层父级部门ID
-     * <p>
-     * 前端需求：仅需要层级ID即可
-     *
-     * @param parentId
-     * @param department
-     * @param partnerVO
-     */
-    private void fillParentDepartmentIds(Long parentId, List<Long> department, PartnerVO partnerVO) {
-        if (null != parentId) {
-            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
-            if (null != departmentDO) {
-                department.add(parentId);
-                fillParentDepartmentIds(departmentDO.getParentId(), department, partnerVO);
-            }
-        } else {
-            // null时为最顶级
-            Collections.reverse(department);
-            partnerVO.setDepartment(department);
+            // 填充部门负责人
+            fillDepartmentLeader(departmentDO.getLeaderId(), partnerVO);
         }
     }
 
     /**
      * 递归填充所有上层父级部门
+     * <p>
+     * 前端需求：仅需要层级ID即可
      *
      * @param parentId
-     * @param childDepartment
+     * @param superDepartmentList
      * @param partnerVO
      */
-//    private void fillParentDepartment(Long parentId, PartnerVO.Department childDepartment, PartnerVO partnerVO) {
-//        if (null != parentId) {
-//            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
-//            if (null != departmentDO) {
-//
-//                PartnerVO.Department parentDepartment = new PartnerVO.Department();
-//                BeanUtils.copyProperties(departmentDO, parentDepartment);
-//
-//                parentDepartment.setChild(childDepartment);
-//                fillParentDepartment(departmentDO.getParentId(), parentDepartment, partnerVO);
-//            }
-//        } else {
-//            // null时为最顶级
-//            partnerVO.setDepartment_(childDepartment);
-//        }
-//    }
+    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, PartnerVO partnerVO) {
+        if (null != parentId) {
+            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != departmentDO) {
+                BaseVO parentDepartment = new BaseVO();
+                BeanUtils.copyProperties(departmentDO, parentDepartment);
+                superDepartmentList.add(parentDepartment);
+                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, partnerVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(superDepartmentList);
+            partnerVO.setDepartment(superDepartmentList);
+        }
+    }
+
+    /**
+     * 填充部门负责人
+     *
+     * @param leaderId
+     * @param partnerVO
+     */
+    private void fillDepartmentLeader(Long leaderId, PartnerVO partnerVO) {
+        if (null == leaderId) {
+            return;
+        }
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(leaderId, VALID_STATUS);
+        if (null != employeeDO) {
+            BaseVO parentEmployee = new BaseVO();
+            BeanUtils.copyProperties(employeeDO, parentEmployee);
+            // 递归填充父级部门负责人
+            fillSuperDepartmentLeader(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), partnerVO);
+        }
+    }
+
+    /**
+     * 递归填充父级部门负责人
+     *
+     * @param parentId
+     * @param superLeaderList
+     * @param partnerVO
+     */
+    private void fillSuperDepartmentLeader(Long parentId, List<BaseVO> superLeaderList, PartnerVO partnerVO) {
+        if (null != parentId) {
+            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != employeeDO) {
+                BaseVO parentEmployee = new BaseVO();
+                BeanUtils.copyProperties(employeeDO, parentEmployee);
+                superLeaderList.add(parentEmployee);
+                fillSuperDepartmentLeader(employeeDO.getParentId(), superLeaderList, partnerVO);
+            }
+        } else {
+            Collections.reverse(superLeaderList);
+            partnerVO.setDepartmentLeader(superLeaderList);
+        }
+    }
 
     /**
      * 填充区域(城市)信息
@@ -442,27 +447,35 @@ public class PartnerServiceImpl implements PartnerService {
         }
         BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
         if (null != baseAreaDO) {
-            // 递归填充所有上层父级区域ID
-            fillSupperAreaId(baseAreaDO.getParentAreaId(), Lists.newArrayList(baseAreaDO.getAreaId()), partnerVO);
+            BaseVO parentArea = new BaseVO();
+            parentArea.setId(baseAreaDO.getAreaId());
+            parentArea.setName(baseAreaDO.getAreaName());
+            // 递归填充所有上层父级区域
+            fillSupperArea(baseAreaDO.getParentAreaId(), Lists.newArrayList(parentArea), partnerVO);
         }
     }
 
     /**
+     * 递归填充所有上层父级区域
+     *
      * @param parentId
-     * @param area
+     * @param supperAreaList
      * @param partnerVO
      */
-    private void fillSupperAreaId(Long parentId, List<Long> area, PartnerVO partnerVO) {
+    private void fillSupperArea(Long parentId, List<BaseVO> supperAreaList, PartnerVO partnerVO) {
         if (null != parentId) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != baseAreaDO) {
-                area.add(parentId);
-                fillSupperAreaId(baseAreaDO.getParentAreaId(), area, partnerVO);
+                BaseVO parentArea = new BaseVO();
+                parentArea.setId(baseAreaDO.getAreaId());
+                parentArea.setName(baseAreaDO.getAreaName());
+                supperAreaList.add(parentArea);
+                fillSupperArea(baseAreaDO.getParentAreaId(), supperAreaList, partnerVO);
             }
         } else {
             // null时为最顶级
-            Collections.reverse(area);
-            partnerVO.setArea(area);
+            Collections.reverse(supperAreaList);
+            partnerVO.setArea(supperAreaList);
         }
     }
 

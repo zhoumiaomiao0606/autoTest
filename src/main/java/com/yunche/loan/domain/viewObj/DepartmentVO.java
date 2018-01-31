@@ -17,15 +17,15 @@ public class DepartmentVO {
     /**
      * 上级部门
      */
-    private List<Long> parent;
+    private List<BaseVO> parent;
     /**
      * 部门负责人
      */
-    private List<Long> leader;
+    private List<BaseVO> leader;
     /**
      * 区域
      */
-    private List<Long> area;
+    private List<BaseVO> area;
     /**
      * 本部门员工总数
      */
@@ -48,5 +48,4 @@ public class DepartmentVO {
     private Date gmtModify;
 
     private Byte status;
-
 }
