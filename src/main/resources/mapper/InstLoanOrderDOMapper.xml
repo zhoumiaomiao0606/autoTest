@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.dao.mapper.InstLoanOrderDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="cust_id" jdbcType="BIGINT" property="custId" />
+    <result column="prod_id" jdbcType="BIGINT" property="prodId" />
+    <result column="loan_amount" jdbcType="INTEGER" property="loanAmount" />
+    <result column="first_pay_amount" jdbcType="INTEGER" property="firstPayAmount" />
+    <result column="total_pay_amount" jdbcType="INTEGER" property="totalPayAmount" />
+    <result column="first_month_pay_amount" jdbcType="INTEGER" property="firstMonthPayAmount" />
+    <result column="each_month_pay_amount" jdbcType="INTEGER" property="eachMonthPayAmount" />
+    <result column="car_id" jdbcType="BIGINT" property="carId" />
+    <result column="insu_id" jdbcType="BIGINT" property="insuId" />
+    <result column="prov" jdbcType="VARCHAR" property="prov" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="feature" jdbcType="VARCHAR" property="feature" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, cust_id, prod_id, loan_amount, first_pay_amount, total_pay_amount, first_month_pay_amount, 
+    each_month_pay_amount, car_id, insu_id, prov, city, status, feature, gmt_create, 
+    gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from inst_loan_order
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from inst_loan_order
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+    <selectKey resultType="long" keyProperty="orderId" order="AFTER">
+      SELECT LAST_INSERT_ID() as orderId
+    </selectKey>
+    insert into inst_loan_order (order_id, cust_id, prod_id, 
+      loan_amount, first_pay_amount, total_pay_amount, 
+      first_month_pay_amount, each_month_pay_amount, 
+      car_id, insu_id, prov, 
+      city, status, feature, 
+      gmt_create, gmt_modify)
+    values (#{orderId,jdbcType=BIGINT}, #{custId,jdbcType=BIGINT}, #{prodId,jdbcType=BIGINT}, 
+      #{loanAmount,jdbcType=INTEGER}, #{firstPayAmount,jdbcType=INTEGER}, #{totalPayAmount,jdbcType=INTEGER}, 
+      #{firstMonthPayAmount,jdbcType=INTEGER}, #{eachMonthPayAmount,jdbcType=INTEGER}, 
+      #{carId,jdbcType=BIGINT}, #{insuId,jdbcType=BIGINT}, #{prov,jdbcType=VARCHAR}, 
+      #{city,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, 
+      now(), now())
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+    insert into inst_loan_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="custId != null">
+        cust_id,
+      </if>
+      <if test="prodId != null">
+        prod_id,
+      </if>
+      <if test="loanAmount != null">
+        loan_amount,
+      </if>
+      <if test="firstPayAmount != null">
+        first_pay_amount,
+      </if>
+      <if test="totalPayAmount != null">
+        total_pay_amount,
+      </if>
+      <if test="firstMonthPayAmount != null">
+        first_month_pay_amount,
+      </if>
+      <if test="eachMonthPayAmount != null">
+        each_month_pay_amount,
+      </if>
+      <if test="carId != null">
+        car_id,
+      </if>
+      <if test="insuId != null">
+        insu_id,
+      </if>
+      <if test="prov != null">
+        prov,
+      </if>
+      <if test="city != null">
+        city,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="feature != null">
+        feature,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="custId != null">
+        #{custId,jdbcType=BIGINT},
+      </if>
+      <if test="prodId != null">
+        #{prodId,jdbcType=BIGINT},
+      </if>
+      <if test="loanAmount != null">
+        #{loanAmount,jdbcType=INTEGER},
+      </if>
+      <if test="firstPayAmount != null">
+        #{firstPayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="totalPayAmount != null">
+        #{totalPayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="firstMonthPayAmount != null">
+        #{firstMonthPayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="eachMonthPayAmount != null">
+        #{eachMonthPayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="carId != null">
+        #{carId,jdbcType=BIGINT},
+      </if>
+      <if test="insuId != null">
+        #{insuId,jdbcType=BIGINT},
+      </if>
+      <if test="prov != null">
+        #{prov,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null">
+        #{feature,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+    update inst_loan_order
+    <set>
+      <if test="custId != null">
+        cust_id = #{custId,jdbcType=BIGINT},
+      </if>
+      <if test="prodId != null">
+        prod_id = #{prodId,jdbcType=BIGINT},
+      </if>
+      <if test="loanAmount != null">
+        loan_amount = #{loanAmount,jdbcType=INTEGER},
+      </if>
+      <if test="firstPayAmount != null">
+        first_pay_amount = #{firstPayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="totalPayAmount != null">
+        total_pay_amount = #{totalPayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="firstMonthPayAmount != null">
+        first_month_pay_amount = #{firstMonthPayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="eachMonthPayAmount != null">
+        each_month_pay_amount = #{eachMonthPayAmount,jdbcType=INTEGER},
+      </if>
+      <if test="carId != null">
+        car_id = #{carId,jdbcType=BIGINT},
+      </if>
+      <if test="insuId != null">
+        insu_id = #{insuId,jdbcType=BIGINT},
+      </if>
+      <if test="prov != null">
+        prov = #{prov,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null">
+        feature = #{feature,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+    update inst_loan_order
+    set cust_id = #{custId,jdbcType=BIGINT},
+      prod_id = #{prodId,jdbcType=BIGINT},
+      loan_amount = #{loanAmount,jdbcType=INTEGER},
+      first_pay_amount = #{firstPayAmount,jdbcType=INTEGER},
+      total_pay_amount = #{totalPayAmount,jdbcType=INTEGER},
+      first_month_pay_amount = #{firstMonthPayAmount,jdbcType=INTEGER},
+      each_month_pay_amount = #{eachMonthPayAmount,jdbcType=INTEGER},
+      car_id = #{carId,jdbcType=BIGINT},
+      insu_id = #{insuId,jdbcType=BIGINT},
+      prov = #{prov,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      feature = #{feature,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+</mapper>

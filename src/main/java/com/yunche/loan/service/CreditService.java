@@ -12,6 +12,6 @@ import java.util.List;
  */
 public interface CreditService {
 
-    ResultBean<Void> test(DelegateExecution execution);
+    ResultBean<Void> create(DelegateExecution execution);
 
 }

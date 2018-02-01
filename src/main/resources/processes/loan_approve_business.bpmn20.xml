@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://activiti.com/modeler" xmlns:tns="http://www.activiti.org/processdef" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef" id="m1516543981212" name="">
   <signal id="cancelApplication" name="cancelApplication"></signal>
-  <process id="loanProcess" name="消费贷流程" isExecutable="true" isClosed="false" processType="None">
+  <process id="dev_loan_process" name="消费贷流程" isExecutable="true" isClosed="false" processType="None">
     <startEvent id="startevent3" name="Start"></startEvent>
     <userTask id="usertask_bank_credit_record" name="银行征信录入" activiti:candidateGroups="bank_credit_user_group"></userTask>
     <userTask id="usertask_social_credit_record" name="社会征信录入" activiti:candidateGroups="social_credit_user_group"></userTask>
@@ -18,7 +18,7 @@
     <sequenceFlow id="flow17" sourceRef="parallelgateway3" targetRef="usertask_car_insurance_record"></sequenceFlow>
     <sequenceFlow id="flow18" sourceRef="parallelgateway3" targetRef="usertask_gps_install"></sequenceFlow>
     <userTask id="usertask_pay_approve" name="放款审批"></userTask>
-    <sequenceFlow id="flow19" sourceRef="parallelgateway3" targetRef="usertask_pay_approve"></sequenceFlow>
+    <sequenceFlow id="flow19" sourceRef="parallelgateway3" targetRef="usertask_busi_examine"></sequenceFlow>
     <parallelGateway id="parallelgateway4" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow20" sourceRef="usertask_car_insurance_record" targetRef="parallelgateway4"></sequenceFlow>
     <sequenceFlow id="flow21" sourceRef="usertask_gps_install" targetRef="parallelgateway4"></sequenceFlow>
@@ -26,11 +26,11 @@
     <sequenceFlow id="flow22" sourceRef="parallelgateway4" targetRef="usertask_contract_print"></sequenceFlow>
     <userTask id="usertask_license_mortgage" name="上牌抵押"></userTask>
     <sequenceFlow id="flow23" sourceRef="usertask_contract_print" targetRef="usertask_license_mortgage"></sequenceFlow>
-    <userTask id="usertask_pay_process" name="财务打款"></userTask>
-    <sequenceFlow id="flow24" sourceRef="usertask_pay_approve" targetRef="usertask_pay_process"></sequenceFlow>
+    <userTask id="usertask_pay_done" name="财务打款"></userTask>
+    <sequenceFlow id="flow24" sourceRef="usertask_pay_approve" targetRef="usertask_pay_done"></sequenceFlow>
     <parallelGateway id="parallelgateway5" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow25" sourceRef="usertask_license_mortgage" targetRef="parallelgateway5"></sequenceFlow>
-    <sequenceFlow id="flow26" sourceRef="usertask_pay_process" targetRef="parallelgateway5"></sequenceFlow>
+    <sequenceFlow id="flow26" sourceRef="usertask_pay_done" targetRef="parallelgateway5"></sequenceFlow>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow27" sourceRef="parallelgateway5" targetRef="endevent1"></sequenceFlow>
     <userTask id="usertask_telephone_verify_review" name="电审复审信息"></userTask>
@@ -48,8 +48,16 @@
     <sequenceFlow id="flow44" sourceRef="exclusivegateway1" targetRef="usertask_telephone_verify"></sequenceFlow>
     <sequenceFlow id="flow45" sourceRef="exclusivegateway1" targetRef="usertask_visit_verify"></sequenceFlow>
     <userTask id="usertask_credit_apply" name="发起征信申请" activiti:candidateGroups="partner_group"></userTask>
-    <sequenceFlow id="flow46" sourceRef="usertask_credit_apply" targetRef="credit_save"></sequenceFlow>
-    <serviceTask id="credit_save" name="征信申请存储" activiti:expression="${creditService.test(execution)}"></serviceTask>
-    <sequenceFlow id="flow47" sourceRef="credit_save" targetRef="usertask_credit_verify"></sequenceFlow>
+    <sequenceFlow id="flow46" sourceRef="usertask_credit_apply" targetRef="servicetask_credit_save"></sequenceFlow>
+    <serviceTask id="servicetask_credit_save" name="征信申请存储" activiti:expression="${creditServiceImpl.create(execution)}"></serviceTask>
+    <sequenceFlow id="flow47" sourceRef="servicetask_credit_save" targetRef="usertask_credit_verify"></sequenceFlow>
+    <userTask id="usertask_busi_examine" name="业务审批"></userTask>
+    <sequenceFlow id="flow48" sourceRef="usertask_busi_examine" targetRef="usertask_pay_approve"></sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow49" sourceRef="usertask_credit_verify" targetRef="endevent2"></sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="flow50" sourceRef="usertask_telephone_verify" targetRef="endevent3"></sequenceFlow>
+    <endEvent id="endevent4" name="End"></endEvent>
+    <sequenceFlow id="flow51" sourceRef="usertask_telephone_verify_review" targetRef="endevent4"></sequenceFlow>
   </process>
 </definitions>

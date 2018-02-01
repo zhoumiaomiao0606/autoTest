@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.dao.mapper.CustBaseInfoDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+    <id column="cust_id" jdbcType="BIGINT" property="custId" />
+    <result column="cust_name" jdbcType="VARCHAR" property="custName" />
+    <result column="identity_type" jdbcType="VARCHAR" property="identityType" />
+    <result column="identity_number" jdbcType="VARCHAR" property="identityNumber" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="marry" jdbcType="VARCHAR" property="marry" />
+    <result column="birth" jdbcType="DATE" property="birth" />
+    <result column="age" jdbcType="TINYINT" property="age" />
+    <result column="education" jdbcType="VARCHAR" property="education" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="identity_address" jdbcType="VARCHAR" property="identityAddress" />
+    <result column="identity_validity" jdbcType="DATE" property="identityValidity" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="company_phone" jdbcType="VARCHAR" property="companyPhone" />
+    <result column="credit_status" jdbcType="VARCHAR" property="creditStatus" />
+    <result column="income" jdbcType="VARCHAR" property="income" />
+    <result column="house_type" jdbcType="VARCHAR" property="houseType" />
+    <result column="house_owner" jdbcType="VARCHAR" property="houseOwner" />
+    <result column="house_feature" jdbcType="VARCHAR" property="houseFeature" />
+    <result column="house_address" jdbcType="VARCHAR" property="houseAddress" />
+    <result column="feature" jdbcType="VARCHAR" property="feature" />
+    <result column="pic_identity_positive" jdbcType="VARCHAR" property="picIdentityPositive" />
+    <result column="pic_identity_opposite" jdbcType="VARCHAR" property="picIdentityOpposite" />
+    <result column="pic_authorization" jdbcType="VARCHAR" property="picAuthorization" />
+    <result column="pic_authorization_sign" jdbcType="VARCHAR" property="picAuthorizationSign" />
+    <result column="emergency_contact_name" jdbcType="VARCHAR" property="emergencyContactName" />
+    <result column="emergency_contact_phone" jdbcType="VARCHAR" property="emergencyContactPhone" />
+    <result column="emergency_contact_relation" jdbcType="VARCHAR" property="emergencyContactRelation" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    cust_id, cust_name, identity_type, identity_number, phone, marry, birth, age, education, 
+    address, identity_address, identity_validity, company_name, company_phone, credit_status, 
+    income, house_type, house_owner, house_feature, house_address, feature, pic_identity_positive, 
+    pic_identity_opposite, pic_authorization, pic_authorization_sign, emergency_contact_name, 
+    emergency_contact_phone, emergency_contact_relation, gmt_create, gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cust_base_info
+    where cust_id = #{custId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from cust_base_info
+    where cust_id = #{custId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+    <selectKey resultType="long" keyProperty="custId" order="AFTER">
+      SELECT LAST_INSERT_ID() as custId
+    </selectKey>
+    insert into cust_base_info (cust_id, cust_name, identity_type, 
+      identity_number, phone, marry, 
+      birth, age, education, 
+      address, identity_address, identity_validity, 
+      company_name, company_phone, credit_status, 
+      income, house_type, house_owner, 
+      house_feature, house_address, feature, 
+      pic_identity_positive, pic_identity_opposite, 
+      pic_authorization, pic_authorization_sign, 
+      emergency_contact_name, emergency_contact_phone, 
+      emergency_contact_relation, gmt_create, 
+      gmt_modify)
+    values (#{custId,jdbcType=BIGINT}, #{custName,jdbcType=VARCHAR}, #{identityType,jdbcType=VARCHAR}, 
+      #{identityNumber,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{marry,jdbcType=VARCHAR}, 
+      #{birth,jdbcType=DATE}, #{age,jdbcType=TINYINT}, #{education,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{identityAddress,jdbcType=VARCHAR}, #{identityValidity,jdbcType=DATE}, 
+      #{companyName,jdbcType=VARCHAR}, #{companyPhone,jdbcType=VARCHAR}, #{creditStatus,jdbcType=VARCHAR}, 
+      #{income,jdbcType=VARCHAR}, #{houseType,jdbcType=VARCHAR}, #{houseOwner,jdbcType=VARCHAR}, 
+      #{houseFeature,jdbcType=VARCHAR}, #{houseAddress,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR}, 
+      #{picIdentityPositive,jdbcType=VARCHAR}, #{picIdentityOpposite,jdbcType=VARCHAR}, 
+      #{picAuthorization,jdbcType=VARCHAR}, #{picAuthorizationSign,jdbcType=VARCHAR}, 
+      #{emergencyContactName,jdbcType=VARCHAR}, #{emergencyContactPhone,jdbcType=VARCHAR}, 
+      #{emergencyContactRelation,jdbcType=VARCHAR}, now(), now())
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+    insert into cust_base_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="custId != null">
+        cust_id,
+      </if>
+      <if test="custName != null">
+        cust_name,
+      </if>
+      <if test="identityType != null">
+        identity_type,
+      </if>
+      <if test="identityNumber != null">
+        identity_number,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="marry != null">
+        marry,
+      </if>
+      <if test="birth != null">
+        birth,
+      </if>
+      <if test="age != null">
+        age,
+      </if>
+      <if test="education != null">
+        education,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="identityAddress != null">
+        identity_address,
+      </if>
+      <if test="identityValidity != null">
+        identity_validity,
+      </if>
+      <if test="companyName != null">
+        company_name,
+      </if>
+      <if test="companyPhone != null">
+        company_phone,
+      </if>
+      <if test="creditStatus != null">
+        credit_status,
+      </if>
+      <if test="income != null">
+        income,
+      </if>
+      <if test="houseType != null">
+        house_type,
+      </if>
+      <if test="houseOwner != null">
+        house_owner,
+      </if>
+      <if test="houseFeature != null">
+        house_feature,
+      </if>
+      <if test="houseAddress != null">
+        house_address,
+      </if>
+      <if test="feature != null">
+        feature,
+      </if>
+      <if test="picIdentityPositive != null">
+        pic_identity_positive,
+      </if>
+      <if test="picIdentityOpposite != null">
+        pic_identity_opposite,
+      </if>
+      <if test="picAuthorization != null">
+        pic_authorization,
+      </if>
+      <if test="picAuthorizationSign != null">
+        pic_authorization_sign,
+      </if>
+      <if test="emergencyContactName != null">
+        emergency_contact_name,
+      </if>
+      <if test="emergencyContactPhone != null">
+        emergency_contact_phone,
+      </if>
+      <if test="emergencyContactRelation != null">
+        emergency_contact_relation,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="custId != null">
+        #{custId,jdbcType=BIGINT},
+      </if>
+      <if test="custName != null">
+        #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="identityType != null">
+        #{identityType,jdbcType=VARCHAR},
+      </if>
+      <if test="identityNumber != null">
+        #{identityNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="marry != null">
+        #{marry,jdbcType=VARCHAR},
+      </if>
+      <if test="birth != null">
+        #{birth,jdbcType=DATE},
+      </if>
+      <if test="age != null">
+        #{age,jdbcType=TINYINT},
+      </if>
+      <if test="education != null">
+        #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="identityAddress != null">
+        #{identityAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="identityValidity != null">
+        #{identityValidity,jdbcType=DATE},
+      </if>
+      <if test="companyName != null">
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyPhone != null">
+        #{companyPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="creditStatus != null">
+        #{creditStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="income != null">
+        #{income,jdbcType=VARCHAR},
+      </if>
+      <if test="houseType != null">
+        #{houseType,jdbcType=VARCHAR},
+      </if>
+      <if test="houseOwner != null">
+        #{houseOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="houseFeature != null">
+        #{houseFeature,jdbcType=VARCHAR},
+      </if>
+      <if test="houseAddress != null">
+        #{houseAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="feature != null">
+        #{feature,jdbcType=VARCHAR},
+      </if>
+      <if test="picIdentityPositive != null">
+        #{picIdentityPositive,jdbcType=VARCHAR},
+      </if>
+      <if test="picIdentityOpposite != null">
+        #{picIdentityOpposite,jdbcType=VARCHAR},
+      </if>
+      <if test="picAuthorization != null">
+        #{picAuthorization,jdbcType=VARCHAR},
+      </if>
+      <if test="picAuthorizationSign != null">
+        #{picAuthorizationSign,jdbcType=VARCHAR},
+      </if>
+      <if test="emergencyContactName != null">
+        #{emergencyContactName,jdbcType=VARCHAR},
+      </if>
+      <if test="emergencyContactPhone != null">
+        #{emergencyContactPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="emergencyContactRelation != null">
+        #{emergencyContactRelation,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+    update cust_base_info
+    <set>
+      <if test="custName != null">
+        cust_name = #{custName,jdbcType=VARCHAR},
+      </if>
+      <if test="identityType != null">
+        identity_type = #{identityType,jdbcType=VARCHAR},
+      </if>
+      <if test="identityNumber != null">
+        identity_number = #{identityNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="marry != null">
+        marry = #{marry,jdbcType=VARCHAR},
+      </if>
+      <if test="birth != null">
+        birth = #{birth,jdbcType=DATE},
+      </if>
+      <if test="age != null">
+        age = #{age,jdbcType=TINYINT},
+      </if>
+      <if test="education != null">
+        education = #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="identityAddress != null">
+        identity_address = #{identityAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="identityValidity != null">
+        identity_validity = #{identityValidity,jdbcType=DATE},
+      </if>
+      <if test="companyName != null">
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyPhone != null">
+        company_phone = #{companyPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="creditStatus != null">
+        credit_status = #{creditStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="income != null">
+        income = #{income,jdbcType=VARCHAR},
+      </if>
+      <if test="houseType != null">
+        house_type = #{houseType,jdbcType=VARCHAR},
+      </if>
+      <if test="houseOwner != null">
+        house_owner = #{houseOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="houseFeature != null">
+        house_feature = #{houseFeature,jdbcType=VARCHAR},
+      </if>
+      <if test="houseAddress != null">
+        house_address = #{houseAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="feature != null">
+        feature = #{feature,jdbcType=VARCHAR},
+      </if>
+      <if test="picIdentityPositive != null">
+        pic_identity_positive = #{picIdentityPositive,jdbcType=VARCHAR},
+      </if>
+      <if test="picIdentityOpposite != null">
+        pic_identity_opposite = #{picIdentityOpposite,jdbcType=VARCHAR},
+      </if>
+      <if test="picAuthorization != null">
+        pic_authorization = #{picAuthorization,jdbcType=VARCHAR},
+      </if>
+      <if test="picAuthorizationSign != null">
+        pic_authorization_sign = #{picAuthorizationSign,jdbcType=VARCHAR},
+      </if>
+      <if test="emergencyContactName != null">
+        emergency_contact_name = #{emergencyContactName,jdbcType=VARCHAR},
+      </if>
+      <if test="emergencyContactPhone != null">
+        emergency_contact_phone = #{emergencyContactPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="emergencyContactRelation != null">
+        emergency_contact_relation = #{emergencyContactRelation,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where cust_id = #{custId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+    update cust_base_info
+    set cust_name = #{custName,jdbcType=VARCHAR},
+      identity_type = #{identityType,jdbcType=VARCHAR},
+      identity_number = #{identityNumber,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      marry = #{marry,jdbcType=VARCHAR},
+      birth = #{birth,jdbcType=DATE},
+      age = #{age,jdbcType=TINYINT},
+      education = #{education,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      identity_address = #{identityAddress,jdbcType=VARCHAR},
+      identity_validity = #{identityValidity,jdbcType=DATE},
+      company_name = #{companyName,jdbcType=VARCHAR},
+      company_phone = #{companyPhone,jdbcType=VARCHAR},
+      credit_status = #{creditStatus,jdbcType=VARCHAR},
+      income = #{income,jdbcType=VARCHAR},
+      house_type = #{houseType,jdbcType=VARCHAR},
+      house_owner = #{houseOwner,jdbcType=VARCHAR},
+      house_feature = #{houseFeature,jdbcType=VARCHAR},
+      house_address = #{houseAddress,jdbcType=VARCHAR},
+      feature = #{feature,jdbcType=VARCHAR},
+      pic_identity_positive = #{picIdentityPositive,jdbcType=VARCHAR},
+      pic_identity_opposite = #{picIdentityOpposite,jdbcType=VARCHAR},
+      pic_authorization = #{picAuthorization,jdbcType=VARCHAR},
+      pic_authorization_sign = #{picAuthorizationSign,jdbcType=VARCHAR},
+      emergency_contact_name = #{emergencyContactName,jdbcType=VARCHAR},
+      emergency_contact_phone = #{emergencyContactPhone,jdbcType=VARCHAR},
+      emergency_contact_relation = #{emergencyContactRelation,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where cust_id = #{custId,jdbcType=BIGINT}
+  </update>
+</mapper>
