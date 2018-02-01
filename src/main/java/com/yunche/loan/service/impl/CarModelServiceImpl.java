@@ -5,7 +5,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.CarBrandDOMapper;
 import com.yunche.loan.dao.mapper.CarDetailDOMapper;
 import com.yunche.loan.dao.mapper.CarModelDOMapper;
-import com.yunche.loan.domain.QueryObj.CarModelQuery;
+import com.yunche.loan.domain.queryObj.CarModelQuery;
 import com.yunche.loan.domain.dataObj.CarBrandDO;
 import com.yunche.loan.domain.dataObj.CarDetailDO;
 import com.yunche.loan.domain.dataObj.CarModelDO;

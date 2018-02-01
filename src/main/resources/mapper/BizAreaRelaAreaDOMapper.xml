@@ -21,7 +21,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.BizAreaQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.BizAreaQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from biz_area_rela_area
@@ -31,7 +31,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.BizAreaQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.BizAreaQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

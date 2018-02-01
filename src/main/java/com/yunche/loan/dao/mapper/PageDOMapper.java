@@ -1,8 +1,9 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.QueryObj.RelaQuery;
+import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.PageDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public interface PageDOMapper {
 
     int updateByPrimaryKey(PageDO record);
 
-    List<PageDO> getAll(Byte validStatus);
+    List<PageDO> getAll(@Param("status") Byte status);
 
     /**
      * 统计总量
@@ -37,4 +38,12 @@ public interface PageDOMapper {
      * @return
      */
     List<PageDO> queryMenuPageAndOperation(RelaQuery query);
+
+    /**
+     * 获取所有页面ID列表
+     *
+     * @param status
+     * @return
+     */
+    List<Long> getAllIdList(@Param("status") Byte status);
 }

@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.QueryObj;
+package com.yunche.loan.domain.queryObj;
 
 import lombok.Data;
 
@@ -13,7 +13,7 @@ public class BaseQuery {
     /**
      * 单页最大记录数
      */
-    private static final Integer PAGE_SIZE_MAX = 50;
+    private static final Integer PAGE_SIZE_MAX = 200;
     /**
      * 主键ID
      */

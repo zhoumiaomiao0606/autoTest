@@ -22,7 +22,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from employee_rela_user_group
@@ -32,7 +32,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

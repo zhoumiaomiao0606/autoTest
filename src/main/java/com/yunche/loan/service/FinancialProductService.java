@@ -1,7 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.QueryObj.FinancialQuery;
+import com.yunche.loan.domain.queryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
 import com.yunche.loan.domain.viewObj.FinancialProductVO;
 

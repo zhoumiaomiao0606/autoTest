@@ -1,7 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.QueryObj.BizAreaQuery;
+import com.yunche.loan.domain.queryObj.BizAreaQuery;
 import com.yunche.loan.domain.dataObj.BizAreaDO;
 import com.yunche.loan.domain.param.BizAreaParam;
 import com.yunche.loan.domain.viewObj.AreaVO;

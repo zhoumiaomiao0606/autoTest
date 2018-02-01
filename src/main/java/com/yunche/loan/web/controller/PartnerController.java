@@ -2,9 +2,9 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.QueryObj.BaseQuery;
-import com.yunche.loan.domain.QueryObj.PartnerQuery;
-import com.yunche.loan.domain.QueryObj.RelaQuery;
+import com.yunche.loan.domain.queryObj.BaseQuery;
+import com.yunche.loan.domain.queryObj.PartnerQuery;
+import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.PartnerDO;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.viewObj.BizModelVO;

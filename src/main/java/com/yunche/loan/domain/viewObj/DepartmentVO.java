@@ -30,6 +30,10 @@ public class DepartmentVO {
      * 本部门员工总数
      */
     private Integer employeeNum;
+    /**
+     * 员工等级
+     */
+    private Integer level;
 
     private String tel;
 

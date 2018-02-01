@@ -1,8 +1,8 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.QueryObj.BaseQuery;
-import com.yunche.loan.domain.QueryObj.EmployeeQuery;
-import com.yunche.loan.domain.QueryObj.RelaQuery;
+import com.yunche.loan.domain.queryObj.BaseQuery;
+import com.yunche.loan.domain.queryObj.EmployeeQuery;
+import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -50,4 +50,28 @@ public interface EmployeeDOMapper {
      * @return
      */
     List<EmployeeDO> listEmployeeByPartnerId(RelaQuery query);
+
+    /**
+     * 根据ID列表获取
+     *
+     * @param idList
+     * @return
+     */
+    List<EmployeeDO> getByIdList(List<Long> idList);
+
+    /**
+     * 获取所有员工ID
+     *
+     * @param status
+     * @return
+     */
+    List<Long> getAllEmployeeIdList(@Param("status") Byte status);
+
+    /**
+     * 条件查询 - 获取所有员工ID
+     *
+     * @param query
+     * @return
+     */
+    List<Long> queryAllEmployeeIdList(EmployeeQuery query);
 }

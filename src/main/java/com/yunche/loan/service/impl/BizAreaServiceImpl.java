@@ -9,7 +9,7 @@ import com.yunche.loan.dao.mapper.BaseAreaDOMapper;
 import com.yunche.loan.dao.mapper.BizAreaDOMapper;
 import com.yunche.loan.dao.mapper.BizAreaRelaAreaDOMapper;
 import com.yunche.loan.dao.mapper.EmployeeDOMapper;
-import com.yunche.loan.domain.QueryObj.BizAreaQuery;
+import com.yunche.loan.domain.queryObj.BizAreaQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.BizAreaParam;
 import com.yunche.loan.domain.viewObj.AreaVO;
@@ -91,6 +91,17 @@ public class BizAreaServiceImpl implements BizAreaService {
 
         // 校验是否是删除操作
         checkIfDel(bizAreaDO);
+
+        // level
+        Long parentId = bizAreaDO.getParentId();
+        if (null != parentId) {
+            BizAreaDO parentBizAreaDO = bizAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != parentBizAreaDO) {
+                Integer parentLevel = parentBizAreaDO.getLevel();
+                Integer level = parentLevel == null ? null : parentLevel + 1;
+                bizAreaDO.setLevel(level);
+            }
+        }
 
         // update
         bizAreaDO.setGmtModify(new Date());

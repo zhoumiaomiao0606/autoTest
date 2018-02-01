@@ -62,7 +62,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.DepartmentQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from department
@@ -72,7 +72,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.DepartmentQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.DepartmentQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

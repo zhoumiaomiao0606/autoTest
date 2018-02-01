@@ -5,9 +5,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
-import com.yunche.loan.domain.QueryObj.BaseQuery;
-import com.yunche.loan.domain.QueryObj.DepartmentQuery;
-import com.yunche.loan.domain.QueryObj.EmployeeQuery;
+import com.yunche.loan.domain.queryObj.BaseQuery;
+import com.yunche.loan.domain.queryObj.DepartmentQuery;
+import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.DepartmentParam;
 import com.yunche.loan.domain.viewObj.BaseVO;
@@ -83,6 +83,17 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         // 校验是否是删除操作
         checkIfDel(departmentDO);
+
+        // level
+        Long parentId = departmentDO.getParentId();
+        if (null != parentId) {
+            DepartmentDO parentDepartmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != parentDepartmentDO) {
+                Integer parentLevel = parentDepartmentDO.getLevel();
+                Integer level = parentLevel == null ? null : parentLevel + 1;
+                departmentDO.setLevel(level);
+            }
+        }
 
         departmentDO.setGmtModify(new Date());
         int count = departmentDOMapper.updateByPrimaryKeySelective(departmentDO);

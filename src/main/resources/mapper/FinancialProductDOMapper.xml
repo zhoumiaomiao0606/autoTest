@@ -33,7 +33,7 @@
     from financial_product
     where prod_id = #{prodId,jdbcType=BIGINT}
   </select>
-  <select id="selectByCondition" parameterType="com.yunche.loan.domain.QueryObj.FinancialQuery" resultMap="BaseResultMap">
+  <select id="selectByCondition" parameterType="com.yunche.loan.domain.queryObj.FinancialQuery" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from financial_product

@@ -4,6 +4,8 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.viewObj.CarThreeLevelVO;
 import com.yunche.loan.domain.viewObj.CarTwoLevelVO;
 
+import java.util.Map;
+
 /**
  * @author liuzhe
  * @date 2018/1/12
@@ -14,7 +16,7 @@ public interface CarService {
 
     ResultBean<Void> fillModel();
 
-    ResultBean<String> count();
+    ResultBean<Map<String,Integer>> count();
 
     /**
      * 三级联动关系   -All

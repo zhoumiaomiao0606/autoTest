@@ -20,7 +20,7 @@
   </sql>
 
     <!-- countListBizModelByPartnerId -->
-    <select id="countListBizModelByPartnerId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="countListBizModelByPartnerId" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
             resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM biz_model_rela_area_partners AS a
@@ -35,7 +35,7 @@
     </select>
 
     <!-- listBizModelByPartnerId -->
-    <select id="listBizModelByPartnerId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="listBizModelByPartnerId" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
             resultMap="BaseResultMap">
         SELECT b.*
         FROM biz_model_rela_area_partners AS a
@@ -77,7 +77,7 @@
         #{feature,jdbcType=VARCHAR})
     </insert>
 
-    <select id="selectByCondition" parameterType="com.yunche.loan.domain.QueryObj.BizModelQuery"
+    <select id="selectByCondition" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

@@ -3,7 +3,7 @@ package com.yunche.loan.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.domain.viewObj.InsuranceCompanyVO;
 import com.yunche.loan.domain.dataObj.InsuranceCompanyDO;
-import com.yunche.loan.domain.QueryObj.InsuranceCompanyQuery;
+import com.yunche.loan.domain.queryObj.InsuranceCompanyQuery;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.service.InsuranceCompanyService;
 import org.slf4j.Logger;

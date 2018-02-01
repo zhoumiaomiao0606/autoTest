@@ -77,7 +77,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.EmployeeQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from employee
@@ -87,7 +87,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.EmployeeQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -100,14 +100,14 @@
     </select>
 
     <!-- countListEmployeeByUserGroupId -->
-    <select id="countListEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="countListEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
             resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM employee_rela_user_group AS a
         JOIN employee AS b
         ON a.`employee_id` = b.`id`
-        <if test="id != null">
-            AND a.user_group_id = #{id}
+        <if test="userGroupId != null">
+            AND a.user_group_id = #{userGroupId}
         </if>
         <if test="status != null">
             AND b.status = #{status}
@@ -115,14 +115,14 @@
     </select>
 
     <!-- listEmployeeByUserGroupId -->
-    <select id="listEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="listEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
             resultMap="BaseResultMap">
         SELECT b.*
         FROM employee_rela_user_group AS a
         JOIN employee AS b
         ON a.`employee_id` = b.`id`
-        <if test="id != null">
-            AND a.user_group_id = #{id}
+        <if test="userGroupId != null">
+            AND a.user_group_id = #{userGroupId}
         </if>
         <if test="status != null">
             AND b.status = #{status}
@@ -132,7 +132,7 @@
     </select>
 
     <!-- countListEmployeeByPartnerId -->
-    <select id="countListEmployeeByPartnerId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="countListEmployeeByPartnerId" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
             resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM partner_rela_employee AS a
@@ -147,7 +147,7 @@
     </select>
 
     <!-- listEmployeeByPartnerId -->
-    <select id="listEmployeeByPartnerId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="listEmployeeByPartnerId" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
             resultMap="BaseResultMap">
         SELECT b.*
         FROM partner_rela_employee AS a
@@ -171,6 +171,36 @@
         <if test="status != null">
             WHERE status = #{status}
         </if>
+    </select>
+
+    <!--getByIdList-->
+    <select id="getByIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from employee
+        WHERE id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item,jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <!--getAllEmployeeIdList-->
+    <select id="getAllEmployeeIdList" resultType="java.lang.Long">
+        select id
+        from employee
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
+    </select>
+
+    <!--queryAllEmployeeIdList-->
+    <select id="queryAllEmployeeIdList" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
+            resultType="java.lang.Long">
+        select id
+        from employee
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
     </select>
 
     <!--listTitle-->

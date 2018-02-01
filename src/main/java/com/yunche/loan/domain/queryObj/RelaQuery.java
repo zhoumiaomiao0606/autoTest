@@ -1,6 +1,8 @@
-package com.yunche.loan.domain.QueryObj;
+package com.yunche.loan.domain.queryObj;
 
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -20,14 +22,24 @@ public class RelaQuery extends BaseQuery {
      * 部门ID
      */
     private Long departmentId;
+
+    /**
+     * 名称
+     */
+    private String name;
     /**
      * 区域ID
      */
     private Long areaId;
+
     /**
      * 菜单ID
      */
     private Long menuId;
+    /**
+     * 菜单ID列表
+     */
+    private List<Long> menuIdList;
     /**
      * 页面名称
      */
@@ -40,8 +52,4 @@ public class RelaQuery extends BaseQuery {
      * 类型（员工类型...）
      */
     private Byte type;
-    /**
-     * 绑定状态
-     */
-    private Integer bindStatus;
 }

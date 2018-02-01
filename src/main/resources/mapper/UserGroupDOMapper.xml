@@ -43,7 +43,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.UserGroupQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.UserGroupQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from user_group
@@ -53,7 +53,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -66,7 +66,7 @@
     </select>
 
     <!-- countListUserGroupByEmployeeId -->
-    <select id="countListUserGroupByEmployeeId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="countListUserGroupByEmployeeId" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
             resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM employee_rela_user_group AS a
@@ -81,7 +81,7 @@
     </select>
 
     <!-- listUserGroupByEmployeeId -->
-    <select id="listUserGroupByEmployeeId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="listUserGroupByEmployeeId" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
             resultMap="BaseResultMap">
         SELECT b.*
         FROM employee_rela_user_group AS a
@@ -98,7 +98,7 @@
     </select>
 
     <!-- countListUserGroupByDepartmentId -->
-    <select id="countListUserGroupByDepartmentId" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="countListUserGroupByDepartmentId" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
             resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM department_rela_user_group AS a
@@ -113,7 +113,7 @@
     </select>
 
     <!-- listUserGroupByDepartmentId -->
-    <select id="listUserGroupByDepartmentId" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
+    <select id="listUserGroupByDepartmentId" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
             resultMap="BaseResultMap">
         SELECT b.*
         FROM department_rela_user_group AS a

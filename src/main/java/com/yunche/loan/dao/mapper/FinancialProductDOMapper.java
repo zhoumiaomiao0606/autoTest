@@ -1,6 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.QueryObj.FinancialQuery;
+import com.yunche.loan.domain.queryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
 import org.apache.ibatis.annotations.Mapper;
 

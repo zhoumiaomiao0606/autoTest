@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
-import com.yunche.loan.domain.QueryObj.BaseQuery;
-import com.yunche.loan.domain.QueryObj.EmployeeQuery;
+import com.yunche.loan.domain.queryObj.BaseQuery;
+import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.viewObj.BaseVO;
@@ -155,6 +155,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ResultBean<List<String>> listTitle() {
         List<String> listTitle = employeeDOMapper.listTitle();
+        listTitle.removeAll(Collections.singleton(null));
         return ResultBean.ofSuccess(listTitle);
     }
 

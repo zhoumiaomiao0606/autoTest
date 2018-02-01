@@ -32,6 +32,20 @@
         </where>
     </select>
 
+    <!--getHasBindOperationIdListByUserGroupId-->
+    <select id="getHasBindOperationIdListByUserGroupId" resultType="java.lang.Long">
+        SELECT DISTINCT(a.auth_id)
+        FROM user_group_rela_area_auth AS a,
+        auth AS b
+        WHERE a.auth_id = b.id
+        <if test="type != null">
+            AND b.type = #{type}
+        </if>
+        <if test="userGroupId != null">
+            AND a.user_group_id = #{userGroupId}
+        </if>
+    </select>
+
     <!--getAreaIdListByUserGroupId-->
     <select id="getAreaIdListByUserGroupId" parameterType="java.lang.Long"
             resultType="java.lang.Long">

@@ -13,7 +13,7 @@
   </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from department_rela_user_group
@@ -21,7 +21,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.BaseQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

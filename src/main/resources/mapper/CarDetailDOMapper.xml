@@ -73,7 +73,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.CarDetailQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.CarDetailQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from car_detail
@@ -83,7 +83,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.CarModelQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.CarModelQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -119,6 +119,16 @@
         where model_id = #{modelId,jdbcType=BIGINT}
         <if test="status != null">
             AND status = #{status}
+        </if>
+    </select>
+
+    <!--getAll-->
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from car_detail
+        <if test="status != null">
+            WHERE status = #{status}
         </if>
     </select>
 

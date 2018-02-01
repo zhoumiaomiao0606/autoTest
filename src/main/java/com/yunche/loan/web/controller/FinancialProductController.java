@@ -2,7 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.QueryObj.FinancialQuery;
+import com.yunche.loan.domain.queryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
 import com.yunche.loan.domain.viewObj.FinancialProductVO;
 import com.yunche.loan.service.FinancialProductService;

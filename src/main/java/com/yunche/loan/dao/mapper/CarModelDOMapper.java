@@ -1,6 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.QueryObj.CarModelQuery;
+import com.yunche.loan.domain.queryObj.CarModelQuery;
 import com.yunche.loan.domain.dataObj.CarModelDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -32,4 +32,6 @@ public interface CarModelDOMapper {
     List<CarModelDO> query(CarModelQuery query);
 
     List<String> getNameListByBrandId(@Param("brandId") Long brandId, @Param("status") Byte status);
+
+    List<CarModelDO> getAll(@Param("status") Byte status);
 }

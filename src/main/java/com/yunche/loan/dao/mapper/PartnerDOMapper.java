@@ -1,6 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.QueryObj.PartnerQuery;
+import com.yunche.loan.domain.queryObj.PartnerQuery;
 import com.yunche.loan.domain.dataObj.PartnerDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

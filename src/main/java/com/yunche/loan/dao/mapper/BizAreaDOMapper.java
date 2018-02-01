@@ -1,6 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.QueryObj.BizAreaQuery;
+import com.yunche.loan.domain.queryObj.BizAreaQuery;
 import com.yunche.loan.domain.dataObj.BizAreaDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

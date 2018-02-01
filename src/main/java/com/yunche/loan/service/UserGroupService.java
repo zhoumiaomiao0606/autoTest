@@ -1,8 +1,9 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.QueryObj.BaseQuery;
-import com.yunche.loan.domain.QueryObj.UserGroupQuery;
+import com.yunche.loan.domain.queryObj.BaseQuery;
+import com.yunche.loan.domain.queryObj.EmployeeQuery;
+import com.yunche.loan.domain.queryObj.UserGroupQuery;
 import com.yunche.loan.domain.param.UserGroupParam;
 import com.yunche.loan.domain.viewObj.AuthVO;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
@@ -27,7 +28,9 @@ public interface UserGroupService {
 
     ResultBean<List<AuthVO>> listAuth(BaseQuery query);
 
-    ResultBean<List<EmployeeVO>> listEmployee(BaseQuery query);
+    ResultBean<List<EmployeeVO>> listBindEmployee(EmployeeQuery query);
+
+    ResultBean<List<EmployeeVO>> listUnbindEmployee(EmployeeQuery query);
 
     ResultBean<Void> bindEmployee(Long id, String employeeIds);
 

@@ -113,20 +113,26 @@ public class CarServiceImpl implements CarService {
             return ResultBean.ofSuccess(null, "car_detail表为空表,无可更新数据.");
         }
 
+        // 车系ID-车系实体 映射关系： model_id —— CarModellDO 映射
+        ConcurrentMap<Long, CarModelDO> idModelDOMap = getIdModelDOMapping();
+
+        // 车型ID-车型实体 映射关系： detail_id —— CarDetailDO 映射
+        ConcurrentMap<Long, CarDetailDO> idDetailDOMap = getIdDetailDOMapping();
+
         // 梳理id映射关系： model_id —— detail_id列表
         ConcurrentMap<Long, List<Long>> modelIdDetailIdsMap = getModelIdDetailIdsMapping(carDetailDOS);
 
         // 执行补偿任务
-        execFillModel(modelIdDetailIdsMap);
+        execFillModel(idModelDOMap, idDetailDOMap, modelIdDetailIdsMap);
 
         long totalTime = System.currentTimeMillis() - startTime;
-        logger.info("/car/fillModel：车系表补偿任务总耗时 : {}h", new BigDecimal(totalTime).doubleValue() / 3600);
+        logger.info("/car/fillModel：车系表补偿任务总耗时 : {}min", new BigDecimal(totalTime).doubleValue() / 60000);
 
         return ResultBean.ofSuccess(null, "补偿任务执行完成");
     }
 
     @Override
-    public ResultBean<String> count() {
+    public ResultBean<Map<String, Integer>> count() {
         // 获取品牌数据
         logger.info("查询品牌开始   >>>>>   ");
         List<CarBrandDO> carBrandDOS = getCarBrand();
@@ -136,7 +142,7 @@ public class CarServiceImpl implements CarService {
         Map<String, Integer> countMap = countTotal(carBrandDOS);
         logger.info("统计数量完成   >>>>>   ");
 
-        return ResultBean.ofSuccess(JSON.toJSONString(countMap));
+        return ResultBean.ofSuccess(countMap);
     }
 
     /**
@@ -517,9 +523,11 @@ public class CarServiceImpl implements CarService {
     /**
      * 执行车系（car_model表）的price、seatNum补偿任务
      *
+     * @param idModelDOMap
+     * @param idDetailDOMap
      * @param modelIdDetailIdsMap
      */
-    private void execFillModel(ConcurrentMap<Long, List<Long>> modelIdDetailIdsMap) {
+    private void execFillModel(Map<Long, CarModelDO> idModelDOMap, Map<Long, CarDetailDO> idDetailDOMap, Map<Long, List<Long>> modelIdDetailIdsMap) {
         // 容器
         ArrayList<Double> minMaxPrice = Lists.newArrayList();
         Set<Integer> seatNumSet = Sets.newTreeSet();
@@ -529,7 +537,7 @@ public class CarServiceImpl implements CarService {
             detailIds.stream()
                     .forEach(detailId -> {
 
-                        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(detailId, VALID_STATUS);
+                        CarDetailDO carDetailDO = idDetailDOMap.get(detailId);
                         if (null != carDetailDO) {
                             // 统计price
                             statisticsPrice(carDetailDO.getPrice(), minMaxPrice);
@@ -540,7 +548,7 @@ public class CarServiceImpl implements CarService {
                     });
 
             // 获取当前要补偿数据的CarModelDO
-            CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(modelId, VALID_STATUS);
+            CarModelDO carModelDO = idModelDOMap.get(modelId);
             if (null != carModelDO) {
                 // 补充price
                 fillCarModelPrice(carModelDO, minMaxPrice);
@@ -552,33 +560,6 @@ public class CarServiceImpl implements CarService {
             seatNumSet.clear();
 
         });
-    }
-
-    /**
-     * 梳理id映射关系： model_id——detail_id列表  映射
-     *
-     * @param carDetailDOS
-     * @return
-     */
-    private ConcurrentMap<Long, List<Long>> getModelIdDetailIdsMapping(List<CarDetailDO> carDetailDOS) {
-        ConcurrentMap<Long, List<Long>> modelIdDetailIdsMap = Maps.newConcurrentMap();
-
-        carDetailDOS.parallelStream()
-                .filter(e -> null != e && null != e.getId() && null != e.getModelId())
-                .forEach(e -> {
-
-                    Long modelId = e.getModelId();
-                    Long detailId = e.getId();
-
-                    if (!modelIdDetailIdsMap.containsKey(modelId)) {
-                        modelIdDetailIdsMap.put(modelId, Lists.newArrayList(detailId));
-                    } else {
-                        modelIdDetailIdsMap.get(modelId).add(detailId);
-                    }
-
-                });
-
-        return modelIdDetailIdsMap;
     }
 
     private void insertBrand(List<CarBrandDO> carBrandDOS) {
@@ -1160,4 +1141,62 @@ public class CarServiceImpl implements CarService {
 
     }
 
+    /**
+     * 车系ID-车系实体 映射关系： model_id —— CarModellDO 映射
+     *
+     * @return
+     */
+    public ConcurrentMap<Long, CarModelDO> getIdModelDOMapping() {
+        ConcurrentMap<Long, CarModelDO> idModelDOMap = Maps.newConcurrentMap();
+        List<CarModelDO> allCarModelDO = carModelDOMapper.getAll(null);
+        allCarModelDO.parallelStream()
+                .filter(e -> null != e && null != e.getId())
+                .forEach(e -> {
+                    idModelDOMap.put(e.getId(), e);
+                });
+        return idModelDOMap;
+    }
+
+    /**
+     * 车型ID-车型实体 映射关系： detail_id —— CarDetailDO 映射
+     *
+     * @return
+     */
+    public ConcurrentMap<Long, CarDetailDO> getIdDetailDOMapping() {
+        ConcurrentMap<Long, CarDetailDO> idDetailDOMap = Maps.newConcurrentMap();
+        List<CarDetailDO> allCarDetailDO = carDetailDOMapper.getAll(null);
+        allCarDetailDO.parallelStream()
+                .filter(e -> null != e && null != e.getId())
+                .forEach(e -> {
+                    idDetailDOMap.put(e.getId(), e);
+                });
+        return idDetailDOMap;
+    }
+
+    /**
+     * 梳理id映射关系： model_id——detail_id列表  映射
+     *
+     * @param carDetailDOS
+     * @return
+     */
+    private ConcurrentMap<Long, List<Long>> getModelIdDetailIdsMapping(List<CarDetailDO> carDetailDOS) {
+        ConcurrentMap<Long, List<Long>> modelIdDetailIdsMap = Maps.newConcurrentMap();
+
+        carDetailDOS.parallelStream()
+                .filter(e -> null != e && null != e.getId() && null != e.getModelId())
+                .forEach(e -> {
+
+                    Long modelId = e.getModelId();
+                    Long detailId = e.getId();
+
+                    if (!modelIdDetailIdsMap.containsKey(modelId)) {
+                        modelIdDetailIdsMap.put(modelId, Lists.newArrayList(detailId));
+                    } else {
+                        modelIdDetailIdsMap.get(modelId).add(detailId);
+                    }
+
+                });
+
+        return modelIdDetailIdsMap;
+    }
 }

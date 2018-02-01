@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +54,7 @@ public class CarController {
      * @return
      */
     @GetMapping("/count")
-    public ResultBean<String> count() {
+    public ResultBean<Map<String,Integer>> count() {
         logger.info("count");
         return carService.count();
     }

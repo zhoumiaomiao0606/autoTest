@@ -99,7 +99,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.PartnerQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.PartnerQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from partner
@@ -109,7 +109,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.PartnerQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.PartnerQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

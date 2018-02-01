@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.BizModelDOMapper;
-import com.yunche.loan.domain.QueryObj.BizModelQuery;
+import com.yunche.loan.domain.queryObj.BizModelQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.viewObj.*;
 import com.yunche.loan.domain.viewObj.AreaVO;
@@ -14,7 +14,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;

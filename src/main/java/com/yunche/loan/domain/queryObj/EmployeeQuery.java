@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.QueryObj;
+package com.yunche.loan.domain.queryObj;
 
 import lombok.Data;
 
@@ -10,6 +10,10 @@ import java.util.Date;
  */
 @Data
 public class EmployeeQuery extends BaseQuery {
+    /**
+     * 用户组ID
+     */
+    private Long userGroupId;
 
     private String name;
 

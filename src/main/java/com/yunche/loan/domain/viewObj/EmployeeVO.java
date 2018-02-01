@@ -33,6 +33,8 @@ public class EmployeeVO {
     private Date gmtModify;
 
     private Byte status;
+
+    private Boolean selected;
     /**
      * 所属部门
      */

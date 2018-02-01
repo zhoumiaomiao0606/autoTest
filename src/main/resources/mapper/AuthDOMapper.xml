@@ -13,6 +13,17 @@
     id, source_id, type, gmt_create, gmt_modify
   </sql>
 
+    <!--getAllHasAuthByUserGroupId-->
+    <select id="getAllHasAuthByUserGroupId" resultType="java.lang.Long">
+        select a.source_id
+        from auth AS a, user_group_rela_area_auth AS b
+        where a.id = b.auth_id
+        AND b.user_group_id = #{userGroupId}
+        <if test="type != null">
+            AND type = #{type}
+        </if>
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

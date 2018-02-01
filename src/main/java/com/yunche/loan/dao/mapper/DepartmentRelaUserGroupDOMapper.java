@@ -1,6 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.QueryObj.BaseQuery;
+import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDO;
 import com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDOKey;
 import org.apache.ibatis.annotations.Mapper;

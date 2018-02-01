@@ -2,6 +2,9 @@ package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.dataObj.AuthDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface AuthDOMapper {
@@ -16,4 +19,13 @@ public interface AuthDOMapper {
     int updateByPrimaryKeySelective(AuthDO record);
 
     int updateByPrimaryKey(AuthDO record);
+
+    /**
+     * 根据权限类型，查询当前用户组已授权的权限ID列表
+     *
+     * @param userGroupId
+     * @param type        权限类型
+     * @return
+     */
+    List<Long> getAllHasAuthByUserGroupId(@Param("userGroupId") Long userGroupId, @Param("type") Byte type);
 }

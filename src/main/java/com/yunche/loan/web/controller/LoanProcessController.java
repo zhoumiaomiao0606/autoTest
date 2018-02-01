@@ -1,22 +1,13 @@
 package com.yunche.loan.web.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.QueryObj.FinancialQuery;
-import com.yunche.loan.domain.dataObj.FinancialProductDO;
 import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
-import com.yunche.loan.domain.viewObj.FinancialProductVO;
-import com.yunche.loan.service.FinancialProductService;
 import com.yunche.loan.service.LoanProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by zhouguoliang on 2018/1/30.

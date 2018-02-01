@@ -77,7 +77,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.PaddingCompanyQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.PaddingCompanyQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from padding_company
@@ -87,7 +87,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.PaddingCompanyQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.PaddingCompanyQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

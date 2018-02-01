@@ -3,6 +3,7 @@ package com.yunche.loan.dao.mapper;
 import com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO;
 import com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDOKey;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -45,4 +46,14 @@ public interface UserGroupRelaAreaAuthDOMapper {
     int updateByUserGroupIdSelective(UserGroupRelaAreaAuthDO userGroupRelaAreaAuthDO);
 
     List<Long> getAreaIdListByUserGroupId(Long userGroupId);
+
+    /**
+     * 当前用户组 - 已绑定 operation ID列表
+     * <p>
+     *
+     * @param userGroupId
+     * @param type        MENU / PAGE / OPERATION {@link com.yunche.loan.config.constant.AuthConst}
+     * @return
+     */
+    List<Long> getHasBindOperationIdListByUserGroupId(@Param("userGroupId") Long userGroupId, @Param("type") Byte type);
 }

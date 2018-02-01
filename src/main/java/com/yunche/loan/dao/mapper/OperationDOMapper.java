@@ -1,7 +1,9 @@
 package com.yunche.loan.dao.mapper;
 
+import com.yunche.loan.domain.queryObj.AuthQuery;
 import com.yunche.loan.domain.dataObj.OperationDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -13,11 +15,21 @@ public interface OperationDOMapper {
 
     int insertSelective(OperationDO record);
 
-    OperationDO selectByPrimaryKey(Long id);
+    OperationDO selectByPrimaryKey(@Param("id") Long id, @Param("status") Byte status);
 
     int updateByPrimaryKeySelective(OperationDO record);
 
     int updateByPrimaryKey(OperationDO record);
 
-    List<OperationDO> getAll(Byte validStatus);
+    List<OperationDO> getAll(@Param("status") Byte status);
+
+    List<Long> getAllIdList(@Param("status") Byte status);
+
+    /**
+     * 条件查询 - 获取所有 operation ID列表
+     *
+     * @param query
+     * @return
+     */
+    List<Long> queryAllOperationIdList(AuthQuery query);
 }

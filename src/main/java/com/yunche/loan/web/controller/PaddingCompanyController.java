@@ -1,7 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.yunche.loan.domain.QueryObj.PaddingCompanyQuery;
+import com.yunche.loan.domain.queryObj.PaddingCompanyQuery;
 import com.yunche.loan.domain.viewObj.PaddingCompanyVO;
 import com.yunche.loan.domain.dataObj.PaddingCompanyDO;
 import com.yunche.loan.config.result.ResultBean;

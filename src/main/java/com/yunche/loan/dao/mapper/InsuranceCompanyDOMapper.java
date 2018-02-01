@@ -1,7 +1,7 @@
 package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.dataObj.InsuranceCompanyDO;
-import com.yunche.loan.domain.QueryObj.InsuranceCompanyQuery;
+import com.yunche.loan.domain.queryObj.InsuranceCompanyQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

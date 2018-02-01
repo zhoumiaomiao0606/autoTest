@@ -1,6 +1,5 @@
-package com.yunche.loan.domain.QueryObj;
+package com.yunche.loan.domain.queryObj;
 
-import com.google.common.collect.Lists;
 import lombok.Data;
 
 import java.util.List;

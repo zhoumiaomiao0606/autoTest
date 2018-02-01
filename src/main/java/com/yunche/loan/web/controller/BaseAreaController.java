@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.yunche.loan.domain.viewObj.AreaVO;
 import com.yunche.loan.domain.viewObj.BaseAreaVO;
 import com.yunche.loan.domain.dataObj.BaseAreaDO;
-import com.yunche.loan.domain.QueryObj.BaseAreaQuery;
+import com.yunche.loan.domain.queryObj.BaseAreaQuery;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.service.BaseAreaService;
 import org.slf4j.Logger;

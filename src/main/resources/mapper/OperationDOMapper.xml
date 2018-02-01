@@ -16,11 +16,61 @@
     id, name, uri, page_id, gmt_create, gmt_modify, feature, status
   </sql>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--getAll-->
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from operation
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
+    </select>
+
+    <!--getAllIdList-->
+    <select id="getAllIdList" resultType="java.lang.Long">
+        select id
+        from operation
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
+    </select>
+
+    <!--queryAllOperationIdList-->
+    <select id="queryAllOperationIdList" parameterType="com.yunche.loan.domain.queryObj.AuthQuery"
+            resultType="java.lang.Long">
+        SELECT DISTINCT(operation.id)
+        FROM
+        `menu` ,
+        `page` ,
+        `operation`
+        WHERE
+        page.menu_id = menu.id
+        AND operation.page_id = page.id
+        <if test="menuIdList != null and menuIdList.size() > 0">
+            AND page.menu_id IN
+            <foreach collection="menuIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pageName != null and pageName != '' ">
+            AND page.name LIKE CONCAT('%',#{pageName},'%')
+        </if>
+        <if test="operationName != null and operationName != '' ">
+            AND operation.name LIKE CONCAT('%',#{operationName},'%')
+        </if>
+        <if test="status != null">
+            AND operation.status = #{status}
+        </if>
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from operation
         where id = #{id,jdbcType=BIGINT}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">

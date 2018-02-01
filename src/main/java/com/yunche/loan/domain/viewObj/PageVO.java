@@ -18,8 +18,6 @@ public class PageVO {
 
     private String uri;
 
-//    private Long menuId;
-
     private Date gmtCreate;
 
     private Date gmtModify;
@@ -63,5 +61,7 @@ public class PageVO {
         private String name;
 
         private String uri;
+
+        private Boolean selected;
     }
 }

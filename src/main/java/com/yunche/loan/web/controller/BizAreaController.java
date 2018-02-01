@@ -2,7 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.QueryObj.BizAreaQuery;
+import com.yunche.loan.domain.queryObj.BizAreaQuery;
 import com.yunche.loan.domain.dataObj.BizAreaDO;
 import com.yunche.loan.domain.param.BizAreaParam;
 import com.yunche.loan.domain.viewObj.AreaVO;

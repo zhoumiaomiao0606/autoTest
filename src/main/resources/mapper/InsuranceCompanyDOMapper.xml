@@ -76,7 +76,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.InsuranceCompanyQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.InsuranceCompanyQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from insurance_company
@@ -86,7 +86,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.InsuranceCompanyQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.InsuranceCompanyQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

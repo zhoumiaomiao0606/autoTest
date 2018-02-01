@@ -2,8 +2,8 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.QueryObj.BaseQuery;
-import com.yunche.loan.domain.QueryObj.EmployeeQuery;
+import com.yunche.loan.domain.queryObj.BaseQuery;
+import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.viewObj.EmployeeVO;

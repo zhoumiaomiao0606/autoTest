@@ -2,8 +2,8 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.QueryObj.BaseQuery;
-import com.yunche.loan.domain.QueryObj.UserGroupQuery;
+import com.yunche.loan.domain.queryObj.EmployeeQuery;
+import com.yunche.loan.domain.queryObj.UserGroupQuery;
 import com.yunche.loan.domain.param.UserGroupParam;
 import com.yunche.loan.domain.viewObj.*;
 import com.yunche.loan.service.UserGroupService;
@@ -92,22 +92,22 @@ public class UserGroupController {
      * @param query id、pageIndex、pageSize
      * @return
      */
-    @PostMapping(value = "/listEmployee", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<EmployeeVO>> listEmployee(@RequestBody BaseQuery query) {
-        logger.info(Arrays.asList("listEmployee", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
-        return userGroupService.listEmployee(query);
+    @PostMapping(value = "/listBindEmployee", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<EmployeeVO>> listEmployee(@RequestBody EmployeeQuery query) {
+        logger.info(Arrays.asList("listBindEmployee", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.listBindEmployee(query);
     }
 
     /**
-     * 当前用户组已绑定的权限列表   -分页查询
+     * 当前用户组未绑定的员工列表   -分页查询
      *
      * @param query id、pageIndex、pageSize
      * @return
      */
-    @PostMapping(value = "/listAuth", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<AuthVO>> listAuth(@RequestBody BaseQuery query) {
-        logger.info(Arrays.asList("listAuth", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
-        return userGroupService.listAuth(query);
+    @PostMapping(value = "/listUnbindEmployee", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<EmployeeVO>> listUnbindEmployee(@RequestBody EmployeeQuery query) {
+        logger.info(Arrays.asList("listUnbindEmployee", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.listUnbindEmployee(query);
     }
 
     /**
@@ -157,7 +157,6 @@ public class UserGroupController {
         logger.info(Arrays.asList("bindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.bindAuth(id, areaId, authIds);
     }
-
 
     /**
      * 解绑权限列表      -支持列表

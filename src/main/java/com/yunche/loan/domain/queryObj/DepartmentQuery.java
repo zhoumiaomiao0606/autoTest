@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.QueryObj;
+package com.yunche.loan.domain.queryObj;
 
 import lombok.Data;
 

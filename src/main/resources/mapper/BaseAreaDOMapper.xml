@@ -38,7 +38,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.QueryObj.BaseAreaQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.BaseAreaQuery"
             resultType="java.lang.Long">
         select COUNT(*)
         from base_area
@@ -48,7 +48,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.QueryObj.BaseAreaQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.queryObj.BaseAreaQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
