@@ -17,6 +17,8 @@ public interface LoanProcessService {
 
     ResultBean<Void> creditApply(CustBaseInfoVO custBaseInfoVO, String processId);
 
+    ResultBean<Void> creditVerify(String processId, String action);
+
     ResultBean<List<Task>> getTasks(String userGroupName);
 
     ResultBean<Void> completeTasks(boolean isApproved, String taskId);

@@ -50,6 +50,10 @@ public class LoanProcessController {
         return loanProcessService.creditApply(custBaseInfoVO, processId);
     }
 
+    public ResultBean<Void> creditVerify(@RequestParam("processId") Long processId, @RequestParam("action") String action) {
+        return null;
+    }
+
 }
 
 

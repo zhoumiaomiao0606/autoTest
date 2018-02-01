@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.constant.ProcessActionEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.InstLoanOrderDOMapper;
 import com.yunche.loan.dao.mapper.InstProcessNodeDOMapper;
@@ -47,7 +48,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         variables.put("operatorRole", operatorRole);
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("dev_loan_process", variables);
 
-        return ResultBean.ofSuccess(processInstance.getProcessInstanceId(), "流程启动成功");
+        return ResultBean.ofSuccess(processInstance.getProcessInstanceId(), "[" + LoanProcessEnum.START.getName() + "]成功");
     }
 
     @Override
@@ -78,7 +79,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         taskVariables.put("instLoanOrderDO", instLoanOrderDO);
         taskService.complete(task.getId(), taskVariables);
 
-        return ResultBean.ofSuccess(null, "任务处理成功");
+        return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.CREDIT_APPLY.getName() + "]任务处理成功");
+    }
+
+    @Override
+    public ResultBean<Void> creditVerify(String processId, String action) {
+        Task task = taskService.createTaskQuery().processInstanceId(processId).singleResult();
+
+        Map<String, Object> taskVariables = new HashMap<String, Object>();
+        taskVariables.put("processAction", action);
+        taskService.complete(task.getId(), taskVariables);
+
+        return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.CREDIT_VERIFY.getName() + "]任务处理成功");
     }
 
     @Override

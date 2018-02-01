@@ -5,6 +5,8 @@ package com.yunche.loan.config.constant;
  */
 public enum LoanProcessEnum {
 
+    START("start_process", "流程启动"),
+    END("end_process", "流程终止"),
     CREDIT_APPLY("usertask_credit_apply", "发起征信申请"),
     CREDIT_SAVE("servicetask_credit_save", "征信申请存储"),
     CREDIT_VERIFY("usertask_credit_verify", "征信申请审核"),
