@@ -142,15 +142,22 @@ public class UserGroupController {
      * 绑定权限列表      -支持列表
      *
      * @param id      用户组ID
+     * @param areaId  限定权限使用的业务区域(城市)ID
+     *                <p>
+     *                替换所有的areaId
+     *                <p>
+     *                需求：所有的权限都只限制在当前的城市下！！！全部权限绑定同一个城市，故以当前areaId为准！！！
      * @param authIds 权限ID列表 逗号分隔
      * @return
      */
     @GetMapping(value = "/bindAuth")
     public ResultBean<Void> bindAuth(@RequestParam("id") Long id,
+                                     @RequestParam("areaId") Long areaId,
                                      @RequestParam("authIds") String authIds) {
         logger.info(Arrays.asList("bindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds)).stream().collect(Collectors.joining("\u0001")));
-        return userGroupService.bindAuth(id, authIds);
+        return userGroupService.bindAuth(id, areaId, authIds);
     }
+
 
     /**
      * 解绑权限列表      -支持列表

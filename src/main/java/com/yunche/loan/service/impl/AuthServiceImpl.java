@@ -1,6 +1,5 @@
 package com.yunche.loan.service.impl;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
@@ -9,7 +8,6 @@ import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.MenuDO;
 import com.yunche.loan.domain.dataObj.OperationDO;
 import com.yunche.loan.domain.dataObj.PageDO;
-import com.yunche.loan.domain.viewObj.AuthVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
 import com.yunche.loan.domain.viewObj.PageVO;
 import com.yunche.loan.service.AuthService;
@@ -45,51 +43,6 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public ResultBean<AuthVO> listAuth() {
-
-
-//        AuthVO authVO = new AuthVO();
-//
-//        // 获取并填充所有菜单
-//        getAndFillAllMenu(authVO);
-//
-//        // 获取并填充所有子菜单
-//        xxx(authVO);
-//
-//        // 获取并填充子菜单下的所有子页面
-//        xxx(authVO);
-//
-//        // 获取并填充子页面下的操作权限
-//        xxx(authVO);
-//
-//
-//        List<PageDO> pageDOS = pageDOMapper.getAll(VALID_STATUS);
-//        List<OperationDO> operationDOS = operationDOMapper.getAll(VALID_STATUS);
-
-        return null;
-    }
-
-    private void getAndFillAllMenu(AuthVO authVO) {
-        // getAll
-        List<MenuDO> menuDOS = menuDOMapper.getAll(VALID_STATUS);
-
-        // parent - DOS
-//        menuDOS.stream()
-//                .filter(Objects::nonNull)
-
-
-        // getAllChild
-
-        // fill
-
-
-        // getAllChild
-
-        // fill
-
-    }
-
-    @Override
     public ResultBean<List<LevelVO>> listMenu() {
         // getAll
         List<MenuDO> menuDOS = menuDOMapper.getAll(VALID_STATUS);
@@ -104,13 +57,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResultBean<Object> listPage(RelaQuery query) {
-        Preconditions.checkNotNull(query.getMenuId(), "菜单ID不能为空");
-        Preconditions.checkNotNull(query.getUserGroupId(), "用户组ID不能为空");
+    public ResultBean<List<PageVO>> listOperation(RelaQuery query) {
         int totalNum = pageDOMapper.countMenuPageAndOperation(query);
         if (totalNum > 0) {
 
-            List<PageDO> pageDOS = pageDOMapper.getMenuPageAndOperation(query);
+            List<PageDO> pageDOS = pageDOMapper.queryMenuPageAndOperation(query);
             if (!CollectionUtils.isEmpty(pageDOS)) {
                 List<PageVO> pageVOList = pageDOS.stream()
                         .filter(Objects::nonNull)
@@ -149,6 +100,12 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * 填充所属菜单
+     *
+     * @param menuDO
+     * @param pageVO
+     */
     private void fillMenu(MenuDO menuDO, PageVO pageVO) {
         if (null != menuDO) {
             PageVO.Menu menu = new PageVO.Menu();
@@ -160,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
-     * 递归填充并返回父级菜单
+     * 递归填充父级菜单
      *
      * @param childMenu
      * @param pageVO
@@ -269,28 +226,5 @@ public class AuthServiceImpl implements AuthService {
                     // 递归填充子列表
                     fillChilds(child, parentIdDOMap);
                 });
-    }
-
-
-    private void xxx(AuthVO authVO) {
-        // getAll
-        List<MenuDO> menuDOS = menuDOMapper.getAll(VALID_STATUS);
-
-        if (!CollectionUtils.isEmpty(menuDOS)) {
-            List<AuthVO.Menu> menuList = menuDOS.stream()
-                    .filter(e -> null != e && null != e.getId())
-                    .map((MenuDO e) -> {
-
-                        AuthVO.Menu menu = new AuthVO.Menu();
-                        BeanUtils.copyProperties(e, menu);
-
-                        return menu;
-                    })
-                    .filter(Objects::nonNull)
-                    .sorted(Comparator.comparing(AuthVO.Menu::getId))
-                    .collect(Collectors.toList());
-
-            authVO.setMenus(menuList);
-        }
     }
 }

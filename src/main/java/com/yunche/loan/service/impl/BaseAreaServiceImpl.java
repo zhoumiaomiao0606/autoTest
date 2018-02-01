@@ -35,6 +35,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+
     @Override
     public ResultBean<BaseAreaVO> getById(Long areaId) {
         Preconditions.checkNotNull(areaId, "areaId不能为空");

@@ -2,7 +2,6 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.BaseQuery;
-import com.yunche.loan.domain.QueryObj.RelaQuery;
 import com.yunche.loan.domain.QueryObj.UserGroupQuery;
 import com.yunche.loan.domain.param.UserGroupParam;
 import com.yunche.loan.domain.viewObj.AuthVO;
@@ -34,7 +33,7 @@ public interface UserGroupService {
 
     ResultBean<Void> unbindEmployee(Long id, String employeeIds);
 
-    ResultBean<Void> bindAuth(Long id, String authIds);
+    ResultBean<Void> bindAuth(Long id, Long areaId, String authIds);
 
     ResultBean<Void> unbindAuth(Long id, String authIds);
 }

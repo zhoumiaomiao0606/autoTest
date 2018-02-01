@@ -3,6 +3,7 @@ package com.yunche.loan.domain.viewObj;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -14,13 +15,13 @@ public class BizAreaVO {
 
     private String name;
     /**
-     * 父业务区域
+     * 父业务区域 ID层级列表
      */
-    private Parent parent;
+    private List<BaseVO> parent;
     /**
-     * 部门负责人
+     * 部门负责人 ID层级列表
      */
-    private Leader leader;
+    private List<BaseVO> leader;
     /**
      * 业务区域等级
      * 根据父level自动+1计算
@@ -34,25 +35,4 @@ public class BizAreaVO {
     private Date gmtCreate;
 
     private Date gmtModify;
-
-
-    @Data
-    public static class Parent {
-        private Long id;
-        private String name;
-    }
-
-    @Data
-    public static class Leader {
-        private Long id;
-        private String name;
-    }
-
-    /**
-     * 级联对象
-     */
-    @Data
-    public static class Level extends LevelVO {
-        private Integer level;
-    }
 }

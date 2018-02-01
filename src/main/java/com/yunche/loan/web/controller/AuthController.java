@@ -2,8 +2,6 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.QueryObj.RelaQuery;
-import com.yunche.loan.domain.viewObj.AuthVO;
-import com.yunche.loan.domain.viewObj.BaseVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
 import com.yunche.loan.domain.viewObj.PageVO;
 import com.yunche.loan.service.AuthService;
@@ -29,18 +27,18 @@ public class AuthController {
     private AuthService authService;
 
 
-    /**
-     * 权限资源实体-级联列表
-     * <p>
-     * 菜单-页面-操作 级联列表
-     *
-     * @return
-     */
-    @GetMapping("/list")
-    public ResultBean<AuthVO> listAuth() {
-        logger.info("list");
-        return authService.listAuth();
-    }
+//    /**
+//     * 权限资源实体-级联列表
+//     * <p>
+//     * 菜单-页面-操作 级联列表
+//     *
+//     * @return
+//     */
+//    @GetMapping("/list")
+//    public ResultBean<AuthVO> listAuth() {
+//        logger.info("list");
+//        return authService.listAuth();
+//    }
 
     /**
      * 菜单-级联列表
@@ -54,14 +52,16 @@ public class AuthController {
     }
 
     /**
-     * 页面分页条件查询
+     * 当前用户组已绑定的operation权限列表  -分页条件查询
+     * <p>
+     * 可选条件：userGroupID、menuId、pageName、operationName、areaId
      *
-     * @return 菜单ID
+     * @return
      */
-    @PostMapping("/listPage")
-    public ResultBean<Object> listPage(@RequestBody RelaQuery query) {
-        logger.info("listPage");
-        return authService.listPage(query);
+    @PostMapping("/listOperation")
+    public ResultBean<List<PageVO>> listOperation(@RequestBody RelaQuery query) {
+        logger.info("listOperation");
+        return authService.listOperation(query);
     }
 
 //    @GetMapping("/listOperation")
@@ -69,6 +69,4 @@ public class AuthController {
 //        logger.info("listOperation");
 //        return authService.listOperation();
 //    }
-
-
 }

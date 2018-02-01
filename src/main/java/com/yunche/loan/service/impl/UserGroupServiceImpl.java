@@ -8,10 +8,7 @@ import com.yunche.loan.domain.QueryObj.BaseQuery;
 import com.yunche.loan.domain.QueryObj.UserGroupQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.UserGroupParam;
-import com.yunche.loan.domain.viewObj.AuthVO;
-import com.yunche.loan.domain.viewObj.BaseVO;
-import com.yunche.loan.domain.viewObj.EmployeeVO;
-import com.yunche.loan.domain.viewObj.UserGroupVO;
+import com.yunche.loan.domain.viewObj.*;
 import com.yunche.loan.service.UserGroupService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -41,8 +38,6 @@ public class UserGroupServiceImpl implements UserGroupService {
     private DepartmentDOMapper departmentDOMapper;
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
-    //    @Autowired
-//    private AuthDOMapper authDOMapper;
     @Autowired
     private DepartmentRelaUserGroupDOMapper departmentRelaUserGroupDOMapper;
     @Autowired
@@ -61,10 +56,7 @@ public class UserGroupServiceImpl implements UserGroupService {
         Long id = insertAndGetId(userGroupParam);
 
         // 绑定部门
-        bindDepartment(id, userGroupParam.getDepartmentId());
-
-        // 绑定区域(城市)
-//        bindArea(id, userGroupParam.getAreaId());
+//        bindDepartment(id, userGroupParam.getDepartmentId());
 
         // 绑定权限列表
         bindAuth(id, userGroupParam.getAreaId(), userGroupParam.getAuthIdList());
@@ -86,10 +78,7 @@ public class UserGroupServiceImpl implements UserGroupService {
         Preconditions.checkArgument(count > 0, "编辑失败");
 
         // 编辑部门
-        updateDepartment(userGroupParam.getId(), userGroupParam.getDepartmentId());
-
-        // 编辑区域(城市)
-//        updateArea(userGroupParam.getId(), userGroupParam.getAreaId());
+//        updateDepartment(userGroupParam.getId(), userGroupParam.getDepartmentId());
 
         return ResultBean.ofSuccess(null, "编辑成功");
     }
@@ -114,7 +103,7 @@ public class UserGroupServiceImpl implements UserGroupService {
         UserGroupVO userGroupVO = new UserGroupVO();
         BeanUtils.copyProperties(userGroupDO, userGroupVO);
 
-        fillDepartment(userGroupVO);
+        fillDepartment(userGroupDO.getDepartmentId(), userGroupVO);
         fillArea(userGroupVO);
 
         return ResultBean.ofSuccess(userGroupVO);
@@ -138,7 +127,7 @@ public class UserGroupServiceImpl implements UserGroupService {
                     UserGroupVO userGroupVO = new UserGroupVO();
                     BeanUtils.copyProperties(e, userGroupVO);
 
-                    fillDepartment(userGroupVO);
+                    fillDepartment(e.getDepartmentId(), userGroupVO);
                     fillArea(userGroupVO);
 
                     return userGroupVO;
@@ -151,9 +140,6 @@ public class UserGroupServiceImpl implements UserGroupService {
     @Override
     public ResultBean<List<AuthVO>> listAuth(BaseQuery query) {
         Preconditions.checkNotNull(query.getId(), "用户组ID不能为空");
-
-
-
 
 
         return ResultBean.ofSuccess(Collections.EMPTY_LIST);
@@ -192,15 +178,15 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param userGroupId
      * @param departmentId
      */
-    private void bindDepartment(Long userGroupId, Long departmentId) {
-        DepartmentRelaUserGroupDO departmentRelaUserGroupDO = new DepartmentRelaUserGroupDO();
-        departmentRelaUserGroupDO.setUserGroupId(userGroupId);
-        departmentRelaUserGroupDO.setDepartmentId(departmentId);
-        departmentRelaUserGroupDO.setGmtCreate(new Date());
-        departmentRelaUserGroupDO.setGmtModify(new Date());
-        int count = departmentRelaUserGroupDOMapper.insert(departmentRelaUserGroupDO);
-        Preconditions.checkArgument(count > 0, "关联部门失败");
-    }
+//    private void bindDepartment(Long userGroupId, Long departmentId) {
+//        DepartmentRelaUserGroupDO departmentRelaUserGroupDO = new DepartmentRelaUserGroupDO();
+//        departmentRelaUserGroupDO.setUserGroupId(userGroupId);
+//        departmentRelaUserGroupDO.setDepartmentId(departmentId);
+//        departmentRelaUserGroupDO.setGmtCreate(new Date());
+//        departmentRelaUserGroupDO.setGmtModify(new Date());
+//        int count = departmentRelaUserGroupDOMapper.insert(departmentRelaUserGroupDO);
+//        Preconditions.checkArgument(count > 0, "关联部门失败");
+//    }
 
     /**
      * 绑定区域(城市)
@@ -219,41 +205,47 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     /**
-     * 补充用户组部门信息
-     *
-     * @param userGroupVO
-     */
-    private void fillDepartment(UserGroupVO userGroupVO) {
-        List<Long> departmentIds = departmentRelaUserGroupDOMapper.getDepartmentIdListByUserGroupId(userGroupVO.getId());
-        if (CollectionUtils.isEmpty(departmentIds)) {
-            return;
-        }
-        Long departmentId = departmentIds.get(0);
-        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
-        if (null != departmentDO) {
-            BaseVO baseVO = new BaseVO();
-            BeanUtils.copyProperties(departmentDO, baseVO);
-            userGroupVO.setDepartment(baseVO);
-        }
-    }
-
-    /**
      * 补充用户组区域信息
      *
      * @param userGroupVO
      */
     private void fillArea(UserGroupVO userGroupVO) {
-        List<Long> areaIds = userGroupRelaAreaDOMapper.getAreaIdListByUserGroupId(userGroupVO.getId());
+        List<Long> areaIds = userGroupRelaAreaAuthDOMapper.getAreaIdListByUserGroupId(userGroupVO.getId());
         if (CollectionUtils.isEmpty(areaIds)) {
             return;
         }
         Long areaId = areaIds.get(0);
         BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
         if (null != baseAreaDO) {
-            BaseVO baseVO = new BaseVO();
-            baseVO.setId(baseAreaDO.getAreaId());
-            baseVO.setName(baseAreaDO.getAreaName());
-            userGroupVO.setArea(baseVO);
+            BaseVO parentArea = new BaseVO();
+            parentArea.setId(baseAreaDO.getAreaId());
+            parentArea.setName(baseAreaDO.getAreaName());
+            // 递归填充所有上层父级区域
+            fillSupperArea(baseAreaDO.getParentAreaId(), Lists.newArrayList(parentArea), userGroupVO);
+        }
+    }
+
+    /**
+     * 递归填充所有上层父级区域
+     *
+     * @param parentId
+     * @param supperAreaList
+     * @param userGroupVO
+     */
+    private void fillSupperArea(Long parentId, List<BaseVO> supperAreaList, UserGroupVO userGroupVO) {
+        if (null != parentId) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != baseAreaDO) {
+                BaseVO parentArea = new BaseVO();
+                parentArea.setId(baseAreaDO.getAreaId());
+                parentArea.setName(baseAreaDO.getAreaName());
+                supperAreaList.add(parentArea);
+                fillSupperArea(baseAreaDO.getParentAreaId(), supperAreaList, userGroupVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(supperAreaList);
+            userGroupVO.setArea(supperAreaList);
         }
     }
 
@@ -261,14 +253,72 @@ public class UserGroupServiceImpl implements UserGroupService {
      * 填充员工部门信息
      *
      * @param departmentId
-     * @param employeeVO
+     * @param userGroupVO
      */
-    private void fillDepartment(Long departmentId, EmployeeVO employeeVO) {
+    private void fillDepartment(Long departmentId, UserGroupVO userGroupVO) {
+        if (null == departmentId) {
+            return;
+        }
         DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
         if (null != departmentDO) {
-            BaseVO baseVO = new BaseVO();
-            BeanUtils.copyProperties(departmentDO, baseVO);
-            employeeVO.setDepartment(baseVO);
+            BaseVO parentDepartment = new BaseVO();
+            BeanUtils.copyProperties(departmentDO, parentDepartment);
+            // 递归填充所有上层父级部门
+            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), userGroupVO);
+        }
+    }
+
+    /**
+     * 递归填充所有上层父级部门
+     * <p>
+     * 前端需求：仅需要层级ID即可
+     *
+     * @param parentId
+     * @param superDepartmentList
+     * @param userGroupVO
+     */
+    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, UserGroupVO userGroupVO) {
+        if (null != parentId) {
+            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != departmentDO) {
+                BaseVO parentDepartment = new BaseVO();
+                BeanUtils.copyProperties(departmentDO, parentDepartment);
+                superDepartmentList.add(parentDepartment);
+                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, userGroupVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(superDepartmentList);
+            userGroupVO.setDepartment(superDepartmentList);
+        }
+    }
+
+    private void fillDepartment(Long departmentId, EmployeeVO employeeVO) {
+        if (null == departmentId) {
+            return;
+        }
+        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(departmentId, VALID_STATUS);
+        if (null != departmentDO) {
+            BaseVO parentDepartment = new BaseVO();
+            BeanUtils.copyProperties(departmentDO, parentDepartment);
+            // 递归填充所有上层父级部门
+            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), employeeVO);
+        }
+    }
+
+    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, EmployeeVO employeeVO) {
+        if (null != parentId) {
+            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != departmentDO) {
+                BaseVO parentDepartment = new BaseVO();
+                BeanUtils.copyProperties(departmentDO, parentDepartment);
+                superDepartmentList.add(parentDepartment);
+                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, employeeVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(superDepartmentList);
+            employeeVO.setDepartment(superDepartmentList);
         }
     }
 
@@ -279,11 +329,38 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param employeeVO
      */
     private void fillLeader(Long parentId, EmployeeVO employeeVO) {
+        if (null == parentId) {
+            return;
+        }
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
         if (null != employeeDO) {
-            BaseVO baseVO = new BaseVO();
-            BeanUtils.copyProperties(employeeDO, baseVO);
-            employeeVO.setParent(baseVO);
+            BaseVO parentEmployee = new BaseVO();
+            BeanUtils.copyProperties(employeeDO, parentEmployee);
+            // 递归填充所有上层父级部门
+            fillSuperLeader(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), employeeVO);
+        }
+    }
+
+    /**
+     * 递归填充所有上层父级主管ID
+     *
+     * @param parentId
+     * @param superLeaderList
+     * @param employeeVO
+     */
+    private void fillSuperLeader(Long parentId, List<BaseVO> superLeaderList, EmployeeVO employeeVO) {
+        if (null != parentId) {
+            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != employeeDO) {
+                BaseVO parentEmployee = new BaseVO();
+                BeanUtils.copyProperties(employeeDO, parentEmployee);
+                superLeaderList.add(parentEmployee);
+                fillSuperLeader(employeeDO.getParentId(), superLeaderList, employeeVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(superLeaderList);
+            employeeVO.setDepartment(superLeaderList);
         }
     }
 
@@ -375,22 +452,25 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
-    public ResultBean<Void> bindAuth(Long id, String authIds) {
+    public ResultBean<Void> bindAuth(Long id, Long areaId, String authIds) {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
+        Preconditions.checkNotNull(areaId, "限定权限使用的业务区域ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(authIds), "权限ID列表不能为空");
 
         // convert
-        List<Long> bizModelIdList = Arrays.asList(authIds.split(",")).stream()
+        List<Long> authIdList = Arrays.asList(authIds.split(",")).stream()
+                .filter(Objects::nonNull)
                 .map(e -> {
                     return Long.valueOf(e);
                 })
                 .distinct()
                 .collect(Collectors.toList());
 
-        // getAreaId
-//        PartnerDO partnerDO = authDOMapper.selectByPrimaryKey(id, VALID_STATUS);
-//        // bind
-//        bindAuth(id, partnerDO.getAreaId(), bizModelIdList);
+        // insert new
+        bindAuth(id, areaId, authIdList);
+
+        // update old areaId
+        updateRelaAuthArea(id, areaId, authIdList);
 
         return ResultBean.ofSuccess(null, "关联成功");
     }
@@ -400,22 +480,16 @@ public class UserGroupServiceImpl implements UserGroupService {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(authIds), "权限ID列表不能为空");
 
-        // getAreaId
-//        AuthDO authDO = authDOMapper.selectByPrimaryKey(id, VALID_STATUS);
-//        Preconditions.checkNotNull(authDO, "id有误,合伙人不存!");
-//        Preconditions.checkNotNull(authDO.getAreaId(), "合伙人业务区域为空，请先设置业务区域");
-//
-//        // delete
-//        Arrays.asList(authIds.split(",")).stream()
-//                .distinct()
-//                .forEach(authId -> {
-//                    UserGroupRelaAreaAuthDOKey userGroupRelaAreaAuthDOKey = new UserGroupRelaAreaAuthDOKey();
-//                    userGroupRelaAreaAuthDOKey.setUserGroupId(id);
-//                    userGroupRelaAreaAuthDOKey.setAreaId(authDO.getAreaId());
-//                    userGroupRelaAreaAuthDOKey.setAuthId(Long.valueOf(authId));
-//                    int count = userGroupRelaAreaAuthDOMapper.deleteByPrimaryKey(userGroupRelaAreaAuthDOKey);
-//                    Preconditions.checkArgument(count > 0, "取消关联失败");
-//                });
+        // delete
+        Arrays.asList(authIds.split(",")).stream()
+                .distinct()
+                .forEach(authId -> {
+                    UserGroupRelaAreaAuthDOKey userGroupRelaAreaAuthDOKey = new UserGroupRelaAreaAuthDOKey();
+                    userGroupRelaAreaAuthDOKey.setUserGroupId(id);
+                    userGroupRelaAreaAuthDOKey.setAuthId(Long.valueOf(authId));
+                    int count = userGroupRelaAreaAuthDOMapper.deleteByPrimaryKey(userGroupRelaAreaAuthDOKey);
+                    Preconditions.checkArgument(count > 0, "取消关联失败");
+                });
 
         return ResultBean.ofSuccess(null, "取消关联成功");
     }
@@ -448,32 +522,32 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param userGroupId
      * @param departmentId
      */
-    private void updateDepartment(Long userGroupId, Long departmentId) {
-        // get
-        List<DepartmentRelaUserGroupDO> departmentRelaUserGroupDOS = departmentRelaUserGroupDOMapper.getByUserGroupId(userGroupId);
-        if (CollectionUtils.isEmpty(departmentRelaUserGroupDOS)) {
-            // insert
-            DepartmentRelaUserGroupDO departmentRelaUserGroupDO = new DepartmentRelaUserGroupDO();
-            departmentRelaUserGroupDO.setUserGroupId(userGroupId);
-            departmentRelaUserGroupDO.setDepartmentId(departmentId);
-            departmentRelaUserGroupDO.setGmtCreate(new Date());
-            departmentRelaUserGroupDO.setGmtModify(new Date());
-            int count = departmentRelaUserGroupDOMapper.insert(departmentRelaUserGroupDO);
-            Preconditions.checkArgument(count > 0, "编辑部门失败");
-        } else {
-            // update : del + insert
-            // delete old
-            DepartmentRelaUserGroupDO departmentRelaUserGroupDO = departmentRelaUserGroupDOS.get(0);
-            int delCount = departmentRelaUserGroupDOMapper.deleteByPrimaryKey(departmentRelaUserGroupDO);
-            Preconditions.checkArgument(delCount > 0, "编辑部门失败");
-
-            // insert new
-            departmentRelaUserGroupDO.setDepartmentId(departmentId);
-            departmentRelaUserGroupDO.setGmtModify(new Date());
-            int count = departmentRelaUserGroupDOMapper.insert(departmentRelaUserGroupDO);
-            Preconditions.checkArgument(count > 0, "编辑部门失败");
-        }
-    }
+//    private void updateDepartment(Long userGroupId, Long departmentId) {
+//        // get
+//        List<DepartmentRelaUserGroupDO> departmentRelaUserGroupDOS = departmentRelaUserGroupDOMapper.getByUserGroupId(userGroupId);
+//        if (CollectionUtils.isEmpty(departmentRelaUserGroupDOS)) {
+//            // insert
+//            DepartmentRelaUserGroupDO departmentRelaUserGroupDO = new DepartmentRelaUserGroupDO();
+//            departmentRelaUserGroupDO.setUserGroupId(userGroupId);
+//            departmentRelaUserGroupDO.setDepartmentId(departmentId);
+//            departmentRelaUserGroupDO.setGmtCreate(new Date());
+//            departmentRelaUserGroupDO.setGmtModify(new Date());
+//            int count = departmentRelaUserGroupDOMapper.insert(departmentRelaUserGroupDO);
+//            Preconditions.checkArgument(count > 0, "编辑部门失败");
+//        } else {
+//            // update : del + insert
+//            // delete old
+//            DepartmentRelaUserGroupDO departmentRelaUserGroupDO = departmentRelaUserGroupDOS.get(0);
+//            int delCount = departmentRelaUserGroupDOMapper.deleteByPrimaryKey(departmentRelaUserGroupDO);
+//            Preconditions.checkArgument(delCount > 0, "编辑部门失败");
+//
+//            // insert new
+//            departmentRelaUserGroupDO.setDepartmentId(departmentId);
+//            departmentRelaUserGroupDO.setGmtModify(new Date());
+//            int count = departmentRelaUserGroupDOMapper.insert(departmentRelaUserGroupDO);
+//            Preconditions.checkArgument(count > 0, "编辑部门失败");
+//        }
+//    }
 
     /**
      * 编辑区域(城市)
@@ -525,6 +599,24 @@ public class UserGroupServiceImpl implements UserGroupService {
 
         // 执行绑定
         execBindAuth(userGroupId, areaId, authIdList);
+    }
+
+    /**
+     * 替换所有的areaId
+     * <p>
+     * 需求：所有的权限都只限制在当前的城市下！！！全部权限绑定同一个城市，故以当前areaId为准！！！
+     *
+     * @param userGroupId
+     * @param areaId
+     * @param authIdList
+     */
+    private void updateRelaAuthArea(Long userGroupId, Long areaId, List<Long> authIdList) {
+        UserGroupRelaAreaAuthDO userGroupRelaAreaAuthDO = new UserGroupRelaAreaAuthDO();
+        userGroupRelaAreaAuthDO.setUserGroupId(userGroupId);
+        userGroupRelaAreaAuthDO.setAreaId(areaId);
+        userGroupRelaAreaAuthDO.setGmtModify(new Date());
+        int count = userGroupRelaAreaAuthDOMapper.updateByUserGroupIdSelective(userGroupRelaAreaAuthDO);
+        Preconditions.checkArgument(count > 0, "关联失败");
     }
 
     /**

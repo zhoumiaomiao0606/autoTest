@@ -33,6 +33,10 @@ public class EmployeeQuery extends BaseQuery {
      */
     private Byte type;
     /**
+     * 员工等级
+     */
+    private Integer level;
+    /**
      * 职位
      */
     private String title;

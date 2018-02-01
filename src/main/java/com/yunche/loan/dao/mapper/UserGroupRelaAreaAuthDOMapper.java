@@ -35,4 +35,14 @@ public interface UserGroupRelaAreaAuthDOMapper {
      * @return
      */
     int batchInsert(List<UserGroupRelaAreaAuthDO> userGroupRelaAreaAuthDOS);
+
+    /**
+     * 通过userGroupId编辑可选字段
+     *
+     * @param userGroupRelaAreaAuthDO
+     * @return
+     */
+    int updateByUserGroupIdSelective(UserGroupRelaAreaAuthDO userGroupRelaAreaAuthDO);
+
+    List<Long> getAreaIdListByUserGroupId(Long userGroupId);
 }

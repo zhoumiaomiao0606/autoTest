@@ -48,62 +48,76 @@
     <!--countMenuPageAndOperation-->
     <select id="countMenuPageAndOperation" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
             resultType="java.lang.Integer">
-        SELECT COUNT(DISTINCT(page.id))
+        SELECT   COUNT(DISTINCT(page.id))
         FROM
-        `user_group_rela_area_auth`,
-        `auth` ,
-        `menu` ,
-        `page` ,
-        `operation`
-
-        WHERE user_group_rela_area_auth.auth_id = auth.id
-
-        AND auth.type = 2
-
-        AND auth.source_id = menu.id
-
-        AND page.menu_id = menu.id
-
-        AND operation.page_id = page.id
-
-        AND user_group_rela_area_auth.user_group_id = #{userGroupId}
-
-        AND menu.id = #{menuId}
+                `user_group_rela_area_auth`,
+                `auth` ,
+                `menu` ,
+                `page` ,
+                `operation`
+        WHERE
+                user_group_rela_area_auth.auth_id = auth.id
+                AND auth.type = 2
+                AND auth.source_id = menu.id
+--                 AND page.menu_id = menu.id
+                AND operation.page_id = page.id
+                <if test="userGroupId != null">
+                    AND user_group_rela_area_auth.user_group_id = #{userGroupId}
+                </if>
+                <if test="menuId != null">
+                    AND menu.id = #{menuId}
+                </if>
+                <if test="pageName != null and pageName != '' ">
+                    AND page.name LIKE CONCAT('%',#{pageName},'%')
+                </if>
+                <if test="operationName != null and operationName != '' ">
+                    AND operation.name LIKE CONCAT('%',#{operationName},'%')
+                </if>
+                <if test="areaId != null">
+                    AND user_group_rela_area_auth.area_id = #{areaId}
+                </if>
     </select>
 
-    <!--getMenuPageAndOperation-->
-    <select id="getMenuPageAndOperation" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
+    <!--queryMenuPageAndOperation-->
+    <select id="queryMenuPageAndOperation" parameterType="com.yunche.loan.domain.QueryObj.RelaQuery"
             resultMap="menuPageAndOperationResultMap">
         SELECT
-        menu.id AS menu_id,
-        menu.name AS menu_name,
-        menu.uri AS menu_uri,
-        menu.parent_id AS menu_parent_id,
-        menu.level AS menu_level,
-        `page`.* ,
-        operation.id AS operation_id,
-        operation.name AS operation_name,
-        operation.uri AS operation_uri
+                menu.id AS menu_id,
+                menu.name AS menu_name,
+                menu.uri AS menu_uri,
+                menu.parent_id AS menu_parent_id,
+                menu.level AS menu_level,
+                `page`.* ,
+                operation.id AS operation_id,
+                operation.name AS operation_name,
+                operation.uri AS operation_uri
         FROM
-        `user_group_rela_area_auth`,
-        `auth` ,
-        `menu` ,
-        `page` ,
-        `operation`
-
-        WHERE user_group_rela_area_auth.auth_id = auth.id
-
-        AND auth.type = 2
-
-        AND auth.source_id = menu.id
-
-        AND page.menu_id = menu.id
-
-        AND operation.page_id = page.id
-
-        AND user_group_rela_area_auth.user_group_id = #{userGroupId}
-
-        AND menu.id = #{menuId}
+                `user_group_rela_area_auth`,
+                `auth` ,
+                `menu` ,
+                `page` ,
+                `operation`
+        WHERE
+                user_group_rela_area_auth.auth_id = auth.id
+                AND auth.type = 2
+                AND auth.source_id = menu.id
+--                 AND page.menu_id = menu.id
+                AND operation.page_id = page.id
+                <if test="userGroupId != null">
+                    AND user_group_rela_area_auth.user_group_id = #{userGroupId}
+                </if>
+                <if test="menuId != null">
+                    AND menu.id = #{menuId}
+                </if>
+                <if test="pageName != null and pageName != '' ">
+                    AND page.name LIKE CONCAT('%',#{pageName},'%')
+                </if>
+                <if test="operationName != null and operationName != '' ">
+                    AND operation.name LIKE CONCAT('%',#{operationName},'%')
+                </if>
+                <if test="areaId != null">
+                    AND user_group_rela_area_auth.area_id = #{areaId}
+                </if>
 
         ORDER BY gmt_modify DESC
         limit #{startRow}, #{pageSize}

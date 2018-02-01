@@ -32,6 +32,34 @@
         </where>
     </select>
 
+    <!--getAreaIdListByUserGroupId-->
+    <select id="getAreaIdListByUserGroupId" parameterType="java.lang.Long"
+            resultType="java.lang.Long">
+        SELECT DISTINCT(area_id)
+        FROM user_group_rela_area_auth
+        WHERE user_group_id = #{userGroupId,jdbcType=BIGINT}
+    </select>
+
+    <!--updateByUserGroupIdSelective-->
+    <update id="updateByUserGroupIdSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO">
+        update user_group_rela_area_auth
+        <set>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="authId != null">
+                auth_id = #{authId,jdbcType=BIGINT},
+            </if>
+            <if test="areaId != null">
+                area_id = #{areaId,jdbcType=BIGINT}
+            </if>
+        </set>
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+    </update>
+
     <!-- batchInsert -->
     <insert id="batchInsert" parameterType="java.util.List">
         insert into user_group_rela_area_auth (user_group_id, auth_id, area_id,
@@ -54,11 +82,13 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDOKey">
-    delete from user_group_rela_area_auth
-    where user_group_id = #{userGroupId,jdbcType=BIGINT}
-      and auth_id = #{authId,jdbcType=BIGINT}
-      and area_id = #{areaId,jdbcType=BIGINT}
-  </delete>
+        delete from user_group_rela_area_auth
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+        and auth_id = #{authId,jdbcType=BIGINT}
+        <if test="areaId != null">
+            and area_id = #{areaId,jdbcType=BIGINT}
+        </if>
+    </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO">
     insert into user_group_rela_area_auth (user_group_id, auth_id, area_id, 

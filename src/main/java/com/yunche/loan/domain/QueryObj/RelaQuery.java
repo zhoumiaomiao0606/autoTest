@@ -21,15 +21,27 @@ public class RelaQuery extends BaseQuery {
      */
     private Long departmentId;
     /**
+     * 区域ID
+     */
+    private Long areaId;
+    /**
      * 菜单ID
      */
     private Long menuId;
     /**
-     * 页面ID
+     * 页面名称
      */
-    private Long pageId;
+    private String pageName;
     /**
-     * 操作ID
+     * 操作名称
      */
-    private Long operationId;
+    private String operationName;
+    /**
+     * 类型（员工类型...）
+     */
+    private Byte type;
+    /**
+     * 绑定状态
+     */
+    private Integer bindStatus;
 }
