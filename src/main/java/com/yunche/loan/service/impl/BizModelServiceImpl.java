@@ -234,10 +234,12 @@ public class BizModelServiceImpl implements BizModelService {
                 }
             }
             list.add(bizModelQuery.getAreaId());
+            list.add(100000000000L);
             bizModelQuery.setCascadeAreaIdList(list);
         }
         if (bizModelQuery.getAreaId() != null && bizModelQuery.getProv() != null && bizModelQuery.getCity() != null) {   // 市级区域
             list.add(bizModelQuery.getAreaId());
+            list.add(100000000000L);
             bizModelQuery.setCascadeAreaIdList(list);
         }
         if (bizModelQuery.getAreaId() != null && bizModelQuery.getAreaId() == 100000000000L){   // 全国区域
@@ -252,7 +254,9 @@ public class BizModelServiceImpl implements BizModelService {
         for (BizModelDO bizModelDO : bizModelDOList) {
             BizModelVO bizModelVO = new BizModelVO();
             BeanUtils.copyProperties(bizModelDO, bizModelVO);
-            bizModelVOList.add(bizModelVO);
+            if (!bizModelVOList.contains(bizModelVO)) {
+                bizModelVOList.add(bizModelVO);
+            }
         }
         return ResultBean.ofSuccess(bizModelVOList);
     }

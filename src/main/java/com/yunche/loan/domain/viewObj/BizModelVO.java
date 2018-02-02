@@ -36,6 +36,34 @@ public class BizModelVO {
         return financialProductDOList;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BizModelVO that = (BizModelVO) o;
+
+//        if (!bizId.equals(that.bizId)) return false;
+//        if (!title.equals(that.title)) return false;
+//        if (!scene.equals(that.scene)) return false;
+//        if (!custTarget.equals(that.custTarget)) return false;
+//        if (!carType.equals(that.carType)) return false;
+        return bizId.equals(that.bizId);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = bizId.hashCode();
+        result = 31 * result + title.hashCode();
+        result = 31 * result + description.hashCode();
+        result = 31 * result + scene.hashCode();
+        result = 31 * result + custTarget.hashCode();
+        result = 31 * result + carType.hashCode();
+        result = 31 * result + status.hashCode();
+        return result;
+    }
+
     public void setFinancialProductDOList(List<BizRelaFinancialProductVO> financialProductDOList) {
         this.financialProductDOList = financialProductDOList;
     }

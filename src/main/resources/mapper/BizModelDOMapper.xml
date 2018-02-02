@@ -80,8 +80,10 @@
     <select id="selectByCondition" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
             resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+          biz_model.*
         from biz_model
+        LEFT JOIN biz_model_rela_area_partners
+        ON biz_model.biz_id = biz_model_rela_area_partners.biz_id
         where 1=1
         <if test="title != null">
             AND
@@ -106,7 +108,7 @@
         </if>
         <if test="cascadeAreaIdList != null">
             AND
-            area_id IN
+            biz_model_rela_area_partners.area_id IN
             <foreach item="item" index="index" collection="cascadeAreaIdList"
                      open="(" separator="," close=")">
                 #{item}
