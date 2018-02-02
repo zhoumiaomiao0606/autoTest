@@ -73,7 +73,9 @@ public class BizModelServiceImpl implements BizModelService {
                 bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
             }
         }
-        bizModelRelaAreaPartnersService.batchInsert(bizModelRelaAreaPartnersDOList);
+        if (CollectionUtils.isNotEmpty(bizModelRelaAreaPartnersDOList)) {
+            bizModelRelaAreaPartnersService.batchInsert(bizModelRelaAreaPartnersDOList);
+        }
 
         List<BizRelaFinancialProductVO> financialProductDOList = bizModelVO.getFinancialProductDOList();
         List<BizModelRelaFinancialProdDO> bizModelRelaFinancialProdDOList = Lists.newArrayList();
@@ -83,7 +85,9 @@ public class BizModelServiceImpl implements BizModelService {
             bizModelRelaFinancialProdDO.setProdId(bizRelaFinancialProductVO.getProdId());
             bizModelRelaFinancialProdDOList.add(bizModelRelaFinancialProdDO);
         }
-        bizModelRelaFinancialProdService.batchInsert(bizModelRelaFinancialProdDOList);
+        if (CollectionUtils.isNotEmpty(bizModelRelaFinancialProdDOList)) {
+            bizModelRelaFinancialProdService.batchInsert(bizModelRelaFinancialProdDOList);
+        }
 
         return ResultBean.ofSuccess(null, "创建成功");
     }

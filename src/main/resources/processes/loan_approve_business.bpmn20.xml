@@ -56,15 +56,15 @@
     <sequenceFlow id="flow51" sourceRef="usertask_telephone_verify_review" targetRef="endevent4"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
     <endEvent id="endevent5" name="End"></endEvent>
-    <sequenceFlow id="flow53" sourceRef="exclusivegateway2" targetRef="endevent5">
+    <sequenceFlow id="flow53" name="弃单" sourceRef="exclusivegateway2" targetRef="endevent5">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${processAction == “CANCEL”}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow54" sourceRef="exclusivegateway2" targetRef="usertask_credit_apply">
+    <sequenceFlow id="flow54" name="驳回" sourceRef="exclusivegateway2" targetRef="usertask_credit_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${processAction == “REJECT”}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_busi_examine" name="业务审批"></userTask>
     <sequenceFlow id="flow55" sourceRef="usertask_busi_examine" targetRef="usertask_pay_approve"></sequenceFlow>
-    <sequenceFlow id="flow56" sourceRef="exclusivegateway2" targetRef="parallelgateway1">
+    <sequenceFlow id="flow56" name="通过" sourceRef="exclusivegateway2" targetRef="parallelgateway1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${processAction == “PASS”}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow57" sourceRef="parallelgateway3" targetRef="usertask_busi_examine"></sequenceFlow>
