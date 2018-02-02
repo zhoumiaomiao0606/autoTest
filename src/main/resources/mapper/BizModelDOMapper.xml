@@ -83,6 +83,10 @@
         <include refid="Base_Column_List"/>
         from biz_model
         where 1=1
+        <if test="title != null">
+            AND
+            title LIKE '%${title}%'
+        </if>
         <if test="scene != null">
             AND
             scene = #{scene,jdbcType=VARCHAR}

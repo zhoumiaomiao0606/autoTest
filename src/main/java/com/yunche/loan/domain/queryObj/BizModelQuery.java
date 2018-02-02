@@ -9,6 +9,8 @@ import java.util.List;
  */
 @Data
 public class BizModelQuery extends BaseQuery {
+    private String title;
+
     private String scene;
 
     private String custTarget;

@@ -53,11 +53,11 @@
     </if>
     <if test="categorySuperior != null">
       AND
-      category_superior = #{category_superior,jdbcType=VARCHAR}
+      category_superior = #{categorySuperior,jdbcType=VARCHAR}
     </if>
     <if test="categoryJunior != null">
       AND
-      category_junior = #{category_junior,jdbcType=VARCHAR}
+      category_junior = #{categoryJunior,jdbcType=VARCHAR}
     </if>
     <if test="rate != null">
       AND
