@@ -8,11 +8,13 @@ import com.yunche.loan.dao.mapper.InstProcessNodeDOMapper;
 import com.yunche.loan.domain.dataObj.InstLoanOrderDO;
 import com.yunche.loan.domain.dataObj.InstProcessNodeDO;
 import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
+import com.yunche.loan.domain.viewObj.InstLoanOrderVO;
 import com.yunche.loan.service.LoanProcessService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,11 +54,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     @Override
-    public ResultBean<Void> creditApply(CustBaseInfoVO custBaseInfoVO, String processId) {
+    public ResultBean<Void> creditApply(InstLoanOrderVO instLoanOrderVO, String processId) {
         Task task = taskService.createTaskQuery().processInstanceId(processId).singleResult();
 
         // 创建贷款订单
         InstLoanOrderDO instLoanOrderDO = new InstLoanOrderDO();
+        BeanUtils.copyProperties(instLoanOrderVO, instLoanOrderDO);
         instLoanOrderDO.setStatus(0);
         instLoanOrderDOMapper.insert(instLoanOrderDO);
         // 记录流程执行节点
@@ -75,8 +78,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         instProcessNodeDOMapper.insert(instProcessNodeDO);
 
         Map<String, Object> taskVariables = new HashMap<String, Object>();
-        taskVariables.put("custBaseInfoVO", custBaseInfoVO);
+        taskVariables.put("custBaseInfoVO", instLoanOrderVO.getCustBaseInfoVO());
         taskVariables.put("instLoanOrderDO", instLoanOrderDO);
+        taskVariables.put("amountGrade", instLoanOrderDO.getAmountGrade());
         taskService.complete(task.getId(), taskVariables);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.CREDIT_APPLY.getName() + "]任务处理成功");

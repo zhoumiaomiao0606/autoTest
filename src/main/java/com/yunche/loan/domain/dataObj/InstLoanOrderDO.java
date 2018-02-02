@@ -24,17 +24,77 @@ public class InstLoanOrderDO implements Serializable {
 
     private Long insuId;
 
+    private Long salesmanId;
+
+    private String salesmanName;
+
+    private Integer amountGrade;
+
+    private Long areaId;
+
     private String prov;
 
     private String city;
 
-    private Integer status;
-
     private String feature;
+
+    private Byte carType;
+
+    private String bank;
+
+    private Integer status;
 
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public Long getSalesmanId() {
+        return salesmanId;
+    }
+
+    public void setSalesmanId(Long salesmanId) {
+        this.salesmanId = salesmanId;
+    }
+
+    public String getSalesmanName() {
+        return salesmanName;
+    }
+
+    public void setSalesmanName(String salesmanName) {
+        this.salesmanName = salesmanName;
+    }
+
+    public Integer getAmountGrade() {
+        return amountGrade;
+    }
+
+    public void setAmountGrade(Integer amountGrade) {
+        this.amountGrade = amountGrade;
+    }
+
+    public Long getAreaId() {
+        return areaId;
+    }
+
+    public void setAreaId(Long areaId) {
+        this.areaId = areaId;
+    }
+
+    public Byte getCarType() {
+        return carType;
+    }
+
+    public void setCarType(Byte carType) {
+        this.carType = carType;
+    }
+
+    public String getBank() {
+        return bank;
+    }
+
+    public void setBank(String bank) {
+        this.bank = bank;
+    }
 
     public Long getOrderId() {
         return orderId;

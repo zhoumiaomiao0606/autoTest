@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
+import com.yunche.loan.domain.viewObj.InstLoanOrderVO;
 import com.yunche.loan.service.LoanProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +35,11 @@ public class LoanProcessController {
 
     /**
      * 合伙人[提交]征信申请表单时调用该服务
-     * @param custBaseInfoVO
+     * @param instLoanOrderVO
      */
     @PostMapping(value = "/creditApply", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> creditApply(@RequestBody CustBaseInfoVO custBaseInfoVO, @RequestParam("processId") String processId) {
-        return loanProcessService.creditApply(custBaseInfoVO, processId);
+    public ResultBean<Void> creditApply(@RequestBody InstLoanOrderVO instLoanOrderVO, @RequestParam("processId") String processId) {
+        return loanProcessService.creditApply(instLoanOrderVO, processId);
     }
 
     public ResultBean<Void> creditVerify(@RequestParam("processId") String processId, @RequestParam("action") String action) {

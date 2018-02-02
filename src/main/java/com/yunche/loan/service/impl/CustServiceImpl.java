@@ -6,18 +6,17 @@ import com.yunche.loan.dao.mapper.CustRelaPersonInfoDOMapper;
 import com.yunche.loan.domain.dataObj.CustBaseInfoDO;
 import com.yunche.loan.domain.dataObj.CustRelaPersonInfoDO;
 import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
-import com.yunche.loan.service.CreditService;
+import com.yunche.loan.service.CustService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by zhouguoliang on 2018/1/29.
  */
 @Service
-public class CreditServiceImpl implements CreditService {
+public class CustServiceImpl implements CustService {
     @Autowired
     private CustBaseInfoDOMapper custBaseInfoDOMapper;
     @Autowired
