@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.queryObj.BizModelQuery;
+import com.yunche.loan.domain.viewObj.BizModelRegionVO;
 import com.yunche.loan.domain.viewObj.BizModelVO;
 import com.yunche.loan.service.BizModelRelaAreaPartnersService;
 import com.yunche.loan.service.BizModelRelaFinancialProdService;
@@ -72,10 +73,22 @@ public class BizModelController {
         return bizModelRelaFinancialProdService.deleteRelaFinancialProd(bizId, prodId);
     }
 
+    @GetMapping(value = "/addRelaFinancialProd")
+    public ResultBean<Void> addRelaFinancialProd(@RequestParam("bizId") Long bizId, @RequestParam("prodId") Long prodId) {
+        logger.info(Arrays.asList("addRelaFinancialProd", JSON.toJSONString(bizId)).stream().collect(Collectors.joining("-")));
+        return bizModelRelaFinancialProdService.addRelaFinancialProd(bizId, prodId);
+    }
+
     @GetMapping(value = "/deleteRelaPartner")
     public ResultBean<Void> deleteRelaPartner(@RequestParam("bizId") Long bizId, @RequestParam("areaId") Long areaId, @RequestParam("groupId") Long groupId) {
         logger.info(Arrays.asList("deleteRelaPartner", JSON.toJSONString(bizId)).stream().collect(Collectors.joining("-")));
         return bizModelRelaAreaPartnersService.deleteRelaPartner(bizId, areaId, groupId);
+    }
+
+    @PostMapping(value = "/addRelaPartner")
+    public ResultBean<Void> addRelaPartner(@RequestBody BizModelRegionVO bizModelRegionVO) {
+        logger.info(Arrays.asList("create", JSON.toJSONString(bizModelRegionVO)).stream().collect(Collectors.joining("-")));
+        return bizModelRelaAreaPartnersService.addRelaPartner(bizModelRegionVO);
     }
 }
 

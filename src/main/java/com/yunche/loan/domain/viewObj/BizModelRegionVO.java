@@ -7,6 +7,8 @@ import java.util.List;
 
 public class BizModelRegionVO {
 
+    private Long bizId;
+
     private Long areaId;
 
     private String prov;
@@ -18,6 +20,14 @@ public class BizModelRegionVO {
     private Long cityId;
 
     private List<UserGroupVO> userGroupVOList = Lists.newArrayList();
+
+    public Long getBizId() {
+        return bizId;
+    }
+
+    public void setBizId(Long bizId) {
+        this.bizId = bizId;
+    }
 
     public Long getProvId() {
         return provId;

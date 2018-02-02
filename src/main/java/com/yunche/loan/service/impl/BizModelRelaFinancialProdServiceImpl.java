@@ -72,6 +72,17 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     }
 
     @Override
+    public ResultBean<Void> addRelaFinancialProd(Long bizId, Long prodId) {
+        Preconditions.checkArgument(bizId != null && prodId != null, "prodId");
+        BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO = new BizModelRelaFinancialProdDO();
+        bizModelRelaFinancialProdDO.setBizId(bizId);
+        bizModelRelaFinancialProdDO.setProdId(prodId);
+        int count = bizModelRelaFinancialProdDOMapper.insert(bizModelRelaFinancialProdDO);
+//        Preconditions.checkArgument(count > 1, "删除失败");
+        return ResultBean.ofSuccess(null, "创建成功");
+    }
+
+    @Override
     public ResultBean<List<BizModelRelaFinancialProdDO>> getById(Long bizId) {
         Preconditions.checkNotNull(bizId, "bizId");
 

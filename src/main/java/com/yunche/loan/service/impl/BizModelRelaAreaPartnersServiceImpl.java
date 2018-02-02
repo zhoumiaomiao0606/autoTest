@@ -1,12 +1,16 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.BizAreaRelaAreaDOMapper;
 import com.yunche.loan.dao.mapper.BizModelRelaAreaPartnersDOMapper;
 import com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
+import com.yunche.loan.domain.viewObj.BizModelRegionVO;
+import com.yunche.loan.domain.viewObj.BizModelVO;
 import com.yunche.loan.domain.viewObj.FinancialProductVO;
+import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.BizModelRelaAreaPartnersService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +75,28 @@ public class BizModelRelaAreaPartnersServiceImpl implements BizModelRelaAreaPart
         int count = bizModelRelaAreaPartnersDOMapper.deleteByPrimaryKey(bizId, areaId, groupId);
 //        Preconditions.checkArgument(count > 1, "删除失败");
         return ResultBean.ofSuccess(null, "删除成功");
+    }
+
+    @Override
+    public ResultBean<Void> addRelaPartner(BizModelRegionVO bizModelRegionVO) {
+        if (CollectionUtils.isNotEmpty(bizModelRegionVO.getUserGroupVOList())) {
+            List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = Lists.newArrayList();
+            for (UserGroupVO userGroupVO : bizModelRegionVO.getUserGroupVOList()) {
+                BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
+                bizModelRelaAreaPartnersDO.setBizId(bizModelRegionVO.getBizId());
+                bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
+                bizModelRelaAreaPartnersDO.setGroupId(userGroupVO.getId());
+                bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
+            }
+            batchInsert(bizModelRelaAreaPartnersDOList);
+        } else {
+            BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
+            bizModelRelaAreaPartnersDO.setBizId(bizModelRegionVO.getBizId());
+            bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
+            bizModelRelaAreaPartnersDO.setGroupId(0L);
+            insert(bizModelRelaAreaPartnersDO);
+        }
+        return ResultBean.ofSuccess(null, "添加成功");
     }
 
     @Override

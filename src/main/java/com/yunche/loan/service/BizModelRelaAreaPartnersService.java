@@ -2,6 +2,8 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO;
+import com.yunche.loan.domain.viewObj.BizModelRegionVO;
+import com.yunche.loan.domain.viewObj.BizModelVO;
 
 import java.util.List;
 
@@ -21,6 +23,8 @@ public interface BizModelRelaAreaPartnersService {
     ResultBean<Void> delete(Long bizId);
 
     ResultBean<Void> deleteRelaPartner(Long bizId, Long areaId, Long groupId);
+
+    ResultBean<Void> addRelaPartner(BizModelRegionVO bizModelRegionVO);
 
     ResultBean<List<BizModelRelaAreaPartnersDO>> getById(Long bizId);
 
