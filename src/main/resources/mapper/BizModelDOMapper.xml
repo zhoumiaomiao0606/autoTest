@@ -93,7 +93,12 @@
         </if>
         <if test="carType != null">
             AND
-            car_type = #{carType,jdbcType=TINYINT}
+            <if test="carType == 2">
+                car_type IN (0, 1, 2)
+            </if>
+            <if test="carType != 2">
+                car_type = #{carType,jdbcType=TINYINT}
+            </if>
         </if>
         <if test="cascadeAreaIdList != null">
             AND

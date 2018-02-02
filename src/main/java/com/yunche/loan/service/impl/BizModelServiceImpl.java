@@ -40,6 +40,9 @@ public class BizModelServiceImpl implements BizModelService {
     @Autowired
     private FinancialProductService financialProductService;
 
+    @Autowired
+    private UserGroupService userGroupService;
+
     @Override
     public ResultBean<Void> insert(BizModelVO bizModelVO) {
         Preconditions.checkArgument(bizModelVO != null, "bizModelVO");
@@ -184,12 +187,14 @@ public class BizModelServiceImpl implements BizModelService {
                 }
 
                 List<Long> parterGroupIdList = areaWithPartnerMap.get(baseAreaVO.getAreaId());
-                List<UserGroupVO> userGroupVOList = Lists.newArrayList();
-                for (Long groupId : parterGroupIdList) {
-                    UserGroupVO userGroupVO = new UserGroupVO();
-                    userGroupVO.setId(groupId);
-                    userGroupVOList.add(userGroupVO);
-                }
+//                List<UserGroupVO> userGroupVOList = Lists.newArrayList();
+//                for (Long groupId : parterGroupIdList) {
+//                    UserGroupVO userGroupVO = new UserGroupVO();
+//                    userGroupVO.setId(groupId);
+////                    userGroupService.
+//                    userGroupVOList.add(userGroupVO);
+//                }
+                List<UserGroupVO> userGroupVOList = userGroupService.batchGetById(parterGroupIdList).getData();
                 bizModelRegionVO.setUserGroupVOList(userGroupVOList);
                 bizModelRegionVOList.add(bizModelRegionVO);
             }

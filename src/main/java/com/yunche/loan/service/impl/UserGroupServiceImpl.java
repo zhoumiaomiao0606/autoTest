@@ -103,6 +103,26 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
+    public ResultBean<List<UserGroupVO>> batchGetById(List<Long> idList) {
+        Preconditions.checkNotNull(idList, "id不能为空");
+
+        List<UserGroupDO> userGroupDOList = userGroupDOMapper.batchSelectByPrimaryKey(idList, VALID_STATUS);
+        Preconditions.checkNotNull(userGroupDOList, "id有误，数据不存在");
+
+        List<UserGroupVO> userGroupVOList = Lists.newArrayList();
+        for (UserGroupDO userGroupDO : userGroupDOList) {
+            UserGroupVO userGroupVO = new UserGroupVO();
+            BeanUtils.copyProperties(userGroupDO, userGroupVO);
+
+            fillDepartment(userGroupDO.getDepartmentId(), userGroupVO);
+            fillArea(userGroupVO);
+            userGroupVOList.add(userGroupVO);
+        }
+
+        return ResultBean.ofSuccess(userGroupVOList);
+    }
+
+    @Override
     public ResultBean<List<UserGroupVO>> query(UserGroupQuery query) {
         int totalNum = userGroupDOMapper.count(query);
         if (totalNum < 1) {

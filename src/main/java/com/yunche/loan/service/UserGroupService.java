@@ -24,6 +24,8 @@ public interface UserGroupService {
 
     ResultBean<UserGroupVO> getById(Long id);
 
+    ResultBean<List<UserGroupVO>> batchGetById(List<Long> idList);
+
     ResultBean<List<UserGroupVO>> query(UserGroupQuery query);
 
     ResultBean<List<AuthVO>> listAuth(BaseQuery query);

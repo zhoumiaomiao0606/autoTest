@@ -18,6 +18,8 @@ public interface UserGroupDOMapper {
 
     UserGroupDO selectByPrimaryKey(@Param("id") Long id, @Param("status") Byte status);
 
+    List<UserGroupDO> batchSelectByPrimaryKey(@Param("idList") List<Long> idList, @Param("status") Byte status);
+
     int updateByPrimaryKeySelective(UserGroupDO record);
 
     int updateByPrimaryKeyWithBLOBs(UserGroupDO record);
