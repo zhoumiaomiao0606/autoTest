@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.FinancialProductDOMapper;
+import com.yunche.loan.domain.dataObj.BizModelDO;
 import com.yunche.loan.domain.queryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
 import com.yunche.loan.domain.viewObj.AreaVO;
@@ -61,9 +62,37 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     @Override
     public ResultBean<Void> delete(Long prodId) {
         Preconditions.checkArgument(prodId != null, "prodId");
-        int count = financialProductDOMapper.deleteByPrimaryKey(prodId);
-//        Preconditions.checkArgument(count > 1, "删除失败");
+
+        FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
+        Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
+
+        financialProductDO.setStatus(2);
+        long count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
         return ResultBean.ofSuccess(null, "删除成功");
+    }
+
+    @Override
+    public ResultBean<Void> disable(Long prodId) {
+        Preconditions.checkArgument(prodId != null, "prodId");
+
+        FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
+        Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
+
+        financialProductDO.setStatus(1);
+        long count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
+        return ResultBean.ofSuccess(null, "停用成功");
+    }
+
+    @Override
+    public ResultBean<Void> enable(Long prodId) {
+        Preconditions.checkArgument(prodId != null, "prodId");
+
+        FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
+        Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
+
+        financialProductDO.setStatus(0);
+        long count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
+        return ResultBean.ofSuccess(null, "启用成功");
     }
 
     @Override

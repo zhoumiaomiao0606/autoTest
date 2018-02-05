@@ -20,6 +20,10 @@ public interface FinancialProductService {
 
     ResultBean<Void> delete(Long prodId);
 
+    ResultBean<Void> disable(Long prodId);
+
+    ResultBean<Void> enable(Long prodId);
+
     ResultBean<FinancialProductVO> getById(Long prodId);
 
     ResultBean<List<FinancialProductVO>> getByCondition(FinancialQuery financialQuery);

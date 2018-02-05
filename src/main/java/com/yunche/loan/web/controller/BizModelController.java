@@ -57,8 +57,14 @@ public class BizModelController {
 
     @GetMapping(value = "/disable")
     public ResultBean<Void> disable(@RequestParam("id") Long bizId) {
-        logger.info(Arrays.asList("delete", JSON.toJSONString(bizId)).stream().collect(Collectors.joining("-")));
-        return bizModelService.delete(bizId);
+        logger.info(Arrays.asList("disable", JSON.toJSONString(bizId)).stream().collect(Collectors.joining("-")));
+        return bizModelService.disable(bizId);
+    }
+
+    @GetMapping(value = "/enable")
+    public ResultBean<Void> enable(@RequestParam("id") Long bizId) {
+        logger.info(Arrays.asList("enable", JSON.toJSONString(bizId)).stream().collect(Collectors.joining("-")));
+        return bizModelService.enable(bizId);
     }
 
     @GetMapping("/getById")

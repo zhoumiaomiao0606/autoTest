@@ -19,6 +19,8 @@ public interface BizModelService {
 
     ResultBean<Void> disable(Long bizId);
 
+    ResultBean<Void> enable(Long bizId);
+
     ResultBean<BizModelVO> getById(Long bizId);
 
     ResultBean<List<BizModelVO>> getByCondition(BizModelQuery bizModelQuery);

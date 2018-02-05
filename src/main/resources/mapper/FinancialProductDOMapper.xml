@@ -261,9 +261,7 @@
       <if test="gmtCreate != null">
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       </if>
-      <if test="gmtModify != null">
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
+        gmt_modify = now(),
       <if test="feature != null">
         feature = #{feature,jdbcType=VARCHAR},
       </if>
@@ -290,7 +288,7 @@
       prov = #{prov,jdbcType=VARCHAR},
       city = #{city,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      gmt_modify = now(),
       feature = #{feature,jdbcType=VARCHAR},
       status = #{status,jdbcType=TINYINT}
     where prod_id = #{prodId,jdbcType=BIGINT}

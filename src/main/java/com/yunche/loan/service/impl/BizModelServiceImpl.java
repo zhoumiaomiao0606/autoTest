@@ -144,7 +144,7 @@ public class BizModelServiceImpl implements BizModelService {
         BizModelDO bizModelDO = bizModelDOMapper.selectByPrimaryKey(bizId);
         Preconditions.checkNotNull(bizModelDO, "bizId，数据不存在.");
 
-        bizModelDO.setStatus(1);
+        bizModelDO.setStatus(2);
         long count = bizModelDOMapper.updateByPrimaryKeySelective(bizModelDO);
         return ResultBean.ofSuccess(null, "删除成功");
     }
@@ -158,7 +158,19 @@ public class BizModelServiceImpl implements BizModelService {
 
         bizModelDO.setStatus(1);
         long count = bizModelDOMapper.updateByPrimaryKeySelective(bizModelDO);
-        return ResultBean.ofSuccess(null, "删除成功");
+        return ResultBean.ofSuccess(null, "停用成功");
+    }
+
+    @Override
+    public ResultBean<Void> enable(Long bizId) {
+        Preconditions.checkNotNull(bizId, "bizId");
+
+        BizModelDO bizModelDO = bizModelDOMapper.selectByPrimaryKey(bizId);
+        Preconditions.checkNotNull(bizModelDO, "bizId，数据不存在.");
+
+        bizModelDO.setStatus(0);
+        long count = bizModelDOMapper.updateByPrimaryKeySelective(bizModelDO);
+        return ResultBean.ofSuccess(null, "启用成功");
     }
 
     @Override

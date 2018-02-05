@@ -137,9 +137,7 @@
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
-            <if test="gmtModify != null">
-                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-            </if>
+                gmt_modify = now(),
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
@@ -156,7 +154,7 @@
       car_type = #{carType,jdbcType=TINYINT},
       status = #{status,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      gmt_modify = now(),
       feature = #{feature,jdbcType=VARCHAR}
     where biz_id = #{bizId,jdbcType=BIGINT}
   </update>

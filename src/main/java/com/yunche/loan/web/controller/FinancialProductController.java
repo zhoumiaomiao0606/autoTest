@@ -47,6 +47,18 @@ public class FinancialProductController {
         return financialProductService.delete(prodId);
     }
 
+    @GetMapping(value = "/disable")
+    public ResultBean<Void> disable(@RequestParam("id") Long prodId) {
+        logger.info(Arrays.asList("disable", JSON.toJSONString(prodId)).stream().collect(Collectors.joining("-")));
+        return financialProductService.disable(prodId);
+    }
+
+    @GetMapping(value = "/enable")
+    public ResultBean<Void> enable(@RequestParam("id") Long prodId) {
+        logger.info(Arrays.asList("enable", JSON.toJSONString(prodId)).stream().collect(Collectors.joining("-")));
+        return financialProductService.enable(prodId);
+    }
+
     @GetMapping("/getById")
     public ResultBean<FinancialProductVO> getById(@RequestParam("id") Long prodId) {
         logger.info(Arrays.asList("getById", JSON.toJSONString(prodId)).stream().collect(Collectors.joining("-")));
