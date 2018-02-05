@@ -13,4 +13,8 @@ public class BaseConst {
      * 无效
      */
     public static final Byte INVALID_STATUS = 1;
+    /**
+     * 已删除
+     */
+    public static final Byte DEL_STATUS = 2;
 }

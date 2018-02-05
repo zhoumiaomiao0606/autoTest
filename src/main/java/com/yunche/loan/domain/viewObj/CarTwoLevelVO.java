@@ -27,6 +27,8 @@ public class CarTwoLevelVO {
 
         private String logo;
 
+        private Byte status;
+
         private Date gmtCreate;
 
         private Date gmtModify;
@@ -86,6 +88,8 @@ public class CarTwoLevelVO {
          * 生产类型（1:国产;2:合资）
          */
         private Byte productionType;
+
+        private Byte status;
 
         private Date gmtCreate;
 

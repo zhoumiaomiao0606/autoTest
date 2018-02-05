@@ -81,7 +81,7 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
     public ResultBean<InsuranceCompanyVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        InsuranceCompanyDO insuranceCompanyDO = insuranceCompanyDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        InsuranceCompanyDO insuranceCompanyDO = insuranceCompanyDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(insuranceCompanyDO, "id有误，数据不存在");
 
         InsuranceCompanyVO insuranceCompanyVO = new InsuranceCompanyVO();

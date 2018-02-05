@@ -62,7 +62,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
         Preconditions.checkNotNull(paddingCompanyDO.getId(), "id不能为空");
 
         paddingCompanyDO.setGmtModify(new Date());
-        int count = paddingCompanyDOMapper.updateByPrimaryKeyWithBLOBs(paddingCompanyDO);
+        int count = paddingCompanyDOMapper.updateByPrimaryKeySelective(paddingCompanyDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
         return ResultBean.ofSuccess(null, "编辑成功");
     }
@@ -80,7 +80,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     public ResultBean<PaddingCompanyVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        PaddingCompanyDO paddingCompanyDO = paddingCompanyDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        PaddingCompanyDO paddingCompanyDO = paddingCompanyDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(paddingCompanyDO, "id有误，数据不存在");
 
         PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();

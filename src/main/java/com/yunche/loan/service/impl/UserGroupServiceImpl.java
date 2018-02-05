@@ -40,11 +40,12 @@ public class UserGroupServiceImpl implements UserGroupService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
     @Autowired
-    private UserGroupRelaAreaDOMapper userGroupRelaAreaDOMapper;
+    private AuthDOMapper authDOMapper;
     @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
     @Autowired
     private UserGroupRelaAreaAuthDOMapper userGroupRelaAreaAuthDOMapper;
+
 
     @Override
     public ResultBean<Long> create(UserGroupParam userGroupParam) {
@@ -55,10 +56,10 @@ public class UserGroupServiceImpl implements UserGroupService {
         Long id = insertAndGetId(userGroupParam);
 
         // 绑定权限列表
-        bindAuth(id, userGroupParam.getAreaId(), userGroupParam.getAuthIdList());
+        doBindAuth(id, userGroupParam.getAreaId(), userGroupParam.getAuthIdList(), userGroupParam.getType());
 
         // 绑定员工列表
-        bindEmployee(id, userGroupParam.getEmployeeIdList());
+        doBindEmployee(id, userGroupParam.getEmployeeIdList());
 
         return ResultBean.ofSuccess(id, "创建成功");
     }
@@ -90,7 +91,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     public ResultBean<UserGroupVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        UserGroupDO userGroupDO = userGroupDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        UserGroupDO userGroupDO = userGroupDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(userGroupDO, "id有误，数据不存在");
 
         UserGroupVO userGroupVO = new UserGroupVO();
@@ -124,30 +125,62 @@ public class UserGroupServiceImpl implements UserGroupService {
 
     @Override
     public ResultBean<List<UserGroupVO>> query(UserGroupQuery query) {
+        // 根据departmentId填充所有子部门ID(含自身)
+        getAndSetAllChildDepartmentIdList(query);
+
         int totalNum = userGroupDOMapper.count(query);
-        if (totalNum < 1) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        if (totalNum > 0) {
+
+            List<UserGroupDO> userGroupDOS = userGroupDOMapper.query(query);
+            if (!CollectionUtils.isEmpty(userGroupDOS)) {
+
+                List<UserGroupVO> departmentVOS = userGroupDOS.stream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+                            UserGroupVO userGroupVO = new UserGroupVO();
+                            BeanUtils.copyProperties(e, userGroupVO);
+
+                            fillDepartment(e.getDepartmentId(), userGroupVO);
+                            fillArea(userGroupVO);
+
+                            return userGroupVO;
+                        })
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(departmentVOS, totalNum, query.getPageIndex(), query.getPageSize());
+            }
         }
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
+    }
 
-        List<UserGroupDO> userGroupDOS = userGroupDOMapper.query(query);
-        if (CollectionUtils.isEmpty(userGroupDOS)) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
-        }
+//    private void getAndSetDepartmentIdList(UserGroupQuery query) {
+//        // getAllDepartmentId
+//        List<Long> allDepartmentId = getAllChildDepartmentId(query.getDepartmentId());
+//        allDepartmentId.removeAll(Collections.singleton(null));
+//        // set
+//        query.setDepartmentIdList(allDepartmentId);
+//    }
 
-        List<UserGroupVO> departmentVOS = userGroupDOS.stream()
-                .filter(Objects::nonNull)
-                .map(e -> {
-                    UserGroupVO userGroupVO = new UserGroupVO();
-                    BeanUtils.copyProperties(e, userGroupVO);
+    /**
+     * TODO 根据departmentId填充所有子部门ID(含自身)
+     *
+     * @param query
+     * @return
+     */
+    private List<Long> getAndSetAllChildDepartmentIdList(UserGroupQuery query) {
+        // getAll
+//        List<MenuDO> menuDOS = departmentDOMapper.getAll(VALID_STATUS);
+//
+//        // parentId - DOS
+//        Map<Long, List<MenuDO>> parentIdDOMap = getParentIdDOSMapping(menuDOS);
+//
+//        // 递归填充子菜单ID
+//        List<Long> childMenuIdList = Lists.newArrayList(parentMenuId);
+//        fillAllChildMenuId(parentMenuId, childMenuIdList, parentIdDOMap);
+//
+//        return childMenuIdList;
 
-                    fillDepartment(e.getDepartmentId(), userGroupVO);
-                    fillArea(userGroupVO);
-
-                    return userGroupVO;
-                })
-                .collect(Collectors.toList());
-
-        return ResultBean.ofSuccess(departmentVOS, totalNum, query.getPageIndex(), query.getPageSize());
+        return null;
     }
 
     @Override
@@ -157,35 +190,6 @@ public class UserGroupServiceImpl implements UserGroupService {
 
         return ResultBean.ofSuccess(Collections.EMPTY_LIST);
     }
-
-//    @Override
-//    public ResultBean<List<EmployeeVO>> listBindEmployee(EmployeeQuery query) {
-//        Preconditions.checkNotNull(query.getUserGroupId(), "用户组ID不能为空");
-//
-//        int totalNum = employeeDOMapper.countListEmployeeByUserGroupId(query);
-//        if (totalNum > 0) {
-//
-//            List<EmployeeDO> employeeDOS = employeeDOMapper.listEmployeeByUserGroupId(query);
-//            if (!CollectionUtils.isEmpty(employeeDOS)) {
-//                List<EmployeeVO> employeeVOS = employeeDOS.stream()
-//                        .filter(Objects::nonNull)
-//                        .map(e -> {
-//                            EmployeeVO employeeVO = new EmployeeVO();
-//                            BeanUtils.copyProperties(e, employeeVO);
-//
-//                            fillDepartment(e.getDepartmentId(), employeeVO);
-//                            fillLeader(e.getParentId(), employeeVO);
-//
-//                            return employeeVO;
-//                        })
-//                        .filter(Objects::nonNull)
-//                        .sorted(Comparator.comparing(EmployeeVO::getId))
-//                        .collect(Collectors.toList());
-//                return ResultBean.ofSuccess(employeeVOS, totalNum, query.getPageIndex(), query.getPageSize());
-//            }
-//        }
-//        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
-//    }
 
     @Override
     public ResultBean<List<EmployeeVO>> listBindEmployee(EmployeeQuery query) {
@@ -509,68 +513,21 @@ public class UserGroupServiceImpl implements UserGroupService {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeIds), "员工ID列表不能为空");
 
-        // 去重
-        List<Long> employeeIdList = distinctEmployeeIds(id, employeeIds);
+        // convert
+        List<Long> employeeIdList = Arrays.asList(employeeIds.split(",")).parallelStream()
+                .filter(Objects::nonNull)
+                .distinct()
+                .map(e -> {
+                    Long employeeId = Long.valueOf(e);
+                    return employeeId;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-        // 绑定
-        if (!CollectionUtils.isEmpty(employeeIdList)) {
-            List<EmployeeRelaUserGroupDO> employeeRelaUserGroupDOS = employeeIdList.parallelStream()
-                    .map(employeeId -> {
-                        EmployeeRelaUserGroupDO employeeRelaUserGroupDO = new EmployeeRelaUserGroupDO();
-                        employeeRelaUserGroupDO.setUserGroupId(id);
-                        employeeRelaUserGroupDO.setEmployeeId(employeeId);
-                        employeeRelaUserGroupDO.setGmtCreate(new Date());
-                        employeeRelaUserGroupDO.setGmtModify(new Date());
-
-                        return employeeRelaUserGroupDO;
-                    })
-                    .collect(Collectors.toList());
-
-            int count = employeeRelaUserGroupDOMapper.batchInsert(employeeRelaUserGroupDOS);
-            Preconditions.checkArgument(count == employeeRelaUserGroupDOS.size(), "关联失败");
-        }
+        // 执行绑定
+        doBindEmployee(id, employeeIdList);
 
         return ResultBean.ofSuccess(null, "关联成功");
-    }
-
-    /**
-     * 去重
-     *
-     * @param userGroupId
-     * @param employeeIds
-     * @return
-     */
-    private List<Long> distinctEmployeeIds(Long userGroupId, String employeeIds) {
-        List<Long> existEmployeeIdList = employeeRelaUserGroupDOMapper.getEmployeeIdListByUserGroupId(userGroupId);
-        List<Long> employeeIdList = null;
-        if (!CollectionUtils.isEmpty(existEmployeeIdList)) {
-
-            employeeIdList = Arrays.asList(employeeIds.split(",")).parallelStream()
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .map(e -> {
-                        Long employeeId = Long.valueOf(e);
-                        if (!existEmployeeIdList.contains(employeeId)) {
-                            return employeeId;
-                        }
-                        return null;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-
-        } else {
-            employeeIdList = Arrays.asList(employeeIds.split(",")).parallelStream()
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .map(e -> {
-                        Long employeeId = Long.valueOf(e);
-                        return employeeId;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        }
-
-        return employeeIdList;
     }
 
     @Override
@@ -592,10 +549,48 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
-    public ResultBean<Void> bindAuth(Long id, Long areaId, String authIds) {
+    public ResultBean<Void> editAuth(Long id, Long areaId, String authIds, Byte type) {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
-        Preconditions.checkNotNull(areaId, "限定权限使用的业务区域ID不能为空");
+        Preconditions.checkNotNull(areaId, "限定权限使用的业务区域范围不能为空");
+        Preconditions.checkNotNull(type, "权限类型不能为空");
+
+        // 删除所有旧有的
+        delAllOldAuth(id, type);
+
+        if (StringUtils.isNotBlank(authIds)) {
+            // convert
+            List<Long> authIdList = Arrays.asList(authIds.split(",")).stream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
+                        return Long.valueOf(e);
+                    })
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            // 执行绑定
+            doBindAuth(id, areaId, authIdList, type);
+        }
+
+        return ResultBean.ofSuccess(null, "编辑权限成功");
+    }
+
+    /**
+     * 删除所有
+     *
+     * @param userGroupId
+     * @param type
+     */
+    private void delAllOldAuth(Long userGroupId, Byte type) {
+        // 删除所有
+        userGroupRelaAreaAuthDOMapper.deleteAllByUserGroupIdAndType(userGroupId, type);
+    }
+
+    @Override
+    public ResultBean<Void> bindAuth(Long id, Long areaId, String authIds, Byte type) {
+        Preconditions.checkNotNull(id, "用户组ID不能为空");
+        Preconditions.checkNotNull(areaId, "限定权限使用的业务区域范围不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(authIds), "权限ID列表不能为空");
+        Preconditions.checkNotNull(type, "权限类型不能为空");
 
         // convert
         List<Long> authIdList = Arrays.asList(authIds.split(",")).stream()
@@ -607,7 +602,7 @@ public class UserGroupServiceImpl implements UserGroupService {
                 .collect(Collectors.toList());
 
         // insert new
-        bindAuth(id, areaId, authIdList);
+        doBindAuth(id, areaId, authIdList, type);
 
         // update old areaId
         updateRelaAuthArea(id, areaId);
@@ -616,9 +611,10 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
-    public ResultBean<Void> unbindAuth(Long id, String authIds) {
+    public ResultBean<Void> unbindAuth(Long id, String authIds, Byte type) {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(authIds), "权限ID列表不能为空");
+        Preconditions.checkNotNull(type, "权限类型不能为空");
 
         // delete
         Arrays.asList(authIds.split(",")).stream()
@@ -662,17 +658,37 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param userGroupId
      * @param areaId
      * @param authIdList
+     * @param type        权限类型  1:MENU; 2:PAGE; 3:OPERATION;
      */
-    private void bindAuth(Long userGroupId, Long areaId, List<Long> authIdList) {
+    private void doBindAuth(Long userGroupId, Long areaId, List<Long> authIdList, Byte type) {
         if (CollectionUtils.isEmpty(authIdList)) {
             return;
         }
+        Preconditions.checkNotNull(areaId, "限定权限使用的业务区域范围不能为空");
 
-        // 去重
-        distinctAuthIdList(userGroupId, authIdList);
+        // auth实体ID 去重
+        distinctAuthIdList(userGroupId, authIdList, type);
+
+        // convert  根据权限类型 将权限实体ID 映射到 AuthID
+        List<Long> trueAuthIdList = convertAuthEntityIdToAuthId(authIdList, type);
 
         // 执行绑定
-        execBindAuth(userGroupId, areaId, authIdList);
+        execBindAuth(userGroupId, areaId, trueAuthIdList);
+    }
+
+    /**
+     * 根据权限类型 将权限实体ID 映射到 AuthID
+     *
+     * @param authEntityIdList
+     * @param type             权限类型  1:MENU; 2:PAGE; 3:OPERATION;
+     * @return
+     */
+    private List<Long> convertAuthEntityIdToAuthId(List<Long> authEntityIdList, Byte type) {
+        if (!CollectionUtils.isEmpty(authEntityIdList)) {
+            List<Long> trueAuthIdList = authDOMapper.convertToAuthId(authEntityIdList, type);
+            return trueAuthIdList;
+        }
+        return null;
     }
 
     /**
@@ -693,33 +709,28 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     /**
-     * 权限ID去重
+     * 权限实体ID(source_id)去重
      *
      * @param userGroupId
-     * @param authIdList
+     * @param authEntityIdList
+     * @param type
      */
-    private void distinctAuthIdList(Long userGroupId, List<Long> authIdList) {
-        UserGroupRelaAreaAuthDOKey userGroupRelaAreaAuthDOKey = new UserGroupRelaAreaAuthDOKey();
-        userGroupRelaAreaAuthDOKey.setUserGroupId(userGroupId);
-        List<UserGroupRelaAreaAuthDO> existUserGroupRelaAreaAuthDOS = userGroupRelaAreaAuthDOMapper.query(userGroupRelaAreaAuthDOKey);
-        if (!CollectionUtils.isEmpty(existUserGroupRelaAreaAuthDOS)) {
-            List<Long> existAuthIdList = existUserGroupRelaAreaAuthDOS.parallelStream()
-                    .filter(e -> null != e && null != e.getAreaId())
-                    .map(e -> {
-                        return e.getAuthId();
-                    })
-                    .distinct()
-                    .collect(Collectors.toList());
+    private void distinctAuthIdList(Long userGroupId, List<Long> authEntityIdList, Byte type) {
+        // 已绑定权限实体ID列表
+        List<Long> hasBindAuthEntityIdList = userGroupRelaAreaAuthDOMapper.getHasBindAuthEntityIdListByUserGroupIdAndType(userGroupId, type);
+
+        // 去重
+        if (!CollectionUtils.isEmpty(hasBindAuthEntityIdList)) {
 
             List<Long> repeatTmp = Lists.newArrayList();
-            authIdList.parallelStream()
+            authEntityIdList.parallelStream()
                     .forEach(e -> {
-                        if (existAuthIdList.contains(e)) {
+                        if (hasBindAuthEntityIdList.contains(e)) {
                             repeatTmp.add(e);
                         }
                     });
 
-            authIdList.removeAll(repeatTmp);
+            authEntityIdList.removeAll(repeatTmp);
         }
     }
 
@@ -731,6 +742,9 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param authIdList
      */
     private void execBindAuth(Long userGroupId, Long areaId, List<Long> authIdList) {
+        if (CollectionUtils.isEmpty(authIdList)) {
+            return;
+        }
         List<UserGroupRelaAreaAuthDO> userGroupRelaAreaAuthDOS = authIdList.parallelStream()
                 .filter(Objects::nonNull)
                 .distinct()
@@ -759,7 +773,7 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param userGroupId
      * @param employeeIdList
      */
-    private void bindEmployee(Long userGroupId, List<Long> employeeIdList) {
+    private void doBindEmployee(Long userGroupId, List<Long> employeeIdList) {
         if (CollectionUtils.isEmpty(employeeIdList)) {
             return;
         }

@@ -24,6 +24,19 @@
         </if>
     </select>
 
+    <!--convertToAuthId-->
+    <select id="convertToAuthId" resultType="java.lang.Long">
+        SELECT DISTINCT(id)
+        FROM auth
+        WHERE source_id IN
+        <foreach collection="authEntityIdList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        <if test="type != null">
+            AND type = #{type}
+        </if>
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

@@ -53,7 +53,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     public ResultBean<List<BaseAreaVO>> getByIdList(List<Long> areaIdList) {
         Preconditions.checkNotNull(areaIdList, "areaIdList不能为空");
 
-        List<BaseAreaDO> baseAreaDOList = baseAreaDOMapper.selectByIdList(areaIdList, VALID_STATUS);
+        List<BaseAreaDO> baseAreaDOList = baseAreaDOMapper.selectByIdList(areaIdList, null);
         Preconditions.checkNotNull(baseAreaDOList, "areaId有误，数据不存在.");
 
         List<BaseAreaVO> baseAreaVOList = Lists.newArrayList();

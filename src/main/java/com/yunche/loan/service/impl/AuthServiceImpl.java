@@ -23,9 +23,6 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AuthConst.OPERATION;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.RelaConst.GET_ALL_AND_HAS_SELECTED_STATE;
-import static com.yunche.loan.config.constant.RelaConst.GET_ALL_HAS_BIND;
-import static com.yunche.loan.config.constant.RelaConst.GET_ALL_NOT_BIND;
 
 /**
  * @author liuzhe
@@ -63,7 +60,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResultBean<List<PageVO>> listOperation(AuthQuery query) {
-        Preconditions.checkNotNull(query.getUserGroupId(), "用户组ID不能为空");
         Preconditions.checkNotNull(query.getStatus(), "状态不能为空");
 
         // 根据menuId填充所有子menuId(含自身)
@@ -78,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
         // queryAll   operation ID列表
         List<Long> allOperationIdListByCondition = operationDOMapper.queryAllOperationIdList(query);
         // 已绑定    operations  ID列表
-        List<Long> hasBindOperationIdList = userGroupRelaAreaAuthDOMapper.getHasBindOperationIdListByUserGroupId(query.getUserGroupId(), OPERATION);
+        List<Long> hasBindOperationIdList = userGroupRelaAreaAuthDOMapper.getHasBindAuthEntityIdListByUserGroupIdAndType(query.getUserGroupId(), OPERATION);
 
         // 获取映射： page - operationDO列表
         Map<Long, List<OperationDO>> pageOperationListMap = getPageOperationListMapping(allOperationIdListByCondition, idOperationDOMap);
@@ -103,7 +99,7 @@ public class AuthServiceImpl implements AuthService {
         List<Long> allOperationIdListByCondition = operationDOMapper.queryAllOperationIdList(query);
 
         // 已绑定    operations  ID列表
-        List<Long> hasBindOperationIdList = userGroupRelaAreaAuthDOMapper.getHasBindOperationIdListByUserGroupId(query.getUserGroupId(), OPERATION);
+        List<Long> hasBindOperationIdList = userGroupRelaAreaAuthDOMapper.getHasBindAuthEntityIdListByUserGroupIdAndType(query.getUserGroupId(), OPERATION);
         List<Long> hasBindOperationIdListByCondition = allOperationIdListByCondition.parallelStream()
                 .distinct()
                 .filter(Objects::nonNull)
@@ -138,7 +134,7 @@ public class AuthServiceImpl implements AuthService {
         // getAll   operation ID列表
         List<Long> allOperationIdListByCondition = operationDOMapper.queryAllOperationIdList(query);
         // 已绑定    operations  ID列表
-        List<Long> hasBindOperationIdList = userGroupRelaAreaAuthDOMapper.getHasBindOperationIdListByUserGroupId(query.getUserGroupId(), OPERATION);
+        List<Long> hasBindOperationIdList = userGroupRelaAreaAuthDOMapper.getHasBindAuthEntityIdListByUserGroupIdAndType(query.getUserGroupId(), OPERATION);
         // 未绑定    operations  ID列表
         allOperationIdListByCondition.removeAll(hasBindOperationIdList);
         List<Long> unBindOperationIdListByCondition = allOperationIdListByCondition.parallelStream()
@@ -400,50 +396,6 @@ public class AuthServiceImpl implements AuthService {
                         // 递归填充子ID列表
                         fillAllChildMenuId(child.getId(), childMenuIdList, parentIdDOMap);
                     });
-        }
-    }
-
-    /**
-     * @param operations
-     * @param pageVO
-     * @param type                      1:查询所有(带是否已选中状态); 2:查询所有(不带是否已选中状态); 3:...; 4...;
-     * @param allHasAuthOperationIdList
-     */
-    private void fillOperations(List<OperationDO> operations, PageVO pageVO, Byte type, List<Long> allHasAuthOperationIdList) {
-        if (!CollectionUtils.isEmpty(operations)) {
-
-            List<PageVO.Operation> operationList = operations.stream()
-                    .filter(Objects::nonNull)
-                    .map(o -> {
-
-                        PageVO.Operation operation = new PageVO.Operation();
-                        BeanUtils.copyProperties(o, operation);
-
-                        // 检验并设置是否已授权
-                        checkAndSetHasAuth(operation, allHasAuthOperationIdList);
-
-                        // 仅仅获取已选中
-                        if (GET_ALL_HAS_BIND.equals(type)) {
-                            if (operation.getSelected()) {
-                                return operation;
-                            }
-                            // 仅仅获取未选中
-                        } else if (GET_ALL_NOT_BIND.equals(type)) {
-                            if (!operation.getSelected()) {
-                                return operation;
-                            }
-                            // 不管有无选中都返回
-                        } else if (GET_ALL_AND_HAS_SELECTED_STATE.equals(type)) {
-                            return operation;
-                        }
-
-                        return null;
-                    })
-                    .filter(Objects::nonNull)
-                    .sorted(Comparator.comparing(PageVO.Operation::getId))
-                    .collect(Collectors.toList());
-
-            pageVO.setOperations(operationList);
         }
     }
 

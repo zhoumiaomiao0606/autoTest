@@ -18,6 +18,8 @@ public class CarBrandVO {
 
     private String logo;
 
+    private Byte status;
+
     private Date gmtCreate;
 
     private Date gmtModify;

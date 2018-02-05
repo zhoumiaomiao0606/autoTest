@@ -61,7 +61,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Long id = insertAndGetId(departmentParam);
 
         // 绑定用户组(角色)列表
-        bindUserGroup(id, departmentParam.getUserGroupIdList());
+        doBindUserGroup(id, departmentParam.getUserGroupIdList());
 
         return ResultBean.ofSuccess(id, "创建成功");
     }
@@ -80,6 +80,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public ResultBean<Void> update(DepartmentDO departmentDO) {
         Preconditions.checkNotNull(departmentDO.getId(), "id不能为空");
+        Preconditions.checkArgument(!departmentDO.getId().equals(departmentDO.getParentId()), "上级部门不能为自身");
 
         // 校验是否是删除操作
         checkIfDel(departmentDO);
@@ -105,7 +106,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public ResultBean<DepartmentVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(departmentDO, "id有误，数据不存在");
 
         DepartmentVO departmentVO = new DepartmentVO();
@@ -188,12 +189,15 @@ public class DepartmentServiceImpl implements DepartmentService {
         Preconditions.checkNotNull(id, "部门ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(userGroupIds), "用户组ID不能为空");
 
+        // convert
         List<Long> userGroupIdList = Arrays.asList(userGroupIds.split(",")).stream()
                 .map(e -> {
                     return Long.valueOf(e);
                 })
                 .collect(Collectors.toList());
-        bindUserGroup(id, userGroupIdList);
+
+        // 绑定用户组
+        doBindUserGroup(id, userGroupIdList);
 
         return ResultBean.ofSuccess(null, "关联成功");
     }
@@ -347,7 +351,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @param departmentId
      * @param userGroupIdList
      */
-    private void bindUserGroup(Long departmentId, List<Long> userGroupIdList) {
+    private void doBindUserGroup(Long departmentId, List<Long> userGroupIdList) {
         if (CollectionUtils.isEmpty(userGroupIdList)) {
             return;
         }

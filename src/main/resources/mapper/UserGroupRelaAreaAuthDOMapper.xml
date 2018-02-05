@@ -32,9 +32,9 @@
         </where>
     </select>
 
-    <!--getHasBindOperationIdListByUserGroupId-->
-    <select id="getHasBindOperationIdListByUserGroupId" resultType="java.lang.Long">
-        SELECT DISTINCT(a.auth_id)
+    <!--getHasBindAuthEntityIdListByUserGroupIdAndType-->
+    <select id="getHasBindAuthEntityIdListByUserGroupIdAndType" resultType="java.lang.Long">
+        SELECT DISTINCT(b.source_id)
         FROM user_group_rela_area_auth AS a,
         auth AS b
         WHERE a.auth_id = b.id
@@ -53,6 +53,20 @@
         FROM user_group_rela_area_auth
         WHERE user_group_id = #{userGroupId,jdbcType=BIGINT}
     </select>
+
+    <!--deleteAllByAuthType-->
+    <delete id="deleteAllByUserGroupIdAndType">
+        DELETE a
+        FROM user_group_rela_area_auth AS a ,
+        auth AS b
+        WHERE a.auth_id = b.id
+        <if test="userGroupId != null">
+            AND a.user_group_id = #{userGroupId}
+        </if>
+        <if test="type != null">
+            AND b.type = #{type}
+        </if>
+    </delete>
 
     <!--updateByUserGroupIdSelective-->
     <update id="updateByUserGroupIdSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO">

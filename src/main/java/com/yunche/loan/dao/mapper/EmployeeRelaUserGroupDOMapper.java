@@ -4,6 +4,7 @@ import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.EmployeeRelaUserGroupDO;
 import com.yunche.loan.domain.dataObj.EmployeeRelaUserGroupDOKey;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 

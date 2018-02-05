@@ -38,7 +38,9 @@ public interface UserGroupService {
 
     ResultBean<Void> unbindEmployee(Long id, String employeeIds);
 
-    ResultBean<Void> bindAuth(Long id, Long areaId, String authIds);
+    ResultBean<Void> editAuth(Long id, Long areaId, String authIds, Byte type);
 
-    ResultBean<Void> unbindAuth(Long id, String authIds);
+    ResultBean<Void> bindAuth(Long id, Long areaId, String authIds, Byte type);
+
+    ResultBean<Void> unbindAuth(Long id, String authIds, Byte type);
 }

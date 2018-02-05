@@ -80,7 +80,7 @@
     <select id="selectByCondition" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
             resultMap="BaseResultMap">
         select
-          biz_model.*
+        biz_model.*
         from biz_model
         LEFT JOIN biz_model_rela_area_partners
         ON biz_model.biz_id = biz_model_rela_area_partners.biz_id
@@ -113,6 +113,9 @@
                      open="(" separator="," close=")">
                 #{item}
             </foreach>
+        </if>
+        <if test="status != null">
+            AND status = #{status}
         </if>
     </select>
 

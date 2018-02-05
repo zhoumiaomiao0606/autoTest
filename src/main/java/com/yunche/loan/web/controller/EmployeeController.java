@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +38,7 @@ public class EmployeeController {
 
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> create(@RequestBody EmployeeParam employeeParam) {
+    public ResultBean<Long> create(@RequestBody EmployeeParam employeeParam) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         logger.info(Arrays.asList("create", JSON.toJSONString(employeeParam)).stream().collect(Collectors.joining("\u0001")));
         return employeeService.create(employeeParam);
     }
@@ -125,5 +127,17 @@ public class EmployeeController {
                                             @RequestParam("userGroupIds") String userGroupIds) {
         logger.info(Arrays.asList("unbindUserGroup", JSON.toJSONString(id), JSON.toJSONString(userGroupIds)).stream().collect(Collectors.joining("\u0001")));
         return employeeService.unbindUserGroup(id, userGroupIds);
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param id 用户ID
+     * @return
+     */
+    @GetMapping(value = "/resetPassword")
+    public ResultBean<Void> resetPassword(@RequestParam("id") Long id) {
+        logger.info(Arrays.asList("resetPassword", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
+        return employeeService.resetPassword(id);
     }
 }

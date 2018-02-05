@@ -89,7 +89,7 @@
         select
         <include refid="Base_Column_List"/>
         from biz_area
-        where parentId = #{parentId,jdbcType=BIGINT}
+        where parent_id = #{parentId,jdbcType=BIGINT}
         <if test="status != null">
             AND status = #{status}
         </if>

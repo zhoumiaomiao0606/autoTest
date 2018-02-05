@@ -88,6 +88,7 @@ public class BizAreaServiceImpl implements BizAreaService {
     @Override
     public ResultBean<Void> update(BizAreaDO bizAreaDO) {
         Preconditions.checkArgument(null != bizAreaDO && null != bizAreaDO.getId(), "id不能为空");
+        Preconditions.checkArgument(!bizAreaDO.getId().equals(bizAreaDO.getParentId()), "上级区域不能为自身");
 
         // 校验是否是删除操作
         checkIfDel(bizAreaDO);
@@ -115,7 +116,7 @@ public class BizAreaServiceImpl implements BizAreaService {
     public ResultBean<BizAreaVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(bizAreaDO, "id有误，数据不存在.");
 
         BizAreaVO bizAreaVO = new BizAreaVO();
@@ -369,7 +370,7 @@ public class BizAreaServiceImpl implements BizAreaService {
      */
     private void checkHasChilds(Long parentId) {
         List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getByParentId(parentId, VALID_STATUS);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "请先删除所有下级区域");
+        Preconditions.checkArgument(CollectionUtils.isEmpty(bizAreaDOS), "请先删除所有下级区域");
     }
 
     /**

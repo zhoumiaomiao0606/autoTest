@@ -97,7 +97,7 @@ public class PartnerServiceImpl implements PartnerService {
     public ResultBean<PartnerVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(partnerDO, "id有误，数据不存在");
 
         PartnerVO partnerVO = new PartnerVO();
