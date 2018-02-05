@@ -1,6 +1,5 @@
 package com.yunche.loan.dao.mapper;
 
-import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.BizModelQuery;
 import com.yunche.loan.domain.dataObj.BizModelDO;
 import org.apache.ibatis.annotations.Mapper;
@@ -29,13 +28,19 @@ public interface BizModelDOMapper {
      * @param query
      * @return
      */
-    int countListBizModelByPartnerId(BaseQuery query);
+    int countListBizModelByPartnerId(BizModelQuery query);
 
     /**
-     * 根据合伙人ID分页查询业务产品列表
-     *
      * @param query
      * @return
      */
-    List<BizModelDO> listBizModelByPartnerId(BaseQuery query);
+    List<BizModelDO> listBizModelByPartnerId(BizModelQuery query);
+
+    /**
+     * 根据ID列表查询
+     *
+     * @param bizIdList
+     * @return
+     */
+    List<BizModelDO> getByIdList(List<Long> bizIdList);
 }

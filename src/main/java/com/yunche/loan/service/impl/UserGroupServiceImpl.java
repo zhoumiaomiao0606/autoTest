@@ -782,7 +782,7 @@ public class UserGroupServiceImpl implements UserGroupService {
         List<Long> existEmployeeIdList = employeeRelaUserGroupDOMapper.getEmployeeIdListByUserGroupId(userGroupId);
         if (!CollectionUtils.isEmpty(existEmployeeIdList)) {
 
-            employeeIdList = existEmployeeIdList.parallelStream()
+            employeeIdList = employeeIdList.parallelStream()
                     .filter(Objects::nonNull)
                     .distinct()
                     .map(e -> {

@@ -1,6 +1,7 @@
 package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO;
+import com.yunche.loan.domain.queryObj.BizModelQuery;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -20,4 +21,19 @@ public interface BizModelRelaAreaPartnersDOMapper {
     int update(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
     List<BizModelRelaAreaPartnersDO> listQuery(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
+
+    /**
+     * 获取所有AreaId
+     *
+     * @return
+     */
+    List<Long> getAllAreaId();
+
+    /**
+     * 根据条件 获取所有的bizModelId
+     *
+     * @param query
+     * @return
+     */
+    List<Long> getBizModelIdListByCondition(BizModelQuery query);
 }

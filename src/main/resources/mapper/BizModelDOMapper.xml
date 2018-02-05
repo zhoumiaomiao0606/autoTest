@@ -20,14 +20,20 @@
   </sql>
 
     <!-- countListBizModelByPartnerId -->
-    <select id="countListBizModelByPartnerId" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
+    <select id="countListBizModelByPartnerId" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
             resultType="java.lang.Integer">
-        SELECT COUNT(*)
+        SELECT COUNT(a.biz_id)
         FROM biz_model_rela_area_partners AS a
         JOIN biz_model AS b
         ON a.`biz_id` = b.`biz_id`
         <if test="id != null">
             AND a.group_id = #{id}
+        </if>
+        <if test="cascadeAreaIdList != null and cascadeAreaIdList.size() > 0">
+            AND a.area_id IN
+            <foreach collection="cascadeAreaIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
         </if>
         <if test="status != null">
             AND b.status = #{status}
@@ -35,7 +41,7 @@
     </select>
 
     <!-- listBizModelByPartnerId -->
-    <select id="listBizModelByPartnerId" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
+    <select id="listBizModelByPartnerId" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
             resultMap="BaseResultMap">
         SELECT b.*
         FROM biz_model_rela_area_partners AS a
@@ -44,11 +50,28 @@
         <if test="id != null">
             AND a.group_id = #{id}
         </if>
+        <if test="cascadeAreaIdList != null and cascadeAreaIdList.size() > 0">
+            AND a.area_id IN
+            <foreach collection="cascadeAreaIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
         <if test="status != null">
             AND b.status = #{status}
         </if>
-        ORDER BY a.`gmt_modify` DESC
+        ORDER BY b.`biz_id` ASC
         LIMIT #{startRow}, #{pageSize}
+    </select>
+
+    <!--getByIdList-->
+    <select id="getByIdList" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_model
+        where biz_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -140,7 +163,7 @@
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
-                gmt_modify = now(),
+            gmt_modify = now(),
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>

@@ -51,7 +51,6 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public ResultBean<Long> create(DepartmentParam departmentParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(departmentParam.getName()), "部门名称不能为空");
-//        Preconditions.checkNotNull(departmentParam.getParentId(), "上级部门不能为空");
         Preconditions.checkNotNull(departmentParam.getLeaderId(), "部门负责人不能为空");
         Preconditions.checkNotNull(departmentParam.getStatus(), "状态不能为空");
         Preconditions.checkArgument(VALID_STATUS.equals(departmentParam.getStatus()) || INVALID_STATUS.equals(departmentParam.getStatus()),
@@ -411,7 +410,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     private void checkHasChilds(Long parentId) {
         List<DepartmentDO> departmentDOS = departmentDOMapper.getByParentId(parentId, VALID_STATUS);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(departmentDOS), "请先删除所有下级部门");
+        Preconditions.checkArgument(CollectionUtils.isEmpty(departmentDOS), "请先删除所有下级部门");
     }
 
     /**

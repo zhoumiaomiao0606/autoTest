@@ -37,7 +37,7 @@ public class CarDetailServiceImpl implements CarDetailService {
     @Override
     public ResultBean<CarDetailVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
-        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(carDetailDO, "id有误，数据不存在.");
 
         CarDetailVO carDetailVO = new CarDetailVO();

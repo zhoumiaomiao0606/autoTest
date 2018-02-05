@@ -82,7 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         checkOnlyProperty(employeeParam);
 
         // 随机生成密码
-        String password = getRandomString(10);
+        String password = MD5Utils.getRandomString(10);
 
         // MD5加密
         String md5Password = MD5Utils.md5Password(password);
@@ -306,30 +306,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             Preconditions.checkArgument(!idCardList.contains(employeeParam.getDingDing()), "该钉钉号已被注册");
         }
     }
-
-    /**
-     * 生成随机字符串
-     *
-     * @param length 指定随机字符串长度
-     * @return
-     */
-    public String getRandomString(int length) {
-        //  设置字符
-        char[] chars = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
-
-        //  设置随机数
-        Random random = new Random();
-
-        //  获取4位随机数
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < length; i++) {
-            //获取随机chars下标
-            int index = random.nextInt(chars.length);
-            sb.append(chars[index]);
-        }
-        return sb.toString();
-    }
-
 
     /**
      * 发送账号密码到邮箱

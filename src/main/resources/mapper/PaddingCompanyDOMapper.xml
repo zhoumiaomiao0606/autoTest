@@ -54,7 +54,7 @@
         <if test="address != null and address != '' ">
             AND address = #{address}
         </if>
-        <if test="rate != null ">
+        <if test="rate != null">
             AND rate = #{rate}
         </if>
         <if test="bank != null and bank != ''  ">
@@ -92,7 +92,7 @@
         <where>
             <include refid="Base_Query_List"/>
         </where>
-        ORDER BY gmt_modify DESC
+        ORDER BY id ASC
         limit #{startRow}, #{pageSize}
     </select>
 

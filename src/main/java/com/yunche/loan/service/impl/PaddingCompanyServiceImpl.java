@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
@@ -36,7 +33,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     private static final Logger logger = LoggerFactory.getLogger(PaddingCompanyServiceImpl.class);
 
     @Autowired
-    PaddingCompanyDOMapper paddingCompanyDOMapper;
+    private PaddingCompanyDOMapper paddingCompanyDOMapper;
 
 
     @Override
@@ -92,24 +89,24 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     @Override
     public ResultBean<List<PaddingCompanyVO>> query(PaddingCompanyQuery query) {
         int totalNum = paddingCompanyDOMapper.count(query);
-        if (totalNum < 1) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        if (totalNum > 0) {
+
+            List<PaddingCompanyDO> paddingCompanyDOS = paddingCompanyDOMapper.query(query);
+            if (!CollectionUtils.isEmpty(paddingCompanyDOS)) {
+
+                List<PaddingCompanyVO> paddingCompanyVOS = paddingCompanyDOS.parallelStream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+                            PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();
+                            BeanUtils.copyProperties(e, paddingCompanyVO);
+                            return paddingCompanyVO;
+                        })
+                        .sorted(Comparator.comparing(PaddingCompanyVO::getId))
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(paddingCompanyVOS, totalNum, query.getPageIndex(), query.getPageSize());
+            }
         }
-
-        List<PaddingCompanyDO> paddingCompanyDOS = paddingCompanyDOMapper.query(query);
-        if (CollectionUtils.isEmpty(paddingCompanyDOS)) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
-        }
-
-        List<PaddingCompanyVO> paddingCompanyVOS = paddingCompanyDOS.stream()
-                .filter(Objects::nonNull)
-                .map(e -> {
-                    PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();
-                    BeanUtils.copyProperties(e, paddingCompanyVO);
-                    return paddingCompanyVO;
-                })
-                .collect(Collectors.toList());
-
-        return ResultBean.ofSuccess(paddingCompanyVOS, totalNum, query.getPageIndex(), query.getPageSize());
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
     }
 }
