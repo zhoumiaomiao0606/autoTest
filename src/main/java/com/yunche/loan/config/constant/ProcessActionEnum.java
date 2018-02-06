@@ -5,9 +5,11 @@ package com.yunche.loan.config.constant;
  */
 public enum ProcessActionEnum {
 
-    PASS("确认通过"),
-    REJECT("驳回"),
+    TODO("未处理"),
+    PASS("通过"),
+    REJECT("打回修改"),
     CANCEL("弃单"),
+    SUPPLEMENT("增补资料"),
     EMAIL("发送邮件"),
     PRINT("打印");
 

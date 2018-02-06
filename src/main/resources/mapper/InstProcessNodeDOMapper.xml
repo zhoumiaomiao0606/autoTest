@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.InstProcessNodeDO">
     <id column="node_id" jdbcType="BIGINT" property="nodeId" />
     <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="process_inst_id" jdbcType="VARCHAR" property="processInstId" />
     <result column="node_name" jdbcType="VARCHAR" property="nodeName" />
     <result column="node_code" jdbcType="VARCHAR" property="nodeCode" />
     <result column="next_node_code" jdbcType="VARCHAR" property="nextNodeCode" />
@@ -17,8 +18,8 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
-    node_id, order_id, node_name, node_code, next_node_code, previous_node_code, feature, 
-    operator_id, operator_name, operator_role, status, gmt_create, gmt_modify
+    node_id, order_id, process_inst_id, node_name, node_code, next_node_code, previous_node_code, 
+    feature, operator_id, operator_name, operator_role, status, gmt_create, gmt_modify
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -31,12 +32,15 @@
     where node_id = #{nodeId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.InstProcessNodeDO">
-    insert into inst_process_node (node_id, order_id, node_name, 
+    <selectKey resultType="long" keyProperty="nodeId" order="AFTER">
+      SELECT LAST_INSERT_ID() as nodeId
+    </selectKey>
+    insert into inst_process_node (node_id, order_id, process_inst_id, node_name, 
       node_code, next_node_code, previous_node_code, 
       feature, operator_id, operator_name, 
       operator_role, status, gmt_create, 
       gmt_modify)
-    values (#{nodeId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{nodeName,jdbcType=VARCHAR}, 
+    values (#{nodeId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{nodeName,jdbcType=VARCHAR}, 
       #{nodeCode,jdbcType=VARCHAR}, #{nextNodeCode,jdbcType=VARCHAR}, #{previousNodeCode,jdbcType=VARCHAR}, 
       #{feature,jdbcType=VARCHAR}, #{operatorId,jdbcType=BIGINT}, #{operatorName,jdbcType=VARCHAR}, 
       #{operatorRole,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, now(), now())
@@ -49,6 +53,9 @@
       </if>
       <if test="orderId != null">
         order_id,
+      </if>
+      <if test="processInstId != null">
+        process_inst_id,
       </if>
       <if test="nodeName != null">
         node_name,
@@ -91,6 +98,9 @@
       <if test="orderId != null">
         #{orderId,jdbcType=BIGINT},
       </if>
+      <if test="processInstId != null">
+        #{processInstId,jdbcType=VARCHAR},
+      </if>
       <if test="nodeName != null">
         #{nodeName,jdbcType=VARCHAR},
       </if>
@@ -132,6 +142,9 @@
       <if test="orderId != null">
         order_id = #{orderId,jdbcType=BIGINT},
       </if>
+      <if test="processInstId != null">
+        process_inst_id = #{processInstId,jdbcType=VARCHAR},
+      </if>
       <if test="nodeName != null">
         node_name = #{nodeName,jdbcType=VARCHAR},
       </if>
@@ -171,6 +184,7 @@
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.InstProcessNodeDO">
     update inst_process_node
     set order_id = #{orderId,jdbcType=BIGINT},
+      process_inst_id = #{processInstId,jdbcType=VARCHAR},
       node_name = #{nodeName,jdbcType=VARCHAR},
       node_code = #{nodeCode,jdbcType=VARCHAR},
       next_node_code = #{nextNodeCode,jdbcType=VARCHAR},

@@ -34,7 +34,13 @@ public class CustBaseInfoVO implements Serializable {
 
     private String companyPhone;
 
-    private String creditStatus;
+    private Integer bankCreditStatus;
+
+    private String bankCreditDetail;
+
+    private Integer socialCreditStatus;
+
+    private String socialCreditDetail;
 
     private String income;
 
@@ -47,14 +53,6 @@ public class CustBaseInfoVO implements Serializable {
     private String houseAddress;
 
     private String feature;
-
-    private String picIdentityPositive;
-
-    private String picIdentityOpposite;
-
-    private String picAuthorization;
-
-    private String picAuthorizationSign;
 
     private Date gmtCreate;
 
@@ -202,12 +200,36 @@ public class CustBaseInfoVO implements Serializable {
         this.companyPhone = companyPhone == null ? null : companyPhone.trim();
     }
 
-    public String getCreditStatus() {
-        return creditStatus;
+    public Integer getBankCreditStatus() {
+        return bankCreditStatus;
     }
 
-    public void setCreditStatus(String creditStatus) {
-        this.creditStatus = creditStatus == null ? null : creditStatus.trim();
+    public void setBankCreditStatus(Integer bankCreditStatus) {
+        this.bankCreditStatus = bankCreditStatus;
+    }
+
+    public String getBankCreditDetail() {
+        return bankCreditDetail;
+    }
+
+    public void setBankCreditDetail(String bankCreditDetail) {
+        this.bankCreditDetail = bankCreditDetail;
+    }
+
+    public Integer getSocialCreditStatus() {
+        return socialCreditStatus;
+    }
+
+    public void setSocialCreditStatus(Integer socialCreditStatus) {
+        this.socialCreditStatus = socialCreditStatus;
+    }
+
+    public String getSocialCreditDetail() {
+        return socialCreditDetail;
+    }
+
+    public void setSocialCreditDetail(String socialCreditDetail) {
+        this.socialCreditDetail = socialCreditDetail;
     }
 
     public String getIncome() {
@@ -256,38 +278,6 @@ public class CustBaseInfoVO implements Serializable {
 
     public void setFeature(String feature) {
         this.feature = feature == null ? null : feature.trim();
-    }
-
-    public String getPicIdentityPositive() {
-        return picIdentityPositive;
-    }
-
-    public void setPicIdentityPositive(String picIdentityPositive) {
-        this.picIdentityPositive = picIdentityPositive == null ? null : picIdentityPositive.trim();
-    }
-
-    public String getPicIdentityOpposite() {
-        return picIdentityOpposite;
-    }
-
-    public void setPicIdentityOpposite(String picIdentityOpposite) {
-        this.picIdentityOpposite = picIdentityOpposite == null ? null : picIdentityOpposite.trim();
-    }
-
-    public String getPicAuthorization() {
-        return picAuthorization;
-    }
-
-    public void setPicAuthorization(String picAuthorization) {
-        this.picAuthorization = picAuthorization == null ? null : picAuthorization.trim();
-    }
-
-    public String getPicAuthorizationSign() {
-        return picAuthorizationSign;
-    }
-
-    public void setPicAuthorizationSign(String picAuthorizationSign) {
-        this.picAuthorizationSign = picAuthorizationSign == null ? null : picAuthorizationSign.trim();
     }
 
     public Date getGmtCreate() {

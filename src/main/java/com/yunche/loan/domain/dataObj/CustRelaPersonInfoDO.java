@@ -22,7 +22,7 @@ public class CustRelaPersonInfoDO implements Serializable {
 
     private Date birth;
 
-    private Byte age;
+    private Integer age;
 
     private String education;
 
@@ -36,7 +36,13 @@ public class CustRelaPersonInfoDO implements Serializable {
 
     private String companyPhone;
 
-    private String creditStatus;
+    private Integer bankCreditStatus;
+
+    private String bankCreditDetail;
+
+    private Integer socialCreditStatus;
+
+    private String socialCreditDetail;
 
     private String income;
 
@@ -49,10 +55,6 @@ public class CustRelaPersonInfoDO implements Serializable {
     private String houseAddress;
 
     private String feature;
-
-    private String picIdentityPositive;
-
-    private String picIdentityOpposite;
 
     private Date gmtCreate;
 
@@ -130,13 +132,6 @@ public class CustRelaPersonInfoDO implements Serializable {
         this.birth = birth;
     }
 
-    public Byte getAge() {
-        return age;
-    }
-
-    public void setAge(Byte age) {
-        this.age = age;
-    }
 
     public String getEducation() {
         return education;
@@ -186,12 +181,45 @@ public class CustRelaPersonInfoDO implements Serializable {
         this.companyPhone = companyPhone == null ? null : companyPhone.trim();
     }
 
-    public String getCreditStatus() {
-        return creditStatus;
+
+    public String getBankCreditDetail() {
+        return bankCreditDetail;
     }
 
-    public void setCreditStatus(String creditStatus) {
-        this.creditStatus = creditStatus == null ? null : creditStatus.trim();
+    public void setBankCreditDetail(String bankCreditDetail) {
+        this.bankCreditDetail = bankCreditDetail == null ? null : bankCreditDetail.trim();
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Integer getBankCreditStatus() {
+        return bankCreditStatus;
+    }
+
+    public void setBankCreditStatus(Integer bankCreditStatus) {
+        this.bankCreditStatus = bankCreditStatus;
+    }
+
+    public Integer getSocialCreditStatus() {
+        return socialCreditStatus;
+    }
+
+    public void setSocialCreditStatus(Integer socialCreditStatus) {
+        this.socialCreditStatus = socialCreditStatus;
+    }
+
+    public String getSocialCreditDetail() {
+        return socialCreditDetail;
+    }
+
+    public void setSocialCreditDetail(String socialCreditDetail) {
+        this.socialCreditDetail = socialCreditDetail == null ? null : socialCreditDetail.trim();
     }
 
     public String getIncome() {
@@ -240,22 +268,6 @@ public class CustRelaPersonInfoDO implements Serializable {
 
     public void setFeature(String feature) {
         this.feature = feature == null ? null : feature.trim();
-    }
-
-    public String getPicIdentityPositive() {
-        return picIdentityPositive;
-    }
-
-    public void setPicIdentityPositive(String picIdentityPositive) {
-        this.picIdentityPositive = picIdentityPositive == null ? null : picIdentityPositive.trim();
-    }
-
-    public String getPicIdentityOpposite() {
-        return picIdentityOpposite;
-    }
-
-    public void setPicIdentityOpposite(String picIdentityOpposite) {
-        this.picIdentityOpposite = picIdentityOpposite == null ? null : picIdentityOpposite.trim();
     }
 
     public Date getGmtCreate() {

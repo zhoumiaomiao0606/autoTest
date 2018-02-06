@@ -18,7 +18,7 @@ public class CustBaseInfoDO implements Serializable {
 
     private Date birth;
 
-    private Byte age;
+    private Integer age;
 
     private String education;
 
@@ -32,7 +32,13 @@ public class CustBaseInfoDO implements Serializable {
 
     private String companyPhone;
 
-    private String creditStatus;
+    private Integer bankCreditStatus;
+
+    private String bankCreditDetail;
+
+    private Integer socialCreditStatus;
+
+    private String socialCreditDetail;
 
     private String income;
 
@@ -46,19 +52,11 @@ public class CustBaseInfoDO implements Serializable {
 
     private String feature;
 
-    private String picIdentityPositive;
+    private String contactName;
 
-    private String picIdentityOpposite;
+    private String contactPhone;
 
-    private String picAuthorization;
-
-    private String picAuthorizationSign;
-
-    private String emergencyContactName;
-
-    private String emergencyContactPhone;
-
-    private String emergencyContactRelation;
+    private String contactRelation;
 
     private Date gmtCreate;
 
@@ -120,13 +118,6 @@ public class CustBaseInfoDO implements Serializable {
         this.birth = birth;
     }
 
-    public Byte getAge() {
-        return age;
-    }
-
-    public void setAge(Byte age) {
-        this.age = age;
-    }
 
     public String getEducation() {
         return education;
@@ -176,12 +167,45 @@ public class CustBaseInfoDO implements Serializable {
         this.companyPhone = companyPhone == null ? null : companyPhone.trim();
     }
 
-    public String getCreditStatus() {
-        return creditStatus;
+
+    public String getBankCreditDetail() {
+        return bankCreditDetail;
     }
 
-    public void setCreditStatus(String creditStatus) {
-        this.creditStatus = creditStatus == null ? null : creditStatus.trim();
+    public void setBankCreditDetail(String bankCreditDetail) {
+        this.bankCreditDetail = bankCreditDetail == null ? null : bankCreditDetail.trim();
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Integer getBankCreditStatus() {
+        return bankCreditStatus;
+    }
+
+    public void setBankCreditStatus(Integer bankCreditStatus) {
+        this.bankCreditStatus = bankCreditStatus;
+    }
+
+    public Integer getSocialCreditStatus() {
+        return socialCreditStatus;
+    }
+
+    public void setSocialCreditStatus(Integer socialCreditStatus) {
+        this.socialCreditStatus = socialCreditStatus;
+    }
+
+    public String getSocialCreditDetail() {
+        return socialCreditDetail;
+    }
+
+    public void setSocialCreditDetail(String socialCreditDetail) {
+        this.socialCreditDetail = socialCreditDetail == null ? null : socialCreditDetail.trim();
     }
 
     public String getIncome() {
@@ -232,60 +256,28 @@ public class CustBaseInfoDO implements Serializable {
         this.feature = feature == null ? null : feature.trim();
     }
 
-    public String getPicIdentityPositive() {
-        return picIdentityPositive;
+    public String getContactName() {
+        return contactName;
     }
 
-    public void setPicIdentityPositive(String picIdentityPositive) {
-        this.picIdentityPositive = picIdentityPositive == null ? null : picIdentityPositive.trim();
+    public void setContactName(String contactName) {
+        this.contactName = contactName == null ? null : contactName.trim();
     }
 
-    public String getPicIdentityOpposite() {
-        return picIdentityOpposite;
+    public String getContactPhone() {
+        return contactPhone;
     }
 
-    public void setPicIdentityOpposite(String picIdentityOpposite) {
-        this.picIdentityOpposite = picIdentityOpposite == null ? null : picIdentityOpposite.trim();
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone == null ? null : contactPhone.trim();
     }
 
-    public String getPicAuthorization() {
-        return picAuthorization;
+    public String getContactRelation() {
+        return contactRelation;
     }
 
-    public void setPicAuthorization(String picAuthorization) {
-        this.picAuthorization = picAuthorization == null ? null : picAuthorization.trim();
-    }
-
-    public String getPicAuthorizationSign() {
-        return picAuthorizationSign;
-    }
-
-    public void setPicAuthorizationSign(String picAuthorizationSign) {
-        this.picAuthorizationSign = picAuthorizationSign == null ? null : picAuthorizationSign.trim();
-    }
-
-    public String getEmergencyContactName() {
-        return emergencyContactName;
-    }
-
-    public void setEmergencyContactName(String emergencyContactName) {
-        this.emergencyContactName = emergencyContactName == null ? null : emergencyContactName.trim();
-    }
-
-    public String getEmergencyContactPhone() {
-        return emergencyContactPhone;
-    }
-
-    public void setEmergencyContactPhone(String emergencyContactPhone) {
-        this.emergencyContactPhone = emergencyContactPhone == null ? null : emergencyContactPhone.trim();
-    }
-
-    public String getEmergencyContactRelation() {
-        return emergencyContactRelation;
-    }
-
-    public void setEmergencyContactRelation(String emergencyContactRelation) {
-        this.emergencyContactRelation = emergencyContactRelation == null ? null : emergencyContactRelation.trim();
+    public void setContactRelation(String contactRelation) {
+        this.contactRelation = contactRelation == null ? null : contactRelation.trim();
     }
 
     public Date getGmtCreate() {

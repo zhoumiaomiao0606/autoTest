@@ -8,6 +8,8 @@ public class InstProcessNodeDO implements Serializable {
 
     private Long orderId;
 
+    private String processInstId;
+
     private String nodeName;
 
     private String nodeCode;
@@ -24,11 +26,19 @@ public class InstProcessNodeDO implements Serializable {
 
     private String operatorRole;
 
-    private Integer status;
+    private String status;
 
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public String getProcessInstId() {
+        return processInstId;
+    }
+
+    public void setProcessInstId(String processInstId) {
+        this.processInstId = processInstId;
+    }
 
     public Long getNodeId() {
         return nodeId;
@@ -110,11 +120,11 @@ public class InstProcessNodeDO implements Serializable {
         this.operatorRole = operatorRole == null ? null : operatorRole.trim();
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

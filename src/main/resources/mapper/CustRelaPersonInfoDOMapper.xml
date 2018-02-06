@@ -18,24 +18,25 @@
     <result column="identity_validity" jdbcType="DATE" property="identityValidity" />
     <result column="company_name" jdbcType="VARCHAR" property="companyName" />
     <result column="company_phone" jdbcType="VARCHAR" property="companyPhone" />
-    <result column="credit_status" jdbcType="VARCHAR" property="creditStatus" />
+    <result column="bank_credit_status" jdbcType="TINYINT" property="bankCreditStatus" />
+    <result column="bank_credit_detail" jdbcType="VARCHAR" property="bankCreditDetail" />
+    <result column="social_credit_status" jdbcType="TINYINT" property="socialCreditStatus" />
+    <result column="social_credit_detail" jdbcType="VARCHAR" property="socialCreditDetail" />
     <result column="income" jdbcType="VARCHAR" property="income" />
     <result column="house_type" jdbcType="VARCHAR" property="houseType" />
     <result column="house_owner" jdbcType="VARCHAR" property="houseOwner" />
     <result column="house_feature" jdbcType="VARCHAR" property="houseFeature" />
     <result column="house_address" jdbcType="VARCHAR" property="houseAddress" />
     <result column="feature" jdbcType="VARCHAR" property="feature" />
-    <result column="pic_identity_positive" jdbcType="VARCHAR" property="picIdentityPositive" />
-    <result column="pic_identity_opposite" jdbcType="VARCHAR" property="picIdentityOpposite" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
     cust_id, cust_name, rela_cust_id, rela_cust_type, identity_type, identity_number, 
     phone, marry, birth, age, education, address, identity_address, identity_validity, 
-    company_name, company_phone, credit_status, income, house_type, house_owner, house_feature, 
-    house_address, feature, pic_identity_positive, pic_identity_opposite, gmt_create, 
-    gmt_modify
+    company_name, company_phone, bank_credit_status, bank_credit_detail, social_credit_status, 
+    social_credit_detail, income, house_type, house_owner, house_feature, house_address, 
+    feature, gmt_create, gmt_modify
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -53,19 +54,21 @@
       phone, marry, birth, age, 
       education, address, identity_address, 
       identity_validity, company_name, company_phone, 
-      credit_status, income, house_type, 
+      bank_credit_status, bank_credit_detail, social_credit_status, 
+      social_credit_detail, income, house_type, 
       house_owner, house_feature, house_address, 
-      feature, pic_identity_positive, pic_identity_opposite, 
-      gmt_create, gmt_modify)
+      feature, gmt_create, gmt_modify
+      )
     values (#{custId,jdbcType=BIGINT}, #{custName,jdbcType=VARCHAR}, #{relaCustId,jdbcType=BIGINT}, 
       #{relaCustType,jdbcType=VARCHAR}, #{identityType,jdbcType=VARCHAR}, #{identityNumber,jdbcType=VARCHAR}, 
       #{phone,jdbcType=VARCHAR}, #{marry,jdbcType=VARCHAR}, #{birth,jdbcType=DATE}, #{age,jdbcType=TINYINT}, 
       #{education,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{identityAddress,jdbcType=VARCHAR}, 
       #{identityValidity,jdbcType=DATE}, #{companyName,jdbcType=VARCHAR}, #{companyPhone,jdbcType=VARCHAR}, 
-      #{creditStatus,jdbcType=VARCHAR}, #{income,jdbcType=VARCHAR}, #{houseType,jdbcType=VARCHAR}, 
+      #{bankCreditStatus,jdbcType=TINYINT}, #{bankCreditDetail,jdbcType=VARCHAR}, #{socialCreditStatus,jdbcType=TINYINT}, 
+      #{socialCreditDetail,jdbcType=VARCHAR}, #{income,jdbcType=VARCHAR}, #{houseType,jdbcType=VARCHAR}, 
       #{houseOwner,jdbcType=VARCHAR}, #{houseFeature,jdbcType=VARCHAR}, #{houseAddress,jdbcType=VARCHAR}, 
-      #{feature,jdbcType=VARCHAR}, #{picIdentityPositive,jdbcType=VARCHAR}, #{picIdentityOpposite,jdbcType=VARCHAR}, 
-      now()), now())
+      #{feature,jdbcType=VARCHAR}, now(), now()
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CustRelaPersonInfoDO">
     insert into cust_rela_person_info
@@ -118,8 +121,17 @@
       <if test="companyPhone != null">
         company_phone,
       </if>
-      <if test="creditStatus != null">
-        credit_status,
+      <if test="bankCreditStatus != null">
+        bank_credit_status,
+      </if>
+      <if test="bankCreditDetail != null">
+        bank_credit_detail,
+      </if>
+      <if test="socialCreditStatus != null">
+        social_credit_status,
+      </if>
+      <if test="socialCreditDetail != null">
+        social_credit_detail,
       </if>
       <if test="income != null">
         income,
@@ -138,12 +150,6 @@
       </if>
       <if test="feature != null">
         feature,
-      </if>
-      <if test="picIdentityPositive != null">
-        pic_identity_positive,
-      </if>
-      <if test="picIdentityOpposite != null">
-        pic_identity_opposite,
       </if>
       <if test="gmtCreate != null">
         gmt_create,
@@ -201,8 +207,17 @@
       <if test="companyPhone != null">
         #{companyPhone,jdbcType=VARCHAR},
       </if>
-      <if test="creditStatus != null">
-        #{creditStatus,jdbcType=VARCHAR},
+      <if test="bankCreditStatus != null">
+        #{bankCreditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="bankCreditDetail != null">
+        #{bankCreditDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="socialCreditStatus != null">
+        #{socialCreditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="socialCreditDetail != null">
+        #{socialCreditDetail,jdbcType=VARCHAR},
       </if>
       <if test="income != null">
         #{income,jdbcType=VARCHAR},
@@ -221,12 +236,6 @@
       </if>
       <if test="feature != null">
         #{feature,jdbcType=VARCHAR},
-      </if>
-      <if test="picIdentityPositive != null">
-        #{picIdentityPositive,jdbcType=VARCHAR},
-      </if>
-      <if test="picIdentityOpposite != null">
-        #{picIdentityOpposite,jdbcType=VARCHAR},
       </if>
       <if test="gmtCreate != null">
         #{gmtCreate,jdbcType=TIMESTAMP},
@@ -284,8 +293,17 @@
       <if test="companyPhone != null">
         company_phone = #{companyPhone,jdbcType=VARCHAR},
       </if>
-      <if test="creditStatus != null">
-        credit_status = #{creditStatus,jdbcType=VARCHAR},
+      <if test="bankCreditStatus != null">
+        bank_credit_status = #{bankCreditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="bankCreditDetail != null">
+        bank_credit_detail = #{bankCreditDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="socialCreditStatus != null">
+        social_credit_status = #{socialCreditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="socialCreditDetail != null">
+        social_credit_detail = #{socialCreditDetail,jdbcType=VARCHAR},
       </if>
       <if test="income != null">
         income = #{income,jdbcType=VARCHAR},
@@ -305,18 +323,10 @@
       <if test="feature != null">
         feature = #{feature,jdbcType=VARCHAR},
       </if>
-      <if test="picIdentityPositive != null">
-        pic_identity_positive = #{picIdentityPositive,jdbcType=VARCHAR},
-      </if>
-      <if test="picIdentityOpposite != null">
-        pic_identity_opposite = #{picIdentityOpposite,jdbcType=VARCHAR},
-      </if>
       <if test="gmtCreate != null">
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       </if>
-      <if test="gmtModify != null">
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
+        gmt_modify = now()
     </set>
     where cust_id = #{custId,jdbcType=BIGINT}
   </update>
@@ -337,17 +347,18 @@
       identity_validity = #{identityValidity,jdbcType=DATE},
       company_name = #{companyName,jdbcType=VARCHAR},
       company_phone = #{companyPhone,jdbcType=VARCHAR},
-      credit_status = #{creditStatus,jdbcType=VARCHAR},
+      bank_credit_status = #{bankCreditStatus,jdbcType=TINYINT},
+      bank_credit_detail = #{bankCreditDetail,jdbcType=VARCHAR},
+      social_credit_status = #{socialCreditStatus,jdbcType=TINYINT},
+      social_credit_detail = #{socialCreditDetail,jdbcType=VARCHAR},
       income = #{income,jdbcType=VARCHAR},
       house_type = #{houseType,jdbcType=VARCHAR},
       house_owner = #{houseOwner,jdbcType=VARCHAR},
       house_feature = #{houseFeature,jdbcType=VARCHAR},
       house_address = #{houseAddress,jdbcType=VARCHAR},
       feature = #{feature,jdbcType=VARCHAR},
-      pic_identity_positive = #{picIdentityPositive,jdbcType=VARCHAR},
-      pic_identity_opposite = #{picIdentityOpposite,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+      gmt_modify = now()
     where cust_id = #{custId,jdbcType=BIGINT}
   </update>
 </mapper>

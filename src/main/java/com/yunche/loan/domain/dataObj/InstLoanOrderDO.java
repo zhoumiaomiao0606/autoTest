@@ -10,6 +10,8 @@ public class InstLoanOrderDO implements Serializable {
 
     private Long prodId;
 
+    private String processInstId;
+
     private Integer loanAmount;
 
     private Integer firstPayAmount;
@@ -28,6 +30,7 @@ public class InstLoanOrderDO implements Serializable {
 
     private String salesmanName;
 
+    // 贷款额度档次:1-13W以下/2-13至20W/3-20W以上
     private Integer amountGrade;
 
     private Long areaId;
@@ -47,6 +50,14 @@ public class InstLoanOrderDO implements Serializable {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public String getProcessInstId() {
+        return processInstId;
+    }
+
+    public void setProcessInstId(String processInstId) {
+        this.processInstId = processInstId;
+    }
 
     public Long getSalesmanId() {
         return salesmanId;

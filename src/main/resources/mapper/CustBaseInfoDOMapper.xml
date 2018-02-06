@@ -16,29 +16,28 @@
     <result column="identity_validity" jdbcType="DATE" property="identityValidity" />
     <result column="company_name" jdbcType="VARCHAR" property="companyName" />
     <result column="company_phone" jdbcType="VARCHAR" property="companyPhone" />
-    <result column="credit_status" jdbcType="VARCHAR" property="creditStatus" />
+    <result column="bank_credit_status" jdbcType="TINYINT" property="bankCreditStatus" />
+    <result column="bank_credit_detail" jdbcType="VARCHAR" property="bankCreditDetail" />
+    <result column="social_credit_status" jdbcType="TINYINT" property="socialCreditStatus" />
+    <result column="social_credit_detail" jdbcType="VARCHAR" property="socialCreditDetail" />
     <result column="income" jdbcType="VARCHAR" property="income" />
     <result column="house_type" jdbcType="VARCHAR" property="houseType" />
     <result column="house_owner" jdbcType="VARCHAR" property="houseOwner" />
     <result column="house_feature" jdbcType="VARCHAR" property="houseFeature" />
     <result column="house_address" jdbcType="VARCHAR" property="houseAddress" />
     <result column="feature" jdbcType="VARCHAR" property="feature" />
-    <result column="pic_identity_positive" jdbcType="VARCHAR" property="picIdentityPositive" />
-    <result column="pic_identity_opposite" jdbcType="VARCHAR" property="picIdentityOpposite" />
-    <result column="pic_authorization" jdbcType="VARCHAR" property="picAuthorization" />
-    <result column="pic_authorization_sign" jdbcType="VARCHAR" property="picAuthorizationSign" />
-    <result column="emergency_contact_name" jdbcType="VARCHAR" property="emergencyContactName" />
-    <result column="emergency_contact_phone" jdbcType="VARCHAR" property="emergencyContactPhone" />
-    <result column="emergency_contact_relation" jdbcType="VARCHAR" property="emergencyContactRelation" />
+    <result column="contact_name" jdbcType="VARCHAR" property="contactName" />
+    <result column="contact_phone" jdbcType="VARCHAR" property="contactPhone" />
+    <result column="contact_relation" jdbcType="VARCHAR" property="contactRelation" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
     cust_id, cust_name, identity_type, identity_number, phone, marry, birth, age, education, 
-    address, identity_address, identity_validity, company_name, company_phone, credit_status, 
-    income, house_type, house_owner, house_feature, house_address, feature, pic_identity_positive, 
-    pic_identity_opposite, pic_authorization, pic_authorization_sign, emergency_contact_name, 
-    emergency_contact_phone, emergency_contact_relation, gmt_create, gmt_modify
+    address, identity_address, identity_validity, company_name, company_phone, bank_credit_status, 
+    bank_credit_detail, social_credit_status, social_credit_detail, income, house_type, 
+    house_owner, house_feature, house_address, feature, contact_name, contact_phone, 
+    contact_relation, gmt_create, gmt_modify
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -58,25 +57,22 @@
       identity_number, phone, marry, 
       birth, age, education, 
       address, identity_address, identity_validity, 
-      company_name, company_phone, credit_status, 
+      company_name, company_phone, bank_credit_status, 
+      bank_credit_detail, social_credit_status, social_credit_detail, 
       income, house_type, house_owner, 
       house_feature, house_address, feature, 
-      pic_identity_positive, pic_identity_opposite, 
-      pic_authorization, pic_authorization_sign, 
-      emergency_contact_name, emergency_contact_phone, 
-      emergency_contact_relation, gmt_create, 
-      gmt_modify)
+      contact_name, contact_phone, contact_relation, 
+      gmt_create, gmt_modify)
     values (#{custId,jdbcType=BIGINT}, #{custName,jdbcType=VARCHAR}, #{identityType,jdbcType=VARCHAR}, 
       #{identityNumber,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{marry,jdbcType=VARCHAR}, 
       #{birth,jdbcType=DATE}, #{age,jdbcType=TINYINT}, #{education,jdbcType=VARCHAR}, 
       #{address,jdbcType=VARCHAR}, #{identityAddress,jdbcType=VARCHAR}, #{identityValidity,jdbcType=DATE}, 
-      #{companyName,jdbcType=VARCHAR}, #{companyPhone,jdbcType=VARCHAR}, #{creditStatus,jdbcType=VARCHAR}, 
+      #{companyName,jdbcType=VARCHAR}, #{companyPhone,jdbcType=VARCHAR}, #{bankCreditStatus,jdbcType=TINYINT}, 
+      #{bankCreditDetail,jdbcType=VARCHAR}, #{socialCreditStatus,jdbcType=TINYINT}, #{socialCreditDetail,jdbcType=VARCHAR}, 
       #{income,jdbcType=VARCHAR}, #{houseType,jdbcType=VARCHAR}, #{houseOwner,jdbcType=VARCHAR}, 
       #{houseFeature,jdbcType=VARCHAR}, #{houseAddress,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR}, 
-      #{picIdentityPositive,jdbcType=VARCHAR}, #{picIdentityOpposite,jdbcType=VARCHAR}, 
-      #{picAuthorization,jdbcType=VARCHAR}, #{picAuthorizationSign,jdbcType=VARCHAR}, 
-      #{emergencyContactName,jdbcType=VARCHAR}, #{emergencyContactPhone,jdbcType=VARCHAR}, 
-      #{emergencyContactRelation,jdbcType=VARCHAR}, now(), now())
+      #{contactName,jdbcType=VARCHAR}, #{contactPhone,jdbcType=VARCHAR}, #{contactRelation,jdbcType=VARCHAR}, 
+      now(), now())
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
     insert into cust_base_info
@@ -123,8 +119,17 @@
       <if test="companyPhone != null">
         company_phone,
       </if>
-      <if test="creditStatus != null">
-        credit_status,
+      <if test="bankCreditStatus != null">
+        bank_credit_status,
+      </if>
+      <if test="bankCreditDetail != null">
+        bank_credit_detail,
+      </if>
+      <if test="socialCreditStatus != null">
+        social_credit_status,
+      </if>
+      <if test="socialCreditDetail != null">
+        social_credit_detail,
       </if>
       <if test="income != null">
         income,
@@ -144,26 +149,14 @@
       <if test="feature != null">
         feature,
       </if>
-      <if test="picIdentityPositive != null">
-        pic_identity_positive,
+      <if test="contactName != null">
+        contact_name,
       </if>
-      <if test="picIdentityOpposite != null">
-        pic_identity_opposite,
+      <if test="contactPhone != null">
+        contact_phone,
       </if>
-      <if test="picAuthorization != null">
-        pic_authorization,
-      </if>
-      <if test="picAuthorizationSign != null">
-        pic_authorization_sign,
-      </if>
-      <if test="emergencyContactName != null">
-        emergency_contact_name,
-      </if>
-      <if test="emergencyContactPhone != null">
-        emergency_contact_phone,
-      </if>
-      <if test="emergencyContactRelation != null">
-        emergency_contact_relation,
+      <if test="contactRelation != null">
+        contact_relation,
       </if>
       <if test="gmtCreate != null">
         gmt_create,
@@ -215,8 +208,17 @@
       <if test="companyPhone != null">
         #{companyPhone,jdbcType=VARCHAR},
       </if>
-      <if test="creditStatus != null">
-        #{creditStatus,jdbcType=VARCHAR},
+      <if test="bankCreditStatus != null">
+        #{bankCreditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="bankCreditDetail != null">
+        #{bankCreditDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="socialCreditStatus != null">
+        #{socialCreditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="socialCreditDetail != null">
+        #{socialCreditDetail,jdbcType=VARCHAR},
       </if>
       <if test="income != null">
         #{income,jdbcType=VARCHAR},
@@ -236,26 +238,14 @@
       <if test="feature != null">
         #{feature,jdbcType=VARCHAR},
       </if>
-      <if test="picIdentityPositive != null">
-        #{picIdentityPositive,jdbcType=VARCHAR},
+      <if test="contactName != null">
+        #{contactName,jdbcType=VARCHAR},
       </if>
-      <if test="picIdentityOpposite != null">
-        #{picIdentityOpposite,jdbcType=VARCHAR},
+      <if test="contactPhone != null">
+        #{contactPhone,jdbcType=VARCHAR},
       </if>
-      <if test="picAuthorization != null">
-        #{picAuthorization,jdbcType=VARCHAR},
-      </if>
-      <if test="picAuthorizationSign != null">
-        #{picAuthorizationSign,jdbcType=VARCHAR},
-      </if>
-      <if test="emergencyContactName != null">
-        #{emergencyContactName,jdbcType=VARCHAR},
-      </if>
-      <if test="emergencyContactPhone != null">
-        #{emergencyContactPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="emergencyContactRelation != null">
-        #{emergencyContactRelation,jdbcType=VARCHAR},
+      <if test="contactRelation != null">
+        #{contactRelation,jdbcType=VARCHAR},
       </if>
       <if test="gmtCreate != null">
         #{gmtCreate,jdbcType=TIMESTAMP},
@@ -307,8 +297,17 @@
       <if test="companyPhone != null">
         company_phone = #{companyPhone,jdbcType=VARCHAR},
       </if>
-      <if test="creditStatus != null">
-        credit_status = #{creditStatus,jdbcType=VARCHAR},
+      <if test="bankCreditStatus != null">
+        bank_credit_status = #{bankCreditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="bankCreditDetail != null">
+        bank_credit_detail = #{bankCreditDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="socialCreditStatus != null">
+        social_credit_status = #{socialCreditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="socialCreditDetail != null">
+        social_credit_detail = #{socialCreditDetail,jdbcType=VARCHAR},
       </if>
       <if test="income != null">
         income = #{income,jdbcType=VARCHAR},
@@ -328,33 +327,19 @@
       <if test="feature != null">
         feature = #{feature,jdbcType=VARCHAR},
       </if>
-      <if test="picIdentityPositive != null">
-        pic_identity_positive = #{picIdentityPositive,jdbcType=VARCHAR},
+      <if test="contactName != null">
+        contact_name = #{contactName,jdbcType=VARCHAR},
       </if>
-      <if test="picIdentityOpposite != null">
-        pic_identity_opposite = #{picIdentityOpposite,jdbcType=VARCHAR},
+      <if test="contactPhone != null">
+        contact_phone = #{contactPhone,jdbcType=VARCHAR},
       </if>
-      <if test="picAuthorization != null">
-        pic_authorization = #{picAuthorization,jdbcType=VARCHAR},
-      </if>
-      <if test="picAuthorizationSign != null">
-        pic_authorization_sign = #{picAuthorizationSign,jdbcType=VARCHAR},
-      </if>
-      <if test="emergencyContactName != null">
-        emergency_contact_name = #{emergencyContactName,jdbcType=VARCHAR},
-      </if>
-      <if test="emergencyContactPhone != null">
-        emergency_contact_phone = #{emergencyContactPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="emergencyContactRelation != null">
-        emergency_contact_relation = #{emergencyContactRelation,jdbcType=VARCHAR},
+      <if test="contactRelation != null">
+        contact_relation = #{contactRelation,jdbcType=VARCHAR},
       </if>
       <if test="gmtCreate != null">
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       </if>
-      <if test="gmtModify != null">
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
+        gmt_modify = now()
     </set>
     where cust_id = #{custId,jdbcType=BIGINT}
   </update>
@@ -373,22 +358,21 @@
       identity_validity = #{identityValidity,jdbcType=DATE},
       company_name = #{companyName,jdbcType=VARCHAR},
       company_phone = #{companyPhone,jdbcType=VARCHAR},
-      credit_status = #{creditStatus,jdbcType=VARCHAR},
+      bank_credit_status = #{bankCreditStatus,jdbcType=TINYINT},
+      bank_credit_detail = #{bankCreditDetail,jdbcType=VARCHAR},
+      social_credit_status = #{socialCreditStatus,jdbcType=TINYINT},
+      social_credit_detail = #{socialCreditDetail,jdbcType=VARCHAR},
       income = #{income,jdbcType=VARCHAR},
       house_type = #{houseType,jdbcType=VARCHAR},
       house_owner = #{houseOwner,jdbcType=VARCHAR},
       house_feature = #{houseFeature,jdbcType=VARCHAR},
       house_address = #{houseAddress,jdbcType=VARCHAR},
       feature = #{feature,jdbcType=VARCHAR},
-      pic_identity_positive = #{picIdentityPositive,jdbcType=VARCHAR},
-      pic_identity_opposite = #{picIdentityOpposite,jdbcType=VARCHAR},
-      pic_authorization = #{picAuthorization,jdbcType=VARCHAR},
-      pic_authorization_sign = #{picAuthorizationSign,jdbcType=VARCHAR},
-      emergency_contact_name = #{emergencyContactName,jdbcType=VARCHAR},
-      emergency_contact_phone = #{emergencyContactPhone,jdbcType=VARCHAR},
-      emergency_contact_relation = #{emergencyContactRelation,jdbcType=VARCHAR},
+      contact_name = #{contactName,jdbcType=VARCHAR},
+      contact_phone = #{contactPhone,jdbcType=VARCHAR},
+      contact_relation = #{contactRelation,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+      gmt_modify = now()
     where cust_id = #{custId,jdbcType=BIGINT}
   </update>
 </mapper>

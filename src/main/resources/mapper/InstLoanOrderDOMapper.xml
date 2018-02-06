@@ -5,6 +5,7 @@
     <id column="order_id" jdbcType="BIGINT" property="orderId" />
     <result column="cust_id" jdbcType="BIGINT" property="custId" />
     <result column="prod_id" jdbcType="BIGINT" property="prodId" />
+    <result column="process_inst_id" jdbcType="VARCHAR" property="processInstId" />
     <result column="loan_amount" jdbcType="INTEGER" property="loanAmount" />
     <result column="first_pay_amount" jdbcType="INTEGER" property="firstPayAmount" />
     <result column="total_pay_amount" jdbcType="INTEGER" property="totalPayAmount" />
@@ -21,14 +22,14 @@
     <result column="feature" jdbcType="VARCHAR" property="feature" />
     <result column="car_type" jdbcType="TINYINT" property="carType" />
     <result column="bank" jdbcType="VARCHAR" property="bank" />
-    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
-    order_id, cust_id, prod_id, loan_amount, first_pay_amount, total_pay_amount, first_month_pay_amount, 
-    each_month_pay_amount, car_id, insu_id, salesman_id, salesman_name, amount_grade, 
-    area_id, prov, city, feature, car_type, bank, status, gmt_create, gmt_modify
+    order_id, cust_id, prod_id, process_inst_id, loan_amount, first_pay_amount, total_pay_amount, 
+    first_month_pay_amount, each_month_pay_amount, car_id, insu_id, salesman_id, salesman_name, 
+    amount_grade, area_id, prov, city, feature, car_type, bank, status, gmt_create, gmt_modify
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -45,20 +46,20 @@
       SELECT LAST_INSERT_ID() as orderId
     </selectKey>
     insert into inst_loan_order (order_id, cust_id, prod_id, 
-      loan_amount, first_pay_amount, total_pay_amount, 
-      first_month_pay_amount, each_month_pay_amount, 
+      process_inst_id, loan_amount, first_pay_amount, 
+      total_pay_amount, first_month_pay_amount, each_month_pay_amount, 
       car_id, insu_id, salesman_id, 
       salesman_name, amount_grade, area_id, 
       prov, city, feature, 
       car_type, bank, status, 
       gmt_create, gmt_modify)
     values (#{orderId,jdbcType=BIGINT}, #{custId,jdbcType=BIGINT}, #{prodId,jdbcType=BIGINT}, 
-      #{loanAmount,jdbcType=INTEGER}, #{firstPayAmount,jdbcType=INTEGER}, #{totalPayAmount,jdbcType=INTEGER}, 
-      #{firstMonthPayAmount,jdbcType=INTEGER}, #{eachMonthPayAmount,jdbcType=INTEGER}, 
+      #{processInstId,jdbcType=VARCHAR}, #{loanAmount,jdbcType=INTEGER}, #{firstPayAmount,jdbcType=INTEGER}, 
+      #{totalPayAmount,jdbcType=INTEGER}, #{firstMonthPayAmount,jdbcType=INTEGER}, #{eachMonthPayAmount,jdbcType=INTEGER}, 
       #{carId,jdbcType=BIGINT}, #{insuId,jdbcType=BIGINT}, #{salesmanId,jdbcType=BIGINT}, 
       #{salesmanName,jdbcType=VARCHAR}, #{amountGrade,jdbcType=TINYINT}, #{areaId,jdbcType=BIGINT}, 
       #{prov,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR}, 
-      #{carType,jdbcType=TINYINT}, #{bank,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+      #{carType,jdbcType=TINYINT}, #{bank,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
       now(), now())
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
@@ -72,6 +73,9 @@
       </if>
       <if test="prodId != null">
         prod_id,
+      </if>
+      <if test="processInstId != null">
+        process_inst_id,
       </if>
       <if test="loanAmount != null">
         loan_amount,
@@ -141,6 +145,9 @@
       <if test="prodId != null">
         #{prodId,jdbcType=BIGINT},
       </if>
+      <if test="processInstId != null">
+        #{processInstId,jdbcType=VARCHAR},
+      </if>
       <if test="loanAmount != null">
         #{loanAmount,jdbcType=INTEGER},
       </if>
@@ -190,7 +197,7 @@
         #{bank,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
-        #{status,jdbcType=TINYINT},
+        #{status,jdbcType=VARCHAR},
       </if>
       <if test="gmtCreate != null">
         #{gmtCreate,jdbcType=TIMESTAMP},
@@ -208,6 +215,9 @@
       </if>
       <if test="prodId != null">
         prod_id = #{prodId,jdbcType=BIGINT},
+      </if>
+      <if test="processInstId != null">
+        process_inst_id = #{processInstId,jdbcType=VARCHAR},
       </if>
       <if test="loanAmount != null">
         loan_amount = #{loanAmount,jdbcType=INTEGER},
@@ -258,7 +268,7 @@
         bank = #{bank,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
-        status = #{status,jdbcType=TINYINT},
+        status = #{status,jdbcType=VARCHAR},
       </if>
       <if test="gmtCreate != null">
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
@@ -273,6 +283,7 @@
     update inst_loan_order
     set cust_id = #{custId,jdbcType=BIGINT},
       prod_id = #{prodId,jdbcType=BIGINT},
+      process_inst_id = #{processInstId,jdbcType=VARCHAR},
       loan_amount = #{loanAmount,jdbcType=INTEGER},
       first_pay_amount = #{firstPayAmount,jdbcType=INTEGER},
       total_pay_amount = #{totalPayAmount,jdbcType=INTEGER},
@@ -289,7 +300,7 @@
       feature = #{feature,jdbcType=VARCHAR},
       car_type = #{carType,jdbcType=TINYINT},
       bank = #{bank,jdbcType=VARCHAR},
-      status = #{status,jdbcType=TINYINT},
+      status = #{status,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where order_id = #{orderId,jdbcType=BIGINT}
