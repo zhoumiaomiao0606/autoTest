@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,6 +44,8 @@ public class BizExceptionHandler {
                 return ResultBean.ofError(throwable.getMessage());
             } else if (throwable instanceof NullPointerException) {
                 return ResultBean.ofError(throwable.getMessage());
+            } else if (throwable instanceof MailException) {
+                return ResultBean.ofError("邮件发送失败");
             } else if (throwable instanceof BadSqlGrammarException) {
                 return ResultBean.ofError("糟糕，出错啦！");
             } else if (throwable instanceof RuntimeException) {

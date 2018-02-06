@@ -47,9 +47,9 @@ public class DepartmentVO {
 
     private String bankAccount;
 
+    private Byte status;
+
     private Date gmtCreate;
 
     private Date gmtModify;
-
-    private Byte status;
 }

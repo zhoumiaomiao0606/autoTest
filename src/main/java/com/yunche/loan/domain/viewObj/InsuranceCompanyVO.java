@@ -43,6 +43,8 @@ public class InsuranceCompanyVO {
 
     private Date gmtModify;
 
+    private Byte status;
+
     private String feature;
 
     private String cooperationPolicy;

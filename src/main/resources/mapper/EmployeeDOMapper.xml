@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.EmployeeDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
         <result column="id_card" jdbcType="CHAR" property="idCard"/>
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
         <result column="email" jdbcType="VARCHAR" property="email"/>
@@ -21,8 +22,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, id_card, mobile, email, ding_ding, department_id, parent_id, title, entry_date,
-        level, type, gmt_create, gmt_modify, feature, status
+        id, name, password, id_card, mobile, email, ding_ding, department_id, parent_id,
+        title, entry_date, level, type, gmt_create, gmt_modify, feature, status
     </sql>
 
     <sql id="Base_Query_List">
@@ -95,8 +96,14 @@
         <where>
             <include refid="Base_Query_List"/>
         </where>
-        ORDER BY gmt_modify DESC
+        ORDER BY id ASC
         limit #{startRow}, #{pageSize}
+    </select>
+
+    <!-- getAllOnlyProperty -->
+    <select id="getAllOnlyProperty" resultMap="BaseResultMap">
+        select id_card, mobile, email, ding_ding
+        from employee
     </select>
 
     <!-- countListEmployeeByUserGroupId -->
@@ -229,18 +236,18 @@
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into employee (id, name, id_card,
-        mobile, email, ding_ding,
-        department_id, parent_id, title,
-        entry_date, level, type,
-        gmt_create, gmt_modify, feature,
-        status)
-        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{idCard,jdbcType=CHAR},
-        #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{dingDing,jdbcType=VARCHAR},
-        #{departmentId,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR},
-        #{entryDate,jdbcType=TIMESTAMP}, #{level,jdbcType=INTEGER}, #{type,jdbcType=TINYINT},
-        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
-        #{status,jdbcType=TINYINT})
+        insert into employee (id, name, password,
+        id_card, mobile, email,
+        ding_ding, department_id, parent_id,
+        title, entry_date, level,
+        type, gmt_create, gmt_modify,
+        feature, status)
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+        #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+        #{dingDing,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT},
+        #{title,jdbcType=VARCHAR}, #{entryDate,jdbcType=TIMESTAMP}, #{level,jdbcType=INTEGER},
+        #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
@@ -255,6 +262,9 @@
             </if>
             <if test="name != null">
                 name,
+            </if>
+            <if test="password != null">
+                password,
             </if>
             <if test="idCard != null">
                 id_card,
@@ -305,6 +315,9 @@
             </if>
             <if test="name != null">
                 #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
             </if>
             <if test="idCard != null">
                 #{idCard,jdbcType=CHAR},
@@ -357,6 +370,9 @@
             <if test="name != null">
                 name = #{name,jdbcType=VARCHAR},
             </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
             <if test="idCard != null">
                 id_card = #{idCard,jdbcType=CHAR},
             </if>
@@ -406,6 +422,7 @@
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
     update employee
     set name = #{name,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
       id_card = #{idCard,jdbcType=CHAR},
       mobile = #{mobile,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},

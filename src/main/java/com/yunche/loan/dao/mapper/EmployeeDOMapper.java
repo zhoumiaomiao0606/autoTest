@@ -4,10 +4,12 @@ import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
+import com.yunche.loan.domain.viewObj.EmployeeOnlyPropertyVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface EmployeeDOMapper {
@@ -74,4 +76,11 @@ public interface EmployeeDOMapper {
      * @return
      */
     List<Long> queryAllEmployeeIdList(EmployeeQuery query);
+
+    /**
+     * 获取所有的唯一属性列表 （身份证号、手机号、邮箱、钉钉）
+     *
+     * @return
+     */
+    List<EmployeeDO> getAllOnlyProperty();
 }

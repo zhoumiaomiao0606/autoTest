@@ -24,6 +24,7 @@
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.dataObj.InsuranceCompanyDO">
         <result column="cooperation_policy" jdbcType="LONGVARCHAR" property="cooperationPolicy"/>
     </resultMap>
+
     <sql id="Base_Column_List">
         id, name, mnemonic_code, contact, tel, office_phone, fax, address, business_insurance_rebate,
         traffic_insurance_rebate, bank, account_name, bank_account, file, gmt_create, gmt_modify,
@@ -96,7 +97,7 @@
         <where>
             <include refid="Base_Query_List"/>
         </where>
-        ORDER BY gmt_modify DESC
+        ORDER BY id ASC
         limit #{startRow}, #{pageSize}
     </select>
 

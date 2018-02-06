@@ -10,6 +10,8 @@ public class EmployeeDO {
 
     private String name;
 
+    private String password;
+
     private String idCard;
 
     private String mobile;

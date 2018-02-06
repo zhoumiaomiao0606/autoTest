@@ -3,31 +3,38 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.common.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.EmployeeParam;
-import com.yunche.loan.domain.viewObj.BaseVO;
-import com.yunche.loan.domain.viewObj.EmployeeVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
-import com.yunche.loan.domain.viewObj.UserGroupVO;
+import com.yunche.loan.domain.viewObj.*;
 import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
+import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
 
 /**
  * @author liuzhe
@@ -36,6 +43,11 @@ import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
 @Service
 @Transactional
 public class EmployeeServiceImpl implements EmployeeService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+
+    @Value("${spring.mail.username}")
+    private String from;
 
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
@@ -50,11 +62,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private UserGroupRelaAreaAuthDOMapper userGroupRelaAreaAuthDOMapper;
     @Autowired
-    private UserGroupRelaAreaDOMapper userGroupRelaAreaDOMapper;
+    private JavaMailSender mailSender;
 
 
     @Override
-    public ResultBean<Long> create(EmployeeParam employeeParam) {
+    public ResultBean<Long> create(EmployeeParam employeeParam) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getName()), "姓名不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getIdCard()), "身份证号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getMobile()), "手机号不能为空");
@@ -66,18 +78,33 @@ public class EmployeeServiceImpl implements EmployeeService {
         Preconditions.checkArgument(TYPE_ZS.equals(employeeParam.getType()) || TYPE_WB.equals(employeeParam.getType()),
                 "员工类型非法");
 
+        // 校验唯一属性(身份证号、手机号、邮箱、钉钉)
+        checkOnlyProperty(employeeParam);
+
+        // 随机生成密码
+        String password = MD5Utils.getRandomString(10);
+
+        // MD5加密
+        String md5Password = MD5Utils.md5Password(password);
+        employeeParam.setPassword(md5Password);
+
         // 创建实体，并返回ID
         Long id = insertAndGetId(employeeParam);
 
         // 绑定用户组(角色)列表
-        bindUserGroup(id, employeeParam.getUserGroupIdList());
+        doBindUserGroup(id, employeeParam.getUserGroupIdList());
+
+        // 发送账号密码到邮箱
+        sentAccountAndPassword(employeeParam.getEmail(), password);
 
         return ResultBean.ofSuccess(id, "创建成功");
     }
 
+
     @Override
     public ResultBean<Void> update(EmployeeDO employeeDO) {
         Preconditions.checkNotNull(employeeDO.getId(), "id不能为空");
+        Preconditions.checkArgument(!employeeDO.getId().equals(employeeDO.getParentId()), "直接主管不能为自己");
 
         employeeDO.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
@@ -98,7 +125,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ResultBean<EmployeeVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(employeeDO, "id有误，数据不存在");
 
         EmployeeVO employeeVO = new EmployeeVO();
@@ -181,7 +208,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
                             return userGroupVO;
                         })
-                        .sorted(Comparator.comparing(UserGroupVO::getGmtModify))
+                        .sorted(Comparator.comparing(UserGroupVO::getId))
                         .collect(Collectors.toList());
 
                 return ResultBean.ofSuccess(userGroupVOList, totalNum, query.getPageIndex(), query.getPageSize());
@@ -195,12 +222,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         Preconditions.checkNotNull(id, "员工ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(userGroupIds), "用户组ID不能为空");
 
+        // convert
         List<Long> userGroupIdList = Arrays.asList(userGroupIds.split(",")).stream()
                 .map(e -> {
                     return Long.valueOf(e);
                 })
                 .collect(Collectors.toList());
-        bindUserGroup(id, userGroupIdList);
+
+        // do
+        doBindUserGroup(id, userGroupIdList);
 
         return ResultBean.ofSuccess(null, "关联成功");
     }
@@ -221,6 +251,77 @@ public class EmployeeServiceImpl implements EmployeeService {
                 });
 
         return ResultBean.ofSuccess(null, "取消关联成功");
+    }
+
+    @Override
+    public ResultBean<Void> resetPassword(Long id) {
+        Preconditions.checkNotNull(id, "id不能为空");
+
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id, null);
+        Preconditions.checkNotNull(employeeDO, "账号不存在");
+        Preconditions.checkArgument(!INVALID_STATUS.equals(employeeDO.getStatus()), "账号已停用");
+        Preconditions.checkArgument(!DEL_STATUS.equals(employeeDO.getStatus()), "账号已删除");
+        Preconditions.checkArgument(VALID_STATUS.equals(employeeDO.getStatus()), "账号状态异常");
+        Preconditions.checkArgument(StringUtils.isNotBlank(employeeDO.getEmail()), "账号邮箱为空，请先绑定密保邮箱");
+
+
+        return null;
+    }
+
+    /**
+     * 校验唯一属性 (身份证号、手机号、邮箱、钉钉)
+     *
+     * @param employeeParam
+     */
+    private void checkOnlyProperty(EmployeeParam employeeParam) {
+
+        // getAll
+        List<EmployeeDO> allOnlyProperty = employeeDOMapper.getAllOnlyProperty();
+
+        if (!CollectionUtils.isEmpty(allOnlyProperty)) {
+
+            List<String> idCardList = Lists.newArrayList();
+            List<String> mobileList = Lists.newArrayList();
+            List<String> emailList = Lists.newArrayList();
+            List<String> dingDingList = Lists.newArrayList();
+
+            allOnlyProperty.parallelStream()
+                    .forEach(e -> {
+
+                        String idCard = e.getIdCard();
+                        String mobile = e.getMobile();
+                        String email = e.getEmail();
+                        String dingDing = e.getDingDing();
+
+                        idCardList.add(idCard);
+                        mobileList.add(mobile);
+                        emailList.add(email);
+                        dingDingList.add(dingDing);
+
+                    });
+
+            Preconditions.checkArgument(!idCardList.contains(employeeParam.getIdCard()), "该身份证号已被注册");
+            Preconditions.checkArgument(!idCardList.contains(employeeParam.getMobile()), "该手机号已被注册");
+            Preconditions.checkArgument(!idCardList.contains(employeeParam.getEmail()), "该邮箱已被注册");
+            Preconditions.checkArgument(!idCardList.contains(employeeParam.getDingDing()), "该钉钉号已被注册");
+        }
+    }
+
+    /**
+     * 发送账号密码到邮箱
+     *
+     * @param email
+     * @param password
+     */
+    private void sentAccountAndPassword(String email, String password) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(email);
+        message.setSubject("主题：注册账号密码");
+        message.setText("账号：" + email + NEW_LINE + "密码：" + password);
+
+        mailSender.send(message);
     }
 
     /**
@@ -360,6 +461,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (null != departmentDO) {
             BaseVO parentDepartment = new BaseVO();
             BeanUtils.copyProperties(departmentDO, parentDepartment);
+
+            // 预加载
+            List<DepartmentDO> all = departmentDOMapper.getAll(VALID_STATUS);
+
+
             // 递归填充所有上层父级部门
             fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), employeeVO);
         }
@@ -510,7 +616,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeeId
      * @param userGroupIdList
      */
-    private void bindUserGroup(Long employeeId, List<Long> userGroupIdList) {
+    private void doBindUserGroup(Long employeeId, List<Long> userGroupIdList) {
         if (CollectionUtils.isEmpty(userGroupIdList)) {
             return;
         }
@@ -530,7 +636,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-
         }
 
         // 绑定

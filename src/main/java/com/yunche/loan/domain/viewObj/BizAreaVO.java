@@ -32,6 +32,8 @@ public class BizAreaVO {
      */
     private String info;
 
+    private Byte status;
+
     private Date gmtCreate;
 
     private Date gmtModify;

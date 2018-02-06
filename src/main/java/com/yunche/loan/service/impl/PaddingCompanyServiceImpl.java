@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
@@ -36,7 +33,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     private static final Logger logger = LoggerFactory.getLogger(PaddingCompanyServiceImpl.class);
 
     @Autowired
-    PaddingCompanyDOMapper paddingCompanyDOMapper;
+    private PaddingCompanyDOMapper paddingCompanyDOMapper;
 
 
     @Override
@@ -62,7 +59,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
         Preconditions.checkNotNull(paddingCompanyDO.getId(), "id不能为空");
 
         paddingCompanyDO.setGmtModify(new Date());
-        int count = paddingCompanyDOMapper.updateByPrimaryKeyWithBLOBs(paddingCompanyDO);
+        int count = paddingCompanyDOMapper.updateByPrimaryKeySelective(paddingCompanyDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
         return ResultBean.ofSuccess(null, "编辑成功");
     }
@@ -80,7 +77,7 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     public ResultBean<PaddingCompanyVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        PaddingCompanyDO paddingCompanyDO = paddingCompanyDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        PaddingCompanyDO paddingCompanyDO = paddingCompanyDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(paddingCompanyDO, "id有误，数据不存在");
 
         PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();
@@ -92,24 +89,24 @@ public class PaddingCompanyServiceImpl implements PaddingCompanyService {
     @Override
     public ResultBean<List<PaddingCompanyVO>> query(PaddingCompanyQuery query) {
         int totalNum = paddingCompanyDOMapper.count(query);
-        if (totalNum < 1) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        if (totalNum > 0) {
+
+            List<PaddingCompanyDO> paddingCompanyDOS = paddingCompanyDOMapper.query(query);
+            if (!CollectionUtils.isEmpty(paddingCompanyDOS)) {
+
+                List<PaddingCompanyVO> paddingCompanyVOS = paddingCompanyDOS.parallelStream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+                            PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();
+                            BeanUtils.copyProperties(e, paddingCompanyVO);
+                            return paddingCompanyVO;
+                        })
+                        .sorted(Comparator.comparing(PaddingCompanyVO::getId))
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(paddingCompanyVOS, totalNum, query.getPageIndex(), query.getPageSize());
+            }
         }
-
-        List<PaddingCompanyDO> paddingCompanyDOS = paddingCompanyDOMapper.query(query);
-        if (CollectionUtils.isEmpty(paddingCompanyDOS)) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
-        }
-
-        List<PaddingCompanyVO> paddingCompanyVOS = paddingCompanyDOS.stream()
-                .filter(Objects::nonNull)
-                .map(e -> {
-                    PaddingCompanyVO paddingCompanyVO = new PaddingCompanyVO();
-                    BeanUtils.copyProperties(e, paddingCompanyVO);
-                    return paddingCompanyVO;
-                })
-                .collect(Collectors.toList());
-
-        return ResultBean.ofSuccess(paddingCompanyVOS, totalNum, query.getPageIndex(), query.getPageSize());
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
     }
 }

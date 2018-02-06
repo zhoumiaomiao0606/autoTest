@@ -57,6 +57,8 @@
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
         from user_group
         <where>
             <include refid="Base_Query_List"/>
@@ -93,7 +95,7 @@
         <if test="status != null">
             AND b.status = #{status}
         </if>
-        ORDER BY a.`gmt_modify` DESC
+        ORDER BY b.`id` ASC
         LIMIT #{startRow}, #{pageSize}
     </select>
 
@@ -125,7 +127,7 @@
         <if test="status != null">
             AND b.status = #{status}
         </if>
-        ORDER BY a.`gmt_modify` DESC
+        ORDER BY b.`id` ASC
         LIMIT #{startRow}, #{pageSize}
     </select>
 
@@ -157,10 +159,10 @@
         <include refid="Blob_Column_List"/>
         from user_group
         where id IN
-            <foreach item="id" index="index" collection="idList"
-                     open="(" separator="," close=")">
-                #{id}
-            </foreach>
+        <foreach item="id" index="index" collection="idList"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
         <if test="status != null">
             AND status = #{status}
         </if>

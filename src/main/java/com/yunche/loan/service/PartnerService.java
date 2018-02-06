@@ -1,7 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.BaseQuery;
+import com.yunche.loan.domain.queryObj.BizModelQuery;
 import com.yunche.loan.domain.queryObj.PartnerQuery;
 import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.PartnerDO;
@@ -10,6 +10,8 @@ import com.yunche.loan.domain.viewObj.BizModelVO;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.PartnerVO;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ import java.util.List;
  * @date 2018/1/24
  */
 public interface PartnerService {
-    ResultBean<Long> create(PartnerParam partnerParam);
+    ResultBean<Long> create(PartnerParam partnerParam) throws UnsupportedEncodingException, NoSuchAlgorithmException;
 
     ResultBean<Void> update(PartnerDO partnerDO);
 
@@ -27,7 +29,7 @@ public interface PartnerService {
 
     ResultBean<List<PartnerVO>> query(PartnerQuery query);
 
-    ResultBean<List<BizModelVO>> listBizModel(BaseQuery query);
+    ResultBean<List<BizModelVO>> listBizModel(BizModelQuery query);
 
     ResultBean<Void> bindBizModel(Long id, String bizModelIds);
 

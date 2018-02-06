@@ -67,6 +67,8 @@ public class CarModelVO {
      */
     private Byte productionType;
 
+    private Byte status;
+
     private Date gmtCreate;
 
     private Date gmtModify;

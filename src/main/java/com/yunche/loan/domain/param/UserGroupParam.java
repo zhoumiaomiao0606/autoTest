@@ -20,6 +20,10 @@ public class UserGroupParam extends UserGroupDO {
      */
     private Long areaId;
     /**
+     * 权限类型  1:MENU; 2:PAGE; 3:OPERATION;
+     */
+    private Byte type;
+    /**
      * 权限ID列表
      */
     private List<Long> authIdList;

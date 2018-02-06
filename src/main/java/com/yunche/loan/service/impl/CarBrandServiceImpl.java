@@ -90,7 +90,7 @@ public class CarBrandServiceImpl implements CarBrandService {
     public ResultBean<CarBrandVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(carBrandDO, "id有误，数据不存在.");
 
         CarBrandVO carBrandVO = new CarBrandVO();

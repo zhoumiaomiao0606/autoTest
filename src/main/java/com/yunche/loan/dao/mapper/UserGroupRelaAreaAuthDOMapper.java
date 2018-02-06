@@ -48,12 +48,20 @@ public interface UserGroupRelaAreaAuthDOMapper {
     List<Long> getAreaIdListByUserGroupId(Long userGroupId);
 
     /**
-     * 当前用户组 - 已绑定 operation ID列表
+     * 删除当前用户组的某一类型的所有权限
+     *
+     * @param userGroupId
+     * @param type        权限类型  1:MENU; 2:PAGE; 3:OPERATION;
+     */
+    int deleteAllByUserGroupIdAndType(@Param("userGroupId") Long userGroupId, @Param("type") Byte type);
+
+    /**
+     * 根据权限类型， 获取当前用户组 - 已绑定 auth实体(source_id) ID列表
      * <p>
      *
      * @param userGroupId
      * @param type        MENU / PAGE / OPERATION {@link com.yunche.loan.config.constant.AuthConst}
      * @return
      */
-    List<Long> getHasBindOperationIdListByUserGroupId(@Param("userGroupId") Long userGroupId, @Param("type") Byte type);
+    List<Long> getHasBindAuthEntityIdListByUserGroupIdAndType(@Param("userGroupId") Long userGroupId, @Param("type") Byte type);
 }

@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
@@ -94,7 +91,7 @@ public class CarModelServiceImpl implements CarModelService {
     public ResultBean<CarModelVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(carModelDO, "id有误，数据不存在.");
 
         CarModelVO carModelVO = new CarModelVO();
@@ -115,26 +112,26 @@ public class CarModelServiceImpl implements CarModelService {
     @Override
     public ResultBean<List<CarModelVO>> query(CarModelQuery query) {
         int totalNum = carModelDOMapper.count(query);
-        if (totalNum < 1) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        if (totalNum > 0) {
+
+            // 根据座位数、生产方式、品牌查询
+            List<CarModelDO> carModelDOS = carModelDOMapper.query(query);
+            if (!CollectionUtils.isEmpty(carModelDOS)) {
+
+                List<CarModelVO> carModelVOS = carModelDOS.parallelStream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+                            CarModelVO carModelVO = new CarModelVO();
+                            BeanUtils.copyProperties(e, carModelVO);
+                            return carModelVO;
+                        })
+                        .sorted(Comparator.comparing(CarModelVO::getId))
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(carModelVOS, totalNum, query.getPageIndex(), query.getPageSize());
+            }
         }
-
-        // 根据座位数、生产方式、品牌查询
-        List<CarModelDO> carModelDOS = carModelDOMapper.query(query);
-        if (CollectionUtils.isEmpty(carModelDOS)) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
-        }
-
-        List<CarModelVO> carModelVOS = carModelDOS.stream()
-                .filter(Objects::nonNull)
-                .map(e -> {
-                    CarModelVO carModelVO = new CarModelVO();
-                    BeanUtils.copyProperties(e, carModelVO);
-                    return carModelVO;
-                })
-                .collect(Collectors.toList());
-
-        return ResultBean.ofSuccess(carModelVOS, totalNum, query.getPageIndex(), query.getPageSize());
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST);
     }
 
     /**
@@ -156,7 +153,7 @@ public class CarModelServiceImpl implements CarModelService {
      */
     private void checkHasChilds(Long modelId) {
         List<CarDetailDO> carDetailDOS = carDetailDOMapperl.getDetailListByModelId(modelId, VALID_STATUS);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(carDetailDOS), "请先删除所有子车型");
+        Preconditions.checkArgument(CollectionUtils.isEmpty(carDetailDOS), "请先删除所有子车型");
     }
 
 }

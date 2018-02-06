@@ -23,9 +23,7 @@ public class PaddingCompanyDO {
 
     private String address;
 
-    private BigDecimal businessInsuranceRebate;
-
-    private BigDecimal trafficInsuranceRebate;
+    private BigDecimal rate;
 
     private String bank;
 

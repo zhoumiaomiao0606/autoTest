@@ -27,9 +27,7 @@ public class PaddingCompanyVO {
 
     private String address;
 
-    private BigDecimal businessInsuranceRebate;
-
-    private BigDecimal trafficInsuranceRebate;
+    private BigDecimal rate;
 
     private String bank;
 
@@ -44,6 +42,8 @@ public class PaddingCompanyVO {
     private Date gmtModify;
 
     private String feature;
+
+    private Byte status;
 
     private String cooperationPolicy;
 }

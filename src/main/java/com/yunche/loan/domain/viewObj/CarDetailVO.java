@@ -68,6 +68,8 @@ public class CarDetailVO {
      */
     private Byte fuelType;
 
+    private Byte status;
+
     private Date gmtCreate;
 
     private Date gmtModify;

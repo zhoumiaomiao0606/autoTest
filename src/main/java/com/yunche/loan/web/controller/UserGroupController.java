@@ -139,7 +139,7 @@ public class UserGroupController {
     }
 
     /**
-     * 绑定权限列表      -支持列表
+     * 编辑权限列表（以当前authIds为准，全量更新）      -支持列表
      *
      * @param id      用户组ID
      * @param areaId  限定权限使用的业务区域(城市)ID
@@ -148,14 +148,38 @@ public class UserGroupController {
      *                <p>
      *                需求：所有的权限都只限制在当前的城市下！！！全部权限绑定同一个城市，故以当前areaId为准！！！
      * @param authIds 权限ID列表 逗号分隔
+     * @param type    权限类型  1:MENU; 2:PAGE; 3:OPERATION;
+     * @return
+     */
+    @GetMapping(value = "/editAuth")
+    public ResultBean<Void> editAuth(@RequestParam("id") Long id,
+                                     @RequestParam("areaId") Long areaId,
+                                     @RequestParam("authIds") String authIds,
+                                     @RequestParam("type") Byte type) {
+        logger.info(Arrays.asList("editAuth", JSON.toJSONString(id), JSON.toJSONString(authIds), JSON.toJSONString(type)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.editAuth(id, areaId, authIds, type);
+    }
+
+    /**
+     * 绑定权限列表（仅绑定新增权限）      -支持列表
+     *
+     * @param id      用户组ID
+     * @param areaId  限定权限使用的业务区域(城市)ID
+     *                <p>
+     *                替换所有的areaId
+     *                <p>
+     *                需求：所有的权限都只限制在当前的城市下！！！全部权限绑定同一个城市，故以当前areaId为准！！！
+     * @param authIds 权限ID列表 逗号分隔
+     * @param type    权限类型  1:MENU; 2:PAGE; 3:OPERATION;
      * @return
      */
     @GetMapping(value = "/bindAuth")
     public ResultBean<Void> bindAuth(@RequestParam("id") Long id,
                                      @RequestParam("areaId") Long areaId,
-                                     @RequestParam("authIds") String authIds) {
-        logger.info(Arrays.asList("bindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds)).stream().collect(Collectors.joining("\u0001")));
-        return userGroupService.bindAuth(id, areaId, authIds);
+                                     @RequestParam("authIds") String authIds,
+                                     @RequestParam("type") Byte type) {
+        logger.info(Arrays.asList("bindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds), JSON.toJSONString(type)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.bindAuth(id, areaId, authIds, type);
     }
 
     /**
@@ -163,12 +187,14 @@ public class UserGroupController {
      *
      * @param id      用户组ID
      * @param authIds 权限ID列表 逗号分隔
+     * @param type    权限类型  1:MENU; 2:PAGE; 3:OPERATION;
      * @return
      */
     @GetMapping(value = "/unbindAuth")
     public ResultBean<Void> unbindAuth(@RequestParam("id") Long id,
-                                       @RequestParam("authIds") String authIds) {
-        logger.info(Arrays.asList("unbindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds)).stream().collect(Collectors.joining("\u0001")));
-        return userGroupService.unbindAuth(id, authIds);
+                                       @RequestParam("authIds") String authIds,
+                                       @RequestParam("type") Byte type) {
+        logger.info(Arrays.asList("unbindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds), JSON.toJSONString(type)).stream().collect(Collectors.joining("\u0001")));
+        return userGroupService.unbindAuth(id, authIds, type);
     }
 }

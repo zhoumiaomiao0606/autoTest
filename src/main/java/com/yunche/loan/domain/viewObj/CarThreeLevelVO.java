@@ -36,6 +36,8 @@ public class CarThreeLevelVO {
 
         private String logo;
 
+        private Byte status;
+
         private Date gmtCreate;
 
         private Date gmtModify;
@@ -95,6 +97,8 @@ public class CarThreeLevelVO {
          * 生产类型（1:国产;2:合资）
          */
         private Byte productionType;
+
+        private Byte status;
 
         private Date gmtCreate;
 
@@ -160,6 +164,8 @@ public class CarThreeLevelVO {
          * 燃油类型（1:汽油;2:柴油）
          */
         private Byte fuelType;
+
+        private Byte status;
 
         private Date gmtCreate;
 

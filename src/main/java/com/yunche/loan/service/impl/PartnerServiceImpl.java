@@ -2,27 +2,40 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.common.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
-import com.yunche.loan.domain.queryObj.BaseQuery;
-import com.yunche.loan.domain.queryObj.PartnerQuery;
-import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.PartnerParam;
-import com.yunche.loan.domain.viewObj.*;
+import com.yunche.loan.domain.queryObj.BizModelQuery;
+import com.yunche.loan.domain.queryObj.EmployeeQuery;
+import com.yunche.loan.domain.queryObj.PartnerQuery;
+import com.yunche.loan.domain.queryObj.RelaQuery;
+import com.yunche.loan.domain.viewObj.BaseVO;
+import com.yunche.loan.domain.viewObj.BizModelVO;
+import com.yunche.loan.domain.viewObj.EmployeeVO;
+import com.yunche.loan.domain.viewObj.PartnerVO;
 import com.yunche.loan.service.PartnerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
+import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
 
 /**
  * @author liuzhe
@@ -31,6 +44,9 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Service
 @Transactional
 public class PartnerServiceImpl implements PartnerService {
+
+    @Value("${spring.mail.username}")
+    private String from;
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
@@ -46,10 +62,12 @@ public class PartnerServiceImpl implements PartnerService {
     private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
     @Autowired
     private BizModelRelaAreaPartnersDOMapper bizModelRelaAreaPartnersDOMapper;
+    @Autowired
+    private JavaMailSender mailSender;
 
 
     @Override
-    public ResultBean<Long> create(PartnerParam partnerParam) {
+    public ResultBean<Long> create(PartnerParam partnerParam) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getName()), "团队名称不能为空");
         Preconditions.checkNotNull(partnerParam.getDepartmentId(), "对应负责部门不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getLeaderName()), "团队负责人不能为空");
@@ -61,6 +79,9 @@ public class PartnerServiceImpl implements PartnerService {
         Preconditions.checkArgument(VALID_STATUS.equals(partnerParam.getStatus()) || INVALID_STATUS.equals(partnerParam.getStatus()),
                 "状态非法");
 
+        // 给合伙人创建一个账号
+        createAccountIfNotExist(partnerParam.getLeaderMobile(), partnerParam.getName());
+
         // 创建实体，并返回ID
         Long id = insertAndGetId(partnerParam);
 
@@ -68,6 +89,63 @@ public class PartnerServiceImpl implements PartnerService {
         bindBizModel(id, partnerParam.getAreaId(), partnerParam.getBizModelIdList());
 
         return ResultBean.ofSuccess(id, "创建成功");
+    }
+
+    /**
+     * 给合伙人团队负责人(老板)  创建一个账号
+     * <p>
+     * 以负责人手机号创建账号
+     *
+     * @param mobile
+     * @param name
+     */
+    private void createAccountIfNotExist(String mobile, String name) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+
+        // 是否已创建账号
+        EmployeeQuery query = new EmployeeQuery();
+        query.setMobile(mobile);
+        List<EmployeeDO> employeeDOS = employeeDOMapper.query(query);
+
+        // 无 -> 新建
+        if (CollectionUtils.isEmpty(employeeDOS)) {
+
+            // 随机生成密码
+            String password = MD5Utils.getRandomString(10);
+
+            // MD5加密
+            String md5Password = MD5Utils.md5Password(password);
+
+            EmployeeDO employeeDO = new EmployeeDO();
+            employeeDO.setType(TYPE_WB);
+            employeeDO.setName(name);
+            employeeDO.setMobile(mobile);
+            employeeDO.setPassword(md5Password);
+            employeeDO.setGmtModify(new Date());
+            employeeDO.setGmtModify(new Date());
+
+            int count = employeeDOMapper.insertSelective(employeeDO);
+            Preconditions.checkArgument(count > 0, "创建团队负责人账号失败");
+
+            // sentAccount
+//            sentAccountAndPassword();
+        }
+    }
+
+    /**
+     * 发送账号密码到邮箱
+     *
+     * @param email
+     * @param password
+     */
+    private void sentAccountAndPassword(String email, String password) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(email);
+        message.setSubject("主题：注册账号密码");
+        message.setText("账号：" + email + NEW_LINE + "密码：" + password);
+
+        mailSender.send(message);
     }
 
     @Override
@@ -97,7 +175,7 @@ public class PartnerServiceImpl implements PartnerService {
     public ResultBean<PartnerVO> getById(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
-        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(id, VALID_STATUS);
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(partnerDO, "id有误，数据不存在");
 
         PartnerVO partnerVO = new PartnerVO();
@@ -117,7 +195,7 @@ public class PartnerServiceImpl implements PartnerService {
             List<PartnerDO> partnerDOS = partnerDOMapper.query(query);
             if (!CollectionUtils.isEmpty(partnerDOS)) {
 
-                List<PartnerVO> partnerVOS = partnerDOS.stream()
+                List<PartnerVO> partnerVOS = partnerDOS.parallelStream()
                         .filter(Objects::nonNull)
                         .map(e -> {
                             PartnerVO partnerVO = new PartnerVO();
@@ -128,6 +206,7 @@ public class PartnerServiceImpl implements PartnerService {
 
                             return partnerVO;
                         })
+                        .sorted(Comparator.comparing(PartnerVO::getId))
                         .collect(Collectors.toList());
 
                 return ResultBean.ofSuccess(partnerVOS, totalNum, query.getPageIndex(), query.getPageSize());
@@ -137,13 +216,19 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public ResultBean<List<BizModelVO>> listBizModel(BaseQuery query) {
-        Preconditions.checkNotNull(query.getId(), "合伙人ID不能为空");
+    public ResultBean<List<BizModelVO>> listBizModel(BizModelQuery query) {
+        // 根据areaId填充所有父级areaId(含自身)
+        getAndSetCascadeAreaIdList(query);
 
-        int totalNum = bizModelDOMapper.countListBizModelByPartnerId(query);
-        if (totalNum > 0) {
+        // 获取所有符合条件的ID
+        List<Long> bizModelIdList = bizModelRelaAreaPartnersDOMapper.getBizModelIdListByCondition(query);
 
-            List<BizModelDO> bizModelDOS = bizModelDOMapper.listBizModelByPartnerId(query);
+        // 截取分页ID
+        List<Long> pagingBizModelIdList = pagingBizModelIdList(bizModelIdList, query.getStartRow(), query.getPageSize());
+
+        if (!CollectionUtils.isEmpty(pagingBizModelIdList)) {
+
+            List<BizModelDO> bizModelDOS = bizModelDOMapper.getByIdList(pagingBizModelIdList);
             if (!CollectionUtils.isEmpty(bizModelDOS)) {
 
                 List<BizModelVO> bizModelVOList = bizModelDOS.parallelStream()
@@ -155,13 +240,13 @@ public class PartnerServiceImpl implements PartnerService {
 
                             return bizModelVO;
                         })
-                        .sorted(Comparator.comparing(BizModelVO::getGmtModify))
+                        .sorted(Comparator.comparing(BizModelVO::getBizId))
                         .collect(Collectors.toList());
 
-                return ResultBean.ofSuccess(bizModelVOList, totalNum, query.getPageIndex(), query.getPageSize());
+                return ResultBean.ofSuccess(bizModelVOList, bizModelIdList.size(), query.getPageIndex(), query.getPageSize());
             }
         }
-        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, bizModelIdList.size(), query.getPageIndex(), query.getPageSize());
     }
 
     @Override
@@ -610,5 +695,93 @@ public class PartnerServiceImpl implements PartnerService {
             int count = partnerRelaEmployeeDOMapper.batchInsert(partnerRelaEmployeeDOS);
             Preconditions.checkArgument(count == partnerRelaEmployeeDOS.size(), "关联失败");
         }
+    }
+
+    /**
+     * 根据areaId填充所有父级areaId(含自身)
+     *
+     * @param query
+     */
+    private void getAndSetCascadeAreaIdList(BizModelQuery query) {
+        // getAllCascadeAreaIdList
+        List<Long> allSuperAreaIdList = getAllSuperAreaIdList(query.getAreaId());
+        allSuperAreaIdList.removeAll(Collections.singleton(null));
+        // set
+        query.setCascadeAreaIdList(allSuperAreaIdList);
+    }
+
+    /**
+     * 获取所有父级areaId(含自身)ID
+     *
+     * @param areaId
+     * @return
+     */
+    private List<Long> getAllSuperAreaIdList(Long areaId) {
+        List<Long> superAreaIdList = Lists.newArrayList(areaId);
+
+        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
+        if (null != baseAreaDO) {
+
+            BaseAreaDO parentBaseAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), VALID_STATUS);
+            if (null != parentBaseAreaDO) {
+                superAreaIdList.add(parentBaseAreaDO.getParentAreaId());
+                getAndSetSuperAreaId(parentBaseAreaDO.getParentAreaId(), superAreaIdList);
+            }
+        }
+
+        return superAreaIdList;
+    }
+
+    /**
+     * 递归获取父级AreaId
+     *
+     * @param parentAreaId
+     * @param superAreaIdList
+     */
+    private void getAndSetSuperAreaId(Long parentAreaId, List<Long> superAreaIdList) {
+        if (null != parentAreaId) {
+            BaseAreaDO parentBaseAreaDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, VALID_STATUS);
+            if (null != parentBaseAreaDO) {
+                superAreaIdList.add(parentBaseAreaDO.getParentAreaId());
+                getAndSetSuperAreaId(parentBaseAreaDO.getParentAreaId(), superAreaIdList);
+            }
+        }
+    }
+
+    /**
+     * 截取分页ID
+     *
+     * @param bizModelIdList
+     * @param startRow
+     * @param pageSize
+     * @return
+     */
+    private List<Long> pagingBizModelIdList(List<Long> bizModelIdList, Integer startRow, Integer pageSize) {
+
+        int fromIndex = 0;
+        int toIndex = 0;
+        int totalNum = bizModelIdList.size();
+
+        if (startRow > totalNum) {
+            return null;
+        } else {
+            fromIndex = startRow;
+        }
+
+        if (pageSize + startRow > totalNum) {
+            toIndex = totalNum;
+        } else {
+            toIndex = pageSize + startRow;
+        }
+
+        // ID大小排序
+        List<Long> pageIdList = bizModelIdList.parallelStream()
+                .sorted()
+                .collect(Collectors.toList());
+
+        // pageID截取
+        List<Long> pagingPageIdList = pageIdList.subList(fromIndex, toIndex);
+
+        return pagingPageIdList;
     }
 }

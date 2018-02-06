@@ -58,13 +58,26 @@
         </dependency>
         <!-- web -->
 
-        <!--Http 请求-->
+        <!-- log4j2 -->
         <dependency>
-            <groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>1.4.9</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
-        <!--Http 请求-->
+        <!-- log4j2 -->
+
+        <!-- redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- redis -->
+
+        <!-- mail -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <!-- mail -->
 
         <!-- test -->
         <dependency>
@@ -101,22 +114,6 @@
         </dependency>
         <!--spring boot jdbc & mybatis-->
 
-        <!--json-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.7.sec01</version>
-        </dependency>
-        <!--json-->
-
-        <!--lombok-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
-        </dependency>
-        <!--lombok-->
-
         <!--mybatis-generator-->
         <dependency>
             <groupId>org.mybatis.generator</groupId>
@@ -124,13 +121,6 @@
             <version>1.3.5</version>
         </dependency>
         <!--mybatis-generator-->
-
-        <!-- log4j2 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
-        <!-- log4j2 -->
 
         <!-- 数组,列表操作,使用lang3,不使用lang,后者不支持泛型 -->
         <dependency>
@@ -150,6 +140,22 @@
         </dependency>
         <!-- 数组,列表操作,使用lang3,不使用lang,后者不支持泛型 -->
 
+        <!--lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.16</version>
+        </dependency>
+        <!--lombok-->
+
+        <!--json-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.7.sec01</version>
+        </dependency>
+        <!--json-->
+
         <!-- 缓存 -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -157,6 +163,14 @@
             <version>20.0</version>
         </dependency>
         <!-- 缓存 -->
+
+        <!--Http 请求-->
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>1.4.9</version>
+        </dependency>
+        <!--Http 请求-->
 
         <!--热部署-->
         <dependency>
@@ -288,16 +302,16 @@
 
             <!--打war包 -->
             <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-war-plugin</artifactId>-->
-                <!--<version>2.1.1</version>-->
-                <!--<configuration>-->
-                    <!--&lt;!&ndash;指定web.xml的路径  &ndash;&gt;-->
-                    <!--&lt;!&ndash;<webXml>WebRoot\WEB-INF\web.xml</webXml>&ndash;&gt;-->
-                    <!--&lt;!&ndash;指定jsp、js、css的路劲  &ndash;&gt;-->
-                    <!--&lt;!&ndash;<warSourceDirectory>WebRoot</warSourceDirectory>&ndash;&gt;-->
-                    <!--<warName>loanBizSystem</warName>-->
-                <!--</configuration>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-war-plugin</artifactId>-->
+            <!--<version>2.1.1</version>-->
+            <!--<configuration>-->
+            <!--&lt;!&ndash;指定web.xml的路径  &ndash;&gt;-->
+            <!--&lt;!&ndash;<webXml>WebRoot\WEB-INF\web.xml</webXml>&ndash;&gt;-->
+            <!--&lt;!&ndash;指定jsp、js、css的路劲  &ndash;&gt;-->
+            <!--&lt;!&ndash;<warSourceDirectory>WebRoot</warSourceDirectory>&ndash;&gt;-->
+            <!--<warName>loanBizSystem</warName>-->
+            <!--</configuration>-->
             <!--</plugin>-->
             <!--打war包到指定的目录下 -->
             <!--<plugin>

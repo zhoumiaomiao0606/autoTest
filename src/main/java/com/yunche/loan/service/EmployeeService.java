@@ -9,6 +9,8 @@ import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.LevelVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    ResultBean<Long> create(EmployeeParam employeeParam);
+    ResultBean<Long> create(EmployeeParam employeeParam) throws UnsupportedEncodingException, NoSuchAlgorithmException;
 
     ResultBean<Void> update(EmployeeDO employeeDO);
 
@@ -36,4 +38,6 @@ public interface EmployeeService {
     ResultBean<Void> bindUserGroup(Long id, String userGroupIds);
 
     ResultBean<Void> unbindUserGroup(Long id, String userGroupIds);
+
+    ResultBean<Void> resetPassword(Long id);
 }

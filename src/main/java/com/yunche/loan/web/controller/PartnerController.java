@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.queryObj.BaseQuery;
+import com.yunche.loan.domain.queryObj.BizModelQuery;
 import com.yunche.loan.domain.queryObj.PartnerQuery;
 import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.PartnerDO;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +48,7 @@ public class PartnerController {
      * @return
      */
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> create(@RequestBody PartnerParam partnerParam) {
+    public ResultBean<Long> create(@RequestBody PartnerParam partnerParam) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         logger.info(Arrays.asList("create", JSON.toJSONString(partnerParam)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.create(partnerParam);
     }
@@ -96,7 +99,7 @@ public class PartnerController {
      * @return
      */
     @PostMapping(value = "/listBizModel")
-    public ResultBean<List<BizModelVO>> listBizModel(@RequestBody BaseQuery query) {
+    public ResultBean<List<BizModelVO>> listBizModel(@RequestBody BizModelQuery query) {
         logger.info(Arrays.asList("listBizModel", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.listBizModel(query);
     }

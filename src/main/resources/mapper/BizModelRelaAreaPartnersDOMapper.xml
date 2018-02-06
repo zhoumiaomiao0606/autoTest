@@ -31,6 +31,27 @@
         </where>
     </select>
 
+    <!-- getBizModelIdListByCondition -->
+    <select id="getBizModelIdListByCondition" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
+            resultType="java.lang.Long">
+        SELECT DISTINCT(a.biz_id)
+        FROM biz_model_rela_area_partners AS a
+        JOIN biz_model AS b
+        ON a.`biz_id` = b.`biz_id`
+        <if test="id != null">
+            AND a.group_id = #{id}
+        </if>
+        <if test="cascadeAreaIdList != null and cascadeAreaIdList.size() > 0">
+            AND a.area_id IN
+            <foreach collection="cascadeAreaIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+    </select>
+
     <select id="query" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO"
             resultMap="BaseResultMap">
         select
@@ -40,12 +61,20 @@
         and area_id = #{areaId,jdbcType=BIGINT}
         and group_id = #{groupId,jdbcType=BIGINT}
     </select>
+
+    <!--getAllAreaId-->
+    <select id="getAllAreaId" resultType="java.lang.Long">
+        select DISTINCT(area_id)
+        from biz_model_rela_area_partners
+    </select>
+
     <select id="queryById" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from biz_model_rela_area_partners
         where biz_id = #{bizId,jdbcType=BIGINT}
     </select>
+
     <delete id="deleteByPrimaryKey">
     delete from biz_model_rela_area_partners
     where biz_id = #{0, jdbcType=BIGINT}
