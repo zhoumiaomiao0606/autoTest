@@ -38,7 +38,7 @@ public class CustServiceImpl implements CustService {
     @Override
     public ResultBean<Void> create(DelegateExecution execution) {
         CustBaseInfoVO custBaseInfoVO = (CustBaseInfoVO) execution.getVariable("custBaseInfoVO");
-        if (custBaseInfoVO != null) {
+        if (custBaseInfoVO != null && custBaseInfoVO.getCustId() == null) {
             // 主贷人
             CustBaseInfoDO custBaseInfoDO = new CustBaseInfoDO();
             BeanUtils.copyProperties(custBaseInfoVO, custBaseInfoDO);
@@ -70,7 +70,6 @@ public class CustServiceImpl implements CustService {
 
             // 记录流程执行节点
             InstProcessNodeDO instProcessNodeDO = new InstProcessNodeDO();
-//            InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) execution.getVariable("instLoanOrderVO");
             instProcessNodeDO.setOrderId(instLoanOrderVO.getOrderId());
             String processId = (String) execution.getVariable("processId");
             instProcessNodeDO.setProcessInstId(processId);
@@ -79,9 +78,26 @@ public class CustServiceImpl implements CustService {
             instProcessNodeDO.setPreviousNodeCode(LoanProcessEnum.CREDIT_APPLY.getCode());
             instProcessNodeDO.setNextNodeCode(LoanProcessEnum.CREDIT_VERIFY.getCode());
             instProcessNodeDO.setStatus(ProcessActionEnum.PASS.name());
-//            instProcessNodeDO.setOperatorId(operatorId);
-//            instProcessNodeDO.setOperatorName(operatorName);
-//            instProcessNodeDO.setOperatorRole(operatorRole);
+            processNodeService.insert(instProcessNodeDO);
+        } else if (custBaseInfoVO != null && custBaseInfoVO.getCustId() != null) {
+            // 客户已存在
+            update(custBaseInfoVO);
+
+            // 更新订单信息
+            InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) execution.getVariable("instLoanOrderVO");
+            instLoanOrderVO.setCustId(custBaseInfoVO.getCustId());
+            loanOrderService.update(instLoanOrderVO);
+
+            // 记录流程执行节点
+            InstProcessNodeDO instProcessNodeDO = new InstProcessNodeDO();
+            instProcessNodeDO.setOrderId(instLoanOrderVO.getOrderId());
+            String processId = (String) execution.getVariable("processId");
+            instProcessNodeDO.setProcessInstId(processId);
+            instProcessNodeDO.setNodeCode(LoanProcessEnum.CREDIT_SAVE.getCode());
+            instProcessNodeDO.setNodeName(LoanProcessEnum.CREDIT_SAVE.getName());
+            instProcessNodeDO.setPreviousNodeCode(LoanProcessEnum.CREDIT_APPLY.getCode());
+            instProcessNodeDO.setNextNodeCode(LoanProcessEnum.CREDIT_VERIFY.getCode());
+            instProcessNodeDO.setStatus(ProcessActionEnum.PASS.name());
             processNodeService.insert(instProcessNodeDO);
         }
         return ResultBean.ofSuccess(null, "创建客户成功");

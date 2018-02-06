@@ -109,6 +109,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     public ResultBean<Void> creditVerify(String processId, String action,
                                          Long operatorId, String operatorName, String operatorRole) {
         Task task = taskService.createTaskQuery().processInstanceId(processId).singleResult();
+        InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) runtimeService.getVariable(task.getExecutionId(), "instLoanOrderVO");
 
         Map<String, Object> taskVariables = new HashMap<String, Object>();
         taskVariables.put("processAction", action);
@@ -116,7 +117,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 记录流程执行节点
         InstProcessNodeDO instProcessNodeDO = new InstProcessNodeDO();
-        InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) runtimeService.getVariable(task.getExecutionId(), "instLoanOrderVO");
+
         instProcessNodeDO.setOrderId(instLoanOrderVO.getOrderId());
         instProcessNodeDO.setProcessInstId(processId);
         instProcessNodeDO.setNodeCode(LoanProcessEnum.CREDIT_VERIFY.getCode());
@@ -136,6 +137,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     public ResultBean<Void> bankCreditRecord(CustBaseInfoVO custBaseInfoVO, String processId, String action,
                                              Long operatorId, String operatorName, String operatorRole) {
         Task task = taskService.createTaskQuery().processInstanceId(processId).taskName(LoanProcessEnum.BANK_CREDIT_RECORD.getName()).singleResult();
+        InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) runtimeService.getVariable(task.getExecutionId(), "instLoanOrderVO");
 
         // 更新客户的银行征信数据
         custService.update(custBaseInfoVO);
@@ -146,7 +148,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 记录流程执行节点
         InstProcessNodeDO instProcessNodeDO = new InstProcessNodeDO();
-        InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) runtimeService.getVariable(task.getExecutionId(), "instLoanOrderVO");
         instProcessNodeDO.setOrderId(instLoanOrderVO.getOrderId());
         instProcessNodeDO.setProcessInstId(processId);
         instProcessNodeDO.setNodeCode(LoanProcessEnum.BANK_CREDIT_RECORD.getCode());
@@ -166,6 +167,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     public ResultBean<Void> socialCreditRecord(CustBaseInfoVO custBaseInfoVO, String processId, String action,
                                                Long operatorId, String operatorName, String operatorRole) {
         Task task = taskService.createTaskQuery().processInstanceId(processId).taskName(LoanProcessEnum.SOCIAL_CREDIT_RECORD.getName()).singleResult();
+        InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) runtimeService.getVariable(task.getExecutionId(), "instLoanOrderVO");
 
         // 更新客户的社会征信数据
         custService.update(custBaseInfoVO);
@@ -176,7 +178,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 记录流程执行节点
         InstProcessNodeDO instProcessNodeDO = new InstProcessNodeDO();
-        InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) runtimeService.getVariable(task.getExecutionId(), "instLoanOrderVO");
         instProcessNodeDO.setOrderId(instLoanOrderVO.getOrderId());
         instProcessNodeDO.setProcessInstId(processId);
         instProcessNodeDO.setNodeCode(LoanProcessEnum.SOCIAL_CREDIT_RECORD.getCode());
