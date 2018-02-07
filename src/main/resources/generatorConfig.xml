@@ -178,9 +178,9 @@
 
         -->
 
-        <table tableName="padding_company" domainObjectName="PaddingCompanyDO"
+       <!-- <table tableName="padding_company" domainObjectName="PaddingCompanyDO"
                enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
 
         <!--
 
@@ -196,6 +196,10 @@
         <table tableName="inst_process_node" domainObjectName="InstProcessNodeDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
+
+        <table tableName="inst_loan_order" domainObjectName="InstLoanOrderDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

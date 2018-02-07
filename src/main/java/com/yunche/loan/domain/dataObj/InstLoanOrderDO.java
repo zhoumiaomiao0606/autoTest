@@ -12,17 +12,45 @@ public class InstLoanOrderDO implements Serializable {
 
     private String processInstId;
 
+    private Long carId;
+
+    private Integer carType;
+
+    private Integer carPrice;
+
+    private Boolean carKey;
+
+    private Integer gpsNum;
+
+    private Integer interestRate;
+
     private Integer loanAmount;
 
     private Integer firstPayAmount;
 
-    private Integer totalPayAmount;
+    private Integer loanRate;
+
+    private Integer loanStage;
+
+    private Integer bankPrincipalAmount;
+
+    private Integer bankChargeAmount;
+
+    private Integer totalAmount;
 
     private Integer firstMonthPayAmount;
 
     private Integer eachMonthPayAmount;
 
-    private Long carId;
+    private Long partnerId;
+
+    private String partnerAccountName;
+
+    private String partnerBank;
+
+    private String partnerAccountNum;
+
+    private Integer partnerPayType;
 
     private Long insuId;
 
@@ -41,8 +69,6 @@ public class InstLoanOrderDO implements Serializable {
 
     private String feature;
 
-    private Byte carType;
-
     private String bank;
 
     private Integer status;
@@ -57,6 +83,54 @@ public class InstLoanOrderDO implements Serializable {
 
     public void setProcessInstId(String processInstId) {
         this.processInstId = processInstId;
+    }
+
+    public Boolean getCarKey() {
+        return carKey;
+    }
+
+    public void setCarKey(Boolean carKey) {
+        this.carKey = carKey;
+    }
+
+    public Long getPartnerId() {
+        return partnerId;
+    }
+
+    public void setPartnerId(Long partnerId) {
+        this.partnerId = partnerId;
+    }
+
+    public String getPartnerAccountName() {
+        return partnerAccountName;
+    }
+
+    public void setPartnerAccountName(String partnerAccountName) {
+        this.partnerAccountName = partnerAccountName;
+    }
+
+    public String getPartnerBank() {
+        return partnerBank;
+    }
+
+    public void setPartnerBank(String partnerBank) {
+        this.partnerBank = partnerBank;
+    }
+
+    public String getPartnerAccountNum() {
+        return partnerAccountNum;
+    }
+
+    public void setPartnerAccountNum(String partnerAccountNum) {
+        this.partnerAccountNum = partnerAccountNum;
+    }
+
+    public Integer getPartnerPayType() {
+        return partnerPayType;
+    }
+
+    public void setPartnerPayType(Integer partnerPayType) {
+        this.partnerPayType = partnerPayType;
     }
 
     public Long getSalesmanId() {
@@ -89,14 +163,6 @@ public class InstLoanOrderDO implements Serializable {
 
     public void setAreaId(Long areaId) {
         this.areaId = areaId;
-    }
-
-    public Byte getCarType() {
-        return carType;
-    }
-
-    public void setCarType(Byte carType) {
-        this.carType = carType;
     }
 
     public String getBank() {
@@ -147,12 +213,76 @@ public class InstLoanOrderDO implements Serializable {
         this.firstPayAmount = firstPayAmount;
     }
 
-    public Integer getTotalPayAmount() {
-        return totalPayAmount;
+    public Integer getCarPrice() {
+        return carPrice;
     }
 
-    public void setTotalPayAmount(Integer totalPayAmount) {
-        this.totalPayAmount = totalPayAmount;
+    public void setCarPrice(Integer carPrice) {
+        this.carPrice = carPrice;
+    }
+
+    public Integer getInterestRate() {
+        return interestRate;
+    }
+
+    public void setInterestRate(Integer interestRate) {
+        this.interestRate = interestRate;
+    }
+
+    public Integer getLoanRate() {
+        return loanRate;
+    }
+
+    public void setLoanRate(Integer loanRate) {
+        this.loanRate = loanRate;
+    }
+
+    public Integer getLoanStage() {
+        return loanStage;
+    }
+
+    public void setLoanStage(Integer loanStage) {
+        this.loanStage = loanStage;
+    }
+
+    public Integer getBankPrincipalAmount() {
+        return bankPrincipalAmount;
+    }
+
+    public void setBankPrincipalAmount(Integer bankPrincipalAmount) {
+        this.bankPrincipalAmount = bankPrincipalAmount;
+    }
+
+    public Integer getBankChargeAmount() {
+        return bankChargeAmount;
+    }
+
+    public void setBankChargeAmount(Integer bankChargeAmount) {
+        this.bankChargeAmount = bankChargeAmount;
+    }
+
+    public Integer getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Integer totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Integer getCarType() {
+        return carType;
+    }
+
+    public void setCarType(Integer carType) {
+        this.carType = carType;
+    }
+
+    public Integer getGpsNum() {
+        return gpsNum;
+    }
+
+    public void setGpsNum(Integer gpsNum) {
+        this.gpsNum = gpsNum;
     }
 
     public Integer getFirstMonthPayAmount() {

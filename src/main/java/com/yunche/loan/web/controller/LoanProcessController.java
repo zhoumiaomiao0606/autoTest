@@ -97,6 +97,23 @@ public class LoanProcessController {
                                                @RequestParam("operatorRole") String operatorRole) {
         return loanProcessService.socialCreditRecord(custBaseInfoVO, processId, action, operatorId, operatorName, operatorRole);
     }
+
+    /**
+     * 合伙人[提交]业务申请单
+     * @param instLoanOrderVO
+     * @param processId
+     * @param operatorId
+     * @param operatorName
+     * @param operatorRole
+     * @return
+     */
+    @PostMapping(value = "/loanApprove", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResultBean<Void> loanApprove(@RequestBody InstLoanOrderVO instLoanOrderVO, @RequestParam("processId") String processId,
+                                               @RequestParam("operatorId") Long operatorId,
+                                               @RequestParam("operatorName") String operatorName,
+                                               @RequestParam("operatorRole") String operatorRole) {
+        return loanProcessService.loanApprove(instLoanOrderVO, processId, operatorId, operatorName, operatorRole);
+    }
 }
 
 

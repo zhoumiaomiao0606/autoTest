@@ -22,8 +22,6 @@ public interface LoanProcessService {
 
     ResultBean<Void> socialCreditRecord(CustBaseInfoVO custBaseInfoVO, String processId, String action, Long operatorId, String operatorName, String operatorRole);
 
-    ResultBean<List<Task>> getTasks(String userGroupName);
-
-    ResultBean<Void> completeTasks(boolean isApproved, String taskId);
+    ResultBean<Void> loanApprove(InstLoanOrderVO instLoanOrderVO, String processId, Long operatorId, String operatorName, String operatorRole);
 
 }

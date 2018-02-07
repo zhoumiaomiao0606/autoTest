@@ -194,17 +194,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     @Override
-    public ResultBean<List<Task>> getTasks(String userGroupName) {
-        List<Task> taskList = taskService.createTaskQuery().taskCandidateUser(userGroupName).list();
-        return ResultBean.ofSuccess(taskList);
+    public ResultBean<Void> loanApprove(InstLoanOrderVO instLoanOrderVO, String processId, Long operatorId, String operatorName, String operatorRole) {
+        return null;
     }
 
-    @Override
-    public ResultBean<Void> completeTasks(boolean isApproved, String taskId) {
-        Map<String, Object> taskVariables = new HashMap<String, Object>();
-        taskVariables.put("isApproved", isApproved);
-        taskService.complete(taskId, taskVariables);
-
-        return ResultBean.ofSuccess(null, "任务处理成功");
-    }
 }

@@ -1,9 +1,8 @@
-package com.yunche.loan.domain.viewObj;
+package com.yunche.loan.domain.dataObj;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class InstLoanOrderVO implements Serializable {
+public class InstLoanOrderDO {
     private Long orderId;
 
     private Long custId;
@@ -14,11 +13,11 @@ public class InstLoanOrderVO implements Serializable {
 
     private Long carId;
 
-    private Integer carType;
+    private Byte carType;
 
     private Integer carPrice;
 
-    private Boolean carKey;
+    private Byte carKey;
 
     private Integer gpsNum;
 
@@ -58,8 +57,7 @@ public class InstLoanOrderVO implements Serializable {
 
     private String salesmanName;
 
-    // 贷款额度档次:1-13W以下/2-13至20W/3-20W以上
-    private Integer amountGrade;
+    private Byte amountGrade;
 
     private Long areaId;
 
@@ -71,109 +69,11 @@ public class InstLoanOrderVO implements Serializable {
 
     private String bank;
 
-    private Integer status;
+    private Byte status;
 
     private Date gmtCreate;
 
     private Date gmtModify;
-
-    private CustBaseInfoVO custBaseInfoVO;
-
-    public Boolean getCarKey() {
-        return carKey;
-    }
-
-    public void setCarKey(Boolean carKey) {
-        this.carKey = carKey;
-    }
-
-    public Long getPartnerId() {
-        return partnerId;
-    }
-
-    public void setPartnerId(Long partnerId) {
-        this.partnerId = partnerId;
-    }
-
-    public String getPartnerAccountName() {
-        return partnerAccountName;
-    }
-
-    public void setPartnerAccountName(String partnerAccountName) {
-        this.partnerAccountName = partnerAccountName;
-    }
-
-    public String getPartnerBank() {
-        return partnerBank;
-    }
-
-    public void setPartnerBank(String partnerBank) {
-        this.partnerBank = partnerBank;
-    }
-
-    public String getPartnerAccountNum() {
-        return partnerAccountNum;
-    }
-
-    public void setPartnerAccountNum(String partnerAccountNum) {
-        this.partnerAccountNum = partnerAccountNum;
-    }
-
-    public Integer getPartnerPayType() {
-        return partnerPayType;
-    }
-
-    public void setPartnerPayType(Integer partnerPayType) {
-        this.partnerPayType = partnerPayType;
-    }
-
-    public CustBaseInfoVO getCustBaseInfoVO() {
-        return custBaseInfoVO;
-    }
-
-    public void setCustBaseInfoVO(CustBaseInfoVO custBaseInfoVO) {
-        this.custBaseInfoVO = custBaseInfoVO;
-    }
-
-    public Long getSalesmanId() {
-        return salesmanId;
-    }
-
-    public void setSalesmanId(Long salesmanId) {
-        this.salesmanId = salesmanId;
-    }
-
-    public String getSalesmanName() {
-        return salesmanName;
-    }
-
-    public void setSalesmanName(String salesmanName) {
-        this.salesmanName = salesmanName;
-    }
-
-    public Integer getAmountGrade() {
-        return amountGrade;
-    }
-
-    public void setAmountGrade(Integer amountGrade) {
-        this.amountGrade = amountGrade;
-    }
-
-    public Long getAreaId() {
-        return areaId;
-    }
-
-    public void setAreaId(Long areaId) {
-        this.areaId = areaId;
-    }
-
-    public String getBank() {
-        return bank;
-    }
-
-    public void setBank(String bank) {
-        this.bank = bank;
-    }
 
     public Long getOrderId() {
         return orderId;
@@ -199,6 +99,62 @@ public class InstLoanOrderVO implements Serializable {
         this.prodId = prodId;
     }
 
+    public String getProcessInstId() {
+        return processInstId;
+    }
+
+    public void setProcessInstId(String processInstId) {
+        this.processInstId = processInstId == null ? null : processInstId.trim();
+    }
+
+    public Long getCarId() {
+        return carId;
+    }
+
+    public void setCarId(Long carId) {
+        this.carId = carId;
+    }
+
+    public Byte getCarType() {
+        return carType;
+    }
+
+    public void setCarType(Byte carType) {
+        this.carType = carType;
+    }
+
+    public Integer getCarPrice() {
+        return carPrice;
+    }
+
+    public void setCarPrice(Integer carPrice) {
+        this.carPrice = carPrice;
+    }
+
+    public Byte getCarKey() {
+        return carKey;
+    }
+
+    public void setCarKey(Byte carKey) {
+        this.carKey = carKey;
+    }
+
+    public Integer getGpsNum() {
+        return gpsNum;
+    }
+
+    public void setGpsNum(Integer gpsNum) {
+        this.gpsNum = gpsNum;
+    }
+
+    public Integer getInterestRate() {
+        return interestRate;
+    }
+
+    public void setInterestRate(Integer interestRate) {
+        this.interestRate = interestRate;
+    }
+
     public Integer getLoanAmount() {
         return loanAmount;
     }
@@ -213,30 +169,6 @@ public class InstLoanOrderVO implements Serializable {
 
     public void setFirstPayAmount(Integer firstPayAmount) {
         this.firstPayAmount = firstPayAmount;
-    }
-
-    public String getProcessInstId() {
-        return processInstId;
-    }
-
-    public void setProcessInstId(String processInstId) {
-        this.processInstId = processInstId;
-    }
-
-    public Integer getCarPrice() {
-        return carPrice;
-    }
-
-    public void setCarPrice(Integer carPrice) {
-        this.carPrice = carPrice;
-    }
-
-    public Integer getInterestRate() {
-        return interestRate;
-    }
-
-    public void setInterestRate(Integer interestRate) {
-        this.interestRate = interestRate;
     }
 
     public Integer getLoanRate() {
@@ -279,22 +211,6 @@ public class InstLoanOrderVO implements Serializable {
         this.totalAmount = totalAmount;
     }
 
-    public Integer getCarType() {
-        return carType;
-    }
-
-    public void setCarType(Integer carType) {
-        this.carType = carType;
-    }
-
-    public Integer getGpsNum() {
-        return gpsNum;
-    }
-
-    public void setGpsNum(Integer gpsNum) {
-        this.gpsNum = gpsNum;
-    }
-
     public Integer getFirstMonthPayAmount() {
         return firstMonthPayAmount;
     }
@@ -311,12 +227,44 @@ public class InstLoanOrderVO implements Serializable {
         this.eachMonthPayAmount = eachMonthPayAmount;
     }
 
-    public Long getCarId() {
-        return carId;
+    public Long getPartnerId() {
+        return partnerId;
     }
 
-    public void setCarId(Long carId) {
-        this.carId = carId;
+    public void setPartnerId(Long partnerId) {
+        this.partnerId = partnerId;
+    }
+
+    public String getPartnerAccountName() {
+        return partnerAccountName;
+    }
+
+    public void setPartnerAccountName(String partnerAccountName) {
+        this.partnerAccountName = partnerAccountName == null ? null : partnerAccountName.trim();
+    }
+
+    public String getPartnerBank() {
+        return partnerBank;
+    }
+
+    public void setPartnerBank(String partnerBank) {
+        this.partnerBank = partnerBank == null ? null : partnerBank.trim();
+    }
+
+    public String getPartnerAccountNum() {
+        return partnerAccountNum;
+    }
+
+    public void setPartnerAccountNum(String partnerAccountNum) {
+        this.partnerAccountNum = partnerAccountNum == null ? null : partnerAccountNum.trim();
+    }
+
+    public Integer getPartnerPayType() {
+        return partnerPayType;
+    }
+
+    public void setPartnerPayType(Integer partnerPayType) {
+        this.partnerPayType = partnerPayType;
     }
 
     public Long getInsuId() {
@@ -325,6 +273,38 @@ public class InstLoanOrderVO implements Serializable {
 
     public void setInsuId(Long insuId) {
         this.insuId = insuId;
+    }
+
+    public Long getSalesmanId() {
+        return salesmanId;
+    }
+
+    public void setSalesmanId(Long salesmanId) {
+        this.salesmanId = salesmanId;
+    }
+
+    public String getSalesmanName() {
+        return salesmanName;
+    }
+
+    public void setSalesmanName(String salesmanName) {
+        this.salesmanName = salesmanName == null ? null : salesmanName.trim();
+    }
+
+    public Byte getAmountGrade() {
+        return amountGrade;
+    }
+
+    public void setAmountGrade(Byte amountGrade) {
+        this.amountGrade = amountGrade;
+    }
+
+    public Long getAreaId() {
+        return areaId;
+    }
+
+    public void setAreaId(Long areaId) {
+        this.areaId = areaId;
     }
 
     public String getProv() {
@@ -343,20 +323,28 @@ public class InstLoanOrderVO implements Serializable {
         this.city = city == null ? null : city.trim();
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
     public String getFeature() {
         return feature;
     }
 
     public void setFeature(String feature) {
         this.feature = feature == null ? null : feature.trim();
+    }
+
+    public String getBank() {
+        return bank;
+    }
+
+    public void setBank(String bank) {
+        this.bank = bank == null ? null : bank.trim();
+    }
+
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
     }
 
     public Date getGmtCreate() {

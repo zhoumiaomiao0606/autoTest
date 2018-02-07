@@ -58,9 +58,6 @@
     where order_id = #{orderId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
-    <selectKey resultType="long" keyProperty="orderId" order="AFTER">
-      SELECT LAST_INSERT_ID() as orderId
-    </selectKey>
     insert into inst_loan_order (order_id, cust_id, prod_id, 
       process_inst_id, car_id, car_type, 
       car_price, car_key, gps_num, 
@@ -85,7 +82,7 @@
       #{insuId,jdbcType=BIGINT}, #{salesmanId,jdbcType=BIGINT}, #{salesmanName,jdbcType=VARCHAR}, 
       #{amountGrade,jdbcType=TINYINT}, #{areaId,jdbcType=BIGINT}, #{prov,jdbcType=VARCHAR}, 
       #{city,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR}, #{bank,jdbcType=VARCHAR}, 
-      #{status,jdbcType=TINYINT}, now(), now()}
+      #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
@@ -416,7 +413,9 @@
       <if test="gmtCreate != null">
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       </if>
-        gmt_modify = now(),
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where order_id = #{orderId,jdbcType=BIGINT}
   </update>
@@ -456,7 +455,7 @@
       bank = #{bank,jdbcType=VARCHAR},
       status = #{status,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = now()
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where order_id = #{orderId,jdbcType=BIGINT}
   </update>
 </mapper>
