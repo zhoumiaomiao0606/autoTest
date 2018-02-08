@@ -62,7 +62,7 @@ public class CarCache {
         return null;
     }
 
-//    @PostConstruct
+    @PostConstruct
     private void refresh() {
         CarCascadeVO carCascadeVO = new CarCascadeVO();
 

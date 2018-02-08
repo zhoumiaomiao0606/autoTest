@@ -57,7 +57,7 @@ public class EmployeeCache {
         return Collections.EMPTY_LIST;
     }
 
-//    @PostConstruct
+    @PostConstruct
     public void refresh() {
         // getAll
         List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(VALID_STATUS);

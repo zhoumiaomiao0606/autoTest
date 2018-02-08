@@ -41,7 +41,6 @@ public class AreaCache {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
-
     public List<CascadeAreaVO> get() {
         // get
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(AREA_CASCADE_CACHE_KEY);
@@ -61,7 +60,7 @@ public class AreaCache {
         return Collections.EMPTY_LIST;
     }
 
-//    @PostConstruct
+    @PostConstruct
     public void refresh() {
         // 获取所有行政区
         List<BaseAreaDO> allArea = baseAreaDOMapper.getAll(VALID_STATUS);
