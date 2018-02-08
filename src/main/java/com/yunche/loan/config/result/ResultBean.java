@@ -1,7 +1,7 @@
 package com.yunche.loan.config.result;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.yunche.loan.config.common.BaseExceptionEnum;
+import com.yunche.loan.config.constant.BaseExceptionEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -115,14 +115,6 @@ public class ResultBean<T> implements Serializable {
         resultBean.setMsg(msg);
         resultBean.setData(null);
         return resultBean;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
     }
 }
 

@@ -9,7 +9,7 @@ import com.yunche.loan.domain.queryObj.AuthQuery;
 import com.yunche.loan.domain.dataObj.MenuDO;
 import com.yunche.loan.domain.dataObj.OperationDO;
 import com.yunche.loan.domain.dataObj.PageDO;
-import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.domain.viewObj.PageVO;
 import com.yunche.loan.service.AuthService;
 import org.springframework.beans.BeanUtils;
@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public ResultBean<List<LevelVO>> listMenu() {
+    public ResultBean<List<CascadeVO>> listMenu() {
         // getAll
         List<MenuDO> menuDOS = menuDOMapper.getAll(VALID_STATUS);
 
@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
         Map<Long, List<MenuDO>> parentIdDOMap = getParentIdDOSMapping(menuDOS);
 
         // 分级递归解析
-        List<LevelVO> topLevelList = parseLevelByLevel(parentIdDOMap);
+        List<CascadeVO> topLevelList = parseLevelByLevel(parentIdDOMap);
 
         return ResultBean.ofSuccess(topLevelList);
     }
@@ -490,13 +490,13 @@ public class AuthServiceImpl implements AuthService {
      * @param parentIdDOMap
      * @return
      */
-    private List<LevelVO> parseLevelByLevel(Map<Long, List<MenuDO>> parentIdDOMap) {
+    private List<CascadeVO> parseLevelByLevel(Map<Long, List<MenuDO>> parentIdDOMap) {
         if (!CollectionUtils.isEmpty(parentIdDOMap)) {
             List<MenuDO> menuDOS = parentIdDOMap.get(-1L);
             if (!CollectionUtils.isEmpty(menuDOS)) {
-                List<LevelVO> topLevelList = menuDOS.stream()
+                List<CascadeVO> topLevelList = menuDOS.stream()
                         .map(p -> {
-                            LevelVO parent = new LevelVO();
+                            CascadeVO parent = new CascadeVO();
                             parent.setValue(p.getId());
                             parent.setLabel(p.getName());
                             parent.setLevel(p.getLevel());
@@ -520,7 +520,7 @@ public class AuthServiceImpl implements AuthService {
      * @param parent
      * @param parentIdDOMap
      */
-    private void fillChilds(LevelVO parent, Map<Long, List<MenuDO>> parentIdDOMap) {
+    private void fillChilds(CascadeVO parent, Map<Long, List<MenuDO>> parentIdDOMap) {
         List<MenuDO> childs = parentIdDOMap.get(parent.getValue());
         if (CollectionUtils.isEmpty(childs)) {
             return;
@@ -528,12 +528,12 @@ public class AuthServiceImpl implements AuthService {
 
         childs.stream()
                 .forEach(c -> {
-                    LevelVO child = new LevelVO();
+                    CascadeVO child = new CascadeVO();
                     child.setValue(c.getId());
                     child.setLabel(c.getName());
                     child.setLevel(c.getLevel());
 
-                    List<LevelVO> childList = parent.getChildren();
+                    List<CascadeVO> childList = parent.getChildren();
                     if (CollectionUtils.isEmpty(childList)) {
                         parent.setChildren(Lists.newArrayList(child));
                     } else {

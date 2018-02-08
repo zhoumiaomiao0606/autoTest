@@ -1,7 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.yunche.loan.domain.viewObj.AreaVO;
+import com.yunche.loan.domain.viewObj.CascadeAreaVO;
 import com.yunche.loan.domain.viewObj.BaseAreaVO;
 import com.yunche.loan.domain.dataObj.BaseAreaDO;
 import com.yunche.loan.domain.queryObj.BaseAreaQuery;
@@ -62,9 +62,8 @@ public class BaseAreaController {
     }
 
     @GetMapping("/list")
-    public ResultBean<List<AreaVO>> list() {
+    public ResultBean<List<CascadeAreaVO>> list() {
         logger.info("list");
         return baseAreaService.list();
     }
-
 }

@@ -26,12 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
@@ -47,6 +44,8 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Value("${spring.mail.username}")
     private String from;
+    @Value("${salt}")
+    private String salt;
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
@@ -67,7 +66,7 @@ public class PartnerServiceImpl implements PartnerService {
 
 
     @Override
-    public ResultBean<Long> create(PartnerParam partnerParam) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public ResultBean<Long> create(PartnerParam partnerParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getName()), "团队名称不能为空");
         Preconditions.checkNotNull(partnerParam.getDepartmentId(), "对应负责部门不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getLeaderName()), "团队负责人不能为空");
@@ -99,7 +98,7 @@ public class PartnerServiceImpl implements PartnerService {
      * @param mobile
      * @param name
      */
-    private void createAccountIfNotExist(String mobile, String name) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    private void createAccountIfNotExist(String mobile, String name) {
 
         // 是否已创建账号
         EmployeeQuery query = new EmployeeQuery();
@@ -113,7 +112,7 @@ public class PartnerServiceImpl implements PartnerService {
             String password = MD5Utils.getRandomString(10);
 
             // MD5加密
-            String md5Password = MD5Utils.md5Password(password);
+            String md5Password = MD5Utils.md5(password, salt);
 
             EmployeeDO employeeDO = new EmployeeDO();
             employeeDO.setType(TYPE_WB);

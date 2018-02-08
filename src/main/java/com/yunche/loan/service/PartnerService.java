@@ -10,8 +10,6 @@ import com.yunche.loan.domain.viewObj.BizModelVO;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.PartnerVO;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -19,7 +17,7 @@ import java.util.List;
  * @date 2018/1/24
  */
 public interface PartnerService {
-    ResultBean<Long> create(PartnerParam partnerParam) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+    ResultBean<Long> create(PartnerParam partnerParam);
 
     ResultBean<Void> update(PartnerDO partnerDO);
 

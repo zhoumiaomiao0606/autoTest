@@ -6,11 +6,9 @@ import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -19,7 +17,7 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    ResultBean<Long> create(EmployeeParam employeeParam) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+    ResultBean<Long> create(EmployeeParam employeeParam);
 
     ResultBean<Void> update(EmployeeDO employeeDO);
 
@@ -29,7 +27,7 @@ public interface EmployeeService {
 
     ResultBean<List<EmployeeVO>> query(EmployeeQuery query);
 
-    ResultBean<List<LevelVO>> listAll();
+    ResultBean<List<CascadeVO>> listAll();
 
     ResultBean<List<String>> listTitle();
 
@@ -39,5 +37,11 @@ public interface EmployeeService {
 
     ResultBean<Void> unbindUserGroup(Long id, String userGroupIds);
 
-    ResultBean<Void> resetPassword(Long id);
+    ResultBean<Void> resetPassword(String id);
+
+    ResultBean<Void> login(EmployeeDO employeeDO);
+
+    ResultBean<Void> logout();
+
+    ResultBean<Void> editPassword(EmployeeParam employeeParam);
 }

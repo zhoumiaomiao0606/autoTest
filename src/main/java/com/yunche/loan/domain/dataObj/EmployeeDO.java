@@ -2,10 +2,14 @@ package com.yunche.loan.domain.dataObj;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class EmployeeDO {
+public class EmployeeDO implements Serializable {
+
+    private static final long serialVersionUID = -2361820086956983471L;
+
     private Long id;
 
     private String name;

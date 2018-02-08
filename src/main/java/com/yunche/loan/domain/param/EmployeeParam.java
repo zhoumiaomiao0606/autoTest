@@ -15,4 +15,12 @@ public class EmployeeParam extends EmployeeDO {
      * 绑定的用户组(角色)列表
      */
     private List<Long> userGroupIdList;
+    /**
+     * 旧密码
+     */
+    private String oldPassword;
+    /**
+     * 新密码
+     */
+    private String newPassword;
 }

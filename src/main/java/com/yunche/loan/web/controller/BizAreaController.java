@@ -5,9 +5,9 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.queryObj.BizAreaQuery;
 import com.yunche.loan.domain.dataObj.BizAreaDO;
 import com.yunche.loan.domain.param.BizAreaParam;
-import com.yunche.loan.domain.viewObj.AreaVO;
+import com.yunche.loan.domain.viewObj.CascadeAreaVO;
 import com.yunche.loan.domain.viewObj.BizAreaVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.service.BizAreaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +93,7 @@ public class BizAreaController {
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultBean<List<LevelVO>> listAll() {
+    public ResultBean<List<CascadeVO>> listAll() {
         logger.info("list");
         return bizAreaService.listAll();
     }
@@ -105,7 +105,7 @@ public class BizAreaController {
      * @return
      */
     @PostMapping(value = "/listArea", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<AreaVO.Prov>> listArea(@RequestBody BizAreaQuery query) {
+    public ResultBean<List<CascadeAreaVO.Prov>> listArea(@RequestBody BizAreaQuery query) {
         logger.info(Arrays.asList("listArea", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return bizAreaService.listArea(query);
     }

@@ -3,7 +3,6 @@ package com.yunche.loan.domain.viewObj;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,7 +14,7 @@ import java.util.List;
  * @date 2018/1/23
  */
 @Data
-public class LevelVO {
+public class CascadeVO {
     /**
      * id
      */
@@ -31,7 +30,7 @@ public class LevelVO {
 
     private boolean hasChild;
 
-    private List<LevelVO> children;
+    private List<CascadeVO> children;
 
     public boolean getHasChild() {
         if (CollectionUtils.isEmpty(children)) {

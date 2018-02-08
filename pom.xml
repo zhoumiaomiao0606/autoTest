@@ -196,6 +196,19 @@
         </dependency>
         <!-- pagehelper -->
 
+        <!-- shiro -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.crazycake</groupId>
+            <artifactId>shiro-redis</artifactId>
+            <version>2.4.6</version>
+        </dependency>
+        <!-- shiro -->
+
         <!-- activiti -->
         <dependency>
             <groupId>org.activiti</groupId>

@@ -12,10 +12,10 @@ import com.yunche.loan.dao.mapper.EmployeeDOMapper;
 import com.yunche.loan.domain.queryObj.BizAreaQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.BizAreaParam;
-import com.yunche.loan.domain.viewObj.AreaVO;
+import com.yunche.loan.domain.viewObj.CascadeAreaVO;
 import com.yunche.loan.domain.viewObj.BaseVO;
 import com.yunche.loan.domain.viewObj.BizAreaVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.service.BizAreaService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -159,7 +159,7 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     @Override
-    public ResultBean<List<AreaVO.Prov>> listArea(BizAreaQuery query) {
+    public ResultBean<List<CascadeAreaVO.Prov>> listArea(BizAreaQuery query) {
         // 业务区域ID不能为空
         Preconditions.checkNotNull(query.getId(), "id不能为空");
 
@@ -169,7 +169,7 @@ public class BizAreaServiceImpl implements BizAreaService {
             List<BizAreaRelaAreaDO> bizAreaRelaAreaDOS = bizAreaRelaAreaDOMapper.query(query);
             if (!CollectionUtils.isEmpty(bizAreaRelaAreaDOS)) {
 
-                List<AreaVO.Prov> bizAreaVOS = bizAreaRelaAreaDOS.stream()
+                List<CascadeAreaVO.Prov> bizAreaVOS = bizAreaRelaAreaDOS.stream()
                         .filter(e -> null != e && null != e.getAreaId())
                         .map(e -> {
 
@@ -177,7 +177,7 @@ public class BizAreaServiceImpl implements BizAreaService {
                             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e.getAreaId(), VALID_STATUS);
                             if (null != baseAreaDO) {
 
-                                AreaVO.Prov province = new AreaVO.Prov();
+                                CascadeAreaVO.Prov province = new CascadeAreaVO.Prov();
                                 // 关联区域的等级
                                 Byte level = baseAreaDO.getLevel();
 
@@ -185,7 +185,7 @@ public class BizAreaServiceImpl implements BizAreaService {
                                 if (LEVEL_CITY.equals(level)) {
 
                                     // 填充市
-                                    AreaVO.City city = new AreaVO.City();
+                                    CascadeAreaVO.City city = new CascadeAreaVO.City();
                                     city.setId(baseAreaDO.getAreaId());
                                     city.setName(baseAreaDO.getAreaName());
                                     city.setLevel(level);
@@ -258,7 +258,7 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     @Override
-    public ResultBean<List<LevelVO>> listAll() {
+    public ResultBean<List<CascadeVO>> listAll() {
 
         List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getAll(VALID_STATUS);
         Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "无有效业务区域数据");
@@ -267,7 +267,7 @@ public class BizAreaServiceImpl implements BizAreaService {
         Map<Long, List<BizAreaDO>> parentIdDOMap = getParentIdDOSMapping(bizAreaDOS);
 
         // 分级递归解析
-        List<LevelVO> topLevelList = parseLevelByLevel(parentIdDOMap);
+        List<CascadeVO> topLevelList = parseLevelByLevel(parentIdDOMap);
 
         return ResultBean.ofSuccess(topLevelList);
     }
@@ -489,13 +489,13 @@ public class BizAreaServiceImpl implements BizAreaService {
      * @param parentIdDOMap
      * @return
      */
-    private List<LevelVO> parseLevelByLevel(Map<Long, List<BizAreaDO>> parentIdDOMap) {
+    private List<CascadeVO> parseLevelByLevel(Map<Long, List<BizAreaDO>> parentIdDOMap) {
         if (!CollectionUtils.isEmpty(parentIdDOMap)) {
             List<BizAreaDO> parentBizAreaDOS = parentIdDOMap.get(-1L);
             if (!CollectionUtils.isEmpty(parentBizAreaDOS)) {
-                List<LevelVO> topLevelList = parentBizAreaDOS.stream()
+                List<CascadeVO> topLevelList = parentBizAreaDOS.stream()
                         .map(p -> {
-                            LevelVO parent = new LevelVO();
+                            CascadeVO parent = new CascadeVO();
                             parent.setValue(p.getId());
                             parent.setLabel(p.getName());
                             parent.setLevel(p.getLevel());
@@ -520,7 +520,7 @@ public class BizAreaServiceImpl implements BizAreaService {
      * @param parent
      * @param parentIdDOMap
      */
-    private void fillChilds(LevelVO parent, Map<Long, List<BizAreaDO>> parentIdDOMap) {
+    private void fillChilds(CascadeVO parent, Map<Long, List<BizAreaDO>> parentIdDOMap) {
         List<BizAreaDO> childs = parentIdDOMap.get(parent.getValue());
         if (CollectionUtils.isEmpty(childs)) {
             return;
@@ -528,12 +528,12 @@ public class BizAreaServiceImpl implements BizAreaService {
 
         childs.stream()
                 .forEach(c -> {
-                    LevelVO child = new LevelVO();
+                    CascadeVO child = new CascadeVO();
                     child.setValue(c.getId());
                     child.setLabel(c.getName());
                     child.setLevel(c.getLevel());
 
-                    List<LevelVO> childList = parent.getChildren();
+                    List<CascadeVO> childList = parent.getChildren();
                     if (CollectionUtils.isEmpty(childList)) {
                         parent.setChildren(Lists.newArrayList(child));
                     } else {

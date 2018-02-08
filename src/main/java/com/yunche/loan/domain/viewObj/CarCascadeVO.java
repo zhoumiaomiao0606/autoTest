@@ -13,7 +13,7 @@ import java.util.List;
  * @date 2018/1/18
  */
 @Data
-public class CarTwoLevelVO {
+public class CarCascadeVO {
 
     private List<Brand> carBrand = Lists.newArrayList();
 
@@ -25,13 +25,13 @@ public class CarTwoLevelVO {
 
         private String initial;
 
-        private String logo;
+//        private String logo;
 
-        private Byte status;
+//        private Byte status;
 
-        private Date gmtCreate;
+//        private Date gmtCreate;
 
-        private Date gmtModify;
+//        private Date gmtModify;
         /**
          * 子车系
          */
@@ -47,7 +47,7 @@ public class CarTwoLevelVO {
         /**
          * 车型简称 eg：A3
          */
-        private String name;
+//        private String name;
         /**
          * 车型全称 eg：奥迪A3
          */
@@ -59,41 +59,41 @@ public class CarTwoLevelVO {
         /**
          * logo图片URL
          */
-        private String logo;
+//        private String logo;
         /**
          * 厂家指导价（min-max,取子车型的两极值）
          */
-        private String price;
+//        private String price;
         /**
          * 座位数(min/max，取子车型的两极值)
          */
-        private String seatNum;
+//        private String seatNum;
         /**
          * 销售状态（1:在售; 2:停售）
          */
-        private Byte saleState;
+//        private Byte saleState;
         /**
          * 车系编码
          */
-        private String seriesCode;
+//        private String seriesCode;
         /**
          * 助记码
          */
-        private String mnemonicCode;
+//        private String mnemonicCode;
         /**
          * 生产厂商
          */
-        private String productionFirm;
+//        private String productionFirm;
         /**
          * 生产类型（1:国产;2:合资）
          */
-        private Byte productionType;
+//        private Byte productionType;
 
-        private Byte status;
+//        private Byte status;
 
-        private Date gmtCreate;
+//        private Date gmtCreate;
 
-        private Date gmtModify;
+//        private Date gmtModify;
     }
 
 }

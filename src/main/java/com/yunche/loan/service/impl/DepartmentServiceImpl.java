@@ -2,7 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.yunche.loan.config.cache.DepartmentCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.queryObj.BaseQuery;
@@ -12,7 +12,7 @@ import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.DepartmentParam;
 import com.yunche.loan.domain.viewObj.BaseVO;
 import com.yunche.loan.domain.viewObj.DepartmentVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.DepartmentService;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +46,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     private EmployeeDOMapper employeeDOMapper;
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+    @Autowired
+    private DepartmentCache departmentCache;
 
 
     @Override
@@ -62,6 +64,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         // 绑定用户组(角色)列表
         doBindUserGroup(id, departmentParam.getUserGroupIdList());
 
+        // 刷新缓存
+        departmentCache.refresh();
+
         return ResultBean.ofSuccess(id, "创建成功");
     }
 
@@ -73,6 +78,10 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         int count = departmentDOMapper.deleteByPrimaryKey(id);
         Preconditions.checkArgument(count > 0, "删除失败");
+
+        // 刷新缓存
+        departmentCache.refresh();
+
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
@@ -98,6 +107,10 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentDO.setGmtModify(new Date());
         int count = departmentDOMapper.updateByPrimaryKeySelective(departmentDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
+
+        // 刷新缓存
+        departmentCache.refresh();
+
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
@@ -144,16 +157,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public ResultBean<List<LevelVO>> listAll() {
-        List<DepartmentDO> departmentDOS = departmentDOMapper.getAll(VALID_STATUS);
-
-        // parentId - DOS
-        Map<Long, List<DepartmentDO>> parentIdDOMap = getParentIdDOSMapping(departmentDOS);
-
-        // 分级递归解析
-        List<LevelVO> topLevelList = parseLevelByLevel(parentIdDOMap);
-
-        return ResultBean.ofSuccess(topLevelList);
+    public ResultBean<List<CascadeVO>> listAll() {
+        // 走缓存
+        List<CascadeVO> cascadeVOS = departmentCache.get();
+        return ResultBean.ofSuccess(cascadeVOS);
     }
 
     @Override
@@ -217,98 +224,6 @@ public class DepartmentServiceImpl implements DepartmentService {
                 });
 
         return ResultBean.ofSuccess(null, "取消关联成功");
-    }
-
-
-    /**
-     * parentId - DOS 映射
-     *
-     * @param departmentDOS
-     * @return
-     */
-    private Map<Long, List<DepartmentDO>> getParentIdDOSMapping(List<DepartmentDO> departmentDOS) {
-        if (CollectionUtils.isEmpty(departmentDOS)) {
-            return null;
-        }
-
-        Map<Long, List<DepartmentDO>> parentIdDOMap = Maps.newHashMap();
-        departmentDOS.stream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
-
-                    Long parentId = e.getParentId();
-                    // 为null,用-1标记
-                    parentId = null == parentId ? -1L : parentId;
-                    if (!parentIdDOMap.containsKey(parentId)) {
-                        parentIdDOMap.put(parentId, Lists.newArrayList(e));
-                    } else {
-                        parentIdDOMap.get(parentId).add(e);
-                    }
-
-                });
-
-        return parentIdDOMap;
-    }
-
-    /**
-     * 分级递归解析
-     *
-     * @param parentIdDOMap
-     * @return
-     */
-    private List<LevelVO> parseLevelByLevel(Map<Long, List<DepartmentDO>> parentIdDOMap) {
-        if (!CollectionUtils.isEmpty(parentIdDOMap)) {
-            List<DepartmentDO> parentDOS = parentIdDOMap.get(-1L);
-            if (!CollectionUtils.isEmpty(parentDOS)) {
-                List<LevelVO> topLevelList = parentDOS.stream()
-                        .map(p -> {
-                            LevelVO parent = new LevelVO();
-                            parent.setValue(p.getId());
-                            parent.setLabel(p.getName());
-                            parent.setLevel(p.getLevel());
-
-                            // 递归填充子列表
-                            fillChilds(parent, parentIdDOMap);
-                            return parent;
-                        })
-                        .collect(Collectors.toList());
-
-                return topLevelList;
-            }
-        }
-
-        return Collections.EMPTY_LIST;
-    }
-
-    /**
-     * 递归填充子列表
-     *
-     * @param parent
-     * @param parentIdDOMap
-     */
-    private void fillChilds(LevelVO parent, Map<Long, List<DepartmentDO>> parentIdDOMap) {
-        List<DepartmentDO> childs = parentIdDOMap.get(parent.getValue());
-        if (CollectionUtils.isEmpty(childs)) {
-            return;
-        }
-
-        childs.stream()
-                .forEach(c -> {
-                    LevelVO child = new LevelVO();
-                    child.setValue(c.getId());
-                    child.setLabel(c.getName());
-                    child.setLevel(c.getLevel());
-
-                    List<LevelVO> childList = parent.getChildren();
-                    if (CollectionUtils.isEmpty(childList)) {
-                        parent.setChildren(Lists.newArrayList(child));
-                    } else {
-                        parent.getChildren().add(child);
-                    }
-
-                    // 递归填充子列表
-                    fillChilds(child, parentIdDOMap);
-                });
     }
 
     /**

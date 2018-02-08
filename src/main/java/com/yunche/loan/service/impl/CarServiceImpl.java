@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.cache.CarCache;
 import com.yunche.loan.config.common.HttpUtils;
 import com.yunche.loan.dao.mapper.CarBrandDOMapper;
 import com.yunche.loan.dao.mapper.CarDetailDOMapper;
@@ -15,7 +16,7 @@ import com.yunche.loan.domain.dataObj.CarDetailDO;
 import com.yunche.loan.domain.dataObj.CarModelDO;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.viewObj.CarThreeLevelVO;
-import com.yunche.loan.domain.viewObj.CarTwoLevelVO;
+import com.yunche.loan.domain.viewObj.CarCascadeVO;
 import com.yunche.loan.service.CarService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -53,13 +54,13 @@ public class CarServiceImpl implements CarService {
 
     /**
      * 阿里云车型大全API服务——HOST
-     * tips：接口限流 30次/min     ===> 大概估算一下：跑一次大概近3个小时
+     * tips：接口限流 30次/min     ===> 大概估算一下：跑一次大概近15个小时
      */
-    private String host = "http://jisucxdq.market.alicloudapi.com";
+    private static final String host = "http://jisucxdq.market.alicloudapi.com";
     /**
      * 阿里云车型大全API服务——appcode
      */
-    private String appcode = "567ef51853094159a974a2955f312590";
+    private static final String appcode = "567ef51853094159a974a2955f312590";
 
 
     @Autowired
@@ -68,6 +69,8 @@ public class CarServiceImpl implements CarService {
     private CarModelDOMapper carModelDOMapper;
     @Autowired
     private CarDetailDOMapper carDetailDOMapper;
+    @Autowired
+    private CarCache carCache;
 
     @Override
     public ResultBean<Void> importCar() {
@@ -190,96 +193,10 @@ public class CarServiceImpl implements CarService {
      * @return
      */
     @Override
-    public ResultBean<CarTwoLevelVO> listTwoLevel() {
-
-        CarTwoLevelVO carTwoLevelVO = new CarTwoLevelVO();
-
-        // 获取并填充所有品牌
-        getAndFillAllCarBrand(carTwoLevelVO);
-
-        // 获取并填充所有子车系
-        getAndFillAllCarModel(carTwoLevelVO);
-
-        return ResultBean.ofSuccess(carTwoLevelVO);
-    }
-
-    /**
-     * 获取并填充所有子车系及子车型   -两级联动
-     *
-     * @param carTwoLevelVO
-     */
-    private void getAndFillAllCarModel(CarTwoLevelVO carTwoLevelVO) {
-        List<CarTwoLevelVO.Brand> carBrandList = carTwoLevelVO.getCarBrand();
-        if (CollectionUtils.isEmpty(carBrandList)) {
-            return;
-        }
-
-        carBrandList.parallelStream()
-                .filter(b -> null != b && null != b.getId())
-                .forEach(b -> {
-
-                    // 根据品牌ID获取所有子车系
-                    List<CarTwoLevelVO.Model> carModelList = getAllCarModel(b.getId());
-                    // fill
-                    b.setCarModel(carModelList);
-
-                });
-
-    }
-
-    /**
-     * 根据品牌ID获取所有子车系
-     *
-     * @param brandId
-     * @return
-     */
-    private List<CarTwoLevelVO.Model> getAllCarModel(Long brandId) {
-        // 获取所有子车系
-        List<CarModelDO> carModelDOS = carModelDOMapper.getModelListByBrandId(brandId, VALID_STATUS);
-        if (CollectionUtils.isEmpty(carModelDOS)) {
-            return Collections.EMPTY_LIST;
-        }
-
-        // 填充所有子车系
-        List<CarTwoLevelVO.Model> carModelList = carModelDOS.stream()
-                .filter(m -> null != m && null != m.getBrandId())
-                .map(m -> {
-
-                    CarTwoLevelVO.Model model = new CarTwoLevelVO.Model();
-                    BeanUtils.copyProperties(m, model);
-
-                    return model;
-                })
-                .collect(Collectors.toList());
-
-        return carModelList;
-    }
-
-    /**
-     * 获取并填充所有汽车品牌对象  -All  两级联动
-     *
-     * @param carTwoLevelVO
-     */
-    private void getAndFillAllCarBrand(CarTwoLevelVO carTwoLevelVO) {
-        // getAll
-        List<CarBrandDO> carBrandDOS = carBrandDOMapper.getAll(VALID_STATUS);
-
-        if (!CollectionUtils.isEmpty(carBrandDOS)) {
-            List<CarTwoLevelVO.Brand> carBrandList = carBrandDOS.stream()
-                    .filter(e -> null != e && null != e.getId())
-                    .map(e -> {
-
-                        CarTwoLevelVO.Brand brand = new CarTwoLevelVO.Brand();
-                        BeanUtils.copyProperties(e, brand);
-
-                        return brand;
-                    })
-                    .filter(Objects::nonNull)
-                    .sorted(Comparator.comparing(CarTwoLevelVO.Brand::getInitial))
-                    .collect(Collectors.toList());
-
-            carTwoLevelVO.setCarBrand(carBrandList);
-        }
+    public ResultBean<CarCascadeVO> listTwoLevel() {
+        // 走缓存
+        CarCascadeVO carCascadeVO = carCache.get();
+        return ResultBean.ofSuccess(carCascadeVO);
 
     }
 
@@ -983,7 +900,9 @@ public class CarServiceImpl implements CarService {
      * @return
      * @throws Exception
      */
-    private JSONObject requestAndCheckThenReturnResult(String host, String path, String method, Map<String, String> headers, Map<String, String> querys) throws Exception {
+    private JSONObject requestAndCheckThenReturnResult(String host, String path, String method,
+                                                       Map<String, String> headers,
+                                                       Map<String, String> querys) throws Exception {
 
         // 请求
         HttpResponse response = HttpUtils.doGet(host, path, method, headers, querys);

@@ -1,9 +1,11 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.common.MD5Utils;
+import com.yunche.loan.config.common.Util;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.dataObj.*;
@@ -11,25 +13,33 @@ import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.viewObj.BaseVO;
+import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.BoundValueOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
+import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.*;
@@ -46,9 +56,19 @@ import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+    /**
+     * session_id
+     */
+    private static final String SESSION_ID = "biz_session_id";
+    /**
+     * redis-session过期时间：30min
+     */
+    private static final long SESSION_TIME_OUT = 1800L;
 
     @Value("${spring.mail.username}")
     private String from;
+    @Value("${salt}")
+    private String salt;
 
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
@@ -64,10 +84,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private UserGroupRelaAreaAuthDOMapper userGroupRelaAreaAuthDOMapper;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private EmployeeCache employeeCache;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
 
     @Override
-    public ResultBean<Long> create(EmployeeParam employeeParam) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public ResultBean<Long> create(EmployeeParam employeeParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getName()), "姓名不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getIdCard()), "身份证号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getMobile()), "手机号不能为空");
@@ -86,7 +110,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         String password = MD5Utils.getRandomString(10);
 
         // MD5加密
-        String md5Password = MD5Utils.md5Password(password);
+        String md5Password = MD5Utils.md5(password, salt);
         employeeParam.setPassword(md5Password);
 
         // 创建实体，并返回ID
@@ -98,18 +122,26 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 发送账号密码到邮箱
         sentAccountAndPassword(employeeParam.getEmail(), password);
 
+        // 刷新缓存
+        employeeCache.refresh();
+
         return ResultBean.ofSuccess(id, "创建成功");
     }
-
 
     @Override
     public ResultBean<Void> update(EmployeeDO employeeDO) {
         Preconditions.checkNotNull(employeeDO.getId(), "id不能为空");
         Preconditions.checkArgument(!employeeDO.getId().equals(employeeDO.getParentId()), "直接主管不能为自己");
 
+        // 禁止通过update更新密码
+        employeeDO.setPassword(null);
         employeeDO.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
+
+        // 刷新缓存
+        employeeCache.refresh();
+
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
@@ -119,6 +151,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         int count = employeeDOMapper.deleteByPrimaryKey(id);
         Preconditions.checkArgument(count > 0, "删除失败");
+
+        // 刷新缓存
+        employeeCache.refresh();
+
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
@@ -144,11 +180,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ResultBean<List<EmployeeVO>> query(EmployeeQuery query) {
         int totalNum = employeeDOMapper.count(query);
         if (totalNum > 0) {
+
             List<EmployeeDO> employeeDOS = employeeDOMapper.query(query);
             if (!CollectionUtils.isEmpty(employeeDOS)) {
+
                 List<EmployeeVO> employeeVOS = employeeDOS.stream()
                         .filter(Objects::nonNull)
                         .map(e -> {
+
                             EmployeeVO employeeVO = new EmployeeVO();
                             BeanUtils.copyProperties(e, employeeVO);
 
@@ -168,16 +207,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ResultBean<List<LevelVO>> listAll() {
-        List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(VALID_STATUS);
-
-        // parentId - DOS
-        Map<Long, List<EmployeeDO>> parentIdDOMap = getParentIdDOSMapping(employeeDOS);
-
-        // 分级递归解析
-        List<LevelVO> topLevelList = parseLevelByLevel(parentIdDOMap);
-
-        return ResultBean.ofSuccess(topLevelList);
+    public ResultBean<List<CascadeVO>> listAll() {
+        // 走缓存
+        List<CascadeVO> cascadeVOS = employeeCache.get();
+        return ResultBean.ofSuccess(cascadeVOS);
     }
 
     @Override
@@ -255,18 +288,83 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ResultBean<Void> resetPassword(Long id) {
-        Preconditions.checkNotNull(id, "id不能为空");
+    public ResultBean<Void> resetPassword(String email) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(email), "邮箱不能为空");
 
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id, null);
-        Preconditions.checkNotNull(employeeDO, "账号不存在");
-        Preconditions.checkArgument(!INVALID_STATUS.equals(employeeDO.getStatus()), "账号已停用");
-        Preconditions.checkArgument(!DEL_STATUS.equals(employeeDO.getStatus()), "账号已删除");
-        Preconditions.checkArgument(VALID_STATUS.equals(employeeDO.getStatus()), "账号状态异常");
-        Preconditions.checkArgument(StringUtils.isNotBlank(employeeDO.getEmail()), "账号邮箱为空，请先绑定密保邮箱");
+        EmployeeDO employeeDO = employeeDOMapper.getByUsername(email, VALID_STATUS);
+        Preconditions.checkNotNull(employeeDO, "账号不存在或已停用");
+
+        // 发送验证URL
+        sentVerifyUrl(email);
+
+        return ResultBean.ofSuccess(null, "密码找回链接发送成功");
+    }
+
+    /**
+     * TODO 发送验证URL
+     *
+     * @param to 收件地址
+     */
+    private void sentVerifyUrl(String to) {
+
+        // URL
+        String url = "";
 
 
-        return null;
+    }
+
+    @Override
+    public ResultBean<Void> login(EmployeeDO employeeDO) {
+        Preconditions.checkArgument(null != employeeDO && StringUtils.isNotBlank(employeeDO.getEmail()), "登陆账号不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(employeeDO.getPassword()), "密码不能为空");
+
+        // 使用shiro提供的方式进行身份认证
+        Subject subject = SecurityUtils.getSubject();
+        String username = employeeDO.getEmail();
+        String password = employeeDO.getPassword();
+        // salt = username + salt
+        password = MD5Utils.md5(password, salt);
+        AuthenticationToken token = new UsernamePasswordToken(username, password);
+
+        try {
+            // 调用安全管理器，安全管理器调用Realm
+            subject.login(token);
+        } catch (UnknownAccountException e) {
+            //用户名不存在
+            return ResultBean.ofError("用户名或密码错误");
+        } catch (IncorrectCredentialsException e) {
+            // 密码错误
+            return ResultBean.ofError("用户名或密码错误");
+        }
+
+        return ResultBean.ofSuccess(null, "登录成功");
+    }
+
+    @Override
+    public ResultBean<Void> logout() {
+        // 清空shiro会话
+        SecurityUtils.getSubject().logout();
+        return ResultBean.ofSuccess(null, "登出成功");
+    }
+
+    @Override
+    public ResultBean<Void> editPassword(EmployeeParam employeeParam) {
+        Preconditions.checkArgument(null != employeeParam && null != employeeParam.getId(), "用户ID不能为空");
+        Preconditions.checkArgument(null != employeeParam && StringUtils.isNotBlank(employeeParam.getOldPassword()), "原密码不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getNewPassword()), "新密码不能为空");
+
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeParam.getId(), VALID_STATUS);
+        Preconditions.checkNotNull(employeeDO, "账号不存在或已停用");
+        String oldPassword = MD5Utils.md5(employeeParam.getOldPassword(), salt);
+        Preconditions.checkArgument(oldPassword.equals(employeeDO.getPassword()), "原密码有误");
+
+        EmployeeDO updateEmployee = new EmployeeDO();
+        updateEmployee.setId(employeeParam.getId());
+        updateEmployee.setPassword(MD5Utils.md5(employeeParam.getNewPassword(), salt));
+        int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
+        Preconditions.checkArgument(count > 0, "密码修改失败");
+
+        return ResultBean.ofSuccess(null, "密码修改成功");
     }
 
     /**
@@ -315,7 +413,6 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param password
      */
     private void sentAccountAndPassword(String email, String password) {
-
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(email);
@@ -323,96 +420,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         message.setText("账号：" + email + NEW_LINE + "密码：" + password);
 
         mailSender.send(message);
-    }
-
-    /**
-     * parentId - DOS映射
-     *
-     * @param employeeDOS
-     * @return
-     */
-    private Map<Long, List<EmployeeDO>> getParentIdDOSMapping(List<EmployeeDO> employeeDOS) {
-        if (CollectionUtils.isEmpty(employeeDOS)) {
-            return null;
-        }
-
-        Map<Long, List<EmployeeDO>> parentIdDOMap = Maps.newConcurrentMap();
-        employeeDOS.parallelStream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
-
-                    Long parentId = e.getParentId();
-                    // 为null,用-1标记
-                    parentId = null == parentId ? -1L : parentId;
-                    if (!parentIdDOMap.containsKey(parentId)) {
-                        parentIdDOMap.put(parentId, Lists.newArrayList(e));
-                    } else {
-                        parentIdDOMap.get(parentId).add(e);
-                    }
-
-                });
-
-        return parentIdDOMap;
-    }
-
-    /**
-     * 分级递归解析
-     *
-     * @param parentIdDOMap
-     * @return
-     */
-    private List<LevelVO> parseLevelByLevel(Map<Long, List<EmployeeDO>> parentIdDOMap) {
-        if (!CollectionUtils.isEmpty(parentIdDOMap)) {
-            List<EmployeeDO> parentDOS = parentIdDOMap.get(-1L);
-            if (!CollectionUtils.isEmpty(parentDOS)) {
-                List<LevelVO> topLevelList = parentDOS.stream()
-                        .map(p -> {
-                            LevelVO parent = new LevelVO();
-                            parent.setValue(p.getId());
-                            parent.setLabel(p.getName());
-                            parent.setLevel(p.getLevel());
-
-                            // 递归填充子列表
-                            fillChilds(parent, parentIdDOMap);
-                            return parent;
-                        })
-                        .collect(Collectors.toList());
-
-                return topLevelList;
-            }
-        }
-        return Collections.EMPTY_LIST;
-    }
-
-    /**
-     * 递归填充子列表
-     *
-     * @param parent
-     * @param parentIdDOMap
-     */
-    private void fillChilds(LevelVO parent, Map<Long, List<EmployeeDO>> parentIdDOMap) {
-        List<EmployeeDO> childs = parentIdDOMap.get(parent.getValue());
-        if (CollectionUtils.isEmpty(childs)) {
-            return;
-        }
-
-        childs.stream()
-                .forEach(c -> {
-                    LevelVO child = new LevelVO();
-                    child.setValue(c.getId());
-                    child.setLabel(c.getName());
-                    child.setLevel(c.getLevel());
-
-                    List<LevelVO> childList = parent.getChildren();
-                    if (CollectionUtils.isEmpty(childList)) {
-                        parent.setChildren(Lists.newArrayList(child));
-                    } else {
-                        parent.getChildren().add(child);
-                    }
-
-                    // 递归填充子列表
-                    fillChilds(child, parentIdDOMap);
-                });
     }
 
 
@@ -464,8 +471,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             BeanUtils.copyProperties(departmentDO, parentDepartment);
 
             // 预加载
-            List<DepartmentDO> all = departmentDOMapper.getAll(VALID_STATUS);
-
+//            List<DepartmentDO> all = departmentDOMapper.getAll(VALID_STATUS);
 
             // 递归填充所有上层父级部门
             fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), employeeVO);
@@ -656,5 +662,31 @@ public class EmployeeServiceImpl implements EmployeeService {
             int count = employeeRelaUserGroupDOMapper.batchInsert(employeeRelaUserGroupDOS);
             Preconditions.checkArgument(count == employeeRelaUserGroupDOS.size(), "关联失败");
         }
+    }
+
+    /**
+     * 添加到redis-session
+     *
+     * @param employeeDO
+     */
+    private void addSession(EmployeeDO employeeDO) {
+        // session已存在，重置过期时间
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(employeeDO.getEmail());
+        String sessionId = boundValueOps.get();
+        if (StringUtils.isNotBlank(sessionId)) {
+            boundValueOps.expire(SESSION_TIME_OUT, TimeUnit.SECONDS);
+        }
+
+        // 不存在，重新生成session_id
+        sessionId = Util.getUUID();
+
+        // username - session_id
+        String username = employeeDO.getEmail();
+        boundValueOps = stringRedisTemplate.boundValueOps(username);
+        boundValueOps.set(sessionId, SESSION_TIME_OUT, TimeUnit.SECONDS);
+
+        // session_id - USER
+        boundValueOps = stringRedisTemplate.boundValueOps(sessionId);
+        boundValueOps.set(JSON.toJSONString(employeeDO), SESSION_TIME_OUT, TimeUnit.SECONDS);
     }
 }

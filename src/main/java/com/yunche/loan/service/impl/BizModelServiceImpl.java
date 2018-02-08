@@ -8,7 +8,7 @@ import com.yunche.loan.dao.mapper.BizModelDOMapper;
 import com.yunche.loan.domain.queryObj.BizModelQuery;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.viewObj.*;
-import com.yunche.loan.domain.viewObj.AreaVO;
+import com.yunche.loan.domain.viewObj.CascadeAreaVO;
 import com.yunche.loan.service.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
  * Created by zhouguoliang on 2018/1/22.
@@ -46,6 +49,10 @@ public class BizModelServiceImpl implements BizModelService {
     @Override
     public ResultBean<Void> insert(BizModelVO bizModelVO) {
         Preconditions.checkArgument(bizModelVO != null, "bizModelVO");
+        Preconditions.checkNotNull(bizModelVO.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(bizModelVO.getStatus().byteValue()) || INVALID_STATUS.equals(bizModelVO.getStatus().byteValue()),
+                "状态非法");
+
         BizModelDO bizModelDO = new BizModelDO();
         BeanUtils.copyProperties(bizModelVO, bizModelDO);
 
@@ -245,13 +252,13 @@ public class BizModelServiceImpl implements BizModelService {
     public ResultBean<List<BizModelVO>> getByCondition(BizModelQuery bizModelQuery) {
         List<Long> list = Lists.newArrayList();
         if (bizModelQuery.getAreaId() != null && bizModelQuery.getProv() != null && bizModelQuery.getCity() == null) {   // 省级区域
-            ResultBean<List<AreaVO>> resultBean = baseAreaService.list();
-            List<AreaVO> areaVOList = resultBean.getData();
-            for (AreaVO areaVO : areaVOList) {
-                if(areaVO.getId().longValue() == bizModelQuery.getAreaId().longValue()) {
-                    List<AreaVO.City> cityList = areaVO.getCityList();
+            ResultBean<List<CascadeAreaVO>> resultBean = baseAreaService.list();
+            List<CascadeAreaVO> cascadeAreaVOList = resultBean.getData();
+            for (CascadeAreaVO cascadeAreaVO : cascadeAreaVOList) {
+                if (cascadeAreaVO.getId().longValue() == bizModelQuery.getAreaId().longValue()) {
+                    List<CascadeAreaVO.City> cityList = cascadeAreaVO.getCityList();
                     if (CollectionUtils.isNotEmpty(cityList)) {
-                        for (AreaVO.City city : cityList) {
+                        for (CascadeAreaVO.City city : cityList) {
                             list.add(city.getId());
                         }
                     }
@@ -266,7 +273,7 @@ public class BizModelServiceImpl implements BizModelService {
             list.add(100000000000L);
             bizModelQuery.setCascadeAreaIdList(list);
         }
-        if (bizModelQuery.getAreaId() != null && bizModelQuery.getAreaId() == 100000000000L){   // 全国区域
+        if (bizModelQuery.getAreaId() != null && bizModelQuery.getAreaId() == 100000000000L) {   // 全国区域
             bizModelQuery.setCascadeAreaIdList(null);
         }
         bizModelQuery.setAreaId(null);

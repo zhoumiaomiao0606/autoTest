@@ -46,6 +46,20 @@
         </if>
     </select>
 
+    <!-- getHasBindAuthIdListByUserGroupIdList -->
+    <select id="getHasBindAuthIdListByUserGroupIdList" resultType="java.lang.Long">
+        SELECT b.id
+        FROM user_group_rela_area_auth AS a,
+        auth AS b
+        WHERE a.auth_id = b.id
+        <if test="userGroupIdList != null">
+            AND a.user_group_id IN
+            <foreach collection="userGroupIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
     <!--getAreaIdListByUserGroupId-->
     <select id="getAreaIdListByUserGroupId" parameterType="java.lang.Long"
             resultType="java.lang.Long">
