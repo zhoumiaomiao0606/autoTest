@@ -7,17 +7,16 @@ import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.EmployeeService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +37,7 @@ public class EmployeeController {
 
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> create(@RequestBody EmployeeParam employeeParam) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public ResultBean<Long> create(@RequestBody EmployeeParam employeeParam) {
         logger.info(Arrays.asList("create", JSON.toJSONString(employeeParam)).stream().collect(Collectors.joining("\u0001")));
         return employeeService.create(employeeParam);
     }
@@ -72,8 +71,9 @@ public class EmployeeController {
      *
      * @return
      */
+    @RequiresPermissions("testPermission")
     @GetMapping("/list")
-    public ResultBean<List<LevelVO>> listAll() {
+    public ResultBean<List<CascadeVO>> listAll() {
         logger.info("list");
         return employeeService.listAll();
     }
@@ -130,14 +130,49 @@ public class EmployeeController {
     }
 
     /**
-     * 重置密码
+     * 用户登录
      *
-     * @param id 用户ID
+     * @param employeeDO
      * @return
      */
-    @GetMapping(value = "/resetPassword")
-    public ResultBean<Void> resetPassword(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("resetPassword", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
-        return employeeService.resetPassword(id);
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> login(@RequestBody EmployeeDO employeeDO) {
+        logger.info(Arrays.asList("login", JSON.toJSONString(employeeDO)).stream().collect(Collectors.joining("\u0001")));
+        return employeeService.login(employeeDO);
+    }
+
+    /**
+     * 用户登出
+     *
+     * @return
+     */
+    @GetMapping("/logout")
+    public ResultBean<Void> logout() {
+        logger.info("logout");
+        return employeeService.logout();
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param employeeParam
+     * @return
+     */
+    @PostMapping(value = "/password/edit", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> editPassword(@RequestBody EmployeeParam employeeParam) {
+        logger.info(Arrays.asList("/password/edit", JSON.toJSONString(employeeParam)).stream().collect(Collectors.joining("\u0001")));
+        return employeeService.editPassword(employeeParam);
+    }
+
+    /**
+     * 找回密码
+     *
+     * @param email 邮箱找回
+     * @return
+     */
+    @GetMapping(value = "/password/reset")
+    public ResultBean<Void> resetPassword(@RequestParam("email") String email) {
+        logger.info(Arrays.asList("/password/reset", JSON.toJSONString(email)).stream().collect(Collectors.joining("\u0001")));
+        return employeeService.resetPassword(email);
     }
 }

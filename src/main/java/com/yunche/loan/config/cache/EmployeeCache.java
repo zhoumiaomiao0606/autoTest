@@ -3,8 +3,8 @@ package com.yunche.loan.config.cache;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yunche.loan.dao.mapper.DepartmentDOMapper;
-import com.yunche.loan.domain.dataObj.DepartmentDO;
+import com.yunche.loan.dao.mapper.EmployeeDOMapper;
+import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.viewObj.CascadeVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,25 +24,23 @@ import java.util.stream.Collectors;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
- * 部门缓存
- *
  * @author liuzhe
- * @date 2018/2/2
+ * @date 2018/2/6
  */
 @Component
-public class DepartmentCache {
+public class EmployeeCache {
 
-    private static final String DEPARTMENT_CASCADE_CACHE_KEY = "DEPARTMENT_CASCADE_CACHE";
+    private static final String EMPLOYEE_CASCADE_CACHE_KEY = "EMPLOYEE_CASCADE_CACHE";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
-    private DepartmentDOMapper departmentDOMapper;
+    private EmployeeDOMapper employeeDOMapper;
 
 
     public List<CascadeVO> get() {
         // get
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DEPARTMENT_CASCADE_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_CASCADE_CACHE_KEY);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
             return JSON.parseArray(result, CascadeVO.class);
@@ -62,32 +60,32 @@ public class DepartmentCache {
 //    @PostConstruct
     public void refresh() {
         // getAll
-        List<DepartmentDO> departmentDOS = departmentDOMapper.getAll(VALID_STATUS);
+        List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(VALID_STATUS);
 
         // parentId - DOS
-        Map<Long, List<DepartmentDO>> parentIdDOMap = getParentIdDOSMapping(departmentDOS);
+        Map<Long, List<EmployeeDO>> parentIdDOMap = getParentIdDOSMapping(employeeDOS);
 
         // 分级递归解析
         List<CascadeVO> topLevelList = parseLevelByLevel(parentIdDOMap);
 
         // 刷新缓存
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DEPARTMENT_CASCADE_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_CASCADE_CACHE_KEY);
         boundValueOps.set(JSON.toJSONString(topLevelList));
     }
 
     /**
-     * parentId - DOS 映射
+     * parentId - DOS映射
      *
-     * @param departmentDOS
+     * @param employeeDOS
      * @return
      */
-    private Map<Long, List<DepartmentDO>> getParentIdDOSMapping(List<DepartmentDO> departmentDOS) {
-        if (CollectionUtils.isEmpty(departmentDOS)) {
+    private Map<Long, List<EmployeeDO>> getParentIdDOSMapping(List<EmployeeDO> employeeDOS) {
+        if (CollectionUtils.isEmpty(employeeDOS)) {
             return null;
         }
 
-        Map<Long, List<DepartmentDO>> parentIdDOMap = Maps.newHashMap();
-        departmentDOS.stream()
+        Map<Long, List<EmployeeDO>> parentIdDOMap = Maps.newConcurrentMap();
+        employeeDOS.parallelStream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
@@ -111,9 +109,9 @@ public class DepartmentCache {
      * @param parentIdDOMap
      * @return
      */
-    private List<CascadeVO> parseLevelByLevel(Map<Long, List<DepartmentDO>> parentIdDOMap) {
+    private List<CascadeVO> parseLevelByLevel(Map<Long, List<EmployeeDO>> parentIdDOMap) {
         if (!CollectionUtils.isEmpty(parentIdDOMap)) {
-            List<DepartmentDO> parentDOS = parentIdDOMap.get(-1L);
+            List<EmployeeDO> parentDOS = parentIdDOMap.get(-1L);
             if (!CollectionUtils.isEmpty(parentDOS)) {
                 List<CascadeVO> topLevelList = parentDOS.stream()
                         .map(p -> {
@@ -131,7 +129,6 @@ public class DepartmentCache {
                 return topLevelList;
             }
         }
-
         return Collections.EMPTY_LIST;
     }
 
@@ -141,8 +138,8 @@ public class DepartmentCache {
      * @param parent
      * @param parentIdDOMap
      */
-    private void fillChilds(CascadeVO parent, Map<Long, List<DepartmentDO>> parentIdDOMap) {
-        List<DepartmentDO> childs = parentIdDOMap.get(parent.getValue());
+    private void fillChilds(CascadeVO parent, Map<Long, List<EmployeeDO>> parentIdDOMap) {
+        List<EmployeeDO> childs = parentIdDOMap.get(parent.getValue());
         if (CollectionUtils.isEmpty(childs)) {
             return;
         }

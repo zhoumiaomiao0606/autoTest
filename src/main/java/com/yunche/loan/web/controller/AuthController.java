@@ -3,7 +3,7 @@ package com.yunche.loan.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.queryObj.AuthQuery;
-import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.domain.viewObj.PageVO;
 import com.yunche.loan.service.AuthService;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class AuthController {
      * @return
      */
     @GetMapping("/listMenu")
-    public ResultBean<List<LevelVO>> listMenu() {
+    public ResultBean<List<CascadeVO>> listMenu() {
         logger.info("listMenu");
         return authService.listMenu();
     }

@@ -6,6 +6,8 @@ import java.util.Date;
 public class InstLoanOrderDO implements Serializable {
     private Long orderId;
 
+    private String orderNbr;
+
     private Long custId;
 
     private Long prodId;
@@ -71,11 +73,27 @@ public class InstLoanOrderDO implements Serializable {
 
     private String bank;
 
+    private Long investigatorId;
+
+    private String investigatorName;
+
+    private String investigateAddress;
+
+    private String investigateContent;
+
     private Integer status;
 
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public String getOrderNbr() {
+        return orderNbr;
+    }
+
+    public void setOrderNbr(String orderNbr) {
+        this.orderNbr = orderNbr;
+    }
 
     public String getProcessInstId() {
         return processInstId;

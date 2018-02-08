@@ -1,6 +1,6 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.domain.viewObj.AreaVO;
+import com.yunche.loan.domain.viewObj.CascadeAreaVO;
 import com.yunche.loan.domain.viewObj.BaseAreaVO;
 import com.yunche.loan.domain.dataObj.BaseAreaDO;
 import com.yunche.loan.domain.queryObj.BaseAreaQuery;
@@ -26,5 +26,5 @@ public interface BaseAreaService {
 
     ResultBean<BaseAreaVO> query(BaseAreaQuery queryJObj);
 
-    ResultBean<List<AreaVO>> list();
+    ResultBean<List<CascadeAreaVO>> list();
 }

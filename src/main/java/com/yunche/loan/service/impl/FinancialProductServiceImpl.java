@@ -4,10 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.FinancialProductDOMapper;
-import com.yunche.loan.domain.dataObj.BizModelDO;
 import com.yunche.loan.domain.queryObj.FinancialQuery;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
-import com.yunche.loan.domain.viewObj.AreaVO;
+import com.yunche.loan.domain.viewObj.CascadeAreaVO;
 import com.yunche.loan.domain.viewObj.BaseAreaVO;
 import com.yunche.loan.domain.viewObj.FinancialProductVO;
 import com.yunche.loan.service.BaseAreaService;
@@ -131,13 +130,13 @@ public class FinancialProductServiceImpl implements FinancialProductService {
 //        Preconditions.checkNotNull(financialQuery, financialQuery);
         List<Long> list = Lists.newArrayList();
         if (financialQuery.getAreaId() != null && financialQuery.getProv() != null && financialQuery.getCity() == null) {   // 省级区域
-            ResultBean<List<AreaVO>> resultBean = baseAreaService.list();
-            List<AreaVO> areaVOList = resultBean.getData();
-            for (AreaVO areaVO : areaVOList) {
-                if(areaVO.getId().longValue() == financialQuery.getAreaId().longValue()) {
-                    List<AreaVO.City> cityList = areaVO.getCityList();
+            ResultBean<List<CascadeAreaVO>> resultBean = baseAreaService.list();
+            List<CascadeAreaVO> cascadeAreaVOList = resultBean.getData();
+            for (CascadeAreaVO cascadeAreaVO : cascadeAreaVOList) {
+                if(cascadeAreaVO.getId().longValue() == financialQuery.getAreaId().longValue()) {
+                    List<CascadeAreaVO.City> cityList = cascadeAreaVO.getCityList();
                     if (CollectionUtils.isNotEmpty(cityList)) {
-                        for (AreaVO.City city : cityList) {
+                        for (CascadeAreaVO.City city : cityList) {
                             list.add(city.getId());
                         }
                     }

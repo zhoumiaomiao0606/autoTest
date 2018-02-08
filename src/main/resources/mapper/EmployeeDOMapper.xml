@@ -226,6 +226,21 @@
         </if>
     </select>
 
+    <!--getByUsername-->
+    <select id="getByUsername" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from employee
+        <where>
+            <if test="email != null and email != '' ">
+                AND email = #{email}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from employee
         where id = #{id,jdbcType=BIGINT}

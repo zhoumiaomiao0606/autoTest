@@ -24,7 +24,7 @@ public class MD5Utils {
         //  设置随机数
         Random random = new Random();
 
-        //  获取4位随机数
+        //  获取N位随机数
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < length; i++) {
             //获取随机chars下标
@@ -38,22 +38,28 @@ public class MD5Utils {
      * 生成32位md5码
      *
      * @param password
+     * @param salt
      * @return
      */
-    public static String md5Password(String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String md5(String password, String salt) {
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            byte[] md5Bytes = md5.digest(password.getBytes("UTF-8"));
 
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        byte[] byteArray = password.getBytes("UTF-8");
-        byte[] md5Bytes = md5.digest(byteArray);
-
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < md5Bytes.length; i++) {
-            int val = ((int) md5Bytes[i]) & 0xff;
-            if (val < 16) {
-                sb.append("0");
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < md5Bytes.length; i++) {
+                int val = ((int) md5Bytes[i]) & 0xff;
+                if (val < 16) {
+                    sb.append("0");
+                }
+                sb.append(Integer.toHexString(val));
             }
-            sb.append(Integer.toHexString(val));
+            return sb.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("没有MD5这个算法", e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("不支持UTF-8编码方式", e);
         }
-        return sb.toString();
     }
 }

@@ -60,8 +60,16 @@ public interface UserGroupRelaAreaAuthDOMapper {
      * <p>
      *
      * @param userGroupId
-     * @param type        MENU / PAGE / OPERATION {@link com.yunche.loan.config.constant.AuthConst}
+     * @param type        MENU / PAGE / OPERATION {@link com.yunche.loan.config.constant.AuthConst}  非空
      * @return
      */
     List<Long> getHasBindAuthEntityIdListByUserGroupIdAndType(@Param("userGroupId") Long userGroupId, @Param("type") Byte type);
+
+    /**
+     * 根据用户组列表 和 权限类型，获取所有 已绑定 auth实体(source_id) ID列表
+     *
+     * @param userGroupIdList
+     * @return
+     */
+    List<Long> getHasBindAuthIdListByUserGroupIdList(@Param("userGroupIdList") List<Long> userGroupIdList);
 }

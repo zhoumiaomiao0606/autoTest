@@ -1,7 +1,11 @@
 package com.yunche.loan.dao.mapper;
 
 import com.yunche.loan.domain.dataObj.InstLoanOrderDO;
+import com.yunche.loan.domain.queryObj.OrderListQuery;
+import com.yunche.loan.domain.viewObj.InstLoanOrderVO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 @Mapper
 public interface InstLoanOrderDOMapper {
@@ -16,4 +20,6 @@ public interface InstLoanOrderDOMapper {
     int updateByPrimaryKeySelective(InstLoanOrderDO record);
 
     int updateByPrimaryKey(InstLoanOrderDO record);
+
+    List<InstLoanOrderDO> queryByCondition(OrderListQuery creditApplyQuery);
 }

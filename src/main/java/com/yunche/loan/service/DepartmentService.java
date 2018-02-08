@@ -6,7 +6,7 @@ import com.yunche.loan.domain.queryObj.DepartmentQuery;
 import com.yunche.loan.domain.dataObj.DepartmentDO;
 import com.yunche.loan.domain.param.DepartmentParam;
 import com.yunche.loan.domain.viewObj.DepartmentVO;
-import com.yunche.loan.domain.viewObj.LevelVO;
+import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public interface DepartmentService {
 
     ResultBean<List<DepartmentVO>> query(DepartmentQuery query);
 
-    ResultBean<List<LevelVO>> listAll();
+    ResultBean<List<CascadeVO>> listAll();
 
     ResultBean<Void> bindUserGroup(Long id, String userGroupIds);
 

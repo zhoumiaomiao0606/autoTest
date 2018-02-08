@@ -4,12 +4,10 @@ import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
-import com.yunche.loan.domain.viewObj.EmployeeOnlyPropertyVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface EmployeeDOMapper {
@@ -83,4 +81,12 @@ public interface EmployeeDOMapper {
      * @return
      */
     List<EmployeeDO> getAllOnlyProperty();
+
+    /**
+     * 根据唯一账号(邮箱📮) 获取用户
+     *
+     * @param email
+     * @return
+     */
+    EmployeeDO getByUsername(@Param("email") String email, @Param("status") Byte status);
 }

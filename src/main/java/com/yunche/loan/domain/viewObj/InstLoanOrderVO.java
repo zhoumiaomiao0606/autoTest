@@ -6,6 +6,8 @@ import java.util.Date;
 public class InstLoanOrderVO implements Serializable {
     private Long orderId;
 
+    private String orderNbr;
+
     private Long custId;
 
     private Long prodId;
@@ -71,6 +73,14 @@ public class InstLoanOrderVO implements Serializable {
 
     private String bank;
 
+    private Long investigatorId;
+
+    private String investigatorName;
+
+    private String investigateAddress;
+
+    private String investigateContent;
+
     private Integer status;
 
     private Date gmtCreate;
@@ -78,6 +88,46 @@ public class InstLoanOrderVO implements Serializable {
     private Date gmtModify;
 
     private CustBaseInfoVO custBaseInfoVO;
+
+    public Long getInvestigatorId() {
+        return investigatorId;
+    }
+
+    public void setInvestigatorId(Long investigatorId) {
+        this.investigatorId = investigatorId;
+    }
+
+    public String getInvestigatorName() {
+        return investigatorName;
+    }
+
+    public void setInvestigatorName(String investigatorName) {
+        this.investigatorName = investigatorName;
+    }
+
+    public String getInvestigateAddress() {
+        return investigateAddress;
+    }
+
+    public void setInvestigateAddress(String investigateAddress) {
+        this.investigateAddress = investigateAddress;
+    }
+
+    public String getInvestigateContent() {
+        return investigateContent;
+    }
+
+    public void setInvestigateContent(String investigateContent) {
+        this.investigateContent = investigateContent;
+    }
+
+    public String getOrderNbr() {
+        return orderNbr;
+    }
+
+    public void setOrderNbr(String orderNbr) {
+        this.orderNbr = orderNbr;
+    }
 
     public Boolean getCarKey() {
         return carKey;

@@ -12,7 +12,7 @@ import java.util.List;
  * @date 2018/1/19
  */
 @Data
-public class AreaVO {
+public class CascadeAreaVO {
 
     private Long id;
 
