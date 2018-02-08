@@ -31,7 +31,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     public ResultBean<InstLoanOrderDO> update(InstLoanOrderVO instLoanOrderVO) {
         InstLoanOrderDO instLoanOrderDO = new InstLoanOrderDO();
         BeanUtils.copyProperties(instLoanOrderVO, instLoanOrderDO);
-        instLoanOrderDO.setStatus(0);
+//        instLoanOrderDO.setStatus(0);
         instLoanOrderDOMapper.updateByPrimaryKeySelective(instLoanOrderDO);
 
         return ResultBean.ofSuccess(instLoanOrderDO, "更新订单成功");

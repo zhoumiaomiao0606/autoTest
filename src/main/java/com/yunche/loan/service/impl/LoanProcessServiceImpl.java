@@ -195,7 +195,35 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Override
     public ResultBean<Void> loanApprove(InstLoanOrderVO instLoanOrderVO, String processId, Long operatorId, String operatorName, String operatorRole) {
-        return null;
+        Task task = taskService.createTaskQuery().processInstanceId(processId).singleResult();
+
+        // 补充贷款业务单信息
+        loanOrderService.update(instLoanOrderVO);
+        // 补充客户信息
+        custService.update(instLoanOrderVO.getCustBaseInfoVO());
+
+        // 记录流程执行节点
+        InstProcessNodeDO instProcessNodeDO = new InstProcessNodeDO();
+        instProcessNodeDO.setOrderId(instLoanOrderVO.getOrderId());
+        instProcessNodeDO.setProcessInstId(processId);
+        instProcessNodeDO.setNodeCode(LoanProcessEnum.LOAN_APPROVE.getCode());
+        instProcessNodeDO.setNodeName(LoanProcessEnum.LOAN_APPROVE.getName());
+        instProcessNodeDO.setPreviousNodeCode(LoanProcessEnum.BANK_CREDIT_RECORD.getCode());
+        instProcessNodeDO.setNextNodeCode(LoanProcessEnum.TELEPHONE_VERIFY.getCode());
+        instProcessNodeDO.setStatus(ProcessActionEnum.PASS.name());
+        instProcessNodeDO.setOperatorId(operatorId);
+        instProcessNodeDO.setOperatorName(operatorName);
+        instProcessNodeDO.setOperatorRole(operatorRole);
+        processNodeService.insert(instProcessNodeDO);
+
+        Map<String, Object> taskVariables = new HashMap<String, Object>();
+        taskVariables.put("custBaseInfoVO", instLoanOrderVO.getCustBaseInfoVO());
+        taskVariables.put("instLoanOrderVO", instLoanOrderVO);
+        taskVariables.put("amountGrade", instLoanOrderVO.getAmountGrade());
+        taskVariables.put("processId", processId);
+        taskService.complete(task.getId(), taskVariables);
+
+        return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.LOAN_APPROVE.getName() + "]任务处理成功");
     }
 
 }
