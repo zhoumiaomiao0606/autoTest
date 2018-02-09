@@ -20,8 +20,8 @@
     select
     <include refid="Base_Column_List" />
     from biz_model_rela_financial_prod
-    where biz_id = #{bizId,jdbcType=BIGINT}
-    and prod_id = #{prodId,jdbcType=BIGINT}
+    where biz_id = #{bizId}
+    and prod_id = #{prodId}
   </select>
   <delete id="deleteByPrimaryKey">
     delete from biz_model_rela_financial_prod
