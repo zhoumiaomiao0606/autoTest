@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.ProcessActionEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.CustBaseInfoDOMapper;
@@ -23,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Created by zhouguoliang on 2018/2/5.
@@ -77,7 +79,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     public ResultBean<List<InstLoanOrderVO>> queryOrderList(OrderListQuery orderListQuery) {
         List<InstLoanOrderDO> instLoanOrderDOList = instLoanOrderDOMapper.queryByCondition(orderListQuery);
         List<InstLoanOrderVO> instLoanOrderVOList = Lists.newArrayList();
+        Set<Long> orderIfSets = Sets.newHashSet();
         for (InstLoanOrderDO instLoanOrderDO : instLoanOrderDOList) {
+            if (orderIfSets.contains(instLoanOrderDO.getOrderId())) continue;
+            orderIfSets.add(instLoanOrderDO.getOrderId());
             InstLoanOrderVO instLoanOrderVO = new InstLoanOrderVO();
             instLoanOrderVOList.add(instLoanOrderVO);
             BeanUtils.copyProperties(instLoanOrderDO, instLoanOrderVO);
