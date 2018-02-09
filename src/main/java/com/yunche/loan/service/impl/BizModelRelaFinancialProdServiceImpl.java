@@ -74,6 +74,13 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     @Override
     public ResultBean<Void> addRelaFinancialProd(Long bizId, Long prodId) {
         Preconditions.checkArgument(bizId != null && prodId != null, "prodId");
+
+        bizModelRelaFinancialProdDOMapper.queryByBizIdAndProdId(bizId, prodId);
+        BizModelRelaFinancialProdDO instance = bizModelRelaFinancialProdDOMapper.queryByBizIdAndProdId(bizId, prodId);
+        if (instance != null) {
+            return ResultBean.ofError( "该产品已存在, 请不要重复添加");
+        }
+
         BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO = new BizModelRelaFinancialProdDO();
         bizModelRelaFinancialProdDO.setBizId(bizId);
         bizModelRelaFinancialProdDO.setProdId(prodId);
@@ -91,4 +98,5 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
 
         return ResultBean.ofSuccess(bizModelRelaFinancialProdDOList);
     }
+
 }
