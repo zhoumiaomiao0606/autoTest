@@ -40,6 +40,10 @@ public class BizModelRelaAreaPartnersServiceImpl implements BizModelRelaAreaPart
     public ResultBean<Void> batchInsert(List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(bizModelRelaAreaPartnersDOList), "bizModelRelaAreaPartnersDOList不能为空");
         for (BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO : bizModelRelaAreaPartnersDOList) {
+            BizModelRelaAreaPartnersDO instance = getByAllId(bizModelRelaAreaPartnersDO).getData();
+            if (instance != null) {
+                return ResultBean.ofError("该区域的合伙人已存在, 请勿重复添加");
+            }
             int count = bizModelRelaAreaPartnersDOMapper.insert(bizModelRelaAreaPartnersDO);
 //            Preconditions.checkArgument(count > 1, "创建失败");
         }
@@ -94,6 +98,10 @@ public class BizModelRelaAreaPartnersServiceImpl implements BizModelRelaAreaPart
             bizModelRelaAreaPartnersDO.setBizId(bizModelRegionVO.getBizId());
             bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
             bizModelRelaAreaPartnersDO.setGroupId(0L);
+            BizModelRelaAreaPartnersDO instance = getByAllId(bizModelRelaAreaPartnersDO).getData();
+            if (instance != null) {
+                return ResultBean.ofError("该区域的合伙人已存在, 请勿重复添加");
+            }
             insert(bizModelRelaAreaPartnersDO);
         }
         return ResultBean.ofSuccess(null, "添加成功");
