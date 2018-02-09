@@ -1,26 +1,29 @@
 package com.yunche.loan.config.common;
 
 import com.alibaba.fastjson.JSON;
+import com.yunche.loan.config.cache.AuthCache;
 import com.yunche.loan.dao.mapper.EmployeeDOMapper;
 import com.yunche.loan.dao.mapper.EmployeeRelaUserGroupDOMapper;
 import com.yunche.loan.dao.mapper.UserGroupRelaAreaAuthDOMapper;
-import com.yunche.loan.domain.dataObj.EmployeeDO;
-import org.apache.commons.lang3.StringUtils;
+import com.yunche.loan.domain.dataObj.*;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.BoundValueOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static com.yunche.loan.config.constant.AuthConst.*;
 import static com.yunche.loan.config.constant.BaseConst.*;
 
 /**
@@ -33,90 +36,14 @@ public class BizShiroRealm extends AuthorizingRealm {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorizingRealm.class);
 
-    /**
-     * redis-session过期时间：30min
-     */
-    private static final long SESSION_TIME_OUT = 1800L;
-
-    @Value("${salt}")
-    private String salt;
-
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
     @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
     @Autowired
     private UserGroupRelaAreaAuthDOMapper userGroupRelaAreaAuthDOMapper;
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
-
-
-//    /**
-//     * 认证方法
-//     *
-//     * @param token
-//     * @return
-//     * @throws AuthenticationException
-//     */
-//    @Override
-//    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-//
-//        UsernamePasswordToken myToken = (UsernamePasswordToken) token;
-//        String username = myToken.getUsername();
-//        char[] password = myToken.getPassword();
-//        // 根据用户名查询数据库中的密码，将密码交给安全管理器，由安全管理器对象负责比较数据库中的密码和页面传递的密码是否一致
-//        EmployeeQuery query = new EmployeeQuery();
-//        query.setEmail(username);
-//        List<EmployeeDO> employeeDOS = employeeDOMapper.query(query);
-//        if (CollectionUtils.isEmpty(employeeDOS)) {
-//            return null;
-//        }
-//        // 参数一：签名对象，认证通过后，可以在程序的任意位置获取当前放入的对象
-//        // 参数二：数据库中查询出的密码
-//        // 参数三：当前realm的类名
-//        EmployeeDO employeeDO = employeeDOS.get(0);
-////        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(employeeDO, employeeDO.getPassword(), "",this.getClass().getName());
-//        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(employeeDO, employeeDO.getPassword(), this.getClass().getName());
-//        return info;
-//    }
-//
-//    /**
-//     * 授权方法
-//     *
-//     * @param principals
-//     * @return
-//     */
-//    @Override
-//    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-//
-//        // 获取当前执行用户:
-//        Subject currentUser = SecurityUtils.getSubject();
-//
-////        currentUser.execute();
-//
-//        //授权信息对象
-//        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-//        //根据当前登录用户查询数据库，获得其对应的权限
-//        EmployeeDO employeeDO = (EmployeeDO) principals.getPrimaryPrincipal();
-//        if (employeeDO.getEmail().equals("admin")) {
-//            //超级管理员，查询所有权限
-//
-//        } else {
-//            //普通用户，根据用户查询对应的权限
-//
-//            // 获取用户所在用户组列表
-//            List<Long> userGroupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(employeeDO.getId());
-//
-//            // 根据用户组获取所有权限ID
-//            List<Long> hasBindAuthIdList = userGroupRelaAreaAuthDOMapper.getHasBindAuthIdListByUserGroupIdList(userGroupIdList);
-//
-//            hasBindAuthIdList.parallelStream()
-//                    .forEach(e -> {
-////                        info.addStringPermission(e);
-//                    });
-//        }
-//        return info;
-//    }
+    @Autowired
+    private AuthCache authCache;
 
 
     /**
@@ -131,11 +58,13 @@ public class BizShiroRealm extends AuthorizingRealm {
         logger.debug("doGetAuthenticationInfo   >>>  认证");
 
         // 获取用户的输入的账号
-        String username = (String) token.getPrincipal();
+        UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
+        String username = usernamePasswordToken.getUsername();
+        String password = String.valueOf(usernamePasswordToken.getPassword());
 
-        // 通过username从数据库中查找 User对象，如果找到，没找到.
+        // 通过username从数据库中查找 User对象
         // 根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
-        EmployeeDO employeeDO = getUser(username);
+        EmployeeDO employeeDO = employeeDOMapper.getByUsername(username, VALID_STATUS);
         logger.debug("employeeDO >>> ", JSON.toJSONString(employeeDO));
 
         if (null == employeeDO) {
@@ -153,15 +82,18 @@ public class BizShiroRealm extends AuthorizingRealm {
             throw new UnknownAccountException("账号状态异常");
         }
 
+        // 自己做密码校验   通过：给当前输入明文密码   不通过：给数据库加密密码
+        boolean verify = MD5Utils.verify(password, employeeDO.getPassword());
+        String verifyPassword = verify ? password : employeeDO.getPassword();
+
         // shiro认证
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(
-                // 用户
+                // 签名对象，认证通过后，可以在程序的任意位置获取当前放入的对象
                 employeeDO,
-                // 密码
-                employeeDO.getPassword(),
-                // realm name
-                this.getClass().getName()
-        );
+                // 常规：数据库中查询出的密码 （验证原理：比对token中的密码[当前输入的明文密码]    But：此处，整合了自定义加密验证，故反向处理）
+                verifyPassword,
+                // 当前realm的类名
+                this.getClass().getName());
 
         // 认证通过，返回认证信息
         return info;
@@ -178,56 +110,68 @@ public class BizShiroRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         logger.debug("doGetAuthorizationInfo   >>>  授权");
 
-        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        EmployeeDO employeeDO = (EmployeeDO) principals.getPrimaryPrincipal();
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+
+        Object user = principals.getPrimaryPrincipal();
+        EmployeeDO employeeDO = new EmployeeDO();
+        BeanUtils.copyProperties(user, employeeDO);
 
         // 获取用户的角色列表
+        List<Long> userGroupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(employeeDO.getId());
+        if (CollectionUtils.isEmpty(userGroupIdList)) {
+            return info;
+        }
 
-        // 获取用户的权限实体列表
-//        getAuthEntityList();
-//
-//        for (SysRole role : employeeDO.getRoleList()) {
-//            authorizationInfo.addRole(role.getRole());
-//            for (SysPermission p : role.getPermissions()) {
-//                authorizationInfo.addStringPermission(p.getPermission());
-//            }
-//        }
-        return authorizationInfo;
-    }
+        // 获取角色列表所绑定的所有权限列表
+        List<Long> hasBindAuthIdList = userGroupRelaAreaAuthDOMapper.getHasBindAuthIdListByUserGroupIdList(userGroupIdList);
+        if (!CollectionUtils.isEmpty(hasBindAuthIdList)) {
 
+            // get all Auth
+            Map<Long, AuthDO> authMap = authCache.getAuth();
+            if (!CollectionUtils.isEmpty(authMap)) {
 
-    /**
-     * 根据username获取用户
-     *
-     * @param username
-     * @return
-     */
-    private EmployeeDO getUser(String username) {
-        // 先走缓存
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(username);
-        String sessionId = boundValueOps.get();
-        if (StringUtils.isNotBlank(sessionId)) {
-            boundValueOps.rename(sessionId);
-            String userJson = boundValueOps.get();
-            if (StringUtils.isNotBlank(userJson)) {
-                return JSON.parseObject(userJson, EmployeeDO.class);
+                // get all auth entity
+                Map<Long, MenuDO> menuMap = authCache.getMenu();
+                Map<Long, PageDO> pageMap = authCache.getPage();
+                Map<Long, OperationDO> operationMap = authCache.getOperation();
+
+                hasBindAuthIdList.parallelStream()
+                        .filter(Objects::nonNull)
+                        .forEach(authId -> {
+
+                            AuthDO authDO = authMap.get(authId);
+                            if (null != authDO) {
+
+                                Byte type = authDO.getType();
+
+                                // menu
+                                if (MENU.equals(type)) {
+                                    MenuDO menuDO = menuMap.get(authDO.getSourceId());
+                                    if (null != menuDO) {
+                                        info.addStringPermission(menuDO.getUri());
+                                    }
+                                }
+                                // page
+                                else if (PAGE.equals(type)) {
+                                    PageDO pageDO = pageMap.get(authDO.getSourceId());
+                                    if (null != pageDO) {
+                                        info.addStringPermission(pageDO.getUri());
+                                    }
+                                }
+                                // operation
+                                else if (OPERATION.equals(type)) {
+                                    OperationDO operationDO = operationMap.get(authDO.getSourceId());
+                                    if (null != operationDO) {
+                                        info.addStringPermission(operationDO.getUri());
+                                    }
+                                }
+
+                            }
+
+                        });
             }
         }
 
-        // 缓存过期，走DB
-        EmployeeDO employeeDO = employeeDOMapper.getByUsername(username, VALID_STATUS);
-        return employeeDO;
-    }
-
-    /**
-     * salt = username + salt
-     *
-     * @param username
-     * @param salt
-     * @return
-     */
-    public String getCredentialsSalt(String username, String salt) {
-        String credentialsSalt = username + salt;
-        return credentialsSalt;
+        return info;
     }
 }

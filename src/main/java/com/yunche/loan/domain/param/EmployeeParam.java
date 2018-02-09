@@ -16,6 +16,10 @@ public class EmployeeParam extends EmployeeDO {
      */
     private List<Long> userGroupIdList;
     /**
+     * 登录名
+     */
+    private String username;
+    /**
      * 旧密码
      */
     private String oldPassword;

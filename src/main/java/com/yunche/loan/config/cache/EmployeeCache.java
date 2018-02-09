@@ -30,7 +30,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Component
 public class EmployeeCache {
 
-    private static final String EMPLOYEE_CASCADE_CACHE_KEY = "EMPLOYEE_CASCADE_CACHE";
+    private static final String EMPLOYEE_CASCADE_CACHE_KEY = "cascade:cache:employee";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

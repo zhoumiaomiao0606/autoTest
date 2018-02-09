@@ -3,6 +3,7 @@ package com.yunche.loan.domain.queryObj;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -52,4 +53,9 @@ public class PartnerQuery extends BaseQuery {
     private String bankAccountTwo;
 
     private Byte payMonth;
+
+    /**
+     * 所有子级areaId（含自身）
+     */
+    private List<Long> cascadeChildAreaIdList;
 }

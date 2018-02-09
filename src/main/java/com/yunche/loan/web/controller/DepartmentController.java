@@ -36,35 +36,35 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
 
-    @RequiresPermissions("/department/create")
+//    @RequiresPermissions("/department/create")
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> create(@RequestBody DepartmentParam departmentParam) {
         logger.info(Arrays.asList("create", JSON.toJSONString(departmentParam)).stream().collect(Collectors.joining("\u0001")));
         return departmentService.create(departmentParam);
     }
 
-    @RequiresPermissions("/department/update")
+//    @RequiresPermissions("/department/update")
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody DepartmentDO departmentDO) {
         logger.info(Arrays.asList("update", JSON.toJSONString(departmentDO)).stream().collect(Collectors.joining("\u0001")));
         return departmentService.update(departmentDO);
     }
 
-    @RequiresPermissions("/department/delete")
+//    @RequiresPermissions("/department/delete")
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long areaId) {
         logger.info(Arrays.asList("delete", JSON.toJSONString(areaId)).stream().collect(Collectors.joining("\u0001")));
         return departmentService.delete(areaId);
     }
 
-    @RequiresPermissions("/department/getById")
+//    @RequiresPermissions("/department/getById")
     @GetMapping("/getById")
     public ResultBean<DepartmentVO> getById(@RequestParam("id") Long id) {
         logger.info(Arrays.asList("getById", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
         return departmentService.getById(id);
     }
 
-    @RequiresPermissions("/department/query")
+//    @RequiresPermissions("/department/query")
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<DepartmentVO>> query(@RequestBody DepartmentQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));

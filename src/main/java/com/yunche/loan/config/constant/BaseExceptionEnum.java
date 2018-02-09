@@ -6,6 +6,9 @@ package com.yunche.loan.config.constant;
  */
 public enum BaseExceptionEnum {
 
+    NOT_LOGIN("NOT_LOGIN", "操作会话已失效，请重新登录！"),
+    NOT_PERMISSION("NOT_PERMISSION", "您无该权限"),
+
     EC00000200("EC00000200", "success"),
     EC00000404("EC00000404", "该接口不存在"),
     EC00000500("EC00000500", "系统异常"),

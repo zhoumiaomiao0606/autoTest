@@ -52,7 +52,7 @@
         FROM user_group_rela_area_auth AS a,
         auth AS b
         WHERE a.auth_id = b.id
-        <if test="userGroupIdList != null">
+        <if test="userGroupIdList != null and userGroupIdList.size() > 0">
             AND a.user_group_id IN
             <foreach collection="userGroupIdList" item="item" open="(" close=")" separator=",">
                 #{item}

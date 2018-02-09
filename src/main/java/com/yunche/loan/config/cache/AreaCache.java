@@ -34,12 +34,13 @@ import static java.util.Locale.CHINA;
 @Component
 public class AreaCache {
 
-    private static final String AREA_CASCADE_CACHE_KEY = "AREA_CASCADE_CACHE";
+    private static final String AREA_CASCADE_CACHE_KEY = "cascade:cache:area";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+
 
     public List<CascadeAreaVO> get() {
         // get

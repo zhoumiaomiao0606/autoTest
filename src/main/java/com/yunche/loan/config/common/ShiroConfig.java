@@ -48,21 +48,23 @@ public class ShiroConfig {
         // 注意过滤器配置顺序 不能颠倒
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap();
         // 配置退出过滤器,其中的具体的退出代码Shiro已经替我们实现了，登出后跳转配置的loginUrl
-        filterChainDefinitionMap.put("/employee/logout", "anon");
+        filterChainDefinitionMap.put("/employee/logout", "authc");
         // 配置不会被拦截的链接 顺序判断
-        filterChainDefinitionMap.put("/static/**", "anon");
-        filterChainDefinitionMap.put("/ajaxLogin", "anon");
+//        filterChainDefinitionMap.put("/static/**", "anon");
+//        filterChainDefinitionMap.put("/ajaxLogin", "anon");
         filterChainDefinitionMap.put("/employee/login", "anon");
         // 过滤链定义，从上向下顺序执行，一般将/**放在最为下边
         filterChainDefinitionMap.put("/**", "authc");
 
         // 配置shiro默认登录界面地址，前后端分离中登录界面跳转应由前端路由控制，后台仅返回json数据
-        shiroFilterFactoryBean.setLoginUrl("http://47.97.112.202/#/login");
-//        shiroFilterFactoryBean.setLoginUrl("/unauth");
+//        shiroFilterFactoryBean.setLoginUrl("http://47.97.112.202/#/login");
+        // 未登录，重定向URL
+        shiroFilterFactoryBean.setLoginUrl("/auth/notLogin");
+        // 未授权，重定向URL
+        shiroFilterFactoryBean.setUnauthorizedUrl("/auth/notPermission");
         // 登录成功后要跳转的链接
 //        shiroFilterFactoryBean.setSuccessUrl("/index");
-        //未授权界面;
-        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
+
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }

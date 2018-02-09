@@ -12,10 +12,7 @@ import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
-import com.yunche.loan.domain.viewObj.BaseVO;
-import com.yunche.loan.domain.viewObj.CascadeVO;
-import com.yunche.loan.domain.viewObj.EmployeeVO;
-import com.yunche.loan.domain.viewObj.UserGroupVO;
+import com.yunche.loan.domain.viewObj.*;
 import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -38,6 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -57,18 +57,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
     /**
-     * session_id
-     */
-    private static final String SESSION_ID = "biz_session_id";
-    /**
      * redis-session过期时间：30min
      */
     private static final long SESSION_TIME_OUT = 1800L;
 
     @Value("${spring.mail.username}")
     private String from;
-    @Value("${salt}")
-    private String salt;
 
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
@@ -110,7 +104,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         String password = MD5Utils.getRandomString(10);
 
         // MD5加密
-        String md5Password = MD5Utils.md5(password, salt);
+        String md5Password = MD5Utils.md5(password);
         employeeParam.setPassword(md5Password);
 
         // 创建实体，并返回ID
@@ -314,16 +308,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ResultBean<Void> login(EmployeeDO employeeDO) {
-        Preconditions.checkArgument(null != employeeDO && StringUtils.isNotBlank(employeeDO.getEmail()), "登陆账号不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(employeeDO.getPassword()), "密码不能为空");
+    public ResultBean<LoginVO> login(HttpServletRequest request, HttpServletResponse response, EmployeeParam employeeParam) {
+        Preconditions.checkArgument(null != employeeParam && StringUtils.isNotBlank(employeeParam.getUsername()), "登陆账号不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getPassword()), "密码不能为空");
+
+        String origin = request.getHeader("origin");
+        response.setHeader("Access-Control-Allow-Origin", origin);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "POST,GET,PUT,DELETE,OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-type");
 
         // 使用shiro提供的方式进行身份认证
         Subject subject = SecurityUtils.getSubject();
-        String username = employeeDO.getEmail();
-        String password = employeeDO.getPassword();
-        // salt = username + salt
-        password = MD5Utils.md5(password, salt);
+        String username = employeeParam.getUsername();
+        String password = employeeParam.getPassword();
         AuthenticationToken token = new UsernamePasswordToken(username, password);
 
         try {
@@ -337,7 +335,15 @@ public class EmployeeServiceImpl implements EmployeeService {
             return ResultBean.ofError("用户名或密码错误");
         }
 
-        return ResultBean.ofSuccess(null, "登录成功");
+        // 返回data
+        LoginVO data = new LoginVO();
+        EmployeeDO user = (EmployeeDO) subject.getPrincipal();
+        data.setUserId(user.getId());
+        data.setUsername(user.getName());
+        Serializable sessionId = subject.getSession().getId();
+        data.setToken(sessionId);
+
+        return ResultBean.ofSuccess(data, "登录成功");
     }
 
     @Override
@@ -355,12 +361,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeParam.getId(), VALID_STATUS);
         Preconditions.checkNotNull(employeeDO, "账号不存在或已停用");
-        String oldPassword = MD5Utils.md5(employeeParam.getOldPassword(), salt);
-        Preconditions.checkArgument(oldPassword.equals(employeeDO.getPassword()), "原密码有误");
+        Preconditions.checkArgument(MD5Utils.verify(employeeParam.getOldPassword(), employeeDO.getPassword()), "原密码有误");
 
         EmployeeDO updateEmployee = new EmployeeDO();
         updateEmployee.setId(employeeParam.getId());
-        updateEmployee.setPassword(MD5Utils.md5(employeeParam.getNewPassword(), salt));
+        updateEmployee.setPassword(MD5Utils.md5(employeeParam.getNewPassword()));
+        updateEmployee.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
         Preconditions.checkArgument(count > 0, "密码修改失败");
 

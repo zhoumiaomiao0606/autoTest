@@ -32,7 +32,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Component
 public class DepartmentCache {
 
-    private static final String DEPARTMENT_CASCADE_CACHE_KEY = "DEPARTMENT_CASCADE_CACHE";
+    private static final String DEPARTMENT_CASCADE_CACHE_KEY = "cascade:cache:department";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

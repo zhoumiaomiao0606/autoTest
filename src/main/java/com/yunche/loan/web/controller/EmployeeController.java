@@ -8,6 +8,7 @@ import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.CascadeVO;
+import com.yunche.loan.domain.viewObj.LoginVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
 import com.yunche.loan.service.EmployeeService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,7 +74,7 @@ public class EmployeeController {
      *
      * @return
      */
-    @RequiresPermissions("testPermission")
+    @RequiresPermissions("/employee/list")
     @GetMapping("/list")
     public ResultBean<List<CascadeVO>> listAll() {
         logger.info("list");
@@ -132,13 +135,15 @@ public class EmployeeController {
     /**
      * 用户登录
      *
-     * @param employeeDO
+     * @param employeeParam
      * @return
      */
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> login(@RequestBody EmployeeDO employeeDO) {
-        logger.info(Arrays.asList("login", JSON.toJSONString(employeeDO)).stream().collect(Collectors.joining("\u0001")));
-        return employeeService.login(employeeDO);
+    public ResultBean<LoginVO> login(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     @RequestBody EmployeeParam employeeParam) {
+        logger.info(Arrays.asList("login", JSON.toJSONString(employeeParam)).stream().collect(Collectors.joining("\u0001")));
+        return employeeService.login(request, response, employeeParam);
     }
 
     /**

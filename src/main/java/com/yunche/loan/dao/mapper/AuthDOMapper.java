@@ -38,4 +38,11 @@ public interface AuthDOMapper {
      * @return
      */
     List<Long> convertToAuthId(@Param("authEntityIdList") List<Long> authEntityIdList, @Param("type") Byte type);
+
+    /**
+     * 获取所有Auth
+     *
+     * @return
+     */
+    List<AuthDO> getAll();
 }

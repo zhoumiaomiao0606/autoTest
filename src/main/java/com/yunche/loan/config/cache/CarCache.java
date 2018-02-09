@@ -33,7 +33,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Component
 public class CarCache {
 
-    private static final String CAR_CASCADE_CACHE_KEY = "CAR_CASCADE_CACHE";
+    private static final String CAR_CASCADE_CACHE_KEY = "cascade:cache:car";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

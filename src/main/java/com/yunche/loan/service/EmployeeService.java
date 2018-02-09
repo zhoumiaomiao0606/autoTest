@@ -7,8 +7,11 @@ import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.CascadeVO;
+import com.yunche.loan.domain.viewObj.LoginVO;
 import com.yunche.loan.domain.viewObj.UserGroupVO;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -39,7 +42,7 @@ public interface EmployeeService {
 
     ResultBean<Void> resetPassword(String id);
 
-    ResultBean<Void> login(EmployeeDO employeeDO);
+    ResultBean<LoginVO> login(HttpServletRequest request, HttpServletResponse response, EmployeeParam employeeParam);
 
     ResultBean<Void> logout();
 

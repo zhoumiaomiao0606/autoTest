@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.yunche.loan.config.constant.BaseExceptionEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.queryObj.AuthQuery;
 import com.yunche.loan.domain.viewObj.CascadeVO;
@@ -100,6 +101,30 @@ public class AuthController {
     }
 
     /**
+     * 未登录
+     * 会话失效后，重定向的URL  >> 写回错误信息
+     *
+     * @return
+     */
+    @GetMapping("/notLogin")
+    public ResultBean<Void> notLogin() {
+        logger.info("notLogin");
+        return ResultBean.ofError(BaseExceptionEnum.NOT_LOGIN);
+    }
+
+    /**
+     * 无权限
+     * 校验无授权后，重定向的URL  >> 写回错误信息
+     *
+     * @return
+     */
+    @GetMapping("/notPermission")
+    public ResultBean<Void> notPermission() {
+        logger.info("notPermission");
+        return ResultBean.ofError(BaseExceptionEnum.NOT_PERMISSION);
+    }
+
+    /**
      * 当前用户组 - 所有的operation权限列表 - 对应的(选中状态展示)   -分页查询
      *
      * @param query id、pageIndex、pageSize
@@ -110,4 +135,6 @@ public class AuthController {
 //        logger.info(Arrays.asList("listOperation", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
 //        return authService.listOperation(query);
 //    }
+
+
 }

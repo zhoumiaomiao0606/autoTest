@@ -44,8 +44,6 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Value("${spring.mail.username}")
     private String from;
-    @Value("${salt}")
-    private String salt;
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
@@ -110,9 +108,8 @@ public class PartnerServiceImpl implements PartnerService {
 
             // 随机生成密码
             String password = MD5Utils.getRandomString(10);
-
             // MD5加密
-            String md5Password = MD5Utils.md5(password, salt);
+            String md5Password = MD5Utils.md5(password);
 
             EmployeeDO employeeDO = new EmployeeDO();
             employeeDO.setType(TYPE_WB);
@@ -188,6 +185,9 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Override
     public ResultBean<List<PartnerVO>> query(PartnerQuery query) {
+        // 根据areaId填充所有子级areaId(含自身)
+        getAndSetCascadeChildAreaIdList(query);
+
         int totalNum = partnerDOMapper.count(query);
         if (totalNum > 0) {
 
@@ -217,7 +217,7 @@ public class PartnerServiceImpl implements PartnerService {
     @Override
     public ResultBean<List<BizModelVO>> listBizModel(BizModelQuery query) {
         // 根据areaId填充所有父级areaId(含自身)
-        getAndSetCascadeAreaIdList(query);
+        getAndSetCascadeSuperAreaIdList(query);
 
         // 获取所有符合条件的ID
         List<Long> bizModelIdList = bizModelRelaAreaPartnersDOMapper.getBizModelIdListByCondition(query);
@@ -697,11 +697,60 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     /**
+     * 根据areaId填充所有子级areaId(含自身)
+     *
+     * @param query
+     */
+    private void getAndSetCascadeChildAreaIdList(PartnerQuery query) {
+        // getAllCascadeAreaIdList
+        List<Long> allChildAreaIdList = getAllChildAreaIdList(query.getAreaId());
+        allChildAreaIdList.removeAll(Collections.singleton(null));
+        // set
+        query.setCascadeChildAreaIdList(allChildAreaIdList);
+    }
+
+    /**
+     * 获取所有子级areaId(含自身)
+     *
+     * @param areaId
+     * @return
+     */
+    private List<Long> getAllChildAreaIdList(Long areaId) {
+        List<Long> childAreaIdList = Lists.newArrayList(areaId);
+
+//        List<BaseAreaDO> childBaseAreaDOList = baseAreaDOMapper.getByParentAreaId(areaId, VALID_STATUS);
+//        if (!CollectionUtils.isEmpty(childBaseAreaDOList)) {
+//
+//            childBaseAreaDOList.parallelStream()
+//                    .filter(Objects::nonNull)
+//                    .map(e -> {
+//
+//                        Long parentAreaId = e.getAreaId();
+//                        childAreaIdList.add(parentAreaId);
+//
+//                        getAndSetChildAreaIdList(parentAreaId, childAreaIdList);
+//                    })
+//        }
+
+        return childAreaIdList;
+    }
+
+    private void getAndSetChildAreaIdList(Long parentAreaId, List<Long> childAreaIdList) {
+//        List<BaseAreaDO> childBaseAreaDOList = baseAreaDOMapper.getByParentAreaId(areaId, VALID_STATUS);
+//        if (!CollectionUtils.isEmpty(childBaseAreaDOList)) {
+//
+//            childBaseAreaDOList.parallelStream()
+//
+//        }
+
+    }
+
+    /**
      * 根据areaId填充所有父级areaId(含自身)
      *
      * @param query
      */
-    private void getAndSetCascadeAreaIdList(BizModelQuery query) {
+    private void getAndSetCascadeSuperAreaIdList(BizModelQuery query) {
         // getAllCascadeAreaIdList
         List<Long> allSuperAreaIdList = getAllSuperAreaIdList(query.getAreaId());
         allSuperAreaIdList.removeAll(Collections.singleton(null));
@@ -710,7 +759,7 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     /**
-     * 获取所有父级areaId(含自身)ID
+     * 获取所有父级areaId(含自身)
      *
      * @param areaId
      * @return
