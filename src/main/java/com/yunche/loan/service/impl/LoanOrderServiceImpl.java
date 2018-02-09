@@ -1,18 +1,23 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.ProcessActionEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.CustBaseInfoDOMapper;
 import com.yunche.loan.dao.mapper.InstLoanOrderDOMapper;
+import com.yunche.loan.dao.mapper.InstProcessNodeDOMapper;
 import com.yunche.loan.domain.dataObj.CustBaseInfoDO;
 import com.yunche.loan.domain.dataObj.InstLoanOrderDO;
+import com.yunche.loan.domain.dataObj.InstProcessNodeDO;
 import com.yunche.loan.domain.queryObj.OrderListQuery;
 import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
 import com.yunche.loan.domain.viewObj.InstLoanOrderVO;
 import com.yunche.loan.service.LoanOrderService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,6 +34,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private CustBaseInfoDOMapper custBaseInfoDOMapper;
+
+    @Autowired
+    private InstProcessNodeDOMapper instProcessNodeDOMapper;
 
     @Override
     public ResultBean<InstLoanOrderDO> create(String processInstanceId) {
@@ -77,6 +85,20 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             CustBaseInfoVO custBaseInfoVO = new CustBaseInfoVO();
             BeanUtils.copyProperties(custBaseInfoDO, custBaseInfoVO);
             instLoanOrderVO.setCustBaseInfoVO(custBaseInfoVO);
+
+            if (!StringUtils.isEmpty(orderListQuery.getDoneProcessTask())) {
+                List<InstProcessNodeDO> instProcessNodeDOList = instProcessNodeDOMapper.selectByOrderIdAndNodeCode(instLoanOrderDO.getOrderId(), orderListQuery.getDoneProcessTask());
+                if (CollectionUtils.isNotEmpty(instProcessNodeDOList)) {
+                    InstProcessNodeDO instProcessNodeDO = instProcessNodeDOList.get(0);
+                    if (ProcessActionEnum.PASS.name().equals(instProcessNodeDO.getStatus())) {
+                        instLoanOrderVO.setAction(ProcessActionEnum.PASS.getDetail());
+                    } else if (ProcessActionEnum.REJECT.name().equals(instProcessNodeDO.getStatus())) {
+                        instLoanOrderVO.setAction(ProcessActionEnum.REJECT.getDetail());
+                    } else if (ProcessActionEnum.CANCEL.name().equals(instProcessNodeDO.getStatus())) {
+                        instLoanOrderVO.setAction(ProcessActionEnum.CANCEL.getDetail());
+                    }
+                }
+            }
         }
 
         return ResultBean.ofSuccess(instLoanOrderVOList, "条件查询订单成功");

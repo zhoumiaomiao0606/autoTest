@@ -87,7 +87,17 @@ public class InstLoanOrderVO implements Serializable {
 
     private Date gmtModify;
 
+    private String action;
+
     private CustBaseInfoVO custBaseInfoVO;
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
 
     public Long getInvestigatorId() {
         return investigatorId;

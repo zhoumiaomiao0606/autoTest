@@ -556,6 +556,11 @@
         AND
         process_inst_id IN (SELECT PROC_INST_ID_ FROM act_ru_task WHERE TASK_DEF_KEY_ = #{todoProcessTask,jdbcType=VARCHAR})
       </if>
+      <if test="doneProcessTask != null">
+        AND
+        process_inst_id IN (SELECT PROC_INST_ID_ FROM act_hi_taskinst WHERE TASK_DEF_KEY_ = #{doneProcessTask,jdbcType=VARCHAR}
+        <![CDATA[ AND act_hi_taskinst.END_TIME_ <= now()]]>)
+      </if>
       <if test="startDate != null">
         <![CDATA[ and gmt_create >= #{startDate}]]>
       </if>

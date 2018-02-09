@@ -22,10 +22,18 @@
     feature, operator_id, operator_name, operator_role, status, gmt_create, gmt_modify
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from inst_process_node
     where node_id = #{nodeId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByOrderIdAndNodeCode" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from inst_process_node
+    where order_id = #{orderId,jdbcType=BIGINT}
+    AND node_code = #{nodeCode,jdbcType=VARCHAR}
+    ORDER BY gmt_create DESC
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from inst_process_node
