@@ -122,7 +122,7 @@ public class BizModelRelaAreaPartnersServiceImpl implements BizModelRelaAreaPart
         Preconditions.checkNotNull(paramDO, "bizModelRelaAreaPartnersDO");
 
         BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = bizModelRelaAreaPartnersDOMapper.query(paramDO);
-        Preconditions.checkNotNull(bizModelRelaAreaPartnersDO, "bizModelRelaAreaPartnersDO，数据不存在.");
+//        Preconditions.checkNotNull(bizModelRelaAreaPartnersDO, "bizModelRelaAreaPartnersDO，数据不存在.");
 
         return ResultBean.ofSuccess(bizModelRelaAreaPartnersDO);
     }
