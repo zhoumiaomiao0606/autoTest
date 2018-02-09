@@ -43,7 +43,7 @@ public class LoanOrderController {
      * @param orderId
      * @return
      */
-    @GetMapping(value = "/detail", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/detail")
     public ResultBean<InstLoanOrderVO> detail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.detail(orderId);
     }

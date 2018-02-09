@@ -30,7 +30,7 @@ public class LoanProcessController {
      * @param operatorRole
      * @return
      */
-    @GetMapping(value = "/start", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/start")
     public ResultBean<String> start(@RequestParam("operatorId") Long operatorId,
                                     @RequestParam("operatorName") String operatorName,
                                     @RequestParam("operatorRole") String operatorRole) {
@@ -57,7 +57,7 @@ public class LoanProcessController {
      * @param action
      * @return
      */
-    @GetMapping(value = "/creditVerify", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/creditVerify")
     public ResultBean<Void> creditVerify(@RequestParam("processId") String processId, @RequestParam("action") String action,
                                          @RequestParam("operatorId") Long operatorId,
                                          @RequestParam("operatorName") String operatorName,

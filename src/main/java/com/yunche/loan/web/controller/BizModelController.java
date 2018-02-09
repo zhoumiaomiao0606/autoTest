@@ -97,7 +97,7 @@ public class BizModelController {
         return bizModelRelaAreaPartnersService.deleteRelaPartner(bizId, areaId, groupId);
     }
 
-    @PostMapping(value = "/addRelaPartner")
+    @PostMapping(value = "/addRelaPartner", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResultBean<Void> addRelaPartner(@RequestBody BizModelRegionVO bizModelRegionVO) {
         logger.info(Arrays.asList("create", JSON.toJSONString(bizModelRegionVO)).stream().collect(Collectors.joining("-")));
         return bizModelRelaAreaPartnersService.addRelaPartner(bizModelRegionVO);
