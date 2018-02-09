@@ -230,6 +230,7 @@ public class BizModelServiceImpl implements BizModelService {
 //                    userGroupVOList.add(userGroupVO);
 //                }
                 List<UserGroupVO> userGroupVOList = userGroupService.batchGetById(parterGroupIdList).getData();
+                if (CollectionUtils.isEmpty(userGroupVOList)) continue;
                 bizModelRegionVO.setUserGroupVOList(userGroupVOList);
                 bizModelRegionVOList.add(bizModelRegionVO);
             }
