@@ -5,14 +5,17 @@ import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.ProcessActionEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.CustBaseInfoDOMapper;
+import com.yunche.loan.dao.mapper.CustRelaPersonInfoDOMapper;
 import com.yunche.loan.dao.mapper.InstLoanOrderDOMapper;
 import com.yunche.loan.dao.mapper.InstProcessNodeDOMapper;
 import com.yunche.loan.domain.dataObj.CustBaseInfoDO;
+import com.yunche.loan.domain.dataObj.CustRelaPersonInfoDO;
 import com.yunche.loan.domain.dataObj.InstLoanOrderDO;
 import com.yunche.loan.domain.dataObj.InstProcessNodeDO;
 import com.yunche.loan.domain.queryObj.OrderListQuery;
 import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
 import com.yunche.loan.domain.viewObj.InstLoanOrderVO;
+import com.yunche.loan.domain.viewObj.InstProcessNodeVO;
 import com.yunche.loan.service.LoanOrderService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -39,6 +42,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private InstProcessNodeDOMapper instProcessNodeDOMapper;
+
+    @Autowired
+    private CustRelaPersonInfoDOMapper custRelaPersonInfoDOMapper;
 
     @Override
     public ResultBean<InstLoanOrderDO> create(String processInstanceId) {
@@ -107,5 +113,45 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         }
 
         return ResultBean.ofSuccess(instLoanOrderVOList, "条件查询订单成功");
+    }
+
+    @Override
+    public ResultBean<InstLoanOrderVO> detail(Long orderId) {
+        // 订单基本信息
+        InstLoanOrderDO instLoanOrderDO = instLoanOrderDOMapper.selectByPrimaryKey(orderId);
+        InstLoanOrderVO instLoanOrderVO = new InstLoanOrderVO();
+        BeanUtils.copyProperties(instLoanOrderDO, instLoanOrderVO);
+
+        // 客户信息
+        CustBaseInfoDO custBaseInfoDO = custBaseInfoDOMapper.selectByPrimaryKey(instLoanOrderVO.getCustId());
+        CustBaseInfoVO custBaseInfoVO = new CustBaseInfoVO();
+        BeanUtils.copyProperties(custBaseInfoDO, custBaseInfoVO);
+        List<CustRelaPersonInfoDO> custRelaPersonInfoDOList = custRelaPersonInfoDOMapper.selectByRelaCustId(custBaseInfoDO.getCustId());
+        if (CollectionUtils.isNotEmpty(custRelaPersonInfoDOList)) {
+            for (CustRelaPersonInfoDO custRelaPersonInfoDO : custRelaPersonInfoDOList) {
+                if ("共贷人".equals(custRelaPersonInfoDO.getRelaCustType())) {
+                    custBaseInfoVO.setShareLoanPerson(custRelaPersonInfoDO);
+                } else if ("担保人".equals(custRelaPersonInfoDO.getRelaCustType())) {
+                    custBaseInfoVO.setGuarantPerson(custRelaPersonInfoDO);
+                } else if ("反担保人".equals(custRelaPersonInfoDO.getRelaCustType())) {
+                    custBaseInfoVO.setBackGuarantorPerson(custRelaPersonInfoDO);
+                }
+            }
+        }
+        instLoanOrderVO.setCustBaseInfoVO(custBaseInfoVO);
+
+        // 流程操作记录
+        List<InstProcessNodeDO> instProcessNodeDOList = instProcessNodeDOMapper.selectByOrderId(orderId);
+        if (CollectionUtils.isNotEmpty(instProcessNodeDOList)) {
+            List<InstProcessNodeVO> instProcessNodeVOList = Lists.newArrayList();
+            for (InstProcessNodeDO instProcessNodeDO : instProcessNodeDOList) {
+                InstProcessNodeVO instProcessNodeVO = new InstProcessNodeVO();
+                BeanUtils.copyProperties(instProcessNodeDO, instProcessNodeVO);
+                instProcessNodeVOList.add(instProcessNodeVO);
+            }
+            instLoanOrderVO.setProcessRecordList(instProcessNodeVOList);
+        }
+
+        return ResultBean.ofSuccess(instLoanOrderVO, "查询订单详情成功");
     }
 }

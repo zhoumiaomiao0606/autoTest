@@ -18,4 +18,6 @@ public interface LoanOrderService {
 
     ResultBean<List<InstLoanOrderVO>> queryOrderList(OrderListQuery orderListQuery);
 
+    ResultBean<InstLoanOrderVO> detail(Long orderId);
+
 }

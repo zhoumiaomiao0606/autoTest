@@ -1,7 +1,10 @@
 package com.yunche.loan.domain.viewObj;
 
+import com.yunche.loan.domain.dataObj.InstProcessNodeDO;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class InstLoanOrderVO implements Serializable {
     private Long orderId;
@@ -90,6 +93,16 @@ public class InstLoanOrderVO implements Serializable {
     private String action;
 
     private CustBaseInfoVO custBaseInfoVO;
+
+    private List<InstProcessNodeVO> processRecordList;
+
+    public List<InstProcessNodeVO> getProcessRecordList() {
+        return processRecordList;
+    }
+
+    public void setProcessRecordList(List<InstProcessNodeVO> processRecordList) {
+        this.processRecordList = processRecordList;
+    }
 
     public String getAction() {
         return action;

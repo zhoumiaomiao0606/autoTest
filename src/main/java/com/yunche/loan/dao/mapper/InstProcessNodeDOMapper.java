@@ -18,6 +18,8 @@ public interface InstProcessNodeDOMapper {
 
     List<InstProcessNodeDO> selectByOrderIdAndNodeCode(@Param("orderId") Long orderId, @Param("nodeCode") String nodeCode);
 
+    List<InstProcessNodeDO> selectByOrderId(@Param("orderId") Long orderId);
+
     int updateByPrimaryKeySelective(InstProcessNodeDO record);
 
     int updateByPrimaryKey(InstProcessNodeDO record);

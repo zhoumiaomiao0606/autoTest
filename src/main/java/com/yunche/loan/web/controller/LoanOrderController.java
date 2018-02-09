@@ -36,6 +36,17 @@ public class LoanOrderController {
     public ResultBean<List<InstLoanOrderVO>> list(@RequestBody OrderListQuery orderListQuery) {
         return loanOrderService.queryOrderList(orderListQuery);
     }
+
+
+    /**
+     * 业务订单详情
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/detail", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResultBean<InstLoanOrderVO> detail(@RequestParam("orderId") Long orderId) {
+        return loanOrderService.detail(orderId);
+    }
 }
 
 

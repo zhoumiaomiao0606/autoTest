@@ -39,10 +39,16 @@
     feature, gmt_create, gmt_modify
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from cust_rela_person_info
     where cust_id = #{custId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByRelaCustId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cust_rela_person_info
+    where rela_cust_id = #{relaCustId,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from cust_rela_person_info
