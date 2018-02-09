@@ -16,6 +16,13 @@
     from biz_model_rela_financial_prod
     where biz_id = #{bizId,jdbcType=BIGINT}
   </select>
+  <select id="queryByBizIdAndProdId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from biz_model_rela_financial_prod
+    where biz_id = #{bizId,jdbcType=BIGINT}
+    and prod_id = #{prodId,jdbcType=BIGINT}
+  </select>
   <delete id="deleteByPrimaryKey">
     delete from biz_model_rela_financial_prod
     where biz_id = #{0, jdbcType=BIGINT}
