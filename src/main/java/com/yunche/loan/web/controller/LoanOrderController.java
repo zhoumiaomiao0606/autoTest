@@ -33,7 +33,7 @@ public class LoanOrderController {
      * @return
      */
     @PostMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<List<InstLoanOrderVO>> loanApprove(@RequestBody OrderListQuery orderListQuery) {
+    public ResultBean<List<InstLoanOrderVO>> list(@RequestBody OrderListQuery orderListQuery) {
         return loanOrderService.queryOrderList(orderListQuery);
     }
 }
