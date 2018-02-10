@@ -127,17 +127,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         CustBaseInfoVO custBaseInfoVO = new CustBaseInfoVO();
         BeanUtils.copyProperties(custBaseInfoDO, custBaseInfoVO);
         List<CustRelaPersonInfoDO> custRelaPersonInfoDOList = custRelaPersonInfoDOMapper.selectByRelaCustId(custBaseInfoDO.getCustId());
-        if (CollectionUtils.isNotEmpty(custRelaPersonInfoDOList)) {
-            for (CustRelaPersonInfoDO custRelaPersonInfoDO : custRelaPersonInfoDOList) {
-                if ("共贷人".equals(custRelaPersonInfoDO.getRelaCustType())) {
-                    custBaseInfoVO.setShareLoanPerson(custRelaPersonInfoDO);
-                } else if ("担保人".equals(custRelaPersonInfoDO.getRelaCustType())) {
-                    custBaseInfoVO.setGuarantPerson(custRelaPersonInfoDO);
-                } else if ("反担保人".equals(custRelaPersonInfoDO.getRelaCustType())) {
-                    custBaseInfoVO.setBackGuarantorPerson(custRelaPersonInfoDO);
-                }
-            }
-        }
+        custBaseInfoVO.setRelaPersonList(custRelaPersonInfoDOList);
         instLoanOrderVO.setCustBaseInfoVO(custBaseInfoVO);
 
         // 流程操作记录

@@ -14,9 +14,12 @@ import com.yunche.loan.service.CustService;
 import com.yunche.loan.service.LoanOrderService;
 import com.yunche.loan.service.ProcessNodeService;
 import org.activiti.engine.delegate.DelegateExecution;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by zhouguoliang on 2018/1/29.
@@ -44,23 +47,12 @@ public class CustServiceImpl implements CustService {
             BeanUtils.copyProperties(custBaseInfoVO, custBaseInfoDO);
             custBaseInfoDOMapper.insert(custBaseInfoDO);
 
-            // 共贷人
-            CustRelaPersonInfoDO sharePerson = custBaseInfoVO.getShareLoanPerson();
-            if (sharePerson != null) {
-                sharePerson.setRelaCustId(custBaseInfoDO.getCustId());
-                custRelaPersonInfoDOMapper.insert(sharePerson);
-            }
-            // 担保人
-            CustRelaPersonInfoDO guarantPerson = custBaseInfoVO.getGuarantPerson();
-            if (guarantPerson != null) {
-                guarantPerson.setRelaCustId(custBaseInfoDO.getCustId());
-                custRelaPersonInfoDOMapper.insert(guarantPerson);
-            }
-            // 反担保人
-            CustRelaPersonInfoDO backGuarantPerson = custBaseInfoVO.getBackGuarantorPerson();
-            if (backGuarantPerson != null) {
-                backGuarantPerson.setRelaCustId(custBaseInfoDO.getCustId());
-                custRelaPersonInfoDOMapper.insert(backGuarantPerson);
+            List<CustRelaPersonInfoDO> custRelaPersonInfoDOList = custBaseInfoVO.getRelaPersonList();
+            if (CollectionUtils.isNotEmpty(custRelaPersonInfoDOList)) {
+                for (CustRelaPersonInfoDO custRelaPersonInfoDO : custRelaPersonInfoDOList) {
+                    custRelaPersonInfoDO.setRelaCustId(custBaseInfoDO.getCustId());
+                    custRelaPersonInfoDOMapper.insert(custRelaPersonInfoDO);
+                }
             }
 
             // 更新订单信息
@@ -110,20 +102,12 @@ public class CustServiceImpl implements CustService {
         BeanUtils.copyProperties(custBaseInfoVO, custBaseInfoDO);
         custBaseInfoDOMapper.updateByPrimaryKeySelective(custBaseInfoDO);
 
-        // 共贷人
-        CustRelaPersonInfoDO sharePerson = custBaseInfoVO.getShareLoanPerson();
-        if (sharePerson != null) {
-            custRelaPersonInfoDOMapper.updateByPrimaryKeySelective(sharePerson);
-        }
-        // 担保人
-        CustRelaPersonInfoDO guarantPerson = custBaseInfoVO.getGuarantPerson();
-        if (guarantPerson != null) {
-            custRelaPersonInfoDOMapper.updateByPrimaryKeySelective(guarantPerson);
-        }
-        // 反担保人
-        CustRelaPersonInfoDO backGuarantPerson = custBaseInfoVO.getBackGuarantorPerson();
-        if (backGuarantPerson != null) {
-            custRelaPersonInfoDOMapper.updateByPrimaryKeySelective(backGuarantPerson);
+        List<CustRelaPersonInfoDO> custRelaPersonInfoDOList = custBaseInfoVO.getRelaPersonList();
+        if (CollectionUtils.isNotEmpty(custRelaPersonInfoDOList)) {
+            for (CustRelaPersonInfoDO custRelaPersonInfoDO : custRelaPersonInfoDOList) {
+                custRelaPersonInfoDO.setRelaCustId(custBaseInfoDO.getCustId());
+                custRelaPersonInfoDOMapper.updateByPrimaryKeySelective(custRelaPersonInfoDO);
+            }
         }
 
         return ResultBean.ofSuccess(null, "更新客户成功");

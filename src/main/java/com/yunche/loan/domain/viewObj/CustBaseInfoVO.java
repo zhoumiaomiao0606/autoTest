@@ -4,6 +4,7 @@ import com.yunche.loan.domain.dataObj.CustRelaPersonInfoDO;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class CustBaseInfoVO implements Serializable {
     private Long custId;
@@ -58,34 +59,14 @@ public class CustBaseInfoVO implements Serializable {
 
     private Date gmtModify;
 
-    private CustRelaPersonInfoDO shareLoanPerson;   // 共贷人
+    private List<CustRelaPersonInfoDO> relaPersonList;   // 共贷人/担保人/反担保人
 
-    private CustRelaPersonInfoDO guarantPerson; // 担保人
-
-    private CustRelaPersonInfoDO backGuarantorPerson;   //反担保人
-
-    public CustRelaPersonInfoDO getShareLoanPerson() {
-        return shareLoanPerson;
+    public List<CustRelaPersonInfoDO> getRelaPersonList() {
+        return relaPersonList;
     }
 
-    public void setShareLoanPerson(CustRelaPersonInfoDO shareLoanPerson) {
-        this.shareLoanPerson = shareLoanPerson;
-    }
-
-    public CustRelaPersonInfoDO getGuarantPerson() {
-        return guarantPerson;
-    }
-
-    public void setGuarantPerson(CustRelaPersonInfoDO guarantPerson) {
-        this.guarantPerson = guarantPerson;
-    }
-
-    public CustRelaPersonInfoDO getBackGuarantorPerson() {
-        return backGuarantorPerson;
-    }
-
-    public void setBackGuarantorPerson(CustRelaPersonInfoDO backGuarantorPerson) {
-        this.backGuarantorPerson = backGuarantorPerson;
+    public void setRelaPersonList(List<CustRelaPersonInfoDO> relaPersonList) {
+        this.relaPersonList = relaPersonList;
     }
 
     public Long getCustId() {
