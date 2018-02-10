@@ -184,6 +184,25 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
+    public ResultBean<List<PartnerVO>> batchGetById(List<Long> idList) {
+        Preconditions.checkNotNull(idList, "id不能为空");
+
+        List<PartnerDO> partnerDOList = partnerDOMapper.batchSelectByPrimaryKey(idList, VALID_STATUS);
+        Preconditions.checkNotNull(partnerDOList, "id有误，数据不存在");
+
+        List<PartnerVO> partnerVOList = Lists.newArrayList();
+        for (PartnerDO partnerDO : partnerDOList) {
+            PartnerVO partnerVO = new PartnerVO();
+            BeanUtils.copyProperties(partnerDO, partnerVO);
+
+            fillMsg(partnerDO, partnerVO);
+            partnerVOList.add(partnerVO);
+        }
+
+        return ResultBean.ofSuccess(partnerVOList);
+    }
+
+    @Override
     public ResultBean<List<PartnerVO>> query(PartnerQuery query) {
         // 根据areaId填充所有子级areaId(含自身)
         getAndSetCascadeChildAreaIdList(query);

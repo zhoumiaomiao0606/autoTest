@@ -44,7 +44,7 @@ public class BizModelServiceImpl implements BizModelService {
     private FinancialProductService financialProductService;
 
     @Autowired
-    private UserGroupService userGroupService;
+    private PartnerService partnerService;
 
     @Override
     public ResultBean<Void> insert(BizModelVO bizModelVO) {
@@ -61,13 +61,13 @@ public class BizModelServiceImpl implements BizModelService {
         List<BizModelRegionVO> bizModelRegionVOList = bizModelVO.getBizModelRegionVOList();
         List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = Lists.newArrayList();
         for (BizModelRegionVO bizModelRegionVO : bizModelRegionVOList) {
-            List<UserGroupVO> userGroupVOList = bizModelRegionVO.getUserGroupVOList();
-            if (CollectionUtils.isNotEmpty(userGroupVOList)) {
-                for (UserGroupVO userGroupVO : userGroupVOList) {
+            List<PartnerVO> partnerVOList = bizModelRegionVO.getPartnerVOList();
+            if (CollectionUtils.isNotEmpty(partnerVOList)) {
+                for (PartnerVO partnerVO : partnerVOList) {
                     BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
                     bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
                     bizModelRelaAreaPartnersDO.setBizId(bizModelDO.getBizId());
-                    bizModelRelaAreaPartnersDO.setGroupId(userGroupVO.getId());
+                    bizModelRelaAreaPartnersDO.setGroupId(partnerVO.getId());
                     bizModelRelaAreaPartnersDO.setProv(bizModelRegionVO.getProv());
                     bizModelRelaAreaPartnersDO.setCity(bizModelRegionVO.getCity());
                     bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
@@ -110,13 +110,13 @@ public class BizModelServiceImpl implements BizModelService {
         List<BizModelRegionVO> bizModelRegionVOList = bizModelVO.getBizModelRegionVOList();
         List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = Lists.newArrayList();
         for (BizModelRegionVO bizModelRegionVO : bizModelRegionVOList) {
-            List<UserGroupVO> userGroupVOList = bizModelRegionVO.getUserGroupVOList();
-            if (CollectionUtils.isNotEmpty(userGroupVOList)) {
-                for (UserGroupVO userGroupVO : userGroupVOList) {
+            List<PartnerVO> partnerVOList = bizModelRegionVO.getPartnerVOList();
+            if (CollectionUtils.isNotEmpty(partnerVOList)) {
+                for (PartnerVO partnerVO : partnerVOList) {
                     BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
                     bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
                     bizModelRelaAreaPartnersDO.setBizId(bizModelDO.getBizId());
-                    bizModelRelaAreaPartnersDO.setGroupId(userGroupVO.getId());
+                    bizModelRelaAreaPartnersDO.setGroupId(partnerVO.getId());
                     bizModelRelaAreaPartnersDO.setProv(bizModelRegionVO.getProv());
                     bizModelRelaAreaPartnersDO.setCity(bizModelRegionVO.getCity());
                     bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
@@ -229,9 +229,8 @@ public class BizModelServiceImpl implements BizModelService {
 ////                    userGroupService.
 //                    userGroupVOList.add(userGroupVO);
 //                }
-                List<UserGroupVO> userGroupVOList = userGroupService.batchGetById(parterGroupIdList).getData();
-//                if (CollectionUtils.isEmpty(userGroupVOList)) continue;
-                bizModelRegionVO.setUserGroupVOList(userGroupVOList);
+                List<PartnerVO> partnerVOList = partnerService.batchGetById(parterGroupIdList).getData();
+                bizModelRegionVO.setPartnerVOList(partnerVOList);
                 bizModelRegionVOList.add(bizModelRegionVO);
             }
         }

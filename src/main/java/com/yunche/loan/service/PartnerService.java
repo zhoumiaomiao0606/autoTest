@@ -25,6 +25,8 @@ public interface PartnerService {
 
     ResultBean<PartnerVO> getById(Long id);
 
+    ResultBean<List<PartnerVO>> batchGetById(List<Long> idList);
+
     ResultBean<List<PartnerVO>> query(PartnerQuery query);
 
     ResultBean<List<BizModelVO>> listBizModel(BizModelQuery query);

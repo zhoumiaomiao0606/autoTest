@@ -19,7 +19,7 @@ public class BizModelRegionVO {
 
     private Long cityId;
 
-    private List<UserGroupVO> userGroupVOList = Lists.newArrayList();
+    private List<PartnerVO> partnerVOList = Lists.newArrayList();
 
     public Long getBizId() {
         return bizId;
@@ -69,11 +69,11 @@ public class BizModelRegionVO {
         this.city = city;
     }
 
-    public List<UserGroupVO> getUserGroupVOList() {
-        return userGroupVOList;
+    public List<PartnerVO> getPartnerVOList() {
+        return partnerVOList;
     }
 
-    public void setUserGroupVOList(List<UserGroupVO> userGroupVOList) {
-        this.userGroupVOList = userGroupVOList;
+    public void setPartnerVOList(List<PartnerVO> partnerVOList) {
+        this.partnerVOList = partnerVOList;
     }
 }

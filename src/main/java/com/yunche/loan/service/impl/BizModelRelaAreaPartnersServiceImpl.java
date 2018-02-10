@@ -7,10 +7,7 @@ import com.yunche.loan.dao.mapper.BizAreaRelaAreaDOMapper;
 import com.yunche.loan.dao.mapper.BizModelRelaAreaPartnersDOMapper;
 import com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO;
 import com.yunche.loan.domain.dataObj.FinancialProductDO;
-import com.yunche.loan.domain.viewObj.BizModelRegionVO;
-import com.yunche.loan.domain.viewObj.BizModelVO;
-import com.yunche.loan.domain.viewObj.FinancialProductVO;
-import com.yunche.loan.domain.viewObj.UserGroupVO;
+import com.yunche.loan.domain.viewObj.*;
 import com.yunche.loan.service.BizModelRelaAreaPartnersService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,13 +80,13 @@ public class BizModelRelaAreaPartnersServiceImpl implements BizModelRelaAreaPart
 
     @Override
     public ResultBean<Void> addRelaPartner(BizModelRegionVO bizModelRegionVO) {
-        if (CollectionUtils.isNotEmpty(bizModelRegionVO.getUserGroupVOList())) {
+        if (CollectionUtils.isNotEmpty(bizModelRegionVO.getPartnerVOList())) {
             List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = Lists.newArrayList();
-            for (UserGroupVO userGroupVO : bizModelRegionVO.getUserGroupVOList()) {
+            for (PartnerVO partnerVO : bizModelRegionVO.getPartnerVOList()) {
                 BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
                 bizModelRelaAreaPartnersDO.setBizId(bizModelRegionVO.getBizId());
                 bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
-                bizModelRelaAreaPartnersDO.setGroupId(userGroupVO.getId());
+                bizModelRelaAreaPartnersDO.setGroupId(partnerVO.getId());
                 bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
             }
             batchInsert(bizModelRelaAreaPartnersDOList);

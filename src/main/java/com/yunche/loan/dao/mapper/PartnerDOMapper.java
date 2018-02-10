@@ -17,6 +17,8 @@ public interface PartnerDOMapper {
 
     PartnerDO selectByPrimaryKey(@Param("id") Long id, @Param("status") Byte status);
 
+    List<PartnerDO> batchSelectByPrimaryKey(@Param("idList") List<Long> idList, @Param("status") Byte status);
+
     int updateByPrimaryKeySelective(PartnerDO record);
 
     int updateByPrimaryKey(PartnerDO record);

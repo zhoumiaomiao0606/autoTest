@@ -139,7 +139,19 @@
             AND status = #{status}
         </if>
     </select>
-
+    <select id="batchSelectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from partner
+        where id IN
+        <foreach item="id" index="index" collection="idList"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from partner
     where id = #{id,jdbcType=BIGINT}
