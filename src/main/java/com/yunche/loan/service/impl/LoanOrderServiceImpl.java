@@ -2,16 +2,11 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.constant.ProcessActionEnum;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.mapper.CustBaseInfoDOMapper;
-import com.yunche.loan.dao.mapper.CustRelaPersonInfoDOMapper;
-import com.yunche.loan.dao.mapper.InstLoanOrderDOMapper;
-import com.yunche.loan.dao.mapper.InstProcessNodeDOMapper;
-import com.yunche.loan.domain.dataObj.CustBaseInfoDO;
-import com.yunche.loan.domain.dataObj.CustRelaPersonInfoDO;
-import com.yunche.loan.domain.dataObj.InstLoanOrderDO;
-import com.yunche.loan.domain.dataObj.InstProcessNodeDO;
+import com.yunche.loan.dao.mapper.*;
+import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.queryObj.OrderListQuery;
 import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
 import com.yunche.loan.domain.viewObj.InstLoanOrderVO;
@@ -45,6 +40,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private CustRelaPersonInfoDOMapper custRelaPersonInfoDOMapper;
+
+    @Autowired
+    private ActRuTaskDOMapper actRuTaskDOMapper;
 
     @Override
     public ResultBean<InstLoanOrderDO> create(String processInstanceId) {
@@ -140,6 +138,19 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 instProcessNodeVOList.add(instProcessNodeVO);
             }
             instLoanOrderVO.setProcessRecordList(instProcessNodeVOList);
+        }
+
+        // 待执行流程
+        List<ActRuTaskDO> actRuTaskDOList = actRuTaskDOMapper.selectByProcInstId(instLoanOrderDO.getProcessInstId());
+        if (CollectionUtils.isNotEmpty(actRuTaskDOList)) {
+            List<InstProcessNodeVO> todoProcessNodeDOList = Lists.newArrayList();
+            for (ActRuTaskDO actRuTaskDO : actRuTaskDOList) {
+                InstProcessNodeVO todoProcessNode = new InstProcessNodeVO();
+                todoProcessNode.setNodeCode(actRuTaskDO.getTaskDefKey());
+                todoProcessNode.setNodeName(actRuTaskDO.getName());
+                todoProcessNodeDOList.add(todoProcessNode);
+            }
+            instLoanOrderVO.setTodoProcessList(todoProcessNodeDOList);
         }
 
         return ResultBean.ofSuccess(instLoanOrderVO, "查询订单详情成功");

@@ -96,6 +96,16 @@ public class InstLoanOrderVO implements Serializable {
 
     private List<InstProcessNodeVO> processRecordList;
 
+    private List<InstProcessNodeVO> todoProcessList;
+
+    public List<InstProcessNodeVO> getTodoProcessList() {
+        return todoProcessList;
+    }
+
+    public void setTodoProcessList(List<InstProcessNodeVO> todoProcessList) {
+        this.todoProcessList = todoProcessList;
+    }
+
     public List<InstProcessNodeVO> getProcessRecordList() {
         return processRecordList;
     }
