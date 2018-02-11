@@ -78,9 +78,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                                         Long operatorId, String operatorName, String operatorRole) {
         Task task = taskService.createTaskQuery().processInstanceId(processId).singleResult();
 
+        InstLoanOrderDO instLoanOrderDO = loanOrderService.getByProcInstId(processId).getData();
+        instLoanOrderVO.setOrderId(instLoanOrderDO.getOrderId());
+
         // 记录流程执行节点
         InstProcessNodeDO instProcessNodeDO = new InstProcessNodeDO();
-        instProcessNodeDO.setOrderId(instLoanOrderVO.getOrderId());
+        instProcessNodeDO.setOrderId(instLoanOrderDO.getOrderId());
         instProcessNodeDO.setProcessInstId(processId);
         instProcessNodeDO.setNodeCode(LoanProcessEnum.CREDIT_APPLY.getCode());
         instProcessNodeDO.setNodeName(LoanProcessEnum.CREDIT_APPLY.getName());

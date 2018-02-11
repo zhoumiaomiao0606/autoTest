@@ -150,4 +150,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         return ResultBean.ofSuccess(instLoanOrderVO, "查询订单详情成功");
     }
+
+    @Override
+    public ResultBean<InstLoanOrderDO> getByProcInstId(String procInstId) {
+        InstLoanOrderDO instLoanOrderDO = instLoanOrderDOMapper.selectByProcInstId(procInstId);
+        return ResultBean.ofSuccess(instLoanOrderDO, "查询订单详情成功");
+    }
 }

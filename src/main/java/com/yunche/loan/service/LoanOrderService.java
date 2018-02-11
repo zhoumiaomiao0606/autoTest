@@ -20,4 +20,6 @@ public interface LoanOrderService {
 
     ResultBean<InstLoanOrderVO> detail(Long orderId);
 
+    ResultBean<InstLoanOrderDO> getByProcInstId(String procInstId);
+
 }

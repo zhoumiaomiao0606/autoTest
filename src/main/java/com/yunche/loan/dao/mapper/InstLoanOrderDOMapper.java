@@ -17,6 +17,8 @@ public interface InstLoanOrderDOMapper {
 
     InstLoanOrderDO selectByPrimaryKey(Long orderId);
 
+    InstLoanOrderDO selectByProcInstId(String procInstId);
+
     int updateByPrimaryKeySelective(InstLoanOrderDO record);
 
     int updateByPrimaryKey(InstLoanOrderDO record);
