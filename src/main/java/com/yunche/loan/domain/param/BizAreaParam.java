@@ -3,7 +3,6 @@ package com.yunche.loan.domain.param;
 import com.yunche.loan.domain.dataObj.BizAreaDO;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 
 /**

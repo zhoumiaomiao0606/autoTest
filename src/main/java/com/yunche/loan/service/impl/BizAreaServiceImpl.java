@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.BaseAreaDOMapper;
 import com.yunche.loan.dao.mapper.BizAreaDOMapper;
@@ -37,7 +36,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  * @date 2018/1/19
  */
 @Service
-@Transactional(rollbackFor = BizException.class)
+@Transactional
 public class BizAreaServiceImpl implements BizAreaService {
 
     @Autowired

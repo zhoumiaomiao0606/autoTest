@@ -1,7 +1,7 @@
 package com.yunche.loan.config.common;
 
-import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.cache.AuthCache;
+import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.dao.mapper.EmployeeDOMapper;
 import com.yunche.loan.dao.mapper.EmployeeRelaUserGroupDOMapper;
 import com.yunche.loan.dao.mapper.UserGroupRelaAreaAuthDOMapper;
@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-
-import javax.annotation.Resource;
 
 import java.util.List;
 import java.util.Map;
@@ -57,7 +55,7 @@ public class BizShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         logger.debug("doGetAuthenticationInfo   >>>  认证");
 
-        // 获取用户的输入的账号
+        // 获取用户输入的账号&密码
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
         String username = usernamePasswordToken.getUsername();
         String password = String.valueOf(usernamePasswordToken.getPassword());
@@ -65,14 +63,12 @@ public class BizShiroRealm extends AuthorizingRealm {
         // 通过username从数据库中查找 User对象
         // 根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
         EmployeeDO employeeDO = employeeDOMapper.getByUsername(username, VALID_STATUS);
-        logger.debug("employeeDO >>> ", JSON.toJSONString(employeeDO));
-
         if (null == employeeDO) {
             return null;
         }
         // 账户冻结
         if (INVALID_STATUS.equals(employeeDO.getStatus())) {
-            throw new LockedAccountException("账号已停用");
+            throw new DisabledAccountException("账号已停用");
         }
         // 账号已删除
         if (DEL_STATUS.equals(employeeDO.getStatus())) {
@@ -90,7 +86,7 @@ public class BizShiroRealm extends AuthorizingRealm {
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(
                 // 签名对象，认证通过后，可以在程序的任意位置获取当前放入的对象
                 employeeDO,
-                // 常规：数据库中查询出的密码 （验证原理：比对token中的密码[当前输入的明文密码]    But：此处，整合了自定义加密验证，故反向处理）
+                // 常规：数据库中查询出的密码 （验证原理：比对token中的密码    But：此处，整合了自定义加密验证，故反向处理）
                 verifyPassword,
                 // 当前realm的类名
                 this.getClass().getName());
@@ -125,53 +121,63 @@ public class BizShiroRealm extends AuthorizingRealm {
         // 获取角色列表所绑定的所有权限列表
         List<Long> hasBindAuthIdList = userGroupRelaAreaAuthDOMapper.getHasBindAuthIdListByUserGroupIdList(userGroupIdList);
         if (!CollectionUtils.isEmpty(hasBindAuthIdList)) {
-
-            // get all Auth
-            Map<Long, AuthDO> authMap = authCache.getAuth();
-            if (!CollectionUtils.isEmpty(authMap)) {
-
-                // get all auth entity
-                Map<Long, MenuDO> menuMap = authCache.getMenu();
-                Map<Long, PageDO> pageMap = authCache.getPage();
-                Map<Long, OperationDO> operationMap = authCache.getOperation();
-
-                hasBindAuthIdList.parallelStream()
-                        .filter(Objects::nonNull)
-                        .forEach(authId -> {
-
-                            AuthDO authDO = authMap.get(authId);
-                            if (null != authDO) {
-
-                                Byte type = authDO.getType();
-
-                                // menu
-                                if (MENU.equals(type)) {
-                                    MenuDO menuDO = menuMap.get(authDO.getSourceId());
-                                    if (null != menuDO) {
-                                        info.addStringPermission(menuDO.getUri());
-                                    }
-                                }
-                                // page
-                                else if (PAGE.equals(type)) {
-                                    PageDO pageDO = pageMap.get(authDO.getSourceId());
-                                    if (null != pageDO) {
-                                        info.addStringPermission(pageDO.getUri());
-                                    }
-                                }
-                                // operation
-                                else if (OPERATION.equals(type)) {
-                                    OperationDO operationDO = operationMap.get(authDO.getSourceId());
-                                    if (null != operationDO) {
-                                        info.addStringPermission(operationDO.getUri());
-                                    }
-                                }
-
-                            }
-
-                        });
-            }
+            // 填充权限
+            fillPermissions(hasBindAuthIdList, info);
         }
 
         return info;
+    }
+
+    /**
+     * 填充权限
+     *
+     * @param hasBindAuthIdList
+     * @param info
+     */
+    private void fillPermissions(List<Long> hasBindAuthIdList, SimpleAuthorizationInfo info) {
+        // get all Auth
+        Map<Long, AuthDO> authMap = authCache.getAuth();
+        if (!CollectionUtils.isEmpty(authMap)) {
+
+            // get all auth entity
+            Map<Long, MenuDO> menuMap = authCache.getMenu();
+            Map<Long, PageDO> pageMap = authCache.getPage();
+            Map<Long, OperationDO> operationMap = authCache.getOperation();
+
+            hasBindAuthIdList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(authId -> {
+
+                        AuthDO authDO = authMap.get(authId);
+                        if (null != authDO) {
+
+                            Byte type = authDO.getType();
+
+                            // menu
+                            if (MENU.equals(type)) {
+                                MenuDO menuDO = menuMap.get(authDO.getSourceId());
+                                if (null != menuDO) {
+                                    info.addStringPermission(menuDO.getUri());
+                                }
+                            }
+                            // page
+                            else if (PAGE.equals(type)) {
+                                PageDO pageDO = pageMap.get(authDO.getSourceId());
+                                if (null != pageDO) {
+                                    info.addStringPermission(pageDO.getUri());
+                                }
+                            }
+                            // operation
+                            else if (OPERATION.equals(type)) {
+                                OperationDO operationDO = operationMap.get(authDO.getSourceId());
+                                if (null != operationDO) {
+                                    info.addStringPermission(operationDO.getUri());
+                                }
+                            }
+
+                        }
+
+                    });
+        }
     }
 }

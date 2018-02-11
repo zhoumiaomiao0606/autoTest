@@ -2,8 +2,6 @@ package com.yunche.loan.domain.viewObj;
 
 import lombok.Data;
 
-import java.io.Serializable;
-
 /**
  * @author liuzhe
  * @date 2018/2/8
@@ -15,5 +13,4 @@ public class LoginVO {
 
     private String username;
 
-    private Serializable token;
 }

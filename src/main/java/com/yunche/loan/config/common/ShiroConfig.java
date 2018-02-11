@@ -1,6 +1,6 @@
 package com.yunche.loan.config.common;
 
-import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import com.yunche.loan.config.filter.BizFormAuthenticationFilter;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -13,10 +13,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * shiro配置文件
+ *
  * @author liuzhe
  * @date 2018/2/6
  */
@@ -41,31 +44,29 @@ public class ShiroConfig {
 
 
     @Bean
-    public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
+    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
+        // 自定义filter替换authc
+        Map<String, Filter> filters = new LinkedHashMap();
+        BizFormAuthenticationFilter authcFilter = new BizFormAuthenticationFilter();
+        filters.put("authc", authcFilter);
+        shiroFilterFactoryBean.setFilters(filters);
+
+        // 自定义权限过滤器替换perms
+//        Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
+//        BizPermissionsAuthorizationFilter permsFilter = new BizPermissionsAuthorizationFilter();
+//        filters.put("perms", permsFilter);
+
+
         // 注意过滤器配置顺序 不能颠倒
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap();
-        // 配置退出过滤器,其中的具体的退出代码Shiro已经替我们实现了，登出后跳转配置的loginUrl
-        filterChainDefinitionMap.put("/employee/logout", "authc");
-        // 配置不会被拦截的链接 顺序判断
-//        filterChainDefinitionMap.put("/static/**", "anon");
-//        filterChainDefinitionMap.put("/ajaxLogin", "anon");
+        filterChainDefinitionMap.put("/employee/logout", "anon");
         filterChainDefinitionMap.put("/employee/login", "anon");
-        // 过滤链定义，从上向下顺序执行，一般将/**放在最为下边
         filterChainDefinitionMap.put("/**", "authc");
-
-        // 配置shiro默认登录界面地址，前后端分离中登录界面跳转应由前端路由控制，后台仅返回json数据
-//        shiroFilterFactoryBean.setLoginUrl("http://47.97.112.202/#/login");
-        // 未登录，重定向URL
-        shiroFilterFactoryBean.setLoginUrl("/auth/notLogin");
-        // 未授权，重定向URL
-        shiroFilterFactoryBean.setUnauthorizedUrl("/auth/notPermission");
-        // 登录成功后要跳转的链接
-//        shiroFilterFactoryBean.setSuccessUrl("/index");
-
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+
         return shiroFilterFactoryBean;
     }
 
@@ -83,24 +84,7 @@ public class ShiroConfig {
     @Bean
     public BizShiroRealm bizShiroRealm() {
         BizShiroRealm bizShiroRealm = new BizShiroRealm();
-//        bizShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
         return bizShiroRealm;
-    }
-
-    /**
-     * 凭证匹配器
-     * 由于我们的密码校验交给Shiro的SimpleAuthenticationInfo进行处理
-     *
-     * @return
-     */
-    @Bean
-    public HashedCredentialsMatcher hashedCredentialsMatcher() {
-        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        // 散列算法: 这里使用MD5算法
-        hashedCredentialsMatcher.setHashAlgorithmName("md5");
-        // 散列的次数，比如散列两次，相当于 md5(md5(""))
-        hashedCredentialsMatcher.setHashIterations(2);
-        return hashedCredentialsMatcher;
     }
 
     /**
@@ -171,14 +155,4 @@ public class ShiroConfig {
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
     }
-
-    /**
-     * 注册全局异常处理
-     *
-     * @return
-     */
-//    @Bean(name = "exceptionHandler")
-//    public HandlerExceptionResolver handlerExceptionResolver() {
-//        return new RuntimeException("");
-//    }
 }

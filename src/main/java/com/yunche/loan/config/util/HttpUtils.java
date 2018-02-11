@@ -1,4 +1,4 @@
-package com.yunche.loan.config.common;
+package com.yunche.loan.config.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
