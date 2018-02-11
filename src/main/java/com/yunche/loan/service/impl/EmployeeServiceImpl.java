@@ -1,45 +1,36 @@
 package com.yunche.loan.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.EmployeeCache;
-import com.yunche.loan.config.common.MD5Utils;
-import com.yunche.loan.config.common.Util;
+import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
+import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.viewObj.*;
 import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.BoundValueOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.*;
@@ -56,10 +47,6 @@ import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
-    /**
-     * redis-session过期时间：30min
-     */
-    private static final long SESSION_TIME_OUT = 1800L;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -80,8 +67,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private JavaMailSender mailSender;
     @Autowired
     private EmployeeCache employeeCache;
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
 
 
     @Override
@@ -100,7 +85,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 校验唯一属性(身份证号、手机号、邮箱、钉钉)
         checkOnlyProperty(employeeParam);
 
-        // 随机生成密码
+        // 生成随机密码
         String password = MD5Utils.getRandomString(10);
 
         // MD5加密
@@ -215,13 +200,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query) {
+    public ResultBean<List<UserGroupVO>> listUserGroup(RelaQuery query) {
         Preconditions.checkNotNull(query.getId(), "员工ID不能为空");
+        // 填充所有子级区域
+        getAndFillChildAreaList(query);
 
-        int totalNum = userGroupDOMapper.countListUserGroupByEmployeeId(query);
+        int totalNum = userGroupDOMapper.countListUserGroupByEmployeeIdAndAreaList(query);
         if (totalNum > 0) {
 
-            List<UserGroupDO> userGroupDOS = userGroupDOMapper.listUserGroupByEmployeeId(query);
+            List<UserGroupDO> userGroupDOS = userGroupDOMapper.listUserGroupByEmployeeIdAndAreaList(query);
             if (!CollectionUtils.isEmpty(userGroupDOS)) {
 
                 List<UserGroupVO> userGroupVOList = userGroupDOS.parallelStream()
@@ -243,6 +230,20 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
         return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
+    }
+
+    /**
+     * 填充所有子级区域
+     *
+     * @param query
+     */
+    private void getAndFillChildAreaList(RelaQuery query) {
+        if (null == query.getAreaId()) {
+            return;
+        }
+
+        List<Long> areaIdList = Lists.newArrayList(query.getAreaId());
+        query.setAreaIdList(areaIdList);
     }
 
     @Override
@@ -314,9 +315,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         String origin = request.getHeader("origin");
         response.setHeader("Access-Control-Allow-Origin", origin);
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Methods", "POST,GET,PUT,DELETE,OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-type");
 
         // 使用shiro提供的方式进行身份认证
         Subject subject = SecurityUtils.getSubject();
@@ -333,6 +331,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         } catch (IncorrectCredentialsException e) {
             // 密码错误
             return ResultBean.ofError("用户名或密码错误");
+        } catch (DisabledAccountException e) {
+            // 账户冻结
+            return ResultBean.ofError("账号已停用");
         }
 
         // 返回data
@@ -340,8 +341,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeDO user = (EmployeeDO) subject.getPrincipal();
         data.setUserId(user.getId());
         data.setUsername(user.getName());
-        Serializable sessionId = subject.getSession().getId();
-        data.setToken(sessionId);
 
         return ResultBean.ofSuccess(data, "登录成功");
     }
@@ -379,7 +378,6 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeeParam
      */
     private void checkOnlyProperty(EmployeeParam employeeParam) {
-
         // getAll
         List<EmployeeDO> allOnlyProperty = employeeDOMapper.getAllOnlyProperty();
 
@@ -668,31 +666,5 @@ public class EmployeeServiceImpl implements EmployeeService {
             int count = employeeRelaUserGroupDOMapper.batchInsert(employeeRelaUserGroupDOS);
             Preconditions.checkArgument(count == employeeRelaUserGroupDOS.size(), "关联失败");
         }
-    }
-
-    /**
-     * 添加到redis-session
-     *
-     * @param employeeDO
-     */
-    private void addSession(EmployeeDO employeeDO) {
-        // session已存在，重置过期时间
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(employeeDO.getEmail());
-        String sessionId = boundValueOps.get();
-        if (StringUtils.isNotBlank(sessionId)) {
-            boundValueOps.expire(SESSION_TIME_OUT, TimeUnit.SECONDS);
-        }
-
-        // 不存在，重新生成session_id
-        sessionId = Util.getUUID();
-
-        // username - session_id
-        String username = employeeDO.getEmail();
-        boundValueOps = stringRedisTemplate.boundValueOps(username);
-        boundValueOps.set(sessionId, SESSION_TIME_OUT, TimeUnit.SECONDS);
-
-        // session_id - USER
-        boundValueOps = stringRedisTemplate.boundValueOps(sessionId);
-        boundValueOps.set(JSON.toJSONString(employeeDO), SESSION_TIME_OUT, TimeUnit.SECONDS);
     }
 }

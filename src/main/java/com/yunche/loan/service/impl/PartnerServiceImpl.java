@@ -2,7 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.common.MD5Utils;
+import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.dataObj.*;

@@ -6,6 +6,7 @@ import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
+import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.domain.viewObj.LoginVO;
@@ -74,7 +75,7 @@ public class EmployeeController {
      *
      * @return
      */
-    @RequiresPermissions("/employee/list")
+//    @RequiresPermissions("/employee/list")
     @GetMapping("/list")
     public ResultBean<List<CascadeVO>> listAll() {
         logger.info("list");
@@ -99,7 +100,7 @@ public class EmployeeController {
      * @return
      */
     @PostMapping(value = "/listUserGroup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<UserGroupVO>> UserGroup(@RequestBody BaseQuery query) {
+    public ResultBean<List<UserGroupVO>> UserGroup(@RequestBody RelaQuery query) {
         logger.info(Arrays.asList("listUserGroup", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return employeeService.listUserGroup(query);
     }

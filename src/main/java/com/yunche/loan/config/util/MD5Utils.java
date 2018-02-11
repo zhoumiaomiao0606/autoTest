@@ -1,4 +1,4 @@
-package com.yunche.loan.config.common;
+package com.yunche.loan.config.util;
 
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
@@ -71,8 +71,8 @@ public class MD5Utils {
     /**
      * 校验加盐后是否和原文一致
      *
-     * @param password
-     * @param md5
+     * @param password 明文密码
+     * @param md5      数据库密码(加盐并md5过)
      * @return
      */
     public static boolean verify(String password, String md5) {
@@ -85,8 +85,12 @@ public class MD5Utils {
                 cs1[i / 3 * 2 + 1] = md5.charAt(i + 2);
                 cs2[i / 3] = md5.charAt(i + 1);
             }
+            // salt
             String salt = new String(cs2);
-            return md5Hex(password + salt).equals(new String(cs1));
+            // md5真实摘要
+            String md5Password = new String(cs1);
+
+            return md5Hex(password + salt).equals(md5Password);
         } catch (Exception e) {
             logger.error("密码校验异常", e);
             return false;
@@ -95,8 +99,11 @@ public class MD5Utils {
 
     /**
      * 获取十六进制字符串形式的MD5摘要
+     *
+     * @param src 明文密碼
+     * @return
      */
-    private static String md5Hex(String src) {
+    public static String md5Hex(String src) {
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
             byte[] bs = md5.digest(src.getBytes());

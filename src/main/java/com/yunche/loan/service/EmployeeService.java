@@ -5,6 +5,7 @@ import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
+import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.viewObj.EmployeeVO;
 import com.yunche.loan.domain.viewObj.CascadeVO;
 import com.yunche.loan.domain.viewObj.LoginVO;
@@ -34,7 +35,7 @@ public interface EmployeeService {
 
     ResultBean<List<String>> listTitle();
 
-    ResultBean<List<UserGroupVO>> listUserGroup(BaseQuery query);
+    ResultBean<List<UserGroupVO>> listUserGroup(RelaQuery query);
 
     ResultBean<Void> bindUserGroup(Long id, String userGroupIds);
 

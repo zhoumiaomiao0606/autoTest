@@ -31,6 +31,10 @@ public class RelaQuery extends BaseQuery {
      * 区域ID
      */
     private Long areaId;
+    /**
+     * 区域ID列表
+     */
+    private List<Long> areaIdList;
 
     /**
      * 菜单ID

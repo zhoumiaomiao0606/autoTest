@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.CarCache;
-import com.yunche.loan.config.common.HttpUtils;
+import com.yunche.loan.config.util.HttpUtils;
 import com.yunche.loan.dao.mapper.CarBrandDOMapper;
 import com.yunche.loan.dao.mapper.CarDetailDOMapper;
 import com.yunche.loan.dao.mapper.CarModelDOMapper;

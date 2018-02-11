@@ -33,20 +33,20 @@ public interface UserGroupDOMapper {
     List<UserGroupDO> query(UserGroupQuery query);
 
     /**
-     * 根据员工ID统计关联的用户组总量
+     * 根据员工ID和区域 统计关联的用户组总量
      *
      * @param query
      * @return
      */
-    int countListUserGroupByEmployeeId(BaseQuery query);
+    int countListUserGroupByEmployeeIdAndAreaList(BaseQuery query);
 
     /**
-     * 根据员工ID分页查询关联的用户组
+     * 根据员工ID和区域 分页查询关联的用户组
      *
      * @param query
      * @return
      */
-    List<UserGroupDO> listUserGroupByEmployeeId(BaseQuery query);
+    List<UserGroupDO> listUserGroupByEmployeeIdAndAreaList(BaseQuery query);
 
     /**
      * 根据部门ID统计关联的用户组总量

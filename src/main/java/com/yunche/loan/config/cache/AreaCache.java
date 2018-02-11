@@ -85,6 +85,31 @@ public class AreaCache {
         boundValueOps.set(JSON.toJSONString(cascadeAreaVOList));
     }
 
+    /**
+     * 获取所有子级id
+     *
+     * @param parentAreaId
+     * @return
+     */
+    public List<Long> getAllChildAreaIdList(Long parentAreaId) {
+
+
+        return null;
+    }
+
+    /**
+     * 获取所有父级id
+     *
+     * @param childAreaId
+     * @return
+     */
+    public List<Long> getAllSuperAreaIdList(Long childAreaId) {
+
+
+        return null;
+
+    }
+
 
     /**
      * 解析并填充省
