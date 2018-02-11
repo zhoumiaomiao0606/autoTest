@@ -12,6 +12,8 @@ public class CustRelaPersonInfoDO implements Serializable {
 
     private String relaCustType;
 
+    private String custRelation;
+
     private String identityType;
 
     private String identityNumber;
@@ -59,6 +61,14 @@ public class CustRelaPersonInfoDO implements Serializable {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public String getCustRelation() {
+        return custRelation;
+    }
+
+    public void setCustRelation(String custRelation) {
+        this.custRelation = custRelation;
+    }
 
     public Long getCustId() {
         return custId;

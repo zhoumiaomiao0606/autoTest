@@ -5,6 +5,7 @@ import com.yunche.loan.domain.dataObj.InstProcessNodeDO;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class InstLoanOrderVO implements Serializable {
     private Long orderId;
@@ -96,14 +97,14 @@ public class InstLoanOrderVO implements Serializable {
 
     private List<InstProcessNodeVO> processRecordList;
 
-    private List<InstProcessNodeVO> todoProcessList;
+    private Map<String, String> todoProcessMap;
 
-    public List<InstProcessNodeVO> getTodoProcessList() {
-        return todoProcessList;
+    public Map<String, String> getTodoProcessMap() {
+        return todoProcessMap;
     }
 
-    public void setTodoProcessList(List<InstProcessNodeVO> todoProcessList) {
-        this.todoProcessList = todoProcessList;
+    public void setTodoProcessMap(Map<String, String> todoProcessMap) {
+        this.todoProcessMap = todoProcessMap;
     }
 
     public List<InstProcessNodeVO> getProcessRecordList() {

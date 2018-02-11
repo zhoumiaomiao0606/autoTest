@@ -6,6 +6,7 @@
     <result column="cust_name" jdbcType="VARCHAR" property="custName" />
     <result column="rela_cust_id" jdbcType="BIGINT" property="relaCustId" />
     <result column="rela_cust_type" jdbcType="VARCHAR" property="relaCustType" />
+    <result column="cust_relation" jdbcType="VARCHAR" property="custRelation" />
     <result column="identity_type" jdbcType="VARCHAR" property="identityType" />
     <result column="identity_number" jdbcType="VARCHAR" property="identityNumber" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
@@ -32,7 +33,7 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
-    cust_id, cust_name, rela_cust_id, rela_cust_type, identity_type, identity_number, 
+    cust_id, cust_name, rela_cust_id, rela_cust_type, cust_relation, identity_type, identity_number, 
     phone, marry, birth, age, education, address, identity_address, identity_validity, 
     company_name, company_phone, bank_credit_status, bank_credit_detail, social_credit_status, 
     social_credit_detail, income, house_type, house_owner, house_feature, house_address, 
@@ -56,25 +57,25 @@
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CustRelaPersonInfoDO">
     insert into cust_rela_person_info (cust_id, cust_name, rela_cust_id, 
-      rela_cust_type, identity_type, identity_number, 
-      phone, marry, birth, age, 
-      education, address, identity_address, 
-      identity_validity, company_name, company_phone, 
-      bank_credit_status, bank_credit_detail, social_credit_status, 
-      social_credit_detail, income, house_type, 
-      house_owner, house_feature, house_address, 
-      feature, gmt_create, gmt_modify
-      )
+      rela_cust_type, cust_relation, identity_type, 
+      identity_number, phone, marry, 
+      birth, age, education, 
+      address, identity_address, identity_validity, 
+      company_name, company_phone, bank_credit_status, 
+      bank_credit_detail, social_credit_status, social_credit_detail, 
+      income, house_type, house_owner, 
+      house_feature, house_address, feature, 
+      gmt_create, gmt_modify)
     values (#{custId,jdbcType=BIGINT}, #{custName,jdbcType=VARCHAR}, #{relaCustId,jdbcType=BIGINT}, 
-      #{relaCustType,jdbcType=VARCHAR}, #{identityType,jdbcType=VARCHAR}, #{identityNumber,jdbcType=VARCHAR}, 
-      #{phone,jdbcType=VARCHAR}, #{marry,jdbcType=VARCHAR}, #{birth,jdbcType=DATE}, #{age,jdbcType=TINYINT}, 
-      #{education,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{identityAddress,jdbcType=VARCHAR}, 
-      #{identityValidity,jdbcType=DATE}, #{companyName,jdbcType=VARCHAR}, #{companyPhone,jdbcType=VARCHAR}, 
-      #{bankCreditStatus,jdbcType=TINYINT}, #{bankCreditDetail,jdbcType=VARCHAR}, #{socialCreditStatus,jdbcType=TINYINT}, 
-      #{socialCreditDetail,jdbcType=VARCHAR}, #{income,jdbcType=VARCHAR}, #{houseType,jdbcType=VARCHAR}, 
-      #{houseOwner,jdbcType=VARCHAR}, #{houseFeature,jdbcType=VARCHAR}, #{houseAddress,jdbcType=VARCHAR}, 
-      #{feature,jdbcType=VARCHAR}, now(), now()
-      )
+      #{relaCustType,jdbcType=VARCHAR}, #{custRelation,jdbcType=VARCHAR}, #{identityType,jdbcType=VARCHAR}, 
+      #{identityNumber,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{marry,jdbcType=VARCHAR}, 
+      #{birth,jdbcType=DATE}, #{age,jdbcType=TINYINT}, #{education,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{identityAddress,jdbcType=VARCHAR}, #{identityValidity,jdbcType=DATE}, 
+      #{companyName,jdbcType=VARCHAR}, #{companyPhone,jdbcType=VARCHAR}, #{bankCreditStatus,jdbcType=TINYINT}, 
+      #{bankCreditDetail,jdbcType=VARCHAR}, #{socialCreditStatus,jdbcType=TINYINT}, #{socialCreditDetail,jdbcType=VARCHAR}, 
+      #{income,jdbcType=VARCHAR}, #{houseType,jdbcType=VARCHAR}, #{houseOwner,jdbcType=VARCHAR}, 
+      #{houseFeature,jdbcType=VARCHAR}, #{houseAddress,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR}, 
+      now(), now())
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CustRelaPersonInfoDO">
     insert into cust_rela_person_info
@@ -90,6 +91,9 @@
       </if>
       <if test="relaCustType != null">
         rela_cust_type,
+      </if>
+      <if test="custRelation != null">
+        cust_relation,
       </if>
       <if test="identityType != null">
         identity_type,
@@ -177,6 +181,9 @@
       <if test="relaCustType != null">
         #{relaCustType,jdbcType=VARCHAR},
       </if>
+      <if test="custRelation != null">
+        #{custRelation,jdbcType=VARCHAR},
+      </if>
       <if test="identityType != null">
         #{identityType,jdbcType=VARCHAR},
       </if>
@@ -263,6 +270,9 @@
       <if test="relaCustType != null">
         rela_cust_type = #{relaCustType,jdbcType=VARCHAR},
       </if>
+      <if test="custRelation != null">
+        cust_relation = #{custRelation,jdbcType=VARCHAR},
+      </if>
       <if test="identityType != null">
         identity_type = #{identityType,jdbcType=VARCHAR},
       </if>
@@ -341,6 +351,7 @@
     set cust_name = #{custName,jdbcType=VARCHAR},
       rela_cust_id = #{relaCustId,jdbcType=BIGINT},
       rela_cust_type = #{relaCustType,jdbcType=VARCHAR},
+      cust_relation = #{custRelation,jdbcType=VARCHAR},
       identity_type = #{identityType,jdbcType=VARCHAR},
       identity_number = #{identityNumber,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},

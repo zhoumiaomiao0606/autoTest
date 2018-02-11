@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.constant.ProcessActionEnum;
@@ -19,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by zhouguoliang on 2018/2/5.
@@ -143,14 +141,11 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // 待执行流程
         List<ActRuTaskDO> actRuTaskDOList = actRuTaskDOMapper.selectByProcInstId(instLoanOrderDO.getProcessInstId());
         if (CollectionUtils.isNotEmpty(actRuTaskDOList)) {
-            List<InstProcessNodeVO> todoProcessNodeDOList = Lists.newArrayList();
+            Map<String, String> todoProcessNodeMap = Maps.newConcurrentMap();
             for (ActRuTaskDO actRuTaskDO : actRuTaskDOList) {
-                InstProcessNodeVO todoProcessNode = new InstProcessNodeVO();
-                todoProcessNode.setNodeCode(actRuTaskDO.getTaskDefKey());
-                todoProcessNode.setNodeName(actRuTaskDO.getName());
-                todoProcessNodeDOList.add(todoProcessNode);
+                todoProcessNodeMap.put(actRuTaskDO.getTaskDefKey(), actRuTaskDO.getName());
             }
-            instLoanOrderVO.setTodoProcessList(todoProcessNodeDOList);
+            instLoanOrderVO.setTodoProcessMap(todoProcessNodeMap);
         }
 
         return ResultBean.ofSuccess(instLoanOrderVO, "查询订单详情成功");
