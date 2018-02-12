@@ -2,7 +2,6 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
@@ -96,7 +95,7 @@ public class EmployeeController {
     /**
      * 获取当前用户已绑定的用户组(角色)列表   -分页查询
      *
-     * @param query
+     * @param query 支持area_id筛选
      * @return
      */
     @PostMapping(value = "/listUserGroup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -171,14 +170,14 @@ public class EmployeeController {
     }
 
     /**
-     * 找回密码
+     * 重置密码
      *
-     * @param email 邮箱找回
+     * @param id 邮箱找回
      * @return
      */
     @GetMapping(value = "/password/reset")
-    public ResultBean<Void> resetPassword(@RequestParam("email") String email) {
-        logger.info(Arrays.asList("/password/reset", JSON.toJSONString(email)).stream().collect(Collectors.joining("\u0001")));
-        return employeeService.resetPassword(email);
+    public ResultBean<Void> resetPassword(@RequestParam("email") Long id) {
+        logger.info(Arrays.asList("/password/reset", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
+        return employeeService.resetPassword(id);
     }
 }

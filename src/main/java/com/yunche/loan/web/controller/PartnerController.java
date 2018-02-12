@@ -130,7 +130,7 @@ public class PartnerController {
     }
 
     /**
-     * 当前合伙人关联的业务产品列表   -分页查询
+     * 当前合伙人关联的业务员列表   -分页查询
      *
      * @param query id、pageIndex、pageSize
      * @return

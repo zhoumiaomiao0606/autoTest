@@ -1,6 +1,7 @@
 package com.yunche.loan.config.common;
 
 import com.yunche.loan.config.filter.BizFormAuthenticationFilter;
+import com.yunche.loan.config.filter.BizPermissionsAuthorizationFilter;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -48,22 +49,21 @@ public class ShiroConfig {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
+        Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
         // 自定义filter替换authc
-        Map<String, Filter> filters = new LinkedHashMap();
         BizFormAuthenticationFilter authcFilter = new BizFormAuthenticationFilter();
         filters.put("authc", authcFilter);
-        shiroFilterFactoryBean.setFilters(filters);
-
         // 自定义权限过滤器替换perms
-//        Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
-//        BizPermissionsAuthorizationFilter permsFilter = new BizPermissionsAuthorizationFilter();
+        BizPermissionsAuthorizationFilter permsFilter = new BizPermissionsAuthorizationFilter();
 //        filters.put("perms", permsFilter);
+        shiroFilterFactoryBean.setFilters(filters);
 
 
         // 注意过滤器配置顺序 不能颠倒
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap();
         filterChainDefinitionMap.put("/employee/logout", "anon");
         filterChainDefinitionMap.put("/employee/login", "anon");
+//        filterChainDefinitionMap.put("/**", "authc,perms");
         filterChainDefinitionMap.put("/**", "authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 

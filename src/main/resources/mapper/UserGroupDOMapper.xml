@@ -74,12 +74,11 @@
         (
             SELECT b.*
             FROM
-                employee_rela_user_group AS a ,
-                user_group AS b ,
-                `user_group_rela_area_auth` AS c
-
+                    employee_rela_user_group AS a ,
+                    user_group AS b ,
+                    user_group_rela_area_auth AS c
             WHERE
-                    a.`user_group_id` = b.`id`
+                    a.`user_group_id` = b.`id` AND a.`user_group_id` = c.`user_group_id`
                     <if test="id != null">
                         AND a.employee_id = #{id}
                     </if>
@@ -99,24 +98,25 @@
     <!-- listUserGroupByEmployeeIdAndAreaList -->
     <select id="listUserGroupByEmployeeIdAndAreaList" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
             resultMap="BaseResultMap">
-        SELECT b.*
+        SELECT  b.*
         FROM
-        employee_rela_user_group AS a ,
-        user_group AS b ,
-        `user_group_rela_area_auth` AS c
-        WHERE a.`user_group_id` = b.`id`
-        <if test="id != null">
-            AND a.employee_id = #{id}
-        </if>
-        <if test="status != null">
-            AND b.status = #{status}
-        </if>
-        <if test="areaIdList != null and areaIdList.size() > 0">
-            AND c.area_id IN
-            <foreach collection="areaIdList" item="item" open="(" close=")" separator=",">
-                #{item}
-            </foreach>
-        </if>
+                employee_rela_user_group AS a ,
+                user_group AS b ,
+                user_group_rela_area_auth AS c
+        WHERE
+                a.`user_group_id` = b.`id` AND a.`user_group_id` = c.`user_group_id`
+                <if test="id != null">
+                    AND a.employee_id = #{id}
+                </if>
+                <if test="status != null">
+                    AND b.status = #{status}
+                </if>
+                <if test="areaIdList != null and areaIdList.size() > 0">
+                    AND c.area_id IN
+                    <foreach collection="areaIdList" item="item" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
         GROUP BY b.`id`
         ORDER BY b.`id` ASC
         LIMIT #{startRow}, #{pageSize}

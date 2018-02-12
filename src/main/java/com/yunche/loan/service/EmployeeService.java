@@ -1,7 +1,6 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.dataObj.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
@@ -41,7 +40,7 @@ public interface EmployeeService {
 
     ResultBean<Void> unbindUserGroup(Long id, String userGroupIds);
 
-    ResultBean<Void> resetPassword(String id);
+    ResultBean<Void> resetPassword(Long id);
 
     ResultBean<LoginVO> login(HttpServletRequest request, HttpServletResponse response, EmployeeParam employeeParam);
 
