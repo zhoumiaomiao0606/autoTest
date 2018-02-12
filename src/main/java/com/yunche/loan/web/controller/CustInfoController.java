@@ -69,6 +69,28 @@ public class CustInfoController {
     public ResultBean<Long> updateMain(@RequestBody CustRelaPersonInfoVO custRelaPersonInfoVO) {
         return custService.updateRelaCust(custRelaPersonInfoVO);
     }
+
+
+    /**
+     * 删除关联人
+     * @param custId
+     * @return
+     */
+    @GetMapping(value = "/deleteRelaCust")
+    public ResultBean<Void> deleteRelaCust(@RequestParam("custId") Long custId) {
+        return custService.deleteRelaCust(custId);
+    }
+
+    /**
+     * 主贷人和共贷人切换
+     * @param mainCustId
+     * @param relaCustId
+     * @return
+     */
+    @GetMapping(value = "/faceOff")
+    public ResultBean<Void> faceOff(@RequestParam("mainCustId") Long mainCustId, @RequestParam("relaCustId") Long relaCustId) {
+        return custService.faceOff(mainCustId, relaCustId);
+    }
 }
 
 

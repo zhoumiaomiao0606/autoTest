@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.constant.ProcessActionEnum;
 import com.yunche.loan.config.result.ResultBean;
@@ -154,6 +155,33 @@ public class CustServiceImpl implements CustService {
         custRelaPersonInfoDOMapper.updateByPrimaryKeySelective(custRelaPersonInfoDO);
 
         return ResultBean.ofSuccess(custRelaPersonInfoDO.getCustId(), "更新关联人成功");
+    }
+
+    @Override
+    public ResultBean<Void> deleteRelaCust(Long custId) {
+        Preconditions.checkArgument(custId != null, "custId");
+
+        custRelaPersonInfoDOMapper.deleteByPrimaryKey(custId);
+
+        return ResultBean.ofSuccess(null, "删除关联人成功");
+    }
+
+    @Override
+    public ResultBean<Void> faceOff(Long mainCustId, Long relaCustId) {
+        CustBaseInfoDO mainCustDO = custBaseInfoDOMapper.selectByPrimaryKey(mainCustId);
+        CustRelaPersonInfoDO relaCustDO = custRelaPersonInfoDOMapper.selectByPrimaryKey(relaCustId);
+
+        CustBaseInfoDO newMainCustDO = new CustBaseInfoDO();
+        BeanUtils.copyProperties(relaCustDO, newMainCustDO);
+        newMainCustDO.setCustId(mainCustDO.getCustId());
+        custBaseInfoDOMapper.updateByPrimaryKeySelective(newMainCustDO);
+
+        CustRelaPersonInfoDO newRelaCustDO = new CustRelaPersonInfoDO();
+        BeanUtils.copyProperties(mainCustDO, newRelaCustDO);
+        newRelaCustDO.setCustId(relaCustDO.getCustId());
+        custRelaPersonInfoDOMapper.updateByPrimaryKeySelective(newRelaCustDO);
+
+        return ResultBean.ofSuccess(null, "主贷人和共贷人切换成功");
     }
 
 }

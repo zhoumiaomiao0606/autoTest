@@ -20,4 +20,7 @@ public interface CustService {
 
     ResultBean<Long> updateRelaCust(CustRelaPersonInfoVO custRelaPersonInfoVO);
 
+    ResultBean<Void> deleteRelaCust(Long custId);
+
+    ResultBean<Void> faceOff(Long mainCustId, Long relaCustId);
 }
