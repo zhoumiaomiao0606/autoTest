@@ -34,6 +34,8 @@ public class EmployeeVO {
 
     private Byte status;
 
+    private Byte type;
+
     private Boolean selected;
     /**
      * 所属部门

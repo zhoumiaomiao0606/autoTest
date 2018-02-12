@@ -49,7 +49,7 @@ public class UserGroupServiceImpl implements UserGroupService {
 
     @Override
     public ResultBean<Long> create(UserGroupParam userGroupParam) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(userGroupParam.getName()), "用户组名称不能为空");
+        Preconditions.checkArgument(null != userGroupParam && StringUtils.isNotBlank(userGroupParam.getName()), "用户组名称不能为空");
         Preconditions.checkNotNull(userGroupParam.getDepartmentId(), "对应部门不能为空");
 
         // 创建实体，并返回ID
