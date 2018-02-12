@@ -21,4 +21,8 @@ public class AreaConst {
      * 全国
      */
     public static final String COUNTRY = "全国";
+    /**
+     * 全国areaId
+     */
+    public static final Long COUNTRY_AREA_ID = 100000000000L;
 }

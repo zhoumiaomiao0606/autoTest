@@ -34,7 +34,14 @@ import static java.util.Locale.CHINA;
 @Component
 public class AreaCache {
 
-    private static final String AREA_CASCADE_CACHE_KEY = "cascade:cache:area";
+    /**
+     * 级联缓存KEY
+     */
+    private static final String CASCADE_CACHE_AREA_KEY = "cascade:cache:area";
+    /**
+     * 所有AREA缓存KEY
+     */
+    private static final String ALL_CACHE_AREA_KEY = "all:cache:area";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -42,9 +49,14 @@ public class AreaCache {
     private BaseAreaDOMapper baseAreaDOMapper;
 
 
+    /**
+     * 获取CASCADE_AREA缓存
+     *
+     * @return
+     */
     public List<CascadeAreaVO> get() {
         // get
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(AREA_CASCADE_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CASCADE_CACHE_AREA_KEY);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
             return JSON.parseArray(result, CascadeAreaVO.class);
@@ -61,6 +73,9 @@ public class AreaCache {
         return Collections.EMPTY_LIST;
     }
 
+    /**
+     * 刷新CASCADE_AREA缓存
+     */
     @PostConstruct
     public void refresh() {
         // 获取所有行政区
@@ -68,6 +83,9 @@ public class AreaCache {
         if (CollectionUtils.isEmpty(allArea)) {
             return;
         }
+
+        // 附带刷新所有
+        refreshAll(allArea);
 
         // 省-市映射容器
         ConcurrentMap<Long, CascadeAreaVO> provCityMap = Maps.newConcurrentMap();
@@ -81,8 +99,101 @@ public class AreaCache {
         List<CascadeAreaVO> cascadeAreaVOList = sortAndGet(provCityMap);
 
         // 刷新缓存
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(AREA_CASCADE_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CASCADE_CACHE_AREA_KEY);
         boundValueOps.set(JSON.toJSONString(cascadeAreaVOList));
+    }
+
+    /**
+     * 获取ALL_AREA缓存
+     *
+     * @return
+     */
+    public List<BaseAreaDO> getAll() {
+        // get
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(ALL_CACHE_AREA_KEY);
+        String result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            return JSON.parseArray(result, BaseAreaDO.class);
+        }
+
+        // 刷新缓存
+        refreshAll();
+
+        // get
+        result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            return JSON.parseArray(result, BaseAreaDO.class);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * 刷新ALL_AREA缓存
+     */
+    public void refreshAll() {
+        // 获取所有行政区
+        List<BaseAreaDO> allArea = baseAreaDOMapper.getAll(VALID_STATUS);
+        if (CollectionUtils.isEmpty(allArea)) {
+            return;
+        }
+
+        // 执行刷新
+        refreshAll(allArea);
+    }
+
+    /**
+     * 刷新ALL_AREA缓存
+     *
+     * @param allArea
+     */
+    public void refreshAll(List<BaseAreaDO> allArea) {
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(ALL_CACHE_AREA_KEY);
+        boundValueOps.set(JSON.toJSONString(allArea));
+    }
+
+
+    /**
+     * 获取所有父级id
+     *
+     * @param childAreaId
+     * @return
+     */
+    public List<Long> getAllSuperAreaIdList(Long childAreaId) {
+        if (null == childAreaId) {
+            return null;
+        }
+
+        // getAll
+        List<BaseAreaDO> allArea = getAll();
+
+        // 获取所有父级ID
+        List<Long> allSuperAreaIdList = getAllSuperAreaIdList(childAreaId, allArea);
+
+        return allSuperAreaIdList;
+    }
+
+    /**
+     * 执行递归遍历，获取所有父级id
+     *
+     * @param childAreaId
+     * @param allArea
+     * @return
+     */
+    private List<Long> getAllSuperAreaIdList(Long childAreaId, List<BaseAreaDO> allArea) {
+        List<Long> allSuperAreaIdList = Lists.newArrayList();
+        allArea.parallelStream()
+                .filter(e -> null != e && null != e.getAreaId() && childAreaId.equals(e.getAreaId()) && null != e.getParentAreaId())
+                .forEach(e -> {
+
+                    Long areaId = e.getParentAreaId();
+                    // 递归调用
+                    List<Long> superAreaIdList = getAllSuperAreaIdList(areaId, allArea);
+                    superAreaIdList.add(areaId);
+
+                    allSuperAreaIdList.addAll(superAreaIdList);
+                });
+
+        return allSuperAreaIdList;
     }
 
     /**
@@ -92,22 +203,42 @@ public class AreaCache {
      * @return
      */
     public List<Long> getAllChildAreaIdList(Long parentAreaId) {
+        if (null == parentAreaId) {
+            return null;
+        }
 
+        // getAll
+        List<BaseAreaDO> allArea = getAll();
 
-        return null;
+        // 获取所有子级ID
+        List<Long> allChildAreaIdList = getAllChildAreaIdList(parentAreaId, allArea);
+
+        return allChildAreaIdList;
     }
 
     /**
-     * 获取所有父级id
+     * 执行递归遍历，获取所有子级id
      *
-     * @param childAreaId
+     * @param parentAreaId
+     * @param allArea
      * @return
      */
-    public List<Long> getAllSuperAreaIdList(Long childAreaId) {
+    private List<Long> getAllChildAreaIdList(Long parentAreaId, List<BaseAreaDO> allArea) {
 
+        List<Long> allChildAreaIdList = Lists.newArrayList();
+        allArea.parallelStream()
+                .filter(e -> null != e && null != e.getAreaId() && parentAreaId.equals(e.getParentAreaId()))
+                .forEach(e -> {
 
-        return null;
+                    Long areaId = e.getAreaId();
+                    // 递归调用
+                    List<Long> childAreaIdList = getAllChildAreaIdList(areaId, allArea);
+                    childAreaIdList.add(areaId);
 
+                    allChildAreaIdList.addAll(childAreaIdList);
+                });
+
+        return allChildAreaIdList;
     }
 
 
@@ -143,7 +274,7 @@ public class AreaCache {
      * @param provCityMap
      */
     private void fillCity(List<BaseAreaDO> allArea, ConcurrentMap<Long, CascadeAreaVO> provCityMap) {
-        allArea.stream()
+        allArea.parallelStream()
                 .filter(e -> null != e && null != e.getAreaId() && LEVEL_CITY.equals(e.getLevel()))
                 .forEach(e -> {
 

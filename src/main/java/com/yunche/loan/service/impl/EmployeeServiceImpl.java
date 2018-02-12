@@ -2,13 +2,14 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.EmployeeCache;
+import com.yunche.loan.config.constant.BaseExceptionEnum;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.dao.mapper.*;
 import com.yunche.loan.domain.dataObj.*;
 import com.yunche.loan.domain.param.EmployeeParam;
-import com.yunche.loan.domain.queryObj.BaseQuery;
 import com.yunche.loan.domain.queryObj.EmployeeQuery;
 import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.viewObj.*;
@@ -16,6 +17,7 @@ import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.AreaConst.COUNTRY_AREA_ID;
 import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
@@ -67,6 +70,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private JavaMailSender mailSender;
     @Autowired
     private EmployeeCache employeeCache;
+    @Autowired
+    private AreaCache areaCache;
 
 
     @Override
@@ -233,17 +238,24 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * 填充所有子级区域
+     * 填充所有子级区域（含自身）
      *
      * @param query
      */
     private void getAndFillChildAreaList(RelaQuery query) {
-        if (null == query.getAreaId()) {
+        Long areaId = query.getAreaId();
+        if (null == areaId) {
             return;
         }
 
-        List<Long> areaIdList = Lists.newArrayList(query.getAreaId());
-        query.setAreaIdList(areaIdList);
+        // 全国
+        if (COUNTRY_AREA_ID.equals(areaId)) {
+            return;
+        }
+
+        List<Long> allChildAreaIdList = areaCache.getAllChildAreaIdList(areaId);
+        allChildAreaIdList.add(areaId);
+        query.setAreaIdList(allChildAreaIdList);
     }
 
     @Override
@@ -283,16 +295,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ResultBean<Void> resetPassword(String email) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(email), "邮箱不能为空");
+    public ResultBean<Void> resetPassword(Long id) {
+        Preconditions.checkNotNull(id, "员工ID不能为空");
 
-        EmployeeDO employeeDO = employeeDOMapper.getByUsername(email, VALID_STATUS);
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id, VALID_STATUS);
         Preconditions.checkNotNull(employeeDO, "账号不存在或已停用");
 
-        // 发送验证URL
-        sentVerifyUrl(email);
+        // 生成随机密码
+        String password = MD5Utils.getRandomString(10);
 
-        return ResultBean.ofSuccess(null, "密码找回链接发送成功");
+        // MD5加密
+        String md5Password = MD5Utils.md5(password);
+        EmployeeDO updateEmployeeDO = new EmployeeDO();
+        updateEmployeeDO.setId(id);
+        updateEmployeeDO.setPassword(md5Password);
+        updateEmployeeDO.setGmtModify(new Date());
+
+        int count = employeeDOMapper.updateByPrimaryKeySelective(updateEmployeeDO);
+        Preconditions.checkArgument(count > 0, "重置密码失败");
+
+        // 发送账号密码到邮箱
+        sentAccountAndPassword(employeeDO.getEmail(), password);
+
+        return ResultBean.ofSuccess(null, "重置密码成功");
     }
 
     /**
@@ -354,22 +379,31 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public ResultBean<Void> editPassword(EmployeeParam employeeParam) {
-        Preconditions.checkArgument(null != employeeParam && null != employeeParam.getId(), "用户ID不能为空");
         Preconditions.checkArgument(null != employeeParam && StringUtils.isNotBlank(employeeParam.getOldPassword()), "原密码不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getNewPassword()), "新密码不能为空");
+        Preconditions.checkArgument(!employeeParam.getOldPassword().equals(employeeParam.getNewPassword()), "新旧密码不能相同");
 
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeParam.getId(), VALID_STATUS);
-        Preconditions.checkNotNull(employeeDO, "账号不存在或已停用");
+        // 从session中获取User
+        Subject subject = SecurityUtils.getSubject();
+        Object principal = subject.getPrincipal();
+        if (null == principal) {
+            return ResultBean.ofError(BaseExceptionEnum.NOT_LOGIN);
+        }
+        EmployeeDO employeeDO = new EmployeeDO();
+        BeanUtils.copyProperties(principal, employeeDO);
         Preconditions.checkArgument(MD5Utils.verify(employeeParam.getOldPassword(), employeeDO.getPassword()), "原密码有误");
 
         EmployeeDO updateEmployee = new EmployeeDO();
-        updateEmployee.setId(employeeParam.getId());
+        updateEmployee.setId(employeeDO.getId());
         updateEmployee.setPassword(MD5Utils.md5(employeeParam.getNewPassword()));
         updateEmployee.setGmtModify(new Date());
-        int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
+        int count = employeeDOMapper.updateByPrimaryKeySelective(updateEmployee);
         Preconditions.checkArgument(count > 0, "密码修改失败");
 
-        return ResultBean.ofSuccess(null, "密码修改成功");
+        // 登出
+        subject.logout();
+
+        return ResultBean.ofSuccess(null, "密码修改成功，请重新登录！");
     }
 
     /**
