@@ -1,9 +1,9 @@
-package com.yunche.loan.domain.dataObj;
+package com.yunche.loan.domain.viewObj;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class CustRelaPersonInfoDO implements Serializable {
+public class CustRelaPersonInfoVO implements Serializable {
     private Long custId;
 
     private String custName;

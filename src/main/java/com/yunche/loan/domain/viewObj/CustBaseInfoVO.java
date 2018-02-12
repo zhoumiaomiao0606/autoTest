@@ -7,6 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 public class CustBaseInfoVO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Long custId;
 
     private String custName;
@@ -21,7 +24,11 @@ public class CustBaseInfoVO implements Serializable {
 
     private Date birth;
 
-    private Byte age;
+    private String sex;
+
+    private Integer age;
+
+    private String nation;
 
     private String education;
 
@@ -63,6 +70,30 @@ public class CustBaseInfoVO implements Serializable {
 
     public List<CustRelaPersonInfoDO> getRelaPersonList() {
         return relaPersonList;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getNation() {
+        return nation;
+    }
+
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 
     public void setRelaPersonList(List<CustRelaPersonInfoDO> relaPersonList) {
@@ -123,14 +154,6 @@ public class CustBaseInfoVO implements Serializable {
 
     public void setBirth(Date birth) {
         this.birth = birth;
-    }
-
-    public Byte getAge() {
-        return age;
-    }
-
-    public void setAge(Byte age) {
-        this.age = age;
     }
 
     public String getEducation() {

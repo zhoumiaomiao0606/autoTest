@@ -9,7 +9,9 @@
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="marry" jdbcType="VARCHAR" property="marry" />
     <result column="birth" jdbcType="DATE" property="birth" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
     <result column="age" jdbcType="TINYINT" property="age" />
+    <result column="nation" jdbcType="VARCHAR" property="nation" />
     <result column="education" jdbcType="VARCHAR" property="education" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="identity_address" jdbcType="VARCHAR" property="identityAddress" />
@@ -33,11 +35,11 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
-    cust_id, cust_name, identity_type, identity_number, phone, marry, birth, age, education, 
-    address, identity_address, identity_validity, company_name, company_phone, bank_credit_status, 
-    bank_credit_detail, social_credit_status, social_credit_detail, income, house_type, 
-    house_owner, house_feature, house_address, feature, contact_name, contact_phone, 
-    contact_relation, gmt_create, gmt_modify
+    cust_id, cust_name, identity_type, identity_number, phone, marry, birth, sex, age, 
+    nation, education, address, identity_address, identity_validity, company_name, company_phone, 
+    bank_credit_status, bank_credit_detail, social_credit_status, social_credit_detail, 
+    income, house_type, house_owner, house_feature, house_address, feature, contact_name, 
+    contact_phone, contact_relation, gmt_create, gmt_modify
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -55,24 +57,26 @@
     </selectKey>
     insert into cust_base_info (cust_id, cust_name, identity_type, 
       identity_number, phone, marry, 
-      birth, age, education, 
-      address, identity_address, identity_validity, 
-      company_name, company_phone, bank_credit_status, 
-      bank_credit_detail, social_credit_status, social_credit_detail, 
-      income, house_type, house_owner, 
-      house_feature, house_address, feature, 
-      contact_name, contact_phone, contact_relation, 
-      gmt_create, gmt_modify)
+      birth, sex, age, nation, 
+      education, address, identity_address, 
+      identity_validity, company_name, company_phone, 
+      bank_credit_status, bank_credit_detail, social_credit_status, 
+      social_credit_detail, income, house_type, 
+      house_owner, house_feature, house_address, 
+      feature, contact_name, contact_phone, 
+      contact_relation, gmt_create, gmt_modify
+      )
     values (#{custId,jdbcType=BIGINT}, #{custName,jdbcType=VARCHAR}, #{identityType,jdbcType=VARCHAR}, 
       #{identityNumber,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{marry,jdbcType=VARCHAR}, 
-      #{birth,jdbcType=DATE}, #{age,jdbcType=TINYINT}, #{education,jdbcType=VARCHAR}, 
-      #{address,jdbcType=VARCHAR}, #{identityAddress,jdbcType=VARCHAR}, #{identityValidity,jdbcType=DATE}, 
-      #{companyName,jdbcType=VARCHAR}, #{companyPhone,jdbcType=VARCHAR}, #{bankCreditStatus,jdbcType=TINYINT}, 
-      #{bankCreditDetail,jdbcType=VARCHAR}, #{socialCreditStatus,jdbcType=TINYINT}, #{socialCreditDetail,jdbcType=VARCHAR}, 
-      #{income,jdbcType=VARCHAR}, #{houseType,jdbcType=VARCHAR}, #{houseOwner,jdbcType=VARCHAR}, 
-      #{houseFeature,jdbcType=VARCHAR}, #{houseAddress,jdbcType=VARCHAR}, #{feature,jdbcType=VARCHAR}, 
-      #{contactName,jdbcType=VARCHAR}, #{contactPhone,jdbcType=VARCHAR}, #{contactRelation,jdbcType=VARCHAR}, 
-      now(), now())
+      #{birth,jdbcType=DATE}, #{sex,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{nation,jdbcType=VARCHAR}, 
+      #{education,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{identityAddress,jdbcType=VARCHAR}, 
+      #{identityValidity,jdbcType=DATE}, #{companyName,jdbcType=VARCHAR}, #{companyPhone,jdbcType=VARCHAR}, 
+      #{bankCreditStatus,jdbcType=TINYINT}, #{bankCreditDetail,jdbcType=VARCHAR}, #{socialCreditStatus,jdbcType=TINYINT}, 
+      #{socialCreditDetail,jdbcType=VARCHAR}, #{income,jdbcType=VARCHAR}, #{houseType,jdbcType=VARCHAR}, 
+      #{houseOwner,jdbcType=VARCHAR}, #{houseFeature,jdbcType=VARCHAR}, #{houseAddress,jdbcType=VARCHAR}, 
+      #{feature,jdbcType=VARCHAR}, #{contactName,jdbcType=VARCHAR}, #{contactPhone,jdbcType=VARCHAR}, 
+      #{contactRelation,jdbcType=VARCHAR}, now(), now()
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
     insert into cust_base_info
@@ -98,8 +102,14 @@
       <if test="birth != null">
         birth,
       </if>
+      <if test="sex != null">
+        sex,
+      </if>
       <if test="age != null">
         age,
+      </if>
+      <if test="nation != null">
+        nation,
       </if>
       <if test="education != null">
         education,
@@ -187,8 +197,14 @@
       <if test="birth != null">
         #{birth,jdbcType=DATE},
       </if>
+      <if test="sex != null">
+        #{sex,jdbcType=VARCHAR},
+      </if>
       <if test="age != null">
         #{age,jdbcType=TINYINT},
+      </if>
+      <if test="nation != null">
+        #{nation,jdbcType=VARCHAR},
       </if>
       <if test="education != null">
         #{education,jdbcType=VARCHAR},
@@ -276,8 +292,14 @@
       <if test="birth != null">
         birth = #{birth,jdbcType=DATE},
       </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
       <if test="age != null">
         age = #{age,jdbcType=TINYINT},
+      </if>
+      <if test="nation != null">
+        nation = #{nation,jdbcType=VARCHAR},
       </if>
       <if test="education != null">
         education = #{education,jdbcType=VARCHAR},
@@ -351,7 +373,9 @@
       phone = #{phone,jdbcType=VARCHAR},
       marry = #{marry,jdbcType=VARCHAR},
       birth = #{birth,jdbcType=DATE},
+      sex = #{sex,jdbcType=VARCHAR},
       age = #{age,jdbcType=TINYINT},
+      nation = #{nation,jdbcType=VARCHAR},
       education = #{education,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR},
       identity_address = #{identityAddress,jdbcType=VARCHAR},

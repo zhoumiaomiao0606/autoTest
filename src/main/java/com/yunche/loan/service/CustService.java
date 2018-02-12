@@ -2,6 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
+import com.yunche.loan.domain.viewObj.CustRelaPersonInfoVO;
 import org.activiti.engine.delegate.DelegateExecution;
 
 /**
@@ -9,8 +10,14 @@ import org.activiti.engine.delegate.DelegateExecution;
  */
 public interface CustService {
 
-    ResultBean<Void> create(DelegateExecution execution);
+    ResultBean<Long> create(DelegateExecution execution);
 
-    ResultBean<Void> update(CustBaseInfoVO custBaseInfoVO);
+    ResultBean<Long> createMainCust(CustBaseInfoVO custBaseInfoVO);
+
+    ResultBean<Long> updateMainCust(CustBaseInfoVO custBaseInfoVO);
+
+    ResultBean<Long> createRelaCust(CustRelaPersonInfoVO custRelaPersonInfoVO);
+
+    ResultBean<Long> updateRelaCust(CustRelaPersonInfoVO custRelaPersonInfoVO);
 
 }

@@ -18,7 +18,11 @@ public class CustBaseInfoDO implements Serializable {
 
     private Date birth;
 
+    private String sex;
+
     private Integer age;
+
+    private String nation;
 
     private String education;
 
@@ -61,6 +65,22 @@ public class CustBaseInfoDO implements Serializable {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public String getNation() {
+        return nation;
+    }
+
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
 
     public Long getCustId() {
         return custId;

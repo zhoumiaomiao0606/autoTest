@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 public class InstLoanOrderVO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private Long orderId;
 
     private String orderNbr;

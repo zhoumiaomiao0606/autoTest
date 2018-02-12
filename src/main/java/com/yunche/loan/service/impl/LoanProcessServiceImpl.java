@@ -143,7 +143,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) runtimeService.getVariable(task.getExecutionId(), "instLoanOrderVO");
 
         // 更新客户的银行征信数据
-        custService.update(custBaseInfoVO);
+        custService.updateMainCust(custBaseInfoVO);
 
         Map<String, Object> taskVariables = new HashMap<String, Object>();
         taskVariables.put("processAction", action);
@@ -173,7 +173,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         InstLoanOrderVO instLoanOrderVO = (InstLoanOrderVO) runtimeService.getVariable(task.getExecutionId(), "instLoanOrderVO");
 
         // 更新客户的社会征信数据
-        custService.update(custBaseInfoVO);
+        custService.updateMainCust(custBaseInfoVO);
 
         Map<String, Object> taskVariables = new HashMap<String, Object>();
         taskVariables.put("processAction", action);
@@ -203,7 +203,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 补充贷款业务单信息
         loanOrderService.update(instLoanOrderVO);
         // 补充客户信息
-        custService.update(instLoanOrderVO.getCustBaseInfoVO());
+        custService.updateMainCust(instLoanOrderVO.getCustBaseInfoVO());
 
         // 记录流程执行节点
         InstProcessNodeDO instProcessNodeDO = new InstProcessNodeDO();
