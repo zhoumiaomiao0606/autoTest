@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.BizModelDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelDO">
+<mapper namespace="com.yunche.loan.dao.BizModelDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BizModelDO">
         <id column="biz_id" jdbcType="BIGINT" property="bizId"/>
         <result column="title" jdbcType="VARCHAR" property="title"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
@@ -20,7 +20,7 @@
   </sql>
 
     <!-- countListBizModelByPartnerId -->
-    <select id="countListBizModelByPartnerId" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
+    <select id="countListBizModelByPartnerId" parameterType="com.yunche.loan.domain.query.BizModelQuery"
             resultType="java.lang.Integer">
         SELECT COUNT(a.biz_id)
         FROM biz_model_rela_area_partners AS a
@@ -41,7 +41,7 @@
     </select>
 
     <!-- listBizModelByPartnerId -->
-    <select id="listBizModelByPartnerId" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
+    <select id="listBizModelByPartnerId" parameterType="com.yunche.loan.domain.query.BizModelQuery"
             resultMap="BaseResultMap">
         SELECT b.*
         FROM biz_model_rela_area_partners AS a
@@ -86,7 +86,7 @@
     where biz_id = #{bizId,jdbcType=BIGINT}
   </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.BizModelDO">
         <selectKey resultType="long" keyProperty="bizId" order="AFTER">
             SELECT LAST_INSERT_ID() as bizId
         </selectKey>
@@ -100,7 +100,7 @@
         #{feature,jdbcType=VARCHAR})
     </insert>
 
-    <select id="selectByCondition" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
+    <select id="selectByCondition" parameterType="com.yunche.loan.domain.query.BizModelQuery"
             resultMap="BaseResultMap">
         select
         biz_model.*
@@ -142,7 +142,7 @@
         </if>
     </select>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BizModelDO">
         update biz_model
         <set>
             <if test="title != null">
@@ -171,7 +171,7 @@
         where biz_id = #{bizId,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizModelDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BizModelDO">
     update biz_model
     set title = #{title,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},

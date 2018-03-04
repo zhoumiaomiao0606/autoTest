@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.EmployeeDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.EmployeeDO">
+<mapper namespace="com.yunche.loan.dao.EmployeeDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.EmployeeDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
@@ -78,7 +78,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.query.EmployeeQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from employee
@@ -88,7 +88,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.query.EmployeeQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -107,7 +107,7 @@
     </select>
 
     <!-- countListEmployeeByUserGroupId -->
-    <select id="countListEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
+    <select id="countListEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.query.RelaQuery"
             resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM employee_rela_user_group AS a
@@ -122,7 +122,7 @@
     </select>
 
     <!-- listEmployeeByUserGroupId -->
-    <select id="listEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
+    <select id="listEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.query.RelaQuery"
             resultMap="BaseResultMap">
         SELECT b.*
         FROM employee_rela_user_group AS a
@@ -139,7 +139,7 @@
     </select>
 
     <!-- countListEmployeeByPartnerId -->
-    <select id="countListEmployeeByPartnerId" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
+    <select id="countListEmployeeByPartnerId" parameterType="com.yunche.loan.domain.query.EmployeeQuery"
             resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM partner_rela_employee AS a
@@ -154,7 +154,7 @@
     </select>
 
     <!-- listEmployeeByPartnerId -->
-    <select id="listEmployeeByPartnerId" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
+    <select id="listEmployeeByPartnerId" parameterType="com.yunche.loan.domain.query.EmployeeQuery"
             resultMap="BaseResultMap">
         SELECT b.*
         FROM partner_rela_employee AS a
@@ -201,7 +201,7 @@
     </select>
 
     <!--queryAllEmployeeIdList-->
-    <select id="queryAllEmployeeIdList" parameterType="com.yunche.loan.domain.queryObj.EmployeeQuery"
+    <select id="queryAllEmployeeIdList" parameterType="com.yunche.loan.domain.query.EmployeeQuery"
             resultType="java.lang.Long">
         select id
         from employee
@@ -246,7 +246,7 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.EmployeeDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -265,7 +265,7 @@
         #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.EmployeeDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -379,7 +379,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.EmployeeDO">
         update employee
         <set>
             <if test="name != null">
@@ -434,7 +434,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.EmployeeDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.EmployeeDO">
     update employee
     set name = #{name,jdbcType=VARCHAR},
       password = #{password,jdbcType=VARCHAR},

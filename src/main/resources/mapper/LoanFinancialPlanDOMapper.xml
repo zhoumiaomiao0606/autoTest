@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.LoanFinancialPlanDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.LoanFinancialPlanDO">
+<mapper namespace="com.yunche.loan.dao.LoanFinancialPlanDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="car_price" jdbcType="DECIMAL" property="carPrice"/>
         <result column="biz_model_id" jdbcType="BIGINT" property="bizModelId"/>
@@ -40,7 +40,7 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.LoanFinancialPlanDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
     insert into loan_financial_plan (id, car_price, biz_model_id, 
       bank, sign_rate, loan_amount, 
       loan_time, down_payment_ratio, down_payment_money, 
@@ -57,7 +57,7 @@
       )
   </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.LoanFinancialPlanDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
         insert into loan_financial_plan
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -173,7 +173,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.LoanFinancialPlanDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
         update loan_financial_plan
         <set>
             <if test="carPrice != null">
@@ -231,7 +231,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.LoanFinancialPlanDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
     update loan_financial_plan
     set car_price = #{carPrice,jdbcType=DECIMAL},
       biz_model_id = #{bizModelId,jdbcType=BIGINT},

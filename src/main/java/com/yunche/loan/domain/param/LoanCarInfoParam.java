@@ -1,6 +1,6 @@
 package com.yunche.loan.domain.param;
 
-import com.yunche.loan.domain.viewObj.LoanCarInfoVO;
+import com.yunche.loan.domain.vo.LoanCarInfoVO;
 import lombok.Data;
 
 /**

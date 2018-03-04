@@ -1,8 +1,8 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.domain.queryObj.PaddingCompanyQuery;
-import com.yunche.loan.domain.viewObj.PaddingCompanyVO;
-import com.yunche.loan.domain.dataObj.PaddingCompanyDO;
+import com.yunche.loan.domain.query.PaddingCompanyQuery;
+import com.yunche.loan.domain.vo.PaddingCompanyVO;
+import com.yunche.loan.domain.entity.PaddingCompanyDO;
 import com.yunche.loan.config.result.ResultBean;
 
 import java.util.List;

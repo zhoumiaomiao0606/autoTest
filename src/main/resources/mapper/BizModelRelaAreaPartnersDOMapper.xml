@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.BizModelRelaAreaPartnersDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
+<mapper namespace="com.yunche.loan.dao.BizModelRelaAreaPartnersDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
         <id column="biz_id" jdbcType="BIGINT" property="bizId"/>
         <id column="area_id" jdbcType="BIGINT" property="areaId"/>
         <id column="group_id" jdbcType="BIGINT" property="groupId"/>
@@ -13,7 +13,7 @@
   </sql>
 
     <!--listQuery-->
-    <select id="listQuery" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO"
+    <select id="listQuery" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -32,7 +32,7 @@
     </select>
 
     <!-- getBizModelIdListByCondition -->
-    <select id="getBizModelIdListByCondition" parameterType="com.yunche.loan.domain.queryObj.BizModelQuery"
+    <select id="getBizModelIdListByCondition" parameterType="com.yunche.loan.domain.query.BizModelQuery"
             resultType="java.lang.Long">
         SELECT DISTINCT(a.biz_id)
         FROM biz_model_rela_area_partners AS a
@@ -52,7 +52,7 @@
         </if>
     </select>
 
-    <select id="query" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO"
+    <select id="query" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -81,13 +81,13 @@
       and area_id = #{1, jdbcType=BIGINT}
       and group_id = #{2, jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
     insert into biz_model_rela_area_partners (biz_id, area_id, group_id, prov, city,
       gmt_create, gmt_modify)
     values (#{bizId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT}, 
       prov, city, now(), now())
   </insert>
-    <update id="update" parameterType="com.yunche.loan.domain.dataObj.BizModelRelaAreaPartnersDO">
+    <update id="update" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
     update biz_model_rela_area_partners
     set gmt_modify = now()
     where biz_id = #{bizId,jdbcType=BIGINT}

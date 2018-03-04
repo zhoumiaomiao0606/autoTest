@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.MenuDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.MenuDO">
+<mapper namespace="com.yunche.loan.dao.MenuDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.MenuDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
@@ -42,7 +42,7 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.MenuDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.MenuDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -57,7 +57,7 @@
         )
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.MenuDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.MenuDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -123,7 +123,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.MenuDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.MenuDO">
         update menu
         <set>
             <if test="name != null">
@@ -154,7 +154,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.MenuDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.MenuDO">
     update menu
     set name = #{name,jdbcType=VARCHAR},
       parent_id = #{parentId,jdbcType=BIGINT},

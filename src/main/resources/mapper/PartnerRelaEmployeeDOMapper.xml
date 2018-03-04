@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.PartnerRelaEmployeeDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.PartnerRelaEmployeeDO">
+<mapper namespace="com.yunche.loan.dao.PartnerRelaEmployeeDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.PartnerRelaEmployeeDO">
         <id column="partner_id" jdbcType="BIGINT" property="partnerId"/>
         <id column="employee_id" jdbcType="BIGINT" property="employeeId"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
@@ -30,7 +30,7 @@
         </foreach>
     </insert>
 
-    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.PartnerRelaEmployeeDOKey"
+    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerRelaEmployeeDOKey"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -39,20 +39,20 @@
         and employee_id = #{employeeId,jdbcType=BIGINT}
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.PartnerRelaEmployeeDOKey">
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerRelaEmployeeDOKey">
     delete from partner_rela_employee
     where partner_id = #{partnerId,jdbcType=BIGINT}
       and employee_id = #{employeeId,jdbcType=BIGINT}
   </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.PartnerRelaEmployeeDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.PartnerRelaEmployeeDO">
     insert into partner_rela_employee (partner_id, employee_id, gmt_create, 
       gmt_modify)
     values (#{partnerId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
       #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.PartnerRelaEmployeeDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.PartnerRelaEmployeeDO">
         insert into partner_rela_employee
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="partnerId != null">
@@ -84,7 +84,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.PartnerRelaEmployeeDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.PartnerRelaEmployeeDO">
         update partner_rela_employee
         <set>
             <if test="gmtCreate != null">
@@ -98,7 +98,7 @@
         and employee_id = #{employeeId,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.PartnerRelaEmployeeDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerRelaEmployeeDO">
     update partner_rela_employee
     set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}

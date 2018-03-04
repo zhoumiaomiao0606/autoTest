@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.BizAreaRelaAreaDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDO">
+<mapper namespace="com.yunche.loan.dao.BizAreaRelaAreaDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BizAreaRelaAreaDO">
         <id column="biz_area_id" jdbcType="BIGINT" property="bizAreaId"/>
         <id column="area_id" jdbcType="BIGINT" property="areaId"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
@@ -21,7 +21,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.queryObj.BizAreaQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.query.BizAreaQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from biz_area_rela_area
@@ -31,7 +31,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.queryObj.BizAreaQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.query.BizAreaQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -60,7 +60,7 @@
         where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDOKey"
+    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BizAreaRelaAreaDOKey"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -69,20 +69,20 @@
         and area_id = #{areaId,jdbcType=BIGINT}
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDOKey">
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BizAreaRelaAreaDOKey">
         delete from biz_area_rela_area
         where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
         and area_id = #{areaId,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.BizAreaRelaAreaDO">
         insert into biz_area_rela_area (biz_area_id, area_id, gmt_create,
         gmt_modify)
         values (#{bizAreaId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP},
         #{gmtModify,jdbcType=TIMESTAMP})
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BizAreaRelaAreaDO">
         insert into biz_area_rela_area
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="bizAreaId != null">
@@ -114,7 +114,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BizAreaRelaAreaDO">
         update biz_area_rela_area
         <set>
             <if test="gmtCreate != null">
@@ -128,7 +128,7 @@
         and area_id = #{areaId,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizAreaRelaAreaDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BizAreaRelaAreaDO">
         update biz_area_rela_area
         set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}

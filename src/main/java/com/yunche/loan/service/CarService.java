@@ -1,8 +1,8 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.viewObj.CarThreeLevelVO;
-import com.yunche.loan.domain.viewObj.CarCascadeVO;
+import com.yunche.loan.domain.vo.CarThreeLevelVO;
+import com.yunche.loan.domain.vo.CarCascadeVO;
 
 import java.util.Map;
 

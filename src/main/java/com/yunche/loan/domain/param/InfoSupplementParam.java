@@ -1,6 +1,6 @@
 package com.yunche.loan.domain.param;
 
-import com.yunche.loan.domain.viewObj.CustomerVO;
+import com.yunche.loan.domain.vo.CustomerVO;
 import lombok.Data;
 
 import java.util.List;

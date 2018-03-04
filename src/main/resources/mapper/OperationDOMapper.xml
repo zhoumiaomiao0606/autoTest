@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.OperationDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.OperationDO">
+<mapper namespace="com.yunche.loan.dao.OperationDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.OperationDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="uri" jdbcType="VARCHAR" property="uri"/>
@@ -36,7 +36,7 @@
     </select>
 
     <!--queryAllOperationIdList-->
-    <select id="queryAllOperationIdList" parameterType="com.yunche.loan.domain.queryObj.AuthQuery"
+    <select id="queryAllOperationIdList" parameterType="com.yunche.loan.domain.query.AuthQuery"
             resultType="java.lang.Long">
         SELECT DISTINCT(operation.id)
         FROM
@@ -78,7 +78,7 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.OperationDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.OperationDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -91,7 +91,7 @@
         #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.OperationDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.OperationDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -151,7 +151,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.OperationDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.OperationDO">
         update operation
         <set>
             <if test="name != null">
@@ -179,7 +179,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.OperationDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.OperationDO">
     update operation
     set name = #{name,jdbcType=VARCHAR},
       uri = #{uri,jdbcType=VARCHAR},

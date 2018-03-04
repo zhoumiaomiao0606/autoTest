@@ -1,10 +1,10 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.domain.viewObj.InsuranceCompanyVO;
-import com.yunche.loan.dao.mapper.InsuranceCompanyDOMapper;
-import com.yunche.loan.domain.dataObj.InsuranceCompanyDO;
-import com.yunche.loan.domain.queryObj.InsuranceCompanyQuery;
+import com.yunche.loan.domain.vo.InsuranceCompanyVO;
+import com.yunche.loan.dao.InsuranceCompanyDOMapper;
+import com.yunche.loan.domain.entity.InsuranceCompanyDO;
+import com.yunche.loan.domain.query.InsuranceCompanyQuery;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.service.InsuranceCompanyService;
 import org.apache.commons.lang3.StringUtils;

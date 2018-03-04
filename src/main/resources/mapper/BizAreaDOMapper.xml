@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.BizAreaDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.BizAreaDO">
+<mapper namespace="com.yunche.loan.dao.BizAreaDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BizAreaDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
@@ -12,7 +12,7 @@
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
-    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.dataObj.BizAreaDO">
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.BizAreaDO">
         <result column="info" jdbcType="LONGVARCHAR" property="info"/>
     </resultMap>
 
@@ -42,7 +42,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.queryObj.BizAreaQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.query.BizAreaQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from biz_area
@@ -52,7 +52,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.queryObj.BizAreaQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.query.BizAreaQuery"
             resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>
@@ -112,7 +112,7 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.BizAreaDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.BizAreaDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -127,7 +127,7 @@
         #{info,jdbcType=LONGVARCHAR})
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.BizAreaDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BizAreaDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -199,7 +199,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.BizAreaDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BizAreaDO">
         update biz_area
         <set>
             <if test="name != null">
@@ -233,7 +233,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.dataObj.BizAreaDO">
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.entity.BizAreaDO">
         update biz_area
         set name = #{name,jdbcType=VARCHAR},
         parent_id = #{parentId,jdbcType=BIGINT},
@@ -247,7 +247,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.BizAreaDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BizAreaDO">
         update biz_area
         set name = #{name,jdbcType=VARCHAR},
         parent_id = #{parentId,jdbcType=BIGINT},

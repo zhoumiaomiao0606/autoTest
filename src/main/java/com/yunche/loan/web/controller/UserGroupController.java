@@ -2,10 +2,10 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.EmployeeQuery;
-import com.yunche.loan.domain.queryObj.UserGroupQuery;
+import com.yunche.loan.domain.query.EmployeeQuery;
+import com.yunche.loan.domain.query.UserGroupQuery;
 import com.yunche.loan.domain.param.UserGroupParam;
-import com.yunche.loan.domain.viewObj.*;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.UserGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

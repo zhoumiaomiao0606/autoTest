@@ -2,9 +2,9 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.CarDetailQuery;
-import com.yunche.loan.domain.dataObj.CarDetailDO;
-import com.yunche.loan.domain.viewObj.CarDetailVO;
+import com.yunche.loan.domain.query.CarDetailQuery;
+import com.yunche.loan.domain.entity.CarDetailDO;
+import com.yunche.loan.domain.vo.CarDetailVO;
 import com.yunche.loan.service.CarDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

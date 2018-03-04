@@ -1,9 +1,9 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.CarDetailQuery;
-import com.yunche.loan.domain.dataObj.CarDetailDO;
-import com.yunche.loan.domain.viewObj.CarDetailVO;
+import com.yunche.loan.domain.query.CarDetailQuery;
+import com.yunche.loan.domain.entity.CarDetailDO;
+import com.yunche.loan.domain.vo.CarDetailVO;
 
 import java.util.List;
 

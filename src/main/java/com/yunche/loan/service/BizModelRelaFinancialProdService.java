@@ -1,7 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.dataObj.BizModelRelaFinancialProdDO;
+import com.yunche.loan.domain.entity.BizModelRelaFinancialProdDO;
 
 import java.util.List;
 

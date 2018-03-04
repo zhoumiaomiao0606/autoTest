@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.LoanProcessOrderDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+<mapper namespace="com.yunche.loan.dao.LoanProcessOrderDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessOrderDO">
         <id column="id" jdbcType="VARCHAR" property="id"/>
         <result column="process_inst_id" jdbcType="VARCHAR" property="processInstId"/>
         <result column="loan_base_info_id" jdbcType="BIGINT" property="loanBaseInfoId"/>
@@ -69,7 +69,7 @@
         where id = #{id,jdbcType=VARCHAR}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessOrderDO">
         insert into loan_process_order (id, process_inst_id, loan_base_info_id,
         loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         status, gmt_create, gmt_modify,
@@ -80,7 +80,7 @@
         #{feature,jdbcType=VARCHAR})
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessOrderDO">
         insert into loan_process_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -148,7 +148,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessOrderDO">
         update loan_process_order
         <set>
             <if test="processInstId != null">
@@ -182,7 +182,7 @@
         where id = #{id,jdbcType=VARCHAR}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessOrderDO">
         update loan_process_order
         set process_inst_id = #{processInstId,jdbcType=VARCHAR},
         loan_base_info_id = #{loanBaseInfoId,jdbcType=BIGINT},

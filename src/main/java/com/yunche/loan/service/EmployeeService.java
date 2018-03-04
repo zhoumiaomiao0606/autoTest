@@ -1,14 +1,14 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.EmployeeQuery;
-import com.yunche.loan.domain.dataObj.EmployeeDO;
+import com.yunche.loan.domain.query.EmployeeQuery;
+import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
-import com.yunche.loan.domain.queryObj.RelaQuery;
-import com.yunche.loan.domain.viewObj.EmployeeVO;
-import com.yunche.loan.domain.viewObj.CascadeVO;
-import com.yunche.loan.domain.viewObj.LoginVO;
-import com.yunche.loan.domain.viewObj.UserGroupVO;
+import com.yunche.loan.domain.query.RelaQuery;
+import com.yunche.loan.domain.vo.EmployeeVO;
+import com.yunche.loan.domain.vo.CascadeVO;
+import com.yunche.loan.domain.vo.LoginVO;
+import com.yunche.loan.domain.vo.UserGroupVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

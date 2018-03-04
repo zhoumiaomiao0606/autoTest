@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.FinancialProductDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.FinancialProductDO">
+<mapper namespace="com.yunche.loan.dao.FinancialProductDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.FinancialProductDO">
         <id column="prod_id" jdbcType="BIGINT" property="prodId"/>
         <result column="prod_name" jdbcType="VARCHAR" property="prodName"/>
         <result column="bank_name" jdbcType="VARCHAR" property="bankName"/>
@@ -33,7 +33,7 @@
         from financial_product
         where prod_id = #{prodId,jdbcType=BIGINT}
     </select>
-    <select id="selectByCondition" parameterType="com.yunche.loan.domain.queryObj.FinancialQuery"
+    <select id="selectByCondition" parameterType="com.yunche.loan.domain.query.FinancialQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -80,7 +80,7 @@
     delete from financial_product
     where prod_id = #{prodId,jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.FinancialProductDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
     insert into financial_product (prod_id, prod_name, bank_name, 
       mnemonic_code, account, sign_phone, 
       sign_bank_code, biz_type, category_superior, 
@@ -96,7 +96,7 @@
       now(), now(), #{feature,jdbcType=VARCHAR}, 
       #{status,jdbcType=TINYINT})
   </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.FinancialProductDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
         insert into financial_product
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="prodId != null">
@@ -217,7 +217,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.FinancialProductDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
         update financial_product
         <set>
             <if test="prodName != null">
@@ -275,7 +275,7 @@
         </set>
         where prod_id = #{prodId,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.FinancialProductDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
     update financial_product
     set prod_name = #{prodName,jdbcType=VARCHAR},
       bank_name = #{bankName,jdbcType=VARCHAR},

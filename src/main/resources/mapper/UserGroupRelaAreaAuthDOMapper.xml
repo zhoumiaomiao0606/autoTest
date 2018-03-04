@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.UserGroupRelaAreaAuthDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO">
+<mapper namespace="com.yunche.loan.dao.UserGroupRelaAreaAuthDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDO">
         <id column="user_group_id" jdbcType="BIGINT" property="userGroupId"/>
         <id column="auth_id" jdbcType="BIGINT" property="authId"/>
         <id column="area_id" jdbcType="BIGINT" property="areaId"/>
@@ -14,7 +14,7 @@
   </sql>
 
     <!--query-->
-    <select id="query" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDOKey"
+    <select id="query" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDOKey"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -83,7 +83,7 @@
     </delete>
 
     <!--updateByUserGroupIdSelective-->
-    <update id="updateByUserGroupIdSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO">
+    <update id="updateByUserGroupIdSelective" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDO">
         update user_group_rela_area_auth
         <set>
             <if test="gmtCreate != null">
@@ -113,7 +113,7 @@
         </foreach>
     </insert>
 
-    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDOKey"
+    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDOKey"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -123,7 +123,7 @@
         and area_id = #{areaId,jdbcType=BIGINT}
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDOKey">
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDOKey">
         delete from user_group_rela_area_auth
         where user_group_id = #{userGroupId,jdbcType=BIGINT}
         and auth_id = #{authId,jdbcType=BIGINT}
@@ -132,14 +132,14 @@
         </if>
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDO">
     insert into user_group_rela_area_auth (user_group_id, auth_id, area_id, 
       gmt_create, gmt_modify)
     values (#{userGroupId,jdbcType=BIGINT}, #{authId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, 
       #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDO">
         insert into user_group_rela_area_auth
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userGroupId != null">
@@ -177,7 +177,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDO">
         update user_group_rela_area_auth
         <set>
             <if test="gmtCreate != null">
@@ -192,7 +192,7 @@
         and area_id = #{areaId,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaAuthDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDO">
     update user_group_rela_area_auth
     set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}

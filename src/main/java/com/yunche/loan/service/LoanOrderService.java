@@ -2,8 +2,8 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.*;
-import com.yunche.loan.domain.queryObj.LoanOrderQuery;
-import com.yunche.loan.domain.viewObj.*;
+import com.yunche.loan.domain.query.LoanOrderQuery;
+import com.yunche.loan.domain.vo.*;
 
 import java.util.List;
 

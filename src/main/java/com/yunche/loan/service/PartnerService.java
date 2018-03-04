@@ -1,14 +1,14 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.BizModelQuery;
-import com.yunche.loan.domain.queryObj.PartnerQuery;
-import com.yunche.loan.domain.queryObj.RelaQuery;
-import com.yunche.loan.domain.dataObj.PartnerDO;
+import com.yunche.loan.domain.query.BizModelQuery;
+import com.yunche.loan.domain.query.PartnerQuery;
+import com.yunche.loan.domain.query.RelaQuery;
+import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.PartnerParam;
-import com.yunche.loan.domain.viewObj.BizModelVO;
-import com.yunche.loan.domain.viewObj.EmployeeVO;
-import com.yunche.loan.domain.viewObj.PartnerVO;
+import com.yunche.loan.domain.vo.BizModelVO;
+import com.yunche.loan.domain.vo.EmployeeVO;
+import com.yunche.loan.domain.vo.PartnerVO;
 
 import java.util.List;
 

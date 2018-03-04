@@ -1,9 +1,9 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.AuthQuery;
-import com.yunche.loan.domain.viewObj.CascadeVO;
-import com.yunche.loan.domain.viewObj.PageVO;
+import com.yunche.loan.domain.query.AuthQuery;
+import com.yunche.loan.domain.vo.CascadeVO;
+import com.yunche.loan.domain.vo.PageVO;
 
 import java.util.List;
 

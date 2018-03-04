@@ -2,9 +2,9 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.dataObj.AppVersionDO;
-import com.yunche.loan.domain.queryObj.AppVersionQuery;
-import com.yunche.loan.domain.viewObj.AppVersionVO;
+import com.yunche.loan.domain.entity.AppVersionDO;
+import com.yunche.loan.domain.query.AppVersionQuery;
+import com.yunche.loan.domain.vo.AppVersionVO;
 import com.yunche.loan.service.AppVersionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +43,9 @@ public class AppVersionController {
         return appVersionService.update(appVersionDO);
     }
 
-    @GetMapping("/getById")
-    public ResultBean<AppVersionVO> getById(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("getById", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
+    @GetMapping("/detail")
+    public ResultBean<AppVersionVO> detail(@RequestParam("id") Long id) {
+        logger.info(Arrays.asList("detail", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
         return appVersionService.getById(id);
     }
 

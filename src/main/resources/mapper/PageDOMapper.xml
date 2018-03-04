@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.PageDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.PageDO">
+<mapper namespace="com.yunche.loan.dao.PageDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.PageDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="uri" jdbcType="VARCHAR" property="uri"/>
@@ -16,7 +16,7 @@
     id, name, uri, menu_id, gmt_create, gmt_modify, feature, status
   </sql>
 
-    <resultMap id="menuPageAndOperationResultMap" type="com.yunche.loan.domain.dataObj.PageDO">
+    <resultMap id="menuPageAndOperationResultMap" type="com.yunche.loan.domain.entity.PageDO">
         <!--page-->
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
@@ -28,7 +28,7 @@
         <result column="status" jdbcType="TINYINT" property="status"/>
 
         <!--menu-->
-        <association property="menu" javaType="com.yunche.loan.domain.dataObj.MenuDO">
+        <association property="menu" javaType="com.yunche.loan.domain.entity.MenuDO">
             <id column="menu_id" jdbcType="BIGINT" property="id"/>
             <result column="menu_name" jdbcType="VARCHAR" property="name"/>
             <result column="menu_parent_id" jdbcType="BIGINT" property="parentId"/>
@@ -37,7 +37,7 @@
         </association>
 
         <!--operation-->
-        <collection property="operations" ofType="com.yunche.loan.domain.dataObj.OperationDO">
+        <collection property="operations" ofType="com.yunche.loan.domain.entity.OperationDO">
             <id column="operation_id" jdbcType="BIGINT" property="id"/>
             <result column="operation_name" jdbcType="VARCHAR" property="name"/>
             <result column="operation_uri" jdbcType="VARCHAR" property="uri"/>
@@ -46,7 +46,7 @@
     </resultMap>
 
     <!--countMenuPageAndOperation-->
-    <select id="countMenuPageAndOperation" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
+    <select id="countMenuPageAndOperation" parameterType="com.yunche.loan.domain.query.RelaQuery"
             resultType="java.lang.Integer">
         SELECT COUNT(DISTINCT(page.id))
         FROM
@@ -81,7 +81,7 @@
     </select>
 
     <!--queryMenuPageAndOperation-->
-    <select id="queryMenuPageAndOperation" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
+    <select id="queryMenuPageAndOperation" parameterType="com.yunche.loan.domain.query.RelaQuery"
             resultMap="menuPageAndOperationResultMap">
         SELECT
         menu.id AS menu_id,
@@ -159,7 +159,7 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.PageDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.PageDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -172,7 +172,7 @@
         #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.PageDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.PageDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -232,7 +232,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.PageDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.PageDO">
         update page
         <set>
             <if test="name != null">
@@ -260,7 +260,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.PageDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PageDO">
     update page
     set name = #{name,jdbcType=VARCHAR},
       uri = #{uri,jdbcType=VARCHAR},

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.PaddingCompanyDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
+<mapper namespace="com.yunche.loan.dao.PaddingCompanyDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.PaddingCompanyDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode"/>
@@ -20,7 +20,7 @@
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
-    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.PaddingCompanyDO">
         <result column="cooperation_policy" jdbcType="LONGVARCHAR" property="cooperationPolicy"/>
     </resultMap>
 
@@ -72,7 +72,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.queryObj.PaddingCompanyQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.query.PaddingCompanyQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from padding_company
@@ -82,7 +82,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.queryObj.PaddingCompanyQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.query.PaddingCompanyQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -113,7 +113,7 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.PaddingCompanyDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -134,7 +134,7 @@
         )
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.PaddingCompanyDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -254,7 +254,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.PaddingCompanyDO">
         update padding_company
         <set>
             <if test="name != null">
@@ -312,7 +312,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.entity.PaddingCompanyDO">
         update padding_company
         set name = #{name,jdbcType=VARCHAR},
         mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
@@ -334,7 +334,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.PaddingCompanyDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PaddingCompanyDO">
     update padding_company
     set name = #{name,jdbcType=VARCHAR},
       mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},

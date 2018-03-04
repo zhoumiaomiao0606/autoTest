@@ -1,11 +1,11 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
-import com.yunche.loan.dao.mapper.CarBrandDOMapper;
-import com.yunche.loan.dao.mapper.CarModelDOMapper;
-import com.yunche.loan.domain.dataObj.CarBrandDO;
-import com.yunche.loan.domain.dataObj.CarModelDO;
-import com.yunche.loan.domain.viewObj.CarCascadeVO;
+import com.yunche.loan.dao.CarBrandDOMapper;
+import com.yunche.loan.dao.CarModelDOMapper;
+import com.yunche.loan.domain.entity.CarBrandDO;
+import com.yunche.loan.domain.entity.CarModelDO;
+import com.yunche.loan.domain.vo.CarCascadeVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.Comparator;

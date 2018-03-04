@@ -1,13 +1,13 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.queryObj.BaseQuery;
-import com.yunche.loan.domain.queryObj.DepartmentQuery;
-import com.yunche.loan.domain.dataObj.DepartmentDO;
+import com.yunche.loan.domain.query.BaseQuery;
+import com.yunche.loan.domain.query.DepartmentQuery;
+import com.yunche.loan.domain.entity.DepartmentDO;
 import com.yunche.loan.domain.param.DepartmentParam;
-import com.yunche.loan.domain.viewObj.DepartmentVO;
-import com.yunche.loan.domain.viewObj.CascadeVO;
-import com.yunche.loan.domain.viewObj.UserGroupVO;
+import com.yunche.loan.domain.vo.DepartmentVO;
+import com.yunche.loan.domain.vo.CascadeVO;
+import com.yunche.loan.domain.vo.UserGroupVO;
 
 import java.util.List;
 

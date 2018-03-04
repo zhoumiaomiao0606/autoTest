@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.InsuranceCompanyDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.InsuranceCompanyDO">
+<mapper namespace="com.yunche.loan.dao.InsuranceCompanyDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.InsuranceCompanyDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode"/>
@@ -21,7 +21,7 @@
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
-    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.dataObj.InsuranceCompanyDO">
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.InsuranceCompanyDO">
         <result column="cooperation_policy" jdbcType="LONGVARCHAR" property="cooperationPolicy"/>
     </resultMap>
 
@@ -77,7 +77,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.queryObj.InsuranceCompanyQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.query.InsuranceCompanyQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from insurance_company
@@ -87,7 +87,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.queryObj.InsuranceCompanyQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.query.InsuranceCompanyQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -118,7 +118,7 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.InsuranceCompanyDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.InsuranceCompanyDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -139,7 +139,7 @@
         #{cooperationPolicy,jdbcType=LONGVARCHAR})
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.InsuranceCompanyDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.InsuranceCompanyDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -265,7 +265,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.InsuranceCompanyDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.InsuranceCompanyDO">
         update insurance_company
         <set>
             <if test="name != null">
@@ -326,7 +326,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.dataObj.InsuranceCompanyDO">
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.entity.InsuranceCompanyDO">
         update insurance_company
         set name = #{name,jdbcType=VARCHAR},
         mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
@@ -349,7 +349,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.InsuranceCompanyDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.InsuranceCompanyDO">
         update insurance_company
         set name = #{name,jdbcType=VARCHAR},
         mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},

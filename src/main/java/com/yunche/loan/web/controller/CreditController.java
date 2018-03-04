@@ -1,10 +1,10 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.dataObj.LoanBaseInfoDO;
-import com.yunche.loan.domain.queryObj.OrderListQuery;
-import com.yunche.loan.domain.viewObj.InstLoanOrderVO;
-import com.yunche.loan.domain.viewObj.LoanBaseInfoVO;
+import com.yunche.loan.domain.entity.LoanBaseInfoDO;
+import com.yunche.loan.domain.query.OrderListQuery;
+import com.yunche.loan.domain.vo.InstLoanOrderVO;
+import com.yunche.loan.domain.vo.LoanBaseInfoVO;
 import com.yunche.loan.service.CreditService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

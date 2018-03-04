@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.DepartmentRelaUserGroupDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDO">
+<mapper namespace="com.yunche.loan.dao.DepartmentRelaUserGroupDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.DepartmentRelaUserGroupDO">
         <id column="department_id" jdbcType="BIGINT" property="departmentId"/>
         <id column="user_group_id" jdbcType="BIGINT" property="userGroupId"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
@@ -13,7 +13,7 @@
   </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.query.BaseQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from department_rela_user_group
@@ -21,7 +21,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.queryObj.BaseQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.query.BaseQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -66,7 +66,7 @@
     </select>
 
     <!--updateByUserGroupId-->
-    <update id="updateByUserGroupId" parameterType="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDO">
+    <update id="updateByUserGroupId" parameterType="com.yunche.loan.domain.entity.DepartmentRelaUserGroupDO">
         update department_rela_user_group
         <set>
             <if test="gmtCreate != null">
@@ -82,7 +82,7 @@
         where user_group_id = #{userGroupId,jdbcType=BIGINT}
     </update>
 
-    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDOKey"
+    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.DepartmentRelaUserGroupDOKey"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -91,20 +91,20 @@
         and user_group_id = #{userGroupId,jdbcType=BIGINT}
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDOKey">
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.DepartmentRelaUserGroupDOKey">
     delete from department_rela_user_group
     where department_id = #{departmentId,jdbcType=BIGINT}
       and user_group_id = #{userGroupId,jdbcType=BIGINT}
   </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.DepartmentRelaUserGroupDO">
     insert into department_rela_user_group (department_id, user_group_id, gmt_create, 
       gmt_modify)
     values (#{departmentId,jdbcType=BIGINT}, #{userGroupId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
       #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.DepartmentRelaUserGroupDO">
         insert into department_rela_user_group
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="departmentId != null">
@@ -136,7 +136,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.DepartmentRelaUserGroupDO">
         update department_rela_user_group
         <set>
             <if test="gmtCreate != null">
@@ -150,7 +150,7 @@
         and user_group_id = #{userGroupId,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.DepartmentRelaUserGroupDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.DepartmentRelaUserGroupDO">
     update department_rela_user_group
     set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}

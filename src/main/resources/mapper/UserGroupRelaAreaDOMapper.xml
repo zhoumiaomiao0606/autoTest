@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.UserGroupRelaAreaDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+<mapper namespace="com.yunche.loan.dao.UserGroupRelaAreaDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.UserGroupRelaAreaDO">
         <id column="user_group_id" jdbcType="BIGINT" property="userGroupId"/>
         <id column="area_id" jdbcType="BIGINT" property="areaId"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
@@ -44,7 +44,7 @@
         where user_group_id = #{userGroupId,jdbcType=BIGINT}
     </update>
 
-    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDOKey"
+    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaDOKey"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -53,20 +53,20 @@
         and area_id = #{areaId,jdbcType=BIGINT}
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDOKey">
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaDOKey">
     delete from user_group_rela_area
     where user_group_id = #{userGroupId,jdbcType=BIGINT}
       and area_id = #{areaId,jdbcType=BIGINT}
   </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaDO">
     insert into user_group_rela_area (user_group_id, area_id, gmt_create, 
       gmt_modify)
     values (#{userGroupId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
       #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaDO">
         insert into user_group_rela_area
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userGroupId != null">
@@ -98,7 +98,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaDO">
         update user_group_rela_area
         <set>
             <if test="gmtCreate != null">
@@ -112,7 +112,7 @@
         and area_id = #{areaId,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.UserGroupRelaAreaDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.UserGroupRelaAreaDO">
     update user_group_rela_area
     set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}

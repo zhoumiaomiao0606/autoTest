@@ -1,9 +1,9 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.dataObj.AppVersionDO;
-import com.yunche.loan.domain.queryObj.AppVersionQuery;
-import com.yunche.loan.domain.viewObj.AppVersionVO;
+import com.yunche.loan.domain.entity.AppVersionDO;
+import com.yunche.loan.domain.query.AppVersionQuery;
+import com.yunche.loan.domain.vo.AppVersionVO;
 
 import java.util.List;
 

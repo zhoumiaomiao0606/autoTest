@@ -2,11 +2,11 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.mapper.CarBrandDOMapper;
-import com.yunche.loan.dao.mapper.CarModelDOMapper;
-import com.yunche.loan.domain.dataObj.CarBrandDO;
-import com.yunche.loan.domain.dataObj.CarModelDO;
-import com.yunche.loan.domain.viewObj.CarBrandVO;
+import com.yunche.loan.dao.CarBrandDOMapper;
+import com.yunche.loan.dao.CarModelDOMapper;
+import com.yunche.loan.domain.entity.CarBrandDO;
+import com.yunche.loan.domain.entity.CarModelDO;
+import com.yunche.loan.domain.vo.CarBrandVO;
 import com.yunche.loan.service.CarBrandService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;

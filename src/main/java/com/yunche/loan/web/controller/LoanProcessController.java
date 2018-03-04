@@ -3,7 +3,7 @@ package com.yunche.loan.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
-import com.yunche.loan.domain.viewObj.*;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

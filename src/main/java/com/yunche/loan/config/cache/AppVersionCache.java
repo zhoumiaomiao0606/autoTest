@@ -2,9 +2,9 @@ package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
-import com.yunche.loan.dao.mapper.AppVersionDOMapper;
-import com.yunche.loan.domain.dataObj.AppVersionDO;
-import com.yunche.loan.domain.queryObj.AppVersionQuery;
+import com.yunche.loan.dao.AppVersionDOMapper;
+import com.yunche.loan.domain.entity.AppVersionDO;
+import com.yunche.loan.domain.query.AppVersionQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundValueOperations;

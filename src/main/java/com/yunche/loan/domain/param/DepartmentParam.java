@@ -1,6 +1,6 @@
 package com.yunche.loan.domain.param;
 
-import com.yunche.loan.domain.dataObj.DepartmentDO;
+import com.yunche.loan.domain.entity.DepartmentDO;
 import lombok.Data;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.CustBaseInfoDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+<mapper namespace="com.yunche.loan.dao.CustBaseInfoDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CustBaseInfoDO">
     <id column="cust_id" jdbcType="BIGINT" property="custId" />
     <result column="cust_name" jdbcType="VARCHAR" property="custName" />
     <result column="identity_type" jdbcType="VARCHAR" property="identityType" />
@@ -51,7 +51,7 @@
     delete from cust_base_info
     where cust_id = #{custId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.CustBaseInfoDO">
     <selectKey resultType="long" keyProperty="custId" order="AFTER">
       SELECT LAST_INSERT_ID() as custId
     </selectKey>
@@ -78,7 +78,7 @@
       #{contactRelation,jdbcType=VARCHAR}, now(), now()
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CustBaseInfoDO">
     insert into cust_base_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="custId != null">
@@ -271,7 +271,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.CustBaseInfoDO">
     update cust_base_info
     <set>
       <if test="custName != null">
@@ -365,7 +365,7 @@
     </set>
     where cust_id = #{custId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.CustBaseInfoDO">
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CustBaseInfoDO">
     update cust_base_info
     set cust_name = #{custName,jdbcType=VARCHAR},
       identity_type = #{identityType,jdbcType=VARCHAR},

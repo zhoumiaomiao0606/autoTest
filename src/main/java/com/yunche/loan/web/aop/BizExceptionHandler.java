@@ -18,9 +18,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -44,9 +45,19 @@ public class BizExceptionHandler {
     public Object doBefore(ProceedingJoinPoint pjp) {
 
         try {
-            // log
-//            log();
-            return pjp.proceed();
+            long startTime = System.currentTimeMillis();
+
+            // 日志记录
+            log(pjp.getArgs());
+
+            // exec
+            Object result = pjp.proceed();
+
+            // 时间
+            long totalTime = System.currentTimeMillis() - startTime;
+            logger.info("totalTime : {}s", new Double(totalTime) / 1000);
+
+            return result;
         } catch (Throwable throwable) {
             logger.error("BizExceptionHandler : ", throwable);
             if (throwable instanceof BizException) {
@@ -68,42 +79,82 @@ public class BizExceptionHandler {
         }
     }
 
-
     /**
      * 记录日志
+     *
+     * @param args
      */
-    private void log() {
+    private void log(Object[] args) {
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-//
-//        String requestUrl = request.getScheme() //当前链接使用的协议
-//                + "://" + request.getServerName()//服务器地址
-//                + ":" + request.getServerPort() //端口号
-//                + request.getContextPath() //应用名称，如果应用名称为
-//                + request.getServletPath() //请求的相对url -->可作log记录:path(即：requestMapping路径)
-//                + "?" + request.getQueryString(); //请求参数
-//
-//        logger.info(Arrays.asList(request.getServletPath(), JSON.toJSONString(requestUrl)).stream().collect(Collectors.joining("-")));
-//
-//        logger.info(Arrays.asList(request.getServletPath(), JSON.toJSONString(request.getQueryString())).stream().collect(Collectors.joining("-")));
 
+        System.out.println(request.getRemoteAddr() + " ====   " + request.getLocalAddr() + " ====   " + request.getRemotePort() + "    ====   " + request.getLocalPort());
 
-        charReader(request);
+        List<Object> argList = Arrays.stream(args).parallel()
+                .filter(arg -> !(arg instanceof HttpServletRequest) && !(arg instanceof HttpServletResponse))
+                .map(arg -> {
+                    return arg;
+                })
+                .collect(Collectors.toList());
+
+        logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request), JSON.toJSONString(argList.get(0))).stream().collect(Collectors.joining("-")));
     }
 
-
-    private void charReader(HttpServletRequest request) {
-
-        try {
-            BufferedReader br = request.getReader();
-
-            String str, wholeStr = "";
-            while ((str = br.readLine()) != null) {
-                wholeStr += str;
-            }
-            System.out.println(wholeStr);
-        } catch (IOException e) {
-            e.printStackTrace();
+    /**
+     * 获取请求主机IP地址,如果通过代理进来，则透过防火墙获取真实IP地址;
+     *
+     * @param request
+     * @return
+     * @throws IOException
+     */
+    public final static String getIpAddress(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (logger.isInfoEnabled()) {
+            logger.info("getIpAddress(HttpServletRequest) - X-Forwarded-For - String ip=" + ip);
         }
+
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getHeader("Proxy-Client-IP");
+                if (logger.isInfoEnabled()) {
+                    logger.info("getIpAddress(HttpServletRequest) - Proxy-Client-IP - String ip=" + ip);
+                }
+            }
+            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getHeader("WL-Proxy-Client-IP");
+                if (logger.isInfoEnabled()) {
+                    logger.info("getIpAddress(HttpServletRequest) - WL-Proxy-Client-IP - String ip=" + ip);
+                }
+            }
+            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getHeader("HTTP_CLIENT_IP");
+                if (logger.isInfoEnabled()) {
+                    logger.info("getIpAddress(HttpServletRequest) - HTTP_CLIENT_IP - String ip=" + ip);
+                }
+            }
+            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+                if (logger.isInfoEnabled()) {
+                    logger.info("getIpAddress(HttpServletRequest) - HTTP_X_FORWARDED_FOR - String ip=" + ip);
+                }
+            }
+            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                ip = request.getRemoteAddr();
+                if (logger.isInfoEnabled()) {
+                    logger.info("getIpAddress(HttpServletRequest) - getRemoteAddr - String ip=" + ip);
+                }
+            }
+        } else if (ip.length() > 15) {
+            String[] ips = ip.split(",");
+            for (int index = 0; index < ips.length; index++) {
+                String strIp = (String) ips[index];
+                if (!("unknown".equalsIgnoreCase(strIp))) {
+                    ip = strIp;
+                    break;
+                }
+            }
+        }
+        return ip;
     }
+
 }

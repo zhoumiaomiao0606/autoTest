@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.LoanCarInfoDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.LoanCarInfoDO">
+<mapper namespace="com.yunche.loan.dao.LoanCarInfoDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanCarInfoDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="car_model_id" jdbcType="BIGINT" property="carModelId"/>
         <result column="car_type" jdbcType="TINYINT" property="carType"/>
@@ -36,7 +36,7 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.LoanCarInfoDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
         insert into loan_car_info (id, car_model_id, car_type,
         partner_id, gps_num, car_key,
         open_bank, account_name, bank_account,
@@ -51,7 +51,7 @@
         )
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.LoanCarInfoDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
         insert into loan_car_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -149,7 +149,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.LoanCarInfoDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
         update loan_car_info
         <set>
             <if test="carModelId != null">
@@ -198,7 +198,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.LoanCarInfoDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
         update loan_car_info
         set car_model_id = #{carModelId,jdbcType=BIGINT},
         car_type = #{carType,jdbcType=TINYINT},

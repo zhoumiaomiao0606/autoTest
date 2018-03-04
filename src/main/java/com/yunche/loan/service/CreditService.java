@@ -1,10 +1,10 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.dataObj.LoanBaseInfoDO;
-import com.yunche.loan.domain.queryObj.OrderListQuery;
-import com.yunche.loan.domain.viewObj.InstLoanOrderVO;
-import com.yunche.loan.domain.viewObj.LoanBaseInfoVO;
+import com.yunche.loan.domain.entity.LoanBaseInfoDO;
+import com.yunche.loan.domain.query.OrderListQuery;
+import com.yunche.loan.domain.vo.InstLoanOrderVO;
+import com.yunche.loan.domain.vo.LoanBaseInfoVO;
 
 import java.util.List;
 

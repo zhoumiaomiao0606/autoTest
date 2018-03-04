@@ -2,10 +2,10 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustDetailParam;
-import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
-import com.yunche.loan.domain.viewObj.CustRelaPersonInfoVO;
-import com.yunche.loan.domain.viewObj.CustDetailVO;
-import com.yunche.loan.domain.viewObj.CustomerVO;
+import com.yunche.loan.domain.vo.CustBaseInfoVO;
+import com.yunche.loan.domain.vo.CustRelaPersonInfoVO;
+import com.yunche.loan.domain.vo.CustDetailVO;
+import com.yunche.loan.domain.vo.CustomerVO;
 
 /**
  * Created by zhouguoliang on 2018/1/29.

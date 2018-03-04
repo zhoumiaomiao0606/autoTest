@@ -2,10 +2,9 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustDetailParam;
-import com.yunche.loan.domain.viewObj.CustBaseInfoVO;
-import com.yunche.loan.domain.viewObj.CustRelaPersonInfoVO;
-import com.yunche.loan.domain.viewObj.CustDetailVO;
-import com.yunche.loan.domain.viewObj.CustomerVO;
+import com.yunche.loan.domain.vo.CustBaseInfoVO;
+import com.yunche.loan.domain.vo.CustRelaPersonInfoVO;
+import com.yunche.loan.domain.vo.CustomerVO;
 import com.yunche.loan.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

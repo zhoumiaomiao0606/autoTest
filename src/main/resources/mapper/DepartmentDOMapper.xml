@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.mapper.DepartmentDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.DepartmentDO">
+<mapper namespace="com.yunche.loan.dao.DepartmentDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.DepartmentDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
@@ -62,7 +62,7 @@
     </sql>
 
     <!--  count -->
-    <select id="count" parameterType="com.yunche.loan.domain.queryObj.DepartmentQuery"
+    <select id="count" parameterType="com.yunche.loan.domain.query.DepartmentQuery"
             resultType="java.lang.Integer">
         select COUNT(*)
         from department
@@ -72,7 +72,7 @@
     </select>
 
     <!-- query -->
-    <select id="query" parameterType="com.yunche.loan.domain.queryObj.DepartmentQuery"
+    <select id="query" parameterType="com.yunche.loan.domain.query.DepartmentQuery"
             resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -129,7 +129,7 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.DepartmentDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -148,7 +148,7 @@
         #{status,jdbcType=TINYINT})
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.DepartmentDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -256,7 +256,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.DepartmentDO">
         update department
         <set>
             <if test="name != null">
@@ -308,7 +308,7 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.DepartmentDO">
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.DepartmentDO">
     update department
     set name = #{name,jdbcType=VARCHAR},
       parent_id = #{parentId,jdbcType=BIGINT},

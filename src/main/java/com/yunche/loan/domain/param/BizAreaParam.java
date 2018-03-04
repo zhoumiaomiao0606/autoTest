@@ -1,6 +1,6 @@
 package com.yunche.loan.domain.param;
 
-import com.yunche.loan.domain.dataObj.BizAreaDO;
+import com.yunche.loan.domain.entity.BizAreaDO;
 import lombok.Data;
 
 import java.util.List;
