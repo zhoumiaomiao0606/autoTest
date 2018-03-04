@@ -27,7 +27,7 @@ public class BaseQuery {
      */
     private Integer pageSize = 10;
     /**
-     * 状态（0：有效; 1：无效;）
+     * 状态（常规：0-有效; 1-无效;）
      */
     private Byte status;
     /**
@@ -55,6 +55,16 @@ public class BaseQuery {
     public Integer getStartRow() {
         Integer startRow = (pageIndex - 1) * pageSize;
         return startRow;
+    }
+
+    /**
+     * 分页结束行号
+     *
+     * @return
+     */
+    public Integer getEndRow() {
+        Integer endRow = getStartRow() + pageSize;
+        return endRow;
     }
 
     /**

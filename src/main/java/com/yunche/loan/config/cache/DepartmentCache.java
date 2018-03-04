@@ -59,7 +59,7 @@ public class DepartmentCache {
         return Collections.EMPTY_LIST;
     }
 
-    @PostConstruct
+//    @PostConstruct
     public void refresh() {
         // getAll
         List<DepartmentDO> departmentDOS = departmentDOMapper.getAll(VALID_STATUS);

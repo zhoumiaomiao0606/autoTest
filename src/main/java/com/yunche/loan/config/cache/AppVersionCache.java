@@ -92,9 +92,9 @@ public class AppVersionCache {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(appVersionDOS), "获取最新版本失败");
 
         String key = null;
-        if (terminalType.equals(TERMINAL_TYPE_IOS)) {
+        if (TERMINAL_TYPE_IOS.equals(terminalType)) {
             key = APP_LATEST_VERSION_IOS_KEY;
-        } else if (terminalType.equals(TERMINAL_TYPE_ANDROID)) {
+        } else if (TERMINAL_TYPE_ANDROID.equals(terminalType)) {
             key = APP_LATEST_VERSION_ANDROID_KEY;
         } else {
             throw new IllegalArgumentException("终端类型非法");

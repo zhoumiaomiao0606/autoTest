@@ -62,7 +62,7 @@ public class BizShiroRealm extends AuthorizingRealm {
 
         // 通过username从数据库中查找 User对象
         // 根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
-        EmployeeDO employeeDO = employeeDOMapper.getByUsername(username, VALID_STATUS);
+        EmployeeDO employeeDO = employeeDOMapper.getByUsername(username, null);
         if (null == employeeDO) {
             return null;
         }

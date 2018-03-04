@@ -1,5 +1,6 @@
 package com.yunche.loan.dao.mapper;
 
+import com.yunche.loan.domain.dataObj.UserGroupDO;
 import com.yunche.loan.domain.queryObj.RelaQuery;
 import com.yunche.loan.domain.dataObj.EmployeeRelaUserGroupDO;
 import com.yunche.loan.domain.dataObj.EmployeeRelaUserGroupDOKey;
@@ -24,6 +25,12 @@ public interface EmployeeRelaUserGroupDOMapper {
 
     List<Long> getEmployeeIdListByUserGroupId(Long userGroupId);
 
+    /**
+     * 获取用户组ID列表
+     *
+     * @param employeeId
+     * @return
+     */
     List<Long> getUserGroupIdListByEmployeeId(Long employeeId);
 
     int batchInsert(List<EmployeeRelaUserGroupDO> employeeRelaUserGroupDOS);

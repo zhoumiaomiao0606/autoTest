@@ -27,8 +27,8 @@ public class ProcessNodeServiceImpl implements ProcessNodeService {
 
     @Override
     public ResultBean<InstProcessNodeDO> update(InstProcessNodeDO instProcessNodeDO) {
-        instProcessNodeDOMapper.insert(instProcessNodeDO);
+        instProcessNodeDOMapper.updateByPrimaryKeySelective(instProcessNodeDO);
 
-        return ResultBean.ofSuccess(instProcessNodeDO, "创建流程节点成功");
+        return ResultBean.ofSuccess(instProcessNodeDO, "编辑流程节点成功");
     }
 }

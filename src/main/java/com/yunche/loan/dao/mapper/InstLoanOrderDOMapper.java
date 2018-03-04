@@ -23,5 +23,15 @@ public interface InstLoanOrderDOMapper {
 
     int updateByPrimaryKey(InstLoanOrderDO record);
 
-    List<InstLoanOrderDO> queryByCondition(OrderListQuery creditApplyQuery);
+    int count(OrderListQuery query);
+
+    List<InstLoanOrderDO> queryByCondition(OrderListQuery query);
+
+    /**
+     * 获取主贷人ID
+     *
+     * @param orderId
+     * @return
+     */
+    Long getCustIdById(Long orderId);
 }

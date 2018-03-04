@@ -76,7 +76,7 @@ public class AreaCache {
     /**
      * 刷新CASCADE_AREA缓存
      */
-    @PostConstruct
+//    @PostConstruct
     public void refresh() {
         // 获取所有行政区
         List<BaseAreaDO> allArea = baseAreaDOMapper.getAll(VALID_STATUS);
@@ -130,6 +130,7 @@ public class AreaCache {
     /**
      * 刷新ALL_AREA缓存
      */
+//    @PostConstruct
     public void refreshAll() {
         // 获取所有行政区
         List<BaseAreaDO> allArea = baseAreaDOMapper.getAll(VALID_STATUS);

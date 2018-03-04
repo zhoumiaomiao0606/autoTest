@@ -33,6 +33,14 @@ public interface UserGroupDOMapper {
     List<UserGroupDO> query(UserGroupQuery query);
 
     /**
+     * 获取用户组基本信息列表  【id + name】
+     *
+     * @param employeeId
+     * @return
+     */
+    List<UserGroupDO> getBaseUserGroupByEmployeeId(Long employeeId);
+
+    /**
      * 根据员工ID和区域 统计关联的用户组总量
      *
      * @param query

@@ -17,7 +17,6 @@ import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
-import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +49,10 @@ import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+    /**
+     * APP端session过期时间：90天
+     */
+    private static final long TERMINAL_SESSION_TIMEOUT = 7776000L;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -359,6 +362,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         } catch (DisabledAccountException e) {
             // 账户冻结
             return ResultBean.ofError("账号已停用");
+        }
+
+        // 如果是移动端登录，更新会话有效期为1年
+        Boolean isTerminal = employeeParam.getIsTerminal();
+        if (isTerminal) {
+            SecurityUtils.getSubject().getSession().setTimeout(TERMINAL_SESSION_TIMEOUT);
         }
 
         // 返回data

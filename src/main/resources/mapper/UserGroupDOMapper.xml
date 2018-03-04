@@ -67,6 +67,19 @@
         limit #{startRow}, #{pageSize}
     </select>
 
+    <!--getBaseUserGroupByEmployeeId-->
+    <select id="getBaseUserGroupByEmployeeId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+                id, name
+        FROM
+                employee_rela_user_group AS a ,
+                user_group AS b
+        WHERE
+                a.`user_group_id` = b.`id`
+        AND     a.`employee_id` = #{employeeId,jdbcType=BIGINT}
+        GROUP BY a.`user_group_id`
+    </select>
+
     <!-- countListUserGroupByEmployeeIdAndAreaList -->
     <select id="countListUserGroupByEmployeeIdAndAreaList" parameterType="com.yunche.loan.domain.queryObj.RelaQuery"
             resultType="java.lang.Integer">

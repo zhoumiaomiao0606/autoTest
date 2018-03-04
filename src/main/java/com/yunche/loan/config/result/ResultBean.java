@@ -48,9 +48,6 @@ public class ResultBean<T> implements Serializable {
             resultBean.setCode(baseExceptionEnum.getCode());
             resultBean.setMsg(baseExceptionEnum.getMessage());
         }
-        if (data instanceof Collection) {
-            resultBean.setTotalNum(((Collection) data).size());
-        }
         return resultBean;
     }
 
@@ -67,6 +64,10 @@ public class ResultBean<T> implements Serializable {
     }
 
     public static <T> ResultBean<T> of(T data, boolean success, BaseExceptionEnum baseExceptionEnum, Integer totalNum, Integer pageIndex, Integer pageSize) {
+        return of(data, success, baseExceptionEnum, totalNum, pageIndex, pageSize, null);
+    }
+
+    public static <T> ResultBean<T> of(T data, boolean success, BaseExceptionEnum baseExceptionEnum, Integer totalNum, Integer pageIndex, Integer pageSize, String msg) {
         ResultBean resultBean = new ResultBean();
         resultBean.setData(data);
         resultBean.setSuccess(success);
@@ -74,15 +75,23 @@ public class ResultBean<T> implements Serializable {
             resultBean.setCode(baseExceptionEnum.getCode());
             resultBean.setMsg(baseExceptionEnum.getMessage());
         }
+        if (data instanceof Collection && null == totalNum) {
+            resultBean.setTotalNum(((Collection) data).size());
+        }
         resultBean.setTotalNum(totalNum);
         resultBean.setPageIndex(pageIndex);
         resultBean.setPageSize(pageSize);
         resultBean.setTotalPage((pageSize == null || pageSize == 0) ? null : (totalNum % pageSize == 0 ? totalNum / pageSize : (totalNum / pageSize + 1)));
+        resultBean.setMsg(msg);
         return resultBean;
     }
 
     public static <T> ResultBean<T> ofSuccess(T data) {
         return of(data, true, BaseExceptionEnum.EC00000200);
+    }
+
+    public static <T> ResultBean<T> ofSuccess(T data, Integer totalNum, Integer pageIndex, Integer pageSize, String msg) {
+        return of(data, true, BaseExceptionEnum.EC00000200, totalNum, pageIndex, pageSize, msg);
     }
 
     public static <T> ResultBean<T> ofSuccess(T data, Integer totalNum, Integer pageIndex, Integer pageSize) {

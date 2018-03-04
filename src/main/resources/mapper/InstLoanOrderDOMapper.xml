@@ -1,50 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.dao.mapper.InstLoanOrderDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
-    <id column="order_id" jdbcType="BIGINT" property="orderId" />
-    <result column="order_nbr" jdbcType="VARCHAR" property="orderNbr" />
-    <result column="cust_id" jdbcType="BIGINT" property="custId" />
-    <result column="prod_id" jdbcType="BIGINT" property="prodId" />
-    <result column="process_inst_id" jdbcType="VARCHAR" property="processInstId" />
-    <result column="car_id" jdbcType="BIGINT" property="carId" />
-    <result column="car_type" jdbcType="TINYINT" property="carType" />
-    <result column="car_price" jdbcType="INTEGER" property="carPrice" />
-    <result column="car_key" jdbcType="TINYINT" property="carKey" />
-    <result column="gps_num" jdbcType="INTEGER" property="gpsNum" />
-    <result column="interest_rate" jdbcType="INTEGER" property="interestRate" />
-    <result column="loan_amount" jdbcType="INTEGER" property="loanAmount" />
-    <result column="first_pay_amount" jdbcType="INTEGER" property="firstPayAmount" />
-    <result column="loan_rate" jdbcType="INTEGER" property="loanRate" />
-    <result column="loan_stage" jdbcType="INTEGER" property="loanStage" />
-    <result column="bank_principal_amount" jdbcType="INTEGER" property="bankPrincipalAmount" />
-    <result column="bank_charge_amount" jdbcType="INTEGER" property="bankChargeAmount" />
-    <result column="total_amount" jdbcType="INTEGER" property="totalAmount" />
-    <result column="first_month_pay_amount" jdbcType="INTEGER" property="firstMonthPayAmount" />
-    <result column="each_month_pay_amount" jdbcType="INTEGER" property="eachMonthPayAmount" />
-    <result column="partner_id" jdbcType="BIGINT" property="partnerId" />
-    <result column="partner_account_name" jdbcType="VARCHAR" property="partnerAccountName" />
-    <result column="partner_bank" jdbcType="VARCHAR" property="partnerBank" />
-    <result column="partner_account_num" jdbcType="VARCHAR" property="partnerAccountNum" />
-    <result column="partner_pay_type" jdbcType="INTEGER" property="partnerPayType" />
-    <result column="insu_id" jdbcType="BIGINT" property="insuId" />
-    <result column="salesman_id" jdbcType="BIGINT" property="salesmanId" />
-    <result column="salesman_name" jdbcType="VARCHAR" property="salesmanName" />
-    <result column="amount_grade" jdbcType="TINYINT" property="amountGrade" />
-    <result column="area_id" jdbcType="BIGINT" property="areaId" />
-    <result column="prov" jdbcType="VARCHAR" property="prov" />
-    <result column="city" jdbcType="VARCHAR" property="city" />
-    <result column="feature" jdbcType="VARCHAR" property="feature" />
-    <result column="bank" jdbcType="VARCHAR" property="bank" />
-    <result column="investigator_id" jdbcType="BIGINT" property="investigatorId" />
-    <result column="investigator_name" jdbcType="VARCHAR" property="investigatorName" />
-    <result column="investigate_address" jdbcType="VARCHAR" property="investigateAddress" />
-    <result column="investigate_content" jdbcType="VARCHAR" property="investigateContent" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+        <id column="order_id" jdbcType="BIGINT" property="orderId"/>
+        <result column="order_nbr" jdbcType="VARCHAR" property="orderNbr"/>
+        <result column="cust_id" jdbcType="BIGINT" property="custId"/>
+        <result column="prod_id" jdbcType="BIGINT" property="prodId"/>
+        <result column="process_inst_id" jdbcType="VARCHAR" property="processInstId"/>
+        <result column="car_id" jdbcType="BIGINT" property="carId"/>
+        <result column="car_type" jdbcType="TINYINT" property="carType"/>
+        <result column="car_price" jdbcType="INTEGER" property="carPrice"/>
+        <result column="car_key" jdbcType="TINYINT" property="carKey"/>
+        <result column="gps_num" jdbcType="INTEGER" property="gpsNum"/>
+        <result column="interest_rate" jdbcType="INTEGER" property="interestRate"/>
+        <result column="loan_amount" jdbcType="INTEGER" property="loanAmount"/>
+        <result column="first_pay_amount" jdbcType="INTEGER" property="firstPayAmount"/>
+        <result column="loan_rate" jdbcType="INTEGER" property="loanRate"/>
+        <result column="loan_stage" jdbcType="INTEGER" property="loanStage"/>
+        <result column="bank_principal_amount" jdbcType="INTEGER" property="bankPrincipalAmount"/>
+        <result column="bank_charge_amount" jdbcType="INTEGER" property="bankChargeAmount"/>
+        <result column="total_amount" jdbcType="INTEGER" property="totalAmount"/>
+        <result column="first_month_pay_amount" jdbcType="INTEGER" property="firstMonthPayAmount"/>
+        <result column="each_month_pay_amount" jdbcType="INTEGER" property="eachMonthPayAmount"/>
+        <result column="partner_id" jdbcType="BIGINT" property="partnerId"/>
+        <result column="partner_account_name" jdbcType="VARCHAR" property="partnerAccountName"/>
+        <result column="partner_bank" jdbcType="VARCHAR" property="partnerBank"/>
+        <result column="partner_account_num" jdbcType="VARCHAR" property="partnerAccountNum"/>
+        <result column="partner_pay_type" jdbcType="INTEGER" property="partnerPayType"/>
+        <result column="insu_id" jdbcType="BIGINT" property="insuId"/>
+        <result column="salesman_id" jdbcType="BIGINT" property="salesmanId"/>
+        <result column="salesman_name" jdbcType="VARCHAR" property="salesmanName"/>
+        <result column="amount_grade" jdbcType="TINYINT" property="amountGrade"/>
+        <result column="area_id" jdbcType="BIGINT" property="areaId"/>
+        <result column="prov" jdbcType="VARCHAR" property="prov"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="bank" jdbcType="VARCHAR" property="bank"/>
+        <result column="investigator_id" jdbcType="BIGINT" property="investigatorId"/>
+        <result column="investigator_name" jdbcType="VARCHAR" property="investigatorName"/>
+        <result column="investigate_address" jdbcType="VARCHAR" property="investigateAddress"/>
+        <result column="investigate_content" jdbcType="VARCHAR" property="investigateContent"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
     order_id, order_nbr, cust_id, prod_id, process_inst_id, car_id, car_type, car_price, 
     car_key, gps_num, interest_rate, loan_amount, first_pay_amount, loan_rate, loan_stage, 
     bank_principal_amount, bank_charge_amount, total_amount, first_month_pay_amount, 
@@ -53,528 +54,561 @@
     city, feature, bank, investigator_id, investigator_name, investigate_address, investigate_content, 
     status, gmt_create, gmt_modify
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from inst_loan_order
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </select>
-  <select id="selectByProcInstId" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from inst_loan_order
-    where process_inst_id = #{procInstId,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+
+    <sql id="Base_Query_List">
+        <if test="orderNbr != null">
+            AND
+            order_nbr = #{orderNbr,jdbcType=VARCHAR}
+        </if>
+        <if test="custName != null">
+            AND
+            cust_id IN (SELECT cust_id FROM cust_base_info WHERE cust_name LIKE CONCAT('%',#{custName},'%'))
+        </if>
+        <if test="phone != null">
+            AND
+            cust_id IN (SELECT cust_id FROM cust_base_info WHERE phone = #{phone,jdbcType=VARCHAR})
+        </if>
+        <if test="identityNumber != null">
+            AND
+            cust_id IN (SELECT cust_id FROM cust_base_info WHERE identity_number =
+            #{identityNumber,jdbcType=VARCHAR})
+        </if>
+        <if test="areaId != null">
+            AND
+            area_id = #{areaId,jdbcType=BIGINT}
+        </if>
+        <if test="partnerId != null">
+            AND
+            partner_id = #{partnerId,jdbcType=BIGINT}
+        </if>
+        <if test="todoProcessTask != null">
+            AND
+            process_inst_id IN (SELECT PROC_INST_ID_ FROM act_ru_task WHERE TASK_DEF_KEY_ =
+            #{todoProcessTask,jdbcType=VARCHAR})
+        </if>
+        <if test="doneProcessTask != null">
+            AND
+            process_inst_id IN (SELECT PROC_INST_ID_ FROM act_hi_taskinst WHERE TASK_DEF_KEY_ =
+            #{doneProcessTask,jdbcType=VARCHAR}
+            <![CDATA[ AND act_hi_taskinst.END_TIME_ <= now()]]>)
+        </if>
+        <if test="startDate != null">
+            <![CDATA[ AND gmt_create >= #{startDate}]]>
+        </if>
+        <if test="endDate != null">
+            <![CDATA[ AND gmt_create <= #{endDate}]]>
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </sql>
+
+    <!--count-->
+    <select id="count" parameterType="com.yunche.loan.domain.queryObj.OrderListQuery"
+            resultType="java.lang.Integer">
+        select COUNT(*)
+        from inst_loan_order
+        <if test="todoProcessTask != null">
+            LEFT JOIN act_ru_task
+            ON inst_loan_order.process_inst_id = act_ru_task.PROC_INST_ID_
+        </if>
+        <include refid="Base_Query_List"/>
+    </select>
+
+    <!--queryByCondition-->
+    <select id="queryByCondition" parameterType="com.yunche.loan.domain.queryObj.OrderListQuery"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from inst_loan_order
+        <if test="todoProcessTask != null">
+            LEFT JOIN act_ru_task
+            ON inst_loan_order.process_inst_id = act_ru_task.PROC_INST_ID_
+        </if>
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+        LIMIT #{startRow}, #{pageSize}
+    </select>
+
+    <!--getCustIdById-->
+    <select id="getCustIdById" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select cust_id
+        from inst_loan_order
+        WHERE order_id = #{orderId}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from inst_loan_order
+        WHERE order_id = #{orderId}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from inst_loan_order
     where order_id = #{orderId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
-    <selectKey resultType="long" keyProperty="orderId" order="AFTER">
-      SELECT LAST_INSERT_ID() as orderId
-    </selectKey>
-    insert into inst_loan_order (order_id, order_nbr, cust_id, 
-      prod_id, process_inst_id, car_id, 
-      car_type, car_price, car_key, 
-      gps_num, interest_rate, loan_amount, 
-      first_pay_amount, loan_rate, loan_stage, 
-      bank_principal_amount, bank_charge_amount, 
-      total_amount, first_month_pay_amount, each_month_pay_amount, 
-      partner_id, partner_account_name, partner_bank, 
-      partner_account_num, partner_pay_type, insu_id, 
-      salesman_id, salesman_name, amount_grade, 
-      area_id, prov, city, 
-      feature, bank, investigator_id, 
-      investigator_name, investigate_address, investigate_content, 
-      status, gmt_create, gmt_modify
-      )
-    values (#{orderId,jdbcType=BIGINT}, #{orderNbr,jdbcType=VARCHAR}, #{custId,jdbcType=BIGINT}, 
-      #{prodId,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{carId,jdbcType=BIGINT}, 
-      #{carType,jdbcType=TINYINT}, #{carPrice,jdbcType=INTEGER}, #{carKey,jdbcType=TINYINT}, 
-      #{gpsNum,jdbcType=INTEGER}, #{interestRate,jdbcType=INTEGER}, #{loanAmount,jdbcType=INTEGER}, 
-      #{firstPayAmount,jdbcType=INTEGER}, #{loanRate,jdbcType=INTEGER}, #{loanStage,jdbcType=INTEGER}, 
-      #{bankPrincipalAmount,jdbcType=INTEGER}, #{bankChargeAmount,jdbcType=INTEGER}, 
-      #{totalAmount,jdbcType=INTEGER}, #{firstMonthPayAmount,jdbcType=INTEGER}, #{eachMonthPayAmount,jdbcType=INTEGER}, 
-      #{partnerId,jdbcType=BIGINT}, #{partnerAccountName,jdbcType=VARCHAR}, #{partnerBank,jdbcType=VARCHAR}, 
-      #{partnerAccountNum,jdbcType=VARCHAR}, #{partnerPayType,jdbcType=INTEGER}, #{insuId,jdbcType=BIGINT}, 
-      #{salesmanId,jdbcType=BIGINT}, #{salesmanName,jdbcType=VARCHAR}, #{amountGrade,jdbcType=TINYINT}, 
-      #{areaId,jdbcType=BIGINT}, #{prov,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
-      #{feature,jdbcType=VARCHAR}, #{bank,jdbcType=VARCHAR}, #{investigatorId,jdbcType=BIGINT}, 
-      #{investigatorName,jdbcType=VARCHAR}, #{investigateAddress,jdbcType=VARCHAR}, #{investigateContent,jdbcType=VARCHAR}, 
-      #{status,jdbcType=TINYINT}, now(), now()
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
-    insert into inst_loan_order
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="orderId != null">
-        order_id,
-      </if>
-      <if test="orderNbr != null">
-        order_nbr,
-      </if>
-      <if test="custId != null">
-        cust_id,
-      </if>
-      <if test="prodId != null">
-        prod_id,
-      </if>
-      <if test="processInstId != null">
-        process_inst_id,
-      </if>
-      <if test="carId != null">
-        car_id,
-      </if>
-      <if test="carType != null">
-        car_type,
-      </if>
-      <if test="carPrice != null">
-        car_price,
-      </if>
-      <if test="carKey != null">
-        car_key,
-      </if>
-      <if test="gpsNum != null">
-        gps_num,
-      </if>
-      <if test="interestRate != null">
-        interest_rate,
-      </if>
-      <if test="loanAmount != null">
-        loan_amount,
-      </if>
-      <if test="firstPayAmount != null">
-        first_pay_amount,
-      </if>
-      <if test="loanRate != null">
-        loan_rate,
-      </if>
-      <if test="loanStage != null">
-        loan_stage,
-      </if>
-      <if test="bankPrincipalAmount != null">
-        bank_principal_amount,
-      </if>
-      <if test="bankChargeAmount != null">
-        bank_charge_amount,
-      </if>
-      <if test="totalAmount != null">
-        total_amount,
-      </if>
-      <if test="firstMonthPayAmount != null">
-        first_month_pay_amount,
-      </if>
-      <if test="eachMonthPayAmount != null">
-        each_month_pay_amount,
-      </if>
-      <if test="partnerId != null">
-        partner_id,
-      </if>
-      <if test="partnerAccountName != null">
-        partner_account_name,
-      </if>
-      <if test="partnerBank != null">
-        partner_bank,
-      </if>
-      <if test="partnerAccountNum != null">
-        partner_account_num,
-      </if>
-      <if test="partnerPayType != null">
-        partner_pay_type,
-      </if>
-      <if test="insuId != null">
-        insu_id,
-      </if>
-      <if test="salesmanId != null">
-        salesman_id,
-      </if>
-      <if test="salesmanName != null">
-        salesman_name,
-      </if>
-      <if test="amountGrade != null">
-        amount_grade,
-      </if>
-      <if test="areaId != null">
-        area_id,
-      </if>
-      <if test="prov != null">
-        prov,
-      </if>
-      <if test="city != null">
-        city,
-      </if>
-      <if test="feature != null">
-        feature,
-      </if>
-      <if test="bank != null">
-        bank,
-      </if>
-      <if test="investigatorId != null">
-        investigator_id,
-      </if>
-      <if test="investigatorName != null">
-        investigator_name,
-      </if>
-      <if test="investigateAddress != null">
-        investigate_address,
-      </if>
-      <if test="investigateContent != null">
-        investigate_content,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-      <if test="gmtCreate != null">
-        gmt_create,
-      </if>
-      <if test="gmtModify != null">
-        gmt_modify,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="orderId != null">
-        #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="orderNbr != null">
-        #{orderNbr,jdbcType=VARCHAR},
-      </if>
-      <if test="custId != null">
-        #{custId,jdbcType=BIGINT},
-      </if>
-      <if test="prodId != null">
-        #{prodId,jdbcType=BIGINT},
-      </if>
-      <if test="processInstId != null">
-        #{processInstId,jdbcType=VARCHAR},
-      </if>
-      <if test="carId != null">
-        #{carId,jdbcType=BIGINT},
-      </if>
-      <if test="carType != null">
-        #{carType,jdbcType=TINYINT},
-      </if>
-      <if test="carPrice != null">
-        #{carPrice,jdbcType=INTEGER},
-      </if>
-      <if test="carKey != null">
-        #{carKey,jdbcType=TINYINT},
-      </if>
-      <if test="gpsNum != null">
-        #{gpsNum,jdbcType=INTEGER},
-      </if>
-      <if test="interestRate != null">
-        #{interestRate,jdbcType=INTEGER},
-      </if>
-      <if test="loanAmount != null">
-        #{loanAmount,jdbcType=INTEGER},
-      </if>
-      <if test="firstPayAmount != null">
-        #{firstPayAmount,jdbcType=INTEGER},
-      </if>
-      <if test="loanRate != null">
-        #{loanRate,jdbcType=INTEGER},
-      </if>
-      <if test="loanStage != null">
-        #{loanStage,jdbcType=INTEGER},
-      </if>
-      <if test="bankPrincipalAmount != null">
-        #{bankPrincipalAmount,jdbcType=INTEGER},
-      </if>
-      <if test="bankChargeAmount != null">
-        #{bankChargeAmount,jdbcType=INTEGER},
-      </if>
-      <if test="totalAmount != null">
-        #{totalAmount,jdbcType=INTEGER},
-      </if>
-      <if test="firstMonthPayAmount != null">
-        #{firstMonthPayAmount,jdbcType=INTEGER},
-      </if>
-      <if test="eachMonthPayAmount != null">
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+        <selectKey resultType="long" keyProperty="orderId" order="AFTER">
+            SELECT LAST_INSERT_ID() as orderId
+        </selectKey>
+        insert into inst_loan_order (order_id, order_nbr, cust_id,
+        prod_id, process_inst_id, car_id,
+        car_type, car_price, car_key,
+        gps_num, interest_rate, loan_amount,
+        first_pay_amount, loan_rate, loan_stage,
+        bank_principal_amount, bank_charge_amount,
+        total_amount, first_month_pay_amount, each_month_pay_amount,
+        partner_id, partner_account_name, partner_bank,
+        partner_account_num, partner_pay_type, insu_id,
+        salesman_id, salesman_name, amount_grade,
+        area_id, prov, city,
+        feature, bank, investigator_id,
+        investigator_name, investigate_address, investigate_content,
+        status, gmt_create, gmt_modify
+        )
+        values (#{orderId,jdbcType=BIGINT}, #{orderNbr,jdbcType=VARCHAR}, #{custId,jdbcType=BIGINT},
+        #{prodId,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{carId,jdbcType=BIGINT},
+        #{carType,jdbcType=TINYINT}, #{carPrice,jdbcType=INTEGER}, #{carKey,jdbcType=TINYINT},
+        #{gpsNum,jdbcType=INTEGER}, #{interestRate,jdbcType=INTEGER}, #{loanAmount,jdbcType=INTEGER},
+        #{firstPayAmount,jdbcType=INTEGER}, #{loanRate,jdbcType=INTEGER}, #{loanStage,jdbcType=INTEGER},
+        #{bankPrincipalAmount,jdbcType=INTEGER}, #{bankChargeAmount,jdbcType=INTEGER},
+        #{totalAmount,jdbcType=INTEGER}, #{firstMonthPayAmount,jdbcType=INTEGER},
         #{eachMonthPayAmount,jdbcType=INTEGER},
-      </if>
-      <if test="partnerId != null">
-        #{partnerId,jdbcType=BIGINT},
-      </if>
-      <if test="partnerAccountName != null">
-        #{partnerAccountName,jdbcType=VARCHAR},
-      </if>
-      <if test="partnerBank != null">
-        #{partnerBank,jdbcType=VARCHAR},
-      </if>
-      <if test="partnerAccountNum != null">
-        #{partnerAccountNum,jdbcType=VARCHAR},
-      </if>
-      <if test="partnerPayType != null">
-        #{partnerPayType,jdbcType=INTEGER},
-      </if>
-      <if test="insuId != null">
-        #{insuId,jdbcType=BIGINT},
-      </if>
-      <if test="salesmanId != null">
-        #{salesmanId,jdbcType=BIGINT},
-      </if>
-      <if test="salesmanName != null">
-        #{salesmanName,jdbcType=VARCHAR},
-      </if>
-      <if test="amountGrade != null">
-        #{amountGrade,jdbcType=TINYINT},
-      </if>
-      <if test="areaId != null">
-        #{areaId,jdbcType=BIGINT},
-      </if>
-      <if test="prov != null">
-        #{prov,jdbcType=VARCHAR},
-      </if>
-      <if test="city != null">
-        #{city,jdbcType=VARCHAR},
-      </if>
-      <if test="feature != null">
-        #{feature,jdbcType=VARCHAR},
-      </if>
-      <if test="bank != null">
-        #{bank,jdbcType=VARCHAR},
-      </if>
-      <if test="investigatorId != null">
-        #{investigatorId,jdbcType=BIGINT},
-      </if>
-      <if test="investigatorName != null">
-        #{investigatorName,jdbcType=VARCHAR},
-      </if>
-      <if test="investigateAddress != null">
-        #{investigateAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="investigateContent != null">
+        #{partnerId,jdbcType=BIGINT}, #{partnerAccountName,jdbcType=VARCHAR}, #{partnerBank,jdbcType=VARCHAR},
+        #{partnerAccountNum,jdbcType=VARCHAR}, #{partnerPayType,jdbcType=INTEGER}, #{insuId,jdbcType=BIGINT},
+        #{salesmanId,jdbcType=BIGINT}, #{salesmanName,jdbcType=VARCHAR}, #{amountGrade,jdbcType=TINYINT},
+        #{areaId,jdbcType=BIGINT}, #{prov,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR},
+        #{feature,jdbcType=VARCHAR}, #{bank,jdbcType=VARCHAR}, #{investigatorId,jdbcType=BIGINT},
+        #{investigatorName,jdbcType=VARCHAR}, #{investigateAddress,jdbcType=VARCHAR},
         #{investigateContent,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null">
-        #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null">
-        #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
-    update inst_loan_order
-    <set>
-      <if test="orderNbr != null">
-        order_nbr = #{orderNbr,jdbcType=VARCHAR},
-      </if>
-      <if test="custId != null">
+        #{status,jdbcType=TINYINT}, now(), now()
+        )
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+        insert into inst_loan_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="orderNbr != null">
+                order_nbr,
+            </if>
+            <if test="custId != null">
+                cust_id,
+            </if>
+            <if test="prodId != null">
+                prod_id,
+            </if>
+            <if test="processInstId != null">
+                process_inst_id,
+            </if>
+            <if test="carId != null">
+                car_id,
+            </if>
+            <if test="carType != null">
+                car_type,
+            </if>
+            <if test="carPrice != null">
+                car_price,
+            </if>
+            <if test="carKey != null">
+                car_key,
+            </if>
+            <if test="gpsNum != null">
+                gps_num,
+            </if>
+            <if test="interestRate != null">
+                interest_rate,
+            </if>
+            <if test="loanAmount != null">
+                loan_amount,
+            </if>
+            <if test="firstPayAmount != null">
+                first_pay_amount,
+            </if>
+            <if test="loanRate != null">
+                loan_rate,
+            </if>
+            <if test="loanStage != null">
+                loan_stage,
+            </if>
+            <if test="bankPrincipalAmount != null">
+                bank_principal_amount,
+            </if>
+            <if test="bankChargeAmount != null">
+                bank_charge_amount,
+            </if>
+            <if test="totalAmount != null">
+                total_amount,
+            </if>
+            <if test="firstMonthPayAmount != null">
+                first_month_pay_amount,
+            </if>
+            <if test="eachMonthPayAmount != null">
+                each_month_pay_amount,
+            </if>
+            <if test="partnerId != null">
+                partner_id,
+            </if>
+            <if test="partnerAccountName != null">
+                partner_account_name,
+            </if>
+            <if test="partnerBank != null">
+                partner_bank,
+            </if>
+            <if test="partnerAccountNum != null">
+                partner_account_num,
+            </if>
+            <if test="partnerPayType != null">
+                partner_pay_type,
+            </if>
+            <if test="insuId != null">
+                insu_id,
+            </if>
+            <if test="salesmanId != null">
+                salesman_id,
+            </if>
+            <if test="salesmanName != null">
+                salesman_name,
+            </if>
+            <if test="amountGrade != null">
+                amount_grade,
+            </if>
+            <if test="areaId != null">
+                area_id,
+            </if>
+            <if test="prov != null">
+                prov,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+            <if test="bank != null">
+                bank,
+            </if>
+            <if test="investigatorId != null">
+                investigator_id,
+            </if>
+            <if test="investigatorName != null">
+                investigator_name,
+            </if>
+            <if test="investigateAddress != null">
+                investigate_address,
+            </if>
+            <if test="investigateContent != null">
+                investigate_content,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="orderNbr != null">
+                #{orderNbr,jdbcType=VARCHAR},
+            </if>
+            <if test="custId != null">
+                #{custId,jdbcType=BIGINT},
+            </if>
+            <if test="prodId != null">
+                #{prodId,jdbcType=BIGINT},
+            </if>
+            <if test="processInstId != null">
+                #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="carId != null">
+                #{carId,jdbcType=BIGINT},
+            </if>
+            <if test="carType != null">
+                #{carType,jdbcType=TINYINT},
+            </if>
+            <if test="carPrice != null">
+                #{carPrice,jdbcType=INTEGER},
+            </if>
+            <if test="carKey != null">
+                #{carKey,jdbcType=TINYINT},
+            </if>
+            <if test="gpsNum != null">
+                #{gpsNum,jdbcType=INTEGER},
+            </if>
+            <if test="interestRate != null">
+                #{interestRate,jdbcType=INTEGER},
+            </if>
+            <if test="loanAmount != null">
+                #{loanAmount,jdbcType=INTEGER},
+            </if>
+            <if test="firstPayAmount != null">
+                #{firstPayAmount,jdbcType=INTEGER},
+            </if>
+            <if test="loanRate != null">
+                #{loanRate,jdbcType=INTEGER},
+            </if>
+            <if test="loanStage != null">
+                #{loanStage,jdbcType=INTEGER},
+            </if>
+            <if test="bankPrincipalAmount != null">
+                #{bankPrincipalAmount,jdbcType=INTEGER},
+            </if>
+            <if test="bankChargeAmount != null">
+                #{bankChargeAmount,jdbcType=INTEGER},
+            </if>
+            <if test="totalAmount != null">
+                #{totalAmount,jdbcType=INTEGER},
+            </if>
+            <if test="firstMonthPayAmount != null">
+                #{firstMonthPayAmount,jdbcType=INTEGER},
+            </if>
+            <if test="eachMonthPayAmount != null">
+                #{eachMonthPayAmount,jdbcType=INTEGER},
+            </if>
+            <if test="partnerId != null">
+                #{partnerId,jdbcType=BIGINT},
+            </if>
+            <if test="partnerAccountName != null">
+                #{partnerAccountName,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerBank != null">
+                #{partnerBank,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerAccountNum != null">
+                #{partnerAccountNum,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerPayType != null">
+                #{partnerPayType,jdbcType=INTEGER},
+            </if>
+            <if test="insuId != null">
+                #{insuId,jdbcType=BIGINT},
+            </if>
+            <if test="salesmanId != null">
+                #{salesmanId,jdbcType=BIGINT},
+            </if>
+            <if test="salesmanName != null">
+                #{salesmanName,jdbcType=VARCHAR},
+            </if>
+            <if test="amountGrade != null">
+                #{amountGrade,jdbcType=TINYINT},
+            </if>
+            <if test="areaId != null">
+                #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="prov != null">
+                #{prov,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="bank != null">
+                #{bank,jdbcType=VARCHAR},
+            </if>
+            <if test="investigatorId != null">
+                #{investigatorId,jdbcType=BIGINT},
+            </if>
+            <if test="investigatorName != null">
+                #{investigatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="investigateAddress != null">
+                #{investigateAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="investigateContent != null">
+                #{investigateContent,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+        update inst_loan_order
+        <set>
+            <if test="orderNbr != null">
+                order_nbr = #{orderNbr,jdbcType=VARCHAR},
+            </if>
+            <if test="custId != null">
+                cust_id = #{custId,jdbcType=BIGINT},
+            </if>
+            <if test="prodId != null">
+                prod_id = #{prodId,jdbcType=BIGINT},
+            </if>
+            <if test="processInstId != null">
+                process_inst_id = #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="carId != null">
+                car_id = #{carId,jdbcType=BIGINT},
+            </if>
+            <if test="carType != null">
+                car_type = #{carType,jdbcType=TINYINT},
+            </if>
+            <if test="carPrice != null">
+                car_price = #{carPrice,jdbcType=INTEGER},
+            </if>
+            <if test="carKey != null">
+                car_key = #{carKey,jdbcType=TINYINT},
+            </if>
+            <if test="gpsNum != null">
+                gps_num = #{gpsNum,jdbcType=INTEGER},
+            </if>
+            <if test="interestRate != null">
+                interest_rate = #{interestRate,jdbcType=INTEGER},
+            </if>
+            <if test="loanAmount != null">
+                loan_amount = #{loanAmount,jdbcType=INTEGER},
+            </if>
+            <if test="firstPayAmount != null">
+                first_pay_amount = #{firstPayAmount,jdbcType=INTEGER},
+            </if>
+            <if test="loanRate != null">
+                loan_rate = #{loanRate,jdbcType=INTEGER},
+            </if>
+            <if test="loanStage != null">
+                loan_stage = #{loanStage,jdbcType=INTEGER},
+            </if>
+            <if test="bankPrincipalAmount != null">
+                bank_principal_amount = #{bankPrincipalAmount,jdbcType=INTEGER},
+            </if>
+            <if test="bankChargeAmount != null">
+                bank_charge_amount = #{bankChargeAmount,jdbcType=INTEGER},
+            </if>
+            <if test="totalAmount != null">
+                total_amount = #{totalAmount,jdbcType=INTEGER},
+            </if>
+            <if test="firstMonthPayAmount != null">
+                first_month_pay_amount = #{firstMonthPayAmount,jdbcType=INTEGER},
+            </if>
+            <if test="eachMonthPayAmount != null">
+                each_month_pay_amount = #{eachMonthPayAmount,jdbcType=INTEGER},
+            </if>
+            <if test="partnerId != null">
+                partner_id = #{partnerId,jdbcType=BIGINT},
+            </if>
+            <if test="partnerAccountName != null">
+                partner_account_name = #{partnerAccountName,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerBank != null">
+                partner_bank = #{partnerBank,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerAccountNum != null">
+                partner_account_num = #{partnerAccountNum,jdbcType=VARCHAR},
+            </if>
+            <if test="partnerPayType != null">
+                partner_pay_type = #{partnerPayType,jdbcType=INTEGER},
+            </if>
+            <if test="insuId != null">
+                insu_id = #{insuId,jdbcType=BIGINT},
+            </if>
+            <if test="salesmanId != null">
+                salesman_id = #{salesmanId,jdbcType=BIGINT},
+            </if>
+            <if test="salesmanName != null">
+                salesman_name = #{salesmanName,jdbcType=VARCHAR},
+            </if>
+            <if test="amountGrade != null">
+                amount_grade = #{amountGrade,jdbcType=TINYINT},
+            </if>
+            <if test="areaId != null">
+                area_id = #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="prov != null">
+                prov = #{prov,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="bank != null">
+                bank = #{bank,jdbcType=VARCHAR},
+            </if>
+            <if test="investigatorId != null">
+                investigator_id = #{investigatorId,jdbcType=BIGINT},
+            </if>
+            <if test="investigatorName != null">
+                investigator_name = #{investigatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="investigateAddress != null">
+                investigate_address = #{investigateAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="investigateContent != null">
+                investigate_content = #{investigateContent,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            gmt_modify = now(),
+        </set>
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
+        update inst_loan_order
+        set order_nbr = #{orderNbr,jdbcType=VARCHAR},
         cust_id = #{custId,jdbcType=BIGINT},
-      </if>
-      <if test="prodId != null">
         prod_id = #{prodId,jdbcType=BIGINT},
-      </if>
-      <if test="processInstId != null">
         process_inst_id = #{processInstId,jdbcType=VARCHAR},
-      </if>
-      <if test="carId != null">
         car_id = #{carId,jdbcType=BIGINT},
-      </if>
-      <if test="carType != null">
         car_type = #{carType,jdbcType=TINYINT},
-      </if>
-      <if test="carPrice != null">
         car_price = #{carPrice,jdbcType=INTEGER},
-      </if>
-      <if test="carKey != null">
         car_key = #{carKey,jdbcType=TINYINT},
-      </if>
-      <if test="gpsNum != null">
         gps_num = #{gpsNum,jdbcType=INTEGER},
-      </if>
-      <if test="interestRate != null">
         interest_rate = #{interestRate,jdbcType=INTEGER},
-      </if>
-      <if test="loanAmount != null">
         loan_amount = #{loanAmount,jdbcType=INTEGER},
-      </if>
-      <if test="firstPayAmount != null">
         first_pay_amount = #{firstPayAmount,jdbcType=INTEGER},
-      </if>
-      <if test="loanRate != null">
         loan_rate = #{loanRate,jdbcType=INTEGER},
-      </if>
-      <if test="loanStage != null">
         loan_stage = #{loanStage,jdbcType=INTEGER},
-      </if>
-      <if test="bankPrincipalAmount != null">
         bank_principal_amount = #{bankPrincipalAmount,jdbcType=INTEGER},
-      </if>
-      <if test="bankChargeAmount != null">
         bank_charge_amount = #{bankChargeAmount,jdbcType=INTEGER},
-      </if>
-      <if test="totalAmount != null">
         total_amount = #{totalAmount,jdbcType=INTEGER},
-      </if>
-      <if test="firstMonthPayAmount != null">
         first_month_pay_amount = #{firstMonthPayAmount,jdbcType=INTEGER},
-      </if>
-      <if test="eachMonthPayAmount != null">
         each_month_pay_amount = #{eachMonthPayAmount,jdbcType=INTEGER},
-      </if>
-      <if test="partnerId != null">
         partner_id = #{partnerId,jdbcType=BIGINT},
-      </if>
-      <if test="partnerAccountName != null">
         partner_account_name = #{partnerAccountName,jdbcType=VARCHAR},
-      </if>
-      <if test="partnerBank != null">
         partner_bank = #{partnerBank,jdbcType=VARCHAR},
-      </if>
-      <if test="partnerAccountNum != null">
         partner_account_num = #{partnerAccountNum,jdbcType=VARCHAR},
-      </if>
-      <if test="partnerPayType != null">
         partner_pay_type = #{partnerPayType,jdbcType=INTEGER},
-      </if>
-      <if test="insuId != null">
         insu_id = #{insuId,jdbcType=BIGINT},
-      </if>
-      <if test="salesmanId != null">
         salesman_id = #{salesmanId,jdbcType=BIGINT},
-      </if>
-      <if test="salesmanName != null">
         salesman_name = #{salesmanName,jdbcType=VARCHAR},
-      </if>
-      <if test="amountGrade != null">
         amount_grade = #{amountGrade,jdbcType=TINYINT},
-      </if>
-      <if test="areaId != null">
         area_id = #{areaId,jdbcType=BIGINT},
-      </if>
-      <if test="prov != null">
         prov = #{prov,jdbcType=VARCHAR},
-      </if>
-      <if test="city != null">
         city = #{city,jdbcType=VARCHAR},
-      </if>
-      <if test="feature != null">
         feature = #{feature,jdbcType=VARCHAR},
-      </if>
-      <if test="bank != null">
         bank = #{bank,jdbcType=VARCHAR},
-      </if>
-      <if test="investigatorId != null">
         investigator_id = #{investigatorId,jdbcType=BIGINT},
-      </if>
-      <if test="investigatorName != null">
         investigator_name = #{investigatorName,jdbcType=VARCHAR},
-      </if>
-      <if test="investigateAddress != null">
         investigate_address = #{investigateAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="investigateContent != null">
         investigate_content = #{investigateContent,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
         status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null">
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-        gmt_modify = now(),
-    </set>
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.InstLoanOrderDO">
-    update inst_loan_order
-    set order_nbr = #{orderNbr,jdbcType=VARCHAR},
-      cust_id = #{custId,jdbcType=BIGINT},
-      prod_id = #{prodId,jdbcType=BIGINT},
-      process_inst_id = #{processInstId,jdbcType=VARCHAR},
-      car_id = #{carId,jdbcType=BIGINT},
-      car_type = #{carType,jdbcType=TINYINT},
-      car_price = #{carPrice,jdbcType=INTEGER},
-      car_key = #{carKey,jdbcType=TINYINT},
-      gps_num = #{gpsNum,jdbcType=INTEGER},
-      interest_rate = #{interestRate,jdbcType=INTEGER},
-      loan_amount = #{loanAmount,jdbcType=INTEGER},
-      first_pay_amount = #{firstPayAmount,jdbcType=INTEGER},
-      loan_rate = #{loanRate,jdbcType=INTEGER},
-      loan_stage = #{loanStage,jdbcType=INTEGER},
-      bank_principal_amount = #{bankPrincipalAmount,jdbcType=INTEGER},
-      bank_charge_amount = #{bankChargeAmount,jdbcType=INTEGER},
-      total_amount = #{totalAmount,jdbcType=INTEGER},
-      first_month_pay_amount = #{firstMonthPayAmount,jdbcType=INTEGER},
-      each_month_pay_amount = #{eachMonthPayAmount,jdbcType=INTEGER},
-      partner_id = #{partnerId,jdbcType=BIGINT},
-      partner_account_name = #{partnerAccountName,jdbcType=VARCHAR},
-      partner_bank = #{partnerBank,jdbcType=VARCHAR},
-      partner_account_num = #{partnerAccountNum,jdbcType=VARCHAR},
-      partner_pay_type = #{partnerPayType,jdbcType=INTEGER},
-      insu_id = #{insuId,jdbcType=BIGINT},
-      salesman_id = #{salesmanId,jdbcType=BIGINT},
-      salesman_name = #{salesmanName,jdbcType=VARCHAR},
-      amount_grade = #{amountGrade,jdbcType=TINYINT},
-      area_id = #{areaId,jdbcType=BIGINT},
-      prov = #{prov,jdbcType=VARCHAR},
-      city = #{city,jdbcType=VARCHAR},
-      feature = #{feature,jdbcType=VARCHAR},
-      bank = #{bank,jdbcType=VARCHAR},
-      investigator_id = #{investigatorId,jdbcType=BIGINT},
-      investigator_name = #{investigatorName,jdbcType=VARCHAR},
-      investigate_address = #{investigateAddress,jdbcType=VARCHAR},
-      investigate_content = #{investigateContent,jdbcType=VARCHAR},
-      status = #{status,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = now()
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </update>
-  <select id="queryByCondition" parameterType="com.yunche.loan.domain.queryObj.OrderListQuery" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from inst_loan_order
-    <if test="todoProcessTask != null" >
-      LEFT JOIN act_ru_task
-      ON inst_loan_order.process_inst_id = act_ru_task.PROC_INST_ID_
-    </if>
-    where 1=1
-      <if test="orderNbr != null">
-        AND
-        order_nbr = #{orderNbr,jdbcType=VARCHAR}
-      </if>
-      <if test="custName != null">
-        AND
-        cust_id IN (SELECT cust_id FROM cust_base_info WHERE cust_name LIKE CONCAT('%',#{custName},'%'))
-      </if>
-      <if test="phone != null">
-        AND
-        cust_id IN (SELECT cust_id FROM cust_base_info WHERE phone = #{phone,jdbcType=VARCHAR})
-      </if>
-      <if test="identityNumber != null">
-        AND
-        cust_id IN (SELECT cust_id FROM cust_base_info WHERE identity_number = #{identityNumber,jdbcType=VARCHAR})
-      </if>
-      <if test="areaId != null">
-        AND
-        area_id = #{areaId,jdbcType=BIGINT}
-      </if>
-      <if test="partnerId != null">
-        AND
-        partner_id = #{partnerId,jdbcType=BIGINT}
-      </if>
-      <if test="todoProcessTask != null">
-        AND
-        process_inst_id IN (SELECT PROC_INST_ID_ FROM act_ru_task WHERE TASK_DEF_KEY_ = #{todoProcessTask,jdbcType=VARCHAR})
-      </if>
-      <if test="doneProcessTask != null">
-        AND
-        process_inst_id IN (SELECT PROC_INST_ID_ FROM act_hi_taskinst WHERE TASK_DEF_KEY_ = #{doneProcessTask,jdbcType=VARCHAR}
-        <![CDATA[ AND act_hi_taskinst.END_TIME_ <= now()]]>)
-      </if>
-      <if test="startDate != null">
-        <![CDATA[ and gmt_create >= #{startDate}]]>
-      </if>
-      <if test="endDate != null">
-        <![CDATA[ and gmt_create <= #{endDate}]]>
-      </if>
-      <if test="status != null">
-        AND status = #{status}
-      </if>
-  </select>
+        gmt_modify = now()
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
 </mapper>

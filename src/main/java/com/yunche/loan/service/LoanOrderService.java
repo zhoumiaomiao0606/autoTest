@@ -1,9 +1,9 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.dataObj.InstLoanOrderDO;
-import com.yunche.loan.domain.queryObj.OrderListQuery;
-import com.yunche.loan.domain.viewObj.InstLoanOrderVO;
+import com.yunche.loan.domain.param.*;
+import com.yunche.loan.domain.queryObj.LoanOrderQuery;
+import com.yunche.loan.domain.viewObj.*;
 
 import java.util.List;
 
@@ -12,14 +12,33 @@ import java.util.List;
  */
 public interface LoanOrderService {
 
-    ResultBean<InstLoanOrderDO> create(String processInstanceId);
+    ResultBean<List<BaseInstProcessOrderVO>> query(LoanOrderQuery query);
 
-    ResultBean<InstLoanOrderDO> update(InstLoanOrderVO instLoanOrderVO);
+    ResultBean<InstProcessOrderVO> creditApplyDetail(String id);
 
-    ResultBean<List<InstLoanOrderVO>> queryOrderList(OrderListQuery orderListQuery);
+    ResultBean<CreditRecordVO> creditRecordDetail(String id, Byte type);
 
-    ResultBean<InstLoanOrderVO> detail(Long orderId);
+    ResultBean<Void> creditRecord(CreditRecordParam customer);
 
-    ResultBean<InstLoanOrderDO> getByProcInstId(String procInstId);
+    ResultBean<CustDetailVO> customerDetail(String orderId);
 
+    ResultBean<Void> updateCustomer(CustDetailVO custDetailVO);
+
+    ResultBean<Void> faceOff(String orderId, Long principalLenderId, Long commonLenderId);
+
+    ResultBean<LoanCarInfoVO> loanCarInfoDetail(String orderId);
+
+    ResultBean<Void> createOrUpdateLoanCarInfo(LoanCarInfoParam loanCarInfoParam);
+
+    ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(String orderId);
+
+    ResultBean<Void> createOrUpdateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanVO);
+
+    ResultBean<LoanHomeVisitVO> homeVisitDetail(String orderId);
+
+    ResultBean<Void> createOrUpdateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam);
+
+    ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam);
+
+    ResultBean<Void> infoSupplement(InfoSupplementParam infoSupplementParam);
 }

@@ -80,7 +80,7 @@ public class AuthCache {
     /**
      * 刷新auth缓存
      */
-    @PostConstruct
+//    @PostConstruct
     private void refreshAuth() {
         List<AuthDO> allAuth = authDOMapper.getAll();
         if (!CollectionUtils.isEmpty(allAuth)) {
@@ -124,7 +124,7 @@ public class AuthCache {
     /**
      * 刷新Menu缓存
      */
-    @PostConstruct
+//    @PostConstruct
     private void refreshMenu() {
         List<MenuDO> allMenu = menuDOMapper.getAll(VALID_STATUS);
         if (!CollectionUtils.isEmpty(allMenu)) {
@@ -168,7 +168,7 @@ public class AuthCache {
     /**
      * 刷新PAGE缓存
      */
-    @PostConstruct
+//    @PostConstruct
     private void refreshPage() {
         List<PageDO> allPage = pageDOMapper.getAll(VALID_STATUS);
         if (!CollectionUtils.isEmpty(allPage)) {
@@ -212,7 +212,7 @@ public class AuthCache {
     /**
      * 刷新OPERATION缓存
      */
-    @PostConstruct
+//    @PostConstruct
     private void refreshOperation() {
         List<OperationDO> allOperation = operationDOMapper.getAll(VALID_STATUS);
         if (!CollectionUtils.isEmpty(allOperation)) {

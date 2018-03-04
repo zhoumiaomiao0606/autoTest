@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.dao.mapper.LoanProcessOrderDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="process_inst_id" jdbcType="VARCHAR" property="processInstId"/>
+        <result column="loan_base_info_id" jdbcType="BIGINT" property="loanBaseInfoId"/>
+        <result column="loan_customer_id" jdbcType="BIGINT" property="loanCustomerId"/>
+        <result column="loan_car_info_id" jdbcType="BIGINT" property="loanCarInfoId"/>
+        <result column="loan_financial_plan_id" jdbcType="BIGINT" property="loanFinancialPlanId"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
+        status, gmt_create, gmt_modify, feature
+    </sql>
+
+    <!--getCustIdById-->
+    <select id="getCustIdById" parameterType="java.lang.String" resultType="java.lang.Long">
+        select customer_id
+        from loan_process_order
+        WHERE id = #{id}
+    </select>
+
+    <!--getLoanCarInfoIdById-->
+    <select id="getLoanCarInfoIdById" parameterType="java.lang.String" resultType="java.lang.Long">
+        select loan_car_info_id
+        from loan_process_order
+        WHERE id = #{id}
+    </select>
+
+    <!--getLoanFinancialPlanIdById-->
+    <select id="getLoanFinancialPlanIdById" parameterType="java.lang.String" resultType="java.lang.Long">
+        select loan_financial_plan_id
+        from loan_process_order
+        WHERE id = #{id}
+    </select>
+
+    <!--getLoanHomeVisitId-->
+    <select id="getLoanHomeVisitId" parameterType="java.lang.String" resultType="java.lang.Long">
+        select loan_home_visit_id
+        from loan_process_order
+        WHERE id = #{id}
+    </select>
+
+    <!--getByProcessInstId-->
+    <select id="getByProcessInstId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_order
+        WHERE process_inst_id = #{processInstId}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_order
+        where id = #{id,jdbcType=VARCHAR}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from loan_process_order
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+        insert into loan_process_order (id, process_inst_id, loan_base_info_id,
+        loan_customer_id, loan_car_info_id, loan_financial_plan_id,
+        status, gmt_create, gmt_modify,
+        feature)
+        values (#{id,jdbcType=VARCHAR}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
+        #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
+        #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{feature,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+        insert into loan_process_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="processInstId != null">
+                process_inst_id,
+            </if>
+            <if test="loanBaseInfoId != null">
+                loan_base_info_id,
+            </if>
+            <if test="loanCustomerId != null">
+                loan_customer_id,
+            </if>
+            <if test="loanCarInfoId != null">
+                loan_car_info_id,
+            </if>
+            <if test="loanFinancialPlanId != null">
+                loan_financial_plan_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="processInstId != null">
+                #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="loanBaseInfoId != null">
+                #{loanBaseInfoId,jdbcType=BIGINT},
+            </if>
+            <if test="loanCustomerId != null">
+                #{loanCustomerId,jdbcType=BIGINT},
+            </if>
+            <if test="loanCarInfoId != null">
+                #{loanCarInfoId,jdbcType=BIGINT},
+            </if>
+            <if test="loanFinancialPlanId != null">
+                #{loanFinancialPlanId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+        update loan_process_order
+        <set>
+            <if test="processInstId != null">
+                process_inst_id = #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="loanBaseInfoId != null">
+                loan_base_info_id = #{loanBaseInfoId,jdbcType=BIGINT},
+            </if>
+            <if test="loanCustomerId != null">
+                loan_customer_id = #{loanCustomerId,jdbcType=BIGINT},
+            </if>
+            <if test="loanCarInfoId != null">
+                loan_car_info_id = #{loanCarInfoId,jdbcType=BIGINT},
+            </if>
+            <if test="loanFinancialPlanId != null">
+                loan_financial_plan_id = #{loanFinancialPlanId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.dataObj.LoanProcessOrderDO">
+        update loan_process_order
+        set process_inst_id = #{processInstId,jdbcType=VARCHAR},
+        loan_base_info_id = #{loanBaseInfoId,jdbcType=BIGINT},
+        loan_customer_id = #{loanCustomerId,jdbcType=BIGINT},
+        loan_car_info_id = #{loanCarInfoId,jdbcType=BIGINT},
+        loan_financial_plan_id = #{loanFinancialPlanId,jdbcType=BIGINT},
+        status = #{status,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

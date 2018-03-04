@@ -5,7 +5,7 @@
 
     <groupId>com.yunche.loan</groupId>
     <artifactId>yunche-biz</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <!--<packaging>war</packaging>-->
     <packaging>jar</packaging>
 
@@ -107,11 +107,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.4.1</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.mybatis</groupId>-->
+        <!--<artifactId>mybatis</artifactId>-->
+        <!--<version>3.4.1</version>-->
+        <!--</dependency>-->
         <!--spring boot jdbc & mybatis-->
 
         <!--mybatis-generator-->
@@ -214,6 +214,7 @@
             <groupId>org.activiti</groupId>
             <artifactId>activiti-spring-boot-starter-basic</artifactId>
             <version>${activiti.version}</version>
+            <!--<version>5.22.0</version>-->
         </dependency>
         <!--<dependency>-->
         <!--<groupId>org.activiti</groupId>-->
@@ -253,17 +254,17 @@
         <finalName>yunche-biz</finalName>
 
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>springloaded</artifactId>
-                        <version>1.2.6.RELEASE</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+            <!--<plugin>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+            <!--<dependencies>-->
+            <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>springloaded</artifactId>-->
+            <!--<version>1.2.6.RELEASE</version>-->
+            <!--</dependency>-->
+            <!--</dependencies>-->
+            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -285,7 +286,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>1.4.1.RELEASE</version>
                 <configuration>
                     <mainClass>com.yunche.loan.App</mainClass>
                     <executable>false</executable>
@@ -306,7 +306,7 @@
                 <version>1.3.2</version>
                 <configuration>
                     <configurationFile>
-                        /Users/liuzhe/Develop/JAVA/Project/Dev/huanMuLu/loanBusiness/src/main/resources/generatorConfig.xml
+                        ${project.basedir}/src/main/resources/generatorConfig.xml
                     </configurationFile>
                     <overwrite>true</overwrite>
                     <verbose>true</verbose>
