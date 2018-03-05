@@ -1,8 +1,8 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
-import com.yunche.loan.dao.CarBrandDOMapper;
-import com.yunche.loan.dao.CarModelDOMapper;
+import com.yunche.loan.mapper.CarBrandDOMapper;
+import com.yunche.loan.mapper.CarModelDOMapper;
 import com.yunche.loan.domain.entity.CarBrandDO;
 import com.yunche.loan.domain.entity.CarModelDO;
 import com.yunche.loan.domain.vo.CarCascadeVO;

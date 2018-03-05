@@ -3,7 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.domain.query.PaddingCompanyQuery;
 import com.yunche.loan.domain.vo.PaddingCompanyVO;
-import com.yunche.loan.dao.PaddingCompanyDOMapper;
+import com.yunche.loan.mapper.PaddingCompanyDOMapper;
 import com.yunche.loan.domain.entity.PaddingCompanyDO;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.service.PaddingCompanyService;

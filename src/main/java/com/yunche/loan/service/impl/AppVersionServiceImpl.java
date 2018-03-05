@@ -3,7 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.cache.AppVersionCache;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.AppVersionDOMapper;
+import com.yunche.loan.mapper.AppVersionDOMapper;
 import com.yunche.loan.domain.entity.AppVersionDO;
 import com.yunche.loan.domain.query.AppVersionQuery;
 import com.yunche.loan.domain.vo.AppVersionVO;

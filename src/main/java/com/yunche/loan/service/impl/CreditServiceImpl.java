@@ -2,8 +2,8 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.LoanProcessOrderDOMapper;
-import com.yunche.loan.dao.LoanBaseInfoDOMapper;
+import com.yunche.loan.mapper.LoanProcessOrderDOMapper;
+import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
 import com.yunche.loan.domain.entity.LoanProcessOrderDO;
 import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.query.OrderListQuery;

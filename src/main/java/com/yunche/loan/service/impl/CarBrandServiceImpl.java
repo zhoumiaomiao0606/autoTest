@@ -2,8 +2,8 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.CarBrandDOMapper;
-import com.yunche.loan.dao.CarModelDOMapper;
+import com.yunche.loan.mapper.CarBrandDOMapper;
+import com.yunche.loan.mapper.CarModelDOMapper;
 import com.yunche.loan.domain.entity.CarBrandDO;
 import com.yunche.loan.domain.entity.CarModelDO;
 import com.yunche.loan.domain.vo.CarBrandVO;

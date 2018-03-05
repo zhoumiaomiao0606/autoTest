@@ -2,10 +2,10 @@ package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
-import com.yunche.loan.dao.AuthDOMapper;
-import com.yunche.loan.dao.MenuDOMapper;
-import com.yunche.loan.dao.OperationDOMapper;
-import com.yunche.loan.dao.PageDOMapper;
+import com.yunche.loan.mapper.AuthDOMapper;
+import com.yunche.loan.mapper.MenuDOMapper;
+import com.yunche.loan.mapper.OperationDOMapper;
+import com.yunche.loan.mapper.PageDOMapper;
 import com.yunche.loan.domain.entity.AuthDO;
 import com.yunche.loan.domain.entity.MenuDO;
 import com.yunche.loan.domain.entity.OperationDO;

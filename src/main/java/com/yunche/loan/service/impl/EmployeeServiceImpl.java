@@ -7,7 +7,7 @@ import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.query.EmployeeQuery;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.BaseAreaDOMapper">
+<mapper namespace="com.yunche.loan.mapper.BaseAreaDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BaseAreaDO">
         <id column="area_id" jdbcType="BIGINT" property="areaId"/>
         <result column="parent_area_id" jdbcType="BIGINT" property="parentAreaId"/>

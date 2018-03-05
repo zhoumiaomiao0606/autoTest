@@ -2,9 +2,9 @@ package com.yunche.loan.config.common;
 
 import com.yunche.loan.config.cache.AuthCache;
 import com.yunche.loan.config.util.MD5Utils;
-import com.yunche.loan.dao.EmployeeDOMapper;
-import com.yunche.loan.dao.EmployeeRelaUserGroupDOMapper;
-import com.yunche.loan.dao.UserGroupRelaAreaAuthDOMapper;
+import com.yunche.loan.mapper.EmployeeDOMapper;
+import com.yunche.loan.mapper.EmployeeRelaUserGroupDOMapper;
+import com.yunche.loan.mapper.UserGroupRelaAreaAuthDOMapper;
 import com.yunche.loan.domain.entity.*;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;

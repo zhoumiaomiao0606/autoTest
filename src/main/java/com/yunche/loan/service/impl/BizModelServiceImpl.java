@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.BizModelDOMapper;
+import com.yunche.loan.mapper.BizModelDOMapper;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.vo.*;

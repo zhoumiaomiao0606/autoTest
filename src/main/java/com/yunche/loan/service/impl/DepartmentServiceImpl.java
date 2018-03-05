@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.DepartmentCache;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.query.DepartmentQuery;
 import com.yunche.loan.domain.query.EmployeeQuery;

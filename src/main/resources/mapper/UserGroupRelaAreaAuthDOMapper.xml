@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.dao.UserGroupRelaAreaAuthDOMapper">
+<mapper namespace="com.yunche.loan.mapper.UserGroupRelaAreaAuthDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.UserGroupRelaAreaAuthDO">
         <id column="user_group_id" jdbcType="BIGINT" property="userGroupId"/>
         <id column="auth_id" jdbcType="BIGINT" property="authId"/>

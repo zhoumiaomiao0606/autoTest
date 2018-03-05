@@ -3,7 +3,7 @@ package com.yunche.loan.config.cache;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yunche.loan.dao.DepartmentDOMapper;
+import com.yunche.loan.mapper.DepartmentDOMapper;
 import com.yunche.loan.domain.entity.DepartmentDO;
 import com.yunche.loan.domain.vo.CascadeVO;
 import org.apache.commons.lang3.StringUtils;

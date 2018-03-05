@@ -2,7 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.domain.vo.InsuranceCompanyVO;
-import com.yunche.loan.dao.InsuranceCompanyDOMapper;
+import com.yunche.loan.mapper.InsuranceCompanyDOMapper;
 import com.yunche.loan.domain.entity.InsuranceCompanyDO;
 import com.yunche.loan.domain.query.InsuranceCompanyQuery;
 import com.yunche.loan.config.result.ResultBean;

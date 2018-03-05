@@ -3,7 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.FinancialProductDOMapper;
+import com.yunche.loan.mapper.FinancialProductDOMapper;
 import com.yunche.loan.domain.query.FinancialQuery;
 import com.yunche.loan.domain.entity.FinancialProductDO;
 import com.yunche.loan.domain.vo.CascadeAreaVO;

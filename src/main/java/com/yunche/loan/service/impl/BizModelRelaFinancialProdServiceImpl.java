@@ -2,7 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.BizModelRelaFinancialProdDOMapper;
+import com.yunche.loan.mapper.BizModelRelaFinancialProdDOMapper;
 import com.yunche.loan.domain.entity.BizModelRelaFinancialProdDO;
 import com.yunche.loan.service.BizModelRelaFinancialProdService;
 import org.apache.commons.collections.CollectionUtils;

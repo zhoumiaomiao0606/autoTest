@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.query.AuthQuery;
 import com.yunche.loan.domain.entity.MenuDO;
 import com.yunche.loan.domain.entity.OperationDO;

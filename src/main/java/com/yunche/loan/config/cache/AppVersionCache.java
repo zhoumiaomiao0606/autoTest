@@ -2,7 +2,7 @@ package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
-import com.yunche.loan.dao.AppVersionDOMapper;
+import com.yunche.loan.mapper.AppVersionDOMapper;
 import com.yunche.loan.domain.entity.AppVersionDO;
 import com.yunche.loan.domain.query.AppVersionQuery;
 import org.apache.commons.lang3.StringUtils;

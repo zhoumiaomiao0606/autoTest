@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.query.BizModelQuery;

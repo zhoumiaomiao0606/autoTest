@@ -2,7 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.CarDetailDOMapper;
+import com.yunche.loan.mapper.CarDetailDOMapper;
 import com.yunche.loan.domain.query.CarDetailQuery;
 import com.yunche.loan.domain.entity.CarDetailDO;
 import com.yunche.loan.domain.vo.CarDetailVO;

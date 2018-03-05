@@ -3,7 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.dao.BizModelRelaAreaPartnersDOMapper;
+import com.yunche.loan.mapper.BizModelRelaAreaPartnersDOMapper;
 import com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.BizModelRelaAreaPartnersService;
