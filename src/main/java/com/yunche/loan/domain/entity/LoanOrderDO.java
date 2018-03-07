@@ -5,9 +5,9 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class LoanProcessOrderDO {
+public class LoanOrderDO {
 
-    private String id;
+    private Long id;
 
     private String processInstId;
     /**

@@ -9,9 +9,13 @@ import lombok.Data;
 @Data
 public class CreditRecordParam {
     /**
-     * 客户ID
+     * 征信信息ID
      */
     private Long id;
+    /**
+     * 客户ID
+     */
+    private Long customerId;
     /**
      * 征信类型
      */
@@ -19,9 +23,9 @@ public class CreditRecordParam {
     /**
      * 结果
      */
-    private Byte creditStatus;
+    private Byte result;
     /**
      * 备注
      */
-    private String creditDetail;
+    private String info;
 }

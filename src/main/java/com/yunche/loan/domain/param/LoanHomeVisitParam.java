@@ -12,5 +12,5 @@ public class LoanHomeVisitParam extends LoanHomeVisitVO {
     /**
      * 业务单ID
      */
-    private String orderId;
+    private Long orderId;
 }

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.LoanCreditInfoDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanCreditInfoDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="result" jdbcType="TINYINT" property="result"/>
+        <result column="info" jdbcType="VARCHAR" property="info"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
+        <result column="customer_id" jdbcType="BIGINT" property="customerId"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, result, info, type, customer_id, gmt_create, gmt_modify, status, feature
+  </sql>
+
+    <!--getByCustomerIdAndType-->
+    <select id="getByCustomerIdAndType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_credit_info
+        where customer_id = #{customerId,jdbcType=BIGINT}
+        AND type = #{type}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_credit_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from loan_credit_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into loan_credit_info (id, result, info,
+        type, customer_id, gmt_create,
+        gmt_modify, status, feature
+        )
+        values (#{id,jdbcType=BIGINT}, #{result,jdbcType=TINYINT}, #{info,jdbcType=VARCHAR},
+        #{type,jdbcType=TINYINT}, #{customerId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into loan_credit_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="result != null">
+                result,
+            </if>
+            <if test="info != null">
+                info,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="customerId != null">
+                customer_id,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="result != null">
+                #{result,jdbcType=TINYINT},
+            </if>
+            <if test="info != null">
+                #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=TINYINT},
+            </if>
+            <if test="customerId != null">
+                #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoDO">
+        update loan_credit_info
+        <set>
+            <if test="result != null">
+                result = #{result,jdbcType=TINYINT},
+            </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="customerId != null">
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoDO">
+    update loan_credit_info
+    set result = #{result,jdbcType=TINYINT},
+      info = #{info,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      customer_id = #{customerId,jdbcType=BIGINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      feature = #{feature,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

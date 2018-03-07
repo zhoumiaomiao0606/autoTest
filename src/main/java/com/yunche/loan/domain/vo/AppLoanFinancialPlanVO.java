@@ -1,17 +1,21 @@
-package com.yunche.loan.domain.entity;
+package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * @author liuzhe
+ * @date 2018/3/5
+ */
 @Data
-public class LoanFinancialPlanDO {
+public class AppLoanFinancialPlanVO {
     private Long id;
 
     private BigDecimal carPrice;
 
-    private Long financialProductId;
+    private Long bizModelId;
 
     private String bank;
 

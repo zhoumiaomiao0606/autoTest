@@ -28,7 +28,17 @@ public interface LoanCustomerDOMapper {
      * @param principalLenderId
      * @return
      */
-    List<LoanCustomerDO> getListById(Long principalLenderId);
+    List<LoanCustomerDO> getListById(Long principalCustId);
+
+
+    /**
+     * 根据主贷人ID和客户类别 获取客户列表(共贷人/担保人/紧急联系人)
+     *
+     * @param principalLenderId
+     * @param custType
+     * @return
+     */
+    List<LoanCustomerDO> listByIdAndType(@Param("principalCustId") Long principalLenderId, @Param("custType") Byte custType);
 
     /**
      * 编辑贷款人

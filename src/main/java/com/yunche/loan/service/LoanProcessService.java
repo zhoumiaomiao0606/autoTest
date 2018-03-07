@@ -13,11 +13,11 @@ public interface LoanProcessService {
 
     ResultBean<String> createCreditApply(CreditApplyVO creditApplyVO);
 
-    ResultBean<Void> updateCreditApply(InstProcessOrderVO processInstOrder);
+    ResultBean<Void> updateCreditApply(CreditApplyOrderVO processInstOrder);
 
     ResultBean<Void> approval(ApprovalParam approval);
 
-    ResultBean<TaskStateVO> currentTask(String orderId);
+    ResultBean<TaskStateVO> currentTask(Long orderId);
 
-    ResultBean<Byte> taskStatus(String orderId, String taskDefinitionKey);
+    ResultBean<Byte> taskStatus(Long orderId, String taskDefinitionKey);
 }

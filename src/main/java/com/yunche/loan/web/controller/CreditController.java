@@ -39,7 +39,7 @@ public class CreditController {
      * @return
      */
     @PostMapping(value = "/loanBaseInfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> createLoanBaseInfo(@RequestParam("orderId") String orderId,
+    public ResultBean<Long> createLoanBaseInfo(@RequestParam("orderId") Long orderId,
                                                @RequestBody LoanBaseInfoDO loanBaseInfoDO) {
         return creditService.createLoanBaseInfo(orderId, loanBaseInfoDO);
     }

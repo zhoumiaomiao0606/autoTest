@@ -12,5 +12,5 @@ public class LoanFinancialPlanParam extends LoanFinancialPlanVO {
     /**
      * 业务单ID
      */
-    private String orderId;
+    private Long orderId;
 }

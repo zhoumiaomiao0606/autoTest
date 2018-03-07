@@ -1,6 +1,5 @@
 package com.yunche.loan.web.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.LoanOrderQuery;
@@ -38,22 +37,41 @@ public class LoanOrderController {
      */
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<BaseInstProcessOrderVO>> query(@RequestBody LoanOrderQuery query) {
-        logger.info("/loanorder/query", JSON.toJSONString(query));
         return loanOrderService.query(query);
     }
 
     /**
-     * 征信申请单详情
+     * 征信申请单详情  [OK]
      *
      * @param orderId
      * @return
      */
     @GetMapping(value = "/creditapply/detail")
-    public ResultBean<InstProcessOrderVO> detail(@RequestParam("orderId") String orderId) {
-        logger.info("/loanorder/creditapply/detail", JSON.toJSONString(orderId));
-        return loanOrderService.creditApplyDetail(orderId);
+    public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(@RequestParam("orderId") Long orderId) {
+        return loanOrderService.creditApplyOrderDetail(orderId);
     }
 
+    /**
+     * 征信申请单 -新建  [OK]
+     *
+     * @param creditApplyOrderVO
+     * @return
+     */
+    @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> createCreditApplyOrder(@RequestBody CreditApplyOrderVO creditApplyOrderVO) {
+        return loanOrderService.createCreditApplyOrder(creditApplyOrderVO);
+    }
+
+    /**
+     * 征信申请单 -编辑
+     *
+     * @param creditApplyOrderVO
+     * @return
+     */
+    @PostMapping(value = "/creditapply/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> updateCreditApplyOrder(@RequestBody CreditApplyOrderVO creditApplyOrderVO) {
+        return loanOrderService.updateCreditApplyOrder(creditApplyOrderVO);
+    }
 
     /**
      * 征信录入单详情
@@ -63,9 +81,8 @@ public class LoanOrderController {
      * @return
      */
     @GetMapping(value = "/creditrecord/detail")
-    public ResultBean<CreditRecordVO> creditRecordDetail(@RequestParam("orderId") String orderId,
+    public ResultBean<CreditRecordVO> creditRecordDetail(@RequestParam("orderId") Long orderId,
                                                          @RequestParam("type") Byte type) {
-        logger.info("/loanorder/creditrecord/detail", JSON.toJSONString(orderId), JSON.toJSONString(type));
         return loanOrderService.creditRecordDetail(orderId, type);
     }
 
@@ -75,9 +92,8 @@ public class LoanOrderController {
      * @param creditRecordParam
      * @return
      */
-    @PostMapping(value = "/creditrecord", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> creditRecord(@RequestBody CreditRecordParam creditRecordParam) {
-        logger.info("/loanorder/creditrecord", JSON.toJSONString(creditRecordParam));
+    @PostMapping(value = "/creditrecord/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> creditRecord(@RequestBody CreditRecordParam creditRecordParam) {
         return loanOrderService.creditRecord(creditRecordParam);
     }
 
@@ -87,9 +103,8 @@ public class LoanOrderController {
      * @param orderId 业务单ID
      * @return
      */
-    @GetMapping(value = "/customer/detail")
-    public ResultBean<CustDetailVO> customerDetail(@RequestParam("orderId") String orderId) {
-        logger.info("/loanorder/customer/detail", JSON.toJSONString(orderId));
+    @GetMapping(value = "/loanapply/customer/detail")
+    public ResultBean<CustDetailVO> customerDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.customerDetail(orderId);
     }
 
@@ -99,9 +114,8 @@ public class LoanOrderController {
      * @param custDetailVO
      * @return
      */
-    @PostMapping(value = "/customer/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/loanapply/customer/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> updateCustomer(@RequestBody CustDetailVO custDetailVO) {
-        logger.info("/loanorder/customer/update", JSON.toJSONString(custDetailVO));
         return loanOrderService.updateCustomer(custDetailVO);
     }
 
@@ -113,11 +127,10 @@ public class LoanOrderController {
      * @param commonLenderId
      * @return
      */
-    @GetMapping(value = "/customer/faceoff")
-    public ResultBean<Void> faceOff(@RequestParam("orderId") String orderId,
+    @GetMapping(value = "/loanapply/customer/faceoff")
+    public ResultBean<Void> faceOff(@RequestParam("orderId") Long orderId,
                                     @RequestParam("principalLenderId") Long principalLenderId,
                                     @RequestParam("commonLenderId") Long commonLenderId) {
-        logger.info("/loanorder/customer/faceoff", JSON.toJSONString(orderId), JSON.toJSONString(principalLenderId), JSON.toJSONString(commonLenderId));
         return loanOrderService.faceOff(orderId, principalLenderId, commonLenderId);
     }
 
@@ -127,9 +140,8 @@ public class LoanOrderController {
      * @param orderId
      * @return
      */
-    @GetMapping(value = "/carinfo/detail")
-    public ResultBean<LoanCarInfoVO> loanCarInfoDetail(@RequestParam("orderId") String orderId) {
-        logger.info("/loanorder/carinfo/detail", JSON.toJSONString(orderId));
+    @GetMapping(value = "/loanapply/carinfo/detail")
+    public ResultBean<LoanCarInfoVO> loanCarInfoDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.loanCarInfoDetail(orderId);
     }
 
@@ -139,9 +151,8 @@ public class LoanOrderController {
      * @param loanCarInfoParam
      * @return
      */
-    @PostMapping(value = "/carinfo/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/loanapply/carinfo/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> saveLoanCarInfo(@RequestBody LoanCarInfoParam loanCarInfoParam) {
-        logger.info("/loanorder/carinfo/save", JSON.toJSONString(loanCarInfoParam));
         return loanOrderService.createOrUpdateLoanCarInfo(loanCarInfoParam);
     }
 
@@ -151,9 +162,8 @@ public class LoanOrderController {
      * @param orderId
      * @return
      */
-    @GetMapping(value = "/financialplan/detail")
-    public ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(@RequestParam("orderId") String orderId) {
-        logger.info("/loanorder/financialplan/detail", JSON.toJSONString(orderId));
+    @GetMapping(value = "/loanapply/financialplan/detail")
+    public ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.loanFinancialPlanDetail(orderId);
     }
 
@@ -163,8 +173,8 @@ public class LoanOrderController {
      * @param loanFinancialPlanParam
      * @return
      */
+    @PostMapping(value = "/loanapply/financialplan/calc", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(@RequestBody LoanFinancialPlanParam loanFinancialPlanParam) {
-        logger.info("/loanorder/financialplan/calc", JSON.toJSONString(loanFinancialPlanParam));
         return loanOrderService.calcLoanFinancialPlan(loanFinancialPlanParam);
     }
 
@@ -174,9 +184,8 @@ public class LoanOrderController {
      * @param loanFinancialPlanParam
      * @return
      */
-    @PostMapping(value = "/financialplan/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/loanapply/financialplan/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> saveLoanFinancialPlan(@RequestBody LoanFinancialPlanParam loanFinancialPlanParam) {
-        logger.info("/loanorder/financialplan/save", JSON.toJSONString(loanFinancialPlanParam));
         return loanOrderService.createOrUpdateLoanFinancialPlan(loanFinancialPlanParam);
     }
 
@@ -187,8 +196,7 @@ public class LoanOrderController {
      * @return
      */
     @GetMapping(value = "/homevisit/detail")
-    public ResultBean<LoanHomeVisitVO> homeVisitDetail(@RequestParam("orderId") String orderId) {
-        logger.info("/loanorder/homevisit/detail", JSON.toJSONString(orderId));
+    public ResultBean<LoanHomeVisitVO> homeVisitDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.homeVisitDetail(orderId);
     }
 
@@ -200,7 +208,6 @@ public class LoanOrderController {
      */
     @PostMapping(value = "/homevisit/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> saveLoanHomeVisit(@RequestBody LoanHomeVisitParam loanHomeVisitParam) {
-        logger.info("/loanorder/homevisit/save", JSON.toJSONString(loanHomeVisitParam));
         return loanOrderService.createOrUpdateLoanHomeVisit(loanHomeVisitParam);
     }
 
@@ -212,7 +219,6 @@ public class LoanOrderController {
      */
     @PostMapping(value = "/infosupplement", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> infoSupplement(@RequestBody InfoSupplementParam infoSupplementParam) {
-        logger.info("/loanorder/infosupplement", JSON.toJSONString(infoSupplementParam));
         return loanOrderService.infoSupplement(infoSupplementParam);
     }
 }

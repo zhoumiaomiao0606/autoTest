@@ -37,6 +37,10 @@
     </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into loan_car_info (id, car_model_id, car_type,
         partner_id, gps_num, car_key,
         open_bank, account_name, bank_account,
@@ -52,6 +56,10 @@
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into loan_car_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

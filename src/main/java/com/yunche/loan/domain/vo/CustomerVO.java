@@ -79,25 +79,5 @@ public class CustomerVO {
 
     private Byte status;
 
-    private List<File> files = Collections.EMPTY_LIST;
-
-    @Data
-    public static class File {
-        /**
-         * 文件名称
-         */
-        private String name;
-        /**
-         * 文件存储路径
-         */
-        private String url;
-        /**
-         * 是否增补:  0-否; 1-是;
-         */
-        private Byte isSupplement = 0;
-        /**
-         * 文件类型
-         */
-//        private Byte type;
-    }
+    private List<FileVO> files = Collections.EMPTY_LIST;
 }

@@ -4,17 +4,17 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.*;
-import com.yunche.loan.domain.query.LoanOrderQuery;
+import com.yunche.loan.domain.query.AppLoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.service.*;
+import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.AppLoanOrderService;
+import com.yunche.loan.service.CreditService;
+import com.yunche.loan.service.LoanCustomerService;
 import org.activiti.engine.HistoryService;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
-import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.TaskInfo;
 import org.activiti.engine.task.TaskInfoQuery;
 import org.apache.commons.lang3.StringUtils;
@@ -25,20 +25,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
-import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 
 /**
- * Created by zhouguoliang on 2018/2/5.
+ * @author liuzhe
+ * @date 2018/3/5
  */
 @Service
 @Transactional
-public class LoanOrderServiceImpl implements LoanOrderService {
+public class AppLoanOrderServiceImpl implements AppLoanOrderService {
+
 
     @Autowired
     private LoanCustomerService loanCustomerService;
@@ -68,21 +72,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private LoanHomeVisitDOMapper loanHomeVisitDOMapper;
 
     @Autowired
-    private LoanFileService loanFileService;
-
-    @Autowired
-    private LoanBaseInfoService loanBaseInfoService;
-
-    @Autowired
-    private LoanProcessOrderService loanProcessOrderService;
-
-    @Autowired
-    private LoanCreditInfoService loanCreditInfoService;
-
-    @Autowired
-    private RuntimeService runtimeService;
-
-    @Autowired
     private TaskService taskService;
 
     @Autowired
@@ -90,7 +79,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
 
     @Override
-    public ResultBean<List<BaseInstProcessOrderVO>> query(LoanOrderQuery query) {
+    public ResultBean<List<AppLoanProcessOrderVO>> query(AppLoanOrderQuery query) {
         Preconditions.checkNotNull(query.getTaskDefinitionKey(), "当前任务节点不能为空");
         Preconditions.checkNotNull(query.getTaskStatus(), "查询类型不能为空");
 
@@ -112,7 +101,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
             // 获取流程列表 -> 业务单列表
             if (!CollectionUtils.isEmpty(tasks)) {
-                List<BaseInstProcessOrderVO> baseInstProcessOrderVOList = tasks.parallelStream()
+                List<AppLoanProcessOrderVO> baseInstProcessOrderVOList = tasks.parallelStream()
                         .filter(Objects::nonNull)
                         .map(e -> {
 
@@ -123,10 +112,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                             String processInstanceId = e.getProcessInstanceId();
                             if (StringUtils.isNotBlank(processInstanceId)) {
                                 // 业务单
-                                BaseInstProcessOrderVO baseInstProcessOrderVO = new BaseInstProcessOrderVO();
-                                baseInstProcessOrderVO.setTaskStatus(taskStatus);
-                                fillMsg(baseInstProcessOrderVO, processInstanceId);
-                                return baseInstProcessOrderVO;
+                                AppLoanProcessOrderVO appLoanProcessOrderVO = new AppLoanProcessOrderVO();
+                                appLoanProcessOrderVO.setTaskStatus(taskStatus);
+                                fillMsg(appLoanProcessOrderVO, processInstanceId);
+                                return appLoanProcessOrderVO;
                             }
                             return null;
                         })
@@ -141,14 +130,14 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
     @Override
-    public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(Long orderId) {
+    public ResultBean<AppCreditApplyOrderVO> creditApplyOrderDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
         // 订单基本信息
-        CreditApplyOrderVO creditApplyOrderVO = new CreditApplyOrderVO();
+        AppCreditApplyOrderVO creditApplyOrderVO = new AppCreditApplyOrderVO();
         BeanUtils.copyProperties(loanOrderDO, creditApplyOrderVO);
 
         // 关联的-客户信息(主贷人/共贷人/担保人/紧急联系人)
@@ -163,141 +152,25 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
     @Override
-    public ResultBean<Long> createCreditApplyOrder(CreditApplyOrderVO creditApplyOrderVO) {
-        Preconditions.checkNotNull(creditApplyOrderVO, "不能为空");
-
-        // 创建贷款基本信息
-        Long baseInfoId = createLoanBaseInfo(creditApplyOrderVO.getLoanBaseInfo());
-
-        // 创建客户信息
-        Long customerId = createLoanCustomer(creditApplyOrderVO);
-
-        // 创建订单
-        Long orderId = createLoanOrder(baseInfoId, customerId);
-
-        return ResultBean.ofSuccess(orderId);
+    public ResultBean<String> createCreditApplyOrder(CreditApplyOrderVO creditApplyOrderVO) {
+        return null;
     }
-
 
     @Override
-    public ResultBean<Void> updateCreditApplyOrder(CreditApplyOrderVO creditApplyOrderVO) {
-        Preconditions.checkNotNull(creditApplyOrderVO.getOrderId(), "业务单号不能为空");
-
-        // 编辑贷款基本信息
-        updateLoanBaseInfo(creditApplyOrderVO.getLoanBaseInfo());
-
-        // 编辑客户信息
-        updateOrInsertLoanCustomer(creditApplyOrderVO);
-
-        return ResultBean.ofSuccess(null);
+    public ResultBean<Void> updateCreditApplyOrder(AppCreditApplyOrderVO appCreditApplyOrderVO) {
+        return null;
     }
-
-    private void updateLoanBaseInfo(LoanBaseInfoVO loanBaseInfoVO) {
-        ResultBean<Void> updateResult = loanBaseInfoService.update(loanBaseInfoVO);
-        Preconditions.checkArgument(updateResult.getSuccess(), updateResult.getMsg());
-    }
-
-    private void updateOrInsertLoanCustomer(CreditApplyOrderVO creditApplyOrderVO) {
-        CustDetailParam custDetailParam = new CustDetailParam();
-        BeanUtils.copyProperties(creditApplyOrderVO, custDetailParam);
-        loanCustomerService.updateAll(custDetailParam);
-
-        CustomerVO principalLender = creditApplyOrderVO.getPrincipalLender();
-        updateOrInsertCustomer(principalLender);
-    }
-
-    private void updateOrInsertCustomer(CustomerVO customerVO) {
-        if (null == customerVO) {
-            return;
-        }
-
-        if (null == customerVO.getId()) {
-            // insert
-            createLoanCustomer(customerVO);
-        } else {
-            // update
-            ResultBean<Void> resultBean = loanCustomerService.update(customerVO);
-            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-
-            // file
-            ResultBean<Void> updateFileResultBean = loanFileService.update(customerVO.getId(), customerVO.getFiles());
-            Preconditions.checkArgument(updateFileResultBean.getSuccess(), updateFileResultBean.getMsg());
-        }
-    }
-
-
-    private Long createLoanOrder(Long baseInfoId, Long customerId) {
-        // 开启activiti流程
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("loan_process");
-        Preconditions.checkNotNull(processInstance, "开启流程实例异常");
-        Preconditions.checkNotNull(processInstance.getProcessInstanceId(), "开启流程实例异常");
-
-        LoanOrderDO loanOrderDO = new LoanOrderDO();
-        loanOrderDO.setProcessInstId(processInstance.getProcessInstanceId());
-        loanOrderDO.setLoanCustomerId(customerId);
-        loanOrderDO.setLoanBaseInfoId(baseInfoId);
-        loanOrderDO.setStatus(VALID_STATUS);
-        ResultBean<Long> createResultBean = loanProcessOrderService.create(loanOrderDO);
-        Preconditions.checkArgument(createResultBean.getSuccess(), createResultBean.getMsg());
-        return createResultBean.getData();
-    }
-
-    private Long createLoanCustomer(CreditApplyOrderVO creditApplyOrderVO) {
-        // 主贷人
-        Long principalLenderId = createLoanCustomer(creditApplyOrderVO.getPrincipalLender());
-
-        List<CustomerVO> commonLenderList = creditApplyOrderVO.getCommonLenderList();
-        List<CustomerVO> guarantorList = creditApplyOrderVO.getGuarantorList();
-        List<CustomerVO> emergencyContactList = creditApplyOrderVO.getEmergencyContactList();
-
-        createLoanCustomerList(commonLenderList);
-        createLoanCustomerList(guarantorList);
-        createLoanCustomerList(emergencyContactList);
-
-        return principalLenderId;
-    }
-
-    private void createLoanCustomerList(List<CustomerVO> commonLenderList) {
-        if (!CollectionUtils.isEmpty(commonLenderList)) {
-            commonLenderList.parallelStream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
-                        createLoanCustomer(e);
-                    });
-        }
-    }
-
-    private Long createLoanCustomer(CustomerVO customerVO) {
-        ResultBean<Long> createCustomerResult = loanCustomerService.create(customerVO);
-        Preconditions.checkArgument(createCustomerResult.getSuccess(), "创建客户信息失败");
-
-        // 文件上传
-        ResultBean<Void> createFileResultBean = loanFileService.create(createCustomerResult.getData(), customerVO.getFiles());
-        Preconditions.checkArgument(createFileResultBean.getSuccess(), "创建文件信息失败");
-
-        // 返回客户ID
-        return createCustomerResult.getData();
-    }
-
-    private Long createLoanBaseInfo(LoanBaseInfoVO loanBaseInfoVO) {
-        LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
-        BeanUtils.copyProperties(loanBaseInfoVO, loanBaseInfoDO);
-        int count = loanBaseInfoDOMapper.insertSelective(loanBaseInfoDO);
-        Preconditions.checkArgument(count > 0, "插入贷款失败");
-        return loanBaseInfoDO.getId();
-    }
-
 
     @Override
-    public ResultBean<CreditRecordVO> creditRecordDetail(Long orderId, Byte type) {
-        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+    public ResultBean<AppCreditRecordVO> creditRecordDetail(Long id, Byte type) {
+//        Preconditions.checkArgument(StringUtils.isNotBlank(id), "业务单号不能为空");
         Preconditions.checkNotNull(type, "征信类型不能为空");
         Preconditions.checkNotNull(CREDIT_TYPE_BANK.equals(type) || CREDIT_TYPE_SOCIAL.equals(type), "征信类型有误");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(id, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
-        CreditRecordVO creditRecordVO = new CreditRecordVO();
+        AppCreditRecordVO creditRecordVO = new AppCreditRecordVO();
 
         // 贷款基本信息
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
@@ -313,18 +186,18 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             // 主
             CreditRecordVO.Customer customer = new CreditRecordVO.Customer();
             BeanUtils.copyProperties(loanCustomerDO, customer);
-            fillCreditMsg(customer, type);
+            fillCreditMsg(customer, loanCustomerDO, type);
             creditRecordVO.setPrincipalLender(customer);
 
             // 共
-            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByIdAndType(loanCustomerDO.getId(), COMMON_LENDER);
+            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.getListById(loanCustomerDO.getId());
             if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
                 List<CreditRecordVO.Customer> commonLenderList = loanCustomerDOS.parallelStream()
                         .filter(Objects::nonNull)
                         .map(e -> {
                             CreditRecordVO.Customer commonLender = new CreditRecordVO.Customer();
-                            BeanUtils.copyProperties(e, commonLender);
-                            fillCreditMsg(commonLender, type);
+                            BeanUtils.copyProperties(loanCustomerDO, commonLender);
+                            fillCreditMsg(customer, loanCustomerDO, type);
                             return commonLender;
                         })
                         .collect(Collectors.toList());
@@ -336,18 +209,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
     @Override
-    public ResultBean<Long> creditRecord(CreditRecordParam creditRecordParam) {
-        if (null == creditRecordParam.getId()) {
-            // insert
-            ResultBean<Long> resultBean = loanCreditInfoService.create(creditRecordParam);
-            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-            return ResultBean.ofSuccess(resultBean.getData(), "征信结果录入成功");
-        } else {
-            // update
-            ResultBean<Long> resultBean = loanCreditInfoService.update(creditRecordParam);
-            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-            return ResultBean.ofSuccess(resultBean.getData(), "征信结果修改成功");
-        }
+    public ResultBean<Void> creditRecord(CreditRecordParam creditRecordParam) {
+
+        return ResultBean.ofSuccess(null, "征信结果录入成功");
     }
 
 
@@ -359,32 +223,91 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long principalLenderId = loanOrderDOMapper.getCustIdById(orderId);
 
         // 根据主贷人ID获取客户详情列表
-        ResultBean<CustDetailVO> custDetailVOResultBean = loanCustomerService.detailAll(orderId);
-        return custDetailVOResultBean;
+        List<LoanCustomerDO> loanCustomerDOList = loanCustomerDOMapper.getListById(principalLenderId);
+
+        CustDetailVO custDetailVO = new CustDetailVO();
+        if (!CollectionUtils.isEmpty(loanCustomerDOList)) {
+            // 填充客户详情信息
+            fillCustInfo(custDetailVO, loanCustomerDOList);
+        }
+
+        return ResultBean.ofSuccess(custDetailVO);
     }
 
     @Override
     public ResultBean<Void> updateCustomer(CustDetailVO custDetailVO) {
         Preconditions.checkNotNull(custDetailVO, "客户信息不能为空");
 
-        CustDetailParam custDetailParam = new CustDetailParam();
-        BeanUtils.copyProperties(custDetailVO, custDetailParam);
-        loanCustomerService.updateAll(custDetailParam);
+        // 主贷人
+        CustomerVO principalLenderVO = custDetailVO.getPrincipalLender();
+        LoanCustomerDO principalLenderDO = new LoanCustomerDO();
+        BeanUtils.copyProperties(principalLenderVO, principalLenderDO);
+//        principalLenderDO.setFiles(JSON.toJSONString(principalLenderVO.getFiles()));
+        principalLenderDO.setGmtModify(new Date());
+        loanCustomerDOMapper.updateByPrimaryKeySelective(principalLenderDO);
+
+        // 共贷人列表
+        List<CustomerVO> commonLenderVOList = custDetailVO.getCommonLenderList();
+        if (!CollectionUtils.isEmpty(commonLenderVOList)) {
+
+            commonLenderVOList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        LoanCustomerDO commonLenderDO = new LoanCustomerDO();
+                        BeanUtils.copyProperties(e, commonLenderDO);
+//                        commonLenderDO.setFiles(JSON.toJSONString(e.getFiles()));
+                        commonLenderDO.setGmtModify(new Date());
+                        loanCustomerDOMapper.updateByPrimaryKeySelective(commonLenderDO);
+                    });
+        }
+
+        // 担保人列表
+        List<CustomerVO> guarantorVOList = custDetailVO.getGuarantorList();
+        if (!CollectionUtils.isEmpty(guarantorVOList)) {
+
+            guarantorVOList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        LoanCustomerDO guarantorDO = new LoanCustomerDO();
+                        BeanUtils.copyProperties(e, guarantorDO);
+//                        guarantorDO.setFiles(JSON.toJSONString(e.getFiles()));
+                        guarantorDO.setGmtModify(new Date());
+                        loanCustomerDOMapper.updateByPrimaryKeySelective(guarantorDO);
+                    });
+        }
+
+        // 紧急联系人列表
+        List<CustomerVO> emergencyContactVOList = custDetailVO.getEmergencyContactList();
+        if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
+
+            emergencyContactVOList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        LoanCustomerDO emergencyContactDO = new LoanCustomerDO();
+                        BeanUtils.copyProperties(e, emergencyContactDO);
+//                        emergencyContactDO.setFiles(JSON.toJSONString(e.getFiles()));
+                        emergencyContactDO.setGmtModify(new Date());
+                        loanCustomerDOMapper.updateByPrimaryKeySelective(emergencyContactDO);
+                    });
+        }
 
         return ResultBean.ofSuccess(null, "客户信息编辑成功");
     }
 
     @Override
     public ResultBean<Void> faceOff(Long orderId, Long principalLenderId, Long commonLenderId) {
-        Preconditions.checkNotNull(orderId, "业务单ID不能为空");
+//        Preconditions.checkArgument(StringUtils.isNotBlank(orderId), "业务单号不能为空");
         Preconditions.checkNotNull(principalLenderId, "主贷人ID不能为空");
         Preconditions.checkNotNull(commonLenderId, "共贷人ID不能为空");
 
-        // TODO 交互数据   编辑原主贷人
+        // 编辑原主贷人
         LoanCustomerDO principalLenderDO = new LoanCustomerDO();
         principalLenderDO.setId(principalLenderId);
         principalLenderDO.setCustType(CUST_TYPE_COMMON);
-        principalLenderDO.setPrincipalCustId(commonLenderId);
+//        principalLenderDO.setPrincipalCustId(commonLenderId);
         principalLenderDO.setGmtModify(new Date());
         loanCustomerDOMapper.updateByPrimaryKeySelective(principalLenderDO);
 
@@ -392,7 +315,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanCustomerDO commonLenderDO = new LoanCustomerDO();
         commonLenderDO.setId(commonLenderId);
         commonLenderDO.setCustType(CUST_TYPE_PRINCIPAL);
-        commonLenderDO.setPrincipalCustId(null);
+//        commonLenderDO.setPrincipalCustId(null);
         commonLenderDO.setGmtModify(new Date());
         loanCustomerDOMapper.updateByPrimaryKeySelective(commonLenderDO);
 
@@ -410,20 +333,20 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
     @Override
-    public ResultBean<LoanCarInfoVO> loanCarInfoDetail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+    public ResultBean<AppLoanCarInfoVO> loanCarInfoDetail(Long orderId) {
+//        Preconditions.checkArgument(StringUtils.isNotBlank(orderId), "业务单号不能为空");
 
         Long loanCarInfoId = loanOrderDOMapper.getLoanCarInfoIdById(orderId);
 
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanCarInfoId);
-        LoanCarInfoVO loanCarInfoVO = new LoanCarInfoVO();
+        AppLoanCarInfoVO loanCarInfoVO = new AppLoanCarInfoVO();
         BeanUtils.copyProperties(loanCarInfoDO, loanCarInfoVO);
 
         return ResultBean.ofSuccess(loanCarInfoVO);
     }
 
     @Override
-    public ResultBean<Void> createOrUpdateLoanCarInfo(LoanCarInfoParam loanCarInfoParam) {
+    public ResultBean<Void> createOrUpdateLoanCarInfo(AppLoanCarInfoParam loanCarInfoParam) {
         Preconditions.checkNotNull(loanCarInfoParam, "贷款车辆信息不能为空");
 
         if (null == loanCarInfoParam.getId()) {
@@ -438,20 +361,20 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
     @Override
-    public ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+    public ResultBean<AppLoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId) {
+//        Preconditions.checkArgument(StringUtils.isNotBlank(orderId), "业务单号不能为空");
 
         Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(orderId);
 
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
-        LoanFinancialPlanVO loanFinancialPlanVO = new LoanFinancialPlanVO();
+        AppLoanFinancialPlanVO loanFinancialPlanVO = new AppLoanFinancialPlanVO();
         BeanUtils.copyProperties(loanFinancialPlanDO, loanFinancialPlanVO);
 
         return ResultBean.ofSuccess(loanFinancialPlanVO);
     }
 
     @Override
-    public ResultBean<Void> createOrUpdateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
+    public ResultBean<Void> createOrUpdateLoanFinancialPlan(AppLoanFinancialPlanParam loanFinancialPlanParam) {
         Preconditions.checkNotNull(loanFinancialPlanParam, "贷款金融方案不能为空");
 
         if (null == loanFinancialPlanParam.getId()) {
@@ -467,20 +390,20 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
 
     @Override
-    public ResultBean<LoanHomeVisitVO> homeVisitDetail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+    public ResultBean<AppLoanHomeVisitVO> homeVisitDetail(Long orderId) {
+//        Preconditions.checkArgument(StringUtils.isNotBlank(orderId), "业务单号不能为空");
 
         Long loanHomeVisitId = loanOrderDOMapper.getLoanHomeVisitId(orderId);
 
         LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanHomeVisitId);
-        LoanHomeVisitVO loanHomeVisitVO = new LoanHomeVisitVO();
+        AppLoanHomeVisitVO loanHomeVisitVO = new AppLoanHomeVisitVO();
         BeanUtils.copyProperties(loanHomeVisitDO, loanHomeVisitVO);
 
         return ResultBean.ofSuccess(loanHomeVisitVO);
     }
 
     @Override
-    public ResultBean<Void> createOrUpdateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam) {
+    public ResultBean<Void> createOrUpdateLoanHomeVisit(AppLoanHomeVisitParam loanHomeVisitParam) {
         Preconditions.checkNotNull(loanHomeVisitParam, "上门家访资料不能为空");
 
         if (null == loanHomeVisitParam.getId()) {
@@ -495,7 +418,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
     @Override
-    public ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
+    public ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam loanFinancialPlanParam) {
         Preconditions.checkNotNull(loanFinancialPlanParam.getCarPrice(), "车辆价格不能为空");
         Preconditions.checkNotNull(loanFinancialPlanParam.getBizModelId(), "业务产品ID不能为空");
         Preconditions.checkNotNull(loanFinancialPlanParam.getSignRate(), "签约利率不能为空");
@@ -509,7 +432,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
     @Override
-    public ResultBean<Void> infoSupplement(InfoSupplementParam infoSupplementParam) {
+    public ResultBean<Void> infoSupplement(AppInfoSupplementParam infoSupplementParam) {
         Preconditions.checkNotNull(infoSupplementParam.getCustomerId(), "客户ID不能为空");
         Preconditions.checkArgument(CollectionUtils.isEmpty(infoSupplementParam.getFiles()), "资料信息不能为空");
 
@@ -541,15 +464,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * 填充征信信息
      *
      * @param customer
+     * @param loanCustomerDO
      * @param type
      */
-    private void fillCreditMsg(CreditRecordVO.Customer customer, Byte type) {
-        ResultBean<LoanCreditInfoVO> resultBean = loanCreditInfoService.getByCustomerId(customer.getId(), type);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-
-        LoanCreditInfoVO loanCreditInfoVO = resultBean.getData();
-        customer.setCreditResult(loanCreditInfoVO.getResult());
-        customer.setCreditInfo(loanCreditInfoVO.getInfo());
+    private void fillCreditMsg(CreditRecordVO.Customer customer, LoanCustomerDO loanCustomerDO, Byte type) {
+        if (CREDIT_TYPE_BANK.equals(type)) {
+//            customer.setCreditStatus(loanCustomerDO.getBankCreditStatus());
+//            customer.setCreditDetail(loanCustomerDO.getBankCreditDetail());
+        } else if (CREDIT_TYPE_SOCIAL.equals(type)) {
+//            customer.setCreditStatus(loanCustomerDO.getSocialCreditStatus());
+//            customer.setCreditDetail(loanCustomerDO.getSocialCreditDetail());
+        }
     }
 
 
@@ -583,7 +508,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * @param processInstanceId
      * @return
      */
-    private void fillMsg(BaseInstProcessOrderVO baseInstProcessOrderVO, String processInstanceId) {
+    private void fillMsg(AppLoanProcessOrderVO baseInstProcessOrderVO, String processInstanceId) {
         // 业务单
         LoanOrderDO loanOrderDO = loanOrderDOMapper.getByProcessInstId(processInstanceId);
         if (null == loanOrderDO) {
@@ -619,7 +544,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * @param userGroupNameList
      * @return
      */
-    private TaskInfoQuery getTaskInfoQuery(LoanOrderQuery query, List<String> userGroupNameList) {
+    private TaskInfoQuery getTaskInfoQuery(AppLoanOrderQuery query, List<String> userGroupNameList) {
         TaskInfoQuery taskQuery = null;
         // 全部
         if (TASK_ALL.equals(query.getTaskStatus())) {
@@ -691,7 +616,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                     if (CUST_TYPE_PRINCIPAL.equals(e.getCustType())) {
                         CustomerVO principalLender = new CustomerVO();
                         BeanUtils.copyProperties(e, principalLender);
-
 //                        principalLender.setFiles(JSON.parseArray(e.getFiles(), CustomerVO.File.class));
                         custDetailVO.setPrincipalLender(principalLender);
                     }
@@ -728,8 +652,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanFinancialPlanParam
      */
-    private void createLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
-        Preconditions.checkNotNull(loanFinancialPlanParam.getOrderId(), "业务单号不能为空");
+    private void createLoanFinancialPlan(AppLoanFinancialPlanParam loanFinancialPlanParam) {
+//        Preconditions.checkArgument(StringUtils.isNotBlank(loanFinancialPlanParam.getOrderId()), "业务单号不能为空");
 
         // insert
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
@@ -756,7 +680,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanFinancialPlanVO
      */
-    private void updateLoanFinancialPlan(LoanFinancialPlanVO loanFinancialPlanVO) {
+    private void updateLoanFinancialPlan(AppLoanFinancialPlanParam loanFinancialPlanVO) {
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         BeanUtils.copyProperties(loanFinancialPlanVO, loanFinancialPlanDO);
         loanFinancialPlanDO.setGmtModify(new Date());
@@ -770,8 +694,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanCarInfoParam
      */
-    private void createLoanCarInfo(LoanCarInfoParam loanCarInfoParam) {
-        Preconditions.checkNotNull(loanCarInfoParam.getOrderId(), "业务单号不能为空");
+    private void createLoanCarInfo(AppLoanCarInfoParam loanCarInfoParam) {
+//        Preconditions.checkArgument(StringUtils.isNotBlank(loanCarInfoParam.getOrderId()), "业务单号不能为空");
 
         // insert
         LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
@@ -798,7 +722,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanCarInfoParam
      */
-    private void updateLoanCarInfo(LoanCarInfoParam loanCarInfoParam) {
+    private void updateLoanCarInfo(AppLoanCarInfoParam loanCarInfoParam) {
         LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
         BeanUtils.copyProperties(loanCarInfoParam, loanCarInfoDO);
         loanCarInfoDO.setGmtModify(new Date());
@@ -812,8 +736,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanHomeVisitParam
      */
-    private void createLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam) {
-        Preconditions.checkNotNull(loanHomeVisitParam.getOrderId(), "业务单号不能为空");
+    private void createLoanHomeVisit(AppLoanHomeVisitParam loanHomeVisitParam) {
+//        Preconditions.checkArgument(StringUtils.isNotBlank(loanHomeVisitParam.getOrderId()), "业务单号不能为空");
 
         // insert
         LoanHomeVisitDO loanHomeVisitDO = new LoanHomeVisitDO();
@@ -840,7 +764,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanHomeVisitParam
      */
-    private void updateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam) {
+    private void updateLoanHomeVisit(AppLoanHomeVisitParam loanHomeVisitParam) {
         LoanHomeVisitDO loanHomeVisitDO = new LoanHomeVisitDO();
         BeanUtils.copyProperties(loanHomeVisitParam, loanHomeVisitDO);
         loanHomeVisitDO.setGmtModify(new Date());

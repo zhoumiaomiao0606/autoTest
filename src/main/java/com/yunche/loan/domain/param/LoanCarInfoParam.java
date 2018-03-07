@@ -12,5 +12,5 @@ public class LoanCarInfoParam extends LoanCarInfoVO {
     /**
      * 业务单ID
      */
-    private String orderId;
+    private Long orderId;
 }

@@ -1,6 +1,5 @@
 package com.yunche.loan.web.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.*;
@@ -27,38 +26,6 @@ public class LoanProcessController {
 
 
     /**
-     * 生成消费贷-流程ID  （业务单编号）
-     *
-     * @return
-     */
-    @GetMapping(value = "/getOrderId")
-    public ResultBean<String> getOrderId() {
-        return loanProcessService.getOrderId();
-    }
-
-    /**
-     * 创建征信申请单 -【开启流程】
-     *
-     * @param creditApplyVO
-     * @return 业务单ID
-     */
-    @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<String> create(@RequestBody CreditApplyVO creditApplyVO) {
-        return loanProcessService.createCreditApply(creditApplyVO);
-    }
-
-    /**
-     * 编辑征信申请单
-     *
-     * @param processInstOrder
-     * @return
-     */
-    @PostMapping(value = "/creditapply/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> create(@RequestBody InstProcessOrderVO processInstOrder) {
-        return loanProcessService.updateCreditApply(processInstOrder);
-    }
-
-    /**
      * 通用审核接口      action： 0-打回 / 1-提交 / 2-弃单 / 3-资料增补
      * <p>
      *
@@ -66,7 +33,6 @@ public class LoanProcessController {
      */
     @PostMapping(value = "/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> approvalCreditApply(@RequestBody ApprovalParam Approval) {
-        logger.info("/loanprocess/approval", JSON.toJSONString(Approval));
         return loanProcessService.approval(Approval);
     }
 
@@ -76,8 +42,7 @@ public class LoanProcessController {
      * @return
      */
     @GetMapping(value = "/task/current")
-    public ResultBean<TaskStateVO> currentTask(@RequestParam("orderId") String orderId) {
-        logger.info("/loanprocess/task/current", JSON.toJSONString(orderId));
+    public ResultBean<TaskStateVO> currentTask(@RequestParam("orderId") Long orderId) {
         return loanProcessService.currentTask(orderId);
     }
 
@@ -89,9 +54,8 @@ public class LoanProcessController {
      * @return
      */
     @GetMapping(value = "/task/status")
-    public ResultBean<Byte> currentTask(@RequestParam("orderId") String orderId,
+    public ResultBean<Byte> currentTask(@RequestParam("orderId") Long orderId,
                                         @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
-        logger.info("/loanprocess/task/status", JSON.toJSONString(orderId), JSON.toJSONString(taskDefinitionKey));
         return loanProcessService.taskStatus(orderId, taskDefinitionKey);
     }
 }

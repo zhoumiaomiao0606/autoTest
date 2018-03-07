@@ -2,9 +2,9 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.mapper.LoanProcessOrderDOMapper;
+import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
-import com.yunche.loan.domain.entity.LoanProcessOrderDO;
 import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.query.OrderListQuery;
 import com.yunche.loan.domain.vo.InstLoanOrderVO;
@@ -36,15 +36,15 @@ public class CreditServiceImpl implements CreditService {
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
 
     @Autowired
-    private LoanProcessOrderDOMapper loanProcessOrderDOMapper;
+    private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
     private RuntimeService runtimeService;
 
 
     @Override
-    public ResultBean<Long> createLoanBaseInfo(String orderId, LoanBaseInfoDO loanBaseInfoDO) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(orderId), "业务单ID不能为空");
+    public ResultBean<Long> createLoanBaseInfo(Long orderId, LoanBaseInfoDO loanBaseInfoDO) {
+        Preconditions.checkNotNull(orderId, "业务单ID不能为空");
         Preconditions.checkArgument(null != loanBaseInfoDO && null != loanBaseInfoDO.getPartnerId(), "合伙人不能为空");
         Preconditions.checkNotNull(loanBaseInfoDO.getSalesmanId(), "业务员不能为空");
         Preconditions.checkNotNull(loanBaseInfoDO.getAreaId(), "业务区域不能为空");
@@ -90,10 +90,10 @@ public class CreditServiceImpl implements CreditService {
     @Override
     public ResultBean<List<InstLoanOrderVO>> query(OrderListQuery query) {
 
-//        int totalNum = loanProcessOrderDOMapper.count(query);
+//        int totalNum = loanOrderDOMapper.count(query);
 //        if (totalNum > 0) {
 //
-//            List<InstLoanOrderDO> instLoanOrderDOS = loanProcessOrderDOMapper.query(query);
+//            List<InstLoanOrderDO> instLoanOrderDOS = loanOrderDOMapper.query(query);
 //            if (!CollectionUtils.isEmpty(instLoanOrderDOS)) {
 //
 //
@@ -120,27 +120,27 @@ public class CreditServiceImpl implements CreditService {
      * @param orderId
      * @param loanBaseInfoId
      */
-    private void startProcessAndRelaInstProcessOrder(String orderId, Long loanBaseInfoId) {
+    private void startProcessAndRelaInstProcessOrder(Long orderId, Long loanBaseInfoId) {
         // 开启activiti流程
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("dev_loan_process");
 
-        LoanProcessOrderDO loanProcessOrderDO = loanProcessOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         // 开启本地业务单流程：业务单不存在，则新建
-        if (null == loanProcessOrderDO) {
-            loanProcessOrderDO = new LoanProcessOrderDO();
-            loanProcessOrderDO.setProcessInstId(processInstance.getProcessInstanceId());
-            loanProcessOrderDO.setId(orderId);
-            loanProcessOrderDO.setLoanBaseInfoId(loanBaseInfoId);
-            loanProcessOrderDO.setGmtCreate(new Date());
-            loanProcessOrderDO.setGmtModify(new Date());
-            int count = loanProcessOrderDOMapper.insertSelective(loanProcessOrderDO);
+        if (null == loanOrderDO) {
+            loanOrderDO = new LoanOrderDO();
+            loanOrderDO.setProcessInstId(processInstance.getProcessInstanceId());
+            loanOrderDO.setId(orderId);
+            loanOrderDO.setLoanBaseInfoId(loanBaseInfoId);
+            loanOrderDO.setGmtCreate(new Date());
+            loanOrderDO.setGmtModify(new Date());
+            int count = loanOrderDOMapper.insertSelective(loanOrderDO);
             Preconditions.checkArgument(count > 0, "新建业务单失败");
         } else {
             // 已存在，则直接关联
-            loanProcessOrderDO.setProcessInstId(processInstance.getProcessInstanceId());
-            loanProcessOrderDO.setLoanBaseInfoId(loanBaseInfoId);
-            loanProcessOrderDO.setGmtModify(new Date());
-            loanProcessOrderDOMapper.updateByPrimaryKeySelective(loanProcessOrderDO);
+            loanOrderDO.setProcessInstId(processInstance.getProcessInstanceId());
+            loanOrderDO.setLoanBaseInfoId(loanBaseInfoId);
+            loanOrderDO.setGmtModify(new Date());
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
         }
     }
 }

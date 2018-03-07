@@ -11,7 +11,7 @@ public class ApprovalParam {
     /**
      * 业务单ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补

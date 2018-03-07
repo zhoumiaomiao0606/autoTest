@@ -1,5 +1,7 @@
-package com.yunche.loan.domain.vo;
+package com.yunche.loan.domain.param;
 
+import com.yunche.loan.domain.vo.CustomerVO;
+import com.yunche.loan.domain.vo.FileVO;
 import lombok.Data;
 
 import java.util.Collections;
@@ -8,10 +10,15 @@ import java.util.List;
 
 /**
  * @author liuzhe
- * @date 2018/3/4
+ * @date 2018/3/5
  */
 @Data
-public class LoanHomeVisitVO {
+public class AppLoanHomeVisitParam {
+    /**
+     * 业务单ID
+     */
+    private Long orderId;
+
     private Long id;
 
     private Long visitSalesmanId;
@@ -25,8 +32,4 @@ public class LoanHomeVisitVO {
     private List<FileVO> files = Collections.EMPTY_LIST;
 
     private Byte status;
-
-    private Date gmtCreate;
-
-    private Date gmtModify;
 }

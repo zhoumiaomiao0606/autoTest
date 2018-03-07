@@ -6,7 +6,6 @@ import java.util.Date;
 
 @Data
 public class LoanCustomerDO {
-
     private Long id;
 
     private String name;
@@ -53,27 +52,17 @@ public class LoanCustomerDO {
 
     private String info;
 
-    private Byte bankCreditStatus;
-
-    private String bankCreditDetail;
-
-    private Byte socialCreditStatus;
-
-    private String socialCreditDetail;
-
     private Byte custType;
 
     private Long principalCustId;
 
     private Byte custRelation;
 
+    private Byte status;
+
     private Date gmtCreate;
 
     private Date gmtModify;
 
-    private Byte status;
-
     private String feature;
-
-    private String files;
 }

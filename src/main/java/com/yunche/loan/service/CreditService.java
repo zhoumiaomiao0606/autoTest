@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface CreditService {
 
-    ResultBean<Long> createLoanBaseInfo(String orderId, LoanBaseInfoDO loanBaseInfoDO);
+    ResultBean<Long> createLoanBaseInfo(Long orderId, LoanBaseInfoDO loanBaseInfoDO);
 
     ResultBean<Void> updateLoanBaseInfo(LoanBaseInfoDO loanBaseInfoDO);
 

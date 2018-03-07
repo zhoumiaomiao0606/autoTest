@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -53,7 +54,7 @@ public class BizExceptionHandler {
             // exec
             Object result = pjp.proceed();
 
-            // 时间
+            // 统计时间
             long totalTime = System.currentTimeMillis() - startTime;
             logger.info("totalTime : {}s", new Double(totalTime) / 1000);
 
@@ -88,7 +89,7 @@ public class BizExceptionHandler {
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-        System.out.println(request.getRemoteAddr() + " ====   " + request.getLocalAddr() + " ====   " + request.getRemotePort() + "    ====   " + request.getLocalPort());
+        System.out.println(request.getRemoteAddr() + "  :  " + request.getRemotePort() + "   -----------   " + request.getLocalAddr() + "  :  " + request.getLocalPort());
 
         List<Object> argList = Arrays.stream(args).parallel()
                 .filter(arg -> !(arg instanceof HttpServletRequest) && !(arg instanceof HttpServletResponse))
@@ -97,7 +98,11 @@ public class BizExceptionHandler {
                 })
                 .collect(Collectors.toList());
 
-        logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request), JSON.toJSONString(argList.get(0))).stream().collect(Collectors.joining("-")));
+        if (CollectionUtils.isEmpty(argList)) {
+            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request)).stream().collect(Collectors.joining("\u0001")));
+        } else {
+            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request), JSON.toJSONString(argList.get(0))).stream().collect(Collectors.joining("\u0001")));
+        }
     }
 
     /**
@@ -109,40 +114,22 @@ public class BizExceptionHandler {
      */
     public final static String getIpAddress(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
-        if (logger.isInfoEnabled()) {
-            logger.info("getIpAddress(HttpServletRequest) - X-Forwarded-For - String ip=" + ip);
-        }
 
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
                 ip = request.getHeader("Proxy-Client-IP");
-                if (logger.isInfoEnabled()) {
-                    logger.info("getIpAddress(HttpServletRequest) - Proxy-Client-IP - String ip=" + ip);
-                }
             }
             if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
                 ip = request.getHeader("WL-Proxy-Client-IP");
-                if (logger.isInfoEnabled()) {
-                    logger.info("getIpAddress(HttpServletRequest) - WL-Proxy-Client-IP - String ip=" + ip);
-                }
             }
             if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
                 ip = request.getHeader("HTTP_CLIENT_IP");
-                if (logger.isInfoEnabled()) {
-                    logger.info("getIpAddress(HttpServletRequest) - HTTP_CLIENT_IP - String ip=" + ip);
-                }
             }
             if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
                 ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-                if (logger.isInfoEnabled()) {
-                    logger.info("getIpAddress(HttpServletRequest) - HTTP_X_FORWARDED_FOR - String ip=" + ip);
-                }
             }
             if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
                 ip = request.getRemoteAddr();
-                if (logger.isInfoEnabled()) {
-                    logger.info("getIpAddress(HttpServletRequest) - getRemoteAddr - String ip=" + ip);
-                }
             }
         } else if (ip.length() > 15) {
             String[] ips = ip.split(",");

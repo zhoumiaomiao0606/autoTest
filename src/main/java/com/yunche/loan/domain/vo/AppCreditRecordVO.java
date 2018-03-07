@@ -6,13 +6,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 征信录入详情页
- *
  * @author liuzhe
- * @date 2018/3/3
+ * @date 2018/3/5
  */
 @Data
-public class CreditRecordVO {
+public class AppCreditRecordVO {
     /**
      * 贷款基本信息
      */
@@ -20,11 +18,11 @@ public class CreditRecordVO {
     /**
      * 主贷人
      */
-    private Customer principalLender;
+    private CreditRecordVO.Customer principalLender;
     /**
      * 共贷人列表
      */
-    private List<Customer> commonLenderList = Collections.EMPTY_LIST;
+    private List<CreditRecordVO.Customer> commonLenderList = Collections.EMPTY_LIST;
 
     @Data
     public static class Customer {
@@ -41,8 +39,8 @@ public class CreditRecordVO {
 
         private Byte custRelation;
 
-        private Byte creditResult;
+        private Byte creditStatus;
 
-        private String creditInfo;
+        private String creditDetail;
     }
 }

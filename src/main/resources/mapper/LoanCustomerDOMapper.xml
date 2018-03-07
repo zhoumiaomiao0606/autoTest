@@ -25,14 +25,9 @@
         <result column="house_feature" jdbcType="TINYINT" property="houseFeature"/>
         <result column="house_address" jdbcType="VARCHAR" property="houseAddress"/>
         <result column="info" jdbcType="VARCHAR" property="info"/>
-        <result column="bank_credit_status" jdbcType="TINYINT" property="bankCreditStatus"/>
-        <result column="bank_credit_detail" jdbcType="VARCHAR" property="bankCreditDetail"/>
-        <result column="social_credit_status" jdbcType="TINYINT" property="socialCreditStatus"/>
-        <result column="social_credit_detail" jdbcType="VARCHAR" property="socialCreditDetail"/>
         <result column="cust_type" jdbcType="TINYINT" property="custType"/>
         <result column="principal_cust_id" jdbcType="BIGINT" property="principalCustId"/>
         <result column="cust_relation" jdbcType="TINYINT" property="custRelation"/>
-        <result column="files" jdbcType="VARCHAR" property="files"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
@@ -40,12 +35,11 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, name, nation, birth, identity_validity, id_card, mobile, age, sex, apply_date,
-    address, marry, identity_address, mobile_area, education, company_name, company_phone,
-    month_income, house_type, house_owner, house_feature, house_address, info, bank_credit_status,
-    bank_credit_detail, social_credit_status, social_credit_detail, cust_type, principal_cust_id,
-    cust_relation, files, gmt_create, gmt_modify, status, feature
-  </sql>
+        id, name, nation, birth, identity_validity, id_card, mobile, age, sex, apply_date,
+        address, marry, identity_address, mobile_area, education, company_name, company_phone,
+        month_income, house_type, house_owner, house_feature, house_address, info, cust_type,
+        principal_cust_id, cust_relation, status, gmt_create, gmt_modify, feature
+    </sql>
 
     <!--getListById-->
     <select id="getListById" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -53,7 +47,16 @@
         <include refid="Base_Column_List"/>
         FROM loan_customer
         WHERE id = #{principalLenderId,jdbcType=BIGINT}
-        OR principal_cust_id = #{principalLenderId,jdbcType=BIGINT}
+        OR principal_cust_id = #{principalCustId,jdbcType=BIGINT}
+    </select>
+
+    <!--listByIdAndType-->
+    <select id="listByIdAndType" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM loan_customer
+        WHERE principal_cust_id = #{principalCustId,jdbcType=BIGINT}
+        AND cust_type = #{custType}
     </select>
 
     <!--getFilesById-->
@@ -97,11 +100,9 @@
         mobile_area, education, company_name,
         company_phone, month_income, house_type,
         house_owner, house_feature, house_address,
-        info, bank_credit_status, bank_credit_detail,
-        social_credit_status, social_credit_detail,
-        cust_type, principal_cust_id, cust_relation,
-        gmt_create, gmt_modify, status,
-        feature, files)
+        info, cust_type, principal_cust_id,
+        cust_relation, status, gmt_create,
+        gmt_modify, feature)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
         #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=DATE}, #{idCard,jdbcType=CHAR},
         #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT}, #{applyDate,jdbcType=DATE},
@@ -109,11 +110,9 @@
         #{mobileArea,jdbcType=VARCHAR}, #{education,jdbcType=TINYINT}, #{companyName,jdbcType=VARCHAR},
         #{companyPhone,jdbcType=VARCHAR}, #{monthIncome,jdbcType=INTEGER}, #{houseType,jdbcType=TINYINT},
         #{houseOwner,jdbcType=TINYINT}, #{houseFeature,jdbcType=TINYINT}, #{houseAddress,jdbcType=VARCHAR},
-        #{info,jdbcType=VARCHAR}, #{bankCreditStatus,jdbcType=TINYINT}, #{bankCreditDetail,jdbcType=VARCHAR},
-        #{socialCreditStatus,jdbcType=TINYINT}, #{socialCreditDetail,jdbcType=VARCHAR},
-        #{custType,jdbcType=TINYINT}, #{principalCustId,jdbcType=BIGINT}, #{custRelation,jdbcType=TINYINT},
-        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT},
-        #{feature,jdbcType=VARCHAR}, #{files,jdbcType=VARCHAR})
+        #{info,jdbcType=VARCHAR}, #{custType,jdbcType=TINYINT}, #{principalCustId,jdbcType=BIGINT},
+        #{custRelation,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
@@ -192,18 +191,6 @@
             <if test="info != null">
                 info,
             </if>
-            <if test="bankCreditStatus != null">
-                bank_credit_status,
-            </if>
-            <if test="bankCreditDetail != null">
-                bank_credit_detail,
-            </if>
-            <if test="socialCreditStatus != null">
-                social_credit_status,
-            </if>
-            <if test="socialCreditDetail != null">
-                social_credit_detail,
-            </if>
             <if test="custType != null">
                 cust_type,
             </if>
@@ -213,20 +200,17 @@
             <if test="custRelation != null">
                 cust_relation,
             </if>
+            <if test="status != null">
+                status,
+            </if>
             <if test="gmtCreate != null">
                 gmt_create,
             </if>
             <if test="gmtModify != null">
                 gmt_modify,
             </if>
-            <if test="status != null">
-                status,
-            </if>
             <if test="feature != null">
                 feature,
-            </if>
-            <if test="files != null">
-                files,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -299,18 +283,6 @@
             <if test="info != null">
                 #{info,jdbcType=VARCHAR},
             </if>
-            <if test="bankCreditStatus != null">
-                #{bankCreditStatus,jdbcType=TINYINT},
-            </if>
-            <if test="bankCreditDetail != null">
-                #{bankCreditDetail,jdbcType=VARCHAR},
-            </if>
-            <if test="socialCreditStatus != null">
-                #{socialCreditStatus,jdbcType=TINYINT},
-            </if>
-            <if test="socialCreditDetail != null">
-                #{socialCreditDetail,jdbcType=VARCHAR},
-            </if>
             <if test="custType != null">
                 #{custType,jdbcType=TINYINT},
             </if>
@@ -320,20 +292,17 @@
             <if test="custRelation != null">
                 #{custRelation,jdbcType=TINYINT},
             </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
             <if test="gmtModify != null">
                 #{gmtModify,jdbcType=TIMESTAMP},
             </if>
-            <if test="status != null">
-                #{status,jdbcType=TINYINT},
-            </if>
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
-            </if>
-            <if test="files != null">
-                #{files,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -407,18 +376,6 @@
             <if test="info != null">
                 info = #{info,jdbcType=VARCHAR},
             </if>
-            <if test="bankCreditStatus != null">
-                bank_credit_status = #{bankCreditStatus,jdbcType=TINYINT},
-            </if>
-            <if test="bankCreditDetail != null">
-                bank_credit_detail = #{bankCreditDetail,jdbcType=VARCHAR},
-            </if>
-            <if test="socialCreditStatus != null">
-                social_credit_status = #{socialCreditStatus,jdbcType=TINYINT},
-            </if>
-            <if test="socialCreditDetail != null">
-                social_credit_detail = #{socialCreditDetail,jdbcType=VARCHAR},
-            </if>
             <if test="custType != null">
                 cust_type = #{custType,jdbcType=TINYINT},
             </if>
@@ -428,62 +385,54 @@
             <if test="custRelation != null">
                 cust_relation = #{custRelation,jdbcType=TINYINT},
             </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
             <if test="gmtModify != null">
                 gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
             </if>
-            <if test="status != null">
-                status = #{status,jdbcType=TINYINT},
-            </if>
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
-            </if>
-            <if test="files != null">
-                files = #{files,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
-        update loan_customer
-        set name = #{name,jdbcType=VARCHAR},
-        nation = #{nation,jdbcType=VARCHAR},
-        birth = #{birth,jdbcType=DATE},
-        identity_validity = #{identityValidity,jdbcType=DATE},
-        id_card = #{idCard,jdbcType=CHAR},
-        mobile = #{mobile,jdbcType=VARCHAR},
-        age = #{age,jdbcType=TINYINT},
-        sex = #{sex,jdbcType=TINYINT},
-        apply_date = #{applyDate,jdbcType=DATE},
-        address = #{address,jdbcType=VARCHAR},
-        marry = #{marry,jdbcType=TINYINT},
-        identity_address = #{identityAddress,jdbcType=VARCHAR},
-        mobile_area = #{mobileArea,jdbcType=VARCHAR},
-        education = #{education,jdbcType=TINYINT},
-        company_name = #{companyName,jdbcType=VARCHAR},
-        company_phone = #{companyPhone,jdbcType=VARCHAR},
-        month_income = #{monthIncome,jdbcType=INTEGER},
-        house_type = #{houseType,jdbcType=TINYINT},
-        house_owner = #{houseOwner,jdbcType=TINYINT},
-        house_feature = #{houseFeature,jdbcType=TINYINT},
-        house_address = #{houseAddress,jdbcType=VARCHAR},
-        info = #{info,jdbcType=VARCHAR},
-        bank_credit_status = #{bankCreditStatus,jdbcType=TINYINT},
-        bank_credit_detail = #{bankCreditDetail,jdbcType=VARCHAR},
-        social_credit_status = #{socialCreditStatus,jdbcType=TINYINT},
-        social_credit_detail = #{socialCreditDetail,jdbcType=VARCHAR},
-        cust_type = #{custType,jdbcType=TINYINT},
-        principal_cust_id = #{principalCustId,jdbcType=BIGINT},
-        cust_relation = #{custRelation,jdbcType=TINYINT},
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        status = #{status,jdbcType=TINYINT},
-        feature = #{feature,jdbcType=VARCHAR},
-        files = #{files,jdbcType=VARCHAR}
-        where id = #{id,jdbcType=BIGINT}
-    </update>
+    update loan_customer
+    set name = #{name,jdbcType=VARCHAR},
+      nation = #{nation,jdbcType=VARCHAR},
+      birth = #{birth,jdbcType=DATE},
+      identity_validity = #{identityValidity,jdbcType=DATE},
+      id_card = #{idCard,jdbcType=CHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      age = #{age,jdbcType=TINYINT},
+      sex = #{sex,jdbcType=TINYINT},
+      apply_date = #{applyDate,jdbcType=DATE},
+      address = #{address,jdbcType=VARCHAR},
+      marry = #{marry,jdbcType=TINYINT},
+      identity_address = #{identityAddress,jdbcType=VARCHAR},
+      mobile_area = #{mobileArea,jdbcType=VARCHAR},
+      education = #{education,jdbcType=TINYINT},
+      company_name = #{companyName,jdbcType=VARCHAR},
+      company_phone = #{companyPhone,jdbcType=VARCHAR},
+      month_income = #{monthIncome,jdbcType=INTEGER},
+      house_type = #{houseType,jdbcType=TINYINT},
+      house_owner = #{houseOwner,jdbcType=TINYINT},
+      house_feature = #{houseFeature,jdbcType=TINYINT},
+      house_address = #{houseAddress,jdbcType=VARCHAR},
+      info = #{info,jdbcType=VARCHAR},
+      cust_type = #{custType,jdbcType=TINYINT},
+      principal_cust_id = #{principalCustId,jdbcType=BIGINT},
+      cust_relation = #{custRelation,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      feature = #{feature,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 
 </mapper>
