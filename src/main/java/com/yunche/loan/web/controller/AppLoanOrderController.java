@@ -5,8 +5,6 @@ import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.AppLoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.AppLoanOrderService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/app/loanorder")
 public class AppLoanOrderController {
-
-    private static final Logger logger = LoggerFactory.getLogger(AppLoanOrderController.class);
 
     @Autowired
     private AppLoanOrderService appLoanOrderService;
@@ -40,6 +36,17 @@ public class AppLoanOrderController {
     }
 
     /**
+     * 征信申请单  -新建（保存主贷人客户时，新建业务单）
+     *
+     * @param appCustomerParam
+     * @return
+     */
+    @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<AppCreditApplyVO> createCreditApplyOrder(@RequestBody AppCustomerParam appCustomerParam) {
+        return appLoanOrderService.createCreditApplyOrder(appCustomerParam);
+    }
+
+    /**
      * 征信申请单详情
      *
      * @param orderId
@@ -51,49 +58,25 @@ public class AppLoanOrderController {
     }
 
     /**
-     * 征信申请单新建
+     * 创建贷款基本信息
      *
-     * @param creditApplyOrderVO
+     * @param param
      * @return
      */
-    @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<String> createCreditApplyOrder(@RequestBody CreditApplyOrderVO creditApplyOrderVO) {
-        return appLoanOrderService.createCreditApplyOrder(creditApplyOrderVO);
+    @PostMapping(value = "/baseinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> createBaseInfo(@RequestBody AppLoanBaseInfoParam param) {
+        return appLoanOrderService.createBaseInfo(param);
     }
 
     /**
-     * 编辑征信申请单
+     * 编辑贷款基本信息
      *
-     * @param appCreditApplyOrderVO
+     * @param param
      * @return
      */
-    @PostMapping(value = "/creditapply/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> updateCreditApplyOrder(AppCreditApplyOrderVO appCreditApplyOrderVO) {
-        return appLoanOrderService.updateCreditApplyOrder(appCreditApplyOrderVO);
-    }
-
-    /**
-     * 征信录入单详情
-     *
-     * @param orderId 业务单号
-     * @param type    征信类型： 1-银行;  2-社会;
-     * @return
-     */
-    @GetMapping(value = "/creditrecord/detail")
-    public ResultBean<AppCreditRecordVO> creditRecordDetail(@RequestParam("orderId") Long orderId,
-                                                            @RequestParam("type") Byte type) {
-        return appLoanOrderService.creditRecordDetail(orderId, type);
-    }
-
-    /**
-     * 征信录入
-     *
-     * @param creditRecordParam
-     * @return
-     */
-    @PostMapping(value = "/creditrecord", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> creditRecord(@RequestBody CreditRecordParam creditRecordParam) {
-        return appLoanOrderService.creditRecord(creditRecordParam);
+    @PostMapping(value = "/baseinfo/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> updateBaseInfo(@RequestBody AppLoanBaseInfoParam param) {
+        return appLoanOrderService.updateBaseInfo(param);
     }
 
     /**
@@ -103,19 +86,41 @@ public class AppLoanOrderController {
      * @return
      */
     @GetMapping(value = "/customer/detail")
-    public ResultBean<CustDetailVO> customerDetail(@RequestParam("orderId") Long orderId) {
+    public ResultBean<AppCustDetailVO> customerDetail(@RequestParam("orderId") Long orderId) {
         return appLoanOrderService.customerDetail(orderId);
     }
 
     /**
      * 贷款客户信息编辑
      *
-     * @param custDetailVO
+     * @param param
      * @return
      */
     @PostMapping(value = "/customer/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> updateCustomer(@RequestBody CustDetailVO custDetailVO) {
-        return appLoanOrderService.updateCustomer(custDetailVO);
+    public ResultBean<Void> updateCustomer(@RequestBody AppCustomerParam param) {
+        return appLoanOrderService.updateCustomer(param);
+    }
+
+    /**
+     * 增加关联人（共贷人/担保人/紧急联系人）
+     *
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/customer/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> addRelaCustomer(@RequestBody AppCustomerParam param) {
+        return appLoanOrderService.addRelaCustomer(param);
+    }
+
+    /**
+     * 删除关联人（共贷人/担保人/紧急联系人）
+     *
+     * @param customerId
+     * @return
+     */
+    @PostMapping(value = "/customer/delrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> delRelaCustomer(@RequestParam("customerId") Long customerId) {
+        return appLoanOrderService.delRelaCustomer(customerId);
     }
 
     /**
@@ -133,6 +138,58 @@ public class AppLoanOrderController {
         return appLoanOrderService.faceOff(orderId, principalLenderId, commonLenderId);
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//    /**
+//     * 征信录入单详情
+//     *
+//     * @param orderId 业务单号
+//     * @param type    征信类型： 1-银行;  2-社会;
+//     * @return
+//     */
+//    @GetMapping(value = "/creditrecord/detail")
+//    public ResultBean<AppCreditRecordVO> creditRecordDetail(@RequestParam("orderId") Long orderId,
+//                                                            @RequestParam("type") Byte type) {
+//        return appLoanOrderService.creditRecordDetail(orderId, type);
+//    }
+//
+//    /**
+//     * 征信录入
+//     *
+//     * @param creditRecordParam
+//     * @return
+//     */
+//    @PostMapping(value = "/creditrecord", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    public ResultBean<Void> creditRecord(@RequestBody CreditRecordParam creditRecordParam) {
+//        return appLoanOrderService.creditRecord(creditRecordParam);
+//    }
+
+    /**
+     * 保存贷款车辆信息 -新增
+     *
+     * @param appLoanCarInfoParam
+     * @return
+     */
+    @PostMapping(value = "/carinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> createLoanCarInfo(@RequestBody AppLoanCarInfoParam appLoanCarInfoParam) {
+        return appLoanOrderService.createLoanCarInfo(appLoanCarInfoParam);
+    }
+
+    /**
+     * 贷款车辆信息 -编辑
+     *
+     * @param appLoanCarInfoParam
+     * @return
+     */
+    @PostMapping(value = "/carinfo/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> saveLoanCarInfo(@RequestBody AppLoanCarInfoParam appLoanCarInfoParam) {
+        return appLoanOrderService.updateLoanCarInfo(appLoanCarInfoParam);
+    }
+
     /**
      * 根据订单号获取贷款车辆信息
      *
@@ -145,14 +202,36 @@ public class AppLoanOrderController {
     }
 
     /**
-     * 保存贷款车辆信息 【新增/编辑】
+     * 金融方案计算
      *
-     * @param appLoanCarInfoParam
+     * @param param
      * @return
      */
-    @PostMapping(value = "/carinfo/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> saveLoanCarInfo(@RequestBody AppLoanCarInfoParam appLoanCarInfoParam) {
-        return appLoanOrderService.createOrUpdateLoanCarInfo(appLoanCarInfoParam);
+    @PostMapping("/financialplan/calc")
+    public ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(@RequestBody AppLoanFinancialPlanParam param) {
+        return appLoanOrderService.calcLoanFinancialPlan(param);
+    }
+
+    /**
+     * 贷款金融方案  -新增
+     *
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/financialplan/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> createLoanFinancialPlan(@RequestBody AppLoanFinancialPlanParam param) {
+        return appLoanOrderService.createLoanFinancialPlan(param);
+    }
+
+    /**
+     * 贷款金融方案  -编辑
+     *
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/financialplan/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> updateLoanFinancialPlan(@RequestBody AppLoanFinancialPlanParam param) {
+        return appLoanOrderService.updateLoanFinancialPlan(param);
     }
 
     /**
@@ -164,28 +243,6 @@ public class AppLoanOrderController {
     @GetMapping(value = "/financialplan/detail")
     public ResultBean<AppLoanFinancialPlanVO> loanFinancialPlanDetail(@RequestParam("orderId") Long orderId) {
         return appLoanOrderService.loanFinancialPlanDetail(orderId);
-    }
-
-    /**
-     * 金融方案计算
-     *
-     * @param appLoanFinancialPlanParam
-     * @return
-     */
-    @PostMapping("/")
-    public ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(@RequestBody AppLoanFinancialPlanParam appLoanFinancialPlanParam) {
-        return appLoanOrderService.calcLoanFinancialPlan(appLoanFinancialPlanParam);
-    }
-
-    /**
-     * 保存贷款金融方案 【新增/编辑】
-     *
-     * @param loanFinancialPlanParam
-     * @return
-     */
-    @PostMapping(value = "/financialplan/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> saveLoanFinancialPlan(@RequestBody AppLoanFinancialPlanParam loanFinancialPlanParam) {
-        return appLoanOrderService.createOrUpdateLoanFinancialPlan(loanFinancialPlanParam);
     }
 
     /**
@@ -202,22 +259,22 @@ public class AppLoanOrderController {
     /**
      * 保存上门家访资料 【新增/编辑】
      *
-     * @param loanHomeVisitParam
+     * @param param
      * @return
      */
     @PostMapping(value = "/homevisit/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> saveLoanHomeVisit(@RequestBody AppLoanHomeVisitParam loanHomeVisitParam) {
-        return appLoanOrderService.createOrUpdateLoanHomeVisit(loanHomeVisitParam);
+    public ResultBean<Void> saveLoanHomeVisit(@RequestBody AppLoanHomeVisitParam param) {
+        return appLoanOrderService.createOrUpdateLoanHomeVisit(param);
     }
 
     /**
      * 资料增补 -客户证件图片信息
      *
-     * @param infoSupplementParam
+     * @param param
      * @return
      */
     @PostMapping(value = "/infosupplement", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> infoSupplement(@RequestBody AppInfoSupplementParam infoSupplementParam) {
-        return appLoanOrderService.infoSupplement(infoSupplementParam);
+    public ResultBean<Void> infoSupplement(@RequestBody AppInfoSupplementParam param) {
+        return appLoanOrderService.infoSupplement(param);
     }
 }

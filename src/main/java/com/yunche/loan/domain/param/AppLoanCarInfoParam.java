@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.param;
 
+import com.yunche.loan.domain.vo.BaseVO;
 import lombok.Data;
 
 import java.util.Date;
@@ -17,25 +18,42 @@ public class AppLoanCarInfoParam {
 
     private Long id;
 
-    private Long carModelId;
-
     private Byte carType;
-
-    private Long partnerId;
 
     private Integer gpsNum;
 
     private Byte carKey;
-
-    private String openBank;
-
-    private String accountName;
-
-    private String bankAccount;
-
-    private Byte payMonth;
-
+    /**
+     * 车型信息
+     */
+    private BaseVO carDetail;
+    /**
+     * 合伙人收款账户信息
+     */
+    private PartnerAccountInfo partnerAccountInfo;
+    /**
+     * 备注
+     */
     private String info;
 
     private Byte status;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
+
+    @Data
+    public static class PartnerAccountInfo {
+        private Long partnerId;
+
+        private String partnerName;
+
+        private String openBank;
+
+        private String accountName;
+
+        private String bankAccount;
+
+        private Byte payMonth;
+    }
 }

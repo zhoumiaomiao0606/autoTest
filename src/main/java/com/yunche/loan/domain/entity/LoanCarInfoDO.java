@@ -8,15 +8,19 @@ import java.util.Date;
 public class LoanCarInfoDO {
     private Long id;
 
-    private Long carModelId;
+    private Long carDetailId;
+
+    private String carDetailName;
 
     private Byte carType;
-
-    private Long partnerId;
 
     private Integer gpsNum;
 
     private Byte carKey;
+
+    private Long partnerId;
+
+    private String partnerName;
 
     private String openBank;
 

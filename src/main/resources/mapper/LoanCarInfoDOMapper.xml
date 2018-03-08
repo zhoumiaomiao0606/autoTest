@@ -3,11 +3,13 @@
 <mapper namespace="com.yunche.loan.mapper.LoanCarInfoDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanCarInfoDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="car_model_id" jdbcType="BIGINT" property="carModelId"/>
+        <result column="car_detail_id" jdbcType="BIGINT" property="carDetailId"/>
+        <result column="car_detail_name" jdbcType="VARCHAR" property="carDetailName"/>
         <result column="car_type" jdbcType="TINYINT" property="carType"/>
-        <result column="partner_id" jdbcType="BIGINT" property="partnerId"/>
         <result column="gps_num" jdbcType="INTEGER" property="gpsNum"/>
         <result column="car_key" jdbcType="TINYINT" property="carKey"/>
+        <result column="partner_id" jdbcType="BIGINT" property="partnerId"/>
+        <result column="partner_name" jdbcType="VARCHAR" property="partnerName"/>
         <result column="open_bank" jdbcType="VARCHAR" property="openBank"/>
         <result column="account_name" jdbcType="VARCHAR" property="accountName"/>
         <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
@@ -20,8 +22,9 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, car_model_id, car_type, partner_id, gps_num, car_key, open_bank, account_name,
-        bank_account, pay_month, info, status, gmt_create, gmt_modify, feature
+        id, car_detail_id, car_detail_name, car_type, gps_num, car_key, partner_id, partner_name,
+        open_bank, account_name, bank_account, pay_month, info, status, gmt_create, gmt_modify,
+        feature
     </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -41,18 +44,18 @@
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into loan_car_info (id, car_model_id, car_type,
-        partner_id, gps_num, car_key,
-        open_bank, account_name, bank_account,
-        pay_month, status, gmt_create,
-        gmt_modify, feature, info
-        )
-        values (#{id,jdbcType=BIGINT}, #{carModelId,jdbcType=BIGINT}, #{carType,jdbcType=TINYINT},
-        #{partnerId,jdbcType=BIGINT}, #{gpsNum,jdbcType=INTEGER}, #{carKey,jdbcType=TINYINT},
-        #{openBank,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR},
-        #{payMonth,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{info,jdbcType=VARCHAR}
-        )
+        insert into loan_car_info (id, car_detail_id, car_detail_name,
+        car_type, gps_num, car_key,
+        partner_id, partner_name, open_bank,
+        account_name, bank_account, pay_month,
+        info, status, gmt_create,
+        gmt_modify, feature)
+        values (#{id,jdbcType=BIGINT}, #{carDetailId,jdbcType=BIGINT}, #{carDetailName,jdbcType=VARCHAR},
+        #{carType,jdbcType=TINYINT}, #{gpsNum,jdbcType=INTEGER}, #{carKey,jdbcType=TINYINT},
+        #{partnerId,jdbcType=BIGINT}, #{partnerName,jdbcType=VARCHAR}, #{openBank,jdbcType=VARCHAR},
+        #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
+        #{info,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
@@ -65,20 +68,26 @@
             <if test="id != null">
                 id,
             </if>
-            <if test="carModelId != null">
-                car_model_id,
+            <if test="carDetailId != null">
+                car_detail_id,
+            </if>
+            <if test="carDetailName != null">
+                car_detail_name,
             </if>
             <if test="carType != null">
                 car_type,
-            </if>
-            <if test="partnerId != null">
-                partner_id,
             </if>
             <if test="gpsNum != null">
                 gps_num,
             </if>
             <if test="carKey != null">
                 car_key,
+            </if>
+            <if test="partnerId != null">
+                partner_id,
+            </if>
+            <if test="partnerName != null">
+                partner_name,
             </if>
             <if test="openBank != null">
                 open_bank,
@@ -92,6 +101,9 @@
             <if test="payMonth != null">
                 pay_month,
             </if>
+            <if test="info != null">
+                info,
+            </if>
             <if test="status != null">
                 status,
             </if>
@@ -104,28 +116,31 @@
             <if test="feature != null">
                 feature,
             </if>
-            <if test="info != null">
-                info,
-            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
-            <if test="carModelId != null">
-                #{carModelId,jdbcType=BIGINT},
+            <if test="carDetailId != null">
+                #{carDetailId,jdbcType=BIGINT},
+            </if>
+            <if test="carDetailName != null">
+                #{carDetailName,jdbcType=VARCHAR},
             </if>
             <if test="carType != null">
                 #{carType,jdbcType=TINYINT},
-            </if>
-            <if test="partnerId != null">
-                #{partnerId,jdbcType=BIGINT},
             </if>
             <if test="gpsNum != null">
                 #{gpsNum,jdbcType=INTEGER},
             </if>
             <if test="carKey != null">
                 #{carKey,jdbcType=TINYINT},
+            </if>
+            <if test="partnerId != null">
+                #{partnerId,jdbcType=BIGINT},
+            </if>
+            <if test="partnerName != null">
+                #{partnerName,jdbcType=VARCHAR},
             </if>
             <if test="openBank != null">
                 #{openBank,jdbcType=VARCHAR},
@@ -139,6 +154,9 @@
             <if test="payMonth != null">
                 #{payMonth,jdbcType=TINYINT},
             </if>
+            <if test="info != null">
+                #{info,jdbcType=VARCHAR},
+            </if>
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
             </if>
@@ -151,29 +169,32 @@
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
             </if>
-            <if test="info != null">
-                #{info,jdbcType=VARCHAR},
-            </if>
         </trim>
     </insert>
 
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
         update loan_car_info
         <set>
-            <if test="carModelId != null">
-                car_model_id = #{carModelId,jdbcType=BIGINT},
+            <if test="carDetailId != null">
+                car_detail_id = #{carDetailId,jdbcType=BIGINT},
+            </if>
+            <if test="carDetailName != null">
+                car_detail_name = #{carDetailName,jdbcType=VARCHAR},
             </if>
             <if test="carType != null">
                 car_type = #{carType,jdbcType=TINYINT},
-            </if>
-            <if test="partnerId != null">
-                partner_id = #{partnerId,jdbcType=BIGINT},
             </if>
             <if test="gpsNum != null">
                 gps_num = #{gpsNum,jdbcType=INTEGER},
             </if>
             <if test="carKey != null">
                 car_key = #{carKey,jdbcType=TINYINT},
+            </if>
+            <if test="partnerId != null">
+                partner_id = #{partnerId,jdbcType=BIGINT},
+            </if>
+            <if test="partnerName != null">
+                partner_name = #{partnerName,jdbcType=VARCHAR},
             </if>
             <if test="openBank != null">
                 open_bank = #{openBank,jdbcType=VARCHAR},
@@ -187,6 +208,9 @@
             <if test="payMonth != null">
                 pay_month = #{payMonth,jdbcType=TINYINT},
             </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
@@ -199,30 +223,29 @@
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
-            <if test="info != null">
-                info = #{info,jdbcType=VARCHAR},
-            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
-        update loan_car_info
-        set car_model_id = #{carModelId,jdbcType=BIGINT},
-        car_type = #{carType,jdbcType=TINYINT},
-        partner_id = #{partnerId,jdbcType=BIGINT},
-        gps_num = #{gpsNum,jdbcType=INTEGER},
-        car_key = #{carKey,jdbcType=TINYINT},
-        open_bank = #{openBank,jdbcType=VARCHAR},
-        account_name = #{accountName,jdbcType=VARCHAR},
-        bank_account = #{bankAccount,jdbcType=VARCHAR},
-        pay_month = #{payMonth,jdbcType=TINYINT},
-        status = #{status,jdbcType=TINYINT},
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        feature = #{feature,jdbcType=VARCHAR},
-        info = #{info,jdbcType=VARCHAR}
-        where id = #{id,jdbcType=BIGINT}
-    </update>
+    update loan_car_info
+    set car_detail_id = #{carDetailId,jdbcType=BIGINT},
+      car_detail_name = #{carDetailName,jdbcType=VARCHAR},
+      car_type = #{carType,jdbcType=TINYINT},
+      gps_num = #{gpsNum,jdbcType=INTEGER},
+      car_key = #{carKey,jdbcType=TINYINT},
+      partner_id = #{partnerId,jdbcType=BIGINT},
+      partner_name = #{partnerName,jdbcType=VARCHAR},
+      open_bank = #{openBank,jdbcType=VARCHAR},
+      account_name = #{accountName,jdbcType=VARCHAR},
+      bank_account = #{bankAccount,jdbcType=VARCHAR},
+      pay_month = #{payMonth,jdbcType=TINYINT},
+      info = #{info,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      feature = #{feature,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 
 </mapper>

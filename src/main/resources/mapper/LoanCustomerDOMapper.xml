@@ -50,13 +50,16 @@
         OR principal_cust_id = #{principalCustId,jdbcType=BIGINT}
     </select>
 
-    <!--listByIdAndType-->
-    <select id="listByIdAndType" resultMap="BaseResultMap">
+    <!--listByPrincipalCustIdAndType-->
+    <select id="listByPrincipalCustIdAndType" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM loan_customer
         WHERE principal_cust_id = #{principalCustId,jdbcType=BIGINT}
-        AND cust_type = #{custType}
+        OR id = #{principalCustId,jdbcType=BIGINT}
+        <if test="custType != null">
+            AND cust_type = #{custType}
+        </if>
     </select>
 
     <!--getFilesById-->

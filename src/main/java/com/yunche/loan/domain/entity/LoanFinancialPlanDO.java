@@ -13,6 +13,8 @@ public class LoanFinancialPlanDO {
 
     private Long financialProductId;
 
+    private String financialProductName;
+
     private String bank;
 
     private BigDecimal signRate;

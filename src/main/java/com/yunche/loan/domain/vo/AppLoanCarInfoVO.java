@@ -10,26 +10,25 @@ import java.util.Date;
  */
 @Data
 public class AppLoanCarInfoVO {
+
     private Long id;
 
-    private Long carModelId;
-
     private Byte carType;
-
-    private Long partnerId;
 
     private Integer gpsNum;
 
     private Byte carKey;
-
-    private String openBank;
-
-    private String accountName;
-
-    private String bankAccount;
-
-    private Byte payMonth;
-
+    /**
+     * 车型信息
+     */
+    private BaseVO carDetail;
+    /**
+     * 合伙人收款账户信息
+     */
+    private PartnerAccountInfo partnerAccountInfo;
+    /**
+     * 备注
+     */
     private String info;
 
     private Byte status;
@@ -37,4 +36,19 @@ public class AppLoanCarInfoVO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    @Data
+    public static class PartnerAccountInfo {
+        private Long partnerId;
+
+        private String partnerName;
+
+        private String openBank;
+
+        private String accountName;
+
+        private String bankAccount;
+
+        private Byte payMonth;
+    }
 }

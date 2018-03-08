@@ -11,6 +11,14 @@
     partner_id, employee_id, gmt_create, gmt_modify
   </sql>
 
+    <!--getPartnerIdByEmployeeId-->
+    <select id="getPartnerIdByEmployeeId" parameterType="java.lang.Long"
+            resultType="java.lang.Long">
+        select DISTINCT(partner_id)
+        from partner_rela_employee
+        where employee_id = #{employeeId,jdbcType=BIGINT}
+    </select>
+
     <select id="getEmployeeIdListByPartnerId" parameterType="java.lang.Long"
             resultType="java.lang.Long">
         select employee_id

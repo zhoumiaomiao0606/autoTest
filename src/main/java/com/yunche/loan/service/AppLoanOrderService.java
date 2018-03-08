@@ -16,33 +16,43 @@ public interface AppLoanOrderService {
 
     ResultBean<AppCreditApplyOrderVO> creditApplyOrderDetail(Long orderId);
 
-    ResultBean<String> createCreditApplyOrder(CreditApplyOrderVO creditApplyOrderVO);
-
-    ResultBean<Void> updateCreditApplyOrder(AppCreditApplyOrderVO creditApplyOrderVO);
+    ResultBean<AppCreditApplyVO> createCreditApplyOrder(AppCustomerParam creditApplyOrderVO);
 
     ResultBean<AppCreditRecordVO> creditRecordDetail(Long orderId, Byte type);
 
     ResultBean<Void> creditRecord(CreditRecordParam creditRecordParam);
 
-    ResultBean<CustDetailVO> customerDetail(Long orderId);
-
-    ResultBean<Void> updateCustomer(CustDetailVO custDetailVO);
+    ResultBean<AppCustDetailVO> customerDetail(Long orderId);
 
     ResultBean<Void> faceOff(Long orderId, Long principalLenderId, Long commonLenderId);
-
-    ResultBean<AppLoanCarInfoVO> loanCarInfoDetail(Long orderId);
-
-    ResultBean<Void> createOrUpdateLoanCarInfo(AppLoanCarInfoParam appLoanCarInfoParam);
-
-    ResultBean<AppLoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId);
-
-    ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam);
-
-    ResultBean<Void> createOrUpdateLoanFinancialPlan(AppLoanFinancialPlanParam loanFinancialPlanParam);
 
     ResultBean<AppLoanHomeVisitVO> homeVisitDetail(Long orderId);
 
     ResultBean<Void> createOrUpdateLoanHomeVisit(AppLoanHomeVisitParam loanHomeVisitParam);
 
     ResultBean<Void> infoSupplement(AppInfoSupplementParam infoSupplementParam);
+
+    ResultBean<Long> createBaseInfo(AppLoanBaseInfoParam param);
+
+    ResultBean<Void> updateBaseInfo(AppLoanBaseInfoParam param);
+
+    ResultBean<Long> addRelaCustomer(AppCustomerParam param);
+
+    ResultBean<Void> updateCustomer(AppCustomerParam param);
+
+    ResultBean<Long> delRelaCustomer(Long customerId);
+
+    ResultBean<Long> createLoanCarInfo(AppLoanCarInfoParam appLoanCarInfoParam);
+
+    ResultBean<Void> updateLoanCarInfo(AppLoanCarInfoParam appLoanCarInfoParam);
+
+    ResultBean<AppLoanCarInfoVO> loanCarInfoDetail(Long orderId);
+
+    ResultBean<Long> createLoanFinancialPlan(AppLoanFinancialPlanParam param);
+
+    ResultBean<Void> updateLoanFinancialPlan(AppLoanFinancialPlanParam param);
+
+    ResultBean<AppLoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId);
+
+    ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam);
 }

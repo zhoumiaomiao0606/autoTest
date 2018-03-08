@@ -29,17 +29,16 @@ public class LoanProcessConst {
      */
     public static final Byte TASK_ALL = 0;
     /**
-     * 审核状态:  1-未处理(待审核);
+     * 审核状态:  1-已处理(审核);
      */
-    public static final Byte TASK_TODO = 1;
+    public static final Byte TASK_DONE = 1;
     /**
-     * 审核状态:  2-已处理(审核);
+     * 审核状态:  2-未处理(待审核);
      */
-    public static final Byte TASK_DONE = 2;
+    public static final Byte TASK_TODO = 2;
 
     /**
      * 删除理由  【task被删除的理由-任务已被执行】
      */
     public static final String DELETE_RELEASE_HAS_DONE = "completed";
-
 }

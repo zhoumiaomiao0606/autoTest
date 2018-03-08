@@ -55,16 +55,16 @@ public class CreditController {
         return creditService.updateLoanBaseInfo(loanBaseInfoDO);
     }
 
-    /**
-     * 编辑-贷款基本信息
-     *
-     * @param id
-     * @return
-     */
-    @GetMapping(value = "/loanBaseInfo/getById")
-    public ResultBean<LoanBaseInfoVO> getLoanBaseInfoById(@RequestParam Long id) {
-        return creditService.getLoanBaseInfoById(id);
-    }
+//    /**
+//     * 编辑-贷款基本信息
+//     *
+//     * @param id
+//     * @return
+//     */
+//    @GetMapping(value = "/loanBaseInfo/getById")
+//    public ResultBean<LoanBaseInfoVO> getLoanBaseInfoById(@RequestParam Long id) {
+//        return creditService.getLoanBaseInfoById(id);
+//    }
 
     /**
      * 征信申请单 -分页查询

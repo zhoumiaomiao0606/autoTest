@@ -11,11 +11,11 @@ public class LoanBaseInfoVO {
 
     private Long id;
 
-    private Long partnerId;
+    private BaseVO partner;
 
-    private Long salesmanId;
+    private BaseVO salesman;
 
-    private Long areaId;
+    private BaseVO area;
 
     private Byte carType;
 

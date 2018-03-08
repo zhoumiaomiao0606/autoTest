@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
-import com.yunche.loan.domain.param.CreditRecordParam;
 import com.yunche.loan.domain.vo.LoanCreditInfoVO;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
 import com.yunche.loan.service.LoanCreditInfoService;
@@ -30,13 +29,11 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
 
 
     @Override
-    public ResultBean<Long> create(CreditRecordParam creditRecordParam) {
-        Preconditions.checkNotNull(creditRecordParam.getCustomerId(), "客户ID不能为空");
-        Preconditions.checkNotNull(creditRecordParam.getType(), "征信类型不能为空");
-        Preconditions.checkNotNull(creditRecordParam.getResult(), "征信结果不能为空");
+    public ResultBean<Long> create(LoanCreditInfoDO loanCreditInfoDO) {
+        Preconditions.checkNotNull(loanCreditInfoDO.getCustomerId(), "客户ID不能为空");
+        Preconditions.checkNotNull(loanCreditInfoDO.getType(), "征信类型不能为空");
+        Preconditions.checkNotNull(loanCreditInfoDO.getResult(), "征信结果不能为空");
 
-        LoanCreditInfoDO loanCreditInfoDO = new LoanCreditInfoDO();
-        BeanUtils.copyProperties(creditRecordParam, loanCreditInfoDO);
         loanCreditInfoDO.setStatus(VALID_STATUS);
         loanCreditInfoDO.setGmtCreate(new Date());
         loanCreditInfoDO.setGmtModify(new Date());
@@ -47,11 +44,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     }
 
     @Override
-    public ResultBean<Long> update(CreditRecordParam creditRecordParam) {
-        Preconditions.checkNotNull(creditRecordParam.getId(), "征信信息ID不能为空");
+    public ResultBean<Long> update(LoanCreditInfoDO loanCreditInfoDO) {
+        Preconditions.checkNotNull(loanCreditInfoDO.getId(), "征信信息ID不能为空");
 
-        LoanCreditInfoDO loanCreditInfoDO = new LoanCreditInfoDO();
-        BeanUtils.copyProperties(creditRecordParam, loanCreditInfoDO);
         loanCreditInfoDO.setGmtModify(new Date());
         int count = loanCreditInfoDOMapper.updateByPrimaryKeySelective(loanCreditInfoDO);
         Preconditions.checkArgument(count > 0, "征信结果修改失败");

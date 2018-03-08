@@ -1,9 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.CustDetailParam;
-import com.yunche.loan.domain.vo.CustBaseInfoVO;
-import com.yunche.loan.domain.vo.CustRelaPersonInfoVO;
+import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.vo.CustomerVO;
 import com.yunche.loan.service.LoanCustomerService;
 import org.slf4j.Logger;
@@ -92,11 +90,11 @@ public class CustomerController {
      * @param customerVO
      * @return
      */
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> create(@RequestParam String orderId,
-                                   @RequestBody CustomerVO customerVO) {
-        return loanCustomerService.create(customerVO);
-    }
+//    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    public ResultBean<Long> create(@RequestParam String orderId,
+//                                   @RequestBody CustomerVO customerVO) {
+//        return loanCustomerService.create(customerVO);
+//    }
 
     /**
      * 通过ID查询
@@ -115,21 +113,21 @@ public class CustomerController {
      * @param customerVO
      * @return
      */
-    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> update(@RequestBody CustomerVO customerVO) {
-        return loanCustomerService.update(customerVO);
-    }
+//    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    public ResultBean<Void> update(@RequestBody CustomerVO customerVO) {
+//        return loanCustomerService.update(customerVO);
+//    }
 
 
     /**
      * 编辑客户信息(主贷人/共贷人/担保人/紧急联系人)
      *
-     * @param custDetailParam
+     * @param allCustDetailParam
      * @return
      */
     @PostMapping(value = "/all/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> updateAll(@RequestBody CustDetailParam custDetailParam) {
-        return loanCustomerService.updateAll(custDetailParam);
+    public ResultBean<Long> updateAll(@RequestBody AllCustDetailParam allCustDetailParam) {
+        return loanCustomerService.updateAll(allCustDetailParam);
     }
 
     /**

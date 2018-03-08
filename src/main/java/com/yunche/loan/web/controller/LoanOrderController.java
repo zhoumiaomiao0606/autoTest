@@ -5,8 +5,6 @@ import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.LoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanOrderService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +21,6 @@ import java.util.List;
 @RequestMapping("/loanorder")
 public class LoanOrderController {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoanOrderController.class);
-
     @Autowired
     private LoanOrderService loanOrderService;
 
@@ -36,7 +32,7 @@ public class LoanOrderController {
      * @return
      */
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<BaseInstProcessOrderVO>> query(@RequestBody LoanOrderQuery query) {
+    public ResultBean<List<BaseLoanOrderVO>> query(@RequestBody LoanOrderQuery query) {
         return loanOrderService.query(query);
     }
 
@@ -54,23 +50,23 @@ public class LoanOrderController {
     /**
      * 征信申请单 -新建  [OK]
      *
-     * @param creditApplyOrderVO
+     * @param param
      * @return
      */
     @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> createCreditApplyOrder(@RequestBody CreditApplyOrderVO creditApplyOrderVO) {
-        return loanOrderService.createCreditApplyOrder(creditApplyOrderVO);
+    public ResultBean<String> createCreditApplyOrder(@RequestBody CreditApplyOrderParam param) {
+        return loanOrderService.createCreditApplyOrder(param);
     }
 
     /**
      * 征信申请单 -编辑
      *
-     * @param creditApplyOrderVO
+     * @param param
      * @return
      */
     @PostMapping(value = "/creditapply/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> updateCreditApplyOrder(@RequestBody CreditApplyOrderVO creditApplyOrderVO) {
-        return loanOrderService.updateCreditApplyOrder(creditApplyOrderVO);
+    public ResultBean<Void> updateCreditApplyOrder(@RequestBody CreditApplyOrderParam param) {
+        return loanOrderService.updateCreditApplyOrder(param);
     }
 
     /**
@@ -103,7 +99,7 @@ public class LoanOrderController {
      * @param orderId 业务单ID
      * @return
      */
-    @GetMapping(value = "/loanapply/customer/detail")
+    @GetMapping(value = "/customer/detail")
     public ResultBean<CustDetailVO> customerDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.customerDetail(orderId);
     }
@@ -114,7 +110,7 @@ public class LoanOrderController {
      * @param custDetailVO
      * @return
      */
-    @PostMapping(value = "/loanapply/customer/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/customer/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> updateCustomer(@RequestBody CustDetailVO custDetailVO) {
         return loanOrderService.updateCustomer(custDetailVO);
     }
@@ -127,11 +123,33 @@ public class LoanOrderController {
      * @param commonLenderId
      * @return
      */
-    @GetMapping(value = "/loanapply/customer/faceoff")
+    @GetMapping(value = "/customer/faceoff")
     public ResultBean<Void> faceOff(@RequestParam("orderId") Long orderId,
                                     @RequestParam("principalLenderId") Long principalLenderId,
                                     @RequestParam("commonLenderId") Long commonLenderId) {
         return loanOrderService.faceOff(orderId, principalLenderId, commonLenderId);
+    }
+
+    /**
+     * 保存贷款车辆信息 -新增
+     *
+     * @param loanCarInfoParam
+     * @return
+     */
+    @PostMapping(value = "/carinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> createLoanCarInfo(@RequestBody LoanCarInfoParam loanCarInfoParam) {
+        return loanOrderService.createLoanCarInfo(loanCarInfoParam);
+    }
+
+    /**
+     * 贷款车辆信息 -编辑
+     *
+     * @param loanCarInfoParam
+     * @return
+     */
+    @PostMapping(value = "/carinfo/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> saveLoanCarInfo(@RequestBody LoanCarInfoParam loanCarInfoParam) {
+        return loanOrderService.updateLoanCarInfo(loanCarInfoParam);
     }
 
     /**
@@ -140,20 +158,9 @@ public class LoanOrderController {
      * @param orderId
      * @return
      */
-    @GetMapping(value = "/loanapply/carinfo/detail")
+    @GetMapping(value = "/carinfo/detail")
     public ResultBean<LoanCarInfoVO> loanCarInfoDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.loanCarInfoDetail(orderId);
-    }
-
-    /**
-     * 保存贷款车辆信息 【新增/编辑】
-     *
-     * @param loanCarInfoParam
-     * @return
-     */
-    @PostMapping(value = "/loanapply/carinfo/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> saveLoanCarInfo(@RequestBody LoanCarInfoParam loanCarInfoParam) {
-        return loanOrderService.createOrUpdateLoanCarInfo(loanCarInfoParam);
     }
 
     /**
@@ -162,7 +169,7 @@ public class LoanOrderController {
      * @param orderId
      * @return
      */
-    @GetMapping(value = "/loanapply/financialplan/detail")
+    @GetMapping(value = "/financialplan/detail")
     public ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.loanFinancialPlanDetail(orderId);
     }
@@ -173,7 +180,7 @@ public class LoanOrderController {
      * @param loanFinancialPlanParam
      * @return
      */
-    @PostMapping(value = "/loanapply/financialplan/calc", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/financialplan/calc", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(@RequestBody LoanFinancialPlanParam loanFinancialPlanParam) {
         return loanOrderService.calcLoanFinancialPlan(loanFinancialPlanParam);
     }
@@ -184,7 +191,7 @@ public class LoanOrderController {
      * @param loanFinancialPlanParam
      * @return
      */
-    @PostMapping(value = "/loanapply/financialplan/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/financialplan/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> saveLoanFinancialPlan(@RequestBody LoanFinancialPlanParam loanFinancialPlanParam) {
         return loanOrderService.createOrUpdateLoanFinancialPlan(loanFinancialPlanParam);
     }

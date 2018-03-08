@@ -8,6 +8,7 @@ import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.vo.BizModelVO;
 import com.yunche.loan.domain.vo.EmployeeVO;
+import com.yunche.loan.domain.vo.PartnerAccountVO;
 import com.yunche.loan.domain.vo.PartnerVO;
 
 import java.util.List;
@@ -40,4 +41,6 @@ public interface PartnerService {
     ResultBean<Void> bindEmployee(Long id, String employeeIds);
 
     ResultBean<Void> unbindEmployee(Long id, String employeeIds);
+
+    ResultBean<PartnerAccountVO> listAccount(Long employeeId);
 }

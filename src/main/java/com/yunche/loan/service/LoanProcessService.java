@@ -11,10 +11,6 @@ public interface LoanProcessService {
 
     ResultBean<String> getOrderId();
 
-    ResultBean<String> createCreditApply(CreditApplyVO creditApplyVO);
-
-    ResultBean<Void> updateCreditApply(CreditApplyOrderVO processInstOrder);
-
     ResultBean<Void> approval(ApprovalParam approval);
 
     ResultBean<TaskStateVO> currentTask(Long orderId);

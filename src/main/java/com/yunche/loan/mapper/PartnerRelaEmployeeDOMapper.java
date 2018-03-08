@@ -23,4 +23,12 @@ public interface PartnerRelaEmployeeDOMapper {
     List<Long> getEmployeeIdListByPartnerId(Long partnerId);
 
     int batchInsert(List<PartnerRelaEmployeeDO> partnerRelaEmployeeDOS);
+
+    /**
+     * 根据业务员ID获取所属合伙人ID
+     *
+     * @param employeeId
+     * @return
+     */
+    Long getPartnerIdByEmployeeId(Long employeeId);
 }

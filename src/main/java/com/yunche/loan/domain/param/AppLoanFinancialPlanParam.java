@@ -1,9 +1,9 @@
 package com.yunche.loan.domain.param;
 
+import com.yunche.loan.domain.vo.BaseVO;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * @author liuzhe
@@ -19,8 +19,10 @@ public class AppLoanFinancialPlanParam {
     private Long id;
 
     private BigDecimal carPrice;
-
-    private Long bizModelId;
+    /**
+     * 金融产品
+     */
+    private BaseVO flinancialProduct;
 
     private String bank;
 

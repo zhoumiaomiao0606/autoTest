@@ -13,7 +13,7 @@ public class AppLoanProcessOrderVO {
     /**
      * 业务单号
      */
-    private String id;
+    private Long id;
     /**
      * 业务员
      */

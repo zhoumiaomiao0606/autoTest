@@ -15,7 +15,10 @@ public class AppLoanFinancialPlanVO {
 
     private BigDecimal carPrice;
 
-    private Long bizModelId;
+    /**
+     * 金融产品 id & name
+     */
+    private BaseVO financialProduct;
 
     private String bank;
 
@@ -44,6 +47,4 @@ public class AppLoanFinancialPlanVO {
     private Date gmtCreate;
 
     private Date gmtModify;
-
-    private String feature;
 }

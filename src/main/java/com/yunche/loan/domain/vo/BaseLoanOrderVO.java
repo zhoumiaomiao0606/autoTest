@@ -11,7 +11,7 @@ import java.util.Date;
  * @date 2018/3/2
  */
 @Data
-public class BaseInstProcessOrderVO {
+public class BaseLoanOrderVO {
     /**
      * 业务单号
      */

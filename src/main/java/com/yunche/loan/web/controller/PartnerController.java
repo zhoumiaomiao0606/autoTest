@@ -1,6 +1,5 @@
 package com.yunche.loan.web.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
@@ -9,6 +8,7 @@ import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.vo.BizModelVO;
 import com.yunche.loan.domain.vo.EmployeeVO;
+import com.yunche.loan.domain.vo.PartnerAccountVO;
 import com.yunche.loan.domain.vo.PartnerVO;
 import com.yunche.loan.service.PartnerService;
 import org.slf4j.Logger;
@@ -17,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author liuzhe
@@ -46,19 +44,16 @@ public class PartnerController {
      */
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> create(@RequestBody PartnerParam partnerParam) {
-        logger.info(Arrays.asList("create", JSON.toJSONString(partnerParam)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.create(partnerParam);
     }
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody PartnerDO partnerDO) {
-        logger.info(Arrays.asList("update", JSON.toJSONString(partnerDO)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.update(partnerDO);
     }
 
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("delete", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.delete(id);
     }
 
@@ -70,7 +65,6 @@ public class PartnerController {
      */
     @GetMapping("/getById")
     public ResultBean<PartnerVO> getById(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("getById", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.getById(id);
     }
 
@@ -85,7 +79,6 @@ public class PartnerController {
      */
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<PartnerVO>> query(@RequestBody PartnerQuery query) {
-        logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.query(query);
     }
 
@@ -97,7 +90,6 @@ public class PartnerController {
      */
     @PostMapping(value = "/listBizModel")
     public ResultBean<List<BizModelVO>> listBizModel(@RequestBody BizModelQuery query) {
-        logger.info(Arrays.asList("listBizModel", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.listBizModel(query);
     }
 
@@ -111,7 +103,6 @@ public class PartnerController {
     @GetMapping(value = "/bindBizModel")
     public ResultBean<Void> bindBizModel(@RequestParam("id") Long id,
                                          @RequestParam("bizModelIds") String bizModelIds) {
-        logger.info(Arrays.asList("bindBizModel", JSON.toJSONString(id), JSON.toJSONString(bizModelIds)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.bindBizModel(id, bizModelIds);
     }
 
@@ -125,7 +116,6 @@ public class PartnerController {
     @GetMapping(value = "/unbindBizModel")
     public ResultBean<Void> unbindBizModel(@RequestParam("id") Long id,
                                            @RequestParam("bizModelIds") String bizModelIds) {
-        logger.info(Arrays.asList("unbindBizModel", JSON.toJSONString(id), JSON.toJSONString(bizModelIds)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.unbindBizModel(id, bizModelIds);
     }
 
@@ -137,7 +127,6 @@ public class PartnerController {
      */
     @PostMapping(value = "/listEmployee")
     public ResultBean<List<EmployeeVO>> listEmployee(@RequestBody RelaQuery query) {
-        logger.info(Arrays.asList("listEmployee", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.listEmployee(query);
     }
 
@@ -151,7 +140,6 @@ public class PartnerController {
     @GetMapping(value = "/bindEmployee")
     public ResultBean<Void> bindEmployee(@RequestParam("id") Long id,
                                          @RequestParam("employeeIds") String employeeIds) {
-        logger.info(Arrays.asList("bindEmployee", JSON.toJSONString(id), JSON.toJSONString(employeeIds)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.bindEmployee(id, employeeIds);
     }
 
@@ -165,7 +153,17 @@ public class PartnerController {
     @GetMapping(value = "/unbindEmployee")
     public ResultBean<Void> unbindEmployee(@RequestParam("id") Long id,
                                            @RequestParam("employeeIds") String employeeIds) {
-        logger.info(Arrays.asList("unbindEmployee", JSON.toJSONString(id), JSON.toJSONString(employeeIds)).stream().collect(Collectors.joining("\u0001")));
         return partnerService.unbindEmployee(id, employeeIds);
+    }
+
+    /**
+     * 员工所属合伙人的账号信息列表
+     *
+     * @param employeeId
+     * @return
+     */
+    @GetMapping(value = "/listAccount")
+    public ResultBean<PartnerAccountVO> listAccount(@RequestParam("employeeId") Long employeeId) {
+        return partnerService.listAccount(employeeId);
     }
 }

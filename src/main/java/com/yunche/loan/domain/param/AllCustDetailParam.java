@@ -1,6 +1,5 @@
 package com.yunche.loan.domain.param;
 
-import com.yunche.loan.domain.vo.CustomerVO;
 import lombok.Data;
 
 import java.util.List;
@@ -10,21 +9,21 @@ import java.util.List;
  * @date 2018/2/26
  */
 @Data
-public class CustDetailParam {
+public class AllCustDetailParam {
     /**
      * 主贷人
      */
-    private CustomerVO principalLender;
+    private CustomerParam principalLender;
     /**
      * 共贷人列表
      */
-    private List<CustomerVO> commonLenderList;
+    private List<CustomerParam> commonLenderList;
     /**
      * 担保人列表
      */
-    private List<CustomerVO> guarantorList;
+    private List<CustomerParam> guarantorList;
     /**
      * 紧急联系人列表
      */
-    private List<CustomerVO> emergencyContactList;
+    private List<CustomerParam> emergencyContactList;
 }

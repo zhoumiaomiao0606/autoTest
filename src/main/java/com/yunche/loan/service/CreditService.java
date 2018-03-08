@@ -18,7 +18,5 @@ public interface CreditService {
 
     ResultBean<Void> updateLoanBaseInfo(LoanBaseInfoDO loanBaseInfoDO);
 
-    ResultBean<LoanBaseInfoVO> getLoanBaseInfoById(Long id);
-
     ResultBean<List<InstLoanOrderVO>> query(OrderListQuery query);
 }

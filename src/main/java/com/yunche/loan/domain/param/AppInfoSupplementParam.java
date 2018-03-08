@@ -1,6 +1,5 @@
 package com.yunche.loan.domain.param;
 
-import com.yunche.loan.domain.vo.CustomerVO;
 import com.yunche.loan.domain.vo.FileVO;
 import lombok.Data;
 

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.PartnerParam;
@@ -11,10 +12,6 @@ import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.query.RelaQuery;
-import com.yunche.loan.domain.vo.BaseVO;
-import com.yunche.loan.domain.vo.BizModelVO;
-import com.yunche.loan.domain.vo.EmployeeVO;
-import com.yunche.loan.domain.vo.PartnerVO;
 import com.yunche.loan.service.PartnerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -375,6 +372,35 @@ public class PartnerServiceImpl implements PartnerService {
                 });
 
         return ResultBean.ofSuccess(null, "取消关联成功");
+    }
+
+    @Override
+    public ResultBean<PartnerAccountVO> listAccount(Long employeeId) {
+        Preconditions.checkNotNull(employeeId, "员工ID不能为空");
+
+        Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
+        Preconditions.checkNotNull(partnerId, "员工无所属合伙人");
+
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(partnerId, null);
+        Preconditions.checkNotNull(partnerDO, "合伙人不存在");
+
+        PartnerAccountVO partnerAccountVO = new PartnerAccountVO();
+        partnerAccountVO.setPartnerId(partnerDO.getId());
+        partnerAccountVO.setPartnerName(partnerDO.getName());
+        partnerAccountVO.setPayMonth(partnerDO.getPayMonth());
+
+        PartnerAccountVO.AccountInfo accountInfo = new PartnerAccountVO.AccountInfo();
+        BeanUtils.copyProperties(partnerDO, accountInfo);
+
+        PartnerAccountVO.AccountInfo accountInfoTwo = new PartnerAccountVO.AccountInfo();
+        accountInfoTwo.setOpenBank(partnerDO.getOpenBankTwo());
+        accountInfoTwo.setAccountName(partnerDO.getAccountNameTwo());
+        accountInfoTwo.setBankAccount(partnerDO.getBankAccountTwo());
+
+        List<PartnerAccountVO.AccountInfo> accountInfoList = Lists.newArrayList(accountInfo, accountInfoTwo);
+        partnerAccountVO.setAccountInfoList(accountInfoList);
+
+        return ResultBean.ofSuccess(partnerAccountVO);
     }
 
 

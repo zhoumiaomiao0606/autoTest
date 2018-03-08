@@ -77,17 +77,6 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Override
-    public ResultBean<LoanBaseInfoVO> getLoanBaseInfoById(Long id) {
-        Preconditions.checkNotNull(id, "贷款基本信息ID不能为空");
-
-        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(id);
-        LoanBaseInfoVO loanBaseInfoVO = new LoanBaseInfoVO();
-        BeanUtils.copyProperties(loanBaseInfoDO, loanBaseInfoVO);
-
-        return ResultBean.ofSuccess(loanBaseInfoVO);
-    }
-
-    @Override
     public ResultBean<List<InstLoanOrderVO>> query(OrderListQuery query) {
 
 //        int totalNum = loanOrderDOMapper.count(query);

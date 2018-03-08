@@ -77,7 +77,7 @@ public class LoanFileServiceImpl implements LoanFileService {
 
         if (!CollectionUtils.isEmpty(loanFileDOS)) {
 
-            loanFileDOS.parallelStream()
+            loanFileDOS.stream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
@@ -108,7 +108,7 @@ public class LoanFileServiceImpl implements LoanFileService {
                     });
         }
 
-        List<FileVO> fileVOS = typeFilesMap.values().parallelStream()
+        List<FileVO> fileVOS = typeFilesMap.values().stream()
                 .map(e -> {
                     return e;
                 })
