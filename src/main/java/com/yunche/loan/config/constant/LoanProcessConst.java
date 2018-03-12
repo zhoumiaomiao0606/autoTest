@@ -22,20 +22,24 @@ public class LoanProcessConst {
     /**
      * 资料增补
      */
-    public static final Byte INFO_SUPPLEMENT = 3;
+    public static final Integer INFO_SUPPLEMENT = 3;
 
     /**
-     * 审核状态:  0-全部;
+     * 任务状态:  0-全部;
      */
     public static final Byte TASK_ALL = 0;
     /**
-     * 审核状态:  1-已处理(审核);
+     * 任务状态:  1-已处理(审核);
      */
     public static final Byte TASK_DONE = 1;
     /**
-     * 审核状态:  2-未处理(待审核);
+     * 任务状态:  2-未处理(待审核);
      */
     public static final Byte TASK_TODO = 2;
+    /**
+     * 任务状态：还未执行到当前任务节点
+     */
+    public static final Byte TASK_NOT_REACH_CURRENT = 3;
 
     /**
      * 删除理由  【task被删除的理由-任务已被执行】

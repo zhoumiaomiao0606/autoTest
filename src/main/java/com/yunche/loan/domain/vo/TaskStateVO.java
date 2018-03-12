@@ -11,7 +11,7 @@ public class TaskStateVO {
 
     private String taskDefinitionKey;
 
-    private String name;
+    private String taskName;
 
     private Byte taskStatus;
 }

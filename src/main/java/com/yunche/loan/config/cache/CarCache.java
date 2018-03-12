@@ -1,7 +1,11 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.yunche.loan.domain.entity.CarDetailDO;
 import com.yunche.loan.mapper.CarBrandDOMapper;
+import com.yunche.loan.mapper.CarDetailDOMapper;
 import com.yunche.loan.mapper.CarModelDOMapper;
 import com.yunche.loan.domain.entity.CarBrandDO;
 import com.yunche.loan.domain.entity.CarModelDO;
@@ -14,11 +18,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -34,12 +37,24 @@ public class CarCache {
 
     private static final String CAR_CASCADE_CACHE_KEY = "cascade:cache:car";
 
+    private static final String CAR_BRAND_ALL_CACHE_KEY = "all:cache:car:brand";
+
+    private static final String CAR_MODEL_ALL_CACHE_KEY = "all:cache:car:model";
+
+    private static final String CAR_DETAIL_ALL_CACHE_KEY = "all:cache:car:detail";
+
+
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
     @Autowired
     private CarBrandDOMapper carBrandDOMapper;
+
     @Autowired
     private CarModelDOMapper carModelDOMapper;
+
+    @Autowired
+    private CarDetailDOMapper carDetailDOMapper;
 
 
     public CarCascadeVO get() {
@@ -61,7 +76,7 @@ public class CarCache {
         return null;
     }
 
-//    @PostConstruct
+    //    @PostConstruct
     private void refresh() {
         CarCascadeVO carCascadeVO = new CarCascadeVO();
 
@@ -153,5 +168,136 @@ public class CarCache {
                 .collect(Collectors.toList());
 
         return carModelList;
+    }
+
+    /**
+     * 获取
+     *
+     * @param carDetailId
+     * @return
+     */
+    public CarDetailDO getCarDetail(Long carDetailId) {
+        if (null == carDetailId) {
+            return null;
+        }
+
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CAR_DETAIL_ALL_CACHE_KEY);
+        String allCarDetail = boundValueOps.get();
+
+        if (StringUtils.isBlank(allCarDetail)) {
+            cacheAllCarDetail();
+        }
+
+        if (StringUtils.isNotBlank(allCarDetail)) {
+            Map<String, CarDetailDO> map = JSON.parseObject(allCarDetail, Map.class);
+            CarDetailDO carDetailDO = map.get(String.valueOf(carDetailId));
+            return carDetailDO;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param carModelId
+     * @return
+     */
+    public CarModelDO getCarModel(Long carModelId) {
+        if (null == carModelId) {
+            return null;
+        }
+
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CAR_MODEL_ALL_CACHE_KEY);
+        String allCarModel = boundValueOps.get();
+
+        if (StringUtils.isBlank(allCarModel)) {
+            cacheAllCarModel();
+        }
+
+        if (StringUtils.isNotBlank(allCarModel)) {
+            Map<String, CarModelDO> map = JSON.parseObject(allCarModel, Map.class);
+            CarModelDO carModelDO = map.get(String.valueOf(carModelId));
+            return carModelDO;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param carBrandId
+     * @return
+     */
+    public CarBrandDO getCarBrand(Long carBrandId) {
+        if (null == carBrandId) {
+            return null;
+        }
+
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CAR_BRAND_ALL_CACHE_KEY);
+        String allCarBrand = boundValueOps.get();
+
+        if (StringUtils.isBlank(allCarBrand)) {
+            cacheAllCarBrand();
+        }
+
+        if (StringUtils.isNotBlank(allCarBrand)) {
+            Map<String, CarBrandDO> map = JSON.parseObject(allCarBrand, Map.class);
+            CarBrandDO carBrandDO = map.get(String.valueOf(carBrandId));
+            return carBrandDO;
+        }
+
+        return null;
+    }
+
+//    @PostConstruct
+    public void cacheAllCarBrand() {
+
+        Map<String, CarBrandDO> idCarBrandMap = Maps.newConcurrentMap();
+
+        List<CarBrandDO> allCarBrand = carBrandDOMapper.getAll(VALID_STATUS);
+        if (!CollectionUtils.isEmpty(allCarBrand)) {
+            allCarBrand.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+                        idCarBrandMap.put(String.valueOf(e.getId()), e);
+                    });
+        }
+
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CAR_BRAND_ALL_CACHE_KEY);
+        boundValueOps.set(JSON.toJSONString(idCarBrandMap));
+    }
+
+//    @PostConstruct
+    public void cacheAllCarModel() {
+
+        Map<String, CarModelDO> idCarModelMap = Maps.newConcurrentMap();
+
+        List<CarModelDO> allCarModel = carModelDOMapper.getAll(VALID_STATUS);
+        if (!CollectionUtils.isEmpty(allCarModel)) {
+            allCarModel.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+                        idCarModelMap.put(String.valueOf(e.getId()), e);
+                    });
+        }
+
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CAR_MODEL_ALL_CACHE_KEY);
+        boundValueOps.set(JSON.toJSONString(idCarModelMap));
+    }
+
+//    @PostConstruct
+    public void cacheAllCarDetail() {
+
+        Map<String, CarDetailDO> idCarDetailMap = Maps.newConcurrentMap();
+
+        List<CarDetailDO> allCarDetail = carDetailDOMapper.getAll(VALID_STATUS);
+        if (!CollectionUtils.isEmpty(allCarDetail)) {
+            allCarDetail.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+                        idCarDetailMap.put(String.valueOf(e.getId()), e);
+                    });
+        }
+
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CAR_DETAIL_ALL_CACHE_KEY);
+        boundValueOps.set(JSON.toJSONString(idCarDetailMap));
     }
 }

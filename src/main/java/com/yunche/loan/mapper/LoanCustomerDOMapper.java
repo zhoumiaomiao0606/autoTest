@@ -23,13 +23,15 @@ public interface LoanCustomerDOMapper {
     int updateByPrimaryKey(LoanCustomerDO record);
 
     /**
-     * 根据主贷人ID和客户类别 获取客户列表(共贷人/担保人/紧急联系人)
+     * 根据主贷人ID和客户类别 获取客户列表(共贷人/担保人/紧急联系人)   [含OR id = principalCustId]
      *
      * @param principalLenderId
      * @param custType
+     * @param status
      * @return
      */
-    List<LoanCustomerDO> listByPrincipalCustIdAndType(@Param("principalCustId") Long principalLenderId, @Param("custType") Byte custType);
+    List<LoanCustomerDO> listByPrincipalCustIdAndType(@Param("principalCustId") Long principalLenderId,
+                                                      @Param("custType") Byte custType, @Param("status") Byte status);
 
     /**
      * 编辑贷款人

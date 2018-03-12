@@ -41,24 +41,17 @@
         principal_cust_id, cust_relation, status, gmt_create, gmt_modify, feature
     </sql>
 
-    <!--getListById-->
-    <select id="getListById" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        SELECT
-        <include refid="Base_Column_List"/>
-        FROM loan_customer
-        WHERE id = #{principalLenderId,jdbcType=BIGINT}
-        OR principal_cust_id = #{principalCustId,jdbcType=BIGINT}
-    </select>
-
     <!--listByPrincipalCustIdAndType-->
     <select id="listByPrincipalCustIdAndType" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM loan_customer
         WHERE principal_cust_id = #{principalCustId,jdbcType=BIGINT}
-        OR id = #{principalCustId,jdbcType=BIGINT}
         <if test="custType != null">
             AND cust_type = #{custType}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
         </if>
     </select>
 

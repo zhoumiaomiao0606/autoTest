@@ -32,7 +32,12 @@ public class LoanOrderController {
      * @return
      */
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<BaseLoanOrderVO>> query(@RequestBody LoanOrderQuery query) {
+    public ResultBean<List<LoanOrderVO>> query(@RequestBody LoanOrderQuery query) {
+        return loanOrderService.query(query);
+    }
+
+    @PostMapping(value = "query2", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<LoanOrderVO>> creditApplyQuery(@RequestBody LoanOrderQuery query) {
         return loanOrderService.query(query);
     }
 
@@ -88,9 +93,20 @@ public class LoanOrderController {
      * @param creditRecordParam
      * @return
      */
-    @PostMapping(value = "/creditrecord/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> creditRecord(@RequestBody CreditRecordParam creditRecordParam) {
-        return loanOrderService.creditRecord(creditRecordParam);
+    @PostMapping(value = "/creditrecord/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> createCreditRecord(@RequestBody CreditRecordParam creditRecordParam) {
+        return loanOrderService.createCreditRecord(creditRecordParam);
+    }
+
+    /**
+     * 征信编辑
+     *
+     * @param creditRecordParam
+     * @return
+     */
+    @PostMapping(value = "/creditrecord/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> updateCreditRecord(@RequestBody CreditRecordParam creditRecordParam) {
+        return loanOrderService.updateCreditRecord(creditRecordParam);
     }
 
     /**
@@ -107,12 +123,34 @@ public class LoanOrderController {
     /**
      * 贷款客户信息编辑
      *
-     * @param custDetailVO
+     * @param allCustDetailParam
      * @return
      */
     @PostMapping(value = "/customer/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> updateCustomer(@RequestBody CustDetailVO custDetailVO) {
-        return loanOrderService.updateCustomer(custDetailVO);
+    public ResultBean<Void> updateCustomer(@RequestBody AllCustDetailParam allCustDetailParam) {
+        return loanOrderService.updateCustomer(allCustDetailParam);
+    }
+
+    /**
+     * 增加关联人（共贷人/担保人/紧急联系人）
+     *
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/customer/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> addRelaCustomer(@RequestBody CustomerParam param) {
+        return loanOrderService.addRelaCustomer(param);
+    }
+
+    /**
+     * 删除关联人（共贷人/担保人/紧急联系人）
+     *
+     * @param customerId
+     * @return
+     */
+    @GetMapping(value = "/customer/delrela")
+    public ResultBean<Long> delRelaCustomer(@RequestParam("customerId") Long customerId) {
+        return loanOrderService.delRelaCustomer(customerId);
     }
 
     /**

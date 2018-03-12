@@ -84,7 +84,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         Long principalLenderId = loanOrderDOMapper.getCustIdById(orderId);
 
         // 根据主贷人ID获取客户详情列表
-        List<LoanCustomerDO> loanCustomerDOList = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalLenderId, null);
+        List<LoanCustomerDO> loanCustomerDOList = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalLenderId, null, VALID_STATUS);
 
         CustDetailVO custDetailVO = new CustDetailVO();
         if (!CollectionUtils.isEmpty(loanCustomerDOList)) {
@@ -120,6 +120,14 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         int count = loanCustomerDOMapper.insertSelective(loanCustomerDO);
         Preconditions.checkArgument(count > 0, "创建客户信息失败");
 
+        if (CUST_TYPE_PRINCIPAL.equals(loanCustomerDO.getCustType())) {
+            LoanCustomerDO customerDO = new LoanCustomerDO();
+            customerDO.setId(loanCustomerDO.getId());
+            customerDO.setPrincipalCustId(loanCustomerDO.getId());
+            int updateCount = loanCustomerDOMapper.updateByPrimaryKeySelective(customerDO);
+            Preconditions.checkArgument(updateCount > 0, "设置主贷人ID失败");
+        }
+
         return ResultBean.ofSuccess(loanCustomerDO.getId(), "创建客户信息成功");
     }
 
@@ -127,10 +135,6 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     public ResultBean<Void> update(LoanCustomerDO loanCustomerDO) {
         Preconditions.checkNotNull(loanCustomerDO, "客户信息不能为空");
         Preconditions.checkNotNull(loanCustomerDO.getId(), "客户ID不能为空");
-        Preconditions.checkNotNull(loanCustomerDO.getCustType(), "客户类型不能为空");
-        if (!CUST_TYPE_PRINCIPAL.equals(loanCustomerDO.getCustType())) {
-            Preconditions.checkNotNull(loanCustomerDO.getPrincipalCustId(), "主贷人ID不能为空");
-        }
 
         loanCustomerDO.setGmtModify(new Date());
         int count = loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
@@ -236,10 +240,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         updateOrInsertCustomer(principalLender);
 
         // 共贷人列表
-        List<CustomerParam> commonLenderVOList = allCustDetailParam.getCommonLenderList();
-        if (!CollectionUtils.isEmpty(commonLenderVOList)) {
+        List<CustomerParam> commonLenderList = allCustDetailParam.getCommonLenderList();
+        if (!CollectionUtils.isEmpty(commonLenderList)) {
 
-            commonLenderVOList.parallelStream()
+            commonLenderList.parallelStream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
                         updateOrInsertCustomer(e);
@@ -247,10 +251,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         }
 
         // 担保人列表
-        List<CustomerParam> guarantorVOList = allCustDetailParam.getGuarantorList();
-        if (!CollectionUtils.isEmpty(guarantorVOList)) {
+        List<CustomerParam> guarantorList = allCustDetailParam.getGuarantorList();
+        if (!CollectionUtils.isEmpty(guarantorList)) {
 
-            guarantorVOList.parallelStream()
+            guarantorList.parallelStream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
                         updateOrInsertCustomer(e);
@@ -258,10 +262,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         }
 
         // 紧急联系人列表
-        List<CustomerParam> emergencyContactVOList = allCustDetailParam.getEmergencyContactList();
-        if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
+        List<CustomerParam> emergencyContactList = allCustDetailParam.getEmergencyContactList();
+        if (!CollectionUtils.isEmpty(emergencyContactList)) {
 
-            emergencyContactVOList.parallelStream()
+            emergencyContactList.parallelStream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
                         updateOrInsertCustomer(e);

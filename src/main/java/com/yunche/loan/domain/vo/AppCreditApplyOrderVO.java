@@ -14,7 +14,7 @@ public class AppCreditApplyOrderVO {
     /**
      * 业务单号
      */
-    private String id;
+    private Long orderId;
     /**
      * 关联的-贷款基本信息
      */

@@ -20,18 +20,43 @@ public class CreditRecordVO {
     /**
      * 主贷人
      */
-    private Customer principalLender;
+    private CustomerCreditRecord principalLender;
     /**
      * 共贷人列表
      */
-    private List<Customer> commonLenderList = Collections.EMPTY_LIST;
+    private List<CustomerCreditRecord> commonLenderList = Collections.EMPTY_LIST;
+    /**
+     * 担保人列表
+     */
+    private List<CustomerCreditRecord> guarantorList = Collections.EMPTY_LIST;
+    /**
+     * 紧急联系人列表
+     */
+    private List<CustomerCreditRecord> emergencyContactList = Collections.EMPTY_LIST;
 
     @Data
-    public static class Customer {
+    public static class CustomerCreditRecord {
+        /**
+         * 征信记录ID
+         */
+        private Long creditId;
+        /**
+         * 征信记录结果
+         */
+        private Byte creditResult;
+        /**
+         * 征信记录备注
+         */
+        private String creditInfo;
 
-        private Long id;
-
-        private String name;
+        /**
+         * 征信所属客户ID
+         */
+        private Long customerId;
+        /**
+         * 征信所属客户名称
+         */
+        private String customerName;
 
         private String mobile;
 
@@ -40,9 +65,5 @@ public class CreditRecordVO {
         private Byte custType;
 
         private Byte custRelation;
-
-        private Byte creditResult;
-
-        private String creditInfo;
     }
 }

@@ -18,11 +18,11 @@ public class AppCreditRecordVO {
     /**
      * 主贷人
      */
-    private CreditRecordVO.Customer principalLender;
+    private Customer principalLender;
     /**
      * 共贷人列表
      */
-    private List<CreditRecordVO.Customer> commonLenderList = Collections.EMPTY_LIST;
+    private List<Customer> commonLenderList = Collections.EMPTY_LIST;
 
     @Data
     public static class Customer {

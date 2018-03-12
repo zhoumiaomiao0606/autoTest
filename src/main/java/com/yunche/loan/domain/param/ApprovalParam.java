@@ -14,6 +14,11 @@ public class ApprovalParam {
     private Long orderId;
 
     /**
+     * 任务key
+     */
+    private String taskDefinitionKey;
+
+    /**
      * 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
      */
     private Integer action;

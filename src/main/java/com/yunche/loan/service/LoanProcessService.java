@@ -9,8 +9,6 @@ import com.yunche.loan.domain.vo.*;
  */
 public interface LoanProcessService {
 
-    ResultBean<String> getOrderId();
-
     ResultBean<Void> approval(ApprovalParam approval);
 
     ResultBean<TaskStateVO> currentTask(Long orderId);

@@ -15,5 +15,5 @@ public class AppLoanBaseInfoParam {
     /**
      * 贷款基本信息
      */
-    private LoanBaseInfoParam loanBaseInfo;
+    private AppLoanBaseInfoDetailParam loanBaseInfo;
 }

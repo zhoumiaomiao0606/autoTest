@@ -5,15 +5,21 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 业务单基本信息
+ *
  * @author liuzhe
- * @date 2018/3/5
+ * @date 2018/3/2
  */
 @Data
-public class AppLoanProcessOrderVO {
+public class LoanOrderVO {
     /**
      * 业务单号
      */
-    private Long id;
+    private String id;
+    /**
+     * 合伙人
+     */
+    private BaseVO partner;
     /**
      * 业务员
      */
@@ -34,6 +40,10 @@ public class AppLoanProcessOrderVO {
      * 创建时间
      */
     private Date gmtCreate;
+    /**
+     * 修改时间
+     */
+    private Date gmtModify;
     /**
      * 当前任务节点审核状态:  0-全部;   1-已提交(审核);   2-未提交(审核);
      */

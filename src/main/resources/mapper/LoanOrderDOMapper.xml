@@ -8,15 +8,49 @@
         <result column="loan_customer_id" jdbcType="BIGINT" property="loanCustomerId"/>
         <result column="loan_car_info_id" jdbcType="BIGINT" property="loanCarInfoId"/>
         <result column="loan_financial_plan_id" jdbcType="BIGINT" property="loanFinancialPlanId"/>
+        <result column="loan_home_visit_id" jdbcType="BIGINT" property="loanHomeVisitId"/>
+        <result column="material_audit_id" jdbcType="BIGINT" property="materialAuditId"/>
+        <result column="cost_details_id" jdbcType="BIGINT" property="costDetailsId"/>
+        <result column="remit_details_id" jdbcType="BIGINT" property="remitDetailsId"/>
+        <result column="apply_license_plate_record_id" jdbcType="BIGINT" property="applyLicensePlateRecordId"/>
+        <result column="apply_license_plate_deposit_info_id" jdbcType="BIGINT"
+                property="applyLicensePlateDepositInfoId"/>
+        <result column="current_task_def_key" jdbcType="VARCHAR" property="currentTaskDefKey"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
     </resultMap>
+
     <sql id="Base_Column_List">
         id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
-        status, gmt_create, gmt_modify, feature
+        loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, apply_license_plate_record_id,
+        apply_license_plate_deposit_info_id, current_task_def_key, status, gmt_create, gmt_modify,
+        feature
     </sql>
+
+    <!--countCreditNotEnding-->
+    <select id="countCreditNotEnding" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM loan_order
+        WHERE current_task_def_key
+        IN ('usertask_credit_apply','usertask_credit_apply_verify',
+        'usertask_bank_credit_record','usertask_social_credit_record')
+        AND `status` = 0
+    </select>
+
+    <!--listCreditNotEnding-->
+    <select id="listCreditNotEnding" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM loan_order
+        WHERE current_task_def_key
+        IN ('usertask_credit_apply','usertask_credit_apply_verify',
+        'usertask_bank_credit_record','usertask_social_credit_record')
+        AND `status` = 0
+        ORDER BY gmt_create DESC
+        LIMIT #{startRow}, #{pageSize}
+    </select>
 
     <!--getCustIdById-->
     <select id="getCustIdById" parameterType="java.lang.Long" resultType="java.lang.Long">
@@ -72,10 +106,16 @@
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanOrderDO">
         insert into loan_order (id, process_inst_id, loan_base_info_id,
         loan_customer_id, loan_car_info_id, loan_financial_plan_id,
+        loan_home_visit_id, material_audit_id, cost_details_id,
+        remit_details_id, apply_license_plate_record_id,
+        apply_license_plate_deposit_info_id, current_task_def_key,
         status, gmt_create, gmt_modify,
         feature)
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
+        #{loanHomeVisitId,jdbcType=BIGINT}, #{materialAuditId,jdbcType=BIGINT}, #{costDetailsId,jdbcType=BIGINT},
+        #{remitDetailsId,jdbcType=BIGINT}, #{applyLicensePlateRecordId,jdbcType=BIGINT},
+        #{applyLicensePlateDepositInfoId,jdbcType=BIGINT}, #{currentTaskDefKey,jdbcType=VARCHAR},
         #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
         #{feature,jdbcType=VARCHAR})
     </insert>
@@ -100,6 +140,27 @@
             </if>
             <if test="loanFinancialPlanId != null">
                 loan_financial_plan_id,
+            </if>
+            <if test="loanHomeVisitId != null">
+                loan_home_visit_id,
+            </if>
+            <if test="materialAuditId != null">
+                material_audit_id,
+            </if>
+            <if test="costDetailsId != null">
+                cost_details_id,
+            </if>
+            <if test="remitDetailsId != null">
+                remit_details_id,
+            </if>
+            <if test="applyLicensePlateRecordId != null">
+                apply_license_plate_record_id,
+            </if>
+            <if test="applyLicensePlateDepositInfoId != null">
+                apply_license_plate_deposit_info_id,
+            </if>
+            <if test="currentTaskDefKey != null">
+                current_task_def_key,
             </if>
             <if test="status != null">
                 status,
@@ -132,6 +193,27 @@
             </if>
             <if test="loanFinancialPlanId != null">
                 #{loanFinancialPlanId,jdbcType=BIGINT},
+            </if>
+            <if test="loanHomeVisitId != null">
+                #{loanHomeVisitId,jdbcType=BIGINT},
+            </if>
+            <if test="materialAuditId != null">
+                #{materialAuditId,jdbcType=BIGINT},
+            </if>
+            <if test="costDetailsId != null">
+                #{costDetailsId,jdbcType=BIGINT},
+            </if>
+            <if test="remitDetailsId != null">
+                #{remitDetailsId,jdbcType=BIGINT},
+            </if>
+            <if test="applyLicensePlateRecordId != null">
+                #{applyLicensePlateRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="applyLicensePlateDepositInfoId != null">
+                #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
+            </if>
+            <if test="currentTaskDefKey != null">
+                #{currentTaskDefKey,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
@@ -166,6 +248,27 @@
             <if test="loanFinancialPlanId != null">
                 loan_financial_plan_id = #{loanFinancialPlanId,jdbcType=BIGINT},
             </if>
+            <if test="loanHomeVisitId != null">
+                loan_home_visit_id = #{loanHomeVisitId,jdbcType=BIGINT},
+            </if>
+            <if test="materialAuditId != null">
+                material_audit_id = #{materialAuditId,jdbcType=BIGINT},
+            </if>
+            <if test="costDetailsId != null">
+                cost_details_id = #{costDetailsId,jdbcType=BIGINT},
+            </if>
+            <if test="remitDetailsId != null">
+                remit_details_id = #{remitDetailsId,jdbcType=BIGINT},
+            </if>
+            <if test="applyLicensePlateRecordId != null">
+                apply_license_plate_record_id = #{applyLicensePlateRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="applyLicensePlateDepositInfoId != null">
+                apply_license_plate_deposit_info_id = #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
+            </if>
+            <if test="currentTaskDefKey != null">
+                current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},
+            </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
@@ -183,17 +286,24 @@
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanOrderDO">
-        update loan_order
-        set process_inst_id = #{processInstId,jdbcType=VARCHAR},
-        loan_base_info_id = #{loanBaseInfoId,jdbcType=BIGINT},
-        loan_customer_id = #{loanCustomerId,jdbcType=BIGINT},
-        loan_car_info_id = #{loanCarInfoId,jdbcType=BIGINT},
-        loan_financial_plan_id = #{loanFinancialPlanId,jdbcType=BIGINT},
-        status = #{status,jdbcType=TINYINT},
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        feature = #{feature,jdbcType=VARCHAR}
-        where id = #{id,jdbcType=BIGINT}
-    </update>
+    update loan_order
+    set process_inst_id = #{processInstId,jdbcType=VARCHAR},
+      loan_base_info_id = #{loanBaseInfoId,jdbcType=BIGINT},
+      loan_customer_id = #{loanCustomerId,jdbcType=BIGINT},
+      loan_car_info_id = #{loanCarInfoId,jdbcType=BIGINT},
+      loan_financial_plan_id = #{loanFinancialPlanId,jdbcType=BIGINT},
+      loan_home_visit_id = #{loanHomeVisitId,jdbcType=BIGINT},
+      material_audit_id = #{materialAuditId,jdbcType=BIGINT},
+      cost_details_id = #{costDetailsId,jdbcType=BIGINT},
+      remit_details_id = #{remitDetailsId,jdbcType=BIGINT},
+      apply_license_plate_record_id = #{applyLicensePlateRecordId,jdbcType=BIGINT},
+      apply_license_plate_deposit_info_id = #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
+      current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      feature = #{feature,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 
 </mapper>

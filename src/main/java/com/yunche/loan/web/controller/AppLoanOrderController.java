@@ -31,8 +31,19 @@ public class AppLoanOrderController {
      * @return
      */
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<AppLoanProcessOrderVO>> query(@RequestBody AppLoanOrderQuery query) {
+    public ResultBean<List<AppLoanOrderVO>> query(@RequestBody AppLoanOrderQuery query) {
         return appLoanOrderService.query(query);
+    }
+
+    /**
+     * 征信结果未：未查询 的订单分页列表
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping(value = "/query2", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<AppLoanOrderVO>> listCreditNotEnding(@RequestBody AppLoanOrderQuery query) {
+        return appLoanOrderService.query2(query);
     }
 
     /**
@@ -75,7 +86,7 @@ public class AppLoanOrderController {
      * @return
      */
     @PostMapping(value = "/baseinfo/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> updateBaseInfo(@RequestBody AppLoanBaseInfoParam param) {
+    public ResultBean<Void> updateBaseInfo(@RequestBody AppLoanBaseInfoDetailParam param) {
         return appLoanOrderService.updateBaseInfo(param);
     }
 
@@ -118,7 +129,7 @@ public class AppLoanOrderController {
      * @param customerId
      * @return
      */
-    @PostMapping(value = "/customer/delrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/customer/delrela")
     public ResultBean<Long> delRelaCustomer(@RequestParam("customerId") Long customerId) {
         return appLoanOrderService.delRelaCustomer(customerId);
     }

@@ -12,15 +12,13 @@ import java.util.List;
  * @date 2018/3/5
  */
 public interface AppLoanOrderService {
-    ResultBean<List<AppLoanProcessOrderVO>> query(AppLoanOrderQuery query);
+    ResultBean<List<AppLoanOrderVO>> query(AppLoanOrderQuery query);
 
     ResultBean<AppCreditApplyOrderVO> creditApplyOrderDetail(Long orderId);
 
     ResultBean<AppCreditApplyVO> createCreditApplyOrder(AppCustomerParam creditApplyOrderVO);
 
     ResultBean<AppCreditRecordVO> creditRecordDetail(Long orderId, Byte type);
-
-    ResultBean<Void> creditRecord(CreditRecordParam creditRecordParam);
 
     ResultBean<AppCustDetailVO> customerDetail(Long orderId);
 
@@ -34,7 +32,7 @@ public interface AppLoanOrderService {
 
     ResultBean<Long> createBaseInfo(AppLoanBaseInfoParam param);
 
-    ResultBean<Void> updateBaseInfo(AppLoanBaseInfoParam param);
+    ResultBean<Void> updateBaseInfo(AppLoanBaseInfoDetailParam param);
 
     ResultBean<Long> addRelaCustomer(AppCustomerParam param);
 
@@ -55,4 +53,6 @@ public interface AppLoanOrderService {
     ResultBean<AppLoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId);
 
     ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam);
+
+    ResultBean<List<AppLoanOrderVO>> query2(AppLoanOrderQuery query);
 }

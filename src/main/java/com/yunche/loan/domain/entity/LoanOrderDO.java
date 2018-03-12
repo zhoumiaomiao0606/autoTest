@@ -31,6 +31,20 @@ public class LoanOrderDO {
      */
     private Long loanHomeVisitId;
 
+    private Long materialAuditId;
+
+    private Long costDetailsId;
+
+    private Long remitDetailsId;
+
+    private Long applyLicensePlateRecordId;
+
+    private Long applyLicensePlateDepositInfoId;
+    /**
+     * 当前任务节点的taskDefinitionKey
+     */
+    private String currentTaskDefKey;
+
     private Byte status;
 
     private Date gmtCreate;

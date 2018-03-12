@@ -5,17 +5,15 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 业务单基本信息
- *
  * @author liuzhe
- * @date 2018/3/2
+ * @date 2018/3/5
  */
 @Data
-public class BaseLoanOrderVO {
+public class AppLoanOrderVO {
     /**
      * 业务单号
      */
-    private String id;
+    private Long id;
     /**
      * 业务员
      */

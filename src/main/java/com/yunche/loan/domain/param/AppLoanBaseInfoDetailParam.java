@@ -1,13 +1,14 @@
-package com.yunche.loan.domain.vo;
+package com.yunche.loan.domain.param;
 
+import com.yunche.loan.domain.vo.BaseVO;
 import lombok.Data;
 
 /**
  * @author liuzhe
- * @date 2018/2/26
+ * @date 2018/3/9
  */
 @Data
-public class LoanBaseInfoVO {
+public class AppLoanBaseInfoDetailParam {
 
     private Long id;
     /**

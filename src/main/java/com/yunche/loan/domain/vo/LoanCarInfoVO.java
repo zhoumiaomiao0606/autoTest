@@ -3,6 +3,7 @@ package com.yunche.loan.domain.vo;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -19,8 +20,9 @@ public class LoanCarInfoVO {
     private Byte carKey;
     /**
      * 车型信息
+     * 父车型   ID层级列表
      */
-    private BaseVO carDetail;
+    private List<BaseVO> carDetail;
     /**
      * 合伙人收款账户信息
      */

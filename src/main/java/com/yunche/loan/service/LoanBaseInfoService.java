@@ -1,7 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.LoanBaseInfoParam;
+import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.vo.LoanBaseInfoVO;
 
 /**
@@ -9,9 +9,10 @@ import com.yunche.loan.domain.vo.LoanBaseInfoVO;
  * @date 2018/3/6
  */
 public interface LoanBaseInfoService {
-    ResultBean<Void> update(LoanBaseInfoParam param);
+    ResultBean<Void> update(LoanBaseInfoDO loanBaseInfoDO);
 
     ResultBean<LoanBaseInfoVO> getLoanBaseInfoById(Long loanBaseInfoId);
 
-    ResultBean<Long> create(LoanBaseInfoParam param);
+    ResultBean<Long> create(LoanBaseInfoDO loanBaseInfoDO);
+
 }

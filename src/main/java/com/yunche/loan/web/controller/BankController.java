@@ -22,13 +22,13 @@ public class BankController {
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultBean<List<String>> listAll2() {
+    public ResultBean<List<String>> listAll() {
         return ResultBean.ofSuccess(BANK_LIST);
     }
 
 
 //    @GetMapping(value = "/list")
-//    public ResultBean<List<BaseVO>> listAll() {
+//    public ResultBean<List<BaseVO>> listAll2() {
 //        List<BaseVO> baseVOS = Lists.newArrayList();
 //        BANK_MAP.forEach((k, v) -> {
 //            BaseVO baseVO = new BaseVO();
