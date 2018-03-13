@@ -43,41 +43,22 @@ public class BizExceptionHandler {
     }
 
     @Around("controller()")
-    public Object doBefore(ProceedingJoinPoint pjp) {
+    public Object doBefore(ProceedingJoinPoint pjp) throws Throwable {
 
-        try {
+
             long startTime = System.currentTimeMillis();
 
             // 日志记录
             log(pjp.getArgs());
 
             // exec
-            Object result = pjp.proceed();
+              Object result = pjp.proceed();
 
             // 统计时间
             long totalTime = System.currentTimeMillis() - startTime;
             logger.info("totalTime : {}s", new Double(totalTime) / 1000);
 
             return result;
-        } catch (Throwable throwable) {
-            logger.error("BizExceptionHandler : ", throwable);
-            if (throwable instanceof BizException) {
-                return ResultBean.ofError(throwable.getMessage());
-            } else if (throwable instanceof IllegalArgumentException) {
-                return ResultBean.ofError(throwable.getMessage());
-            } else if (throwable instanceof NullPointerException) {
-                return ResultBean.ofError(throwable.getMessage());
-            } else if (throwable instanceof MailException) {
-                return ResultBean.ofError("邮件发送失败");
-            } else if (throwable instanceof BadSqlGrammarException) {
-                return ResultBean.ofError("糟糕，出错啦！");
-            } else if (throwable instanceof RuntimeException) {
-                return ResultBean.ofError("糟糕，出错啦！");
-            } else {
-                String errorMsg = throwable.toString() == null ? throwable.getMessage() : throwable.toString();
-                return ResultBean.ofError(errorMsg == null || errorMsg.equals("") ? "未知错误" : throwable.toString());
-            }
-        }
     }
 
     /**

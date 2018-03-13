@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.InsuranceInfoDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.InsuranceInfoDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_id" property="order_id" jdbcType="BIGINT" />
+    <result column="issue_bills_date" property="issue_bills_date" jdbcType="DATE" />
+    <result column="residential_address" property="residential_address" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="feature" property="feature" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_id, issue_bills_date, residential_address, status, feature
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from insurance_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from insurance_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.InsuranceInfoDO" >
+    insert into insurance_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="order_id != null" >
+        order_id,
+      </if>
+      <if test="issue_bills_date != null" >
+        issue_bills_date,
+      </if>
+      <if test="residential_address != null" >
+        residential_address,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="feature != null" >
+        feature,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="order_id != null" >
+        #{order_id,jdbcType=BIGINT},
+      </if>
+      <if test="issue_bills_date != null" >
+        #{issue_bills_date,jdbcType=DATE},
+      </if>
+      <if test="residential_address != null" >
+        #{residential_address,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null" >
+        #{feature,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.InsuranceInfoDO" >
+    update insurance_info
+    <set >
+      <if test="order_id != null" >
+        order_id = #{order_id,jdbcType=BIGINT},
+      </if>
+      <if test="issue_bills_date != null" >
+        issue_bills_date = #{issue_bills_date,jdbcType=DATE},
+      </if>
+      <if test="residential_address != null" >
+        residential_address = #{residential_address,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null" >
+        feature = #{feature,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

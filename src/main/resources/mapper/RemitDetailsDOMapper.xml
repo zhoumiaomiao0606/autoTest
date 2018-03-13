@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.RemitDetailsDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.RemitDetailsDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="beneficiary_bank" property="beneficiary_bank" jdbcType="VARCHAR" />
+    <result column="beneficiary_account" property="beneficiary_account" jdbcType="VARCHAR" />
+    <result column="beneficiary_account_number" property="beneficiary_account_number" jdbcType="VARCHAR" />
+    <result column="remit_amount" property="remit_amount" jdbcType="DECIMAL" />
+    <result column="return_rete_amount" property="return_rete_amount" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="feature" property="feature" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, beneficiary_bank, beneficiary_account, beneficiary_account_number, remit_amount, 
+    return_rete_amount, status, feature
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from remit_details
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from remit_details
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO" >
+    insert into remit_details
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="beneficiary_bank != null" >
+        beneficiary_bank,
+      </if>
+      <if test="beneficiary_account != null" >
+        beneficiary_account,
+      </if>
+      <if test="beneficiary_account_number != null" >
+        beneficiary_account_number,
+      </if>
+      <if test="remit_amount != null" >
+        remit_amount,
+      </if>
+      <if test="return_rete_amount != null" >
+        return_rete_amount,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="feature != null" >
+        feature,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="beneficiary_bank != null" >
+        #{beneficiary_bank,jdbcType=VARCHAR},
+      </if>
+      <if test="beneficiary_account != null" >
+        #{beneficiary_account,jdbcType=VARCHAR},
+      </if>
+      <if test="beneficiary_account_number != null" >
+        #{beneficiary_account_number,jdbcType=VARCHAR},
+      </if>
+      <if test="remit_amount != null" >
+        #{remit_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="return_rete_amount != null" >
+        #{return_rete_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null" >
+        #{feature,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO" >
+    update remit_details
+    <set >
+      <if test="beneficiary_bank != null" >
+        beneficiary_bank = #{beneficiary_bank,jdbcType=VARCHAR},
+      </if>
+      <if test="beneficiary_account != null" >
+        beneficiary_account = #{beneficiary_account,jdbcType=VARCHAR},
+      </if>
+      <if test="beneficiary_account_number != null" >
+        beneficiary_account_number = #{beneficiary_account_number,jdbcType=VARCHAR},
+      </if>
+      <if test="remit_amount != null" >
+        remit_amount = #{remit_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="return_rete_amount != null" >
+        return_rete_amount = #{return_rete_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null" >
+        feature = #{feature,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

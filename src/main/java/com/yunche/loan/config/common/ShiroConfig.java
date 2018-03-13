@@ -33,6 +33,8 @@ public class ShiroConfig {
     private int port;
     @Value("${spring.redis.password}")
     private String password;
+    @Value("${spring.shiro.anno}")
+    private String anno;
 
     /**
      * 缓存过期时间：30min
@@ -61,10 +63,15 @@ public class ShiroConfig {
 
         // 注意过滤器配置顺序 不能颠倒
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap();
-        filterChainDefinitionMap.put("/employee/logout", "anon");
-        filterChainDefinitionMap.put("/employee/login", "anon");
-//        filterChainDefinitionMap.put("/**", "authc,perms");
-        filterChainDefinitionMap.put("/**", "authc");
+        if("true".equals(anno)){
+            filterChainDefinitionMap.put("/**", "anon");
+        }else {
+            filterChainDefinitionMap.put("/employee/logout", "anon");
+            filterChainDefinitionMap.put("/employee/login", "anon");
+  //        filterChainDefinitionMap.put("/**", "authc,perms");
+            filterChainDefinitionMap.put("/**", "authc");
+        }
+
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
         return shiroFilterFactoryBean;

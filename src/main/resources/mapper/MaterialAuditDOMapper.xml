@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.MaterialAuditDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.MaterialAuditDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="complete_material_date" property="complete_material_date" jdbcType="DATE" />
+    <result column="rate_type" property="rate_type" jdbcType="TINYINT" />
+    <result column="is_subsidy" property="is_subsidy" jdbcType="TINYINT" />
+    <result column="is_pledge" property="is_pledge" jdbcType="TINYINT" />
+    <result column="is_guarantee" property="is_guarantee" jdbcType="TINYINT" />
+    <result column="rate" property="rate" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="feature" property="feature" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, complete_material_date, rate_type, is_subsidy, is_pledge, is_guarantee, rate, 
+    status, feature
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from material_audit
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from material_audit
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO" >
+    insert into material_audit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="complete_material_date != null" >
+        complete_material_date,
+      </if>
+      <if test="rate_type != null" >
+        rate_type,
+      </if>
+      <if test="is_subsidy != null" >
+        is_subsidy,
+      </if>
+      <if test="is_pledge != null" >
+        is_pledge,
+      </if>
+      <if test="is_guarantee != null" >
+        is_guarantee,
+      </if>
+      <if test="rate != null" >
+        rate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="feature != null" >
+        feature,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="complete_material_date != null" >
+        #{complete_material_date,jdbcType=DATE},
+      </if>
+      <if test="rate_type != null" >
+        #{rate_type,jdbcType=TINYINT},
+      </if>
+      <if test="is_subsidy != null" >
+        #{is_subsidy,jdbcType=TINYINT},
+      </if>
+      <if test="is_pledge != null" >
+        #{is_pledge,jdbcType=TINYINT},
+      </if>
+      <if test="is_guarantee != null" >
+        #{is_guarantee,jdbcType=TINYINT},
+      </if>
+      <if test="rate != null" >
+        #{rate,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null" >
+        #{feature,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO" >
+    update material_audit
+    <set >
+      <if test="complete_material_date != null" >
+        complete_material_date = #{complete_material_date,jdbcType=DATE},
+      </if>
+      <if test="rate_type != null" >
+        rate_type = #{rate_type,jdbcType=TINYINT},
+      </if>
+      <if test="is_subsidy != null" >
+        is_subsidy = #{is_subsidy,jdbcType=TINYINT},
+      </if>
+      <if test="is_pledge != null" >
+        is_pledge = #{is_pledge,jdbcType=TINYINT},
+      </if>
+      <if test="is_guarantee != null" >
+        is_guarantee = #{is_guarantee,jdbcType=TINYINT},
+      </if>
+      <if test="rate != null" >
+        rate = #{rate,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null" >
+        feature = #{feature,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
