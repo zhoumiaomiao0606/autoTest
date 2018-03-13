@@ -35,5 +35,5 @@ public class AppLoanOrderQuery extends BaseQuery {
     /**
      * 当前任务节点审核状态:  0-全部;   1-已提交(审核);   2-未提交(审核);
      */
-    private Byte taskStatus;
+    private Integer taskStatus;
 }

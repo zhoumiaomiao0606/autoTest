@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.AppLoanOrderQuery;
+import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.AppLoanOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +37,14 @@ public class AppLoanOrderController {
     }
 
     /**
-     * 征信结果未：未查询 的订单分页列表
+     * 征信结果为：未查询 的订单分页列表   -包含任务状态：【征信申请单、征信申请单审核、银行征信、社会征信】
      *
      * @param query
      * @return
      */
-    @PostMapping(value = "/query2", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<AppLoanOrderVO>> listCreditNotEnding(@RequestBody AppLoanOrderQuery query) {
-        return appLoanOrderService.query2(query);
+    @PostMapping(value = "/listCreditNotEnding", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<AppLoanOrderVO>> listCreditNotEnding(@RequestBody BaseQuery query) {
+        return appLoanOrderService.listCreditNotEnding(query);
     }
 
     /**

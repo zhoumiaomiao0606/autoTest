@@ -1,7 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.query.AppLoanOrderQuery;
+import com.yunche.loan.domain.query.BaseQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -67,7 +67,7 @@ public interface LoanOrderDOMapper {
      * @return
      * @param query
      */
-    long countCreditNotEnding(AppLoanOrderQuery query);
+    long countCreditNotEnding(BaseQuery query);
 
     /**
      * 征信查询未完成的业务单列表   -包含任务状态：【征信申请单、征信申请单审核、银行征信、社会征信】
@@ -75,5 +75,5 @@ public interface LoanOrderDOMapper {
      * @return
      * @param query
      */
-    List<LoanOrderDO> listCreditNotEnding(AppLoanOrderQuery query);
+    List<LoanOrderDO> listCreditNotEnding(BaseQuery query);
 }

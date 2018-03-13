@@ -4,8 +4,6 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanProcessService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/loanprocess")
 public class LoanProcessController {
-
-    private static final Logger logger = LoggerFactory.getLogger(LoanProcessController.class);
 
     @Autowired
     private LoanProcessService loanProcessService;
@@ -54,7 +50,7 @@ public class LoanProcessController {
      * @return
      */
     @GetMapping(value = "/task/status")
-    public ResultBean<Byte> currentTask(@RequestParam("orderId") Long orderId,
+    public ResultBean<Integer> currentTask(@RequestParam("orderId") Long orderId,
                                         @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
         return loanProcessService.taskStatus(orderId, taskDefinitionKey);
     }

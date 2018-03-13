@@ -26,9 +26,7 @@
     <sequenceFlow id="flow13" name="征信通过" sourceRef="exclusivegateway3" targetRef="usertask_loan_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 && loanAmount == 1}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow14" name="征信通过" sourceRef="parallelgateway2" targetRef="usertask_loan_apply">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
-    </sequenceFlow>
+    <sequenceFlow id="flow14" name="征信通过" sourceRef="parallelgateway2" targetRef="usertask_loan_apply"></sequenceFlow>
     <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="合伙人,内勤">
       <documentation>【合伙人-业务员】填写【上门调查结果】</documentation>
     </userTask>
@@ -247,7 +245,7 @@
         <omgdi:waypoint x="1342.0" y="177.0"></omgdi:waypoint>
         <omgdi:waypoint x="1342.0" y="241.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="44.0" x="1190.0" y="159.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="44.0" x="1189.0" y="170.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
@@ -255,7 +253,7 @@
         <omgdi:waypoint x="1342.0" y="377.0"></omgdi:waypoint>
         <omgdi:waypoint x="1342.0" y="296.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="44.0" x="1199.0" y="383.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="100.0" x="1189.0" y="370.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">

@@ -36,11 +36,6 @@ public class LoanOrderController {
         return loanOrderService.query(query);
     }
 
-    @PostMapping(value = "query2", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<LoanOrderVO>> creditApplyQuery(@RequestBody LoanOrderQuery query) {
-        return loanOrderService.query(query);
-    }
-
     /**
      * 征信申请单详情  [OK]
      *

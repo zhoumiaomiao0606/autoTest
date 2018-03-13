@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.AppLoanOrderQuery;
+import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.vo.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface AppLoanOrderService {
 
     ResultBean<AppCreditApplyVO> createCreditApplyOrder(AppCustomerParam creditApplyOrderVO);
 
-    ResultBean<AppCreditRecordVO> creditRecordDetail(Long orderId, Byte type);
+//    ResultBean<AppCreditRecordVO> creditRecordDetail(Long orderId, Byte type);
 
     ResultBean<AppCustDetailVO> customerDetail(Long orderId);
 
@@ -54,5 +55,5 @@ public interface AppLoanOrderService {
 
     ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam);
 
-    ResultBean<List<AppLoanOrderVO>> query2(AppLoanOrderQuery query);
+    ResultBean<List<AppLoanOrderVO>> listCreditNotEnding(BaseQuery query);
 }
