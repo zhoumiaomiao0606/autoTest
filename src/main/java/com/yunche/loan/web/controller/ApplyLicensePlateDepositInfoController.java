@@ -2,7 +2,6 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApplyLicensePlateDepositInfoUpdateParam;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,8 @@ public class ApplyLicensePlateDepositInfoController {
      * 上牌抵押录入
      */
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean update(@RequestBody @Validated ApplyLicensePlateDepositInfoUpdateParam param) {
+    public ResultBean<Void> update(@RequestBody @Validated ApplyLicensePlateDepositInfoUpdateParam param) {
+
         return null;
     }
 

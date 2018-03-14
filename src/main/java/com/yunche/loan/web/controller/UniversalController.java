@@ -2,9 +2,6 @@ package com.yunche.loan.web.controller;
 
 
 import com.yunche.loan.config.result.ResultBean;
-import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin

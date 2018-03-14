@@ -9,5 +9,7 @@ public interface InsuranceInfoDOMapper {
 
     InsuranceInfoDO selectByPrimaryKey(Long id);
 
+    InsuranceInfoDO selectLastUpdateRecordByOrderId(Long orderId);
+
     int updateByPrimaryKeySelective(InsuranceInfoDO record);
 }

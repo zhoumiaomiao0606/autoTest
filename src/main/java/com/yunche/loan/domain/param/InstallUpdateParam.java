@@ -9,7 +9,8 @@ import java.util.List;
 
 @Data
 public class InstallUpdateParam  {
-
+    @NotBlank
+    private String order_id;//订单号s
     @Valid
     @NotEmpty
     private List<GpsUpdateParam> gps_list;
