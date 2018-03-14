@@ -27,7 +27,7 @@ public class ApplyLicensePlateRecordServiceImpl implements ApplyLicensePlateReco
 
 
     @Override
-    public Map detail(String order_id) {
+    public Map detail(Long orderId) {
         return null;
     }
 

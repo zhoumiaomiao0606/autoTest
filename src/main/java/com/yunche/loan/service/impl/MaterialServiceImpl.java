@@ -26,7 +26,7 @@ public class MaterialServiceImpl implements MaterialService {
     private MaterialAuditDOMapper materialAuditDOMapper;
 
     @Override
-    public Map detail(String order_id) {
+    public Map detail(Long orderId) {
         return null;
     }
 

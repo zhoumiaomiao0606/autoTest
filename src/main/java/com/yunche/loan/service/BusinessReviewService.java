@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public interface BusinessReviewService {
-    public Map detail(String order_id);
+    public Map detail(Long orderId);
 
     public void update(BusinessReviewUpdateParam param);
 

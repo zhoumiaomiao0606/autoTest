@@ -1,7 +1,9 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface InsuranceRelevanceDOMapper {
     int deleteByPrimaryKey(Long id);
 

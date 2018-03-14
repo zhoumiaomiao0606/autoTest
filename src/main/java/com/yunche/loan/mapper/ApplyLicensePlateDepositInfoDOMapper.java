@@ -1,7 +1,9 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface ApplyLicensePlateDepositInfoDOMapper {
     int deleteByPrimaryKey(Long id);
 

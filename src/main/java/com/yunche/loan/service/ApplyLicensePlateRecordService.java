@@ -5,7 +5,7 @@ import com.yunche.loan.domain.param.ApplyLicensePlateRecordUpdateParam;
 import java.util.Map;
 
 public interface ApplyLicensePlateRecordService {
-    public Map detail(String order_id);
+    public Map detail(Long orderId);
 
     public void update(ApplyLicensePlateRecordUpdateParam param);
 }

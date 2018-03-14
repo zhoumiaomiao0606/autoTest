@@ -31,8 +31,8 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
 
 
     @Override
-    public void commit(String order_id) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(order_id),new Byte("0"));
+    public void commit(Long orderId) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
         if(loanOrderDO == null){
             throw new BizException("此业务单不存在");
         }

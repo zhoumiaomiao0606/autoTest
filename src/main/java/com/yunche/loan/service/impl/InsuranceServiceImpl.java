@@ -33,7 +33,7 @@ public class InsuranceServiceImpl implements InsuranceService {
     private InsuranceRelevanceDOMapper insuranceRelevanceDOMapper;
 
     @Override
-    public Map detail(String order_id) {
+    public Map detail(Long orderId) {
         return null;
     }
 

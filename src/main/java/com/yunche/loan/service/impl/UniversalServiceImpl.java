@@ -10,17 +10,17 @@ import java.util.Map;
 @Transactional
 public class UniversalServiceImpl implements UniversalService {
     @Override
-    public Map customer(String order_id) {
+    public Map customer(Long orderId) {
         return null;
     }
 
     @Override
-    public Map customerFile(String customer_id) {
+    public Map customerFile(Long customerId) {
         return null;
     }
 
     @Override
-    public Map materialRecord(String order_id) {
+    public Map materialRecord(Long orderId) {
         return null;
     }
 }

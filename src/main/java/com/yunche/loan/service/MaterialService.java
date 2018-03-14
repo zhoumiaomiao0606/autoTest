@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface MaterialService {
 
-    public Map detail(String order_id);
+    public Map detail(Long orderId);
 
     public void update(MaterialUpdateParam param);
 }

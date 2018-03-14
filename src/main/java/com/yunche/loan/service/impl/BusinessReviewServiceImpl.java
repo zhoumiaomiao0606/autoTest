@@ -33,7 +33,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     private RemitDetailsDOMapper remitDetailsDOMapper;
 
     @Override
-    public Map detail(String order_id) {
+    public Map detail(Long orderId) {
         return null;
     }
 

@@ -5,14 +5,16 @@ import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.ApplyLicensePlateDepositInfoUpdateParam;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.ApplyLicensePlateDepositInfoDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.ApplyLicensePlateDepositInfoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -24,11 +26,26 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
     @Resource
     private ApplyLicensePlateDepositInfoDOMapper applyLicensePlateDepositInfoDOMapper;
 
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
+
 
     @Override
-    public Map detail(String order_id) {
+    public RecombinationVO detail(Long orderId) {
 
-        return null;
+        ApplyLicensePlateDepositInfoVO applyLicensePlateDepositInfoVO = loanQueryDOMapper.selectApplyLicensePlateDepositInfo(orderId);
+
+        List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
+
+        for(UniversalCustomerVO universalCustomerVO:customers){
+            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+
+        RecombinationVO<ApplyLicensePlateDepositInfoVO> recombinationVO = new RecombinationVO<ApplyLicensePlateDepositInfoVO>();
+        recombinationVO.setInfo(applyLicensePlateDepositInfoVO);
+        recombinationVO.setCustomers(customers);
+        return recombinationVO;
     }
 
     @Override

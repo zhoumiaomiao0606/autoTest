@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LoanQueryDOMapper" >
+
+  <!--上牌抵押-->
+  <select id="selectApplyLicensePlateDepositInfo" resultType="com.yunche.loan.domain.vo.ApplyLicensePlateDepositInfoVO" parameterType="java.lang.Long" >
+
+    select
+         o.id as order_id,
+             c.id as customer_id,
+             c.name as cname,
+             c.id_card,
+             (select name from employee where id = b.salesman_id) as ename,
+             (select name from partner where id = b.partner_id) as pname,
+             i.car_type,
+             l.license_plate_number,
+             b.bank,
+             a.apply_license_plate_deposit_date,
+             a.registration_certificate_number
+
+
+    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+    left join loan_customer c on o.loan_customer_id= c.id
+
+    left join loan_base_info b on o.loan_base_info_id = b.id
+
+    left join loan_car_info i on o.loan_car_info_id = i.id
+
+    left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+    left join cost_details d on o.cost_details_id = d.id
+
+    left join remit_details r on o.remit_details_id = r.id
+
+    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
+
+    left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
+
+  </select>
+
+  <!--上牌记录-->
+  <select id="selectApplyLicensePlateRecord" resultType="com.yunche.loan.domain.vo.ApplyLicensePlateRecordVO" parameterType="java.lang.Long" >
+    select
+         o.id as order_id,
+             c.id as customer_id,
+             c.name as cname,
+             c.id_card,
+             (select name from employee where id = b.salesman_id) as ename,
+             (select name from partner where id = b.partner_id) as pname,
+             i.car_type,
+             l.vehicle_identification_number,
+             l.license_plate_number,
+             l.apply_license_plate_date,
+             l.engine_number,
+             l.license_plate_type,
+             l.apply_license_plate_area,
+             l.registration_certificate_number,
+             l.qualified_certificate_number,
+             l.car_model,
+             l.transfer_ownership_date,
+             l.license_plate_readiness_date
+
+    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+    left join loan_customer c on o.loan_customer_id= c.id
+
+    left join loan_base_info b on o.loan_base_info_id = b.id
+
+    left join loan_car_info i on o.loan_car_info_id = i.id
+
+    left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+    left join cost_details d on o.cost_details_id = d.id
+
+    left join remit_details r on o.remit_details_id = r.id
+
+    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
+
+
+  </select>
+
+  <!--业务审批单-->
+  <select id="selectBusinessReview" resultType="com.yunche.loan.domain.vo.BusinessReviewVO" parameterType="java.lang.Long" >
+    select
+         o.id as order_id,
+             c.id as customer_id,
+             c.name as cname,
+             (select name from employee where id = b.salesman_id) as ename,
+             c.id_card,
+             (select name from partner where id = b.partner_id) as pname,
+             f.loan_amount,
+             f.sign_rate,
+             f.bank_period_principal,
+             f.bank_fee,
+             i.pay_month,
+             d.service_fee,
+             d.apply_license_plate_deposit_fee,
+             d.performance_fee,
+             d.install_gps_fee,
+             d.risk_fee,
+             d.fair_assess_fee,
+             d.apply_license_plate_out_province_fee,
+             d.based_margin_fee,
+             d.service_fee_type,
+             d.apply_license_plate_deposit_fee_type,
+             d.performance_fee_type,
+             d.install_gps_fee_type,
+             d.risk_fee_type,
+             d.fair_assess_fee_type,
+             d.apply_license_plate_out_province_fee_type,
+             d.based_margin_fee_type,
+             (d.service_fee+d.apply_license_plate_deposit_fee+d.performance_fee+d.install_gps_fee+d.risk_fee+d.fair_assess_fee+d.apply_license_plate_out_province_fee+d.based_margin_fee) as total_cost,
+             r.beneficiary_bank,
+             r.beneficiary_account,
+             r.beneficiary_account_number,
+             r.return_rete_amount,
+             r.remit_amount
+
+    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+    left join loan_customer c on o.loan_customer_id= c.id
+
+    left join loan_base_info b on o.loan_base_info_id = b.id
+
+    left join loan_car_info i on o.loan_car_info_id = i.id
+
+    left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+    left join cost_details d on o.cost_details_id = d.id
+
+    left join remit_details r on o.remit_details_id = r.id
+
+
+  </select>
+
+  <!--财务-->
+  <select id="selectFinance" resultType="com.yunche.loan.domain.vo.FinanceVO" parameterType="java.lang.Long" >
+    select
+         o.id as order_id,
+             c.id as customer_id,
+             c.name as cname,
+             c.id_card,
+             (select name from employee where id = b.salesman_id) as ename,
+             c.mobile,
+             f.loan_amount,
+             (select name from partner where id = b.partner_id) as pname,
+             i.pay_month,
+             r.return_rete_amount,
+             r.beneficiary_bank,
+             r.beneficiary_account,
+             r.beneficiary_account_number,
+             r.remit_amount,
+             d.service_fee,
+             d.apply_license_plate_deposit_fee,
+             d.performance_fee,
+             d.install_gps_fee,
+             d.risk_fee,
+             d.fair_assess_fee,
+             d.apply_license_plate_out_province_fee,
+             d.based_margin_fee,
+             d.service_fee_type,
+             d.apply_license_plate_deposit_fee_type,
+             d.performance_fee_type,
+             d.install_gps_fee_type,
+             d.risk_fee_type,
+             d.fair_assess_fee_type,
+             d.apply_license_plate_out_province_fee_type,
+             d.based_margin_fee_type,
+             (d.service_fee+d.apply_license_plate_deposit_fee+d.performance_fee+d.install_gps_fee+d.risk_fee+d.fair_assess_fee+d.apply_license_plate_out_province_fee+d.based_margin_fee) as total_cost,
+             m.complete_material_date,
+             m.rate_type,
+             m.is_subsidy,
+             m.is_pledge,
+             m.is_guarantee,
+             m.rate,
+             (select CONCAT(parent_area_name,area_name) from base_area where area_id = b.area_id) as biz_area,
+             f.financial_product_name,
+             f.loan_time,
+             f.bank,
+             f.bank_period_principal,
+             (0.5) as bank_per_rate,
+             f.bank_fee,
+             f.down_payment_money,
+             f.down_payment_ratio,
+             f.sign_rate,
+             f.first_month_repay,
+             f.each_month_repay,
+             (select count(id) from install_gps where order_id = o.id) as gps_num,
+             i.car_key,
+             (select name from car_detail where id = i.car_detail_id) as car_name,
+             (select sale_price from car_detail where id = i.car_detail_id) as sale_price,
+             (select price from car_detail where id = i.car_detail_id) as assess_price,
+             (select production_type from car_model where id = (select model_id from car_detail where id = i.car_detail_id) ) as production_type,
+             l.license_plate_type,
+             i.car_type,
+             l.apply_license_plate_area,
+             v.visit_date,
+             (select name from employee where id = v.visit_salesman_id) as vname,
+             v.visit_address,
+             v.survey_report,
+             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','action')) as verify_status,
+             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report
+
+    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+    left join loan_customer c on o.loan_customer_id= c.id
+
+    left join loan_base_info b on o.loan_base_info_id = b.id
+
+    left join loan_car_info i on o.loan_car_info_id = i.id
+
+    left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+    left join cost_details d on o.cost_details_id = d.id
+
+    left join remit_details r on o.remit_details_id = r.id
+
+    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
+
+    left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
+
+    left join material_audit m on o.material_audit_id = m.id
+
+    left join loan_home_visit v on o.loan_home_visit_id = v.id
+
+
+  </select>
+
+  <!--资料-->
+  <select id="selectMaterial" resultType="com.yunche.loan.domain.vo.MaterialVO" parameterType="java.lang.Long" >
+        select
+         o.id as order_id,
+             c.id as customer_id,
+             c.name as cname,
+             c.id_card,
+             (select name from employee where id = b.salesman_id) as ename,
+             c.mobile,
+             f.loan_amount,
+             (select name from partner where id = b.partner_id) as pname,
+             m.complete_material_date,
+             m.rate_type,
+             m.is_subsidy,
+             m.is_pledge,
+             m.is_guarantee,
+             m.rate,
+             (select CONCAT(parent_area_name,area_name) from base_area where area_id = b.area_id) as biz_area,
+             f.financial_product_name,
+             f.loan_time,
+             f.bank,
+             f.bank_period_principal,
+             (0.5) as bank_per_rate,
+             f.bank_fee,
+             f.down_payment_money,
+             f.down_payment_ratio,
+             d.performance_fee,
+             f.sign_rate,
+             f.first_month_repay,
+             f.each_month_repay,
+             (select count(id) from install_gps where order_id = o.id) as gps_num,
+             i.car_key,
+             (select name from car_detail where id = i.car_detail_id) as car_name,
+             (select sale_price from car_detail where id = i.car_detail_id) as sale_price,
+             (select price from car_detail where id = i.car_detail_id) as assess_price,
+             (select production_type from car_model where id = (select model_id from car_detail where id = i.car_detail_id) ) as production_type,
+             l.license_plate_type,
+             i.car_type,
+             l.apply_license_plate_area,
+             v.visit_date,
+             (select name from employee where id = v.visit_salesman_id) as vname,
+             v.visit_address,
+             v.survey_report,
+             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','action')) as verify_status,
+             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report
+
+    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+    left join loan_customer c on o.loan_customer_id= c.id
+
+    left join loan_base_info b on o.loan_base_info_id = b.id
+
+    left join loan_car_info i on o.loan_car_info_id = i.id
+
+    left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+    left join cost_details d on o.cost_details_id = d.id
+
+    left join remit_details r on o.remit_details_id = r.id
+
+    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
+
+    left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
+
+    left join material_audit m on o.material_audit_id = m.id
+
+    left join loan_home_visit v on o.loan_home_visit_id = v.id
+
+
+  </select>
+
+  <!--保险客户信息-->
+  <select id="selectInsuranceCustomer" resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO" parameterType="java.lang.Long" >
+  select
+          order_id,
+              id as insurance_info_id,
+              (select loan_customer_id from loan_order where id = order_id) as customer_id,
+              (select name from loan_customer where id = (select loan_customer_id from loan_order where id = order_id)) as cname,
+              (select id_card from loan_customer where id = (select loan_customer_id from loan_order where id = order_id)) as id_card,
+              (select name from employee where id = (select salesman_id from loan_base_info where id = (select loan_base_info_id from loan_order where id = order_id))) as ename,
+              (select name from partner where id = (select partner_id from loan_base_info where id = (select loan_base_info_id from loan_order where id = order_id))) as pname,
+            (@row:=@row + 1) as insurance_year,
+          issue_bills_date,
+              residential_address,
+              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )as total_insurance_amount
+
+  from insurance_info where order_id = #{orderId,jdbcType=BIGINT} ORDER BY issue_bills_date asc
+
+
+  </select>
+
+  <!--保险相关信息-->
+  <select id="selectInsuranceRelevance" resultType="com.yunche.loan.domain.vo.InsuranceRelevanceVO" parameterType="java.lang.Long" >
+
+    select
+             insurance_info_id,
+             insurance_company_name,
+             insurance_number,
+             area,
+             insurance_amount,
+             start_date,
+             end_date,
+             insurance_type
+    from insurance_relevance where insurance_info_id = #{insuranceInfoId,jdbcType=BIGINT}
+
+  </select>
+
+  <!--金融方案-->
+  <select id="selectFinancialScheme" resultType="com.yunche.loan.domain.vo.FinancialSchemeVO" parameterType="java.lang.Long" >
+    select
+         o.id as order_id,
+             c.id as customer_id,
+             c.name as cname,
+             c.id_card,
+             f.financial_product_name,
+             l.license_plate_number,
+             l.registration_certificate_number,
+             l.apply_license_plate_date,
+             a.apply_license_plate_deposit_date,
+             f.loan_time,
+             f.car_price,
+             b.bank,
+             f.sign_rate,
+             f.down_payment_money,
+             f.loan_amount,
+             f.down_payment_ratio,
+             f.bank_period_principal,
+             f.bank_fee,
+             f.principal_interest_sum,
+             f.first_month_repay,
+             f.each_month_repay
+
+    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+    left join loan_customer c on o.loan_customer_id= c.id
+
+    left join loan_base_info b on o.loan_base_info_id = b.id
+
+    left join loan_car_info i on o.loan_car_info_id = i.id
+
+    left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+    left join cost_details d on o.cost_details_id = d.id
+
+    left join remit_details r on o.remit_details_id = r.id
+
+    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
+
+    left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
+
+    left join material_audit m on o.material_audit_id = m.id
+
+    left join loan_home_visit v on o.loan_home_visit_id = v.id
+
+
+  </select>
+
+  <!--客户信息-->
+  <select id="selectUniversalCustomer" resultType="com.yunche.loan.domain.vo.UniversalCustomerVO" parameterType="java.lang.Long" >
+    select
+        o.id as order_id,
+        c.id as customer_id,
+        c.cust_type,
+        c.name,
+        c.id_card,
+        c.mobile,
+        c.cust_relation,
+        case when
+            (select result from loan_credit_info where customer_id = c.id)  is null
+        then
+            (select result from loan_credit_info where customer_id = c.id) else 1 end as result
+
+    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+    left join loan_customer c on o.loan_customer_id= c.principal_cust_id
+
+
+  </select>
+
+  <!--客户附件信息-->
+  <select id="selectUniversalCustomerFile" resultType="com.yunche.loan.domain.vo.UniversalCustomerFileVO" parameterType="java.lang.Long" >
+    select path,type from  loan_file  where customer_id = #{customerId,jdbcType=BIGINT}
+  </select>
+
+  <!--资料增补-->
+  <select id="selectUniversalMaterialRecord" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO" parameterType="java.lang.Long" >
+    select path,type from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
+  </select>
+
+</mapper>
