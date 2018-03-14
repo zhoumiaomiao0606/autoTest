@@ -408,12 +408,12 @@
 
   <!--客户附件信息-->
   <select id="selectUniversalCustomerFile" resultType="com.yunche.loan.domain.vo.UniversalCustomerFileVO" parameterType="java.lang.Long" >
-    select path,type from  loan_file  where customer_id = #{customerId,jdbcType=BIGINT}
+    select path as urls,type from  loan_file  where customer_id = #{customerId,jdbcType=BIGINT}
   </select>
 
   <!--资料增补-->
   <select id="selectUniversalMaterialRecord" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO" parameterType="java.lang.Long" >
-    select path,type from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
+    select path as urls,type from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
   </select>
 
 </mapper>
