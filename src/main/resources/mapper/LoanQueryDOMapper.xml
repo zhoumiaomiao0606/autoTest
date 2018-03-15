@@ -85,6 +85,7 @@
     select
          o.id as order_id,
              c.id as customer_id,
+             (select id from partner where id = b.partner_id) as pid,
              c.name as cname,
              (select name from employee where id = b.salesman_id) as ename,
              c.id_card,

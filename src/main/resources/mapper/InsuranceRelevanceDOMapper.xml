@@ -32,7 +32,7 @@
     delete from insurance_relevance
     where insurance_info_id = #{insuranceInfoId,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.InsuranceRelevanceDO" >
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.InsuranceRelevanceDO" >
     insert into insurance_relevance
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

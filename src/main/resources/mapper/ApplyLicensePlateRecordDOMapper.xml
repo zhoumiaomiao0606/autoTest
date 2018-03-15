@@ -33,7 +33,7 @@
     delete from apply_license_plate_record
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ApplyLicensePlateRecordDO" >
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.ApplyLicensePlateRecordDO" >
     insert into apply_license_plate_record
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

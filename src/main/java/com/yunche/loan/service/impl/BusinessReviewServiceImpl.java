@@ -8,8 +8,12 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.RemitDetailsDO;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
 import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
+import com.yunche.loan.domain.vo.ApplyLicensePlateRecordVO;
+import com.yunche.loan.domain.vo.BusinessReviewVO;
+import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.mapper.CostDetailsDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.RemitDetailsDOMapper;
 import com.yunche.loan.service.BusinessReviewService;
 import org.springframework.stereotype.Service;
@@ -32,9 +36,15 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     @Resource
     private RemitDetailsDOMapper remitDetailsDOMapper;
 
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
+
     @Override
-    public Map detail(Long orderId) {
-        return null;
+    public RecombinationVO detail(Long orderId) {
+        BusinessReviewVO businessReviewVO = loanQueryDOMapper.selectBusinessReview(orderId);
+        RecombinationVO<BusinessReviewVO> recombinationVO = new RecombinationVO<BusinessReviewVO>();
+        recombinationVO.setInfo(businessReviewVO);
+        return recombinationVO;
     }
 
     @Override
@@ -80,7 +90,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             remitDetailsDOMapper.insertSelective(V);
             //进行绑定
             Long id = V.getId();
-            loanOrderDO.setApplyLicensePlateRecordId(id);
+            loanOrderDO.setRemitDetailsId(id);
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
         }else{
             if(remitDetailsDOMapper.selectByPrimaryKey(remitDetailsId) == null){

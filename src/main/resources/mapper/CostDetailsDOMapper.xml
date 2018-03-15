@@ -11,7 +11,7 @@
     <result column="fair_assess_fee" property="fair_assess_fee" jdbcType="DECIMAL" />
     <result column="apply_license_plate_out_province_fee" property="apply_license_plate_out_province_fee" jdbcType="DECIMAL" />
     <result column="based_margin_fee" property="based_margin_fee" jdbcType="DECIMAL" />
-    <result column="service_fee_type" property="service_fee_type" jdbcType="DECIMAL" />
+    <result column="service_fee_type" property="service_fee_type" jdbcType="TINYINT" />
     <result column="apply_license_plate_deposit_fee_type" property="apply_license_plate_deposit_fee_type" jdbcType="TINYINT" />
     <result column="performance_fee_type" property="performance_fee_type" jdbcType="TINYINT" />
     <result column="install_gps_fee_type" property="install_gps_fee_type" jdbcType="TINYINT" />
@@ -39,7 +39,7 @@
     delete from cost_details
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CostDetailsDO" >
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.CostDetailsDO" >
     insert into cost_details
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -129,7 +129,7 @@
         #{based_margin_fee,jdbcType=DECIMAL},
       </if>
       <if test="service_fee_type != null" >
-        #{service_fee_type,jdbcType=DECIMAL},
+        #{service_fee_type,jdbcType=TINYINT},
       </if>
       <if test="apply_license_plate_deposit_fee_type != null" >
         #{apply_license_plate_deposit_fee_type,jdbcType=TINYINT},
@@ -188,7 +188,7 @@
         based_margin_fee = #{based_margin_fee,jdbcType=DECIMAL},
       </if>
       <if test="service_fee_type != null" >
-        service_fee_type = #{service_fee_type,jdbcType=DECIMAL},
+        service_fee_type = #{service_fee_type,jdbcType=TINYINT},
       </if>
       <if test="apply_license_plate_deposit_fee_type != null" >
         apply_license_plate_deposit_fee_type = #{apply_license_plate_deposit_fee_type,jdbcType=TINYINT},
