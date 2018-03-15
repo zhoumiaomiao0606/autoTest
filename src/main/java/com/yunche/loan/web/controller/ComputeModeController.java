@@ -1,8 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.CalcParamDo;
-import com.yunche.loan.domain.param.LoanFinancialPlanParam;
+import com.yunche.loan.domain.vo.CalcParamVO;
 import com.yunche.loan.service.ComputeModeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,7 @@ public class ComputeModeController {
     @Autowired
     private ComputeModeService computeModeService;
     @RequestMapping(value = "/calc",method = RequestMethod.GET)
-    public ResultBean<CalcParamDo> getFormulaResult(@RequestParam("id")int id, @RequestParam("loanAmt")BigDecimal loanAmt, @RequestParam("exeRate")BigDecimal exeRate, @RequestParam("bankBaseRate")BigDecimal bankBaseRate, @RequestParam("year")int year, @RequestParam("carPrice")BigDecimal carPrice){
+    public ResultBean<CalcParamVO> getFormulaResult(@RequestParam("id")int id, @RequestParam("loanAmt")BigDecimal loanAmt, @RequestParam("exeRate")BigDecimal exeRate, @RequestParam("bankBaseRate")BigDecimal bankBaseRate, @RequestParam("year")int year, @RequestParam("carPrice")BigDecimal carPrice){
         return  computeModeService.calc(id,loanAmt,exeRate,bankBaseRate,year,carPrice);
     }
 }

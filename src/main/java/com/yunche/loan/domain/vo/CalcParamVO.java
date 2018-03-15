@@ -1,11 +1,11 @@
-package com.yunche.loan.domain.entity;
+package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class CalcParamDo {
+public class CalcParamVO {
     //银行分期本金
     private BigDecimal bankPeriodPrincipal;
     //还款总额

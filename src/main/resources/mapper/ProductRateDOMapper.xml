@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.ProductRateDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ProductRateDO">
+        <id column="prod_id" jdbcType="BIGINT" property="prodId"/>
+        <id column="bank_rate" jdbcType="DECIMAL" property="bankRate"/>
+        <id column="loan_time" jdbcType="INTEGER" property="loanTime"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        prod_id, bank_rate, loan_time, gmt_create, gmt_modify, feature, status
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ProductRateDOKey"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from product_rate
+        where prod_id = #{prodId,jdbcType=BIGINT}
+        and loan_time = #{loanTime,jdbcType=INTEGER}
+        <if test="bankRate != null">
+            and bank_rate = #{bankRate,jdbcType=DECIMAL}
+        </if>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ProductRateDOKey">
+        delete from product_rate
+        where prod_id = #{prodId,jdbcType=BIGINT}
+        and bank_rate = #{bankRate,jdbcType=DECIMAL}
+        and loan_time = #{loanTime,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ProductRateDO">
+        insert into product_rate (prod_id, bank_rate, loan_time,
+        gmt_create, gmt_modify, feature,
+        status)
+        values (#{prodId,jdbcType=BIGINT}, #{bankRate,jdbcType=DECIMAL}, #{loanTime,jdbcType=INTEGER},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT})
+    </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ProductRateDO">
+        insert into product_rate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="prodId != null">
+                prod_id,
+            </if>
+            <if test="bankRate != null">
+                bank_rate,
+            </if>
+            <if test="loanTime != null">
+                loan_time,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="prodId != null">
+                #{prodId,jdbcType=BIGINT},
+            </if>
+            <if test="bankRate != null">
+                #{bankRate,jdbcType=DECIMAL},
+            </if>
+            <if test="loanTime != null">
+                #{loanTime,jdbcType=INTEGER},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ProductRateDO">
+        update product_rate
+        <set>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where prod_id = #{prodId,jdbcType=BIGINT}
+        and bank_rate = #{bankRate,jdbcType=DECIMAL}
+        and loan_time = #{loanTime,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ProductRateDO">
+        update product_rate
+        set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT}
+        where prod_id = #{prodId,jdbcType=BIGINT}
+        and bank_rate = #{bankRate,jdbcType=DECIMAL}
+        and loan_time = #{loanTime,jdbcType=INTEGER}
+    </update>
+</mapper>
