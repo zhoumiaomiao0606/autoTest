@@ -7,9 +7,13 @@ import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.InsuranceRelevanceUpdateParam;
 import com.yunche.loan.domain.param.InsuranceUpdateParam;
+import com.yunche.loan.domain.vo.InsuranceCustomerVO;
+import com.yunche.loan.domain.vo.InsuranceRelevanceVO;
+import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.mapper.InsuranceInfoDOMapper;
 import com.yunche.loan.mapper.InsuranceRelevanceDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.InsuranceService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -32,9 +36,19 @@ public class InsuranceServiceImpl implements InsuranceService {
     @Resource
     private InsuranceRelevanceDOMapper insuranceRelevanceDOMapper;
 
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
+
     @Override
-    public Map detail(Long orderId) {
-        return null;
+    public RecombinationVO detail(Long orderId) {
+        List<InsuranceCustomerVO> insuranceCustomerVOList = loanQueryDOMapper.selectInsuranceCustomer(orderId);
+        for(InsuranceCustomerVO obj:insuranceCustomerVOList){
+            List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(obj.getInsurance_info_id()));
+            obj.setInsurance_relevance_list(insurance_relevance_list);
+        }
+        RecombinationVO<List<InsuranceCustomerVO>> recombinationVO = new RecombinationVO<List<InsuranceCustomerVO>>();
+        recombinationVO.setInfo(insuranceCustomerVOList);
+        return recombinationVO;
     }
 
     @Override

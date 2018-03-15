@@ -11,7 +11,7 @@ public class BeanPlasticityUtills {
     public static <T>T copy(Class<T> t,Object orig)  {
         try {
             T result = t.newInstance();
-            PropertyUtils.copyProperties(result,orig);
+            BeanUtils.copyProperties(result,orig);
             return result;
         } catch (IllegalAccessException e) {
             throw new BizException("copy bean throw IllegalAccessException");
@@ -19,8 +19,6 @@ public class BeanPlasticityUtills {
             throw new BizException("copy bean throw InvocationTargetException");
         } catch (InstantiationException e) {
             throw new BizException("copy bean throw InstantiationException");
-        } catch (NoSuchMethodException e) {
-            throw new BizException("copy bean throw NoSuchMethodException");
         }
     }
 }

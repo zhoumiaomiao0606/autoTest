@@ -6,13 +6,16 @@ import com.yunche.loan.domain.entity.ApplyLicensePlateRecordDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.MaterialAuditDO;
 import com.yunche.loan.domain.param.MaterialUpdateParam;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.MaterialAuditDOMapper;
 import com.yunche.loan.service.MaterialService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -25,9 +28,25 @@ public class MaterialServiceImpl implements MaterialService {
     @Resource
     private MaterialAuditDOMapper materialAuditDOMapper;
 
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
+
     @Override
-    public Map detail(Long orderId) {
-        return null;
+    public RecombinationVO detail(Long orderId) {
+        MaterialVO materialVO = loanQueryDOMapper.selectMaterial(orderId);
+
+        List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for(UniversalCustomerVO universalCustomerVO:customers){
+            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+        List<UniversalMaterialRecordVO>  materials = loanQueryDOMapper.selectUniversalMaterialRecord(orderId);
+
+        RecombinationVO<MaterialVO> recombinationVO = new RecombinationVO<MaterialVO>();
+        recombinationVO.setInfo(materialVO);
+        recombinationVO.setCustomers(customers);
+        recombinationVO.setMaterials(materials);
+        return recombinationVO;
     }
 
     @Override

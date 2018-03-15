@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class InsuranceCustomerVO {
     private String order_id;//业务编号
@@ -15,5 +17,6 @@ public class InsuranceCustomerVO {
     private String issue_bills_date;//出单日期
     private String residential_address;//现居地址
     private String total_insurance_amount;//保险总金额
+    private List<InsuranceRelevanceVO> insurance_relevance_list;
 
 }

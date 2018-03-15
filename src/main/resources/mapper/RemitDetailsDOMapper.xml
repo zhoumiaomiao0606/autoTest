@@ -25,7 +25,7 @@
     delete from remit_details
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO" >
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO" >
     insert into remit_details
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
