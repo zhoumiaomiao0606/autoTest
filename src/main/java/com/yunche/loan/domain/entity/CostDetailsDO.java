@@ -21,7 +21,7 @@ public class CostDetailsDO {
 
     private BigDecimal based_margin_fee;
 
-    private BigDecimal service_fee_type;
+    private Byte service_fee_type;
 
     private Byte apply_license_plate_deposit_fee_type;
 
@@ -113,11 +113,11 @@ public class CostDetailsDO {
         this.based_margin_fee = based_margin_fee;
     }
 
-    public BigDecimal getService_fee_type() {
+    public Byte getService_fee_type() {
         return service_fee_type;
     }
 
-    public void setService_fee_type(BigDecimal service_fee_type) {
+    public void setService_fee_type(Byte service_fee_type) {
         this.service_fee_type = service_fee_type;
     }
 
