@@ -2,26 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.FinancialProductDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.FinancialProductDO">
-        <id column="prod_id" jdbcType="BIGINT" property="prodId" />
-        <result column="prod_name" jdbcType="VARCHAR" property="prodName" />
-        <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
-        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode" />
-        <result column="account" jdbcType="VARCHAR" property="account" />
-        <result column="sign_phone" jdbcType="VARCHAR" property="signPhone" />
-        <result column="sign_bank_code" jdbcType="VARCHAR" property="signBankCode" />
-        <result column="biz_type" jdbcType="TINYINT" property="bizType" />
-        <result column="category_superior" jdbcType="VARCHAR" property="categorySuperior" />
-        <result column="category_junior" jdbcType="VARCHAR" property="categoryJunior" />
-        <result column="rate" jdbcType="VARCHAR" property="rate" />
-        <result column="mortgage_term" jdbcType="TINYINT" property="mortgageTerm" />
-        <result column="area_id" jdbcType="BIGINT" property="areaId" />
-        <result column="prov" jdbcType="VARCHAR" property="prov" />
-        <result column="city" jdbcType="VARCHAR" property="city" />
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-        <result column="feature" jdbcType="VARCHAR" property="feature" />
-        <result column="status" jdbcType="TINYINT" property="status" />
-        <result column="formula_id" jdbcType="INTEGER" property="formulaId" />
+        <id column="prod_id" jdbcType="BIGINT" property="prodId"/>
+        <result column="prod_name" jdbcType="VARCHAR" property="prodName"/>
+        <result column="bank_name" jdbcType="VARCHAR" property="bankName"/>
+        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode"/>
+        <result column="account" jdbcType="VARCHAR" property="account"/>
+        <result column="sign_phone" jdbcType="VARCHAR" property="signPhone"/>
+        <result column="sign_bank_code" jdbcType="VARCHAR" property="signBankCode"/>
+        <result column="biz_type" jdbcType="TINYINT" property="bizType"/>
+        <result column="category_superior" jdbcType="VARCHAR" property="categorySuperior"/>
+        <result column="category_junior" jdbcType="VARCHAR" property="categoryJunior"/>
+        <result column="rate" jdbcType="VARCHAR" property="rate"/>
+        <result column="mortgage_term" jdbcType="TINYINT" property="mortgageTerm"/>
+        <result column="area_id" jdbcType="BIGINT" property="areaId"/>
+        <result column="prov" jdbcType="VARCHAR" property="prov"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="formula_id" jdbcType="INTEGER" property="formulaId"/>
     </resultMap>
     <sql id="Base_Column_List">
         prod_id, prod_name, bank_name, mnemonic_code, account, sign_phone, sign_bank_code,
@@ -75,15 +75,21 @@
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from financial_product
         where prod_id = #{prodId,jdbcType=BIGINT}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from financial_product
         where prod_id = #{prodId,jdbcType=BIGINT}
     </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
+        <selectKey resultType="java.lang.Long" keyProperty="prodId"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into financial_product (prod_id, prod_name, bank_name,
         mnemonic_code, account, sign_phone,
         sign_bank_code, biz_type, category_superior,
@@ -99,7 +105,12 @@
         #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
         #{status,jdbcType=TINYINT}, #{formulaId,jdbcType=INTEGER})
     </insert>
+
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
+        <selectKey resultType="java.lang.Long" keyProperty="prodId"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into financial_product
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="prodId != null">
