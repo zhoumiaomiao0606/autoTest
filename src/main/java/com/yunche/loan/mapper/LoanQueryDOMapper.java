@@ -20,6 +20,8 @@ public interface LoanQueryDOMapper {
 
     public List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
 
+    public InsuranceCustomerVO selectInsuranceCustomerNormalizeInsuranceYear(Long orderId);
+
     public List<InsuranceRelevanceVO> selectInsuranceRelevance(Long insuranceInfoId);
 
     public FinancialSchemeVO selectFinancialScheme(Long orderId);

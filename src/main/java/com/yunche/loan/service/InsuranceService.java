@@ -9,5 +9,7 @@ public interface InsuranceService {
 
     public RecombinationVO detail(Long orderId);
 
+    public RecombinationVO query(Long orderId);
+
     public void update(InsuranceUpdateParam param);
 }

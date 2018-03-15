@@ -53,18 +53,29 @@ public class InsuranceServiceImpl implements InsuranceService {
     }
 
     @Override
+    public RecombinationVO query(Long orderId) {
+        InsuranceCustomerVO insuranceCustomerVO = loanQueryDOMapper.selectInsuranceCustomerNormalizeInsuranceYear(orderId);
+        List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(insuranceCustomerVO.getInsurance_info_id()));
+        insuranceCustomerVO.setInsurance_relevance_list(insurance_relevance_list);
+        RecombinationVO<InsuranceCustomerVO> recombinationVO = new RecombinationVO<InsuranceCustomerVO>();
+        recombinationVO.setInfo(insuranceCustomerVO);
+        return recombinationVO;
+    }
+
+    @Override
     public void update(InsuranceUpdateParam param) {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()),new Byte("0"));
         if(loanOrderDO == null){
             throw new BizException("此业务单不存在");
         }
-
-        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(Long.valueOf(param.getOrder_id()),new Byte(param.getInsurance_year()));
+        //新保录入接口只能查1-续保后期在做
+        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(Long.valueOf(param.getOrder_id()),new Byte("1"));
         if(insuranceInfoDO == null){
             //新增所有关联数据
             InsuranceInfoDO V= BeanPlasticityUtills.copy(InsuranceInfoDO.class,param);
             V.setOrder_id(Long.valueOf(param.getOrder_id()));
             V.setIssue_bills_date(new Date());
+            V.setInsurance_year(new Byte("1"));
             insuranceInfoDOMapper.insertSelective(V);
             //开始新增保险公司关联表
             //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的
@@ -76,17 +87,12 @@ public class InsuranceServiceImpl implements InsuranceService {
             }
         }else {
             //代表存在
-            //进行更新
-            InsuranceInfoDO V= BeanPlasticityUtills.copy(InsuranceInfoDO.class,param);
-            V.setId(insuranceInfoDO.getId());
-            V.setOrder_id(insuranceInfoDO.getOrder_id());
-            insuranceInfoDOMapper.updateByPrimaryKeySelective(V);
             //开始更新保险公司关联表
             //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的
-            insuranceRelevanceDOMapper.deleteByInsuranceInfoId(V.getId());
+            insuranceRelevanceDOMapper.deleteByInsuranceInfoId(insuranceInfoDO.getId());
             for(InsuranceRelevanceUpdateParam obj:param.getInsurance_relevance_list()){
                 InsuranceRelevanceDO T= BeanPlasticityUtills.copy(InsuranceRelevanceDO.class,obj);
-                T.setInsurance_info_id(V.getId());
+                T.setInsurance_info_id(insuranceInfoDO.getId());
                 insuranceRelevanceDOMapper.insertSelective(T);
             }
         }

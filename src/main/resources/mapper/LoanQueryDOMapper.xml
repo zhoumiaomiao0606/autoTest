@@ -318,6 +318,25 @@
 
   </select>
 
+    <!--保险客户信息-->
+    <select id="selectInsuranceCustomerNormalizeInsuranceYear" resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO" parameterType="java.lang.Long" >
+  select
+          order_id,
+              id as insurance_info_id,
+              (select loan_customer_id from loan_order where id = order_id) as customer_id,
+              (select name from loan_customer where id = (select loan_customer_id from loan_order where id = order_id)) as cname,
+              (select id_card from loan_customer where id = (select loan_customer_id from loan_order where id = order_id)) as id_card,
+              (select name from employee where id = (select salesman_id from loan_base_info where id = (select loan_base_info_id from loan_order where id = order_id))) as ename,
+              (select name from partner where id = (select partner_id from loan_base_info where id = (select loan_base_info_id from loan_order where id = order_id))) as pname,
+              insurance_year,
+              issue_bills_date,
+              (select address from loan_customer where id = (select loan_customer_id from loan_order where id = order_id)) as residential_address,
+              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )as total_insurance_amount
+
+          from insurance_info where order_id = #{orderId,jdbcType=BIGINT} and insurance_year = 1
+
+  </select>
+
   <!--保险相关信息-->
   <select id="selectInsuranceRelevance" resultType="com.yunche.loan.domain.vo.InsuranceRelevanceVO" parameterType="java.lang.Long" >
 
