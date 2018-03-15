@@ -2,7 +2,12 @@ package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.vo.AppBusinessInfoVO;
+import com.yunche.loan.domain.vo.AppCustomerInfoVO;
+import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
+import com.yunche.loan.domain.vo.AppLoanCustomerVO;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.AppCustomerQuery;
@@ -38,7 +43,6 @@ import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
-import static com.yunche.loan.config.constant.LoanInfoSupplementEnum.SUPPLEMENT_TELEPHONE_REVIEW;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 
 /**
@@ -93,6 +97,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanCarInfoService loanCarInfoService;
+
+    @Autowired
+    private LoanCreditInfoService loanCreditInfoService;
 
     @Autowired
     private CarService carService;
@@ -517,30 +524,190 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // TODO
 
 
-
-
         return ResultBean.ofSuccess(null);
     }
 
     @Override
-    public ResultBean<AppCustomerInfo> customerInfo(Long orderId) {
+    public ResultBean<AppCustomerInfoVO> customerInfo(Long orderId) {
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
+        // 客户基本信息
+        ResultBean<CustDetailVO> custDetailVOResultBean = loanCustomerService.detailAll(orderId);
+        Preconditions.checkArgument(custDetailVOResultBean.getSuccess(), custDetailVOResultBean.getMsg());
 
-        return null;
+        AppCustomerInfoVO customerInfoVO = new AppCustomerInfoVO();
+        customerInfoVO.setOrderId(orderId);
+
+        CustDetailVO custDetailVO = custDetailVOResultBean.getData();
+        if (null != custDetailVO) {
+
+            // 主
+            CustomerVO principalLenderVO = custDetailVO.getPrincipalLender();
+            if (null != principalLenderVO) {
+                AppCustomerInfoVO.CustomerInfo principalLender = new AppCustomerInfoVO.CustomerInfo();
+                fillCustomerInfo(principalLenderVO, principalLender);
+                customerInfoVO.setPrincipalLender(principalLender);
+            }
+
+            // 共
+            List<CustomerVO> commonLenderVOList = custDetailVO.getCommonLenderList();
+            if (!CollectionUtils.isEmpty(commonLenderVOList)) {
+
+                List<AppCustomerInfoVO.CustomerInfo> commonLenderList = Lists.newArrayList();
+
+                commonLenderVOList.parallelStream()
+                        .filter(Objects::nonNull)
+                        .forEach(e -> {
+                            AppCustomerInfoVO.CustomerInfo customerInfo = new AppCustomerInfoVO.CustomerInfo();
+                            fillCustomerInfo(e, customerInfo);
+                            commonLenderList.add(customerInfo);
+                        });
+
+                customerInfoVO.setCommonLenderList(commonLenderList);
+            }
+
+            // 担保人
+            List<CustomerVO> guarantorVOList = custDetailVO.getGuarantorList();
+            if (!CollectionUtils.isEmpty(guarantorVOList)) {
+
+                List<AppCustomerInfoVO.CustomerInfo> guarantorList = Lists.newArrayList();
+
+                guarantorVOList.parallelStream()
+                        .filter(Objects::nonNull)
+                        .forEach(e -> {
+                            AppCustomerInfoVO.CustomerInfo customerInfo = new AppCustomerInfoVO.CustomerInfo();
+                            fillCustomerInfo(e, customerInfo);
+                            guarantorList.add(customerInfo);
+                        });
+
+                customerInfoVO.setGuarantorList(guarantorList);
+            }
+
+            // 紧急联系人
+            List<CustomerVO> emergencyContactVOList = custDetailVO.getEmergencyContactList();
+            if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
+
+                List<AppCustomerInfoVO.EmergencyContact> emergencyContactList = Lists.newArrayList();
+
+                emergencyContactVOList.parallelStream()
+                        .filter(Objects::nonNull)
+                        .forEach(e -> {
+                            AppCustomerInfoVO.EmergencyContact emergencyContact = new AppCustomerInfoVO.EmergencyContact();
+                            fillCustomerInfo(e, (AppCustomerInfoVO.CustomerInfo) emergencyContact);
+                            emergencyContactList.add(emergencyContact);
+                        });
+
+                customerInfoVO.setEmergencyContactList(emergencyContactList);
+            }
+        }
+
+        return ResultBean.ofSuccess(customerInfoVO);
+    }
+
+    /**
+     * 填充客户信息
+     *
+     * @param customerVO
+     * @param customerInfo
+     */
+    private void fillCustomerInfo(CustomerVO customerVO, AppCustomerInfoVO.CustomerInfo customerInfo) {
+        if (null != customerVO) {
+            BeanUtils.copyProperties(customerVO, customerInfo);
+        }
     }
 
     @Override
-    public ResultBean<AppBusinessInfo> businessInfo(Long orderId) {
+    public ResultBean<AppBusinessInfoVO> businessInfo(Long orderId) {
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
+        AppBusinessInfoVO businessInfoVO = new AppBusinessInfoVO();
 
-        return null;
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO, "不能为空");
+
+        // 基本信息
+        if (null != loanOrderDO.getLoanBaseInfoId()) {
+            ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
+            Preconditions.checkArgument(loanBaseInfoVOResultBean.getSuccess(), loanBaseInfoVOResultBean.getMsg());
+
+            // 业务员 & 合伙人
+            LoanBaseInfoVO loanBaseInfoVO = loanBaseInfoVOResultBean.getData();
+            if (null != loanBaseInfoVO) {
+                if (null != loanBaseInfoVO.getSalesman()) {
+                    businessInfoVO.setSalesmanName(loanBaseInfoVO.getSalesman().getName());
+                }
+                if (null != loanBaseInfoVO.getPartner()) {
+                    businessInfoVO.setPartnerName(loanBaseInfoVO.getPartner().getName());
+                }
+            }
+
+            // 车型
+            LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+            if (null != loanCarInfoDO) {
+                // 车名
+                ResultBean<String> carFullNameResultBean = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
+                Preconditions.checkArgument(carFullNameResultBean.getSuccess(), carFullNameResultBean.getMsg());
+                businessInfoVO.setCarName(carFullNameResultBean.getData());
+
+                // 车辆属性
+                businessInfoVO.setCarType(loanCarInfoDO.getCarType());
+                // GPS数量
+                businessInfoVO.setGpsNum(loanCarInfoDO.getGpsNum());
+            }
+
+            if (null != loanOrderDO.getLoanFinancialPlanId()) {
+                LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+                // 车价
+                businessInfoVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
+
+                // 贷款额
+                businessInfoVO.setLoanAmount(loanFinancialPlanDO.getLoanAmount());
+
+                // 首月还款
+                businessInfoVO.setFirstMonthRepay(loanFinancialPlanDO.getFirstMonthRepay());
+                // 每月还款
+                businessInfoVO.setEachMonthRepay(loanFinancialPlanDO.getEachMonthRepay());
+                // 按揭期限
+                businessInfoVO.setLoanTime(loanFinancialPlanDO.getLoanTime());
+            }
+
+            // TODO 车牌号
+            businessInfoVO.setLicensePlateNumber("");
+
+            // 征信情况
+            if (null != loanOrderDO.getLoanCustomerId()) {
+                // 银行征信
+                ResultBean<LoanCreditInfoVO> bankLoanCreditInfoVOResultBean = loanCreditInfoService.getByCustomerId(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_BANK);
+                Preconditions.checkArgument(bankLoanCreditInfoVOResultBean.getSuccess(), bankLoanCreditInfoVOResultBean.getMsg());
+                LoanCreditInfoVO bankLoanCreditInfoVO = bankLoanCreditInfoVOResultBean.getData();
+                if (null != bankLoanCreditInfoVO) {
+                    businessInfoVO.setBankCreditResult(bankLoanCreditInfoVO.getResult());
+                    businessInfoVO.setBankCreditInfo(bankLoanCreditInfoVO.getInfo());
+                }
+
+                // 社会征信
+                ResultBean<LoanCreditInfoVO> socialLoanCreditInfoVOResultBean = loanCreditInfoService.getByCustomerId(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_SOCIAL);
+                Preconditions.checkArgument(socialLoanCreditInfoVOResultBean.getSuccess(), socialLoanCreditInfoVOResultBean.getMsg());
+                // 银行征信
+                LoanCreditInfoVO socialLoanCreditInfoVO = socialLoanCreditInfoVOResultBean.getData();
+                if (null != socialLoanCreditInfoVO) {
+                    businessInfoVO.setSocialCreditResult(socialLoanCreditInfoVO.getResult());
+                    businessInfoVO.setSocialCreditInfo(socialLoanCreditInfoVO.getInfo());
+                }
+            }
+        }
+
+        return ResultBean.ofSuccess(businessInfoVO);
     }
 
     @Override
-    public ResultBean<AppInsuranceInfo> insuranceInfo(Long orderId) {
+    public ResultBean<AppInsuranceInfoVO> insuranceInfo(Long orderId) {
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+
+        AppInsuranceInfoVO insuranceInfoVO = new AppInsuranceInfoVO();
 
 
-        return null;
+        return ResultBean.ofSuccess(insuranceInfoVO);
     }
 
     /**

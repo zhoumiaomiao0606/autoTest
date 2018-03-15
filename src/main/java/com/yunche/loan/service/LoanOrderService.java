@@ -33,7 +33,7 @@ public interface LoanOrderService {
 
     ResultBean<LoanHomeVisitVO> homeVisitDetail(Long orderId);
 
-    ResultBean<Void> createOrUpdateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam);
+    ResultBean<Long> createOrUpdateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam);
 
     ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam);
 

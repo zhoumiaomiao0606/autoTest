@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.entity;
+package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2018/3/15
  */
 @Data
-public class AppInsuranceInfo {
+public class AppInsuranceInfoVO {
 
 
 }

@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.entity;
+package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import java.util.Date;
  * @date 2018/3/15
  */
 @Data
-public class AppBusinessInfo {
+public class AppBusinessInfoVO {
 
 //    private Long salesmanId;
 
@@ -60,15 +60,15 @@ public class AppBusinessInfo {
     /**
      * 首月还款额
      */
-    private BigDecimal firstMonthPay;
+    private BigDecimal firstMonthRepay;
     /**
      * 每月还款
      */
-    private BigDecimal eachMonthPay;
+    private BigDecimal eachMonthRepay;
     /**
      * 按揭期限
      */
-    private BigDecimal loanTime;
+    private Integer loanTime;
     /**
      * 还款总额
      */

@@ -1,10 +1,10 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.AppBusinessInfo;
-import com.yunche.loan.domain.entity.AppCustomerInfo;
-import com.yunche.loan.domain.entity.AppInsuranceInfo;
-import com.yunche.loan.domain.entity.AppLoanCustomerVO;
+import com.yunche.loan.domain.vo.AppBusinessInfoVO;
+import com.yunche.loan.domain.vo.AppCustomerInfoVO;
+import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
+import com.yunche.loan.domain.vo.AppLoanCustomerVO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.AppCustomerQuery;
 import com.yunche.loan.domain.query.AppLoanOrderQuery;
@@ -66,9 +66,9 @@ public interface AppLoanOrderService {
 
     ResultBean<List<AppLoanCustomerVO>> customerQuery(AppCustomerQuery query);
 
-    ResultBean<AppCustomerInfo> customerInfo(Long orderId);
+    ResultBean<AppCustomerInfoVO> customerInfo(Long orderId);
 
-    ResultBean<AppBusinessInfo> businessInfo(Long orderId);
+    ResultBean<AppBusinessInfoVO> businessInfo(Long orderId);
 
-    ResultBean<AppInsuranceInfo> insuranceInfo(Long orderId);
+    ResultBean<AppInsuranceInfoVO> insuranceInfo(Long orderId);
 }

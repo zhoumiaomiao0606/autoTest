@@ -1,6 +1,5 @@
-package com.yunche.loan.domain.entity;
+package com.yunche.loan.domain.vo;
 
-import com.yunche.loan.domain.vo.FileVO;
 import lombok.Data;
 
 import java.util.Collections;
@@ -11,7 +10,7 @@ import java.util.List;
  * @date 2018/3/15
  */
 @Data
-public class AppCustomerInfo {
+public class AppCustomerInfoVO {
 
     /**
      * 业务单单号
@@ -35,24 +34,29 @@ public class AppCustomerInfo {
      */
     private List<EmergencyContact> emergencyContactList = Collections.EMPTY_LIST;
 
+
     @Data
-    public static class CustomerInfo {
+    public static class EmergencyContact {
 
         private Long id;
 
         private String name;
+
+        private String mobile;
         /**
          * 与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
          */
         private Byte custRelation;
+    }
+
+    @Data
+    public static class CustomerInfo extends EmergencyContact {
 
         private Byte sex;
 
         private Byte age;
 
         private String idCard;
-
-        private String mobile;
 
         private Byte marry;
 
@@ -136,19 +140,5 @@ public class AppCustomerInfo {
 //        private Date gmtModify;
 //
 //        private Byte status;
-    }
-
-    @Data
-    public static class EmergencyContact {
-
-        private Long id;
-
-        private String name;
-
-        private String mobile;
-        /**
-         * 与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
-         */
-        private Byte custRelation;
     }
 }

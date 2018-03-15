@@ -182,10 +182,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         // fillFiles
                         fillFiles(principalLender);
-                        custDetailVO.setPrincipalLender(principalLender);
 
                         // fillCredit
                         fillCredit(principalLender, e.getId());
+
+                        custDetailVO.setPrincipalLender(principalLender);
                     }
 
                     // 共贷人
@@ -195,10 +196,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         // fillFiles
                         fillFiles(commonLender);
-                        commonLenderList.add(commonLender);
 
                         // fillCredit
                         fillCredit(commonLender, e.getId());
+
+                        commonLenderList.add(commonLender);
                     }
                     // 担保人
                     else if (CUST_TYPE_GUARANTOR.equals(e.getCustType())) {
@@ -207,10 +209,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         // fillFiles
                         fillFiles(guarantor);
-                        guarantorList.add(guarantor);
 
                         // fillCredit
                         fillCredit(guarantor, e.getId());
+
+                        guarantorList.add(guarantor);
                     }
                     // 紧急联系人
                     else if (CUST_TYPE_EMERGENCY_CONTACT.equals(e.getCustType())) {
@@ -219,10 +222,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         // fillFiles
                         fillFiles(emergencyContact);
-                        emergencyContactList.add(emergencyContact);
 
                         // fillCredit
                         fillCredit(emergencyContact, e.getId());
+
+                        emergencyContactList.add(emergencyContact);
                     }
                 });
 

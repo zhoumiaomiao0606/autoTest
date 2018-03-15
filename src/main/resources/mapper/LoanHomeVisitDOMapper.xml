@@ -1,143 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.LoanHomeVisitDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanHomeVisitDO">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="visit_salesman_id" jdbcType="BIGINT" property="visitSalesmanId" />
-    <result column="visit_date" jdbcType="DATE" property="visitDate" />
-    <result column="survey_report" jdbcType="VARCHAR" property="surveyReport" />
-    <result column="visit_address" jdbcType="VARCHAR" property="visitAddress" />
-    <result column="files" jdbcType="VARCHAR" property="files" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-    <result column="feature" jdbcType="VARCHAR" property="feature" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanHomeVisitDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="visit_salesman_id" jdbcType="BIGINT" property="visitSalesmanId"/>
+        <result column="visit_date" jdbcType="DATE" property="visitDate"/>
+        <result column="survey_report" jdbcType="VARCHAR" property="surveyReport"/>
+        <result column="visit_address" jdbcType="VARCHAR" property="visitAddress"/>
+        <result column="files" jdbcType="VARCHAR" property="files"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
     id, visit_salesman_id, visit_date, survey_report, visit_address, files, status, gmt_create, 
     gmt_modify, feature
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from loan_home_visit
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_home_visit
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from loan_home_visit
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanHomeVisitDO">
-    insert into loan_home_visit (id, visit_salesman_id, visit_date, 
-      survey_report, visit_address, files, 
-      status, gmt_create, gmt_modify, 
-      feature)
-    values (#{id,jdbcType=BIGINT}, #{visitSalesmanId,jdbcType=BIGINT}, #{visitDate,jdbcType=DATE}, 
-      #{surveyReport,jdbcType=VARCHAR}, #{visitAddress,jdbcType=VARCHAR}, #{files,jdbcType=VARCHAR}, 
-      #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, 
-      #{feature,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanHomeVisitDO">
-    insert into loan_home_visit
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="visitSalesmanId != null">
-        visit_salesman_id,
-      </if>
-      <if test="visitDate != null">
-        visit_date,
-      </if>
-      <if test="surveyReport != null">
-        survey_report,
-      </if>
-      <if test="visitAddress != null">
-        visit_address,
-      </if>
-      <if test="files != null">
-        files,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-      <if test="gmtCreate != null">
-        gmt_create,
-      </if>
-      <if test="gmtModify != null">
-        gmt_modify,
-      </if>
-      <if test="feature != null">
-        feature,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="visitSalesmanId != null">
-        #{visitSalesmanId,jdbcType=BIGINT},
-      </if>
-      <if test="visitDate != null">
-        #{visitDate,jdbcType=DATE},
-      </if>
-      <if test="surveyReport != null">
-        #{surveyReport,jdbcType=VARCHAR},
-      </if>
-      <if test="visitAddress != null">
-        #{visitAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="files != null">
-        #{files,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null">
-        #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null">
-        #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-      <if test="feature != null">
-        #{feature,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanHomeVisitDO">
-    update loan_home_visit
-    <set>
-      <if test="visitSalesmanId != null">
-        visit_salesman_id = #{visitSalesmanId,jdbcType=BIGINT},
-      </if>
-      <if test="visitDate != null">
-        visit_date = #{visitDate,jdbcType=DATE},
-      </if>
-      <if test="surveyReport != null">
-        survey_report = #{surveyReport,jdbcType=VARCHAR},
-      </if>
-      <if test="visitAddress != null">
-        visit_address = #{visitAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="files != null">
-        files = #{files,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null">
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null">
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-      <if test="feature != null">
-        feature = #{feature,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanHomeVisitDO">
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanHomeVisitDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into loan_home_visit (id, visit_salesman_id, visit_date,
+        survey_report, visit_address, files,
+        status, gmt_create, gmt_modify,
+        feature)
+        values (#{id,jdbcType=BIGINT}, #{visitSalesmanId,jdbcType=BIGINT}, #{visitDate,jdbcType=DATE},
+        #{surveyReport,jdbcType=VARCHAR}, #{visitAddress,jdbcType=VARCHAR}, #{files,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{feature,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanHomeVisitDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into loan_home_visit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="visitSalesmanId != null">
+                visit_salesman_id,
+            </if>
+            <if test="visitDate != null">
+                visit_date,
+            </if>
+            <if test="surveyReport != null">
+                survey_report,
+            </if>
+            <if test="visitAddress != null">
+                visit_address,
+            </if>
+            <if test="files != null">
+                files,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="visitSalesmanId != null">
+                #{visitSalesmanId,jdbcType=BIGINT},
+            </if>
+            <if test="visitDate != null">
+                #{visitDate,jdbcType=DATE},
+            </if>
+            <if test="surveyReport != null">
+                #{surveyReport,jdbcType=VARCHAR},
+            </if>
+            <if test="visitAddress != null">
+                #{visitAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="files != null">
+                #{files,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanHomeVisitDO">
+        update loan_home_visit
+        <set>
+            <if test="visitSalesmanId != null">
+                visit_salesman_id = #{visitSalesmanId,jdbcType=BIGINT},
+            </if>
+            <if test="visitDate != null">
+                visit_date = #{visitDate,jdbcType=DATE},
+            </if>
+            <if test="surveyReport != null">
+                survey_report = #{surveyReport,jdbcType=VARCHAR},
+            </if>
+            <if test="visitAddress != null">
+                visit_address = #{visitAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="files != null">
+                files = #{files,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanHomeVisitDO">
     update loan_home_visit
     set visit_salesman_id = #{visitSalesmanId,jdbcType=BIGINT},
       visit_date = #{visitDate,jdbcType=DATE},
@@ -150,4 +165,5 @@
       feature = #{feature,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
 </mapper>
