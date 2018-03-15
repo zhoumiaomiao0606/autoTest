@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.FinancialQuery;
 import com.yunche.loan.domain.entity.FinancialProductDO;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.FinancialProductVO;
 
 import java.util.List;
@@ -27,4 +28,6 @@ public interface FinancialProductService {
     ResultBean<FinancialProductVO> getById(Long prodId);
 
     ResultBean<List<FinancialProductVO>> getByCondition(FinancialQuery financialQuery);
+
+    ResultBean<List<BaseVO>> listByPartnerId(Long partnerId);
 }

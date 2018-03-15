@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.AreaCache;
+import com.yunche.loan.config.constant.AreaConst;
 import com.yunche.loan.domain.vo.CascadeAreaVO;
 import com.yunche.loan.domain.vo.BaseAreaVO;
 import com.yunche.loan.mapper.BaseAreaDOMapper;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
@@ -122,5 +124,32 @@ public class BaseAreaServiceImpl implements BaseAreaService {
         // 走缓存
         List<CascadeAreaVO> cascadeAreaVOList = areaCache.get();
         return ResultBean.ofSuccess(cascadeAreaVOList);
+    }
+
+    @Override
+    public ResultBean<String> getFullAreaName(Long areaId) {
+        Preconditions.checkNotNull(areaId, "区域ID不能为空");
+
+        String fullAreaName = "";
+        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, null);
+        if (null != baseAreaDO) {
+
+            if (LEVEL_CITY.equals(baseAreaDO.getLevel())) {
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                if (null != parentAreaId) {
+                    BaseAreaDO parentAreaDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                    if (null != parentAreaDO) {
+                        // 省
+                        fullAreaName = parentAreaDO.getAreaName();
+                    }
+                }
+                // 市
+                fullAreaName += baseAreaDO.getAreaName();
+            } else {
+                fullAreaName = baseAreaDO.getAreaName();
+            }
+        }
+
+        return ResultBean.ofSuccess(fullAreaName);
     }
 }

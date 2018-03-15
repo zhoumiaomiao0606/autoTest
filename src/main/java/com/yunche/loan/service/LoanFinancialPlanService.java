@@ -4,6 +4,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.param.AppLoanFinancialPlanParam;
 import com.yunche.loan.domain.vo.AppLoanFinancialPlanVO;
+import com.yunche.loan.domain.vo.LoanFinancialPlanVO;
 
 /**
  * @author liuzhe
@@ -14,5 +15,5 @@ public interface LoanFinancialPlanService {
 
     ResultBean<Void> update(LoanFinancialPlanDO loanFinancialPlanDO);
 
-    ResultBean<AppLoanFinancialPlanVO> calc(LoanFinancialPlanDO loanFinancialPlanDO);
+    ResultBean<LoanFinancialPlanVO> calc(LoanFinancialPlanDO loanFinancialPlanDO);
 }

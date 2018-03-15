@@ -19,6 +19,7 @@
         <result column="education" jdbcType="TINYINT" property="education"/>
         <result column="company_name" jdbcType="VARCHAR" property="companyName"/>
         <result column="company_phone" jdbcType="VARCHAR" property="companyPhone"/>
+        <result column="company_address" jdbcType="VARCHAR" property="companyAddress"/>
         <result column="month_income" jdbcType="INTEGER" property="monthIncome"/>
         <result column="house_type" jdbcType="TINYINT" property="houseType"/>
         <result column="house_owner" jdbcType="TINYINT" property="houseOwner"/>
@@ -37,8 +38,9 @@
     <sql id="Base_Column_List">
         id, name, nation, birth, identity_validity, id_card, mobile, age, sex, apply_date,
         address, marry, identity_address, mobile_area, education, company_name, company_phone,
-        month_income, house_type, house_owner, house_feature, house_address, info, cust_type,
-        principal_cust_id, cust_relation, status, gmt_create, gmt_modify, feature
+        company_address, month_income, house_type, house_owner, house_feature, house_address,
+        info, cust_type, principal_cust_id, cust_relation, status, gmt_create, gmt_modify,
+        feature
     </sql>
 
     <!--listByPrincipalCustIdAndType-->
@@ -94,21 +96,23 @@
         mobile, age, sex, apply_date,
         address, marry, identity_address,
         mobile_area, education, company_name,
-        company_phone, month_income, house_type,
-        house_owner, house_feature, house_address,
-        info, cust_type, principal_cust_id,
-        cust_relation, status, gmt_create,
-        gmt_modify, feature)
+        company_phone, company_address, month_income,
+        house_type, house_owner, house_feature,
+        house_address, info, cust_type,
+        principal_cust_id, cust_relation, status,
+        gmt_create, gmt_modify, feature
+        )
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
         #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=DATE}, #{idCard,jdbcType=CHAR},
         #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT}, #{applyDate,jdbcType=DATE},
         #{address,jdbcType=VARCHAR}, #{marry,jdbcType=TINYINT}, #{identityAddress,jdbcType=VARCHAR},
         #{mobileArea,jdbcType=VARCHAR}, #{education,jdbcType=TINYINT}, #{companyName,jdbcType=VARCHAR},
-        #{companyPhone,jdbcType=VARCHAR}, #{monthIncome,jdbcType=INTEGER}, #{houseType,jdbcType=TINYINT},
-        #{houseOwner,jdbcType=TINYINT}, #{houseFeature,jdbcType=TINYINT}, #{houseAddress,jdbcType=VARCHAR},
-        #{info,jdbcType=VARCHAR}, #{custType,jdbcType=TINYINT}, #{principalCustId,jdbcType=BIGINT},
-        #{custRelation,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR})
+        #{companyPhone,jdbcType=VARCHAR}, #{companyAddress,jdbcType=VARCHAR}, #{monthIncome,jdbcType=INTEGER},
+        #{houseType,jdbcType=TINYINT}, #{houseOwner,jdbcType=TINYINT}, #{houseFeature,jdbcType=TINYINT},
+        #{houseAddress,jdbcType=VARCHAR}, #{info,jdbcType=VARCHAR}, #{custType,jdbcType=TINYINT},
+        #{principalCustId,jdbcType=BIGINT}, #{custRelation,jdbcType=TINYINT}, #{status,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}
+        )
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
@@ -168,6 +172,9 @@
             </if>
             <if test="companyPhone != null">
                 company_phone,
+            </if>
+            <if test="companyAddress != null">
+                company_address,
             </if>
             <if test="monthIncome != null">
                 month_income,
@@ -260,6 +267,9 @@
             </if>
             <if test="companyPhone != null">
                 #{companyPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="companyAddress != null">
+                #{companyAddress,jdbcType=VARCHAR},
             </if>
             <if test="monthIncome != null">
                 #{monthIncome,jdbcType=INTEGER},
@@ -354,6 +364,9 @@
             <if test="companyPhone != null">
                 company_phone = #{companyPhone,jdbcType=VARCHAR},
             </if>
+            <if test="companyAddress != null">
+                company_address = #{companyAddress,jdbcType=VARCHAR},
+            </if>
             <if test="monthIncome != null">
                 month_income = #{monthIncome,jdbcType=INTEGER},
             </if>
@@ -415,6 +428,7 @@
       education = #{education,jdbcType=TINYINT},
       company_name = #{companyName,jdbcType=VARCHAR},
       company_phone = #{companyPhone,jdbcType=VARCHAR},
+      company_address = #{companyAddress,jdbcType=VARCHAR},
       month_income = #{monthIncome,jdbcType=INTEGER},
       house_type = #{houseType,jdbcType=TINYINT},
       house_owner = #{houseOwner,jdbcType=TINYINT},

@@ -1,7 +1,12 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.AppBusinessInfo;
+import com.yunche.loan.domain.entity.AppCustomerInfo;
+import com.yunche.loan.domain.entity.AppInsuranceInfo;
+import com.yunche.loan.domain.entity.AppLoanCustomerVO;
 import com.yunche.loan.domain.param.*;
+import com.yunche.loan.domain.query.AppCustomerQuery;
 import com.yunche.loan.domain.query.AppLoanOrderQuery;
 import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.vo.*;
@@ -285,8 +290,64 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
-    @PostMapping(value = "/infosupplement", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> infoSupplement(@RequestBody AppInfoSupplementParam param) {
-        return appLoanOrderService.infoSupplement(param);
+    @PostMapping(value = "/infosupplement/upload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> infoSupplementUpload(@RequestBody AppInfoSupplementParam param) {
+        return appLoanOrderService.infoSupplementUpload(param);
     }
+
+    /**
+     * 资料增补详情页
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/infosupplement/detail")
+    public ResultBean<AppInfoSupplementVO> infoSupplementDetail(@RequestParam Long orderId) {
+        return appLoanOrderService.infoSupplementDetail(orderId);
+    }
+
+    /**
+     * APP端-客户查询
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping(value = "/customerQuery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<AppLoanCustomerVO>> customerQuery(@RequestBody AppCustomerQuery query) {
+        return appLoanOrderService.customerQuery(query);
+    }
+
+    /**
+     * APP端 -客户信息查询 -基本信息
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/customerInfo")
+    public ResultBean<AppCustomerInfo> customerInfo(@RequestParam Long orderId) {
+        return appLoanOrderService.customerInfo(orderId);
+    }
+
+    /**
+     * APP端 -客户信息查询 -业务信息
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/businessInfo")
+    public ResultBean<AppBusinessInfo> businessInfo(@RequestParam Long orderId) {
+        return appLoanOrderService.businessInfo(orderId);
+    }
+
+    /**
+     * APP端 -客户信息查询 -保险信息
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/insuranceInfo")
+    public ResultBean<AppInsuranceInfo> insuranceInfo(@RequestParam Long orderId) {
+        return appLoanOrderService.insuranceInfo(orderId);
+    }
+
 }

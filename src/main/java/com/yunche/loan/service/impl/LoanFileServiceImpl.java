@@ -1,14 +1,15 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.service.LoanFileService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,6 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  * @date 2018/3/6
  */
 @Service
-@Transactional
 public class LoanFileServiceImpl implements LoanFileService {
 
 
@@ -33,38 +33,30 @@ public class LoanFileServiceImpl implements LoanFileService {
 
 
     @Override
-    public ResultBean<Void> create(Long customerId, List<FileVO> files) {
-        Preconditions.checkNotNull(customerId, "客户信息不能为空");
+    @Transactional
+    public ResultBean<Long> create(LoanFileDO loanFileDO) {
+        Preconditions.checkNotNull(loanFileDO, "客户信息不能为空");
 
-        if (!CollectionUtils.isEmpty(files)) {
+        loanFileDO.setStatus(VALID_STATUS);
+        loanFileDO.setGmtCreate(new Date());
+        loanFileDO.setGmtModify(new Date());
 
-            files.parallelStream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
+        int count = loanFileDOMapper.insertSelective(loanFileDO);
+        Preconditions.checkArgument(count > 0, "编辑图片信息失败");
 
-                        List<FileVO.FileDetail> fileDetails = e.getDetails();
-                        if (!CollectionUtils.isEmpty(fileDetails)) {
+        return ResultBean.ofSuccess(loanFileDO.getId(), "文件信息保存成功");
+    }
 
-                            fileDetails.parallelStream()
-                                    .filter(Objects::nonNull)
-                                    .forEach(f -> {
-                                        LoanFileDO loanFileDO = new LoanFileDO();
-                                        loanFileDO.setCustomerId(customerId);
-                                        loanFileDO.setType(e.getType());
-                                        BeanUtils.copyProperties(f, loanFileDO);
-                                        loanFileDO.setPath(f.getUrl());
-                                        loanFileDO.setStatus(VALID_STATUS);
-                                        loanFileDO.setGmtCreate(new Date());
-                                        loanFileDO.setGmtModify(new Date());
-                                        int count = loanFileDOMapper.insertSelective(loanFileDO);
-                                        Preconditions.checkArgument(count > 0, "文件信息保存失败");
-                                    });
-                        }
+    @Override
+    @Transactional
+    public ResultBean<Void> update(LoanFileDO loanFileDO) {
+        Preconditions.checkArgument(null != loanFileDO && null != loanFileDO.getId(), "ID不能为空");
 
-                    });
-        }
+        loanFileDO.setGmtModify(new Date());
+        int count = loanFileDOMapper.updateByPrimaryKeySelective(loanFileDO);
+        Preconditions.checkArgument(count > 0, "编辑图片信息失败");
 
-        return ResultBean.ofSuccess(null, "文件信息保存成功");
+        return ResultBean.ofSuccess(null, "图片信息编辑成功");
     }
 
     @Override
@@ -77,35 +69,35 @@ public class LoanFileServiceImpl implements LoanFileService {
 
         if (!CollectionUtils.isEmpty(loanFileDOS)) {
 
-            loanFileDOS.stream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
-
-                        Byte type = e.getType();
-                        if (!typeFilesMap.containsKey(type)) {
-
-                            FileVO fileVO = new FileVO();
-                            fileVO.setType(type);
-
-                            FileVO.FileDetail fileDetail = new FileVO.FileDetail();
-                            BeanUtils.copyProperties(e, fileDetail);
-                            fileDetail.setUrl(e.getPath());
-                            List<FileVO.FileDetail> fileDetails = Lists.newArrayList(fileDetail);
-                            fileVO.setDetails(fileDetails);
-
-                            typeFilesMap.put(type, fileVO);
-
-                        } else {
-                            FileVO fileVO = typeFilesMap.get(type);
-
-                            FileVO.FileDetail fileDetail = new FileVO.FileDetail();
-                            BeanUtils.copyProperties(e, fileDetail);
-                            fileDetail.setUrl(e.getPath());
-
-                            fileVO.getDetails().add(fileDetail);
-                        }
-
-                    });
+//            loanFileDOS.stream()
+//                    .filter(Objects::nonNull)
+//                    .forEach(e -> {
+//
+//                        Byte type = e.getType();
+//                        if (!typeFilesMap.containsKey(type)) {
+//
+//                            FileVO fileVO = new FileVO();
+//                            fileVO.setType(type);
+//
+//                            FileVO.FileDetail fileDetail = new FileVO.FileDetail();
+//                            BeanUtils.copyProperties(e, fileDetail);
+//                            fileDetail.setUrl(e.getPath());
+//                            List<FileVO.FileDetail> fileDetails = Lists.newArrayList(fileDetail);
+//                            fileVO.setDetails(fileDetails);
+//
+//                            typeFilesMap.put(type, fileVO);
+//
+//                        } else {
+//                            FileVO fileVO = typeFilesMap.get(type);
+//
+//                            FileVO.FileDetail fileDetail = new FileVO.FileDetail();
+//                            BeanUtils.copyProperties(e, fileDetail);
+//                            fileDetail.setUrl(e.getPath());
+//
+//                            fileVO.getDetails().add(fileDetail);
+//                        }
+//
+//                    });
         }
 
         List<FileVO> fileVOS = typeFilesMap.values().stream()
@@ -119,51 +111,28 @@ public class LoanFileServiceImpl implements LoanFileService {
     }
 
     @Override
-    public ResultBean<Void> update(Long customerId, List<FileVO> files) {
+    public ResultBean<List<FileVO>> listByCustomerIdAndUploadType(Long customerId, Byte uploadType) {
         Preconditions.checkNotNull(customerId, "客户ID不能为空");
 
-        if (!CollectionUtils.isEmpty(files)) {
+        List<FileVO> fileVOS = Lists.newArrayList();
 
-            files.parallelStream()
-                    .forEach(e -> {
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, null, uploadType);
+        if (!CollectionUtils.isEmpty(loanFileDOS)) {
 
-                        List<FileVO.FileDetail> details = e.getDetails();
-                        if (!CollectionUtils.isEmpty(details)) {
+            fileVOS = loanFileDOS.parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
 
-                            details.parallelStream()
-                                    .filter(Objects::nonNull)
-                                    .forEach(f -> {
-
-                                        if (null == f.getId()) {
-                                            // insert
-                                            LoanFileDO loanFileDO = new LoanFileDO();
-                                            BeanUtils.copyProperties(f, loanFileDO);
-                                            loanFileDO.setType(e.getType());
-                                            loanFileDO.setCustomerId(customerId);
-                                            loanFileDO.setPath(f.getUrl());
-                                            loanFileDO.setStatus(VALID_STATUS);
-                                            loanFileDO.setGmtCreate(new Date());
-                                            loanFileDO.setGmtModify(new Date());
-                                            int count = loanFileDOMapper.insertSelective(loanFileDO);
-                                            Preconditions.checkArgument(count > 0, "图片信息保存失败");
-                                        } else {
-                                            // update (逻辑删除等)
-                                            LoanFileDO loanFileDO = new LoanFileDO();
-                                            BeanUtils.copyProperties(f, loanFileDO);
-                                            loanFileDO.setType(e.getType());
-                                            loanFileDO.setCustomerId(customerId);
-                                            loanFileDO.setPath(f.getUrl());
-                                            loanFileDO.setGmtModify(new Date());
-                                            int count = loanFileDOMapper.updateByPrimaryKeySelective(loanFileDO);
-                                            Preconditions.checkArgument(count > 0, "图片信息编辑失败,图片ID有误！");
-                                        }
-
-                                    });
-                        }
-
-                    });
+                        FileVO fileVO = new FileVO();
+                        fileVO.setType(e.getType());
+                        // TODO   Object Key  --> URL
+                        List<String> urls = JSON.parseArray(e.getPath(), String.class);
+                        fileVO.setUrls(urls);
+                        return fileVO;
+                    })
+                    .collect(Collectors.toList());
         }
 
-        return ResultBean.ofSuccess(null, "图片信息编辑成功");
+        return ResultBean.ofSuccess(fileVOS);
     }
 }

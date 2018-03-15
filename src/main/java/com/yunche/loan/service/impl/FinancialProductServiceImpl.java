@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.mapper.FinancialProductDOMapper;
 import com.yunche.loan.domain.query.FinancialQuery;
 import com.yunche.loan.domain.entity.FinancialProductDO;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +39,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(financialProductDOs), "financialProductDOs不能为空");
         for (FinancialProductDO financialProductDO : financialProductDOs) {
             int count = financialProductDOMapper.insert(financialProductDO);
-//            Preconditions.checkArgument(count > 1, "创建失败");
+            Preconditions.checkArgument(count > 0, "创建失败");
         }
         return ResultBean.ofSuccess(null, "创建成功");
     }
@@ -46,7 +48,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     public ResultBean<Void> insert(FinancialProductDO financialProductDO) {
         Preconditions.checkArgument(financialProductDO != null, "financialProductDOs不能为空");
         int count = financialProductDOMapper.insert(financialProductDO);
-//        Preconditions.checkArgument(count > 1, "创建失败");
+        Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
     }
 
@@ -54,7 +56,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     public ResultBean<Void> update(FinancialProductDO financialProductDO) {
         Preconditions.checkArgument(financialProductDO != null && financialProductDO.getProdId() != null, "financialProductDOs不能为空");
         int count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
-//        Preconditions.checkArgument(count > 1, "更新失败");
+        Preconditions.checkArgument(count > 0, "更新失败");
         return ResultBean.ofSuccess(null, "更新成功");
     }
 
@@ -65,7 +67,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
         Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
 
-        financialProductDO.setStatus(2);
+        financialProductDO.setStatus((byte) 2);
         long count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
         return ResultBean.ofSuccess(null, "删除成功");
     }
@@ -77,7 +79,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
         Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
 
-        financialProductDO.setStatus(1);
+        financialProductDO.setStatus((byte) 1);
         long count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
         return ResultBean.ofSuccess(null, "停用成功");
     }
@@ -89,7 +91,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
         Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
 
-        financialProductDO.setStatus(0);
+        financialProductDO.setStatus((byte) 0);
         long count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
         return ResultBean.ofSuccess(null, "启用成功");
     }
@@ -133,7 +135,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
             ResultBean<List<CascadeAreaVO>> resultBean = baseAreaService.list();
             List<CascadeAreaVO> cascadeAreaVOList = resultBean.getData();
             for (CascadeAreaVO cascadeAreaVO : cascadeAreaVOList) {
-                if(cascadeAreaVO.getId().longValue() == financialQuery.getAreaId().longValue()) {
+                if (cascadeAreaVO.getId().longValue() == financialQuery.getAreaId().longValue()) {
                     List<CascadeAreaVO.City> cityList = cascadeAreaVO.getCityList();
                     if (CollectionUtils.isNotEmpty(cityList)) {
                         for (CascadeAreaVO.City city : cityList) {
@@ -149,7 +151,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
             list.add(financialQuery.getAreaId());
             financialQuery.setCascadeAreaIdList(list);
         }
-        if (financialQuery.getAreaId() != null && financialQuery.getAreaId() == 100000000000L){   // 全国区域
+        if (financialQuery.getAreaId() != null && financialQuery.getAreaId() == 100000000000L) {   // 全国区域
             financialQuery.setCascadeAreaIdList(null);
         }
         financialQuery.setAreaId(null);
@@ -161,5 +163,26 @@ public class FinancialProductServiceImpl implements FinancialProductService {
             financialProductVOList.add(getFinancialProductVO(financialProductDO));
         }
         return ResultBean.ofSuccess(financialProductVOList);
+    }
+
+    @Override
+    public ResultBean<List<BaseVO>> listByPartnerId(Long partnerId) {
+        Preconditions.checkNotNull(partnerId, "合伙人ID不能为空");
+
+
+        // TODO
+
+        BaseVO baseVO1 = new BaseVO();
+        BaseVO baseVO2 = new BaseVO();
+        BaseVO baseVO3 = new BaseVO();
+        baseVO1.setId(100026L);
+        baseVO1.setName("浙江省内新车");
+        baseVO2.setId(100028L);
+        baseVO2.setName("浙江省外二手车");
+        baseVO3.setId(100034L);
+        baseVO3.setName("哈尔滨工行三成首付");
+        List<BaseVO> baseVOS = Lists.newArrayList(baseVO1, baseVO2, baseVO3);
+
+        return ResultBean.ofSuccess(baseVOS);
     }
 }

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustomerParam;
+import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.domain.entity.*;
@@ -36,6 +37,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
+    private LoanCreditInfoDOMapper loanCreditInfoDOMapper;
 
     @Autowired
     private LoanFileService loanFileService;
@@ -179,31 +183,46 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         // fillFiles
                         fillFiles(principalLender);
                         custDetailVO.setPrincipalLender(principalLender);
+
+                        // fillCredit
+                        fillCredit(principalLender, e.getId());
                     }
 
                     // 共贷人
                     else if (CUST_TYPE_COMMON.equals(e.getCustType())) {
                         CustomerVO commonLender = new CustomerVO();
                         BeanUtils.copyProperties(e, commonLender);
+
                         // fillFiles
                         fillFiles(commonLender);
                         commonLenderList.add(commonLender);
+
+                        // fillCredit
+                        fillCredit(commonLender, e.getId());
                     }
                     // 担保人
                     else if (CUST_TYPE_GUARANTOR.equals(e.getCustType())) {
                         CustomerVO guarantor = new CustomerVO();
                         BeanUtils.copyProperties(e, guarantor);
+
                         // fillFiles
                         fillFiles(guarantor);
                         guarantorList.add(guarantor);
+
+                        // fillCredit
+                        fillCredit(guarantor, e.getId());
                     }
                     // 紧急联系人
                     else if (CUST_TYPE_EMERGENCY_CONTACT.equals(e.getCustType())) {
                         CustomerVO emergencyContact = new CustomerVO();
                         BeanUtils.copyProperties(e, emergencyContact);
+
                         // fillFiles
                         fillFiles(emergencyContact);
                         emergencyContactList.add(emergencyContact);
+
+                        // fillCredit
+                        fillCredit(emergencyContact, e.getId());
                     }
                 });
 
@@ -214,6 +233,29 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         custDetailVO.setCommonLenderList(sortedCommonLenderList);
         custDetailVO.setGuarantorList(sortedGuarantorList);
         custDetailVO.setEmergencyContactList(sortedEmergencyContactList);
+    }
+
+    /**
+     * 填充征信信息
+     *
+     * @param principalLender
+     * @param customerId
+     */
+    private void fillCredit(CustomerVO principalLender, Long customerId) {
+        List<LoanCreditInfoDO> loanCreditInfoDOS = loanCreditInfoDOMapper.getByCustomerIdAndType(customerId, null);
+        if (!CollectionUtils.isEmpty(loanCreditInfoDOS)) {
+            loanCreditInfoDOS.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+                        if (CREDIT_TYPE_BANK.equals(e.getType())) {
+                            principalLender.setBankCreditResult(e.getResult());
+                            principalLender.setBankCreditInfo(e.getInfo());
+                        } else if (CREDIT_TYPE_SOCIAL.equals(e.getType())) {
+                            principalLender.setSocialCreditResult(e.getResult());
+                            principalLender.setSocialCreditInfo(e.getInfo());
+                        }
+                    });
+        }
     }
 
     private void fillFiles(CustomerVO customerVO) {
@@ -288,9 +330,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
             ResultBean<Void> resultBean = update(loanCustomerDO);
             Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
-            // file
-            ResultBean<Void> updateFileResultBean = loanFileService.update(customerParam.getId(), customerParam.getFiles());
-            Preconditions.checkArgument(updateFileResultBean.getSuccess(), updateFileResultBean.getMsg());
+            // TODO file
+//            ResultBean<Void> updateFileResultBean = loanFileService.update(customerParam.getId(), customerParam.getFiles());
+//            Preconditions.checkArgument(updateFileResultBean.getSuccess(), updateFileResultBean.getMsg());
         }
     }
 
@@ -300,9 +342,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         ResultBean<Long> createCustomerResult = create(loanCustomerDO);
         Preconditions.checkArgument(createCustomerResult.getSuccess(), "创建客户信息失败");
 
-        // 文件上传
-        ResultBean<Void> createFileResultBean = loanFileService.create(createCustomerResult.getData(), customerParam.getFiles());
-        Preconditions.checkArgument(createFileResultBean.getSuccess(), "创建文件信息失败");
+        //  TODO 文件上传
+//        ResultBean<Void> createFileResultBean = loanFileService.create(createCustomerResult.getData(), customerParam.getFiles());
+//        Preconditions.checkArgument(createFileResultBean.getSuccess(), "创建文件信息失败");
 
         // 返回客户ID
         return createCustomerResult.getData();

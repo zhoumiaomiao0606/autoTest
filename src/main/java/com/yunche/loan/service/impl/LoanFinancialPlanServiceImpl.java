@@ -5,12 +5,14 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.param.AppLoanFinancialPlanParam;
 import com.yunche.loan.domain.vo.AppLoanFinancialPlanVO;
+import com.yunche.loan.domain.vo.LoanFinancialPlanVO;
 import com.yunche.loan.mapper.LoanFinancialPlanDOMapper;
 import com.yunche.loan.service.LoanFinancialPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -65,17 +67,26 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
     }
 
     @Override
-    public ResultBean<AppLoanFinancialPlanVO> calc(LoanFinancialPlanDO loanFinancialPlanDO) {
-        Preconditions.checkNotNull(loanFinancialPlanDO, "金融方案不能为空");
+    public ResultBean<LoanFinancialPlanVO> calc(LoanFinancialPlanDO loanFinancialPlanDO) {
+        Preconditions.checkNotNull(loanFinancialPlanDO, "金融产品不能为空");
         Preconditions.checkNotNull(loanFinancialPlanDO.getCarPrice(), "车辆价格不能为空");
-        Preconditions.checkNotNull(loanFinancialPlanDO.getFinancialProductId(), "业务产品ID不能为空");
+        Preconditions.checkNotNull(loanFinancialPlanDO.getFinancialProductId(), "金融产品ID不能为空");
         Preconditions.checkNotNull(loanFinancialPlanDO.getSignRate(), "签约利率不能为空");
         Preconditions.checkNotNull(loanFinancialPlanDO.getLoanAmount(), "贷款金额不能为空");
         Preconditions.checkNotNull(loanFinancialPlanDO.getLoanTime(), "贷款期数不能为空");
 
+
         // TODO 根据公式计算
 
+        LoanFinancialPlanVO loanFinancialPlanVO = new LoanFinancialPlanVO();
+        loanFinancialPlanVO.setDownPaymentRatio(new BigDecimal(0.3));
+        loanFinancialPlanVO.setDownPaymentMoney(new BigDecimal(50000));
+        loanFinancialPlanVO.setBankPeriodPrincipal(new BigDecimal(100000));
+        loanFinancialPlanVO.setBankFee(new BigDecimal(2000));
+        loanFinancialPlanVO.setPrincipalInterestSum(new BigDecimal(180000));
+        loanFinancialPlanVO.setFirstMonthRepay(new BigDecimal(5000));
+        loanFinancialPlanVO.setEachMonthRepay(new BigDecimal(3000));
 
-        return ResultBean.ofSuccess(null, "计算成功");
+        return ResultBean.ofSuccess(loanFinancialPlanVO, "计算成功");
     }
 }

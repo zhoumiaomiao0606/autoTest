@@ -18,6 +18,9 @@ public class LoanBaseInfoDO {
 
     private String bank;
 
+    /**
+     * 贷款额度档次：1 - 13W以下; 2 - 13至20W; 3 - 20W以上;
+     */
     private Byte loanAmount;
 
     private Byte status;

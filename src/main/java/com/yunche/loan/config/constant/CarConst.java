@@ -9,6 +9,18 @@ import java.util.Map;
  * @date 2018/1/14
  */
 public class CarConst {
+    /**
+     * 品牌
+     */
+    public static final Byte CAR_BRAND = 1;
+    /**
+     * 车系
+     */
+    public static final Byte CAR_MODEL = 2;
+    /**
+     * 车型
+     */
+    public static final Byte CAR_DETAIL = 3;
 
     /**
      * 生产类型（1:国产;2:进口）
@@ -40,5 +52,4 @@ public class CarConst {
         fuelTypeMap.put("汽油", (byte) 1);
         fuelTypeMap.put("柴油", (byte) 2);
     }
-
 }

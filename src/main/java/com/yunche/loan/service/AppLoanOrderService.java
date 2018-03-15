@@ -1,7 +1,12 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.AppBusinessInfo;
+import com.yunche.loan.domain.entity.AppCustomerInfo;
+import com.yunche.loan.domain.entity.AppInsuranceInfo;
+import com.yunche.loan.domain.entity.AppLoanCustomerVO;
 import com.yunche.loan.domain.param.*;
+import com.yunche.loan.domain.query.AppCustomerQuery;
 import com.yunche.loan.domain.query.AppLoanOrderQuery;
 import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.vo.*;
@@ -29,7 +34,7 @@ public interface AppLoanOrderService {
 
     ResultBean<Void> createOrUpdateLoanHomeVisit(AppLoanHomeVisitParam loanHomeVisitParam);
 
-    ResultBean<Void> infoSupplement(AppInfoSupplementParam infoSupplementParam);
+    ResultBean<Void> infoSupplementUpload(AppInfoSupplementParam infoSupplementParam);
 
     ResultBean<Long> createBaseInfo(AppLoanBaseInfoParam param);
 
@@ -56,4 +61,14 @@ public interface AppLoanOrderService {
     ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam);
 
     ResultBean<List<AppLoanOrderVO>> listCreditNotEnding(BaseQuery query);
+
+    ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long orderId);
+
+    ResultBean<List<AppLoanCustomerVO>> customerQuery(AppCustomerQuery query);
+
+    ResultBean<AppCustomerInfo> customerInfo(Long orderId);
+
+    ResultBean<AppBusinessInfo> businessInfo(Long orderId);
+
+    ResultBean<AppInsuranceInfo> insuranceInfo(Long orderId);
 }

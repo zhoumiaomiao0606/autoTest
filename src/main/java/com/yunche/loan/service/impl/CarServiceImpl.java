@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -34,9 +35,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.CarConst.fuelTypeMap;
-import static com.yunche.loan.config.constant.CarConst.productionStateMap;
-import static com.yunche.loan.config.constant.CarConst.saleStateMap;
+import static com.yunche.loan.config.constant.CarConst.*;
 
 /**
  * @author liuzhe
@@ -198,6 +197,45 @@ public class CarServiceImpl implements CarService {
         CarCascadeVO carCascadeVO = carCache.get();
         return ResultBean.ofSuccess(carCascadeVO);
 
+    }
+
+    @Override
+    public ResultBean<String> getFullName(Long carId, Byte carType) {
+        Preconditions.checkNotNull(carId, "车辆ID不能为空");
+        Preconditions.checkNotNull(carType, "车辆等级不能为空");
+
+        String carName = "";
+
+        if (CAR_DETAIL.equals(carType)) {
+            CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(carId, null);
+            if (null != carDetailDO && null != carDetailDO.getModelId()) {
+                CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(carDetailDO.getModelId(), null);
+                if (null != carModelDO && null != carModelDO.getBrandId()) {
+                    CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carModelDO.getBrandId(), null);
+                    if (null != carBrandDO) {
+                        carName = carName + " " + carBrandDO.getName();
+                    }
+                    carName = carName + " " + carModelDO.getName();
+                }
+                carName = carName + " " + carDetailDO.getName();
+            }
+        } else if (CAR_MODEL.equals(carType)) {
+            CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(carId, null);
+            if (null != carModelDO && null != carModelDO.getBrandId()) {
+                CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carModelDO.getBrandId(), null);
+                if (null != carBrandDO) {
+                    carName = carName + " " + carBrandDO.getName();
+                }
+                carName = carName + " " + carModelDO.getName();
+            }
+        } else if (CAR_BRAND.equals(carType)) {
+            CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carId, null);
+            if (null != carBrandDO) {
+                carName = carName + " " + carBrandDO.getName();
+            }
+        }
+
+        return ResultBean.ofSuccess(carName.trim());
     }
 
     /**

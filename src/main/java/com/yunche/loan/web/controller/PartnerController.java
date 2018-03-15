@@ -11,8 +11,6 @@ import com.yunche.loan.domain.vo.EmployeeVO;
 import com.yunche.loan.domain.vo.PartnerAccountVO;
 import com.yunche.loan.domain.vo.PartnerVO;
 import com.yunche.loan.service.PartnerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +25,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/partner")
 public class PartnerController {
-
-    private static final Logger logger = LoggerFactory.getLogger(PartnerController.class);
 
     @Autowired
     private PartnerService partnerService;

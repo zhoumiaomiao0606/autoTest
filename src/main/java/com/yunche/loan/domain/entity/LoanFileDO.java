@@ -8,13 +8,13 @@ import java.util.Date;
 public class LoanFileDO {
     private Long id;
 
-    private String name;
+    private Long customerId;
 
     private String path;
 
     private Byte type;
 
-    private Long customerId;
+    private Byte uploadType;
 
     private Date gmtCreate;
 

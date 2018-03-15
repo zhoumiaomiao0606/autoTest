@@ -4,6 +4,8 @@ import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface LoanCreditInfoDOMapper {
     int deleteByPrimaryKey(Long id);
@@ -18,5 +20,5 @@ public interface LoanCreditInfoDOMapper {
 
     int updateByPrimaryKey(LoanCreditInfoDO record);
 
-    LoanCreditInfoDO getByCustomerIdAndType(@Param("customerId") Long customerId, @Param("type") Byte type);
+    List<LoanCreditInfoDO> getByCustomerIdAndType(@Param("customerId") Long customerId, @Param("type") Byte type);
 }
