@@ -5,12 +5,12 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="order_id" property="order_id" jdbcType="BIGINT" />
     <result column="issue_bills_date" property="issue_bills_date" jdbcType="DATE" />
-    <result column="residential_address" property="residential_address" jdbcType="VARCHAR" />
+    <result column="insurance_year" property="insurance_year" jdbcType="TINYINT" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, order_id, issue_bills_date, residential_address, status, feature
+    id, order_id, issue_bills_date, insurance_year, status, feature
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -18,12 +18,11 @@
     from insurance_info
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectLastUpdateRecordByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <select id="selectByInsuranceYear" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from insurance_info
-    where order_id = #{orderId,jdbcType=BIGINT}
-    ORDER BY issue_bills_date DESC LIMIT 1
+    where order_id = #{orderId,jdbcType=BIGINT} and insurance_year = #{insuranceYear,jdbcType=TINYINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from insurance_info
@@ -41,8 +40,8 @@
       <if test="issue_bills_date != null" >
         issue_bills_date,
       </if>
-      <if test="residential_address != null" >
-        residential_address,
+      <if test="insurance_year != null" >
+        insurance_year,
       </if>
       <if test="status != null" >
         status,
@@ -61,8 +60,8 @@
       <if test="issue_bills_date != null" >
         #{issue_bills_date,jdbcType=DATE},
       </if>
-      <if test="residential_address != null" >
-        #{residential_address,jdbcType=VARCHAR},
+      <if test="insurance_year != null" >
+        #{insurance_year,jdbcType=TINYINT},
       </if>
       <if test="status != null" >
         #{status,jdbcType=TINYINT},
@@ -81,8 +80,8 @@
       <if test="issue_bills_date != null" >
         issue_bills_date = #{issue_bills_date,jdbcType=DATE},
       </if>
-      <if test="residential_address != null" >
-        residential_address = #{residential_address,jdbcType=VARCHAR},
+      <if test="insurance_year != null" >
+        insurance_year = #{insurance_year,jdbcType=TINYINT},
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=TINYINT},

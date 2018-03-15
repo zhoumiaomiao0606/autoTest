@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -58,11 +59,12 @@ public class InsuranceServiceImpl implements InsuranceService {
             throw new BizException("此业务单不存在");
         }
 
-        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectLastUpdateRecordByOrderId(Long.valueOf(param.getOrder_id()));
+        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(Long.valueOf(param.getOrder_id()),new Byte(param.getInsurance_year()));
         if(insuranceInfoDO == null){
             //新增所有关联数据
             InsuranceInfoDO V= BeanPlasticityUtills.copy(InsuranceInfoDO.class,param);
             V.setOrder_id(Long.valueOf(param.getOrder_id()));
+            V.setIssue_bills_date(new Date());
             insuranceInfoDOMapper.insertSelective(V);
             //开始新增保险公司关联表
             //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的

@@ -12,7 +12,7 @@ public class InsuranceInfoDO {
 
     private Date issue_bills_date;
 
-    private String residential_address;
+    private Byte insurance_year;
 
     private Byte status;
 
