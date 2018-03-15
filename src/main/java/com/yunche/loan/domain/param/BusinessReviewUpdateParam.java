@@ -47,7 +47,7 @@ public class BusinessReviewUpdateParam  {
     @NotBlank
     private String beneficiary_account_number;//收款账号
     @NotBlank
-    private String return_rete_amount;//返利金额
+    private String return_rate_amount;//返利金额
     @NotBlank
     private String remit_amount;//打款金额
 }

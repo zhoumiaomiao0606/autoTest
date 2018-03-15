@@ -36,7 +36,7 @@ public class BusinessReviewVO {
     private String beneficiary_bank;//收款银行
     private String beneficiary_account;//收款账户
     private String beneficiary_account_number;//收款账号
-    private String return_rete_amount;//返利金额
+    private String return_rate_amount;//返利金额
     private String remit_amount;//打款金额
 
 }

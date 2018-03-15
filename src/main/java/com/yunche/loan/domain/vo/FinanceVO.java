@@ -14,7 +14,7 @@ public class FinanceVO {
     private String loan_amount;//贷款金额
     private String pname;//合伙人
     private String pay_month;// 是否月结：0-否;1-是;
-    private String return_rete_amount;// 返利
+    private String return_rate_amount;// 返利
     private String beneficiary_bank;// 收款银行
     private String beneficiary_account;//收款账户
     private String beneficiary_account_number;//收款账号

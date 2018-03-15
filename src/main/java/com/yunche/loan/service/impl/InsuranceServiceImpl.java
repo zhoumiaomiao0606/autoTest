@@ -58,7 +58,7 @@ public class InsuranceServiceImpl implements InsuranceService {
             throw new BizException("此业务单不存在");
         }
 
-        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
+        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectLastUpdateRecordByOrderId(Long.valueOf(param.getOrder_id()));
         if(insuranceInfoDO == null){
             //新增所有关联数据
             InsuranceInfoDO V= BeanPlasticityUtills.copy(InsuranceInfoDO.class,param);

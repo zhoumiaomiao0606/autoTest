@@ -115,7 +115,7 @@
              r.beneficiary_bank,
              r.beneficiary_account,
              r.beneficiary_account_number,
-             r.return_rete_amount,
+             r.return_rate_amount,
              r.remit_amount
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
@@ -147,7 +147,7 @@
              f.loan_amount,
              (select name from partner where id = b.partner_id) as pname,
              i.pay_month,
-             r.return_rete_amount,
+             r.return_rate_amount,
              r.beneficiary_bank,
              r.beneficiary_account,
              r.beneficiary_account_number,
