@@ -57,21 +57,21 @@ public class CustomerVO {
 
     private String houseAddress;
 
-    private String info;
-
-    private Byte bankCreditStatus;
-
-    private String bankCreditDetail;
-
-    private Byte socialCreditStatus;
-
-    private String socialCreditDetail;
-
     private Byte custType;
+
+    private String info;
 
     private Long principalCustId;
 
     private Byte custRelation;
+
+    private Byte bankCreditResult;
+
+    private String bankCreditInfo;
+
+    private Byte socialCreditResult;
+
+    private String socialCreditInfo;
 
     private Date gmtCreate;
 

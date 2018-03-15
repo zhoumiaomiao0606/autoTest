@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanFileDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -26,4 +27,18 @@ public interface LoanFileDOMapper {
      * @return
      */
     List<LoanFileDO> listByCustomerId(Long customerId);
+
+    /**
+     * 根据客户ID 和 上传类型 查询列表
+     *
+     * @param customerId
+     * @param type       文件类型：1-身份证;2-身份证正面;3-身份证反面;4-授权书;5-授权书签字照;
+     *                   6-驾驶证;7- 户口本;8- 银行流水;9-结婚证;10-房产证;
+     *                   11-定位照;12-合影;13-房子照片;14-家访视频
+     * @param uploadType 1-正常上传;  2-资料增补上传;
+     * @return
+     */
+    List<LoanFileDO> listByCustomerIdAndType(@Param("customerId") Long customerId,
+                                             @Param("type") Byte type,
+                                             @Param("uploadType") Byte uploadType);
 }

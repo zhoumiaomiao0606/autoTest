@@ -2,11 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.BaseAreaDO;
-import com.yunche.loan.domain.entity.EmployeeDO;
-import com.yunche.loan.domain.entity.LoanBaseInfoDO;
-import com.yunche.loan.domain.entity.PartnerDO;
-import com.yunche.loan.domain.param.LoanBaseInfoParam;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.LoanBaseInfoVO;
 import com.yunche.loan.mapper.*;
@@ -17,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
@@ -37,6 +34,9 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
 
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
+
+    @Autowired
+    private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
@@ -94,6 +94,18 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
         LoanBaseInfoVO loanBaseInfoVO = new LoanBaseInfoVO();
         BeanUtils.copyProperties(loanBaseInfoDO, loanBaseInfoVO);
 
+        // 实际贷款额
+        Byte loanAmount = loanBaseInfoDO.getLoanAmount();
+        if (null != loanAmount) {
+            if (loanAmount == 1) {
+                loanBaseInfoVO.setActualLoanAmount(String.valueOf("13万以下"));
+            } else if (loanAmount == 2) {
+                loanBaseInfoVO.setActualLoanAmount(String.valueOf("13~20万"));
+            } else if (loanAmount == 3) {
+                loanBaseInfoVO.setActualLoanAmount(String.valueOf("20万以上"));
+            }
+        }
+
         // 合伙人
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), null);
         if (null != partnerDO) {
@@ -109,7 +121,6 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
             BeanUtils.copyProperties(employeeDO, salesman);
             loanBaseInfoVO.setSalesman(salesman);
         }
-
 
         // 区域
         BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), null);

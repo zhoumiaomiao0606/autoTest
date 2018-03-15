@@ -16,7 +16,7 @@ public interface CarService {
 
     ResultBean<Void> fillModel();
 
-    ResultBean<Map<String,Integer>> count();
+    ResultBean<Map<String, Integer>> count();
 
     /**
      * 三级联动关系   -All
@@ -39,4 +39,13 @@ public interface CarService {
      * @return
      */
     ResultBean<CarCascadeVO> listTwoLevel();
+
+    /**
+     * 获取车型全名
+     *
+     * @param carId
+     * @param carType
+     * @return
+     */
+    ResultBean<String> getFullName(Long carId, Byte carType);
 }

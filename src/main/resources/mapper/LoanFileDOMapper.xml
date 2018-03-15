@@ -3,19 +3,32 @@
 <mapper namespace="com.yunche.loan.mapper.LoanFileDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanFileDO">
         <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="customer_id" jdbcType="BIGINT" property="customerId"/>
         <result column="path" jdbcType="VARCHAR" property="path"/>
         <result column="type" jdbcType="TINYINT" property="type"/>
-        <result column="customer_id" jdbcType="BIGINT" property="customerId"/>
+        <result column="upload_type" jdbcType="TINYINT" property="uploadType"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
     </resultMap>
-
     <sql id="Base_Column_List">
-    id, name, path, type, customer_id, gmt_create, gmt_modify, status, feature
-  </sql>
+        id, customer_id, path, type, upload_type, gmt_create, gmt_modify, status, feature
+    </sql>
+
+    <!--listByCustomerIdAndType-->
+    <select id="listByCustomerIdAndType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_file
+        where customer_id = #{customerId,jdbcType=BIGINT}
+        <if test="type != null">
+            AND type = #{type}
+        </if>
+        <if test="uploadType != null">
+            AND upload_type = #{uploadType}
+        </if>
+    </select>
 
     <!--listByCustomerId-->
     <select id="listByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -33,21 +46,21 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from loan_file
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+        delete from loan_file
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanFileDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into loan_file (id, name, path,
-        type, customer_id, gmt_create,
+        insert into loan_file (id, customer_id, path,
+        type, upload_type, gmt_create,
         gmt_modify, status, feature
         )
-        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{path,jdbcType=VARCHAR},
-        #{type,jdbcType=TINYINT}, #{customerId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{path,jdbcType=VARCHAR},
+        #{type,jdbcType=TINYINT}, #{uploadType,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
         #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}
         )
     </insert>
@@ -62,8 +75,8 @@
             <if test="id != null">
                 id,
             </if>
-            <if test="name != null">
-                name,
+            <if test="customerId != null">
+                customer_id,
             </if>
             <if test="path != null">
                 path,
@@ -71,8 +84,8 @@
             <if test="type != null">
                 type,
             </if>
-            <if test="customerId != null">
-                customer_id,
+            <if test="uploadType != null">
+                upload_type,
             </if>
             <if test="gmtCreate != null">
                 gmt_create,
@@ -91,8 +104,8 @@
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
-            <if test="name != null">
-                #{name,jdbcType=VARCHAR},
+            <if test="customerId != null">
+                #{customerId,jdbcType=BIGINT},
             </if>
             <if test="path != null">
                 #{path,jdbcType=VARCHAR},
@@ -100,8 +113,8 @@
             <if test="type != null">
                 #{type,jdbcType=TINYINT},
             </if>
-            <if test="customerId != null">
-                #{customerId,jdbcType=BIGINT},
+            <if test="uploadType != null">
+                #{uploadType,jdbcType=TINYINT},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -121,8 +134,8 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanFileDO">
         update loan_file
         <set>
-            <if test="name != null">
-                name = #{name,jdbcType=VARCHAR},
+            <if test="customerId != null">
+                customer_id = #{customerId,jdbcType=BIGINT},
             </if>
             <if test="path != null">
                 path = #{path,jdbcType=VARCHAR},
@@ -130,8 +143,8 @@
             <if test="type != null">
                 type = #{type,jdbcType=TINYINT},
             </if>
-            <if test="customerId != null">
-                customer_id = #{customerId,jdbcType=BIGINT},
+            <if test="uploadType != null">
+                upload_type = #{uploadType,jdbcType=TINYINT},
             </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
@@ -150,16 +163,16 @@
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanFileDO">
-    update loan_file
-    set name = #{name,jdbcType=VARCHAR},
-      path = #{path,jdbcType=VARCHAR},
-      type = #{type,jdbcType=TINYINT},
-      customer_id = #{customerId,jdbcType=BIGINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=TINYINT},
-      feature = #{feature,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update loan_file
+        set customer_id = #{customerId,jdbcType=BIGINT},
+        path = #{path,jdbcType=VARCHAR},
+        type = #{type,jdbcType=TINYINT},
+        upload_type = #{uploadType,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        status = #{status,jdbcType=TINYINT},
+        feature = #{feature,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
 </mapper>

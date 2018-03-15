@@ -40,6 +40,8 @@ public class LoanCustomerDO {
 
     private String companyPhone;
 
+    private String companyAddress;
+
     private Integer monthIncome;
 
     private Byte houseType;

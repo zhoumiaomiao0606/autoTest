@@ -78,10 +78,13 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         Preconditions.checkNotNull(customerId, "客户ID不能为空");
         Preconditions.checkNotNull(type, "征信类型不能为空");
 
-        LoanCreditInfoDO loanCreditInfoDO = loanCreditInfoDOMapper.getByCustomerIdAndType(customerId, type);
+        List<LoanCreditInfoDO> loanCreditInfoDOS = loanCreditInfoDOMapper.getByCustomerIdAndType(customerId, type);
         LoanCreditInfoVO loanCreditInfoVO = new LoanCreditInfoVO();
-        if (null != loanCreditInfoDO) {
-            BeanUtils.copyProperties(loanCreditInfoDO, loanCreditInfoVO);
+        if (!CollectionUtils.isEmpty(loanCreditInfoDOS)) {
+            LoanCreditInfoDO loanCreditInfoDO = loanCreditInfoDOS.get(0);
+            if (null != loanCreditInfoDO) {
+                BeanUtils.copyProperties(loanCreditInfoDO, loanCreditInfoVO);
+            }
         }
         return ResultBean.ofSuccess(loanCreditInfoVO);
     }

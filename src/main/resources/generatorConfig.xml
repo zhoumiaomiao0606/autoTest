@@ -232,69 +232,63 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
-        -->
-
-
-        <!--<table tableName="loan_order" domainObjectName="LoanOrderDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
-
-
         <table tableName="apply_license_plate_deposit_info" domainObjectName="ApplyLicensePlateDepositInfoDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!-- 如果设置为true，生成的model类会直接使用column本身的名字，而不会再使用驼峰命名方法，比如BORN_DATE，生成的属性名字就是BORN_DATE,而不会是bornDate -->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
+        <property name="useActualColumnNames" value="true"/>
+    </table>
 
-        <table tableName="apply_license_plate_record" domainObjectName="ApplyLicensePlateRecordDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!-- 如果设置为true，生成的model类会直接使用column本身的名字，而不会再使用驼峰命名方法，比如BORN_DATE，生成的属性名字就是BORN_DATE,而不会是bornDate -->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
+    <table tableName="apply_license_plate_record" domainObjectName="ApplyLicensePlateRecordDO"
+           enableCountByExample="false" enableUpdateByExample="false"
+           enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        <property name="useActualColumnNames" value="true"/>
+    </table>
 
-        <table tableName="cost_details" domainObjectName="CostDetailsDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!-- 如果设置为true，生成的model类会直接使用column本身的名字，而不会再使用驼峰命名方法，比如BORN_DATE，生成的属性名字就是BORN_DATE,而不会是bornDate -->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
+    <table tableName="cost_details" domainObjectName="CostDetailsDO"
+           enableCountByExample="false" enableUpdateByExample="false"
+           enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        <property name="useActualColumnNames" value="true"/>
+    </table>
 
-        <table tableName="install_gps" domainObjectName="InstallGpsDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!-- 如果设置为true，生成的model类会直接使用column本身的名字，而不会再使用驼峰命名方法，比如BORN_DATE，生成的属性名字就是BORN_DATE,而不会是bornDate -->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
+    <table tableName="install_gps" domainObjectName="InstallGpsDO"
+           enableCountByExample="false" enableUpdateByExample="false"
+           enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        <property name="useActualColumnNames" value="true"/>
+    </table>
 
-        <table tableName="insurance_info" domainObjectName="InsuranceInfoDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!-- 如果设置为true，生成的model类会直接使用column本身的名字，而不会再使用驼峰命名方法，比如BORN_DATE，生成的属性名字就是BORN_DATE,而不会是bornDate -->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
+    <table tableName="insurance_info" domainObjectName="InsuranceInfoDO"
+           enableCountByExample="false" enableUpdateByExample="false"
+           enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        <property name="useActualColumnNames" value="true"/>
+    </table>
 
-        <table tableName="insurance_relevance" domainObjectName="InsuranceRelevanceDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!-- 如果设置为true，生成的model类会直接使用column本身的名字，而不会再使用驼峰命名方法，比如BORN_DATE，生成的属性名字就是BORN_DATE,而不会是bornDate -->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
+    <table tableName="insurance_relevance" domainObjectName="InsuranceRelevanceDO"
+           enableCountByExample="false" enableUpdateByExample="false"
+           enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        <property name="useActualColumnNames" value="true"/>
+    </table>
 
-        <table tableName="material_audit" domainObjectName="MaterialAuditDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!-- 如果设置为true，生成的model类会直接使用column本身的名字，而不会再使用驼峰命名方法，比如BORN_DATE，生成的属性名字就是BORN_DATE,而不会是bornDate -->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
+    <table tableName="material_audit" domainObjectName="MaterialAuditDO"
+           enableCountByExample="false" enableUpdateByExample="false"
+           enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        <property name="useActualColumnNames" value="true"/>
+    </table>
 
-        <table tableName="remit_details" domainObjectName="RemitDetailsDO"
+    -->
+
+        <!---->
+        <!--<table tableName="remit_details" domainObjectName="RemitDetailsDO"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+        <!--&lt;!&ndash; 如果设置为true，生成的model类会直接使用column本身的名字，而不会再使用驼峰命名方法，比如BORN_DATE，生成的属性名字就是BORN_DATE,而不会是bornDate &ndash;&gt;-->
+        <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--</table>-->
+
+
+        <table tableName="loan_file" domainObjectName="LoanFileDO"
                enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!-- 如果设置为true，生成的model类会直接使用column本身的名字，而不会再使用驼峰命名方法，比如BORN_DATE，生成的属性名字就是BORN_DATE,而不会是bornDate -->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

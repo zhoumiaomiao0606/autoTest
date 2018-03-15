@@ -74,50 +74,30 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
+        if (INFO_SUPPLEMENT.equals(approval.getAction())) {
+            Preconditions.checkNotNull(approval.getSupplementType(), "资料增补类型不能为空");
+        }
 
         // 业务单
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approval.getOrderId(), null);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
         Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
 
-        // 获取当前流程taskId
-        Task task = taskService.createTaskQuery()
-                .processInstanceId(loanOrderDO.getProcessInstId())
-                .taskDefinitionKey(approval.getTaskDefinitionKey())
-                .singleResult();
-        Preconditions.checkNotNull(task, "当前任务不存在");
-        String taskId = task.getId();
+        // 获取任务
+        Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
 
         // 流程变量
-        String taskVariablePrefix = task.getTaskDefinitionKey() + ":" + task.getProcessInstanceId() + ":" + task.getExecutionId() + ":";
         Map<String, Object> variables = Maps.newHashMap();
-        Map<String, Object> transientVariables = Maps.newHashMap();
-        // 审核结果
-        transientVariables.put("action", approval.getAction());
-        variables.put(taskVariablePrefix + "action", approval.getAction());
-        // 审核备注
-        variables.put(taskVariablePrefix + "info", approval.getInfo());
-        // 审核人ID
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        EmployeeDO user = new EmployeeDO();
-        BeanUtils.copyProperties(principal, user);
-        variables.put(taskVariablePrefix + "userId", user.getId());
-        variables.put(taskVariablePrefix + "userName", user.getName());
-
-        // 添加流程变量-贷款金额
-        fillLoanAmount(transientVariables, approval.getAction(), task.getTaskDefinitionKey(), loanOrderDO.getLoanBaseInfoId());
+        fillVariables(variables, task, approval, loanOrderDO.getLoanBaseInfoId());
 
         // 执行任务
-        taskService.complete(taskId, variables, transientVariables);
+        taskService.complete(task.getId(), variables);
 
         // 并行网关任务
 //        dealParallelTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey(), transientVariables, approval.getAction(), loanOrderDO.getLoanBaseInfoId());
 
-        // 更新状态
-        loanOrderDO.setCurrentTaskDefKey(approval.getTaskDefinitionKey());
-        loanOrderDO.setGmtModify(new Date());
-        int count = loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        Preconditions.checkArgument(count > 0, "更新失败");
+        // 更新任务状态
+        updateLoanOrderTaskDefinitionKey(approval.getOrderId(), approval.getTaskDefinitionKey());
 
         return ResultBean.ofSuccess(null, "审核成功");
     }
@@ -160,8 +140,26 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             .collect(Collectors.toList());
 
                     if (!CollectionUtils.isEmpty(taskIds)) {
-//                        taskService.deleteTasks(taskIds, true);
-//                        taskService.deleteTasks(taskIds, "打回修改");
+                        taskService.deleteTasks(taskIds, true);
+                        taskService.deleteTasks(taskIds, "打回修改");
+
+
+                        Task task = taskService.createTaskQuery()
+                                .taskDefinitionKey(taskDefinitionKey)
+                                .singleResult();
+
+                        String executionId = task.getExecutionId();
+//                        historyService.createHistoricTaskInstanceQuery()
+//                                .executionId()
+//
+//
+//                        taskService.resolveTask();
+//
+//                        taskService.delegateTask();
+//
+//                        taskService.getSubTasks();
+//                        taskService.deleteTasks();
+
                     }
                 }
             }
@@ -249,12 +247,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 执行 征信申请审核 或 银行&社会征信录入 任务时：填充流程变量-贷款金额
      *
-     * @param transientVariables
+     * @param variables
      * @param action
      * @param taskDefinitionKey
      * @param loanBaseInfoId
      */
-    private void fillLoanAmount(Map<String, Object> transientVariables, Integer action, String taskDefinitionKey, Long loanBaseInfoId) {
+    private void fillLoanAmount(Map<String, Object> variables, Integer action, String taskDefinitionKey, Long loanBaseInfoId) {
         // 征信申请审核且审核通过时
         boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY_VERIFY.getCode().equals(taskDefinitionKey) && PASS.equals(action);
         // 银行&社会征信录入
@@ -264,7 +262,88 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
             Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
             Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
-            transientVariables.put("loanAmount", Integer.valueOf(loanBaseInfoDO.getLoanAmount()));
+            variables.put("loanAmount", Integer.valueOf(loanBaseInfoDO.getLoanAmount()));
         }
+    }
+
+    /**
+     * 获取任务
+     *
+     * @param processInstId
+     * @param taskDefinitionKey
+     * @return
+     */
+    private Task getTask(String processInstId, String taskDefinitionKey) {
+        // 获取当前流程taskId
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(processInstId)
+                .taskDefinitionKey(taskDefinitionKey)
+                .singleResult();
+
+        Preconditions.checkNotNull(task, "当前任务不存在");
+        return task;
+    }
+
+    /**
+     * 填充流程变量
+     *
+     * @param variables
+     * @param task
+     * @param approval
+     * @param loanBaseInfoId
+     */
+    private void fillVariables(Map<String, Object> variables, Task task, ApprovalParam approval, Long loanBaseInfoId) {
+        String taskVariablePrefix = task.getTaskDefinitionKey() + ":" + task.getProcessInstanceId() + ":" + task.getExecutionId() + ":";
+
+        // 审核结果
+        variables.put("action", approval.getAction());
+        variables.put(taskVariablePrefix + "action", approval.getAction());
+
+        // 审核备注
+        variables.put(taskVariablePrefix + "info", approval.getInfo());
+
+        // 审核人ID、NAME
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        EmployeeDO user = new EmployeeDO();
+        BeanUtils.copyProperties(principal, user);
+        variables.put(taskVariablePrefix + "userId", user.getId());
+        variables.put(taskVariablePrefix + "userName", user.getName());
+
+        // 添加流程变量-贷款金额
+        fillLoanAmount(variables, approval.getAction(), task.getTaskDefinitionKey(), loanBaseInfoId);
+
+        // 填充其他的流程变量
+        fillOtherVariables(variables, taskVariablePrefix, approval);
+    }
+
+    /**
+     * 填充其他的流程变量
+     *
+     * @param variables
+     * @param taskVariablePrefix
+     * @param approval
+     */
+    private void fillOtherVariables(Map<String, Object> variables, String taskVariablePrefix, ApprovalParam approval) {
+        // 资料增补
+        if (INFO_SUPPLEMENT.equals(approval.getAction())) {
+            variables.put(taskVariablePrefix + "supplementType", approval.getSupplementType());
+            variables.put(taskVariablePrefix + "supplementContent", approval.getSupplementContent());
+            variables.put(taskVariablePrefix + "supplementInfo", approval.getSupplementInfo());
+        }
+    }
+
+    /**
+     * 更新任务状态
+     *
+     * @param orderId
+     * @param taskDefinitionKey
+     */
+    private void updateLoanOrderTaskDefinitionKey(Long orderId, String taskDefinitionKey) {
+        LoanOrderDO loanOrderDO = new LoanOrderDO();
+        loanOrderDO.setId(orderId);
+        loanOrderDO.setCurrentTaskDefKey(taskDefinitionKey);
+        loanOrderDO.setGmtModify(new Date());
+        int count = loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+        Preconditions.checkArgument(count > 0, "更新失败");
     }
 }

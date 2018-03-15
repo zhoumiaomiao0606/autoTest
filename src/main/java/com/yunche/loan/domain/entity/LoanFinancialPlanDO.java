@@ -18,8 +18,10 @@ public class LoanFinancialPlanDO {
     private String bank;
 
     private BigDecimal signRate;
-
-    private String loanAmount;
+    /**
+     * 实际贷款额
+     */
+    private BigDecimal loanAmount;
 
     private Integer loanTime;
 

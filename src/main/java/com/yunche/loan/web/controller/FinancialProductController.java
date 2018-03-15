@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.FinancialQuery;
 import com.yunche.loan.domain.entity.FinancialProductDO;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.FinancialProductVO;
 import com.yunche.loan.service.FinancialProductService;
 import org.slf4j.Logger;
@@ -69,6 +70,17 @@ public class FinancialProductController {
     public ResultBean<List<FinancialProductVO>> query(@RequestBody FinancialQuery query) {
         logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("-")));
         return financialProductService.getByCondition(query);
+    }
+
+    /**
+     * 通过合伙人ID 获取合伙人被授权的金融产品列表
+     *
+     * @param partnerId
+     * @return
+     */
+    @GetMapping("/listByPartnerId")
+    public ResultBean<List<BaseVO>> listByPartnerId(@RequestParam("partnerId") Long partnerId) {
+        return financialProductService.listByPartnerId(partnerId);
     }
 }
 

@@ -18,19 +18,11 @@ public class FileVO {
      */
     private Byte type;
     /**
+     * 类型名称
+     */
+//    private String name;
+    /**
      * 文件存储路径
      */
-    private List<FileDetail> details;
-
-    @Data
-    public static class FileDetail {
-
-        private Long id;
-
-        private String name;
-
-        private String url;
-
-        private Byte status;
-    }
+    private List<String> urls;
 }

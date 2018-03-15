@@ -37,13 +37,15 @@ public class ShiroConfig {
     private String anno;
 
     /**
-     * 缓存过期时间：30min
+     * TODO 缓存过期时间：30min
      */
-    private static final Integer CACHE_EXPIRE = 1800;
+//    private static final Integer CACHE_EXPIRE = 1800;
+    private static final Integer CACHE_EXPIRE = 86400;
     /**
-     * Redis键值对过期时间：30min
+     * TODO Redis键值对过期时间：30min
      */
-    private static final Integer REDIS_TIMEOUT = 1800;
+//    private static final Integer REDIS_TIMEOUT = 1800;
+    private static final Integer REDIS_TIMEOUT = 86400;
 
 
     @Bean

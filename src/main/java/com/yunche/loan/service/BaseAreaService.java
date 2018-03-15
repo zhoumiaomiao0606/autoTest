@@ -27,4 +27,6 @@ public interface BaseAreaService {
     ResultBean<BaseAreaVO> query(BaseAreaQuery queryJObj);
 
     ResultBean<List<CascadeAreaVO>> list();
+
+    ResultBean<String> getFullAreaName(Long areaId);
 }

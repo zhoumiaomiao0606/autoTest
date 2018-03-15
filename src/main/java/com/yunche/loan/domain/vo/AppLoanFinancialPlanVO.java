@@ -15,16 +15,18 @@ public class AppLoanFinancialPlanVO {
 
     private BigDecimal carPrice;
 
-    /**
-     * 金融产品 id & name
-     */
-    private BaseVO financialProduct;
+    private Long financialProductId;
+
+    private String financialProductName;
 
     private String bank;
 
     private BigDecimal signRate;
 
-    private String loanAmount;
+    /**
+     * 实际贷款额
+     */
+    private BigDecimal loanAmount;
 
     private Integer loanTime;
 

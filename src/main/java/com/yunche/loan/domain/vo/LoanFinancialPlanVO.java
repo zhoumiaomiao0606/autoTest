@@ -16,13 +16,18 @@ public class LoanFinancialPlanVO {
 
     private BigDecimal carPrice;
 
-    private Long bizModelId;
+    private Long financialProductId;
+
+    private String financialProductName;
 
     private String bank;
 
     private BigDecimal signRate;
 
-    private String loanAmount;
+    /**
+     * 实际贷款额
+     */
+    private BigDecimal loanAmount;
 
     private Integer loanTime;
 
@@ -45,6 +50,4 @@ public class LoanFinancialPlanVO {
     private Date gmtCreate;
 
     private Date gmtModify;
-
-    private String feature;
 }

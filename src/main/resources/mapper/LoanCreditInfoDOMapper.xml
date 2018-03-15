@@ -23,7 +23,9 @@
         <include refid="Base_Column_List"/>
         from loan_credit_info
         where customer_id = #{customerId,jdbcType=BIGINT}
-        AND type = #{type}
+        <if test="type != null">
+            AND type = #{type}
+        </if>
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">

@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.TelephoneVerifyVO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.LoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
@@ -37,7 +38,7 @@ public class LoanOrderController {
     }
 
     /**
-     * 征信申请单详情  [OK]
+     * 征信申请单详情
      *
      * @param orderId
      * @return
@@ -48,7 +49,7 @@ public class LoanOrderController {
     }
 
     /**
-     * 征信申请单 -新建  [OK]
+     * 征信申请单 -新建
      *
      * @param param
      * @return
@@ -260,6 +261,39 @@ public class LoanOrderController {
     @PostMapping(value = "/infosupplement", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> infoSupplement(@RequestBody InfoSupplementParam infoSupplementParam) {
         return loanOrderService.infoSupplement(infoSupplementParam);
+    }
+
+    /**
+     * 上门调查   -主贷客户信息
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/info/simple")
+    public ResultBean<LoanSimpleInfoVO> simpleInfo(@RequestParam Long orderId) {
+        return loanOrderService.simpleInfo(orderId);
+    }
+
+    /**
+     * 上门调查   -贷款业务详细信息
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/customerinfo/simple")
+    public ResultBean<List<LoanSimpleCustomerInfoVO>> simpleCustomerInfo(@RequestParam Long orderId) {
+        return loanOrderService.simpleCustomerInfo(orderId);
+    }
+
+    /**
+     * 电审页详情展示
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/telephoneverify/detail")
+    public ResultBean<TelephoneVerifyVO> telephoneVerifyDetail(@RequestParam Long orderId) {
+        return loanOrderService.telephoneVerifyDetail(orderId);
     }
 }
 

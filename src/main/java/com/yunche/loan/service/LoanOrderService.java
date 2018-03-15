@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.TelephoneVerifyVO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.LoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
@@ -53,4 +54,10 @@ public interface LoanOrderService {
     ResultBean<Long> createCreditRecord(CreditRecordParam creditRecordParam);
 
     ResultBean<Long> updateCreditRecord(CreditRecordParam creditRecordParam);
+
+    ResultBean<LoanSimpleInfoVO> simpleInfo(Long orderId);
+
+    ResultBean<List<LoanSimpleCustomerInfoVO>> simpleCustomerInfo(Long orderId);
+
+    ResultBean<TelephoneVerifyVO> telephoneVerifyDetail(Long orderId);
 }
