@@ -67,7 +67,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
         Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
 
-        financialProductDO.setStatus(2);
+        financialProductDO.setStatus((byte) 2);
         long count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
         return ResultBean.ofSuccess(null, "删除成功");
     }
@@ -79,7 +79,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
         Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
 
-        financialProductDO.setStatus(1);
+        financialProductDO.setStatus((byte) 1);
         long count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
         return ResultBean.ofSuccess(null, "停用成功");
     }
@@ -91,7 +91,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
         Preconditions.checkNotNull(financialProductDO, "prodId，数据不存在.");
 
-        financialProductDO.setStatus(0);
+        financialProductDO.setStatus((byte) 0);
         long count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductDO);
         return ResultBean.ofSuccess(null, "启用成功");
     }

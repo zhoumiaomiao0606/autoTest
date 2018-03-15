@@ -2,37 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.FinancialProductDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.FinancialProductDO">
-        <id column="prod_id" jdbcType="BIGINT" property="prodId"/>
-        <result column="prod_name" jdbcType="VARCHAR" property="prodName"/>
-        <result column="bank_name" jdbcType="VARCHAR" property="bankName"/>
-        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode"/>
-        <result column="account" jdbcType="VARCHAR" property="account"/>
-        <result column="sign_phone" jdbcType="VARCHAR" property="signPhone"/>
-        <result column="sign_bank_code" jdbcType="VARCHAR" property="signBankCode"/>
-        <result column="biz_type" jdbcType="TINYINT" property="bizType"/>
-        <result column="category_superior" jdbcType="VARCHAR" property="categorySuperior"/>
-        <result column="category_junior" jdbcType="VARCHAR" property="categoryJunior"/>
-        <result column="rate" jdbcType="VARCHAR" property="rate"/>
-        <result column="mortgage_term" jdbcType="TINYINT" property="mortgageTerm"/>
-        <result column="area_id" jdbcType="BIGINT" property="areaId"/>
-        <result column="prov" jdbcType="VARCHAR" property="prov"/>
-        <result column="city" jdbcType="VARCHAR" property="city"/>
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-        <result column="feature" jdbcType="VARCHAR" property="feature"/>
-        <result column="status" jdbcType="TINYINT" property="status"/>
+        <id column="prod_id" jdbcType="BIGINT" property="prodId" />
+        <result column="prod_name" jdbcType="VARCHAR" property="prodName" />
+        <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode" />
+        <result column="account" jdbcType="VARCHAR" property="account" />
+        <result column="sign_phone" jdbcType="VARCHAR" property="signPhone" />
+        <result column="sign_bank_code" jdbcType="VARCHAR" property="signBankCode" />
+        <result column="biz_type" jdbcType="TINYINT" property="bizType" />
+        <result column="category_superior" jdbcType="VARCHAR" property="categorySuperior" />
+        <result column="category_junior" jdbcType="VARCHAR" property="categoryJunior" />
+        <result column="rate" jdbcType="VARCHAR" property="rate" />
+        <result column="mortgage_term" jdbcType="TINYINT" property="mortgageTerm" />
+        <result column="area_id" jdbcType="BIGINT" property="areaId" />
+        <result column="prov" jdbcType="VARCHAR" property="prov" />
+        <result column="city" jdbcType="VARCHAR" property="city" />
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+        <result column="feature" jdbcType="VARCHAR" property="feature" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="formula_id" jdbcType="INTEGER" property="formulaId" />
     </resultMap>
     <sql id="Base_Column_List">
-    prod_id, prod_name, bank_name, mnemonic_code, account, sign_phone, sign_bank_code, 
-    biz_type, category_superior, category_junior, rate, mortgage_term, area_id, prov, 
-    city, gmt_create, gmt_modify, feature, status
-  </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from financial_product
-        where prod_id = #{prodId,jdbcType=BIGINT}
-    </select>
+        prod_id, prod_name, bank_name, mnemonic_code, account, sign_phone, sign_bank_code,
+        biz_type, category_superior, category_junior, rate, mortgage_term, area_id, prov,
+        city, gmt_create, gmt_modify, feature, status, formula_id
+    </sql>
+
     <select id="selectByCondition" parameterType="com.yunche.loan.domain.query.FinancialQuery"
             resultMap="BaseResultMap">
         select
@@ -76,26 +72,33 @@
             AND status = #{status}
         </if>
     </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from financial_product
+        where prod_id = #{prodId,jdbcType=BIGINT}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from financial_product
-    where prod_id = #{prodId,jdbcType=BIGINT}
-  </delete>
+        delete from financial_product
+        where prod_id = #{prodId,jdbcType=BIGINT}
+    </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
-    insert into financial_product (prod_id, prod_name, bank_name, 
-      mnemonic_code, account, sign_phone, 
-      sign_bank_code, biz_type, category_superior, 
-      category_junior, rate, mortgage_term, 
-      area_id, prov, city, 
-      gmt_create, gmt_modify, feature, 
-      status)
-    values (#{prodId,jdbcType=BIGINT}, #{prodName,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, 
-      #{mnemonicCode,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{signPhone,jdbcType=VARCHAR}, 
-      #{signBankCode,jdbcType=VARCHAR}, #{bizType,jdbcType=TINYINT}, #{categorySuperior,jdbcType=VARCHAR}, 
-      #{categoryJunior,jdbcType=VARCHAR}, #{rate,jdbcType=VARCHAR}, #{mortgageTerm,jdbcType=TINYINT}, 
-      #{areaId,jdbcType=BIGINT}, #{prov,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
-      now(), now(), #{feature,jdbcType=VARCHAR}, 
-      #{status,jdbcType=TINYINT})
-  </insert>
+        insert into financial_product (prod_id, prod_name, bank_name,
+        mnemonic_code, account, sign_phone,
+        sign_bank_code, biz_type, category_superior,
+        category_junior, rate, mortgage_term,
+        area_id, prov, city,
+        gmt_create, gmt_modify, feature,
+        status, formula_id)
+        values (#{prodId,jdbcType=BIGINT}, #{prodName,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR},
+        #{mnemonicCode,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{signPhone,jdbcType=VARCHAR},
+        #{signBankCode,jdbcType=VARCHAR}, #{bizType,jdbcType=TINYINT}, #{categorySuperior,jdbcType=VARCHAR},
+        #{categoryJunior,jdbcType=VARCHAR}, #{rate,jdbcType=VARCHAR}, #{mortgageTerm,jdbcType=TINYINT},
+        #{areaId,jdbcType=BIGINT}, #{prov,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT}, #{formulaId,jdbcType=INTEGER})
+    </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
         insert into financial_product
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -156,6 +159,9 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="formulaId != null">
+                formula_id,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="prodId != null">
@@ -215,6 +221,9 @@
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
             </if>
+            <if test="formulaId != null">
+                #{formulaId,jdbcType=INTEGER},
+            </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
@@ -265,36 +274,42 @@
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
-            gmt_modify = now(),
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
+            <if test="formulaId != null">
+                formula_id = #{formulaId,jdbcType=INTEGER},
+            </if>
         </set>
         where prod_id = #{prodId,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.FinancialProductDO">
-    update financial_product
-    set prod_name = #{prodName,jdbcType=VARCHAR},
-      bank_name = #{bankName,jdbcType=VARCHAR},
-      mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
-      account = #{account,jdbcType=VARCHAR},
-      sign_phone = #{signPhone,jdbcType=VARCHAR},
-      sign_bank_code = #{signBankCode,jdbcType=VARCHAR},
-      biz_type = #{bizType,jdbcType=TINYINT},
-      category_superior = #{categorySuperior,jdbcType=VARCHAR},
-      category_junior = #{categoryJunior,jdbcType=VARCHAR},
-      rate = #{rate,jdbcType=VARCHAR},
-      mortgage_term = #{mortgageTerm,jdbcType=TINYINT},
-      area_id = #{areaId,jdbcType=BIGINT},
-      prov = #{prov,jdbcType=VARCHAR},
-      city = #{city,jdbcType=VARCHAR},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = now(),
-      feature = #{feature,jdbcType=VARCHAR},
-      status = #{status,jdbcType=TINYINT}
-    where prod_id = #{prodId,jdbcType=BIGINT}
-  </update>
+        update financial_product
+        set prod_name = #{prodName,jdbcType=VARCHAR},
+        bank_name = #{bankName,jdbcType=VARCHAR},
+        mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+        account = #{account,jdbcType=VARCHAR},
+        sign_phone = #{signPhone,jdbcType=VARCHAR},
+        sign_bank_code = #{signBankCode,jdbcType=VARCHAR},
+        biz_type = #{bizType,jdbcType=TINYINT},
+        category_superior = #{categorySuperior,jdbcType=VARCHAR},
+        category_junior = #{categoryJunior,jdbcType=VARCHAR},
+        rate = #{rate,jdbcType=VARCHAR},
+        mortgage_term = #{mortgageTerm,jdbcType=TINYINT},
+        area_id = #{areaId,jdbcType=BIGINT},
+        prov = #{prov,jdbcType=VARCHAR},
+        city = #{city,jdbcType=VARCHAR},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT},
+        formula_id = #{formulaId,jdbcType=INTEGER}
+        where prod_id = #{prodId,jdbcType=BIGINT}
+    </update>
 </mapper>
