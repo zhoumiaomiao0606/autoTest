@@ -457,8 +457,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
 
-
-
         return ResultBean.ofSuccess(null);
     }
 
@@ -535,18 +533,16 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Override
     @Transactional
-    public ResultBean<Void> createOrUpdateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam) {
+    public ResultBean<Long> createOrUpdateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam) {
         Preconditions.checkNotNull(loanHomeVisitParam, "上门家访资料不能为空");
 
         if (null == loanHomeVisitParam.getId()) {
             // 创建
-            createLoanHomeVisit(loanHomeVisitParam);
+            return createLoanHomeVisit(loanHomeVisitParam);
         } else {
             // 编辑
-            updateLoanHomeVisit(loanHomeVisitParam);
+            return updateLoanHomeVisit(loanHomeVisitParam);
         }
-
-        return ResultBean.ofSuccess(null, "保存上门家访资料成功");
     }
 
     @Override
@@ -769,7 +765,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanHomeVisitParam
      */
-    private void createLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam) {
+    private ResultBean<Long> createLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam) {
         Preconditions.checkNotNull(loanHomeVisitParam.getOrderId(), "业务单号不能为空");
 
         // insert
@@ -785,11 +781,13 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // 关联
         LoanOrderDO loanOrderDO = new LoanOrderDO();
         loanOrderDO.setId(loanHomeVisitParam.getOrderId());
-        loanOrderDO.setLoanHomeVisitId(loanHomeVisitParam.getId());
+        loanOrderDO.setLoanHomeVisitId(loanHomeVisitDO.getId());
         loanOrderDO.setGmtModify(new Date());
 
         int relaCount = loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
         Preconditions.checkArgument(relaCount > 0, "关联上门家访资料失败");
+
+        return ResultBean.ofSuccess(loanHomeVisitDO.getId(), "保存上门家访资料成功");
     }
 
     /**
@@ -797,13 +795,15 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanHomeVisitParam
      */
-    private void updateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam) {
+    private ResultBean<Long> updateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam) {
         LoanHomeVisitDO loanHomeVisitDO = new LoanHomeVisitDO();
         BeanUtils.copyProperties(loanHomeVisitParam, loanHomeVisitDO);
         loanHomeVisitDO.setGmtModify(new Date());
 
         int count = loanHomeVisitDOMapper.updateByPrimaryKeySelective(loanHomeVisitDO);
         Preconditions.checkArgument(count > 0, "编辑上门家访资料失败");
+
+        return ResultBean.ofSuccess(null, "保存上门家访资料成功");
     }
 
     private void convertLoanCarInfo(LoanCarInfoParam loanCarInfoParam, LoanCarInfoDO loanCarInfoDO) {

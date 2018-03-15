@@ -248,7 +248,7 @@ public class LoanOrderController {
      * @return
      */
     @PostMapping(value = "/homevisit/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> saveLoanHomeVisit(@RequestBody LoanHomeVisitParam loanHomeVisitParam) {
+    public ResultBean<Long> saveLoanHomeVisit(@RequestBody LoanHomeVisitParam loanHomeVisitParam) {
         return loanOrderService.createOrUpdateLoanHomeVisit(loanHomeVisitParam);
     }
 

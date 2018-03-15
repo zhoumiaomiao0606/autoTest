@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.InsuranceRelevanceDO" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="insurance_info_id" property="insurance_info_id" jdbcType="BIGINT" />
-    <result column="insurance_company_name" property="insurance_company_name" jdbcType="BIGINT" />
+    <result column="insurance_company_name" property="insurance_company_name" jdbcType="VARCHAR" />
     <result column="insurance_number" property="insurance_number" jdbcType="VARCHAR" />
     <result column="area" property="area" jdbcType="VARCHAR" />
     <result column="insurance_amount" property="insurance_amount" jdbcType="DECIMAL" />
@@ -77,7 +77,7 @@
         #{insurance_info_id,jdbcType=BIGINT},
       </if>
       <if test="insurance_company_name != null" >
-        #{insurance_company_name,jdbcType=BIGINT},
+        #{insurance_company_name,jdbcType=VARCHAR},
       </if>
       <if test="insurance_number != null" >
         #{insurance_number,jdbcType=VARCHAR},
@@ -112,7 +112,7 @@
         insurance_info_id = #{insurance_info_id,jdbcType=BIGINT},
       </if>
       <if test="insurance_company_name != null" >
-        insurance_company_name = #{insurance_company_name,jdbcType=BIGINT},
+        insurance_company_name = #{insurance_company_name,jdbcType=VARCHAR},
       </if>
       <if test="insurance_number != null" >
         insurance_number = #{insurance_number,jdbcType=VARCHAR},

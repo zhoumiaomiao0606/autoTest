@@ -1,10 +1,10 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.AppBusinessInfo;
-import com.yunche.loan.domain.entity.AppCustomerInfo;
-import com.yunche.loan.domain.entity.AppInsuranceInfo;
-import com.yunche.loan.domain.entity.AppLoanCustomerVO;
+import com.yunche.loan.domain.vo.AppBusinessInfoVO;
+import com.yunche.loan.domain.vo.AppCustomerInfoVO;
+import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
+import com.yunche.loan.domain.vo.AppLoanCustomerVO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.AppCustomerQuery;
 import com.yunche.loan.domain.query.AppLoanOrderQuery;
@@ -324,7 +324,7 @@ public class AppLoanOrderController {
      * @return
      */
     @GetMapping(value = "/customerInfo")
-    public ResultBean<AppCustomerInfo> customerInfo(@RequestParam Long orderId) {
+    public ResultBean<AppCustomerInfoVO> customerInfo(@RequestParam Long orderId) {
         return appLoanOrderService.customerInfo(orderId);
     }
 
@@ -335,7 +335,7 @@ public class AppLoanOrderController {
      * @return
      */
     @GetMapping(value = "/businessInfo")
-    public ResultBean<AppBusinessInfo> businessInfo(@RequestParam Long orderId) {
+    public ResultBean<AppBusinessInfoVO> businessInfo(@RequestParam Long orderId) {
         return appLoanOrderService.businessInfo(orderId);
     }
 
@@ -346,8 +346,7 @@ public class AppLoanOrderController {
      * @return
      */
     @GetMapping(value = "/insuranceInfo")
-    public ResultBean<AppInsuranceInfo> insuranceInfo(@RequestParam Long orderId) {
+    public ResultBean<AppInsuranceInfoVO> insuranceInfo(@RequestParam Long orderId) {
         return appLoanOrderService.insuranceInfo(orderId);
     }
-
 }

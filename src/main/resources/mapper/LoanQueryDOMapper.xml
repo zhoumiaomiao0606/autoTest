@@ -115,7 +115,7 @@
              r.beneficiary_bank,
              r.beneficiary_account,
              r.beneficiary_account_number,
-             r.return_rete_amount,
+             r.return_rate_amount,
              r.remit_amount
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
@@ -147,7 +147,7 @@
              f.loan_amount,
              (select name from partner where id = b.partner_id) as pname,
              i.pay_month,
-             r.return_rete_amount,
+             r.return_rate_amount,
              r.beneficiary_bank,
              r.beneficiary_account,
              r.beneficiary_account_number,
@@ -309,13 +309,12 @@
               (select id_card from loan_customer where id = (select loan_customer_id from loan_order where id = order_id)) as id_card,
               (select name from employee where id = (select salesman_id from loan_base_info where id = (select loan_base_info_id from loan_order where id = order_id))) as ename,
               (select name from partner where id = (select partner_id from loan_base_info where id = (select loan_base_info_id from loan_order where id = order_id))) as pname,
-            (@row:=@row + 1) as insurance_year,
-          issue_bills_date,
-              residential_address,
+              insurance_year,
+              issue_bills_date,
+              (select address from loan_customer where id = (select loan_customer_id from loan_order where id = order_id)) as residential_address,
               (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )as total_insurance_amount
 
   from insurance_info where order_id = #{orderId,jdbcType=BIGINT} ORDER BY issue_bills_date asc
-
 
   </select>
 

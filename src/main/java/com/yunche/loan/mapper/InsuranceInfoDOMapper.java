@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.InsuranceInfoDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface InsuranceInfoDOMapper {
@@ -11,7 +12,7 @@ public interface InsuranceInfoDOMapper {
 
     InsuranceInfoDO selectByPrimaryKey(Long id);
 
-    InsuranceInfoDO selectLastUpdateRecordByOrderId(Long orderId);
+    InsuranceInfoDO selectByInsuranceYear(@Param("orderId") Long orderId,@Param("insuranceYear") Byte insuranceYear);
 
     int updateByPrimaryKeySelective(InsuranceInfoDO record);
 }

@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.entity;
+package com.yunche.loan.domain.vo;
 
 import com.sun.org.apache.xpath.internal.operations.String;
 import lombok.Data;
