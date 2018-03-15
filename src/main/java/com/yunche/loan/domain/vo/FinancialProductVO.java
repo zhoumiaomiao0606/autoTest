@@ -1,8 +1,10 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.param.FinancialProductParam;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class FinancialProductVO {
@@ -47,4 +49,5 @@ public class FinancialProductVO {
     private Date gmtModify;
 
     private String feature;
+
 }

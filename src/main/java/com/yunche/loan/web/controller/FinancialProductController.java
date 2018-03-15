@@ -2,9 +2,11 @@ package com.yunche.loan.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.FinancialProductParam;
 import com.yunche.loan.domain.query.FinancialQuery;
 import com.yunche.loan.domain.entity.FinancialProductDO;
 import com.yunche.loan.domain.vo.BaseVO;
+import com.yunche.loan.domain.vo.FinancialProductAndRateVO;
 import com.yunche.loan.domain.vo.FinancialProductVO;
 import com.yunche.loan.service.FinancialProductService;
 import org.slf4j.Logger;
@@ -31,15 +33,14 @@ public class FinancialProductController {
     private FinancialProductService financialProductService;
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> create(@RequestBody FinancialProductDO financialProductDO) {
-        logger.info(Arrays.asList("create", JSON.toJSONString(financialProductDO)).stream().collect(Collectors.joining("-")));
-        return financialProductService.insert(financialProductDO);
+    public ResultBean<Void> create(@RequestBody FinancialProductParam FinancialProductParam) {
+        return financialProductService.insert(FinancialProductParam);
     }
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> update(@RequestBody FinancialProductDO financialProductDO) {
-        logger.info(Arrays.asList("update", JSON.toJSONString(financialProductDO)).stream().collect(Collectors.joining("-")));
-        return financialProductService.update(financialProductDO);
+    public ResultBean<Void> update(@RequestBody FinancialProductParam financialProductParam) {
+        logger.info(Arrays.asList("update", JSON.toJSONString(financialProductParam)).stream().collect(Collectors.joining("-")));
+        return financialProductService.update(financialProductParam);
     }
 
     @GetMapping(value = "/delete")

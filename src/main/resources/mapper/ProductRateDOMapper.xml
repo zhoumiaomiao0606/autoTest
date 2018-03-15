@@ -26,12 +26,27 @@
         </if>
     </select>
 
+
+    <select id="selectByProdId" parameterType="com.yunche.loan.domain.entity.ProductRateDOKey"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from product_rate
+        where prod_id = #{prodId,jdbcType=BIGINT}
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ProductRateDOKey">
         delete from product_rate
         where prod_id = #{prodId,jdbcType=BIGINT}
         and bank_rate = #{bankRate,jdbcType=DECIMAL}
         and loan_time = #{loanTime,jdbcType=INTEGER}
     </delete>
+
+    <delete id="deleteByProdId" parameterType="com.yunche.loan.domain.entity.ProductRateDOKey">
+        delete from product_rate
+        where prod_id = #{prodId,jdbcType=BIGINT}
+    </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.ProductRateDO">
         insert into product_rate (prod_id, bank_rate, loan_time,
         gmt_create, gmt_modify, feature,
