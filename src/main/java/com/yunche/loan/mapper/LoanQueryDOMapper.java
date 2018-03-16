@@ -36,4 +36,6 @@ public interface LoanQueryDOMapper {
 
     CostCalculateInfoVO selectCostCalculateInfo(Long orderId);
 
+    List<GpsVO> selectGpsByOrderId(Long orderId);
+
 }

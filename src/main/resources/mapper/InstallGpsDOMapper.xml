@@ -3,13 +3,13 @@
 <mapper namespace="com.yunche.loan.mapper.InstallGpsDOMapper" >
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.InstallGpsDO" >
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="oder_id" property="oder_id" jdbcType="BIGINT" />
+    <result column="order_id" property="order_id" jdbcType="BIGINT" />
     <result column="gps_number" property="gps_number" jdbcType="VARCHAR" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, oder_id, gps_number, feature, status
+    id, order_id, gps_number, feature, status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -31,8 +31,8 @@
       <if test="id != null" >
         id,
       </if>
-      <if test="oder_id != null" >
-        oder_id,
+      <if test="order_id != null" >
+        order_id,
       </if>
       <if test="gps_number != null" >
         gps_number,
@@ -48,8 +48,8 @@
       <if test="id != null" >
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="oder_id != null" >
-        #{oder_id,jdbcType=BIGINT},
+      <if test="order_id != null" >
+        #{order_id,jdbcType=BIGINT},
       </if>
       <if test="gps_number != null" >
         #{gps_number,jdbcType=VARCHAR},
@@ -65,8 +65,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.InstallGpsDO" >
     update install_gps
     <set >
-      <if test="oder_id != null" >
-        oder_id = #{oder_id,jdbcType=BIGINT},
+      <if test="order_id != null" >
+        order_id = #{order_id,jdbcType=BIGINT},
       </if>
       <if test="gps_number != null" >
         gps_number = #{gps_number,jdbcType=VARCHAR},

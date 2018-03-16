@@ -8,14 +8,17 @@ import com.yunche.loan.domain.entity.LoanCarInfoDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.GpsUpdateParam;
 import com.yunche.loan.domain.param.InstallUpdateParam;
+import com.yunche.loan.domain.vo.GpsVO;
 import com.yunche.loan.mapper.InstallGpsDOMapper;
 import com.yunche.loan.mapper.LoanCarInfoDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.AuxiliaryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 @Transactional
@@ -28,6 +31,9 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
 
     @Resource
     private LoanCarInfoDOMapper loanCarInfoDOMapper;
+
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
 
 
     @Override
@@ -56,8 +62,13 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
         //先删除-再新增-保持数据最新
         for(GpsUpdateParam obj:param.getGps_list()){
             InstallGpsDO T= BeanPlasticityUtills.copy(InstallGpsDO.class,obj);
-            T.setOder_id(Long.valueOf(param.getOrder_id()));
+            T.setOrder_id(Long.valueOf(param.getOrder_id()));
             installGpsDOMapper.insertSelective(T);
         }
+    }
+
+    @Override
+    public List<GpsVO> query(Long orderId) {
+        return loanQueryDOMapper.selectGpsByOrderId(orderId);
     }
 }

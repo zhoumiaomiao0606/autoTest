@@ -26,6 +26,14 @@ public class AuxiliaryController {
     }
 
     /**
+     * 查看gps列表
+     */
+    @GetMapping(value = "/query")
+    public ResultBean query(@RequestParam String order_id) {
+        return ResultBean.ofSuccess(auxiliaryService.query(Long.valueOf(order_id)));
+    }
+
+    /**
      * 安装gps
      */
     @PostMapping(value = "/install", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -33,6 +41,8 @@ public class AuxiliaryController {
         auxiliaryService.install(param);
         return ResultBean.ofSuccess("安装成功");
     }
+
+
 
 
 

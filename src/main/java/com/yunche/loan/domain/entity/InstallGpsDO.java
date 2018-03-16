@@ -6,7 +6,7 @@ import lombok.Data;
 public class InstallGpsDO {
     private Long id;
 
-    private Long oder_id;
+    private Long order_id;
 
     private String gps_number;
 

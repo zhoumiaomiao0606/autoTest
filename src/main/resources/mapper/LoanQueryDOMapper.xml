@@ -491,4 +491,11 @@
 
     </select>
 
+    <select id="selectGpsByOrderId" resultType="com.yunche.loan.domain.vo.GpsVO" parameterType="java.lang.Long" >
+        select
+        order_id,gps_number
+        from install_gps
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </select>
+
 </mapper>
