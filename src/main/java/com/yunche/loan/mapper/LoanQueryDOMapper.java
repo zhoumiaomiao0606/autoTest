@@ -32,4 +32,6 @@ public interface LoanQueryDOMapper {
 
     public List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
+    CostCalculateInfoVO selectCostCalculateInfo(Long orderId);
+
 }

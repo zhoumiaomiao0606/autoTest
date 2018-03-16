@@ -435,4 +435,19 @@
     select path as urls,type from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
   </select>
 
+    <!--计算明细的信息-->
+    <select id="selectCostCalculateInfo" resultType="com.yunche.loan.domain.vo.CostCalculateInfoVO" parameterType="java.lang.Long" >
+        select
+
+                 f.bank_period_principal,
+                 i.pay_month
+
+        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+        left join loan_car_info i on o.loan_car_info_id = i.id
+
+        left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+    </select>
+
 </mapper>

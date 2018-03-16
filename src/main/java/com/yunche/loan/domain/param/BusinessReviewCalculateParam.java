@@ -1,12 +1,12 @@
 package com.yunche.loan.domain.param;
 
 import lombok.Data;
+import org.apache.ibatis.annotations.Param;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @Data
 public class BusinessReviewCalculateParam {
-
-
     @NotBlank
     private String service_fee;//服务费
     @NotBlank
@@ -39,4 +39,10 @@ public class BusinessReviewCalculateParam {
     private String apply_license_plate_out_province_fee_type;//上省外牌费用 1 打款内扣 2 返利内扣 3 实收
     @NotBlank
     private String based_margin_fee_type;//基础保证金 1 打款内扣 2 返利内扣 3 实收
+    @NotBlank
+    private String return_rate_amount;//返利金额
+    @NotBlank
+    private String bank_period_principal;//银行分期本金
+    @NotBlank
+    private String pay_month;// 0 否 1 是 是否月结
 }
