@@ -509,15 +509,15 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     @Override
-    public ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam loanFinancialPlanParam) {
-        Preconditions.checkNotNull(loanFinancialPlanParam, "金融方案不能为空");
+    public ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam) {
+        Preconditions.checkNotNull(appLoanFinancialPlanParam, "金融方案不能为空");
 
         // convert
-        LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
-        BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
+        LoanFinancialPlanParam loanFinancialPlanParam = new LoanFinancialPlanParam();
+        BeanUtils.copyProperties(appLoanFinancialPlanParam, loanFinancialPlanParam);
 
         // calc
-        ResultBean<LoanFinancialPlanVO> calcResult = loanFinancialPlanService.calc(loanFinancialPlanDO);
+        ResultBean<LoanFinancialPlanVO> calcResult = loanFinancialPlanService.calc(loanFinancialPlanParam);
         Preconditions.checkArgument(calcResult.getSuccess(), calcResult.getMsg());
 
         AppLoanFinancialPlanVO appLoanFinancialPlanVO = new AppLoanFinancialPlanVO();

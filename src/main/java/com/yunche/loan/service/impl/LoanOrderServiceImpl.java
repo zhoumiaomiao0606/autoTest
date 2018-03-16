@@ -548,13 +548,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     @Override
     public ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
         // convert
-        LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
-        BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
+//        LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
+//        BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
 
-        // TODO 根据公式计算
-        // calc
-        ResultBean<LoanFinancialPlanVO> resultBean = loanFinancialPlanService.calc(loanFinancialPlanDO);
-
+        ResultBean<LoanFinancialPlanVO> resultBean = loanFinancialPlanService.calc(loanFinancialPlanParam);
         return resultBean;
     }
 
