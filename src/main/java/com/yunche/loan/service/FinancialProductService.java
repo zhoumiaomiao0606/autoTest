@@ -1,11 +1,10 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.FinancialProductDO;
 import com.yunche.loan.domain.param.FinancialProductParam;
 import com.yunche.loan.domain.query.FinancialQuery;
-import com.yunche.loan.domain.entity.FinancialProductDO;
 import com.yunche.loan.domain.vo.BaseVO;
-import com.yunche.loan.domain.vo.FinancialProductAndRateVO;
 import com.yunche.loan.domain.vo.FinancialProductVO;
 
 import java.util.List;
