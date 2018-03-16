@@ -12,8 +12,6 @@ public class MaterialUpdateParam {
     @NotBlank
     private String rate_type;// 手续费收取方式 1 一次性 2 分期
     @NotBlank
-    private String is_subsidy;// 是否补贴 1 是 2 否
-    @NotBlank
     private String is_pledge;//  是否抵押 1 是 2 否
     @NotBlank
     private String is_guarantee;// 是否担保 1 是 2 否

@@ -38,10 +38,8 @@ public class FinanceVO {
     private String total_cost;//费用总额
     private String complete_material_date;//资料完整日期
     private String rate_type;//手续费收取方式 1 一次性 2 分期
-    private String is_subsidy;//是否补贴 0-否;1-是;
     private String is_pledge;//是否抵押 0-否;1-是;
     private String is_guarantee;//是否担保 0-否;1-是;
-    private String rate;//费率
     private String biz_area;//业务区域
     private String financial_product_name;//金融产品名称
     private String loan_time;//贷款时间

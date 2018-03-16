@@ -5,15 +5,13 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="complete_material_date" property="complete_material_date" jdbcType="DATE" />
     <result column="rate_type" property="rate_type" jdbcType="TINYINT" />
-    <result column="is_subsidy" property="is_subsidy" jdbcType="TINYINT" />
     <result column="is_pledge" property="is_pledge" jdbcType="TINYINT" />
     <result column="is_guarantee" property="is_guarantee" jdbcType="TINYINT" />
-    <result column="rate" property="rate" jdbcType="DECIMAL" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, complete_material_date, rate_type, is_subsidy, is_pledge, is_guarantee, rate, 
+    id, complete_material_date, rate_type, is_pledge, is_guarantee,
     status, feature
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -38,17 +36,11 @@
       <if test="rate_type != null" >
         rate_type,
       </if>
-      <if test="is_subsidy != null" >
-        is_subsidy,
-      </if>
       <if test="is_pledge != null" >
         is_pledge,
       </if>
       <if test="is_guarantee != null" >
         is_guarantee,
-      </if>
-      <if test="rate != null" >
-        rate,
       </if>
       <if test="status != null" >
         status,
@@ -67,17 +59,11 @@
       <if test="rate_type != null" >
         #{rate_type,jdbcType=TINYINT},
       </if>
-      <if test="is_subsidy != null" >
-        #{is_subsidy,jdbcType=TINYINT},
-      </if>
       <if test="is_pledge != null" >
         #{is_pledge,jdbcType=TINYINT},
       </if>
       <if test="is_guarantee != null" >
         #{is_guarantee,jdbcType=TINYINT},
-      </if>
-      <if test="rate != null" >
-        #{rate,jdbcType=DECIMAL},
       </if>
       <if test="status != null" >
         #{status,jdbcType=TINYINT},
@@ -96,17 +82,11 @@
       <if test="rate_type != null" >
         rate_type = #{rate_type,jdbcType=TINYINT},
       </if>
-      <if test="is_subsidy != null" >
-        is_subsidy = #{is_subsidy,jdbcType=TINYINT},
-      </if>
       <if test="is_pledge != null" >
         is_pledge = #{is_pledge,jdbcType=TINYINT},
       </if>
       <if test="is_guarantee != null" >
         is_guarantee = #{is_guarantee,jdbcType=TINYINT},
-      </if>
-      <if test="rate != null" >
-        rate = #{rate,jdbcType=DECIMAL},
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=TINYINT},

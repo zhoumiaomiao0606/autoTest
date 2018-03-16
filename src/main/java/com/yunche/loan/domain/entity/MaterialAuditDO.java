@@ -13,13 +13,9 @@ public class MaterialAuditDO {
 
     private Byte rate_type;
 
-    private Byte is_subsidy;
-
     private Byte is_pledge;
 
     private Byte is_guarantee;
-
-    private BigDecimal rate;
 
     private Byte status;
 
