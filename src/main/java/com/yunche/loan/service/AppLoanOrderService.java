@@ -20,11 +20,11 @@ import java.util.List;
 public interface AppLoanOrderService {
     ResultBean<List<AppLoanOrderVO>> query(AppLoanOrderQuery query);
 
+    ResultBean<List<AppLoanOrderVO>> multipartQuery(AppLoanOrderQuery query);
+
     ResultBean<AppCreditApplyOrderVO> creditApplyOrderDetail(Long orderId);
 
     ResultBean<AppCreditApplyVO> createCreditApplyOrder(AppCustomerParam creditApplyOrderVO);
-
-//    ResultBean<AppCreditRecordVO> creditRecordDetail(Long orderId, Byte type);
 
     ResultBean<AppCustDetailVO> customerDetail(Long orderId);
 

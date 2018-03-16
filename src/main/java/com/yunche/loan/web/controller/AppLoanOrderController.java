@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.query.AppInfoSupplementQuery;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
 import com.yunche.loan.domain.vo.AppCustomerInfoVO;
 import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
@@ -14,6 +15,7 @@ import com.yunche.loan.service.AppLoanOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class AppLoanOrderController {
 
 
     /**
-     * 分页查询 各个流程环节的业务流程单列表
+     * 分页查询 各个流程环节的业务流程单列表    -单节点&单状态
      *
      * @param query
      * @return
@@ -50,6 +52,17 @@ public class AppLoanOrderController {
     @PostMapping(value = "/listCreditNotEnding", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<AppLoanOrderVO>> listCreditNotEnding(@RequestBody BaseQuery query) {
         return appLoanOrderService.listCreditNotEnding(query);
+    }
+
+    /**
+     * 多节点列表查询
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping(value = "/multipartQuery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<AppLoanOrderVO>> multipartQuery(@RequestBody AppLoanOrderQuery query) {
+        return appLoanOrderService.multipartQuery(query);
     }
 
     /**
@@ -154,36 +167,6 @@ public class AppLoanOrderController {
                                     @RequestParam("commonLenderId") Long commonLenderId) {
         return appLoanOrderService.faceOff(orderId, principalLenderId, commonLenderId);
     }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//    /**
-//     * 征信录入单详情
-//     *
-//     * @param orderId 业务单号
-//     * @param type    征信类型： 1-银行;  2-社会;
-//     * @return
-//     */
-//    @GetMapping(value = "/creditrecord/detail")
-//    public ResultBean<AppCreditRecordVO> creditRecordDetail(@RequestParam("orderId") Long orderId,
-//                                                            @RequestParam("type") Byte type) {
-//        return appLoanOrderService.creditRecordDetail(orderId, type);
-//    }
-//
-//    /**
-//     * 征信录入
-//     *
-//     * @param creditRecordParam
-//     * @return
-//     */
-//    @PostMapping(value = "/creditrecord", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-//    public ResultBean<Void> creditRecord(@RequestBody CreditRecordParam creditRecordParam) {
-//        return appLoanOrderService.creditRecord(creditRecordParam);
-//    }
 
     /**
      * 保存贷款车辆信息 -新增
@@ -307,7 +290,7 @@ public class AppLoanOrderController {
     }
 
     /**
-     * APP端-客户查询
+     * APP端-客户列表查询
      *
      * @param query
      * @return

@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanFileDO;
+import com.yunche.loan.domain.param.LoanFileParam;
 import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.service.LoanFileService;
@@ -134,5 +134,17 @@ public class LoanFileServiceImpl implements LoanFileService {
         }
 
         return ResultBean.ofSuccess(fileVOS);
+    }
+
+    @Override
+    public ResultBean<Void> upload(List<LoanFileParam> fileParams) {
+
+        if (!CollectionUtils.isEmpty(fileParams)) {
+
+
+        }
+
+
+        return ResultBean.ofSuccess(null);
     }
 }

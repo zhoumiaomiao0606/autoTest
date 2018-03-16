@@ -1,8 +1,6 @@
 package com.yunche.loan.web.aop;
 
 import com.alibaba.fastjson.JSON;
-import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.config.result.ResultBean;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -11,8 +9,6 @@ import org.aspectj.lang.annotation.Pointcut;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.BadSqlGrammarException;
-import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -45,20 +41,19 @@ public class BizExceptionHandler {
     @Around("controller()")
     public Object doBefore(ProceedingJoinPoint pjp) throws Throwable {
 
+        long startTime = System.currentTimeMillis();
 
-            long startTime = System.currentTimeMillis();
+        // 日志记录
+        log(pjp.getArgs());
 
-            // 日志记录
-            log(pjp.getArgs());
+        // exec
+        Object result = pjp.proceed();
 
-            // exec
-              Object result = pjp.proceed();
+        // 统计时间
+        long totalTime = System.currentTimeMillis() - startTime;
+        logger.info("totalTime : {}s", new Double(totalTime) / 1000);
 
-            // 统计时间
-            long totalTime = System.currentTimeMillis() - startTime;
-            logger.info("totalTime : {}s", new Double(totalTime) / 1000);
-
-            return result;
+        return result;
     }
 
     /**
@@ -80,9 +75,9 @@ public class BizExceptionHandler {
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isEmpty(argList)) {
-            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request)).stream().collect(Collectors.joining("\u0001")));
+            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request)).stream().collect(Collectors.joining(" ")));
         } else {
-            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request), JSON.toJSONString(argList.get(0))).stream().collect(Collectors.joining("\u0001")));
+            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request), JSON.toJSONString(argList.get(0))).stream().collect(Collectors.joining(" ")));
         }
     }
 
@@ -124,5 +119,4 @@ public class BizExceptionHandler {
         }
         return ip;
     }
-
 }

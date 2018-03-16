@@ -3,7 +3,9 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.AppMultipartQueryTypeConst;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
 import com.yunche.loan.domain.vo.AppCustomerInfoVO;
 import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
@@ -37,13 +39,17 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.AppMultipartQueryTypeConst.*;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
+import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
+
 
 /**
  * @author liuzhe
@@ -54,9 +60,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
 
     @Autowired
-    private LoanCustomerService loanCustomerService;
-
-    @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
@@ -64,9 +67,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
-
-    @Autowired
-    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
 
     @Autowired
     private LoanCarInfoDOMapper loanCarInfoDOMapper;
@@ -81,7 +81,13 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private LoanFileDOMapper loanFileDOMapper;
 
     @Autowired
+    private DepartmentDOMapper departmentDOMapper;
+
+    @Autowired
     private EmployeeDOMapper employeeDOMapper;
+
+    @Autowired
+    private LoanCustomerService loanCustomerService;
 
     @Autowired
     private LoanProcessOrderService loanProcessOrderService;
@@ -141,18 +147,16 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         .filter(Objects::nonNull)
                         .map(e -> {
 
-                            // 任务状态
-                            Integer taskStatus = getTaskStatus(e, query.getTaskStatus());
-
                             // 流程实例ID
                             String processInstanceId = e.getProcessInstanceId();
                             if (StringUtils.isNotBlank(processInstanceId)) {
                                 // 业务单
                                 AppLoanOrderVO appLoanOrderVO = new AppLoanOrderVO();
-                                appLoanOrderVO.setTaskStatus(taskStatus);
-                                fillMsg(appLoanOrderVO, processInstanceId);
+                                // 填充订单信息
+                                fillOrderMsg(appLoanOrderVO, processInstanceId, query.getTaskDefinitionKey(), query.getTaskStatus());
                                 return appLoanOrderVO;
                             }
+
                             return null;
                         })
                         .filter(Objects::nonNull)
@@ -160,6 +164,54 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         .collect(Collectors.toList());
 
                 return ResultBean.ofSuccess(baseInstProcessOrderVOList, (int) totalNum, query.getPageIndex(), query.getPageSize());
+            }
+        }
+
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, (int) totalNum, query.getPageIndex(), query.getPageSize());
+    }
+
+    @Override
+    public ResultBean<List<AppLoanOrderVO>> multipartQuery(AppLoanOrderQuery query) {
+        Preconditions.checkNotNull(query.getMultipartType(), "多节点查询类型不能为空");
+
+        // TODO
+//        if (LOAN_APPLY_TODO.equals(query.getMultipartType())) {
+//
+//        } else if (LOAN_APPLY_DONE.equals(query.getMultipartType())) {
+//
+//        } else if (CUSTOMER_LOAN_TODO.equals(query.getMultipartType())) {
+//
+//        } else if (CUSTOMER_LOAN_DONE.equals(query.getMultipartType())) {
+//
+//        }
+
+        long totalNum = loanOrderDOMapper.countMultipartQuery(query);
+        if (totalNum > 0) {
+
+            List<LoanOrderDO> loanOrderDOList = loanOrderDOMapper.listMultipartQuery(query);
+            if (!CollectionUtils.isEmpty(loanOrderDOList)) {
+
+                List<AppLoanOrderVO> loanOrderVOList = loanOrderDOList.parallelStream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+
+                            // 流程实例ID
+                            String processInstanceId = e.getProcessInstId();
+                            if (StringUtils.isNotBlank(processInstanceId)) {
+                                // 业务单
+                                AppLoanOrderVO appLoanOrderVO = new AppLoanOrderVO();
+                                // 填充订单信息
+                                fillOrderMsg(appLoanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), null);
+                                return appLoanOrderVO;
+                            }
+
+                            return null;
+                        })
+                        .filter(Objects::nonNull)
+                        .sorted(Comparator.comparing(AppLoanOrderVO::getGmtCreate).reversed())
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(loanOrderVOList, (int) totalNum, query.getPageIndex(), query.getPageSize());
             }
         }
 
@@ -179,11 +231,17 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         .filter(Objects::nonNull)
                         .map(e -> {
 
-                            // 业务单
-                            AppLoanOrderVO appLoanOrderVO = new AppLoanOrderVO();
-                            appLoanOrderVO.setTaskStatus(TASK_TODO);
-                            fillMsg(appLoanOrderVO, e.getProcessInstId());
-                            return appLoanOrderVO;
+                            // 流程实例ID
+                            String processInstanceId = e.getProcessInstId();
+                            if (StringUtils.isNotBlank(processInstanceId)) {
+                                // 业务单
+                                AppLoanOrderVO appLoanOrderVO = new AppLoanOrderVO();
+                                // 填充订单信息
+                                fillOrderMsg(appLoanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), null);
+                                return appLoanOrderVO;
+                            }
+
+                            return null;
                         })
                         .filter(Objects::nonNull)
                         .sorted(Comparator.comparing(AppLoanOrderVO::getGmtCreate).reversed())
@@ -251,12 +309,14 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             appInfoSupplementVO.setSupplementStartDate(historicTaskInstance.getCreateTime());
             appInfoSupplementVO.setSupplementEndDate(historicTaskInstance.getEndTime());
 
-            String taskVariableTypeKey = loanOrderDO.getCurrentTaskDefKey() + ":" + loanOrderDO.getProcessInstId() + ":"
-                    + historicTaskInstance.getExecutionId() + ":" + "supplementType";
-            String taskVariableContentKey = loanOrderDO.getCurrentTaskDefKey() + ":" + loanOrderDO.getProcessInstId() + ":"
-                    + historicTaskInstance.getExecutionId() + ":" + "supplementContent";
-            String taskVariableInfoKey = loanOrderDO.getCurrentTaskDefKey() + ":" + loanOrderDO.getProcessInstId() + ":"
-                    + historicTaskInstance.getExecutionId() + ":" + "supplementInfo";
+            String taskVariablePrefix = loanOrderDO.getCurrentTaskDefKey() + ":" + loanOrderDO.getProcessInstId() + ":"
+                    + historicTaskInstance.getExecutionId() + ":";
+
+            String taskVariableTypeKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
+            String taskVariableContentKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_CONTENT;
+            String taskVariableInfoKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_INFO;
+            String taskVariableUserIdKey = taskVariablePrefix + PROCESS_VARIABLE_USER_ID;
+            String taskVariableUserNameKey = taskVariablePrefix + PROCESS_VARIABLE_USER_NAME;
 
             HistoricVariableInstanceQuery historicVariableInstanceQuery = historyService.createHistoricVariableInstanceQuery()
                     .processInstanceId(loanOrderDO.getProcessInstId());
@@ -264,6 +324,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             HistoricVariableInstance typeHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableTypeKey).singleResult();
             HistoricVariableInstance contentHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableContentKey).singleResult();
             HistoricVariableInstance infoHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableInfoKey).singleResult();
+            HistoricVariableInstance userIdHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableUserIdKey).singleResult();
+            HistoricVariableInstance userNameHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableUserNameKey).singleResult();
 
             // 增补类型
             if (null != typeHistoricVariableInstance) {
@@ -276,6 +338,24 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             // 增补说明
             if (null != infoHistoricVariableInstance) {
                 appInfoSupplementVO.setSupplementInfo((String) infoHistoricVariableInstance.getValue());
+            }
+            // 要求增补人员
+            if (null != userNameHistoricVariableInstance) {
+                appInfoSupplementVO.setInitiator((String) userNameHistoricVariableInstance.getValue());
+            }
+            // 要求增补部门
+            if (null != userIdHistoricVariableInstance) {
+                Object value = userIdHistoricVariableInstance.getValue();
+                if (null != value) {
+                    Long userId = (Long) value;
+                    EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(userId, null);
+                    if (null != employeeDO) {
+                        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(employeeDO.getDepartmentId(), null);
+                        if (null != departmentDO) {
+                            appInfoSupplementVO.setInitiatorUnit(departmentDO.getName());
+                        }
+                    }
+                }
             }
         }
 
@@ -345,53 +425,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         return ResultBean.ofSuccess(appCreditApplyVO);
     }
-
-//    @Override
-//    public ResultBean<AppCreditRecordVO> creditRecordDetail(Long orderId, Byte type) {
-//        Preconditions.checkNotNull(orderId, "业务单号不能为空");
-//        Preconditions.checkNotNull(type, "征信类型不能为空");
-//        Preconditions.checkNotNull(CREDIT_TYPE_BANK.equals(type) || CREDIT_TYPE_SOCIAL.equals(type), "征信类型有误");
-//
-//        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
-//        Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
-//
-//        AppCreditRecordVO creditRecordVO = new AppCreditRecordVO();
-//
-//        // 贷款基本信息
-//        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-//        if (null != loanBaseInfoDO) {
-//            LoanBaseInfoVO loanBaseInfo = new LoanBaseInfoVO();
-//            BeanUtils.copyProperties(loanBaseInfoDO, loanBaseInfo);
-//            creditRecordVO.setLoanBaseInfo(loanBaseInfo);
-//        }
-//
-//        // 客户信息
-//        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
-//        if (null != loanCustomerDO) {
-//            // 主 TODO
-//            CreditRecordVO.Customer customer = new CreditRecordVO.Customer();
-//            BeanUtils.copyProperties(loanCustomerDO, customer);
-//            fillCreditMsg(customer, loanCustomerDO, type);
-//            creditRecordVO.setPrincipalLender(customer);
-//
-//            // 共
-//            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getId(), COMMON_LENDER);
-//            if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
-//                List<CreditRecordVO.Customer> commonLenderList = loanCustomerDOS.parallelStream()
-//                        .filter(Objects::nonNull)
-//                        .map(e -> {
-//                            CreditRecordVO.Customer commonLender = new CreditRecordVO.Customer();
-//                            BeanUtils.copyProperties(loanCustomerDO, commonLender);
-//                            fillCreditMsg(customer, loanCustomerDO, type);
-//                            return commonLender;
-//                        })
-//                        .collect(Collectors.toList());
-//                creditRecordVO.setCommonLenderList(commonLenderList);
-//            }
-//        }
-//
-//        return ResultBean.ofSuccess(creditRecordVO, "征信录入详情查询成功");
-//    }
 
     @Override
     public ResultBean<AppCustDetailVO> customerDetail(Long orderId) {
@@ -522,10 +555,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkNotNull(query.getLoanStatus(), "贷款状态不能为空");
 
         // TODO
+        AppLoanOrderQuery appLoanOrderQuery = new AppLoanOrderQuery();
 
 
         return ResultBean.ofSuccess(null);
     }
+
 
     @Override
     public ResultBean<AppCustomerInfoVO> customerInfo(Long orderId) {
@@ -985,6 +1020,92 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     /**
+     * 填充订单信息
+     *
+     * @param appLoanOrderVO
+     * @param processInstanceId
+     * @param taskDefinitionKey
+     * @param taskStatus
+     */
+    private void fillOrderMsg(AppLoanOrderVO appLoanOrderVO, String processInstanceId, String taskDefinitionKey, Integer taskStatus) {
+        // 任务状态
+        if (null == taskStatus) {
+            appLoanOrderVO.setTaskStatus(TASK_TODO);
+        } else {
+            appLoanOrderVO.setTaskStatus(taskStatus);
+        }
+
+        // 贷款客户基本信息填充
+        fillBaseMsg(appLoanOrderVO, processInstanceId);
+
+        // 资料增补类型
+        fillInfoSupplementType(appLoanOrderVO, taskDefinitionKey, processInstanceId);
+
+        // 当前任务节点
+        fillCurrentTask(appLoanOrderVO, taskDefinitionKey);
+
+        // 还款状态
+        fillRepayStatus(appLoanOrderVO, taskDefinitionKey, processInstanceId);
+    }
+
+
+    /**
+     * 当前任务
+     *
+     * @param appLoanOrderVO
+     * @param taskDefinitionKey
+     */
+    private void fillCurrentTask(AppLoanOrderVO appLoanOrderVO, String taskDefinitionKey) {
+        String currentTask = PROCESS_MAP.get(taskDefinitionKey);
+        appLoanOrderVO.setCurrentTask(currentTask);
+    }
+
+    /**
+     * TODO 还款状态： 1-正常还款;  2-非正常还款;  3-已结清;
+     *
+     * @param appLoanOrderVO
+     * @param taskDefinitionKey
+     * @param processInstanceId
+     */
+    private void fillRepayStatus(AppLoanOrderVO appLoanOrderVO, String taskDefinitionKey, String processInstanceId) {
+        appLoanOrderVO.setRepayStatus(1);
+    }
+
+    /**
+     * 资料增补类型
+     *
+     * @param appLoanOrderVO
+     * @param taskDefinitionKey
+     * @param processInstanceId
+     */
+    private void fillInfoSupplementType(AppLoanOrderVO appLoanOrderVO, String taskDefinitionKey, String processInstanceId) {
+        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
+
+            List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
+                    .processInstanceId(processInstanceId)
+                    .taskDefinitionKey(taskDefinitionKey)
+                    .orderByTaskCreateTime()
+                    .desc()
+                    .listPage(0, 1);
+
+            if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
+                HistoricTaskInstance historicTaskInstance = historicTaskInstanceList.get(0);
+
+                String taskVariableTypeKey = taskDefinitionKey + ":" + processInstanceId + ":"
+                        + historicTaskInstance.getExecutionId() + ":" + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
+
+                HistoricVariableInstance typeHistoricVariableInstance = historyService.createHistoricVariableInstanceQuery()
+                        .processInstanceId(processInstanceId).variableName(taskVariableTypeKey).singleResult();
+
+                // 增补类型
+                if (null != typeHistoricVariableInstance) {
+                    appLoanOrderVO.setInfoSupplementType((Integer) typeHistoricVariableInstance.getValue());
+                }
+            }
+        }
+    }
+
+    /**
      * 填充征信信息
      *
      * @param customer
@@ -1028,39 +1149,44 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     /**
      * 根据流程实例ID获取并填充业务单基本信息
      *
-     * @param baseInstProcessOrderVO
+     * @param appLoanOrderVO
      * @param processInstanceId
      * @return
      */
-    private void fillMsg(AppLoanOrderVO baseInstProcessOrderVO, String processInstanceId) {
+    private void fillBaseMsg(AppLoanOrderVO appLoanOrderVO, String processInstanceId) {
         // 业务单
         LoanOrderDO loanOrderDO = loanOrderDOMapper.getByProcessInstId(processInstanceId);
         if (null == loanOrderDO) {
             return;
         }
 
-        // 订单基本信息
-        BeanUtils.copyProperties(loanOrderDO, baseInstProcessOrderVO);
+        // 业务单单号
+        appLoanOrderVO.setId(loanOrderDO.getId());
+        // 业务单创建时间
+        appLoanOrderVO.setGmtCreate(loanOrderDO.getGmtCreate());
 
-        // 关联的-客户信息(主贷人)
+        // 主贷人信息
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
         if (null != loanCustomerDO) {
             BaseVO customer = new BaseVO();
             BeanUtils.copyProperties(loanCustomerDO, customer);
-            baseInstProcessOrderVO.setCustomer(customer);
-            baseInstProcessOrderVO.setIdCard(loanCustomerDO.getIdCard());
-            baseInstProcessOrderVO.setMobile(loanCustomerDO.getMobile());
+            // 主贷人
+            appLoanOrderVO.setCustomer(customer);
+            // 身份证
+            appLoanOrderVO.setIdCard(loanCustomerDO.getIdCard());
+            // 手机号
+            appLoanOrderVO.setMobile(loanCustomerDO.getMobile());
         }
 
-        // 关联的-贷款基本信息
-        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-        if (null != loanBaseInfoDO) {
-            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(loanBaseInfoDO.getSalesmanId(), null);
-            if (null != employeeDO) {
-                BaseVO salesman = new BaseVO();
-                BeanUtils.copyProperties(employeeDO, salesman);
-                baseInstProcessOrderVO.setSalesman(salesman);
-            }
+        // 合伙人 & 业务员
+        ResultBean<LoanBaseInfoVO> loanBaseInfoResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
+        Preconditions.checkArgument(loanBaseInfoResultBean.getSuccess(), loanBaseInfoResultBean.getMsg());
+        LoanBaseInfoVO loanBaseInfoVO = loanBaseInfoResultBean.getData();
+        if (null != loanBaseInfoVO) {
+            // 合伙人
+            appLoanOrderVO.setPartner(loanBaseInfoVO.getPartner());
+            // 业务员
+            appLoanOrderVO.setSalesman(loanBaseInfoVO.getSalesman());
         }
     }
 
@@ -1102,12 +1228,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
      */
     public List<String> getUserGroupNameList() {
         // getUser
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        EmployeeDO employeeDO = new EmployeeDO();
-        BeanUtils.copyProperties(principal, employeeDO);
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
 
         // getUserGroup
-        List<UserGroupDO> baseUserGroup = userGroupDOMapper.getBaseUserGroupByEmployeeId(employeeDO.getId());
+        List<UserGroupDO> baseUserGroup = userGroupDOMapper.getBaseUserGroupByEmployeeId(loginUser.getId());
 
         // getUserGroupName
         List<String> userGroupNameList = null;

@@ -4,15 +4,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.ProductRateDO;
-import com.yunche.loan.domain.entity.ProductRateDOKey;
 import com.yunche.loan.domain.param.FinancialProductParam;
-import com.yunche.loan.domain.vo.BaseVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.FinancialProductDOMapper;
 import com.yunche.loan.domain.query.FinancialQuery;
 import com.yunche.loan.domain.entity.FinancialProductDO;
-import com.yunche.loan.domain.vo.CascadeAreaVO;
-import com.yunche.loan.domain.vo.BaseAreaVO;
-import com.yunche.loan.domain.vo.FinancialProductVO;
 import com.yunche.loan.mapper.ProductRateDOMapper;
 import com.yunche.loan.service.BaseAreaService;
 import com.yunche.loan.service.FinancialProductService;
@@ -22,15 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by zhouguoliang on 2018/1/18.
  */
 @Service
-@Transactional
 public class FinancialProductServiceImpl implements FinancialProductService {
 
     @Autowired
@@ -43,6 +36,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     private ProductRateDOMapper productRateDOMapper;
 
     @Override
+    @Transactional
     public ResultBean<Void> batchInsert(List<FinancialProductDO> financialProductDOs) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(financialProductDOs), "financialProductDOs不能为空");
         for (FinancialProductDO financialProductDO : financialProductDOs) {
@@ -53,6 +47,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Long> insert(FinancialProductParam financialProductParam) {
 
         Preconditions.checkArgument(financialProductParam != null, "financialProductDOs不能为空");
@@ -75,6 +70,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> update(FinancialProductParam financialProductParam) {
         Preconditions.checkArgument(financialProductParam != null && financialProductParam.getProdId() != null, "financialProductDOs不能为空");
         int count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductParam);
@@ -95,6 +91,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> delete(Long prodId) {
         Preconditions.checkArgument(prodId != null, "prodId");
 
@@ -107,6 +104,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> disable(Long prodId) {
         Preconditions.checkArgument(prodId != null, "prodId");
 
@@ -119,6 +117,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> enable(Long prodId) {
         Preconditions.checkArgument(prodId != null, "prodId");
 
@@ -200,23 +199,17 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     }
 
     @Override
-    public ResultBean<List<BaseVO>> listByPartnerId(Long partnerId) {
+    public ResultBean<List<CascadeFinancialProductVO>> listByPartnerId(Long partnerId) {
         Preconditions.checkNotNull(partnerId, "合伙人ID不能为空");
 
 
-        // TODO
+        // 根据合伙人获取授权银行列表
 
-        BaseVO baseVO1 = new BaseVO();
-        BaseVO baseVO2 = new BaseVO();
-        BaseVO baseVO3 = new BaseVO();
-        baseVO1.setId(100026L);
-        baseVO1.setName("浙江省内新车");
-        baseVO2.setId(100028L);
-        baseVO2.setName("浙江省外二手车");
-        baseVO3.setId(100034L);
-        baseVO3.setName("哈尔滨工行三成首付");
-        List<BaseVO> baseVOS = Lists.newArrayList(baseVO1, baseVO2, baseVO3);
+        // 根据银行获取金融产品列表
 
-        return ResultBean.ofSuccess(baseVOS);
+        // 根据金融产品获取对应银行利率
+
+
+        return ResultBean.ofSuccess(null);
     }
 }
