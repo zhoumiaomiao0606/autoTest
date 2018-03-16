@@ -6,6 +6,7 @@ import lombok.Data;
 public class UniversalCustomerDetailVO {
 
     private String customer_id;//客户id
+    private String cust_type;//客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
     private String name;//姓名
     private String id_card;//身份证
     private String mobile;//手机号

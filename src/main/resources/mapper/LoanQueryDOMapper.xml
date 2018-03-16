@@ -434,6 +434,7 @@
     <select id="selectUniversalCustomerDetail" resultType="com.yunche.loan.domain.vo.UniversalCustomerDetailVO" parameterType="java.lang.Long" >
               select
                 id as customer_id,
+                cust_type,
                 name,
                 id_card,
                 mobile,
