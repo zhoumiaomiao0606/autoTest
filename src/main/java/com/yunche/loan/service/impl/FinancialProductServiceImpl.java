@@ -53,41 +53,41 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     }
 
     @Override
-    public ResultBean<Void> insert(FinancialProductParam FinancialProductParam) {
+    public ResultBean<Long> insert(FinancialProductParam financialProductParam) {
 
-        Preconditions.checkArgument(FinancialProductParam != null, "financialProductDOs不能为空");
-        int count = financialProductDOMapper.insert(FinancialProductParam);
-        List<com.yunche.loan.domain.param.FinancialProductParam.ProductRate> productRates = FinancialProductParam.getProductRateList();
-        Preconditions.checkNotNull(productRates,"费率未设置");
+        Preconditions.checkArgument(financialProductParam != null, "financialProductDOs不能为空");
+        int count = financialProductDOMapper.insert(financialProductParam);
+        Preconditions.checkArgument(count > 0, "创建金融产品失败");
 
-        for(com.yunche.loan.domain.param.FinancialProductParam.ProductRate tmpProductRate:productRates){
+        List<FinancialProductParam.ProductRate> productRateList = financialProductParam.getProductRateList();
+        Preconditions.checkNotNull(productRateList, "费率未设置");
+
+        for (FinancialProductParam.ProductRate tmpProductRate : productRateList) {
             ProductRateDO productRateDO = new ProductRateDO();
-            productRateDO.setProdId(FinancialProductParam.getProdId());
-            productRateDO.setLoanTime((int)FinancialProductParam.getMortgageTerm());
-            productRateDO.setBankRate( new BigDecimal(FinancialProductParam.getRate()));
-            productRateDOMapper.insert(productRateDO);
+            productRateDO.setProdId(financialProductParam.getProdId());
+            productRateDO.setLoanTime(tmpProductRate.getLoanTime());
+            productRateDO.setBankRate(tmpProductRate.getBankRate());
+            int insertCount = productRateDOMapper.insert(productRateDO);
+            Preconditions.checkArgument(insertCount > 0, "创建银行费率失败");
         }
-        Preconditions.checkArgument(count > 0, "创建失败");
 
-
-
-        return ResultBean.ofSuccess(null, "创建成功");
+        return ResultBean.ofSuccess(financialProductParam.getProdId(), "创建成功");
     }
 
     @Override
     public ResultBean<Void> update(FinancialProductParam financialProductParam) {
         Preconditions.checkArgument(financialProductParam != null && financialProductParam.getProdId() != null, "financialProductDOs不能为空");
         int count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductParam);
-        List<com.yunche.loan.domain.param.FinancialProductParam.ProductRate> productRates = financialProductParam.getProductRateList();
-        Preconditions.checkNotNull(productRates,"费率未设置");
+        List<FinancialProductParam.ProductRate> productRates = financialProductParam.getProductRateList();
+        Preconditions.checkNotNull(productRates, "费率未设置");
         //更新前先按照产品ID删除之前的记录
         productRateDOMapper.deleteByProdId(financialProductParam.getProdId());
         //插入本次产品费率信息
-        for(com.yunche.loan.domain.param.FinancialProductParam.ProductRate tmpProductRate:productRates){
+        for (FinancialProductParam.ProductRate tmpProductRate : productRates) {
             ProductRateDO productRateDO = new ProductRateDO();
             productRateDO.setProdId(financialProductParam.getProdId());
-            productRateDO.setLoanTime((int)financialProductParam.getMortgageTerm());
-            productRateDO.setBankRate( new BigDecimal(financialProductParam.getRate()));
+            productRateDO.setLoanTime(tmpProductRate.getLoanTime());
+            productRateDO.setBankRate(tmpProductRate.getBankRate());
             productRateDOMapper.insert(productRateDO);
         }
         Preconditions.checkArgument(count > 0, "更新失败");

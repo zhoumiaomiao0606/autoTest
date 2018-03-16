@@ -91,6 +91,8 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         Preconditions.checkNotNull(loanFinancialPlanDO.getLoanAmount(), "贷款金额不能为空");
         Preconditions.checkNotNull(loanFinancialPlanDO.getLoanTime(), "贷款期数不能为空");
 
+        //
+        loanFinancialPlanDO.setDownPaymentMoney(loanFinancialPlanDO.getCarPrice().subtract(loanFinancialPlanDO.getLoanAmount()));
         // 获取公式ID
         FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(loanFinancialPlanDO.getFinancialProductId());
         Preconditions.checkNotNull(financialProductDO, "金融产品不存在");
@@ -106,11 +108,18 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         BigDecimal bankBaseRate = productRateDO.getBankRate();
 
         ResultBean<CalcParamVO> resultBean = computeModeService.calc(formulaId, loanFinancialPlanDO.getLoanAmount(), loanFinancialPlanDO.getSignRate(),
-                bankBaseRate, loanFinancialPlanDO.getLoanTime() / 12, loanFinancialPlanDO.getCarPrice());
+                bankBaseRate, loanFinancialPlanDO.getLoanTime(), loanFinancialPlanDO.getCarPrice());
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
         LoanFinancialPlanVO loanFinancialPlanVO = new LoanFinancialPlanVO();
-
+//        loanFinancialPlanVO.setDownPaymentRatio(new BigDecimal(0.3));
+//        loanFinancialPlanVO.setDownPaymentMoney(new BigDecimal(50000));
+//        loanFinancialPlanVO.setBankPeriodPrincipal(new BigDecimal(100000));
+//        loanFinancialPlanVO.setBankFee(new BigDecimal(2000));
+//        loanFinancialPlanVO.setPrincipalInterestSum(new BigDecimal(180000));
+//        loanFinancialPlanVO.setFirstMonthRepay(new BigDecimal(5000));
+//        loanFinancialPlanVO.setEachMonthRepay(new BigDecimal(3000));
+//
 
         CalcParamVO calcParamVO = resultBean.getData();
         if (null != calcParamVO) {

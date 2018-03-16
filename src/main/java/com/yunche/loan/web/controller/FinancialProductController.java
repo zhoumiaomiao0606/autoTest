@@ -33,7 +33,7 @@ public class FinancialProductController {
     private FinancialProductService financialProductService;
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> create(@RequestBody FinancialProductParam FinancialProductParam) {
+    public ResultBean<Long> create(@RequestBody FinancialProductParam FinancialProductParam) {
         return financialProductService.insert(FinancialProductParam);
     }
 

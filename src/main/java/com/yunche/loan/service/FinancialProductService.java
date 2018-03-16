@@ -17,7 +17,7 @@ public interface FinancialProductService {
 
     ResultBean<Void> batchInsert(List<FinancialProductDO> financialProductDOs);
 
-    ResultBean<Void> insert(FinancialProductParam FinancialProductParam);
+    ResultBean<Long> insert(FinancialProductParam FinancialProductParam);
 
     ResultBean<Void> update(FinancialProductParam financialProductParam);
 
