@@ -1,8 +1,8 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.query.AppLoanOrderQuery;
 import com.yunche.loan.domain.query.BaseQuery;
+import com.yunche.loan.domain.query.LoanOrderQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -84,7 +84,7 @@ public interface LoanOrderDOMapper {
      * @param query
      * @return
      */
-    long countMultipartQuery(AppLoanOrderQuery query);
+    int countMultipartQuery(LoanOrderQuery query);
 
     /**
      * 多节点查询
@@ -92,5 +92,5 @@ public interface LoanOrderDOMapper {
      * @param query
      * @return
      */
-    List<LoanOrderDO> listMultipartQuery(AppLoanOrderQuery query);
+    List<LoanOrderDO> listMultipartQuery(LoanOrderQuery query);
 }

@@ -4,23 +4,15 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
 import com.yunche.loan.domain.vo.AppCustomerInfoVO;
 import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
-import com.yunche.loan.domain.vo.AppLoanCustomerVO;
 import com.yunche.loan.domain.param.*;
-import com.yunche.loan.domain.query.AppCustomerQuery;
-import com.yunche.loan.domain.query.AppLoanOrderQuery;
-import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.vo.*;
 
-import java.util.List;
 
 /**
  * @author liuzhe
  * @date 2018/3/5
  */
 public interface AppLoanOrderService {
-    ResultBean<List<AppLoanOrderVO>> query(AppLoanOrderQuery query);
-
-    ResultBean<List<AppLoanOrderVO>> multipartQuery(AppLoanOrderQuery query);
 
     ResultBean<AppCreditApplyOrderVO> creditApplyOrderDetail(Long orderId);
 
@@ -60,11 +52,7 @@ public interface AppLoanOrderService {
 
     ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam);
 
-    ResultBean<List<AppLoanOrderVO>> listCreditNotEnding(BaseQuery query);
-
     ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long orderId);
-
-    ResultBean<List<AppLoanCustomerVO>> customerQuery(AppCustomerQuery query);
 
     ResultBean<AppCustomerInfoVO> customerInfo(Long orderId);
 

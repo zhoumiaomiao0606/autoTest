@@ -3,18 +3,13 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.constant.AppMultipartQueryTypeConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
 import com.yunche.loan.domain.vo.AppCustomerInfoVO;
 import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
-import com.yunche.loan.domain.vo.AppLoanCustomerVO;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.*;
-import com.yunche.loan.domain.query.AppCustomerQuery;
-import com.yunche.loan.domain.query.AppLoanOrderQuery;
-import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
@@ -24,9 +19,6 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.history.HistoricVariableInstanceQuery;
-import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
-import org.activiti.engine.task.TaskInfo;
-import org.activiti.engine.task.TaskInfoQuery;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -39,16 +31,13 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.AppMultipartQueryTypeConst.*;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
-import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
-import static com.yunche.loan.config.constant.LoanProcessConst.*;
 
 
 /**
@@ -119,140 +108,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private RuntimeService runtimeService;
 
-
-    @Override
-    public ResultBean<List<AppLoanOrderVO>> query(AppLoanOrderQuery query) {
-        Preconditions.checkNotNull(query.getTaskDefinitionKey(), "当前任务节点不能为空");
-        Preconditions.checkNotNull(query.getTaskStatus(), "查询类型不能为空");
-
-        // 获取用户角色名列表
-        List<String> userGroupNameList = getUserGroupNameList();
-
-        long totalNum = 0;
-        TaskInfoQuery taskQuery = null;
-        if (!CollectionUtils.isEmpty(userGroupNameList)) {
-            // 创建任务查询对象
-            taskQuery = getTaskInfoQuery(query, userGroupNameList);
-            // 统计
-            totalNum = taskQuery.count();
-        }
-
-        if (totalNum > 0) {
-            // 任务列表
-            List<TaskInfo> tasks = taskQuery.orderByTaskCreateTime().desc().listPage(query.getStartRow(), query.getEndRow());
-
-            // 获取流程列表 -> 业务单列表
-            if (!CollectionUtils.isEmpty(tasks)) {
-                List<AppLoanOrderVO> baseInstProcessOrderVOList = tasks.parallelStream()
-                        .filter(Objects::nonNull)
-                        .map(e -> {
-
-                            // 流程实例ID
-                            String processInstanceId = e.getProcessInstanceId();
-                            if (StringUtils.isNotBlank(processInstanceId)) {
-                                // 业务单
-                                AppLoanOrderVO appLoanOrderVO = new AppLoanOrderVO();
-                                // 填充订单信息
-                                fillOrderMsg(appLoanOrderVO, processInstanceId, query.getTaskDefinitionKey(), query.getTaskStatus());
-                                return appLoanOrderVO;
-                            }
-
-                            return null;
-                        })
-                        .filter(Objects::nonNull)
-                        .sorted(Comparator.comparing(AppLoanOrderVO::getGmtCreate).reversed())
-                        .collect(Collectors.toList());
-
-                return ResultBean.ofSuccess(baseInstProcessOrderVOList, (int) totalNum, query.getPageIndex(), query.getPageSize());
-            }
-        }
-
-        return ResultBean.ofSuccess(Collections.EMPTY_LIST, (int) totalNum, query.getPageIndex(), query.getPageSize());
-    }
-
-    @Override
-    public ResultBean<List<AppLoanOrderVO>> multipartQuery(AppLoanOrderQuery query) {
-        Preconditions.checkNotNull(query.getMultipartType(), "多节点查询类型不能为空");
-
-        // TODO
-//        if (LOAN_APPLY_TODO.equals(query.getMultipartType())) {
-//
-//        } else if (LOAN_APPLY_DONE.equals(query.getMultipartType())) {
-//
-//        } else if (CUSTOMER_LOAN_TODO.equals(query.getMultipartType())) {
-//
-//        } else if (CUSTOMER_LOAN_DONE.equals(query.getMultipartType())) {
-//
-//        }
-
-        long totalNum = loanOrderDOMapper.countMultipartQuery(query);
-        if (totalNum > 0) {
-
-            List<LoanOrderDO> loanOrderDOList = loanOrderDOMapper.listMultipartQuery(query);
-            if (!CollectionUtils.isEmpty(loanOrderDOList)) {
-
-                List<AppLoanOrderVO> loanOrderVOList = loanOrderDOList.parallelStream()
-                        .filter(Objects::nonNull)
-                        .map(e -> {
-
-                            // 流程实例ID
-                            String processInstanceId = e.getProcessInstId();
-                            if (StringUtils.isNotBlank(processInstanceId)) {
-                                // 业务单
-                                AppLoanOrderVO appLoanOrderVO = new AppLoanOrderVO();
-                                // 填充订单信息
-                                fillOrderMsg(appLoanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), null);
-                                return appLoanOrderVO;
-                            }
-
-                            return null;
-                        })
-                        .filter(Objects::nonNull)
-                        .sorted(Comparator.comparing(AppLoanOrderVO::getGmtCreate).reversed())
-                        .collect(Collectors.toList());
-
-                return ResultBean.ofSuccess(loanOrderVOList, (int) totalNum, query.getPageIndex(), query.getPageSize());
-            }
-        }
-
-        return ResultBean.ofSuccess(Collections.EMPTY_LIST, (int) totalNum, query.getPageIndex(), query.getPageSize());
-    }
-
-    @Override
-    public ResultBean<List<AppLoanOrderVO>> listCreditNotEnding(BaseQuery query) {
-
-        long totalNum = loanOrderDOMapper.countCreditNotEnding(query);
-        if (totalNum > 0) {
-
-            List<LoanOrderDO> loanOrderDOList = loanOrderDOMapper.listCreditNotEnding(query);
-            if (!CollectionUtils.isEmpty(loanOrderDOList)) {
-
-                List<AppLoanOrderVO> loanOrderVOList = loanOrderDOList.parallelStream()
-                        .filter(Objects::nonNull)
-                        .map(e -> {
-
-                            // 流程实例ID
-                            String processInstanceId = e.getProcessInstId();
-                            if (StringUtils.isNotBlank(processInstanceId)) {
-                                // 业务单
-                                AppLoanOrderVO appLoanOrderVO = new AppLoanOrderVO();
-                                // 填充订单信息
-                                fillOrderMsg(appLoanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), null);
-                                return appLoanOrderVO;
-                            }
-
-                            return null;
-                        })
-                        .filter(Objects::nonNull)
-                        .sorted(Comparator.comparing(AppLoanOrderVO::getGmtCreate).reversed())
-                        .collect(Collectors.toList());
-
-                return ResultBean.ofSuccess(loanOrderVOList, (int) totalNum, query.getPageIndex(), query.getPageSize());
-            }
-        }
-
-        return ResultBean.ofSuccess(Collections.EMPTY_LIST, (int) totalNum, query.getPageIndex(), query.getPageSize());
-    }
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long orderId) {
@@ -551,18 +406,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     @Override
-    public ResultBean<List<AppLoanCustomerVO>> customerQuery(AppCustomerQuery query) {
-        Preconditions.checkNotNull(query.getLoanStatus(), "贷款状态不能为空");
-
-        // TODO
-        AppLoanOrderQuery appLoanOrderQuery = new AppLoanOrderQuery();
-
-
-        return ResultBean.ofSuccess(null);
-    }
-
-
-    @Override
     public ResultBean<AppCustomerInfoVO> customerInfo(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
@@ -745,115 +588,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         return ResultBean.ofSuccess(insuranceInfoVO);
     }
 
-    /**
-     * 保存新增补的文件
-     *
-     * @param customerId
-     * @param type
-     * @param urls
-     */
-    private void saveNewSupplementFiles(Long customerId, Byte type, List<String> urls) {
-        if (CollectionUtils.isEmpty(urls)) {
-            return;
-        }
-
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, type, UPLOAD_TYPE_SUPPLEMENT);
-        if (!CollectionUtils.isEmpty(loanFileDOS)) {
-            LoanFileDO loanFileDO = loanFileDOS.get(0);
-            if (null != loanFileDO) {
-
-                loanFileDO.setPath(JSON.toJSONString(urls));
-                ResultBean<Void> resultBean = loanFileService.update(loanFileDO);
-                Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-            } else {
-
-                loanFileDO.setType(type);
-                loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
-                loanFileDO.setCustomerId(customerId);
-                loanFileDO.setPath(JSON.toJSONString(urls));
-                ResultBean<Long> resultBean = loanFileService.create(loanFileDO);
-                Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-            }
-        } else {
-            LoanFileDO loanFileDO = new LoanFileDO();
-            loanFileDO.setType(type);
-            loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
-            loanFileDO.setCustomerId(customerId);
-            loanFileDO.setPath(JSON.toJSONString(urls));
-            ResultBean<Long> resultBean = loanFileService.create(loanFileDO);
-            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-        }
-    }
-
-
-    private void moveOldSupplementToNormal(Long customerId, Byte type) {
-
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, type, null);
-        if (!CollectionUtils.isEmpty(loanFileDOS)) {
-
-            final LoanFileDO[] supplementFile = {null};
-            final LoanFileDO[] normalFile = {null};
-
-            loanFileDOS.parallelStream()
-                    .filter(Objects::nonNull)
-                    .forEach(f -> {
-
-                        if (UPLOAD_TYPE_SUPPLEMENT.equals(f.getType())) {
-                            supplementFile[0] = f;
-                        } else if (UPLOAD_TYPE_NORMAL.equals(f.getType())) {
-                            normalFile[0] = f;
-                        }
-                    });
-
-            if (ArrayUtils.isNotEmpty(supplementFile)) {
-                LoanFileDO supplementFileDO = supplementFile[0];
-                if (null != supplementFileDO) {
-
-                    String existSupplementPath = supplementFileDO.getPath();
-                    if (StringUtils.isNotBlank(existSupplementPath)) {
-
-                        // B - y
-                        List<String> existSupplementPathList = JSON.parseArray(existSupplementPath, String.class);
-                        if (!CollectionUtils.isEmpty(existSupplementPathList)) {
-
-                            // A -y  编辑
-                            if (ArrayUtils.isNotEmpty(normalFile)) {
-                                LoanFileDO normalFileDO = normalFile[0];
-
-                                String existNormalPath = normalFileDO.getPath();
-                                if (StringUtils.isNotBlank(existNormalPath)) {
-                                    List<String> existNormalPathList = JSON.parseArray(existNormalPath, String.class);
-
-                                    existNormalPathList.add(existSupplementPath);
-                                    normalFileDO.setPath(JSON.toJSONString(existNormalPathList));
-                                    ResultBean<Void> updateResult = loanFileService.update(normalFileDO);
-                                    Preconditions.checkArgument(updateResult.getSuccess(), updateResult.getMsg());
-
-                                    supplementFileDO.setPath(null);
-                                    ResultBean<Void> updateSupplementFileResult = loanFileService.update(supplementFileDO);
-                                    Preconditions.checkArgument(updateSupplementFileResult.getSuccess(), updateSupplementFileResult.getMsg());
-                                }
-                            } else {
-
-                                // A -n  新增
-                                LoanFileDO normalFileDO = new LoanFileDO();
-                                normalFileDO.setPath(JSON.toJSONString(existSupplementPathList));
-                                normalFileDO.setType(UPLOAD_TYPE_NORMAL);
-                                normalFileDO.setCustomerId(customerId);
-
-                                ResultBean<Long> insertResult = loanFileService.create(normalFileDO);
-                                Preconditions.checkArgument(insertResult.getSuccess(), insertResult.getMsg());
-                            }
-                        }
-                    }
-
-                }
-            }
-
-
-        }
-    }
-
     @Override
     @Transactional
     public ResultBean<Long> createBaseInfo(AppLoanBaseInfoParam param) {
@@ -1020,205 +754,112 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     /**
-     * 填充订单信息
+     * 保存新增补的文件
      *
-     * @param appLoanOrderVO
-     * @param processInstanceId
-     * @param taskDefinitionKey
-     * @param taskStatus
-     */
-    private void fillOrderMsg(AppLoanOrderVO appLoanOrderVO, String processInstanceId, String taskDefinitionKey, Integer taskStatus) {
-        // 任务状态
-        if (null == taskStatus) {
-            appLoanOrderVO.setTaskStatus(TASK_TODO);
-        } else {
-            appLoanOrderVO.setTaskStatus(taskStatus);
-        }
-
-        // 贷款客户基本信息填充
-        fillBaseMsg(appLoanOrderVO, processInstanceId);
-
-        // 资料增补类型
-        fillInfoSupplementType(appLoanOrderVO, taskDefinitionKey, processInstanceId);
-
-        // 当前任务节点
-        fillCurrentTask(appLoanOrderVO, taskDefinitionKey);
-
-        // 还款状态
-        fillRepayStatus(appLoanOrderVO, taskDefinitionKey, processInstanceId);
-    }
-
-
-    /**
-     * 当前任务
-     *
-     * @param appLoanOrderVO
-     * @param taskDefinitionKey
-     */
-    private void fillCurrentTask(AppLoanOrderVO appLoanOrderVO, String taskDefinitionKey) {
-        String currentTask = PROCESS_MAP.get(taskDefinitionKey);
-        appLoanOrderVO.setCurrentTask(currentTask);
-    }
-
-    /**
-     * TODO 还款状态： 1-正常还款;  2-非正常还款;  3-已结清;
-     *
-     * @param appLoanOrderVO
-     * @param taskDefinitionKey
-     * @param processInstanceId
-     */
-    private void fillRepayStatus(AppLoanOrderVO appLoanOrderVO, String taskDefinitionKey, String processInstanceId) {
-        appLoanOrderVO.setRepayStatus(1);
-    }
-
-    /**
-     * 资料增补类型
-     *
-     * @param appLoanOrderVO
-     * @param taskDefinitionKey
-     * @param processInstanceId
-     */
-    private void fillInfoSupplementType(AppLoanOrderVO appLoanOrderVO, String taskDefinitionKey, String processInstanceId) {
-        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
-
-            List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
-                    .processInstanceId(processInstanceId)
-                    .taskDefinitionKey(taskDefinitionKey)
-                    .orderByTaskCreateTime()
-                    .desc()
-                    .listPage(0, 1);
-
-            if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
-                HistoricTaskInstance historicTaskInstance = historicTaskInstanceList.get(0);
-
-                String taskVariableTypeKey = taskDefinitionKey + ":" + processInstanceId + ":"
-                        + historicTaskInstance.getExecutionId() + ":" + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
-
-                HistoricVariableInstance typeHistoricVariableInstance = historyService.createHistoricVariableInstanceQuery()
-                        .processInstanceId(processInstanceId).variableName(taskVariableTypeKey).singleResult();
-
-                // 增补类型
-                if (null != typeHistoricVariableInstance) {
-                    appLoanOrderVO.setInfoSupplementType((Integer) typeHistoricVariableInstance.getValue());
-                }
-            }
-        }
-    }
-
-    /**
-     * 填充征信信息
-     *
-     * @param customer
-     * @param loanCustomerDO
+     * @param customerId
      * @param type
+     * @param urls
      */
-    private void fillCreditMsg(CreditRecordVO.CustomerCreditRecord customer, LoanCustomerDO loanCustomerDO, Byte type) {
-        if (CREDIT_TYPE_BANK.equals(type)) {
-//            customer.setCreditStatus(loanCustomerDO.getBankCreditStatus());
-//            customer.setCreditDetail(loanCustomerDO.getBankCreditDetail());
-        } else if (CREDIT_TYPE_SOCIAL.equals(type)) {
-//            customer.setCreditStatus(loanCustomerDO.getSocialCreditStatus());
-//            customer.setCreditDetail(loanCustomerDO.getSocialCreditDetail());
-        }
-    }
-
-
-    /**
-     * 任务状态
-     *
-     * @param taskInfo
-     * @param taskStatusCondition
-     * @return
-     */
-    private Integer getTaskStatus(TaskInfo taskInfo, Integer taskStatusCondition) {
-        Integer taskStatus = taskStatusCondition;
-        if (TASK_ALL.equals(taskStatusCondition)) {
-            HistoricTaskInstanceEntity historicTaskInstanceEntity = (HistoricTaskInstanceEntity) taskInfo;
-            Date endTime = historicTaskInstanceEntity.getEndTime();
-            if (null != endTime) {
-                // 已处理
-                taskStatus = TASK_DONE;
-            } else {
-                // 未处理
-                taskStatus = TASK_TODO;
-            }
-        }
-        return taskStatus;
-    }
-
-    /**
-     * 根据流程实例ID获取并填充业务单基本信息
-     *
-     * @param appLoanOrderVO
-     * @param processInstanceId
-     * @return
-     */
-    private void fillBaseMsg(AppLoanOrderVO appLoanOrderVO, String processInstanceId) {
-        // 业务单
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.getByProcessInstId(processInstanceId);
-        if (null == loanOrderDO) {
+    private void saveNewSupplementFiles(Long customerId, Byte type, List<String> urls) {
+        if (CollectionUtils.isEmpty(urls)) {
             return;
         }
 
-        // 业务单单号
-        appLoanOrderVO.setId(loanOrderDO.getId());
-        // 业务单创建时间
-        appLoanOrderVO.setGmtCreate(loanOrderDO.getGmtCreate());
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, type, UPLOAD_TYPE_SUPPLEMENT);
+        if (!CollectionUtils.isEmpty(loanFileDOS)) {
+            LoanFileDO loanFileDO = loanFileDOS.get(0);
+            if (null != loanFileDO) {
 
-        // 主贷人信息
-        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
-        if (null != loanCustomerDO) {
-            BaseVO customer = new BaseVO();
-            BeanUtils.copyProperties(loanCustomerDO, customer);
-            // 主贷人
-            appLoanOrderVO.setCustomer(customer);
-            // 身份证
-            appLoanOrderVO.setIdCard(loanCustomerDO.getIdCard());
-            // 手机号
-            appLoanOrderVO.setMobile(loanCustomerDO.getMobile());
-        }
+                loanFileDO.setPath(JSON.toJSONString(urls));
+                ResultBean<Void> resultBean = loanFileService.update(loanFileDO);
+                Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+            } else {
 
-        // 合伙人 & 业务员
-        ResultBean<LoanBaseInfoVO> loanBaseInfoResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
-        Preconditions.checkArgument(loanBaseInfoResultBean.getSuccess(), loanBaseInfoResultBean.getMsg());
-        LoanBaseInfoVO loanBaseInfoVO = loanBaseInfoResultBean.getData();
-        if (null != loanBaseInfoVO) {
-            // 合伙人
-            appLoanOrderVO.setPartner(loanBaseInfoVO.getPartner());
-            // 业务员
-            appLoanOrderVO.setSalesman(loanBaseInfoVO.getSalesman());
+                loanFileDO.setType(type);
+                loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
+                loanFileDO.setCustomerId(customerId);
+                loanFileDO.setPath(JSON.toJSONString(urls));
+                ResultBean<Long> resultBean = loanFileService.create(loanFileDO);
+                Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+            }
+        } else {
+            LoanFileDO loanFileDO = new LoanFileDO();
+            loanFileDO.setType(type);
+            loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
+            loanFileDO.setCustomerId(customerId);
+            loanFileDO.setPath(JSON.toJSONString(urls));
+            ResultBean<Long> resultBean = loanFileService.create(loanFileDO);
+            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
         }
     }
 
-    /**
-     * 创建任务查询对象
-     *
-     * @param query
-     * @param userGroupNameList
-     * @return
-     */
-    private TaskInfoQuery getTaskInfoQuery(AppLoanOrderQuery query, List<String> userGroupNameList) {
-        TaskInfoQuery taskQuery = null;
-        // 全部
-        if (TASK_ALL.equals(query.getTaskStatus())) {
-            taskQuery = historyService.createHistoricTaskInstanceQuery()
-                    .taskDefinitionKey(query.getTaskDefinitionKey())
-                    .taskCandidateGroupIn(userGroupNameList);
+
+    private void moveOldSupplementToNormal(Long customerId, Byte type) {
+
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, type, null);
+        if (!CollectionUtils.isEmpty(loanFileDOS)) {
+
+            final LoanFileDO[] supplementFile = {null};
+            final LoanFileDO[] normalFile = {null};
+
+            loanFileDOS.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(f -> {
+
+                        if (UPLOAD_TYPE_SUPPLEMENT.equals(f.getType())) {
+                            supplementFile[0] = f;
+                        } else if (UPLOAD_TYPE_NORMAL.equals(f.getType())) {
+                            normalFile[0] = f;
+                        }
+                    });
+
+            if (ArrayUtils.isNotEmpty(supplementFile)) {
+                LoanFileDO supplementFileDO = supplementFile[0];
+                if (null != supplementFileDO) {
+
+                    String existSupplementPath = supplementFileDO.getPath();
+                    if (StringUtils.isNotBlank(existSupplementPath)) {
+
+                        // B - y
+                        List<String> existSupplementPathList = JSON.parseArray(existSupplementPath, String.class);
+                        if (!CollectionUtils.isEmpty(existSupplementPathList)) {
+
+                            // A -y  编辑
+                            if (ArrayUtils.isNotEmpty(normalFile)) {
+                                LoanFileDO normalFileDO = normalFile[0];
+
+                                String existNormalPath = normalFileDO.getPath();
+                                if (StringUtils.isNotBlank(existNormalPath)) {
+                                    List<String> existNormalPathList = JSON.parseArray(existNormalPath, String.class);
+
+                                    existNormalPathList.add(existSupplementPath);
+                                    normalFileDO.setPath(JSON.toJSONString(existNormalPathList));
+                                    ResultBean<Void> updateResult = loanFileService.update(normalFileDO);
+                                    Preconditions.checkArgument(updateResult.getSuccess(), updateResult.getMsg());
+
+                                    supplementFileDO.setPath(null);
+                                    ResultBean<Void> updateSupplementFileResult = loanFileService.update(supplementFileDO);
+                                    Preconditions.checkArgument(updateSupplementFileResult.getSuccess(), updateSupplementFileResult.getMsg());
+                                }
+                            } else {
+
+                                // A -n  新增
+                                LoanFileDO normalFileDO = new LoanFileDO();
+                                normalFileDO.setPath(JSON.toJSONString(existSupplementPathList));
+                                normalFileDO.setType(UPLOAD_TYPE_NORMAL);
+                                normalFileDO.setCustomerId(customerId);
+
+                                ResultBean<Long> insertResult = loanFileService.create(normalFileDO);
+                                Preconditions.checkArgument(insertResult.getSuccess(), insertResult.getMsg());
+                            }
+                        }
+                    }
+
+                }
+            }
+
+
         }
-        // 待处理
-        else if (TASK_TODO.equals(query.getTaskStatus())) {
-            taskQuery = taskService.createTaskQuery()
-                    .taskDefinitionKey(query.getTaskDefinitionKey())
-                    .taskCandidateGroupIn(userGroupNameList);
-        }
-        // 已处理
-        else if (TASK_DONE.equals(query.getTaskStatus())) {
-            taskQuery = historyService.createHistoricTaskInstanceQuery()
-                    .taskDefinitionKey(query.getTaskDefinitionKey())
-                    .taskCandidateGroupIn(userGroupNameList)
-                    .finished();
-        }
-        return taskQuery;
     }
 
     /**

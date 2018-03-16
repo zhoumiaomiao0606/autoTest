@@ -11,9 +11,10 @@ import com.yunche.loan.domain.query.LoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.HistoryService;
-import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.TaskInfo;
@@ -33,6 +34,8 @@ import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
 
 /**
  * Created by zhouguoliang on 2018/2/5.
@@ -107,9 +110,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private RuntimeService runtimeService;
 
     @Autowired
-    private RepositoryService repositoryService;
-
-    @Autowired
     private TaskService taskService;
 
     @Autowired
@@ -143,22 +143,20 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         .filter(Objects::nonNull)
                         .map(e -> {
 
-                            // 任务状态
-                            Integer taskStatus = getTaskStatus(e, query.getTaskStatus());
-
                             // 流程实例ID
                             String processInstanceId = e.getProcessInstanceId();
                             if (StringUtils.isNotBlank(processInstanceId)) {
                                 // 业务单
-                                LoanOrderVO loanOrderVO = new LoanOrderVO();
-                                loanOrderVO.setTaskStatus(taskStatus);
-                                fillMsg(loanOrderVO, processInstanceId);
-                                return loanOrderVO;
+                                LoanOrderVO appLoanOrderVO = new LoanOrderVO();
+                                // 填充订单信息
+                                fillOrderMsg(appLoanOrderVO, processInstanceId, query.getTaskDefinitionKey(), query.getTaskStatus());
+                                return appLoanOrderVO;
                             }
+
                             return null;
                         })
                         .filter(Objects::nonNull)
-                        .sorted(Comparator.comparing(LoanOrderVO::getGmtModify))
+                        .sorted(Comparator.comparing(LoanOrderVO::getGmtCreate).reversed())
                         .collect(Collectors.toList());
 
                 return ResultBean.ofSuccess(loanOrderVOList, (int) totalNum, query.getPageIndex(), query.getPageSize());
@@ -166,6 +164,43 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         }
 
         return ResultBean.ofSuccess(Collections.EMPTY_LIST, (int) totalNum, query.getPageIndex(), query.getPageSize());
+    }
+
+    @Override
+    public ResultBean<List<LoanOrderVO>> multipartQuery(LoanOrderQuery query) {
+        Preconditions.checkNotNull(query.getMultipartType(), "多节点查询类型不能为空");
+
+        int totalNum = loanOrderDOMapper.countMultipartQuery(query);
+        if (totalNum > 0) {
+
+            List<LoanOrderDO> loanOrderDOList = loanOrderDOMapper.listMultipartQuery(query);
+            if (!CollectionUtils.isEmpty(loanOrderDOList)) {
+
+                List<LoanOrderVO> loanOrderVOList = loanOrderDOList.parallelStream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+
+                            // 流程实例ID
+                            String processInstanceId = e.getProcessInstId();
+                            if (StringUtils.isNotBlank(processInstanceId)) {
+                                // 业务单
+                                LoanOrderVO loanOrderVO = new LoanOrderVO();
+                                // 填充订单信息
+                                fillOrderMsg(loanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), null);
+                                return loanOrderVO;
+                            }
+
+                            return null;
+                        })
+                        .filter(Objects::nonNull)
+                        .sorted(Comparator.comparing(LoanOrderVO::getGmtCreate).reversed())
+                        .collect(Collectors.toList());
+
+                return ResultBean.ofSuccess(loanOrderVOList, totalNum, query.getPageIndex(), query.getPageSize());
+            }
+        }
+
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
     }
 
     @Override
@@ -582,6 +617,136 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkArgument(count > 0, "资料增补失败");
 
         return ResultBean.ofSuccess(null, "资料增补成功");
+    }
+
+    /**
+     * 填充订单信息
+     *
+     * @param loanOrderVO
+     * @param processInstanceId
+     * @param taskDefinitionKey
+     * @param taskStatus
+     */
+    private void fillOrderMsg(LoanOrderVO loanOrderVO, String processInstanceId, String taskDefinitionKey, Integer taskStatus) {
+        // 任务状态
+        if (null == taskStatus) {
+            loanOrderVO.setTaskStatus(TASK_TODO);
+        } else {
+            loanOrderVO.setTaskStatus(taskStatus);
+        }
+
+        // 贷款客户基本信息填充
+        fillBaseMsg(loanOrderVO, processInstanceId);
+
+        // 资料增补类型
+        fillInfoSupplementType(loanOrderVO, taskDefinitionKey, processInstanceId);
+
+        // 当前任务节点
+        fillCurrentTask(loanOrderVO, taskDefinitionKey);
+
+        // 还款状态
+        fillRepayStatus(loanOrderVO, taskDefinitionKey, processInstanceId);
+    }
+
+    /**
+     * 根据流程实例ID获取并填充业务单基本信息
+     *
+     * @param loanOrderVO
+     * @param processInstanceId
+     * @return
+     */
+    private void fillBaseMsg(LoanOrderVO loanOrderVO, String processInstanceId) {
+        // 业务单
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.getByProcessInstId(processInstanceId);
+        if (null == loanOrderDO) {
+            return;
+        }
+
+        // 业务单单号
+        loanOrderVO.setId(String.valueOf(loanOrderDO.getId()));
+        // 业务单创建时间
+        loanOrderVO.setGmtCreate(loanOrderDO.getGmtCreate());
+
+        // 主贷人信息
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
+        if (null != loanCustomerDO) {
+            BaseVO customer = new BaseVO();
+            BeanUtils.copyProperties(loanCustomerDO, customer);
+            // 主贷人
+            loanOrderVO.setCustomer(customer);
+            // 身份证
+            loanOrderVO.setIdCard(loanCustomerDO.getIdCard());
+            // 手机号
+            loanOrderVO.setMobile(loanCustomerDO.getMobile());
+        }
+
+        // 合伙人 & 业务员
+        ResultBean<LoanBaseInfoVO> loanBaseInfoResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
+        Preconditions.checkArgument(loanBaseInfoResultBean.getSuccess(), loanBaseInfoResultBean.getMsg());
+        LoanBaseInfoVO loanBaseInfoVO = loanBaseInfoResultBean.getData();
+        if (null != loanBaseInfoVO) {
+            // 合伙人
+            loanOrderVO.setPartner(loanBaseInfoVO.getPartner());
+            // 业务员
+            loanOrderVO.setSalesman(loanBaseInfoVO.getSalesman());
+        }
+    }
+
+
+    /**
+     * 资料增补类型
+     *
+     * @param loanOrderVO
+     * @param taskDefinitionKey
+     * @param processInstanceId
+     */
+    private void fillInfoSupplementType(LoanOrderVO loanOrderVO, String taskDefinitionKey, String processInstanceId) {
+        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
+
+            List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
+                    .processInstanceId(processInstanceId)
+                    .taskDefinitionKey(taskDefinitionKey)
+                    .orderByTaskCreateTime()
+                    .desc()
+                    .listPage(0, 1);
+
+            if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
+                HistoricTaskInstance historicTaskInstance = historicTaskInstanceList.get(0);
+
+                String taskVariableTypeKey = taskDefinitionKey + ":" + processInstanceId + ":"
+                        + historicTaskInstance.getExecutionId() + ":" + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
+
+                HistoricVariableInstance typeHistoricVariableInstance = historyService.createHistoricVariableInstanceQuery()
+                        .processInstanceId(processInstanceId).variableName(taskVariableTypeKey).singleResult();
+
+                // 增补类型
+                if (null != typeHistoricVariableInstance) {
+                    loanOrderVO.setInfoSupplementType((Integer) typeHistoricVariableInstance.getValue());
+                }
+            }
+        }
+    }
+
+    /**
+     * 当前任务
+     *
+     * @param loanOrderVO
+     * @param taskDefinitionKey
+     */
+    private void fillCurrentTask(LoanOrderVO loanOrderVO, String taskDefinitionKey) {
+        String currentTask = PROCESS_MAP.get(taskDefinitionKey);
+        loanOrderVO.setCurrentTask(currentTask);
+    }
+
+    /**
+     * TODO 还款状态： 1-正常还款;  2-非正常还款;  3-已结清;
+     *
+     * @param loanOrderVO
+     * @param taskDefinitionKey
+     * @param processInstanceId
+     */
+    private void fillRepayStatus(LoanOrderVO loanOrderVO, String taskDefinitionKey, String processInstanceId) {
+        loanOrderVO.setRepayStatus(1);
     }
 
 

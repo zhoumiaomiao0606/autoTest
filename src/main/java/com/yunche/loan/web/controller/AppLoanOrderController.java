@@ -1,23 +1,16 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.query.AppInfoSupplementQuery;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
 import com.yunche.loan.domain.vo.AppCustomerInfoVO;
 import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
-import com.yunche.loan.domain.vo.AppLoanCustomerVO;
 import com.yunche.loan.domain.param.*;
-import com.yunche.loan.domain.query.AppCustomerQuery;
-import com.yunche.loan.domain.query.AppLoanOrderQuery;
-import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.AppLoanOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 /**
  * @author liuzhe
@@ -31,39 +24,6 @@ public class AppLoanOrderController {
     @Autowired
     private AppLoanOrderService appLoanOrderService;
 
-
-    /**
-     * 分页查询 各个流程环节的业务流程单列表    -单节点&单状态
-     *
-     * @param query
-     * @return
-     */
-    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<AppLoanOrderVO>> query(@RequestBody AppLoanOrderQuery query) {
-        return appLoanOrderService.query(query);
-    }
-
-    /**
-     * 征信结果为：未查询 的订单分页列表   -包含任务状态：【征信申请单、征信申请单审核、银行征信、社会征信】
-     *
-     * @param query
-     * @return
-     */
-    @PostMapping(value = "/listCreditNotEnding", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<AppLoanOrderVO>> listCreditNotEnding(@RequestBody BaseQuery query) {
-        return appLoanOrderService.listCreditNotEnding(query);
-    }
-
-    /**
-     * 多节点列表查询
-     *
-     * @param query
-     * @return
-     */
-    @PostMapping(value = "/multipartQuery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<AppLoanOrderVO>> multipartQuery(@RequestBody AppLoanOrderQuery query) {
-        return appLoanOrderService.multipartQuery(query);
-    }
 
     /**
      * 征信申请单  -新建（保存主贷人客户时，新建业务单）
@@ -289,16 +249,16 @@ public class AppLoanOrderController {
         return appLoanOrderService.infoSupplementDetail(orderId);
     }
 
-    /**
-     * APP端-客户列表查询
-     *
-     * @param query
-     * @return
-     */
-    @PostMapping(value = "/customerQuery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<AppLoanCustomerVO>> customerQuery(@RequestBody AppCustomerQuery query) {
-        return appLoanOrderService.customerQuery(query);
-    }
+//    /**
+//     * APP端-客户列表查询
+//     *
+//     * @param query
+//     * @return
+//     */
+//    @PostMapping(value = "/customerQuery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    public ResultBean<List<AppLoanCustomerVO>> customerQuery(@RequestBody AppCustomerQuery query) {
+//        return appLoanOrderService.customerQuery(query);
+//    }
 
     /**
      * APP端 -客户信息查询 -基本信息
