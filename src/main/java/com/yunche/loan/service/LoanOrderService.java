@@ -15,6 +15,8 @@ public interface LoanOrderService {
 
     ResultBean<List<LoanOrderVO>> query(LoanOrderQuery query);
 
+    ResultBean<List<LoanOrderVO>> multipartQuery(LoanOrderQuery query);
+
     ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(Long orderId);
 
     ResultBean<CreditRecordVO> creditRecordDetail(Long orderId, Byte type);

@@ -29,21 +29,43 @@
         feature
     </sql>
 
-    <!--countCreditNotEnding-->
-    <select id="countCreditNotEnding" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery"
-            resultType="java.lang.Long">
+    <!--countMultipartQuery-->
+    <select id="countMultipartQuery" parameterType="com.yunche.loan.domain.query.LoanOrderQuery"
+            resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM loan_order
         WHERE current_task_def_key
-        IN ('usertask_credit_apply','usertask_credit_apply_verify',
-        'usertask_bank_credit_record','usertask_social_credit_record')
+        <if test="multipartType == 1">
+            IN ('usertask_credit_apply','usertask_credit_apply_verify',
+            'usertask_bank_credit_record','usertask_social_credit_record')
+        </if>
+        <if test="multipartType == 2">
+            IN ('usertask_loan_apply','usertask_visit_verify',
+            'usertask_telephone_verify','usertask_info_supplement',
+            'usertask_car_insurance_record','usertask_gps_install',
+            'usertask_busi_examine','usertask_contract_print',
+            'usertask_license_mortgage','usertask_pay_approve')
+        </if>
+        <if test="multipartType == 3">
+            IN ('usertask_credit_apply','usertask_credit_apply_verify',
+            'usertask_bank_credit_record','usertask_social_credit_record',
+            'usertask_loan_apply','usertask_visit_verify',
+            'usertask_telephone_verify','usertask_info_supplement',
+            'usertask_car_insurance_record','usertask_gps_install',
+            'usertask_busi_examine','usertask_contract_print',
+            'usertask_license_mortgage','usertask_pay_approve')
+        </if>
+        <if test="multipartType == 4">
+            IN ('usertask_pay_process')
+        </if>
         AND `status` = 0
     </select>
 
-    <!--countMultipartQuery-->
-    <select id="countMultipartQuery" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery"
-            resultType="java.lang.Long">
-        SELECT COUNT(*)
+    <!--listMultipartQuery-->
+    <select id="listMultipartQuery" parameterType="com.yunche.loan.domain.query.LoanOrderQuery"
+            resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
         FROM loan_order
         WHERE current_task_def_key
         <if test="multipartType == 1">
@@ -62,18 +84,6 @@
             IN ('usertask_credit_apply','usertask_credit_apply_verify',
             'usertask_bank_credit_record','usertask_social_credit_record')
         </if>
-        AND `status` = 0
-    </select>
-
-    <!--listCreditNotEnding-->
-    <select id="listCreditNotEnding" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery"
-            resultMap="BaseResultMap">
-        SELECT
-        <include refid="Base_Column_List"/>
-        FROM loan_order
-        WHERE current_task_def_key
-        IN ('usertask_credit_apply','usertask_credit_apply_verify',
-        'usertask_bank_credit_record','usertask_social_credit_record')
         AND `status` = 0
         ORDER BY gmt_create DESC
         LIMIT #{startRow}, #{pageSize}

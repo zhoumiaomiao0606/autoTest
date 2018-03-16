@@ -27,7 +27,7 @@ public class LoanOrderController {
 
 
     /**
-     * 分页查询 各个流程环节的业务流程单列表
+     * 分页查询 各个流程环节的业务流程单列表   -单节点列表查询
      *
      * @param query
      * @return
@@ -35,6 +35,17 @@ public class LoanOrderController {
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<LoanOrderVO>> query(@RequestBody LoanOrderQuery query) {
         return loanOrderService.query(query);
+    }
+
+    /**
+     * 多节点列表查询
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping(value = "/multipartQuery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<LoanOrderVO>> multipartQuery(@RequestBody LoanOrderQuery query) {
+        return loanOrderService.multipartQuery(query);
     }
 
     /**
