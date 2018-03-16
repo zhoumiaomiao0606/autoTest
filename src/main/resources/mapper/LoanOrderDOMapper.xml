@@ -30,7 +30,8 @@
     </sql>
 
     <!--countCreditNotEnding-->
-    <select id="countCreditNotEnding" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery" resultType="java.lang.Long">
+    <select id="countCreditNotEnding" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery"
+            resultType="java.lang.Long">
         SELECT COUNT(*)
         FROM loan_order
         WHERE current_task_def_key
@@ -39,8 +40,34 @@
         AND `status` = 0
     </select>
 
+    <!--countMultipartQuery-->
+    <select id="countMultipartQuery" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery"
+            resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM loan_order
+        WHERE current_task_def_key
+        <if test="multipartType == 1">
+            IN ('usertask_credit_apply','usertask_credit_apply_verify',
+            'usertask_bank_credit_record','usertask_social_credit_record')
+        </if>
+        <if test="multipartType == 2">
+            IN ('usertask_credit_apply','usertask_credit_apply_verify',
+            'usertask_bank_credit_record','usertask_social_credit_record')
+        </if>
+        <if test="multipartType == 3">
+            IN ('usertask_credit_apply','usertask_credit_apply_verify',
+            'usertask_bank_credit_record','usertask_social_credit_record')
+        </if>
+        <if test="multipartType == 4">
+            IN ('usertask_credit_apply','usertask_credit_apply_verify',
+            'usertask_bank_credit_record','usertask_social_credit_record')
+        </if>
+        AND `status` = 0
+    </select>
+
     <!--listCreditNotEnding-->
-    <select id="listCreditNotEnding" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery" resultMap="BaseResultMap">
+    <select id="listCreditNotEnding" parameterType="com.yunche.loan.domain.query.AppLoanOrderQuery"
+            resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM loan_order

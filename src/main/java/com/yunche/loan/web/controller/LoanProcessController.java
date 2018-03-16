@@ -28,7 +28,7 @@ public class LoanProcessController {
      * @return
      */
     @PostMapping(value = "/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> approvalCreditApply(@RequestBody ApprovalParam Approval) {
+    public ResultBean<Void> approval(@RequestBody ApprovalParam Approval) {
         return loanProcessService.approval(Approval);
     }
 
@@ -51,7 +51,7 @@ public class LoanProcessController {
      */
     @GetMapping(value = "/task/status")
     public ResultBean<Integer> currentTask(@RequestParam("orderId") Long orderId,
-                                        @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
+                                           @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
         return loanProcessService.taskStatus(orderId, taskDefinitionKey);
     }
 }

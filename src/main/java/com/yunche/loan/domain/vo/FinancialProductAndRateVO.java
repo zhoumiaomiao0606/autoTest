@@ -1,6 +1,5 @@
 package com.yunche.loan.domain.vo;
 
-import com.yunche.loan.domain.entity.FinancialProductDO;
 import com.yunche.loan.domain.entity.ProductRateDO;
 import lombok.Data;
 

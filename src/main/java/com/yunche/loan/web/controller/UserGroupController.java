@@ -1,21 +1,16 @@
 package com.yunche.loan.web.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.query.UserGroupQuery;
 import com.yunche.loan.domain.param.UserGroupParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.UserGroupService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author liuzhe
@@ -25,8 +20,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/user/group")
 public class UserGroupController {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserGroupController.class);
 
     @Autowired
     private UserGroupService userGroupService;
@@ -43,19 +36,16 @@ public class UserGroupController {
      */
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> create(@RequestBody UserGroupParam userGroupParam) {
-        logger.info(Arrays.asList("create", JSON.toJSONString(userGroupParam)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.create(userGroupParam);
     }
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody UserGroupParam userGroupParam) {
-        logger.info(Arrays.asList("update", JSON.toJSONString(userGroupParam)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.update(userGroupParam);
     }
 
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("delete", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.delete(id);
     }
 
@@ -67,7 +57,6 @@ public class UserGroupController {
      */
     @GetMapping("/getById")
     public ResultBean<UserGroupVO> getById(@RequestParam("id") Long id) {
-        logger.info(Arrays.asList("getById", JSON.toJSONString(id)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.getById(id);
     }
 
@@ -82,7 +71,6 @@ public class UserGroupController {
      */
     @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<UserGroupVO>> query(@RequestBody UserGroupQuery query) {
-        logger.info(Arrays.asList("query", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.query(query);
     }
 
@@ -94,7 +82,6 @@ public class UserGroupController {
      */
     @PostMapping(value = "/listBindEmployee", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<EmployeeVO>> listEmployee(@RequestBody EmployeeQuery query) {
-        logger.info(Arrays.asList("listBindEmployee", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.listBindEmployee(query);
     }
 
@@ -106,7 +93,6 @@ public class UserGroupController {
      */
     @PostMapping(value = "/listUnbindEmployee", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<EmployeeVO>> listUnbindEmployee(@RequestBody EmployeeQuery query) {
-        logger.info(Arrays.asList("listUnbindEmployee", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.listUnbindEmployee(query);
     }
 
@@ -120,7 +106,6 @@ public class UserGroupController {
     @GetMapping(value = "/bindEmployee")
     public ResultBean<Void> bindEmployee(@RequestParam("id") Long id,
                                          @RequestParam("employeeIds") String employeeIds) {
-        logger.info(Arrays.asList("bindEmployee", JSON.toJSONString(id), JSON.toJSONString(employeeIds)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.bindEmployee(id, employeeIds);
     }
 
@@ -134,7 +119,6 @@ public class UserGroupController {
     @GetMapping(value = "/unbindEmployee")
     public ResultBean<Void> unbindEmployee(@RequestParam("id") Long id,
                                            @RequestParam("employeeIds") String employeeIds) {
-        logger.info(Arrays.asList("unbindEmployee", JSON.toJSONString(id), JSON.toJSONString(employeeIds)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.unbindEmployee(id, employeeIds);
     }
 
@@ -156,7 +140,6 @@ public class UserGroupController {
                                      @RequestParam("areaId") Long areaId,
                                      @RequestParam("authIds") String authIds,
                                      @RequestParam("type") Byte type) {
-        logger.info(Arrays.asList("editAuth", JSON.toJSONString(id), JSON.toJSONString(authIds), JSON.toJSONString(type)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.editAuth(id, areaId, authIds, type);
     }
 
@@ -178,7 +161,6 @@ public class UserGroupController {
                                      @RequestParam("areaId") Long areaId,
                                      @RequestParam("authIds") String authIds,
                                      @RequestParam("type") Byte type) {
-        logger.info(Arrays.asList("bindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds), JSON.toJSONString(type)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.bindAuth(id, areaId, authIds, type);
     }
 
@@ -194,7 +176,6 @@ public class UserGroupController {
     public ResultBean<Void> unbindAuth(@RequestParam("id") Long id,
                                        @RequestParam("authIds") String authIds,
                                        @RequestParam("type") Byte type) {
-        logger.info(Arrays.asList("unbindAuth", JSON.toJSONString(id), JSON.toJSONString(authIds), JSON.toJSONString(type)).stream().collect(Collectors.joining("\u0001")));
         return userGroupService.unbindAuth(id, authIds, type);
     }
 }

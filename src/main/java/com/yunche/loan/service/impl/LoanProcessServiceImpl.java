@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
 import com.yunche.loan.domain.entity.*;
@@ -13,8 +14,6 @@ import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,19 +22,15 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_CREDIT_RECORD;
-import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY_VERIFY;
-import static com.yunche.loan.config.constant.LoanProcessEnum.SOCIAL_CREDIT_RECORD;
+import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 
 /**
  * Created by zhouguoliang on 2018/1/30.
  */
 @Service
 public class LoanProcessServiceImpl implements LoanProcessService {
-
-    @Autowired
-    private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -45,6 +40,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private HistoryService historyService;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
@@ -74,7 +72,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
-        if (INFO_SUPPLEMENT.equals(approval.getAction())) {
+        if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
             Preconditions.checkNotNull(approval.getSupplementType(), "资料增补类型不能为空");
         }
 
@@ -118,7 +116,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (isBankAndSocialCreditRecordTask) {
 
             // 任意一个子流程打回，则主流程打回，现有子任务全部结束掉
-            boolean anyChildExecActionIsReject = REJECT.equals(action);
+            boolean anyChildExecActionIsReject = ACTION_REJECT.equals(action);
             if (anyChildExecActionIsReject) {
                 List<Task> tasks = taskService.createTaskQuery()
                         .processInstanceId(processInstId)
@@ -165,7 +163,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
 
             // 任意一个子任务弃单，则主流程弃单
-            boolean anyChildExecActionIsCancel = CANCEL.equals(action);
+            boolean anyChildExecActionIsCancel = ACTION_CANCEL.equals(action);
             if (anyChildExecActionIsCancel) {
                 runtimeService.deleteProcessInstance(processInstId, "弃单");
             }
@@ -254,7 +252,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void fillLoanAmount(Map<String, Object> variables, Integer action, String taskDefinitionKey, Long loanBaseInfoId) {
         // 征信申请审核且审核通过时
-        boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY_VERIFY.getCode().equals(taskDefinitionKey) && PASS.equals(action);
+        boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY_VERIFY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
         // 银行&社会征信录入
         boolean isBankAndSocialCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey);
         if (isApplyVerifyTaskAndActionIsPass || isBankAndSocialCreditRecordTask) {
@@ -262,7 +260,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
             Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
             Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
-            variables.put("loanAmount", Integer.valueOf(loanBaseInfoDO.getLoanAmount()));
+            variables.put(PROCESS_VARIABLE_LOAN_AMOUNT, Integer.valueOf(loanBaseInfoDO.getLoanAmount()));
         }
     }
 
@@ -296,18 +294,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         String taskVariablePrefix = task.getTaskDefinitionKey() + ":" + task.getProcessInstanceId() + ":" + task.getExecutionId() + ":";
 
         // 审核结果
-        variables.put("action", approval.getAction());
-        variables.put(taskVariablePrefix + "action", approval.getAction());
+        variables.put(PROCESS_VARIABLE_ACTION, approval.getAction());
+        variables.put(taskVariablePrefix + PROCESS_VARIABLE_ACTION, approval.getAction());
 
         // 审核备注
-        variables.put(taskVariablePrefix + "info", approval.getInfo());
+        variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO, approval.getInfo());
 
         // 审核人ID、NAME
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        EmployeeDO user = new EmployeeDO();
-        BeanUtils.copyProperties(principal, user);
-        variables.put(taskVariablePrefix + "userId", user.getId());
-        variables.put(taskVariablePrefix + "userName", user.getName());
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        variables.put(taskVariablePrefix + PROCESS_VARIABLE_USER_ID, loginUser.getId());
+        variables.put(taskVariablePrefix + PROCESS_VARIABLE_USER_NAME, loginUser.getName());
 
         // 添加流程变量-贷款金额
         fillLoanAmount(variables, approval.getAction(), task.getTaskDefinitionKey(), loanBaseInfoId);
@@ -325,10 +321,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void fillOtherVariables(Map<String, Object> variables, String taskVariablePrefix, ApprovalParam approval) {
         // 资料增补
-        if (INFO_SUPPLEMENT.equals(approval.getAction())) {
-            variables.put(taskVariablePrefix + "supplementType", approval.getSupplementType());
-            variables.put(taskVariablePrefix + "supplementContent", approval.getSupplementContent());
-            variables.put(taskVariablePrefix + "supplementInfo", approval.getSupplementInfo());
+        if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
+            variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE, approval.getSupplementType());
+            variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_CONTENT, approval.getSupplementContent());
+            variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_INFO, approval.getSupplementInfo());
         }
     }
 

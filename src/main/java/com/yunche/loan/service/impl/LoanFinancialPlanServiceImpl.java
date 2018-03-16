@@ -7,6 +7,7 @@ import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.ProductRateDO;
 import com.yunche.loan.domain.entity.ProductRateDOKey;
 import com.yunche.loan.domain.param.AppLoanFinancialPlanParam;
+import com.yunche.loan.domain.param.LoanFinancialPlanParam;
 import com.yunche.loan.domain.vo.AppLoanFinancialPlanVO;
 import com.yunche.loan.domain.vo.CalcParamVO;
 import com.yunche.loan.domain.vo.LoanFinancialPlanVO;
@@ -83,41 +84,43 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
     }
 
     @Override
-    public ResultBean<LoanFinancialPlanVO> calc(LoanFinancialPlanDO loanFinancialPlanDO) {
-        Preconditions.checkNotNull(loanFinancialPlanDO, "金融产品不能为空");
-        Preconditions.checkNotNull(loanFinancialPlanDO.getCarPrice(), "车辆价格不能为空");
-        Preconditions.checkNotNull(loanFinancialPlanDO.getFinancialProductId(), "金融产品ID不能为空");
-        Preconditions.checkNotNull(loanFinancialPlanDO.getSignRate(), "签约利率不能为空");
-        Preconditions.checkNotNull(loanFinancialPlanDO.getLoanAmount(), "贷款金额不能为空");
-        Preconditions.checkNotNull(loanFinancialPlanDO.getLoanTime(), "贷款期数不能为空");
+    public ResultBean<LoanFinancialPlanVO> calc(LoanFinancialPlanParam loanFinancialPlanParam) {
+        Preconditions.checkNotNull(loanFinancialPlanParam, "金融产品不能为空");
+        Preconditions.checkNotNull(loanFinancialPlanParam.getCarPrice(), "车辆价格不能为空");
+        Preconditions.checkNotNull(loanFinancialPlanParam.getFinancialProductId(), "金融产品ID不能为空");
+        Preconditions.checkNotNull(loanFinancialPlanParam.getSignRate(), "签约利率不能为空");
+        Preconditions.checkNotNull(loanFinancialPlanParam.getLoanAmount(), "贷款金额不能为空");
+        Preconditions.checkNotNull(loanFinancialPlanParam.getLoanTime(), "贷款期数不能为空");
+        Preconditions.checkNotNull(loanFinancialPlanParam.getBankRate(), "银行利率不能为空");
 
+        //
+        loanFinancialPlanParam.setDownPaymentMoney(loanFinancialPlanParam.getCarPrice().subtract(loanFinancialPlanParam.getLoanAmount()));
         // 获取公式ID
-        FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(loanFinancialPlanDO.getFinancialProductId());
+        FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(loanFinancialPlanParam.getFinancialProductId());
         Preconditions.checkNotNull(financialProductDO, "金融产品不存在");
         // 公式ID
         Integer formulaId = financialProductDO.getFormulaId();
 
         // 根据贷款期数,获取对应银行基准利率
-        ProductRateDOKey productRateDOKey = new ProductRateDOKey();
-        productRateDOKey.setProdId(loanFinancialPlanDO.getFinancialProductId());
-        productRateDOKey.setLoanTime(loanFinancialPlanDO.getLoanTime());
-        ProductRateDO productRateDO = productRateDOMapper.selectByPrimaryKey(productRateDOKey);
-        Preconditions.checkNotNull(productRateDO, "银行费率不存在");
-        BigDecimal bankBaseRate = productRateDO.getBankRate();
+//        ProductRateDOKey productRateDOKey = new ProductRateDOKey();
+//        productRateDOKey.setProdId(loanFinancialPlanParam.getFinancialProductId());
+//        productRateDOKey.setLoanTime(loanFinancialPlanParam.getLoanTime());
+//        ProductRateDO productRateDO = productRateDOMapper.selectByPrimaryKey(productRateDOKey);
+//        Preconditions.checkNotNull(productRateDO, "银行费率不存在");
+//        BigDecimal bankBaseRate = productRateDO.getBankRate();
 
-        ResultBean<CalcParamVO> resultBean = computeModeService.calc(formulaId, loanFinancialPlanDO.getLoanAmount(), loanFinancialPlanDO.getSignRate(),
-                bankBaseRate, loanFinancialPlanDO.getLoanTime() / 12, loanFinancialPlanDO.getCarPrice());
+        ResultBean<CalcParamVO> resultBean = computeModeService.calc(formulaId, loanFinancialPlanParam.getLoanAmount(), loanFinancialPlanParam.getSignRate(),
+                loanFinancialPlanParam.getBankRate(), loanFinancialPlanParam.getLoanTime(), loanFinancialPlanParam.getCarPrice());
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
         LoanFinancialPlanVO loanFinancialPlanVO = new LoanFinancialPlanVO();
 
-
         CalcParamVO calcParamVO = resultBean.getData();
         if (null != calcParamVO) {
             //首付比例
-            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanDO.getDownPaymentMoney().divide(loanFinancialPlanDO.getCarPrice(),4));
+            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice(), 4));
             // 首付额 =首付比率*车价
-            loanFinancialPlanVO.setDownPaymentMoney(loanFinancialPlanDO.getDownPaymentMoney());
+            loanFinancialPlanVO.setDownPaymentMoney(loanFinancialPlanParam.getDownPaymentMoney());
             // 本息合计(还款总额)
             loanFinancialPlanVO.setPrincipalInterestSum(calcParamVO.getTotalRepayment());
 

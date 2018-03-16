@@ -1,11 +1,10 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.FinancialProductDO;
 import com.yunche.loan.domain.param.FinancialProductParam;
 import com.yunche.loan.domain.query.FinancialQuery;
-import com.yunche.loan.domain.entity.FinancialProductDO;
-import com.yunche.loan.domain.vo.BaseVO;
-import com.yunche.loan.domain.vo.FinancialProductAndRateVO;
+import com.yunche.loan.domain.vo.CascadeFinancialProductVO;
 import com.yunche.loan.domain.vo.FinancialProductVO;
 
 import java.util.List;
@@ -17,7 +16,7 @@ public interface FinancialProductService {
 
     ResultBean<Void> batchInsert(List<FinancialProductDO> financialProductDOs);
 
-    ResultBean<Void> insert(FinancialProductParam FinancialProductParam);
+    ResultBean<Long> insert(FinancialProductParam FinancialProductParam);
 
     ResultBean<Void> update(FinancialProductParam financialProductParam);
 
@@ -31,5 +30,5 @@ public interface FinancialProductService {
 
     ResultBean<List<FinancialProductVO>> getByCondition(FinancialQuery financialQuery);
 
-    ResultBean<List<BaseVO>> listByPartnerId(Long partnerId);
+    ResultBean<List<CascadeFinancialProductVO>> listByPartnerId(Long partnerId);
 }

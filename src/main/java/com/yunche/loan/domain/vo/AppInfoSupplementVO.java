@@ -56,6 +56,14 @@ public class AppInfoSupplementVO {
      */
     private String supplementInfo;
     /**
+     * 要求增补人员
+     */
+    private String initiator;
+    /**
+     * 要求增补部门
+     */
+    private String initiatorUnit;
+    /**
      * 增补开始日期
      */
     private Date supplementStartDate;
