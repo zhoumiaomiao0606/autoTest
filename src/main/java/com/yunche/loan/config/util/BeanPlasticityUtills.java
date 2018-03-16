@@ -5,8 +5,9 @@ import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
+import org.apache.commons.beanutils.BeanUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -21,6 +22,8 @@ public class BeanPlasticityUtills {
             throw new BizException("copy bean throw IllegalAccessException");
         } catch (InstantiationException e) {
             throw new BizException("copy bean throw InstantiationException");
+        } catch (InvocationTargetException e) {
+            throw new BizException("copy bean throw InvocationTargetException");
         }
     }
 
