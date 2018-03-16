@@ -12,7 +12,7 @@ public class FinancialProductParam extends FinancialProductDO {
     /**
      * 银行费率列表
      */
-    private List<ProductRate> ProductRateList;
+    private List<ProductRate> productRateList;
 
     @Data
     public static class ProductRate {
