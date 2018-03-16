@@ -417,10 +417,10 @@
             (select result from loan_credit_info where customer_id = 128 and type = 1)  is null
         then
             (select result from loan_credit_info where customer_id = c.id and type = 1) else 1 end as bank_result,
-				case when
+		case when
             (select result from loan_credit_info where customer_id = 128 and type = 2)  is null
         then
-            (select result from loan_credit_info where customer_id = c.id and type = 2) else 1 end as society_result
+            (select result from loan_credit_info where customer_id = c.id and type = 2) else 2 end as society_result
 
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
