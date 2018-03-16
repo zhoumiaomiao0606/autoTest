@@ -430,6 +430,41 @@
 
   </select>
 
+    <!--客户信息-->
+    <select id="selectUniversalCustomerDetail" resultType="com.yunche.loan.domain.vo.UniversalCustomerDetailVO" parameterType="java.lang.Long" >
+              select
+                id as customer_id,
+                name,
+                id_card,
+                mobile,
+                age,
+                sex,
+                apply_date,
+                address,
+                marry,
+                identity_address,
+                mobile_area,
+                education,
+                company_name,
+                company_phone,
+                month_income,
+                house_type,
+                house_owner,
+                house_feature,
+                house_address,
+
+                (select gmt_create from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_gmt_create,
+                ('需要') as bank_addition,
+                (select result from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_result,
+                (select info from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_result_info,
+
+                (select gmt_create from loan_credit_info where customer_id = loan_customer.id and type = 2) as society_gmt_create,
+                ('需要') as society_addition,
+                (select result from loan_credit_info where customer_id = loan_customer.id and type = 2) as society_result,
+                (select info from loan_credit_info where customer_id = loan_customer.id and type = 2) as society_result_info
+        from loan_customer where id = #{customerId,jdbcType=BIGINT}
+    </select>
+
   <!--客户附件信息-->
   <select id="selectUniversalCustomerFile" resultType="com.yunche.loan.domain.vo.UniversalCustomerFileVO" parameterType="java.lang.Long" >
     select path as urls,type from  loan_file  where customer_id = #{customerId,jdbcType=BIGINT}
