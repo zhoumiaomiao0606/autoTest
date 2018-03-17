@@ -4,11 +4,7 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.FinancialProductDO;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
-import com.yunche.loan.domain.entity.ProductRateDO;
-import com.yunche.loan.domain.entity.ProductRateDOKey;
-import com.yunche.loan.domain.param.AppLoanFinancialPlanParam;
 import com.yunche.loan.domain.param.LoanFinancialPlanParam;
-import com.yunche.loan.domain.vo.AppLoanFinancialPlanVO;
 import com.yunche.loan.domain.vo.CalcParamVO;
 import com.yunche.loan.domain.vo.LoanFinancialPlanVO;
 import com.yunche.loan.mapper.FinancialProductDOMapper;
@@ -118,7 +114,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         CalcParamVO calcParamVO = resultBean.getData();
         if (null != calcParamVO) {
             //首付比例
-            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice(), 4));
+            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice()));
             // 首付额 =首付比率*车价
             loanFinancialPlanVO.setDownPaymentMoney(loanFinancialPlanParam.getDownPaymentMoney());
             // 本息合计(还款总额)
@@ -137,3 +133,4 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         return ResultBean.ofSuccess(loanFinancialPlanVO, "计算成功");
     }
 }
+
