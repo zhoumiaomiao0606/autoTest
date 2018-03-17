@@ -30,7 +30,7 @@ public class CascadeFinancialProductVO {
         /**
          * 金融产品ID
          */
-        private String id;
+        private Long id;
         /**
          * 金融产品名称
          */

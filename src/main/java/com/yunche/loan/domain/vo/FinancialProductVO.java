@@ -50,4 +50,6 @@ public class FinancialProductVO {
 
     private String feature;
 
+    private List<FinancialProductParam.ProductRate> productRateList;
+
 }
