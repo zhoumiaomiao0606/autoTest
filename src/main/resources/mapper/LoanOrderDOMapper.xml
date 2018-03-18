@@ -16,6 +16,7 @@
         <result column="apply_license_plate_deposit_info_id" jdbcType="BIGINT"
                 property="applyLicensePlateDepositInfoId"/>
         <result column="current_task_def_key" jdbcType="VARCHAR" property="currentTaskDefKey"/>
+        <result column="previous_task_def_key" jdbcType="VARCHAR" property="previousTaskDefKey"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
@@ -25,8 +26,8 @@
     <sql id="Base_Column_List">
         id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, apply_license_plate_record_id,
-        apply_license_plate_deposit_info_id, current_task_def_key, status, gmt_create, gmt_modify,
-        feature
+        apply_license_plate_deposit_info_id, current_task_def_key, previous_task_def_key,
+        status, gmt_create, gmt_modify, feature
     </sql>
 
     <!--countMultipartQuery-->
@@ -146,15 +147,15 @@
         loan_home_visit_id, material_audit_id, cost_details_id,
         remit_details_id, apply_license_plate_record_id,
         apply_license_plate_deposit_info_id, current_task_def_key,
-        status, gmt_create, gmt_modify,
-        feature)
+        previous_task_def_key, status, gmt_create,
+        gmt_modify, feature)
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
         #{loanHomeVisitId,jdbcType=BIGINT}, #{materialAuditId,jdbcType=BIGINT}, #{costDetailsId,jdbcType=BIGINT},
         #{remitDetailsId,jdbcType=BIGINT}, #{applyLicensePlateRecordId,jdbcType=BIGINT},
         #{applyLicensePlateDepositInfoId,jdbcType=BIGINT}, #{currentTaskDefKey,jdbcType=VARCHAR},
-        #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{feature,jdbcType=VARCHAR})
+        #{previousTaskDefKey,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanOrderDO">
@@ -198,6 +199,9 @@
             </if>
             <if test="currentTaskDefKey != null">
                 current_task_def_key,
+            </if>
+            <if test="previousTaskDefKey != null">
+                previous_task_def_key,
             </if>
             <if test="status != null">
                 status,
@@ -251,6 +255,9 @@
             </if>
             <if test="currentTaskDefKey != null">
                 #{currentTaskDefKey,jdbcType=VARCHAR},
+            </if>
+            <if test="previousTaskDefKey != null">
+                #{previousTaskDefKey,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
@@ -306,6 +313,9 @@
             <if test="currentTaskDefKey != null">
                 current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},
             </if>
+            <if test="previousTaskDefKey != null">
+                previous_task_def_key = #{previousTaskDefKey,jdbcType=VARCHAR},
+            </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
@@ -323,24 +333,25 @@
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanOrderDO">
-    update loan_order
-    set process_inst_id = #{processInstId,jdbcType=VARCHAR},
-      loan_base_info_id = #{loanBaseInfoId,jdbcType=BIGINT},
-      loan_customer_id = #{loanCustomerId,jdbcType=BIGINT},
-      loan_car_info_id = #{loanCarInfoId,jdbcType=BIGINT},
-      loan_financial_plan_id = #{loanFinancialPlanId,jdbcType=BIGINT},
-      loan_home_visit_id = #{loanHomeVisitId,jdbcType=BIGINT},
-      material_audit_id = #{materialAuditId,jdbcType=BIGINT},
-      cost_details_id = #{costDetailsId,jdbcType=BIGINT},
-      remit_details_id = #{remitDetailsId,jdbcType=BIGINT},
-      apply_license_plate_record_id = #{applyLicensePlateRecordId,jdbcType=BIGINT},
-      apply_license_plate_deposit_info_id = #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
-      current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},
-      status = #{status,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      feature = #{feature,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update loan_order
+        set process_inst_id = #{processInstId,jdbcType=VARCHAR},
+        loan_base_info_id = #{loanBaseInfoId,jdbcType=BIGINT},
+        loan_customer_id = #{loanCustomerId,jdbcType=BIGINT},
+        loan_car_info_id = #{loanCarInfoId,jdbcType=BIGINT},
+        loan_financial_plan_id = #{loanFinancialPlanId,jdbcType=BIGINT},
+        loan_home_visit_id = #{loanHomeVisitId,jdbcType=BIGINT},
+        material_audit_id = #{materialAuditId,jdbcType=BIGINT},
+        cost_details_id = #{costDetailsId,jdbcType=BIGINT},
+        remit_details_id = #{remitDetailsId,jdbcType=BIGINT},
+        apply_license_plate_record_id = #{applyLicensePlateRecordId,jdbcType=BIGINT},
+        apply_license_plate_deposit_info_id = #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
+        current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},
+        previous_task_def_key = #{previousTaskDefKey,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
 </mapper>

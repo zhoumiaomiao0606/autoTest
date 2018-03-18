@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 /**
  * @author liuzhe
@@ -249,17 +251,6 @@ public class AppLoanOrderController {
         return appLoanOrderService.infoSupplementDetail(orderId);
     }
 
-//    /**
-//     * APP端-客户列表查询
-//     *
-//     * @param query
-//     * @return
-//     */
-//    @PostMapping(value = "/customerQuery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-//    public ResultBean<List<AppLoanCustomerVO>> customerQuery(@RequestBody AppCustomerQuery query) {
-//        return appLoanOrderService.customerQuery(query);
-//    }
-
     /**
      * APP端 -客户信息查询 -基本信息
      *
@@ -289,7 +280,18 @@ public class AppLoanOrderController {
      * @return
      */
     @GetMapping(value = "/insuranceInfo")
-    public ResultBean<AppInsuranceInfoVO> insuranceInfo(@RequestParam Long orderId) {
+    public ResultBean<List<AppInsuranceInfoVO>> insuranceInfo(@RequestParam Long orderId) {
         return appLoanOrderService.insuranceInfo(orderId);
+    }
+
+    /**
+     * 订单任务进度
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/process")
+    public ResultBean<AppOrderProcessVO> orderProcess(@RequestParam Long orderId) {
+        return appLoanOrderService.orderProcess(orderId);
     }
 }

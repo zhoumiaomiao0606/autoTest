@@ -3,6 +3,8 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface InsuranceRelevanceDOMapper {
     int deleteByPrimaryKey(Long id);
@@ -14,4 +16,12 @@ public interface InsuranceRelevanceDOMapper {
     InsuranceRelevanceDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(InsuranceRelevanceDO record);
+
+    /**
+     * 获取关联保险列表
+     *
+     * @param insuranceInfoId
+     * @return
+     */
+    List<InsuranceRelevanceDO> listByInsuranceInfoId(Long insuranceInfoId);
 }

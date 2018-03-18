@@ -9,14 +9,12 @@ import com.yunche.loan.domain.vo.CalcParamVO;
 import com.yunche.loan.domain.vo.LoanFinancialPlanVO;
 import com.yunche.loan.mapper.FinancialProductDOMapper;
 import com.yunche.loan.mapper.LoanFinancialPlanDOMapper;
-import com.yunche.loan.mapper.ProductRateDOMapper;
 import com.yunche.loan.service.ComputeModeService;
 import com.yunche.loan.service.LoanFinancialPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -34,9 +32,6 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
 
     @Autowired
     private FinancialProductDOMapper financialProductDOMapper;
-
-    @Autowired
-    private ProductRateDOMapper productRateDOMapper;
 
     @Autowired
     ComputeModeService computeModeService;
@@ -98,13 +93,6 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         Integer formulaId = financialProductDO.getFormulaId();
 
         // 根据贷款期数,获取对应银行基准利率
-//        ProductRateDOKey productRateDOKey = new ProductRateDOKey();
-//        productRateDOKey.setProdId(loanFinancialPlanParam.getFinancialProductId());
-//        productRateDOKey.setLoanTime(loanFinancialPlanParam.getLoanTime());
-//        ProductRateDO productRateDO = productRateDOMapper.selectByPrimaryKey(productRateDOKey);
-//        Preconditions.checkNotNull(productRateDO, "银行费率不存在");
-//        BigDecimal bankBaseRate = productRateDO.getBankRate();
-
         ResultBean<CalcParamVO> resultBean = computeModeService.calc(formulaId, loanFinancialPlanParam.getLoanAmount(), loanFinancialPlanParam.getSignRate(),
                 loanFinancialPlanParam.getBankRate(), loanFinancialPlanParam.getLoanTime(), loanFinancialPlanParam.getCarPrice());
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
@@ -114,7 +102,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         CalcParamVO calcParamVO = resultBean.getData();
         if (null != calcParamVO) {
             //首付比例
-            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice()));
+            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice(), 4));
             // 首付额 =首付比率*车价
             loanFinancialPlanVO.setDownPaymentMoney(loanFinancialPlanParam.getDownPaymentMoney());
             // 本息合计(还款总额)

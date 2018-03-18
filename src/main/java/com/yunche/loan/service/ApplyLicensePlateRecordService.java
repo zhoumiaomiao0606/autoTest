@@ -5,7 +5,9 @@ import com.yunche.loan.domain.vo.RecombinationVO;
 
 
 public interface ApplyLicensePlateRecordService {
-    public RecombinationVO detail(Long orderId);
+    RecombinationVO detail(Long orderId);
 
-    public void update(ApplyLicensePlateRecordUpdateParam param);
+    void update(ApplyLicensePlateRecordUpdateParam param);
+
+
 }

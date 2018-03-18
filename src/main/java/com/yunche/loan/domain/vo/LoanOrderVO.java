@@ -54,6 +54,17 @@ public class LoanOrderVO {
     private String currentTask;
 
     /**
+     * 任务类型：1-未提交;  2-打回;
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer taskType;
+    /**
+     * 任务类型文本：1-未提交;  2-打回;
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String taskTypeText;
+
+    /**
      * 资料增补列表查询展示：
      * 增补类型：1-电审增补;  2-资料审核增补;
      */

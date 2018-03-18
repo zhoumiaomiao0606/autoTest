@@ -24,6 +24,10 @@ public class LoanProcessVariableConst {
      */
     public static final String PROCESS_VARIABLE_USER_NAME = "user_name";
     /**
+     * 操作员所属角色 OR 所属合伙人团队名称
+     */
+    public static final String PROCESS_VARIABLE_USER_GROUP = "user_group";
+    /**
      * 贷款额
      */
     public static final String PROCESS_VARIABLE_LOAN_AMOUNT = "loanAmount";
@@ -39,4 +43,12 @@ public class LoanProcessVariableConst {
      * 资料增补说明
      */
     public static final String PROCESS_VARIABLE_INFO_SUPPLEMENT_INFO = "info_supplement_info";
+    /**
+     * 增补源头任务节点：从哪个节点发起的增补
+     */
+    public static final String PROCESS_VARIABLE_INFO_SUPPLEMENT_ORIGIN_TASK = "info_supplement_origin_task";
+    /**
+     * 订单打回
+     */
+    public static final String PROCESS_VARIABLE_REJECT_ORDER_ORIGIN_TASK = "reject_order_origin_task";
 }

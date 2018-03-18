@@ -7,6 +7,8 @@ import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 
+import java.util.List;
+
 
 /**
  * @author liuzhe
@@ -44,13 +46,13 @@ public interface AppLoanOrderService {
 
     ResultBean<AppLoanCarInfoVO> loanCarInfoDetail(Long orderId);
 
-    ResultBean<Long> createLoanFinancialPlan(AppLoanFinancialPlanParam param);
+    ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam loanFinancialPlanParam);
+
+    ResultBean<Long> createLoanFinancialPlan(AppLoanFinancialPlanParam loanFinancialPlanParam);
 
     ResultBean<Void> updateLoanFinancialPlan(AppLoanFinancialPlanParam param);
 
     ResultBean<AppLoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId);
-
-    ResultBean<AppLoanFinancialPlanVO> calcLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam);
 
     ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long orderId);
 
@@ -58,5 +60,7 @@ public interface AppLoanOrderService {
 
     ResultBean<AppBusinessInfoVO> businessInfo(Long orderId);
 
-    ResultBean<AppInsuranceInfoVO> insuranceInfo(Long orderId);
+    ResultBean<List<AppInsuranceInfoVO>> insuranceInfo(Long orderId);
+
+    ResultBean<AppOrderProcessVO> orderProcess(Long orderId);
 }

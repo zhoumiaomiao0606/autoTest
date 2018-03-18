@@ -39,4 +39,8 @@ public class ApprovalParam {
      * 增补说明
      */
     private String supplementInfo;
+    /**
+     * 增补源头任务节点
+     */
+//    private String supplementOriginTask;
 }

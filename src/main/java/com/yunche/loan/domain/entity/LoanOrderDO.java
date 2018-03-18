@@ -44,6 +44,10 @@ public class LoanOrderDO {
      * 当前任务节点的taskDefinitionKey
      */
     private String currentTaskDefKey;
+    /**
+     * 上一个执行任务节点的taskDefinitionKey
+     */
+    private String previousTaskDefKey;
 
     private Byte status;
 

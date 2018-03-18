@@ -235,7 +235,7 @@
         -->
 
 
-        <table tableName="product_rate" domainObjectName="ProductRateDO"
+        <table tableName="loan_order" domainObjectName="LoanOrderDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 

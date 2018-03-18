@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.*;
@@ -17,6 +18,7 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.activiti.engine.task.TaskInfoQuery;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +37,9 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_ACTION;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
+import static com.yunche.loan.config.constant.MultipartTypeConst.MULTIPART_TYPE_CUSTOMER_LOAN_DONE;
 
 /**
  * Created by zhouguoliang on 2018/2/5.
@@ -147,10 +151,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                             String processInstanceId = e.getProcessInstanceId();
                             if (StringUtils.isNotBlank(processInstanceId)) {
                                 // 业务单
-                                LoanOrderVO appLoanOrderVO = new LoanOrderVO();
+                                LoanOrderVO loanOrderVO = new LoanOrderVO();
                                 // 填充订单信息
-                                fillOrderMsg(appLoanOrderVO, processInstanceId, query.getTaskDefinitionKey(), query.getTaskStatus());
-                                return appLoanOrderVO;
+                                fillOrderMsg(loanOrderVO, processInstanceId, query.getTaskDefinitionKey(), query.getTaskStatus(), query.getMultipartType());
+                                return loanOrderVO;
                             }
 
                             return null;
@@ -186,7 +190,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                                 // 业务单
                                 LoanOrderVO loanOrderVO = new LoanOrderVO();
                                 // 填充订单信息
-                                fillOrderMsg(loanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), null);
+                                fillOrderMsg(loanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), query.getTaskStatus(), null);
                                 return loanOrderVO;
                             }
 
@@ -582,10 +586,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Override
     public ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
-        // convert
-//        LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
-//        BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
-
         ResultBean<LoanFinancialPlanVO> resultBean = loanFinancialPlanService.calc(loanFinancialPlanParam);
         return resultBean;
     }
@@ -626,8 +626,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * @param processInstanceId
      * @param taskDefinitionKey
      * @param taskStatus
+     * @param multipartType
      */
-    private void fillOrderMsg(LoanOrderVO loanOrderVO, String processInstanceId, String taskDefinitionKey, Integer taskStatus) {
+    private void fillOrderMsg(LoanOrderVO loanOrderVO, String processInstanceId, String taskDefinitionKey,
+                              Integer taskStatus, Integer multipartType) {
         // 任务状态
         if (null == taskStatus) {
             loanOrderVO.setTaskStatus(TASK_TODO);
@@ -639,13 +641,59 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         fillBaseMsg(loanOrderVO, processInstanceId);
 
         // 资料增补类型
-        fillInfoSupplementType(loanOrderVO, taskDefinitionKey, processInstanceId);
+        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
+            fillInfoSupplementType(loanOrderVO, taskDefinitionKey, processInstanceId);
+        }
 
-        // 当前任务节点
-        fillCurrentTask(loanOrderVO, taskDefinitionKey);
+        // 打回 OR 未提交
+        // 历史 action == 3   --> 打回
+        if (null != loanOrderVO.getId()) {
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(loanOrderVO.getId()), null);
+            if (null != loanOrderDO) {
+                String previousTaskDefKey = loanOrderDO.getPreviousTaskDefKey();
+                if (StringUtils.isNotBlank(previousTaskDefKey)) {
 
-        // 还款状态
-        fillRepayStatus(loanOrderVO, taskDefinitionKey, processInstanceId);
+                    List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
+                            .processInstanceId(processInstanceId)
+                            .taskDefinitionKey(previousTaskDefKey)
+                            .orderByTaskCreateTime()
+                            .desc()
+                            .listPage(0, 1);
+
+                    if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
+                        HistoricTaskInstance historicTaskInstance = historicTaskInstanceList.get(0);
+
+                        String taskVariableActionKey = previousTaskDefKey + ":" + processInstanceId + ":"
+                                + historicTaskInstance.getExecutionId() + ":" + PROCESS_VARIABLE_ACTION;
+
+                        HistoricVariableInstance actionHistoricVariableInstance = historyService.createHistoricVariableInstanceQuery()
+                                .processInstanceId(processInstanceId).variableName(taskVariableActionKey).singleResult();
+
+                        // 上一步action
+                        if (null != actionHistoricVariableInstance) {
+                            Integer action = (Integer) actionHistoricVariableInstance.getValue();
+                            // 打回 OR 未提交
+                            if (ACTION_REJECT.equals(action)) {
+                                loanOrderVO.setTaskTypeText(TASK_TYPE_TEXT_REJECT);
+                            } else if (ACTION_PASS.equals(action)) {
+                                loanOrderVO.setTaskTypeText(TASK_TYPE_TEXT_UN_SUBMIT);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if (null != multipartType) {
+            // 当前任务节点
+            fillCurrentTask(loanOrderVO, taskDefinitionKey);
+
+            // 还款状态
+            if (MULTIPART_TYPE_CUSTOMER_LOAN_DONE.equals(multipartType)) {
+                fillRepayStatus(loanOrderVO, taskDefinitionKey, processInstanceId);
+            }
+        }
     }
 
     /**
@@ -860,12 +908,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      */
     public List<String> getUserGroupNameList() {
         // getUser
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        EmployeeDO employeeDO = new EmployeeDO();
-        BeanUtils.copyProperties(principal, employeeDO);
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
 
         // getUserGroup
-        List<UserGroupDO> baseUserGroup = userGroupDOMapper.getBaseUserGroupByEmployeeId(employeeDO.getId());
+        List<UserGroupDO> baseUserGroup = userGroupDOMapper.getBaseUserGroupByEmployeeId(loginUser.getId());
 
         // getUserGroupName
         List<String> userGroupNameList = null;
@@ -1163,10 +1209,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * 校验权限：只有合伙人、内勤可以 发起征信申请单【创建业务单】
      */
     private void checkStartProcessPermission() {
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        EmployeeDO user = new EmployeeDO();
-        BeanUtils.copyProperties(principal, user);
-
         // TODO 只有合伙人、内勤可以 发起征信申请单【创建业务单】
         // 获取用户角色名列表
         List<String> userGroupNameList = getUserGroupNameList();

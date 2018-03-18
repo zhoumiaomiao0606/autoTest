@@ -11,19 +11,21 @@ public enum LoanProcessEnum {
     CREDIT_APPLY_VERIFY("usertask_credit_apply_verify", "征信申请审核"),
     BANK_CREDIT_RECORD("usertask_bank_credit_record", "银行征信录入"),
     SOCIAL_CREDIT_RECORD("usertask_social_credit_record", "社会征信录入"),
-    LOAN_APPROVE("usertask_loan_apply", "业务申请"),
+    LOAN_APPLY("usertask_loan_apply", "业务申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),
     TELEPHONE_VERIFY("usertask_telephone_verify", "电审信息"),
     INFO_SUPPLEMENT("usertask_info_supplement", "资料增补"),
-
-    //    TELEPHONE_VERIFY_REVIEW("usertask_telephone_verify_review", "电审复审信息"),
-    CAR_INSURANCE_RECORD("usertask_car_insurance_record", "车辆保险"),
-    GPS_INSTALL("usertask_gps_install", "GPS安装"),
-    BUSINESS_EXAMINE("usertask_busi_examine", "业务审批"),
-    CONTRACT_PRINT("usertask_contract_print", "合同套打"),
-    LICENSE_MORTGAGE("usertask_license_mortgage", "上牌抵押"),
-    PAY_APPROVE("usertask_pay_approve", "放款审批"),
-    PAY_DONE("usertask_pay_process", "财务打款");
+    CAR_BUSINESS_REVIEW("usertask_business_review", "业务审批"),
+    LOAN_REVIEW("usertask_loan_review", "放款审批"),
+    REMIT_REVIEW("usertask_remit_review", "打款确认"),
+    METERIAL_REVIEW("usertask_material_review", "资料审核"),
+    METERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),
+    CAR_INSURANCE("usertask_car_insurance", "车辆保险"),
+    APPLY_LICENSE_PLATE_RECORD("usertask_apply_license_plate_record", "上牌记录"),
+    APPLY_LICENSE_PLATE_DEPOSIT_INFO("usertask_apply_license_plate_deposit_info", "上牌抵押"),
+    INSTALL_GPS("usertask_install_gps", "GPS安装"),
+    COMMIT_KEY("usertask_commit_key", "待收钥匙"),
+    FINANCIAL_SCHEME("servicetask_financial_scheme", "金融方案展示");
 
     private String code;
 

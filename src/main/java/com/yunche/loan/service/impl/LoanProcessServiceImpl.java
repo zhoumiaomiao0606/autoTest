@@ -167,6 +167,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (anyChildExecActionIsCancel) {
                 runtimeService.deleteProcessInstance(processInstId, "弃单");
             }
+
+
+//            //  电审提交后，执行自动任务：servicetask_financial_scheme   -金融方案
+//            if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+//                taskService.
+//            }
         }
     }
 
@@ -325,21 +331,33 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE, approval.getSupplementType());
             variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_CONTENT, approval.getSupplementContent());
             variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_INFO, approval.getSupplementInfo());
+            variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_ORIGIN_TASK, approval.getTaskDefinitionKey());
         }
     }
 
     /**
-     * 更新任务状态
+     * 更新任务节点状态
      *
      * @param orderId
-     * @param taskDefinitionKey
+     * @param previousTaskDefKey
      */
-    private void updateLoanOrderTaskDefinitionKey(Long orderId, String taskDefinitionKey) {
+    private void updateLoanOrderTaskDefinitionKey(Long orderId, String previousTaskDefKey) {
+        // 获取最新任务节点
+        String currentTaskDefinitionKey = null;
+        ResultBean<TaskStateVO> currentTaskResultBean = currentTask(orderId);
+        Preconditions.checkArgument(currentTaskResultBean.getSuccess(), currentTaskResultBean.getMsg());
+        TaskStateVO taskStateVO = currentTaskResultBean.getData();
+        if (null != taskStateVO) {
+            currentTaskDefinitionKey = taskStateVO.getTaskDefinitionKey();
+        }
+
+        // update
         LoanOrderDO loanOrderDO = new LoanOrderDO();
         loanOrderDO.setId(orderId);
-        loanOrderDO.setCurrentTaskDefKey(taskDefinitionKey);
+        loanOrderDO.setCurrentTaskDefKey(currentTaskDefinitionKey);
+        loanOrderDO.setPreviousTaskDefKey(previousTaskDefKey);
         loanOrderDO.setGmtModify(new Date());
         int count = loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        Preconditions.checkArgument(count > 0, "更新失败");
+        Preconditions.checkArgument(count > 0, "更新任务节点失败");
     }
 }

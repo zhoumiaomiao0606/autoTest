@@ -1,144 +1,159 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.InsuranceRelevanceDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.InsuranceRelevanceDO" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="insurance_info_id" property="insurance_info_id" jdbcType="BIGINT" />
-    <result column="insurance_company_name" property="insurance_company_name" jdbcType="VARCHAR" />
-    <result column="insurance_number" property="insurance_number" jdbcType="VARCHAR" />
-    <result column="area" property="area" jdbcType="VARCHAR" />
-    <result column="insurance_amount" property="insurance_amount" jdbcType="DECIMAL" />
-    <result column="start_date" property="start_date" jdbcType="DATE" />
-    <result column="end_date" property="end_date" jdbcType="DATE" />
-    <result column="insurance_type" property="insurance_type" jdbcType="TINYINT" />
-    <result column="status" property="status" jdbcType="TINYINT" />
-    <result column="feature" property="feature" jdbcType="VARCHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.yunche.loan.mapper.InsuranceRelevanceDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.InsuranceRelevanceDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="insurance_info_id" property="insurance_info_id" jdbcType="BIGINT"/>
+        <result column="insurance_company_name" property="insurance_company_name" jdbcType="VARCHAR"/>
+        <result column="insurance_number" property="insurance_number" jdbcType="VARCHAR"/>
+        <result column="area" property="area" jdbcType="VARCHAR"/>
+        <result column="insurance_amount" property="insurance_amount" jdbcType="DECIMAL"/>
+        <result column="start_date" property="start_date" jdbcType="DATE"/>
+        <result column="end_date" property="end_date" jdbcType="DATE"/>
+        <result column="insurance_type" property="insurance_type" jdbcType="TINYINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="feature" property="feature" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, insurance_info_id, insurance_company_name, insurance_number, area, insurance_amount, 
     start_date, end_date, insurance_type, status, feature
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    from insurance_relevance
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+
+    <!--listByInsuranceInfoId-->
+    <select id="listByInsuranceInfoId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from insurance_relevance
+        where insurance_info_id = #{insuranceInfoId,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from insurance_relevance
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from insurance_relevance
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByInsuranceInfoId" parameterType="java.lang.Long" >
+
+    <delete id="deleteByInsuranceInfoId" parameterType="java.lang.Long">
     delete from insurance_relevance
     where insurance_info_id = #{insuranceInfoId,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.InsuranceRelevanceDO" >
-    insert into insurance_relevance
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="insurance_info_id != null" >
-        insurance_info_id,
-      </if>
-      <if test="insurance_company_name != null" >
-        insurance_company_name,
-      </if>
-      <if test="insurance_number != null" >
-        insurance_number,
-      </if>
-      <if test="area != null" >
-        area,
-      </if>
-      <if test="insurance_amount != null" >
-        insurance_amount,
-      </if>
-      <if test="start_date != null" >
-        start_date,
-      </if>
-      <if test="end_date != null" >
-        end_date,
-      </if>
-      <if test="insurance_type != null" >
-        insurance_type,
-      </if>
-      <if test="status != null" >
-        status,
-      </if>
-      <if test="feature != null" >
-        feature,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="insurance_info_id != null" >
-        #{insurance_info_id,jdbcType=BIGINT},
-      </if>
-      <if test="insurance_company_name != null" >
-        #{insurance_company_name,jdbcType=VARCHAR},
-      </if>
-      <if test="insurance_number != null" >
-        #{insurance_number,jdbcType=VARCHAR},
-      </if>
-      <if test="area != null" >
-        #{area,jdbcType=VARCHAR},
-      </if>
-      <if test="insurance_amount != null" >
-        #{insurance_amount,jdbcType=DECIMAL},
-      </if>
-      <if test="start_date != null" >
-        #{start_date,jdbcType=DATE},
-      </if>
-      <if test="end_date != null" >
-        #{end_date,jdbcType=DATE},
-      </if>
-      <if test="insurance_type != null" >
-        #{insurance_type,jdbcType=TINYINT},
-      </if>
-      <if test="status != null" >
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="feature != null" >
-        #{feature,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.InsuranceRelevanceDO" >
-    update insurance_relevance
-    <set >
-      <if test="insurance_info_id != null" >
-        insurance_info_id = #{insurance_info_id,jdbcType=BIGINT},
-      </if>
-      <if test="insurance_company_name != null" >
-        insurance_company_name = #{insurance_company_name,jdbcType=VARCHAR},
-      </if>
-      <if test="insurance_number != null" >
-        insurance_number = #{insurance_number,jdbcType=VARCHAR},
-      </if>
-      <if test="area != null" >
-        area = #{area,jdbcType=VARCHAR},
-      </if>
-      <if test="insurance_amount != null" >
-        insurance_amount = #{insurance_amount,jdbcType=DECIMAL},
-      </if>
-      <if test="start_date != null" >
-        start_date = #{start_date,jdbcType=DATE},
-      </if>
-      <if test="end_date != null" >
-        end_date = #{end_date,jdbcType=DATE},
-      </if>
-      <if test="insurance_type != null" >
-        insurance_type = #{insurance_type,jdbcType=TINYINT},
-      </if>
-      <if test="status != null" >
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="feature != null" >
-        feature = #{feature,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.yunche.loan.domain.entity.InsuranceRelevanceDO">
+        insert into insurance_relevance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="insurance_info_id != null">
+                insurance_info_id,
+            </if>
+            <if test="insurance_company_name != null">
+                insurance_company_name,
+            </if>
+            <if test="insurance_number != null">
+                insurance_number,
+            </if>
+            <if test="area != null">
+                area,
+            </if>
+            <if test="insurance_amount != null">
+                insurance_amount,
+            </if>
+            <if test="start_date != null">
+                start_date,
+            </if>
+            <if test="end_date != null">
+                end_date,
+            </if>
+            <if test="insurance_type != null">
+                insurance_type,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="insurance_info_id != null">
+                #{insurance_info_id,jdbcType=BIGINT},
+            </if>
+            <if test="insurance_company_name != null">
+                #{insurance_company_name,jdbcType=VARCHAR},
+            </if>
+            <if test="insurance_number != null">
+                #{insurance_number,jdbcType=VARCHAR},
+            </if>
+            <if test="area != null">
+                #{area,jdbcType=VARCHAR},
+            </if>
+            <if test="insurance_amount != null">
+                #{insurance_amount,jdbcType=DECIMAL},
+            </if>
+            <if test="start_date != null">
+                #{start_date,jdbcType=DATE},
+            </if>
+            <if test="end_date != null">
+                #{end_date,jdbcType=DATE},
+            </if>
+            <if test="insurance_type != null">
+                #{insurance_type,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.InsuranceRelevanceDO">
+        update insurance_relevance
+        <set>
+            <if test="insurance_info_id != null">
+                insurance_info_id = #{insurance_info_id,jdbcType=BIGINT},
+            </if>
+            <if test="insurance_company_name != null">
+                insurance_company_name = #{insurance_company_name,jdbcType=VARCHAR},
+            </if>
+            <if test="insurance_number != null">
+                insurance_number = #{insurance_number,jdbcType=VARCHAR},
+            </if>
+            <if test="area != null">
+                area = #{area,jdbcType=VARCHAR},
+            </if>
+            <if test="insurance_amount != null">
+                insurance_amount = #{insurance_amount,jdbcType=DECIMAL},
+            </if>
+            <if test="start_date != null">
+                start_date = #{start_date,jdbcType=DATE},
+            </if>
+            <if test="end_date != null">
+                end_date = #{end_date,jdbcType=DATE},
+            </if>
+            <if test="insurance_type != null">
+                insurance_type = #{insurance_type,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
 </mapper>

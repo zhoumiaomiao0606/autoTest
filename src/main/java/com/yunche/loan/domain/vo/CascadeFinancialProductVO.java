@@ -12,18 +12,12 @@ import java.util.List;
 @Data
 public class CascadeFinancialProductVO {
 
-    // 银行
-    private List<Bank> bankList;
 
-    @Data
-    public static class Bank {
-
-        private String bank;
-        /**
-         * 金融产品列表
-         */
-        private List<FinancialProduct> financialProductList;
-    }
+    private String bank;
+    /**
+     * 金融产品列表
+     */
+    private List<FinancialProduct> financialProductList;
 
     @Data
     public static class FinancialProduct {

@@ -12,8 +12,6 @@ import java.util.Date;
 @Data
 public class AppBusinessInfoVO {
 
-//    private Long salesmanId;
-
     private String salesmanName;
 
     private String partnerName;
@@ -30,21 +28,13 @@ public class AppBusinessInfoVO {
      */
     private String licensePlateNumber;
     /**
-     * 垫资日期
-     */
-    private String xxxxDate;
-    /**
      * 上牌日期
      */
-    private String licensePlateDate;
+    private Date licensePlateDate;
     /**
-     * 上跑抵押日期
+     * 上牌抵押日期
      */
-    private String licensePlateDepositDate;
-    /**
-     * 银行放款日期
-     */
-    private String bankLendDate;
+    private Date licensePlateDepositDate;
     /**
      * 车价
      */
@@ -53,10 +43,7 @@ public class AppBusinessInfoVO {
      * 贷款额
      */
     private BigDecimal loanAmount;
-    /**
-     * 每月还款日期
-     */
-    private Date xxxDate;
+
     /**
      * 首月还款额
      */
@@ -72,7 +59,7 @@ public class AppBusinessInfoVO {
     /**
      * 还款总额
      */
-    private BigDecimal total;
+    private BigDecimal totalRepay;
     /**
      * GPS个数
      */
@@ -80,15 +67,11 @@ public class AppBusinessInfoVO {
     /**
      * 履约保证金
      */
-    private BigDecimal Money;
-    /**
-     * 贷款状态
-     */
-    private Byte loanStatus;
+    private BigDecimal performanceMoney;
     /**
      * 还款卡号
      */
-    private String payAccount;
+    private String repayAccount;
 
     /**
      * 银行征信结果
@@ -106,4 +89,27 @@ public class AppBusinessInfoVO {
      * 社会征信备注
      */
     private String socialCreditInfo;
+
+
+    ///////////////
+
+    /**
+     * 贷款状态 无
+     */
+//    private Byte loanStatus;
+
+    /**
+     *  每月还款日期  没有
+     */
+//    private Date monthlyRepayDate;
+
+    /**
+     * 银行放款日期  没有
+     */
+//    private String bankLendDate;
+
+    /**
+     * 垫资日期    -没有
+     */
+//    private String advanceMoneyDate;
 }
