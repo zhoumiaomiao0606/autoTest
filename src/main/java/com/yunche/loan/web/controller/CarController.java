@@ -1,18 +1,13 @@
 package com.yunche.loan.web.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.vo.CarThreeLevelVO;
 import com.yunche.loan.domain.vo.CarCascadeVO;
 import com.yunche.loan.service.CarService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author liuzhe
@@ -23,14 +18,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/car")
 public class CarController {
 
-    private static final Logger logger = LoggerFactory.getLogger(CarController.class);
-
     @Autowired
     private CarService carService;
 
+
     @GetMapping("/import")
     public ResultBean<Void> importCar() {
-        logger.info("import");
         return carService.importCar();
     }
 
@@ -44,7 +37,6 @@ public class CarController {
      */
     @GetMapping("/fillModel")
     public ResultBean<Void> fillModel() {
-        logger.info("fillModel");
         return carService.fillModel();
     }
 
@@ -54,8 +46,7 @@ public class CarController {
      * @return
      */
     @GetMapping("/count")
-    public ResultBean<Map<String,Integer>> count() {
-        logger.info("count");
+    public ResultBean<Map<String, Integer>> count() {
         return carService.count();
     }
 
@@ -68,7 +59,6 @@ public class CarController {
      */
     @GetMapping("/list/allBrand")
     public ResultBean<CarThreeLevelVO> listThreeLevel() {
-        logger.info("/list/allBrand");
         return carService.listAll();
     }
 
@@ -81,7 +71,6 @@ public class CarController {
      */
     @GetMapping("/list")
     public ResultBean<CarCascadeVO> listTwoLevel() {
-        logger.info("/list");
         return carService.listTwoLevel();
     }
 
@@ -97,7 +86,6 @@ public class CarController {
      */
     @GetMapping("/list/brand")
     public ResultBean<CarThreeLevelVO.CarOneBrandThreeLevelVO> list(@RequestParam("brandId") Long brandId) {
-        logger.info(Arrays.asList("/list/brand", JSON.toJSONString(brandId)).stream().collect(Collectors.joining("-")));
         return carService.list(brandId);
     }
 

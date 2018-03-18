@@ -1,21 +1,16 @@
 package com.yunche.loan.web.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.AuthQuery;
 import com.yunche.loan.domain.vo.CascadeVO;
 import com.yunche.loan.domain.vo.PageVO;
 import com.yunche.loan.service.AuthService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author liuzhe
@@ -25,8 +20,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private AuthService authService;
@@ -52,7 +45,6 @@ public class AuthController {
      */
     @GetMapping("/listMenu")
     public ResultBean<List<CascadeVO>> listMenu() {
-        logger.info("listMenu");
         return authService.listMenu();
     }
 
@@ -65,7 +57,6 @@ public class AuthController {
      */
     @PostMapping("/listOperation")
     public ResultBean<List<PageVO>> listOperation(@RequestBody AuthQuery query) {
-        logger.info("listOperation");
         return authService.listOperation(query);
     }
 
@@ -84,7 +75,6 @@ public class AuthController {
      */
     @PostMapping(value = "/listBindOperation", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<PageVO>> listBindOperation(@RequestBody AuthQuery query) {
-        logger.info(Arrays.asList("listBindOperation", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return authService.listBindOperation(query);
     }
 
@@ -96,7 +86,6 @@ public class AuthController {
      */
     @PostMapping(value = "/listUnbindOperation", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<PageVO>> listUnbindOperation(@RequestBody AuthQuery query) {
-        logger.info(Arrays.asList("listBindOperation", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
         return authService.listUnbindOperation(query);
     }
 
@@ -108,7 +97,6 @@ public class AuthController {
      */
     @GetMapping("/notLogin")
     public ResultBean<Void> notLogin() {
-        logger.info("notLogin");
         return ResultBean.ofError(BaseExceptionEnum.NOT_LOGIN);
     }
 
@@ -120,7 +108,6 @@ public class AuthController {
      */
     @GetMapping("/notPermission")
     public ResultBean<Void> notPermission() {
-        logger.info("notPermission");
         return ResultBean.ofError(BaseExceptionEnum.NOT_PERMISSION);
     }
 

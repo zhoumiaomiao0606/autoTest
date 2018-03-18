@@ -4,8 +4,6 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.vo.CustomerVO;
 import com.yunche.loan.service.LoanCustomerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
-
-    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     @Autowired
     private LoanCustomerService loanCustomerService;
