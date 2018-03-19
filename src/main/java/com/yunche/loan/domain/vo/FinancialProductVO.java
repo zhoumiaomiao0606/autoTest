@@ -52,4 +52,6 @@ public class FinancialProductVO {
 
     private List<FinancialProductParam.ProductRate> productRateList;
 
+    private Integer formulaId;
+
 }
