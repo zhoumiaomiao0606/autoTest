@@ -102,7 +102,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         CalcParamVO calcParamVO = resultBean.getData();
         if (null != calcParamVO) {
             //首付比例
-            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice(), 4));
+            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice()));
             // 首付额 =首付比率*车价
             loanFinancialPlanVO.setDownPaymentMoney(loanFinancialPlanParam.getDownPaymentMoney());
             // 本息合计(还款总额)
