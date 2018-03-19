@@ -11,8 +11,6 @@ public class InsuranceRelevanceUpdateParam {
     @NotBlank
     private String insurance_number;//  保单号
     @NotBlank
-    private String area;// 地区
-    @NotBlank
     private String insurance_amount;// 保险金额
     @NotBlank
     private String start_date;// 开始日期
