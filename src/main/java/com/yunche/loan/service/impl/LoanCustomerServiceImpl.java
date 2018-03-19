@@ -265,18 +265,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     private void fillFiles(CustomerVO customerVO) {
         ResultBean<List<FileVO>> fileResultBean = loanFileService.listByCustomerId(customerVO.getId());
         Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
-
-        List<FileVO> fileVOS = fileResultBean.getData();
-        List<FileVO> files = fileVOS.parallelStream()
-                .filter(Objects::nonNull)
-                .map(f -> {
-                    FileVO file = new FileVO();
-                    BeanUtils.copyProperties(f, file);
-                    return file;
-                })
-                .collect(Collectors.toList());
-
-        customerVO.setFiles(files);
+        customerVO.setFiles(fileResultBean.getData());
     }
 
     private void updateOrInsertLoanCustomer(AllCustDetailParam allCustDetailParam) {

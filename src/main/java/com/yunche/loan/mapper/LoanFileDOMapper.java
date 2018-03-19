@@ -41,4 +41,12 @@ public interface LoanFileDOMapper {
     List<LoanFileDO> listByCustomerIdAndType(@Param("customerId") Long customerId,
                                              @Param("type") Byte type,
                                              @Param("uploadType") Byte uploadType);
+
+    /**
+     * 批量插入
+     *
+     * @param loanFileDOS
+     * @return
+     */
+    int batchInsert(List<LoanFileDO> loanFileDOS);
 }

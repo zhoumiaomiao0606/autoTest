@@ -50,6 +50,21 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
+    <!--batchInsert-->
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into loan_file (id, customer_id, path,
+        type, upload_type, gmt_create,
+        gmt_modify, status, feature
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{path,jdbcType=VARCHAR},
+            #{type,jdbcType=TINYINT}, #{uploadType,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+            #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanFileDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">

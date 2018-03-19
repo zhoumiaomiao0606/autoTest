@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_ACTION;
@@ -541,18 +542,16 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Override
     @Transactional
-    public ResultBean<Void> createOrUpdateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
+    public ResultBean<Long> createOrUpdateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
         Preconditions.checkNotNull(loanFinancialPlanParam, "贷款金融方案不能为空");
 
         if (null == loanFinancialPlanParam.getId()) {
             // 创建
-            createLoanFinancialPlan(loanFinancialPlanParam);
+            return createLoanFinancialPlan(loanFinancialPlanParam);
         } else {
             // 编辑
-            updateLoanFinancialPlan(loanFinancialPlanParam);
+            return updateLoanFinancialPlan(loanFinancialPlanParam);
         }
-
-        return ResultBean.ofSuccess(null, "保存贷款金融方案成功");
     }
 
 
@@ -972,27 +971,25 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanFinancialPlanParam
      */
-    private void createLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
+    private ResultBean<Long> createLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
         Preconditions.checkNotNull(loanFinancialPlanParam.getOrderId(), "业务单号不能为空");
 
         // insert
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
-        loanFinancialPlanDO.setGmtCreate(new Date());
-        loanFinancialPlanDO.setGmtModify(new Date());
-        loanFinancialPlanDO.setStatus(VALID_STATUS);
 
-        int count = loanFinancialPlanDOMapper.insertSelective(loanFinancialPlanDO);
-        Preconditions.checkArgument(count > 0, "创建贷款金融方案失败");
+        // insert
+        ResultBean<Long> resultBean = loanFinancialPlanService.create(loanFinancialPlanDO);
+        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
         // 关联
         LoanOrderDO loanOrderDO = new LoanOrderDO();
         loanOrderDO.setId(loanFinancialPlanParam.getOrderId());
-        loanOrderDO.setLoanFinancialPlanId(loanFinancialPlanParam.getId());
-        loanOrderDO.setGmtModify(new Date());
+        loanOrderDO.setLoanFinancialPlanId(loanFinancialPlanDO.getId());
+        ResultBean<Void> updateRelaResult = loanProcessOrderService.update(loanOrderDO);
+        Preconditions.checkArgument(updateRelaResult.getSuccess(), updateRelaResult.getMsg());
 
-        int relaCount = loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        Preconditions.checkArgument(relaCount > 0, "关联贷款金融方案失败");
+        return resultBean;
     }
 
     /**
@@ -1000,13 +997,15 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      *
      * @param loanFinancialPlanVO
      */
-    private void updateLoanFinancialPlan(LoanFinancialPlanVO loanFinancialPlanVO) {
+    private ResultBean<Long> updateLoanFinancialPlan(LoanFinancialPlanVO loanFinancialPlanVO) {
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         BeanUtils.copyProperties(loanFinancialPlanVO, loanFinancialPlanDO);
         loanFinancialPlanDO.setGmtModify(new Date());
 
         int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
         Preconditions.checkArgument(count > 0, "编辑贷款金融方案失败");
+
+        return ResultBean.ofSuccess(null, "保存贷款金融方案成功");
     }
 
     /**
@@ -1169,9 +1168,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             ResultBean<Void> resultBean = loanCustomerService.update(loanCustomerDO);
             Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
-            // todo file
-//            ResultBean<Void> updateFileResultBean = loanFileService.update(customerParam.getId(), customerParam.getFiles());
-//            Preconditions.checkArgument(updateFileResultBean.getSuccess(), updateFileResultBean.getMsg());
+            ResultBean<Void> updateFileResultBean = loanFileService.updateByCustomerIdAndUploadType(customerParam.getId(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
+            Preconditions.checkArgument(updateFileResultBean.getSuccess(), updateFileResultBean.getMsg());
         }
     }
 
@@ -1229,13 +1227,14 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         ResultBean<Long> createCustomerResult = loanCustomerService.create(loanCustomerDO);
         Preconditions.checkArgument(createCustomerResult.getSuccess(), createCustomerResult.getMsg());
 
-        // TODO 文件上传
-//        ResultBean<Void> createFileResultBean = loanFileService.create(createCustomerResult.getData(), customerParam.getFiles());
-//        Preconditions.checkArgument(createFileResultBean.getSuccess(), createFileResultBean.getMsg());
+        // 文件KEY列表保存
+        ResultBean<Void> insertFileResultBean = loanFileService.batchInsert(createCustomerResult.getData(), customerParam.getFiles());
+        Preconditions.checkArgument(insertFileResultBean.getSuccess(), insertFileResultBean.getMsg());
 
         // 返回客户ID
         return createCustomerResult.getData();
     }
+
 
     private Long createLoanBaseInfo(LoanBaseInfoParam loanBaseInfoParam) {
         LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();

@@ -32,9 +32,19 @@ public class AppInsuranceInfoVO {
     @Data
     public static class InsuranceDetail {
         /**
+         * 保单号
+         */
+        private String insuranceNumber;
+
+        /**
          * 保险公司
          */
         private String insuranceCompany;
+
+        /**
+         * 保险开始日期
+         */
+        private Date insuranceStartDate;
 
         /**
          * 保险截止日期

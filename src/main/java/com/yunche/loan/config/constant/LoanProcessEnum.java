@@ -24,8 +24,8 @@ public enum LoanProcessEnum {
     APPLY_LICENSE_PLATE_RECORD("usertask_apply_license_plate_record", "上牌记录"),
     APPLY_LICENSE_PLATE_DEPOSIT_INFO("usertask_apply_license_plate_deposit_info", "上牌抵押"),
     INSTALL_GPS("usertask_install_gps", "GPS安装"),
-    COMMIT_KEY("usertask_commit_key", "待收钥匙"),
-    FINANCIAL_SCHEME("servicetask_financial_scheme", "金融方案展示");
+    COMMIT_KEY("usertask_commit_key", "待收钥匙");
+//    FINANCIAL_SCHEME("servicetask_financial_scheme", "金融方案展示");
 
     private String code;
 

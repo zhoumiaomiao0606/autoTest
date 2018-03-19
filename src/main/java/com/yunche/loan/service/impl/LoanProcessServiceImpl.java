@@ -174,9 +174,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
 
             //  TODO 电审提交后，执行自动任务：servicetask_financial_scheme   -金融方案
-            if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
-                taskService.complete(FINANCIAL_SCHEME.getCode());
-            }
+//            if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+//                taskService.complete(FINANCIAL_SCHEME.getCode());
+//            }
         }
     }
 

@@ -24,6 +24,10 @@ public class AppBusinessInfoVO {
      */
     private Byte carType;
     /**
+     * 车辆类型文本值：1-新车; 2-二手车; 3-不限;
+     */
+    private String carTypeText;
+    /**
      * 车牌号
      */
     private String licensePlateNumber;

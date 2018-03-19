@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
-import static com.yunche.loan.config.constant.LoanProcessEnum.FINANCIAL_SCHEME;
-
 
 @Component("financialSchemeServiceTask")
 public class FinancialSchemeServiceTask implements JavaDelegate, Serializable {
@@ -29,6 +27,6 @@ public class FinancialSchemeServiceTask implements JavaDelegate, Serializable {
 
     @Override
     public void execute(DelegateExecution execution) {
-        taskService.complete(FINANCIAL_SCHEME.getCode());
+//        taskService.complete(FINANCIAL_SCHEME.getCode());
     }
 }

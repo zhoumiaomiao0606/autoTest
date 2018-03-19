@@ -33,5 +33,17 @@ public interface LoanFileService {
      * @param fileParams
      * @return
      */
-    ResultBean<Void> upload(List<LoanFileParam> fileParams);
+//    ResultBean<Void> upload(List<LoanFileParam> fileParams);
+
+    /**
+     * 批量插入
+     *
+     * @param loanFileDOS
+     * @return
+     */
+    ResultBean<Void> batchInsert(List<LoanFileDO> loanFileDOS);
+
+    ResultBean<Void> updateByCustomerIdAndUploadType(Long customerId, List<FileVO> files, Byte uploadType);
+
+    ResultBean<Void> batchInsert(Long customerId, List<FileVO> files);
 }

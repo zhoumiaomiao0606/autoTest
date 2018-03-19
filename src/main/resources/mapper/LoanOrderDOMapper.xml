@@ -43,21 +43,36 @@
         <if test="multipartType == 2">
             IN ('usertask_loan_apply','usertask_visit_verify',
             'usertask_telephone_verify','usertask_info_supplement',
-            'usertask_car_insurance_record','usertask_gps_install',
-            'usertask_busi_examine','usertask_contract_print',
-            'usertask_license_mortgage','usertask_pay_approve')
+            'usertask_business_review','usertask_loan_review',
+            'usertask_remit_review','usertask_material_review',
+            'usertask_material_print_review','usertask_car_insurance',
+            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
+            'usertask_install_gps','usertask_commit_key')
         </if>
         <if test="multipartType == 3">
-            IN ('usertask_credit_apply','usertask_credit_apply_verify',
-            'usertask_bank_credit_record','usertask_social_credit_record',
-            'usertask_loan_apply','usertask_visit_verify',
-            'usertask_telephone_verify','usertask_info_supplement',
-            'usertask_car_insurance_record','usertask_gps_install',
-            'usertask_busi_examine','usertask_contract_print',
-            'usertask_license_mortgage','usertask_pay_approve')
+            IN ('usertask_visit_verify','usertask_telephone_verify',
+            'usertask_info_supplement')
         </if>
         <if test="multipartType == 4">
-            IN ('usertask_pay_process')
+            IN ('usertask_business_review','usertask_loan_review',
+            'usertask_remit_review','usertask_material_review',
+            'usertask_material_print_review','usertask_car_insurance',
+            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
+            'usertask_install_gps','usertask_commit_key')
+        </if>
+        <if test="multipartType == 5">
+            IN (
+            'usertask_credit_apply_verify','usertask_bank_credit_record',
+            'usertask_social_credit_record','usertask_loan_apply',
+            'usertask_visit_verify','usertask_telephone_verify',
+            'usertask_info_supplement','usertask_business_review',
+            'usertask_loan_review','usertask_material_review',
+            'usertask_material_print_review','usertask_car_insurance',
+            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
+            'usertask_install_gps','usertask_commit_key')
+        </if>
+        <if test="multipartType == 6">
+            IN ('usertask_remit_review')
         </if>
         AND `status` = 0
     </select>
@@ -74,16 +89,38 @@
             'usertask_bank_credit_record','usertask_social_credit_record')
         </if>
         <if test="multipartType == 2">
-            IN ('usertask_credit_apply','usertask_credit_apply_verify',
-            'usertask_bank_credit_record','usertask_social_credit_record')
+            IN ('usertask_loan_apply','usertask_visit_verify',
+            'usertask_telephone_verify','usertask_info_supplement',
+            'usertask_business_review','usertask_loan_review',
+            'usertask_remit_review','usertask_material_review',
+            'usertask_material_print_review','usertask_car_insurance',
+            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
+            'usertask_install_gps','usertask_commit_key')
         </if>
         <if test="multipartType == 3">
-            IN ('usertask_credit_apply','usertask_credit_apply_verify',
-            'usertask_bank_credit_record','usertask_social_credit_record')
+            IN ('usertask_visit_verify','usertask_telephone_verify',
+            'usertask_info_supplement')
         </if>
         <if test="multipartType == 4">
-            IN ('usertask_credit_apply','usertask_credit_apply_verify',
-            'usertask_bank_credit_record','usertask_social_credit_record')
+            IN ('usertask_business_review','usertask_loan_review',
+            'usertask_remit_review','usertask_material_review',
+            'usertask_material_print_review','usertask_car_insurance',
+            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
+            'usertask_install_gps','usertask_commit_key')
+        </if>
+        <if test="multipartType == 5">
+            IN (
+            'usertask_credit_apply_verify','usertask_bank_credit_record',
+            'usertask_social_credit_record','usertask_loan_apply',
+            'usertask_visit_verify','usertask_telephone_verify',
+            'usertask_info_supplement','usertask_business_review',
+            'usertask_loan_review','usertask_material_review',
+            'usertask_material_print_review','usertask_car_insurance',
+            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
+            'usertask_install_gps','usertask_commit_key')
+        </if>
+        <if test="multipartType == 6">
+            IN ('usertask_remit_review')
         </if>
         AND `status` = 0
         ORDER BY gmt_create DESC

@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
+import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
@@ -540,6 +541,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
                 // 车辆属性
                 businessInfoVO.setCarType(loanCarInfoDO.getCarType());
+                businessInfoVO.setCarTypeText(CAR_TYPE_MAP.get(loanCarInfoDO.getCarType()));
                 // GPS数量
                 businessInfoVO.setGpsNum(loanCarInfoDO.getGpsNum());
             }
@@ -640,23 +642,17 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                                         if (INSURANCE_TYPE_COMMERCIAL.equals(r.getInsurance_type())) {
                                             // 商业险
                                             AppInsuranceInfoVO.InsuranceDetail insuranceDetail = new AppInsuranceInfoVO.InsuranceDetail();
-                                            insuranceDetail.setInsuranceCompany(r.getInsurance_company_name());
-                                            insuranceDetail.setInsuranceEndDate(r.getEnd_date());
-                                            insuranceDetail.setInsuranceAmount(r.getInsurance_amount());
+                                            convertInsuranceDetail(r, insuranceDetail);
                                             commercialInsuranceList.add(insuranceDetail);
                                         } else if (INSURANCE_TYPE_TRAFFIC.equals(r.getInsurance_type())) {
                                             // 交强险
                                             AppInsuranceInfoVO.InsuranceDetail insuranceDetail = new AppInsuranceInfoVO.InsuranceDetail();
-                                            insuranceDetail.setInsuranceCompany(r.getInsurance_company_name());
-                                            insuranceDetail.setInsuranceEndDate(r.getEnd_date());
-                                            insuranceDetail.setInsuranceAmount(r.getInsurance_amount());
+                                            convertInsuranceDetail(r, insuranceDetail);
                                             trafficInsuranceList.add(insuranceDetail);
                                         } else if (INSURANCE_TYPE_VEHICLE_VESSEL_TAX.equals(r.getInsurance_type())) {
                                             // 车船税
                                             AppInsuranceInfoVO.InsuranceDetail insuranceDetail = new AppInsuranceInfoVO.InsuranceDetail();
-                                            insuranceDetail.setInsuranceCompany(r.getInsurance_company_name());
-                                            insuranceDetail.setInsuranceEndDate(r.getEnd_date());
-                                            insuranceDetail.setInsuranceAmount(r.getInsurance_amount());
+                                            convertInsuranceDetail(r, insuranceDetail);
                                             vehicleVesselTaxInsuranceList.add(insuranceDetail);
                                         }
 
@@ -675,6 +671,20 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         }
 
         return ResultBean.ofSuccess(appInsuranceInfoVOList);
+    }
+
+    /**
+     * Insurance convert
+     *
+     * @param insuranceRelevanceDO
+     * @param insuranceDetail
+     */
+    private void convertInsuranceDetail(InsuranceRelevanceDO insuranceRelevanceDO, AppInsuranceInfoVO.InsuranceDetail insuranceDetail) {
+        insuranceDetail.setInsuranceNumber(insuranceRelevanceDO.getInsurance_number());
+        insuranceDetail.setInsuranceCompany(insuranceRelevanceDO.getInsurance_company_name());
+        insuranceDetail.setInsuranceStartDate(insuranceRelevanceDO.getStart_date());
+        insuranceDetail.setInsuranceEndDate(insuranceRelevanceDO.getEnd_date());
+        insuranceDetail.setInsuranceAmount(insuranceRelevanceDO.getInsurance_amount());
     }
 
     @Override
@@ -834,7 +844,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // 关联
         LoanOrderDO loanOrderDO = new LoanOrderDO();
         loanOrderDO.setId(appLoanFinancialPlanParam.getOrderId());
-        loanOrderDO.setLoanFinancialPlanId(appLoanFinancialPlanParam.getId());
+        loanOrderDO.setLoanFinancialPlanId(loanFinancialPlanDO.getId());
         ResultBean<Void> updateRelaResult = loanProcessOrderService.update(loanOrderDO);
         Preconditions.checkArgument(updateRelaResult.getSuccess(), updateRelaResult.getMsg());
 
@@ -971,11 +981,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                             }
                         }
                     }
-
                 }
             }
-
-
         }
     }
 
@@ -1157,21 +1164,27 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     /**
-     * 任务状态
+     * 审核备注
      *
-     * @param historicTaskInstance
+     * @param taskDefinitionKey
+     * @param processInstanceId
+     * @param executionId
      * @return
      */
-    private String getTaskStatus(HistoricTaskInstance historicTaskInstance) {
+    private String getApprovalInfo(String taskDefinitionKey, String processInstanceId, String executionId) {
+        String infoTaskVariableKey = taskDefinitionKey + ":" + processInstanceId + ":"
+                + executionId + ":" + PROCESS_VARIABLE_INFO;
 
-        if (null != historicTaskInstance) {
-            Date endTime = historicTaskInstance.getEndTime();
-            if (null != endTime) {
-                // 已处理
-                return "已处理";
-            } else {
-                // 未处理
-                return "未处理";
+        HistoricVariableInstance infoHistoricVariableInstance = historyService.createHistoricVariableInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .variableName(infoTaskVariableKey)
+                .singleResult();
+
+        if (null != infoHistoricVariableInstance) {
+            Object value = infoHistoricVariableInstance.getValue();
+            if (null != value) {
+                String info = (String) value;
+                return info;
             }
         }
 
@@ -1240,9 +1253,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         //办理时间
                         task.setApprovalTime(e.getEndTime());
                         // 任务状态
-                        task.setTaskStatus(getTaskStatus(e));
+                        fillTaskStatus(task, e);
                         // 审核员
                         task.setAuditor(getAuditor(e.getTaskDefinitionKey(), loanOrderDO.getProcessInstId(), e.getExecutionId()));
+                        // 审核备注
+                        task.setApprovalInfo(getApprovalInfo(e.getTaskDefinitionKey(), loanOrderDO.getProcessInstId(), e.getExecutionId()));
                         // 审核员角色 OR 合伙人团队名称
                         task.setUserGroup(getUserGroup(e.getTaskDefinitionKey(), loanOrderDO.getLoanBaseInfoId()));
 
@@ -1253,6 +1268,30 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         }
 
         appOrderProcessVO.setTaskList(taskList);
+    }
+
+    /**
+     * 任务状态
+     *
+     * @param historicTaskInstance
+     * @return
+     */
+    private String fillTaskStatus(AppOrderProcessVO.Task task, HistoricTaskInstance historicTaskInstance) {
+
+        if (null != historicTaskInstance) {
+            Date endTime = historicTaskInstance.getEndTime();
+            if (null != endTime) {
+                // 已处理
+                task.setTaskStatus(TASK_DONE);
+                task.setTaskStatusText("已处理");
+            } else {
+                // 未处理
+                task.setTaskStatus(TASK_TODO);
+                task.setTaskStatusText("未处理");
+            }
+        }
+
+        return null;
     }
 
     /**

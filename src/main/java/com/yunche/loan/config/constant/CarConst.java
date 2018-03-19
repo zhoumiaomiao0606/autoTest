@@ -52,4 +52,14 @@ public class CarConst {
         fuelTypeMap.put("汽油", (byte) 1);
         fuelTypeMap.put("柴油", (byte) 2);
     }
+
+    /**
+     * 汽车类型-类型文本  映射关系
+     */
+    public static final Map<Byte, String> CAR_TYPE_MAP = Maps.newHashMap();
+
+    static {
+        CAR_TYPE_MAP.put((byte) 1, "新车");
+        CAR_TYPE_MAP.put((byte) 2, "二手车");
+    }
 }

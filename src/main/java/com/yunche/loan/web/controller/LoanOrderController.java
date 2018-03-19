@@ -237,7 +237,7 @@ public class LoanOrderController {
      * @return
      */
     @PostMapping(value = "/financialplan/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> saveLoanFinancialPlan(@RequestBody LoanFinancialPlanParam loanFinancialPlanParam) {
+    public ResultBean<Long> saveLoanFinancialPlan(@RequestBody LoanFinancialPlanParam loanFinancialPlanParam) {
         return loanOrderService.createOrUpdateLoanFinancialPlan(loanFinancialPlanParam);
     }
 

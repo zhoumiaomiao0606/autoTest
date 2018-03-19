@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanFileConst.TYPE_NAME_MAP;
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 
 /**
  * @author liuzhe
@@ -62,44 +64,49 @@ public class LoanFileServiceImpl implements LoanFileService {
     public ResultBean<List<FileVO>> listByCustomerId(Long customerId) {
         Preconditions.checkNotNull(customerId, "客户ID不能为空");
 
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerId(customerId);
-
         Map<Byte, FileVO> typeFilesMap = Maps.newConcurrentMap();
 
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerId(customerId);
         if (!CollectionUtils.isEmpty(loanFileDOS)) {
 
+            loanFileDOS.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
 
-//            loanFileDOS.stream()
-//                    .filter(Objects::nonNull)
-//                    .forEach(e -> {
-//
-//                        Byte type = e.getType();
-//                        if (!typeFilesMap.containsKey(type)) {
-//
-//                            FileVO fileVO = new FileVO();
-//                            fileVO.setType(type);
-//
-//                            FileVO.FileDetail fileDetail = new FileVO.FileDetail();
-//                            BeanUtils.copyProperties(e, fileDetail);
-//                            fileDetail.setUrl(e.getPath());
-//                            List<FileVO.FileDetail> fileDetails = Lists.newArrayList(fileDetail);
-//                            fileVO.setDetails(fileDetails);
-//
-//                            typeFilesMap.put(type, fileVO);
-//
-//                        } else {
-//                            FileVO fileVO = typeFilesMap.get(type);
-//
-//                            FileVO.FileDetail fileDetail = new FileVO.FileDetail();
-//                            BeanUtils.copyProperties(e, fileDetail);
-//                            fileDetail.setUrl(e.getPath());
-//
-//                            fileVO.getDetails().add(fileDetail);
-//                        }
-//
-//                    });
+                        Byte type = e.getType();
+                        if (!typeFilesMap.containsKey(type)) {
+
+                            FileVO fileVO = new FileVO();
+                            fileVO.setType(type);
+                            fileVO.setName(TYPE_NAME_MAP.get(type));
+
+                            List<String> urls = Lists.newArrayList();
+                            List<String> existUrls = JSON.parseArray(e.getPath(), String.class);
+                            if (!CollectionUtils.isEmpty(existUrls)) {
+                                urls.addAll(existUrls);
+                            }
+                            fileVO.setUrls(urls);
+
+                            typeFilesMap.put(type, fileVO);
+
+                        } else {
+                            FileVO fileVO = typeFilesMap.get(type);
+                            List<String> urls = JSON.parseArray(e.getPath(), String.class);
+                            fileVO.getUrls().addAll(urls);
+                        }
+
+                    });
         }
-        return null;
+
+        List<FileVO> fileVOS = typeFilesMap.values()
+                .parallelStream()
+                .map(e -> {
+                    return e;
+                })
+                .sorted(Comparator.comparing(FileVO::getType))
+                .collect(Collectors.toList());
+
+        return ResultBean.ofSuccess(fileVOS);
     }
 
     @Override
@@ -128,14 +135,84 @@ public class LoanFileServiceImpl implements LoanFileService {
         return ResultBean.ofSuccess(fileVOS);
     }
 
+
+    /**
+     * 文件KEY列表保存
+     *
+     * @param loanFileDOS
+     * @return
+     */
     @Override
-    public ResultBean<Void> upload(List<LoanFileParam> fileParams) {
+    public ResultBean<Void> batchInsert(List<LoanFileDO> loanFileDOS) {
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(loanFileDOS), "文件列表不能为空");
 
-        if (!CollectionUtils.isEmpty(fileParams)) {
+        int count = loanFileDOMapper.batchInsert(loanFileDOS);
+        Preconditions.checkArgument(count > 0, "批量插入失败");
 
+        return ResultBean.ofSuccess(null, "批量插入成功");
+    }
 
+    @Override
+    public ResultBean<Void> updateByCustomerIdAndUploadType(Long customerId, List<FileVO> files, Byte uploadType) {
+
+        if (!CollectionUtils.isEmpty(files)) {
+
+            files.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        // get
+                        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, e.getType(), uploadType);
+                        if (CollectionUtils.isEmpty(loanFileDOS)) {
+                            // insert
+                            LoanFileDO loanFileDO = new LoanFileDO();
+                            loanFileDO.setCustomerId(customerId);
+                            loanFileDO.setType(e.getType());
+                            loanFileDO.setPath(JSON.toJSONString(e.getUrls()));
+                            loanFileDO.setUploadType(uploadType);
+
+                            ResultBean<Long> resultBean = create(loanFileDO);
+                            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+
+                        } else {
+                            // update
+                            LoanFileDO loanFileDO = loanFileDOS.get(0);
+                            if (null != loanFileDO) {
+                                loanFileDO.setPath(JSON.toJSONString(e.getUrls()));
+
+                                ResultBean<Void> resultBean = update(loanFileDO);
+                                Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+                            }
+                        }
+                    });
         }
 
+        return ResultBean.ofSuccess(null);
+    }
+
+    @Override
+    public ResultBean<Void> batchInsert(Long customerId, List<FileVO> files) {
+
+        if (!CollectionUtils.isEmpty(files)) {
+
+            List<LoanFileDO> loanFileDOS = files.parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
+                        LoanFileDO loanFileDO = new LoanFileDO();
+                        loanFileDO.setCustomerId(customerId);
+                        loanFileDO.setType(e.getType());
+                        loanFileDO.setPath(JSON.toJSONString(e.getUrls()));
+                        loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
+                        loanFileDO.setStatus(VALID_STATUS);
+                        loanFileDO.setGmtCreate(new Date());
+                        loanFileDO.setGmtModify(new Date());
+                        return loanFileDO;
+                    })
+                    .collect(Collectors.toList());
+
+            ResultBean<Void> resultBean = batchInsert(loanFileDOS);
+            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+        }
 
         return ResultBean.ofSuccess(null);
     }

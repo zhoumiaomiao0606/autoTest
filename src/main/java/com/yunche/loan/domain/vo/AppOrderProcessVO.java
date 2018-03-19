@@ -62,8 +62,16 @@ public class AppOrderProcessVO {
          */
         private Date approvalTime;
         /**
+         * 审核备注
+         */
+        private String approvalInfo;
+        /**
          * 任务状态
          */
-        private String taskStatus;
+        private Integer taskStatus;
+        /**
+         * 任务状态文本
+         */
+        private String taskStatusText;
     }
 }
