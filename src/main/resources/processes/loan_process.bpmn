@@ -117,7 +117,9 @@
     <sequenceFlow id="flow58" name="弃单" sourceRef="exclusivegateway11" targetRef="endevent11">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 2}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow59" sourceRef="exclusivegateway5" targetRef="parallelgateway3"></sequenceFlow>
+    <sequenceFlow id="flow59" name="审核通过" sourceRef="exclusivegateway5" targetRef="parallelgateway3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <userTask id="usertask_business_review" name="业务审批" activiti:candidateGroups="业务审批员"></userTask>
     <sequenceFlow id="flow60" sourceRef="parallelgateway3" targetRef="usertask_business_review"></sequenceFlow>
     <userTask id="usertask_material_review" name="资料审核" activiti:candidateGroups="资料审核员"></userTask>
@@ -137,7 +139,6 @@
     <userTask id="usertask_remit_review" name="打款确认" activiti:candidateGroups="财务"></userTask>
     <sequenceFlow id="flow69" sourceRef="usertask_loan_review" targetRef="usertask_remit_review"></sequenceFlow>
     <parallelGateway id="parallelgateway3" name="Parallel Gateway"></parallelGateway>
-    <serviceTask id="servicetask_financial_scheme" name="金融方案展示" activiti:class="src.main.java.com.yunche.loan.config.task.FinancialSchemeServiceTask"></serviceTask>
     <sequenceFlow id="flow70" sourceRef="parallelgateway3" targetRef="servicetask_financial_scheme"></sequenceFlow>
     <parallelGateway id="parallelgateway4" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow71" sourceRef="usertask_remit_review" targetRef="parallelgateway4"></sequenceFlow>
@@ -152,6 +153,9 @@
     <userTask id="usertask_material_print_review" name="合同套打" activiti:candidateGroups="合同套打员"></userTask>
     <sequenceFlow id="flow80" sourceRef="usertask_material_review" targetRef="usertask_material_print_review"></sequenceFlow>
     <sequenceFlow id="flow81" sourceRef="usertask_material_print_review" targetRef="parallelgateway4"></sequenceFlow>
+    <userTask id="servicetask_financial_scheme" name="金融方案展示">
+      <documentation>展示-自动任务</documentation>
+    </userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -263,9 +267,6 @@
       <bpmndi:BPMNShape bpmnElement="parallelgateway3" id="BPMNShape_parallelgateway3">
         <omgdc:Bounds height="40.0" width="40.0" x="2592.0" y="483.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="servicetask_financial_scheme" id="BPMNShape_servicetask_financial_scheme">
-        <omgdc:Bounds height="55.0" width="105.0" x="2700.0" y="942.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="parallelgateway4" id="BPMNShape_parallelgateway4">
         <omgdc:Bounds height="40.0" width="40.0" x="3800.0" y="479.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
@@ -274,6 +275,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="usertask_material_print_review" id="BPMNShape_usertask_material_print_review">
         <omgdc:Bounds height="55.0" width="105.0" x="3060.0" y="91.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask_financial_scheme" id="BPMNShape_servicetask_financial_scheme">
+        <omgdc:Bounds height="55.0" width="105.0" x="2700.0" y="942.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="85.0" y="510.0"></omgdi:waypoint>
@@ -496,6 +500,9 @@
       <bpmndi:BPMNEdge bpmnElement="flow59" id="BPMNEdge_flow59">
         <omgdi:waypoint x="2472.0" y="503.0"></omgdi:waypoint>
         <omgdi:waypoint x="2592.0" y="503.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="44.0" x="2492.0" y="492.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow60" id="BPMNEdge_flow60">
         <omgdi:waypoint x="2612.0" y="483.0"></omgdi:waypoint>

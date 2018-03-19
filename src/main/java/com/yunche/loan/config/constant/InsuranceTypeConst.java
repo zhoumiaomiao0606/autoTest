@@ -17,5 +17,5 @@ public class InsuranceTypeConst {
     /**
      * 车船税
      */
-    public static final Byte INSURANCE_TYPE_ = 3;
+    public static final Byte INSURANCE_TYPE_VEHICLE_VESSEL_TAX = 3;
 }

@@ -94,6 +94,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 并行网关任务
 //        dealParallelTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey(), transientVariables, approval.getAction(), loanOrderDO.getLoanBaseInfoId());
 
+        // TODO 电审提交后，执行自动任务：servicetask_financial_scheme   -金融方案
+//        if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+//            taskService.complete(FINANCIAL_SCHEME.getCode());
+//        }
+
         // 更新任务状态
         updateLoanOrderTaskDefinitionKey(approval.getOrderId(), approval.getTaskDefinitionKey());
 
@@ -168,11 +173,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 runtimeService.deleteProcessInstance(processInstId, "弃单");
             }
 
-
-//            //  电审提交后，执行自动任务：servicetask_financial_scheme   -金融方案
-//            if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
-//                taskService.
-//            }
+            //  TODO 电审提交后，执行自动任务：servicetask_financial_scheme   -金融方案
+            if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+                taskService.complete(FINANCIAL_SCHEME.getCode());
+            }
         }
     }
 
