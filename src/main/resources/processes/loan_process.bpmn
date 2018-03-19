@@ -139,7 +139,6 @@
     <userTask id="usertask_remit_review" name="打款确认" activiti:candidateGroups="财务"></userTask>
     <sequenceFlow id="flow69" sourceRef="usertask_loan_review" targetRef="usertask_remit_review"></sequenceFlow>
     <parallelGateway id="parallelgateway3" name="Parallel Gateway"></parallelGateway>
-    <sequenceFlow id="flow70" sourceRef="parallelgateway3" targetRef="servicetask_financial_scheme"></sequenceFlow>
     <parallelGateway id="parallelgateway4" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow71" sourceRef="usertask_remit_review" targetRef="parallelgateway4"></sequenceFlow>
     <sequenceFlow id="flow73" sourceRef="usertask_car_insurance" targetRef="parallelgateway4"></sequenceFlow>
@@ -147,15 +146,11 @@
     <sequenceFlow id="flow75" sourceRef="usertask_apply_license_plate_deposit_info" targetRef="parallelgateway4"></sequenceFlow>
     <sequenceFlow id="flow76" sourceRef="usertask_install_gps" targetRef="parallelgateway4"></sequenceFlow>
     <sequenceFlow id="flow77" sourceRef="usertask_commit_key" targetRef="parallelgateway4"></sequenceFlow>
-    <sequenceFlow id="flow78" sourceRef="servicetask_financial_scheme" targetRef="parallelgateway4"></sequenceFlow>
     <endEvent id="endevent_end_process" name="End"></endEvent>
     <sequenceFlow id="flow79" sourceRef="parallelgateway4" targetRef="endevent_end_process"></sequenceFlow>
     <userTask id="usertask_material_print_review" name="合同套打" activiti:candidateGroups="合同套打员"></userTask>
     <sequenceFlow id="flow80" sourceRef="usertask_material_review" targetRef="usertask_material_print_review"></sequenceFlow>
     <sequenceFlow id="flow81" sourceRef="usertask_material_print_review" targetRef="parallelgateway4"></sequenceFlow>
-    <userTask id="servicetask_financial_scheme" name="金融方案展示">
-      <documentation>展示-自动任务</documentation>
-    </userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -275,9 +270,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="usertask_material_print_review" id="BPMNShape_usertask_material_print_review">
         <omgdc:Bounds height="55.0" width="105.0" x="3060.0" y="91.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="servicetask_financial_scheme" id="BPMNShape_servicetask_financial_scheme">
-        <omgdc:Bounds height="55.0" width="105.0" x="2700.0" y="942.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="85.0" y="510.0"></omgdi:waypoint>
@@ -547,11 +539,6 @@
         <omgdi:waypoint x="3165.0" y="28.0"></omgdi:waypoint>
         <omgdi:waypoint x="3390.0" y="29.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow70" id="BPMNEdge_flow70">
-        <omgdi:waypoint x="2612.0" y="523.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2612.0" y="968.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2700.0" y="969.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow71" id="BPMNEdge_flow71">
         <omgdi:waypoint x="3495.0" y="29.0"></omgdi:waypoint>
         <omgdi:waypoint x="3820.0" y="29.0"></omgdi:waypoint>
@@ -580,11 +567,6 @@
       <bpmndi:BPMNEdge bpmnElement="flow77" id="BPMNEdge_flow77">
         <omgdi:waypoint x="2805.0" y="849.0"></omgdi:waypoint>
         <omgdi:waypoint x="3820.0" y="849.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3820.0" y="519.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow78" id="BPMNEdge_flow78">
-        <omgdi:waypoint x="2805.0" y="969.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3820.0" y="969.0"></omgdi:waypoint>
         <omgdi:waypoint x="3820.0" y="519.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow79" id="BPMNEdge_flow79">
