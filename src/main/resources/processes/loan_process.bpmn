@@ -137,11 +137,7 @@
     <userTask id="usertask_remit_review" name="打款确认" activiti:candidateGroups="财务"></userTask>
     <sequenceFlow id="flow69" sourceRef="usertask_loan_review" targetRef="usertask_remit_review"></sequenceFlow>
     <parallelGateway id="parallelgateway3" name="Parallel Gateway"></parallelGateway>
-    <serviceTask id="servicetask_financial_scheme" name="金融方案展示">
-      <extensionElements>
-        <activiti:executionListener event="start" class="src.main.java.com.yunche.loan.config.task.FinancialSchemeServiceTask"></activiti:executionListener>
-      </extensionElements>
-    </serviceTask>
+    <serviceTask id="servicetask_financial_scheme" name="金融方案展示" activiti:class="src.main.java.com.yunche.loan.config.task.FinancialSchemeServiceTask"></serviceTask>
     <sequenceFlow id="flow70" sourceRef="parallelgateway3" targetRef="servicetask_financial_scheme"></sequenceFlow>
     <parallelGateway id="parallelgateway4" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow71" sourceRef="usertask_remit_review" targetRef="parallelgateway4"></sequenceFlow>
