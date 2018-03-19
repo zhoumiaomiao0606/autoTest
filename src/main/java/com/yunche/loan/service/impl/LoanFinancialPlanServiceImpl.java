@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -102,7 +103,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         CalcParamVO calcParamVO = resultBean.getData();
         if (null != calcParamVO) {
             //首付比例
-            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice()));
+            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice(),4, BigDecimal.ROUND_HALF_EVEN));
             // 首付额 =首付比率*车价
             loanFinancialPlanVO.setDownPaymentMoney(loanFinancialPlanParam.getDownPaymentMoney());
             // 本息合计(还款总额)
