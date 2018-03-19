@@ -340,7 +340,6 @@
              insurance_info_id,
              insurance_company_name,
              insurance_number,
-             area,
              insurance_amount,
              start_date,
              end_date,

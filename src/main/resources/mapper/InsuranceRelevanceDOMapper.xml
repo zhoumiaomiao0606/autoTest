@@ -6,7 +6,6 @@
         <result column="insurance_info_id" property="insurance_info_id" jdbcType="BIGINT"/>
         <result column="insurance_company_name" property="insurance_company_name" jdbcType="VARCHAR"/>
         <result column="insurance_number" property="insurance_number" jdbcType="VARCHAR"/>
-        <result column="area" property="area" jdbcType="VARCHAR"/>
         <result column="insurance_amount" property="insurance_amount" jdbcType="DECIMAL"/>
         <result column="start_date" property="start_date" jdbcType="DATE"/>
         <result column="end_date" property="end_date" jdbcType="DATE"/>
@@ -15,7 +14,7 @@
         <result column="feature" property="feature" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, insurance_info_id, insurance_company_name, insurance_number, area, insurance_amount, 
+    id, insurance_info_id, insurance_company_name, insurance_number, insurance_amount,
     start_date, end_date, insurance_type, status, feature
   </sql>
 
@@ -60,9 +59,6 @@
             <if test="insurance_number != null">
                 insurance_number,
             </if>
-            <if test="area != null">
-                area,
-            </if>
             <if test="insurance_amount != null">
                 insurance_amount,
             </if>
@@ -94,9 +90,6 @@
             </if>
             <if test="insurance_number != null">
                 #{insurance_number,jdbcType=VARCHAR},
-            </if>
-            <if test="area != null">
-                #{area,jdbcType=VARCHAR},
             </if>
             <if test="insurance_amount != null">
                 #{insurance_amount,jdbcType=DECIMAL},
@@ -130,9 +123,6 @@
             </if>
             <if test="insurance_number != null">
                 insurance_number = #{insurance_number,jdbcType=VARCHAR},
-            </if>
-            <if test="area != null">
-                area = #{area,jdbcType=VARCHAR},
             </if>
             <if test="insurance_amount != null">
                 insurance_amount = #{insurance_amount,jdbcType=DECIMAL},

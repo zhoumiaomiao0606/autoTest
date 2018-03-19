@@ -14,8 +14,6 @@ public class InsuranceRelevanceDO {
 
     private String insurance_number;
 
-    private String area;
-
     private BigDecimal insurance_amount;
 
     private Date start_date;
