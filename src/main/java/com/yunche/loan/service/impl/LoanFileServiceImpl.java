@@ -27,7 +27,6 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Service
 public class LoanFileServiceImpl implements LoanFileService {
 
-
     @Autowired
     private LoanFileDOMapper loanFileDOMapper;
 
@@ -69,6 +68,7 @@ public class LoanFileServiceImpl implements LoanFileService {
 
         if (!CollectionUtils.isEmpty(loanFileDOS)) {
 
+
 //            loanFileDOS.stream()
 //                    .filter(Objects::nonNull)
 //                    .forEach(e -> {
@@ -99,15 +99,7 @@ public class LoanFileServiceImpl implements LoanFileService {
 //
 //                    });
         }
-
-        List<FileVO> fileVOS = typeFilesMap.values().stream()
-                .map(e -> {
-                    return e;
-                })
-                .sorted(Comparator.comparing(FileVO::getType))
-                .collect(Collectors.toList());
-
-        return ResultBean.ofSuccess(fileVOS);
+        return null;
     }
 
     @Override

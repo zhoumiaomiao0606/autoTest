@@ -91,6 +91,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private CarDetailDOMapper carDetailDOMapper;
 
     @Autowired
+    private ApplyLicensePlateRecordDOMapper applyLicensePlateRecordDOMapper;
+
+    @Autowired
     private BaseAreaService baseAreaService;
 
     @Autowired
@@ -644,7 +647,27 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         }
 
         // 打回 OR 未提交
-        // 历史 action == 3   --> 打回
+        fillTaskTypeText(loanOrderVO, processInstanceId);
+
+        if (null != multipartType) {
+            // 当前任务节点
+            fillCurrentTask(loanOrderVO, taskDefinitionKey);
+
+            // 还款状态
+            if (MULTIPART_TYPE_CUSTOMER_LOAN_DONE.equals(multipartType)) {
+                fillRepayStatus(loanOrderVO, taskDefinitionKey, processInstanceId);
+            }
+        }
+    }
+
+    /**
+     * 打回 OR 未提交
+     * 历史 action == 3   --> 打回
+     *
+     * @param loanOrderVO
+     * @param processInstanceId
+     */
+    private void fillTaskTypeText(LoanOrderVO loanOrderVO, String processInstanceId) {
         if (null != loanOrderVO.getId()) {
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(loanOrderVO.getId()), null);
             if (null != loanOrderDO) {
@@ -679,17 +702,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         }
                     }
                 }
-            }
-        }
-
-
-        if (null != multipartType) {
-            // 当前任务节点
-            fillCurrentTask(loanOrderVO, taskDefinitionKey);
-
-            // 还款状态
-            if (MULTIPART_TYPE_CUSTOMER_LOAN_DONE.equals(multipartType)) {
-                fillRepayStatus(loanOrderVO, taskDefinitionKey, processInstanceId);
             }
         }
     }
@@ -736,6 +748,37 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             // 业务员
             loanOrderVO.setSalesman(loanBaseInfoVO.getSalesman());
         }
+
+        // 金融方案
+        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+        if (null != loanFinancialPlanDO) {
+            // 银行
+            loanOrderVO.setBank(loanFinancialPlanDO.getBank());
+            // 贷款额
+            loanOrderVO.setLoanAmount(loanFinancialPlanDO.getLoanAmount());
+            // 贷款期限
+            loanOrderVO.setLoanTime(loanFinancialPlanDO.getLoanTime());
+            // 执行利率
+            loanOrderVO.setSignRate(loanFinancialPlanDO.getSignRate());
+            // 银行分期本金
+            loanOrderVO.setBankPeriodPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
+        }
+
+        // 车辆信息
+        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+        if (null != loanCarInfoDO) {
+            // 车辆类型：1-新车; 2-二手车;
+            loanOrderVO.setCarType(loanCarInfoDO.getCarType());
+        }
+
+        ApplyLicensePlateRecordDO applyLicensePlateRecordDO = applyLicensePlateRecordDOMapper.selectByPrimaryKey(loanOrderDO.getApplyLicensePlateRecordId());
+        if (null != applyLicensePlateRecordDO) {
+            // 车牌号
+            loanOrderVO.setLicensePlateNumber(applyLicensePlateRecordDO.getLicense_plate_number());
+        }
+
+        // TODO 逾期次数
+        loanOrderVO.setOverdueNum(0);
     }
 
 

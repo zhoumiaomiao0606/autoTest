@@ -3,6 +3,7 @@ package com.yunche.loan.domain.vo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -41,6 +42,38 @@ public class LoanOrderVO {
      * 业务单创建时间
      */
     private Date gmtCreate;
+    /**
+     * 贷款银行
+     */
+    private String bank;
+    /**
+     * 贷款额
+     */
+    private BigDecimal loanAmount;
+    /**
+     * 银行分期本金
+     */
+    private BigDecimal bankPeriodPrincipal;
+    /**
+     * 执行利率
+     */
+    private BigDecimal signRate;
+    /**
+     * 车辆类型：1-新车; 2-二手车;
+     */
+    private Byte carType;
+    /**
+     * 车牌号
+     */
+    private String licensePlateNumber;
+    /**
+     * 贷款期限
+     */
+    private Integer loanTime;
+    /**
+     * 逾期次数
+     */
+    private Integer overdueNum;
 
     /**
      * 当前任务节点审核状态:  0-全部;   1-已提交(审核);   2-未提交(审核);
