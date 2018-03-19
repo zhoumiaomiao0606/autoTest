@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -16,34 +17,33 @@ public class AppInsuranceInfoVO {
      * 第几年
      */
     private Byte yearNum;
-
     /**
-     * 商业保险公司
+     * 商业险列表
      */
-    private String commercialInsuranceCompany;
-
+    private List<InsuranceDetail> commercialInsuranceList;
     /**
-     * 商业险截止日期
+     * 交强险列表
      */
-    private Date commercialInsuranceEndDate;
+    private List<InsuranceDetail> trafficInsuranceList;
 
-    /**
-     * 商业险保险金额
-     */
-    private BigDecimal commercialInsuranceAmount;
+    private List<InsuranceDetail> vehicleVesselTaxInsuranceList;
 
-    /**
-     * 交强险保险公司
-     */
-    private String trafficInsuranceCompany;
 
-    /**
-     * 交强险截止日期
-     */
-    private Date trafficInsuranceEndDate;
+    @Data
+    public static class InsuranceDetail {
+        /**
+         * 保险公司
+         */
+        private String insuranceCompany;
 
-    /**
-     * 交强险保险金额
-     */
-    private BigDecimal trafficInsuranceAmount;
+        /**
+         * 保险截止日期
+         */
+        private Date insuranceEndDate;
+
+        /**
+         * 保险金额
+         */
+        private BigDecimal insuranceAmount;
+    }
 }

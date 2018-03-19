@@ -35,8 +35,7 @@ import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CustomerConst.*;
-import static com.yunche.loan.config.constant.InsuranceTypeConst.INSURANCE_TYPE_COMMERCIAL;
-import static com.yunche.loan.config.constant.InsuranceTypeConst.INSURANCE_TYPE_TRAFFIC;
+import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
@@ -80,6 +79,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
+
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private PartnerDOMapper partnerDOMapper;
 
     @Autowired
     private LoanCustomerService loanCustomerService;
@@ -620,8 +625,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     .filter(Objects::nonNull)
                     .map(e -> {
 
-                        AppInsuranceInfoVO appInsuranceInfoVO = new AppInsuranceInfoVO();
-                        appInsuranceInfoVO.setYearNum(e.getInsurance_year());
+                        List<AppInsuranceInfoVO.InsuranceDetail> commercialInsuranceList = Lists.newArrayList();
+                        List<AppInsuranceInfoVO.InsuranceDetail> trafficInsuranceList = Lists.newArrayList();
+                        List<AppInsuranceInfoVO.InsuranceDetail> vehicleVesselTaxInsuranceList = Lists.newArrayList();
 
                         // 关联保险列表
                         List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(e.getId());
@@ -633,18 +639,35 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
                                         if (INSURANCE_TYPE_COMMERCIAL.equals(r.getInsurance_type())) {
                                             // 商业险
-                                            appInsuranceInfoVO.setCommercialInsuranceCompany(r.getInsurance_company_name());
-                                            appInsuranceInfoVO.setCommercialInsuranceEndDate(r.getEnd_date());
-                                            appInsuranceInfoVO.setCommercialInsuranceAmount(r.getInsurance_amount());
+                                            AppInsuranceInfoVO.InsuranceDetail insuranceDetail = new AppInsuranceInfoVO.InsuranceDetail();
+                                            insuranceDetail.setInsuranceCompany(r.getInsurance_company_name());
+                                            insuranceDetail.setInsuranceEndDate(r.getEnd_date());
+                                            insuranceDetail.setInsuranceAmount(r.getInsurance_amount());
+                                            commercialInsuranceList.add(insuranceDetail);
                                         } else if (INSURANCE_TYPE_TRAFFIC.equals(r.getInsurance_type())) {
                                             // 交强险
-                                            appInsuranceInfoVO.setTrafficInsuranceCompany(r.getInsurance_company_name());
-                                            appInsuranceInfoVO.setTrafficInsuranceEndDate(r.getEnd_date());
-                                            appInsuranceInfoVO.setTrafficInsuranceAmount(r.getInsurance_amount());
+                                            AppInsuranceInfoVO.InsuranceDetail insuranceDetail = new AppInsuranceInfoVO.InsuranceDetail();
+                                            insuranceDetail.setInsuranceCompany(r.getInsurance_company_name());
+                                            insuranceDetail.setInsuranceEndDate(r.getEnd_date());
+                                            insuranceDetail.setInsuranceAmount(r.getInsurance_amount());
+                                            trafficInsuranceList.add(insuranceDetail);
+                                        } else if (INSURANCE_TYPE_VEHICLE_VESSEL_TAX.equals(r.getInsurance_type())) {
+                                            // 车船税
+                                            AppInsuranceInfoVO.InsuranceDetail insuranceDetail = new AppInsuranceInfoVO.InsuranceDetail();
+                                            insuranceDetail.setInsuranceCompany(r.getInsurance_company_name());
+                                            insuranceDetail.setInsuranceEndDate(r.getEnd_date());
+                                            insuranceDetail.setInsuranceAmount(r.getInsurance_amount());
+                                            vehicleVesselTaxInsuranceList.add(insuranceDetail);
                                         }
 
                                     });
                         }
+
+                        AppInsuranceInfoVO appInsuranceInfoVO = new AppInsuranceInfoVO();
+                        appInsuranceInfoVO.setYearNum(e.getInsurance_year());
+                        appInsuranceInfoVO.setCommercialInsuranceList(commercialInsuranceList);
+                        appInsuranceInfoVO.setTrafficInsuranceList(trafficInsuranceList);
+                        appInsuranceInfoVO.setVehicleVesselTaxInsuranceList(vehicleVesselTaxInsuranceList);
 
                         return appInsuranceInfoVO;
                     })
@@ -665,7 +688,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // 基本信息
         fillBaseMsg(appOrderProcessVO, loanOrderDO);
         // 流程信息
-        fillProcessMsg(appOrderProcessVO, loanOrderDO.getProcessInstId());
+        fillProcessMsg(appOrderProcessVO, loanOrderDO);
 
         return ResultBean.ofSuccess(appOrderProcessVO);
     }
@@ -1193,12 +1216,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
      * 流程信息
      *
      * @param appOrderProcessVO
-     * @param processInstId
+     * @param loanOrderDO
      */
-    private void fillProcessMsg(AppOrderProcessVO appOrderProcessVO, String processInstId) {
+    private void fillProcessMsg(AppOrderProcessVO appOrderProcessVO, LoanOrderDO loanOrderDO) {
         // 历史task列表
         List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(processInstId)
+                .processInstanceId(loanOrderDO.getProcessInstId())
                 .orderByTaskCreateTime()
                 .desc()
                 .list();
@@ -1219,9 +1242,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         // 任务状态
                         task.setTaskStatus(getTaskStatus(e));
                         // 审核员
-                        task.setAuditor(getAuditor(e.getTaskDefinitionKey(), processInstId, e.getExecutionId()));
+                        task.setAuditor(getAuditor(e.getTaskDefinitionKey(), loanOrderDO.getProcessInstId(), e.getExecutionId()));
                         // 审核员角色 OR 合伙人团队名称
-                        task.setUserGroup(TASK_USER_GROUP_MAP.get(e.getTaskDefinitionKey()));
+                        task.setUserGroup(getUserGroup(e.getTaskDefinitionKey(), loanOrderDO.getLoanBaseInfoId()));
 
                         return task;
                     })
@@ -1230,5 +1253,31 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         }
 
         appOrderProcessVO.setTaskList(taskList);
+    }
+
+    /**
+     * 审核员角色 OR 合伙人团队名称
+     *
+     * @param taskDefinitionKey
+     * @param loanBaseInfoId
+     * @return
+     */
+    private String getUserGroup(String taskDefinitionKey, Long loanBaseInfoId) {
+        // 审单员角色
+        String userGroup = TASK_USER_GROUP_MAP.get(taskDefinitionKey);
+
+        if (StringUtils.isBlank(userGroup)) {
+
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+            if (null != loanBaseInfoDO) {
+                // 合伙人名称
+                PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), null);
+                if (null != partnerDO) {
+                    userGroup = partnerDO.getName();
+                }
+            }
+        }
+
+        return userGroup;
     }
 }
