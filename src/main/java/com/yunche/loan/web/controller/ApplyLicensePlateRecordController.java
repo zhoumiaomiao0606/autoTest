@@ -33,7 +33,7 @@ public class ApplyLicensePlateRecordController {
     public ResultBean update(@RequestBody @Validated ApplyLicensePlateRecordUpdateParam param) {
 
         applyLicensePlateRecordService.update(param);
-        return ResultBean.ofSuccess("保存成功");
+        return ResultBean.ofSuccess(null,"保存成功");
     }
 
 

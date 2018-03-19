@@ -33,7 +33,7 @@ public class MaterialController {
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody @Validated MaterialUpdateParam param) {
         materialService.update(param);
-        return ResultBean.ofSuccess("保存成功");
+        return ResultBean.ofSuccess(null,"保存成功");
     }
 
 }

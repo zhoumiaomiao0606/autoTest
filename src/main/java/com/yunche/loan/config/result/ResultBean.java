@@ -106,10 +106,6 @@ public class ResultBean<T> implements Serializable {
         return of(data, true, BaseExceptionEnum.EC00000200.getCode(), msg);
     }
 
-    public static <T> ResultBean<T> ofSuccess(String msg) {
-        return of(null, true, BaseExceptionEnum.EC00000200.getCode(), msg);
-    }
-
     public static ResultBean ofError(BaseExceptionEnum baseExceptionEnum) {
         ResultBean resultBean = new ResultBean();
         resultBean.setSuccess(false);

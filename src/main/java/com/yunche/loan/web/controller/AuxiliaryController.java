@@ -22,7 +22,7 @@ public class AuxiliaryController {
     @GetMapping(value = "/commit")
     public ResultBean commit(@RequestParam String order_id) {
         auxiliaryService.commit(Long.valueOf(order_id));
-        return ResultBean.ofSuccess("确认成功");
+        return ResultBean.ofSuccess(null,"确认成功");
     }
 
     /**
@@ -39,7 +39,7 @@ public class AuxiliaryController {
     @PostMapping(value = "/install", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean install(@RequestBody @Validated InstallUpdateParam param) {
         auxiliaryService.install(param);
-        return ResultBean.ofSuccess("安装成功");
+        return ResultBean.ofSuccess(null,"安装成功");
     }
 
 
