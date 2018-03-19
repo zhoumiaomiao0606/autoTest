@@ -17,7 +17,8 @@ public class ApplyLicensePlateRecordVO {
     private String apply_license_plate_date;//上牌日期
     private String engine_number;//发动机号
     private String license_plate_type;//牌证类型 牌证类型 1 公牌 2 私牌
-    private String apply_license_plate_area;//上牌地
+    private String apply_license_plate_area_id;//上牌地
+    private String apply_license_plate_parent_area_id;//上牌地
     private String registration_certificate_number;//登记证书号
     private String qualified_certificate_number;//合格证类型
     private String car_model;//汽车品牌

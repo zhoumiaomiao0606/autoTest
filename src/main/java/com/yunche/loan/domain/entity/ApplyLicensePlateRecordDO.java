@@ -18,7 +18,7 @@ public class ApplyLicensePlateRecordDO {
 
     private Byte license_plate_type;
 
-    private String apply_license_plate_area;
+    private Long apply_license_plate_area_id;//上牌地
 
     private String registration_certificate_number;
 

@@ -18,7 +18,7 @@ public class ApplyLicensePlateRecordUpdateParam {
     @NotBlank
     private String license_plate_type;//  牌证类型 牌证类型 1 公牌 2 私牌
     @NotBlank
-    private String apply_license_plate_area;//  上牌地
+    private String apply_license_plate_area_id;//  上牌地
     @NotBlank
     private String registration_certificate_number;//  登记证书号
     @NotBlank

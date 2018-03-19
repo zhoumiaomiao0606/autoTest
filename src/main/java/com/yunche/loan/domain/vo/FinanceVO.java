@@ -60,7 +60,8 @@ public class FinanceVO {
     private String production_type;//生产类型（1;//国产;2;//合资）
     private String license_plate_type;//牌证类型 1 公牌 2 私牌
     private String car_type;//车辆类型：1-新车; 2-二手车; 3-不限;
-    private String apply_license_plate_area;//上牌地
+    private String apply_license_plate_area_id;//上牌地
+    private String apply_license_plate_parent_area_id;//上牌地
     private String visit_date;//调查时间
     private String vname;//调查人
     private String visit_address;//调查地址
