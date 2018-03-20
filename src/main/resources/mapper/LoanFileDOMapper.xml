@@ -52,15 +52,15 @@
 
     <!--batchInsert-->
     <insert id="batchInsert" parameterType="java.util.List">
-        insert into loan_file (id, customer_id, path,
+        insert into loan_file (customer_id, path,
         type, upload_type, gmt_create,
         gmt_modify, status, feature
         )
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{path,jdbcType=VARCHAR},
-            #{type,jdbcType=TINYINT}, #{uploadType,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-            #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}
+            (#{item.customerId,jdbcType=BIGINT}, #{item.path,jdbcType=VARCHAR},
+            #{item.type,jdbcType=TINYINT}, #{item.uploadType,jdbcType=TINYINT}, #{item.gmtCreate,jdbcType=TIMESTAMP},
+            #{item.gmtModify,jdbcType=TIMESTAMP}, #{item.status,jdbcType=TINYINT}, #{item.feature,jdbcType=VARCHAR}
             )
         </foreach>
     </insert>
