@@ -55,8 +55,10 @@ public class InsuranceServiceImpl implements InsuranceService {
     @Override
     public RecombinationVO query(Long orderId) {
         InsuranceCustomerVO insuranceCustomerVO = loanQueryDOMapper.selectInsuranceCustomerNormalizeInsuranceYear(orderId);
-        List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(insuranceCustomerVO.getInsurance_info_id()));
-        insuranceCustomerVO.setInsurance_relevance_list(insurance_relevance_list);
+        if(insuranceCustomerVO!=null){
+            List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(insuranceCustomerVO.getInsurance_info_id()));
+            insuranceCustomerVO.setInsurance_relevance_list(insurance_relevance_list);
+        }
         RecombinationVO<InsuranceCustomerVO> recombinationVO = new RecombinationVO<InsuranceCustomerVO>();
         recombinationVO.setInfo(insuranceCustomerVO);
         return recombinationVO;
