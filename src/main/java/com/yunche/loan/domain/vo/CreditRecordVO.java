@@ -65,5 +65,7 @@ public class CreditRecordVO {
         private Byte custType;
 
         private Byte custRelation;
+
+        private List<FileVO> files;
     }
 }

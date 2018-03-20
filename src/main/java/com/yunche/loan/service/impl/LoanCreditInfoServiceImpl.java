@@ -3,16 +3,16 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.vo.CreditRecordVO;
-import com.yunche.loan.domain.vo.LoanBaseInfoVO;
+import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.domain.vo.LoanCreditInfoVO;
 import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.service.LoanCreditInfoService;
+import com.yunche.loan.service.LoanFileService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,10 +41,10 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     private LoanCreditInfoDOMapper loanCreditInfoDOMapper;
 
     @Autowired
-    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+    private LoanCustomerDOMapper loanCustomerDOMapper;
 
     @Autowired
-    private LoanCustomerDOMapper loanCustomerDOMapper;
+    private LoanFileService loanFileService;
 
 
     @Override
@@ -131,7 +131,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         // 客户信息
                         fillCustInfo(principalLender, e);
                         // 文件
-                        fillFiles(principalLender);
+                        fillFiles(principalLender, principalLender.getCustomerId());
                         // 征信结果
                         fillCreditMsg(principalLender, creditType);
 
@@ -145,7 +145,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         // 客户信息
                         fillCustInfo(commonLender, e);
                         // 文件
-                        fillFiles(commonLender);
+                        fillFiles(commonLender, commonLender.getCustomerId());
                         // 征信结果
                         fillCreditMsg(commonLender, creditType);
 
@@ -158,7 +158,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         // 客户信息
                         fillCustInfo(guarantor, e);
                         // 文件
-                        fillFiles(guarantor);
+                        fillFiles(guarantor, guarantor.getCustomerId());
                         // 征信结果
                         fillCreditMsg(guarantor, creditType);
 
@@ -171,7 +171,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         // 客户信息
                         fillCustInfo(emergencyContact, e);
                         // 文件
-                        fillFiles(emergencyContact);
+                        fillFiles(emergencyContact, emergencyContact.getCustomerId());
                         // 征信结果
                         fillCreditMsg(emergencyContact, creditType);
 
@@ -191,9 +191,16 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         creditRecordVO.setEmergencyContactList(sortedEmergencyContactList);
     }
 
-    private void fillFiles(CreditRecordVO.CustomerCreditRecord customerCreditRecord) {
-
-
+    /**
+     * 文件信息
+     *
+     * @param customerCreditRecord
+     * @param customerId
+     */
+    private void fillFiles(CreditRecordVO.CustomerCreditRecord customerCreditRecord, Long customerId) {
+        ResultBean<List<FileVO>> filesResultBean = loanFileService.listByCustomerId(customerId);
+        Preconditions.checkArgument(filesResultBean.getSuccess(), filesResultBean.getMsg());
+        customerCreditRecord.setFiles(filesResultBean.getData());
     }
 
     /**
