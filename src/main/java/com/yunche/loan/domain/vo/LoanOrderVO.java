@@ -76,9 +76,14 @@ public class LoanOrderVO {
     private Integer overdueNum;
 
     /**
-     * 当前任务节点审核状态:  0-全部;   1-已提交(审核);   2-未提交(审核);
+     * 当前任务节点审核状态:   1-已提交(审核);   2-未提交(审核);
      */
     private Integer taskStatus;
+
+    /**
+     * 首付款
+     */
+    private BigDecimal downPaymentMoney;
 
     /**
      * 当前任务节点

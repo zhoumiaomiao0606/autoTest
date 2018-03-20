@@ -14,29 +14,49 @@ public class LoanFinancialPlanDO {
     private Long financialProductId;
 
     private String financialProductName;
-
+    /**
+     * 贷款银行名称
+     */
     private String bank;
-
+    /**
+     * 签约利率
+     */
     private BigDecimal signRate;
     /**
      * 实际贷款额
      */
     private BigDecimal loanAmount;
-
+    /**
+     * 贷款期数
+     */
     private Integer loanTime;
-
+    /**
+     * 首付比例
+     */
     private BigDecimal downPaymentRatio;
-
+    /**
+     * 首付额
+     */
     private BigDecimal downPaymentMoney;
-
+    /**
+     * 银行分期本金
+     */
     private BigDecimal bankPeriodPrincipal;
-
+    /**
+     * 银行手续费
+     */
     private BigDecimal bankFee;
-
+    /**
+     * 本息合计(还款总额)
+     */
     private BigDecimal principalInterestSum;
-
+    /**
+     * 首月还款
+     */
     private BigDecimal firstMonthRepay;
-
+    /**
+     * 每月还款
+     */
     private BigDecimal eachMonthRepay;
 
     private Byte status;

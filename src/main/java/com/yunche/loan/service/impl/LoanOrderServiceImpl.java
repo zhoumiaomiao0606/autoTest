@@ -730,7 +730,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private void fillOrderMsg(TaskInfo taskInfo, LoanOrderVO loanOrderVO, String processInstanceId, String taskDefinitionKey,
                               Integer taskStatus, Integer multipartType) {
         // 任务状态
-
         if (null == taskInfo) {
             List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
                     .processInstanceId(processInstanceId)
@@ -869,6 +868,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanOrderVO.setSignRate(loanFinancialPlanDO.getSignRate());
             // 银行分期本金
             loanOrderVO.setBankPeriodPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
+            // 首付款
+            loanOrderVO.setDownPaymentMoney(loanFinancialPlanDO.getDownPaymentMoney());
         }
 
         // 车辆信息
