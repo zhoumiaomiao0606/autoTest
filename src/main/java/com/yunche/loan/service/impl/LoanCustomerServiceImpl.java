@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 
 /**
  * Created by zhouguoliang on 2018/1/29.
@@ -323,24 +324,29 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
             ResultBean<Void> resultBean = update(loanCustomerDO);
             Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
-            // TODO file
-//            ResultBean<Void> updateFileResultBean = loanFileService.update(customerParam.getId(), customerParam.getFiles());
-//            Preconditions.checkArgument(updateFileResultBean.getSuccess(), updateFileResultBean.getMsg());
+            // 文件信息保存
+            ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(customerParam.getId(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
+            Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
         }
     }
 
+    /**
+     * 新增用户信息
+     *
+     * @param customerParam
+     * @return
+     */
     private Long createLoanCustomer(CustomerParam customerParam) {
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         BeanUtils.copyProperties(customerParam, loanCustomerDO);
         ResultBean<Long> createCustomerResult = create(loanCustomerDO);
         Preconditions.checkArgument(createCustomerResult.getSuccess(), "创建客户信息失败");
 
-        //  TODO 文件上传
-//        ResultBean<Void> createFileResultBean = loanFileService.create(createCustomerResult.getData(), customerParam.getFiles());
-//        Preconditions.checkArgument(createFileResultBean.getSuccess(), "创建文件信息失败");
+        // 文件信息保存
+        ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(customerParam.getId(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
+        Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
 
         // 返回客户ID
         return createCustomerResult.getData();
     }
-
 }

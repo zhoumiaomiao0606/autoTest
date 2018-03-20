@@ -156,7 +156,7 @@ public class LoanFileServiceImpl implements LoanFileService {
     }
 
     @Override
-    public ResultBean<Void> updateByCustomerIdAndUploadType(Long customerId, List<FileVO> files, Byte uploadType) {
+    public ResultBean<Void> updateOrInsertByCustomerIdAndUploadType(Long customerId, List<FileVO> files, Byte uploadType) {
 
         if (!CollectionUtils.isEmpty(files)) {
 

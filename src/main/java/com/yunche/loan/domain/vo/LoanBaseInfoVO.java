@@ -2,8 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -25,6 +25,11 @@ public class LoanBaseInfoVO {
      * 区域对象
      */
     private BaseVO area;
+
+    /**
+     * WEB端回填：级联区域ID列表
+     */
+    private List<Long> cascadeAreaId;
 
     private Byte carType;
 

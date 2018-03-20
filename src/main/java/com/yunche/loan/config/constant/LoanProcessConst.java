@@ -97,7 +97,9 @@ public class LoanProcessConst {
         PROCESS_MAP.put(TELEPHONE_VERIFY.getCode(), "电审信息");
         PROCESS_MAP.put(INFO_SUPPLEMENT.getCode(), "资料增补");
 
-        //    TELEPHONE_VERIFY_REVIEW("usertask_telephone_verify_review", "电审复审信息");
+//        TELEPHONE_VERIFY_REVIEW("usertask_telephone_verify_review", "电审复审信息");
+
+
         PROCESS_MAP.put("usertask_car_insurance_record", "车辆保险");
         PROCESS_MAP.put("usertask_gps_install", "GPS安装");
         PROCESS_MAP.put("usertask_busi_examine", "业务审批");

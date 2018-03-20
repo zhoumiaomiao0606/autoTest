@@ -43,7 +43,15 @@ public interface LoanFileService {
      */
     ResultBean<Void> batchInsert(List<LoanFileDO> loanFileDOS);
 
-    ResultBean<Void> updateByCustomerIdAndUploadType(Long customerId, List<FileVO> files, Byte uploadType);
+    /**
+     * 编辑 or 新增 文件信息
+     *
+     * @param customerId
+     * @param files
+     * @param uploadType
+     * @return
+     */
+    ResultBean<Void> updateOrInsertByCustomerIdAndUploadType(Long customerId, List<FileVO> files, Byte uploadType);
 
     ResultBean<Void> batchInsert(Long customerId, List<FileVO> files);
 

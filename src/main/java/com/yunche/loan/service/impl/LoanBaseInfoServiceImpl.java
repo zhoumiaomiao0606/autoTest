@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.vo.BaseVO;
@@ -13,8 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
 
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 
@@ -34,9 +34,6 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
 
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
-
-    @Autowired
-    private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
@@ -123,21 +120,27 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
         }
 
         // 区域
+        List<Long> cascadeAreaId = Lists.newArrayList();
         BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), null);
         BaseVO area = new BaseVO();
         if (null != baseAreaDO) {
             area.setId(baseAreaDO.getAreaId());
             String areaName = baseAreaDO.getAreaName();
+            cascadeAreaId.add(baseAreaDO.getAreaId());
 
             if (LEVEL_CITY.equals(baseAreaDO.getLevel())) {
                 BaseAreaDO parentAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), null);
                 if (null != parentAreaDO) {
                     areaName = parentAreaDO.getAreaName() + areaName;
+
+                    cascadeAreaId.add(parentAreaDO.getAreaId());
+                    Collections.reverse(cascadeAreaId);
                 }
             }
             area.setName(areaName);
         }
         loanBaseInfoVO.setArea(area);
+        loanBaseInfoVO.setCascadeAreaId(cascadeAreaId);
 
         return ResultBean.ofSuccess(loanBaseInfoVO);
     }

@@ -157,7 +157,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                                 // 业务单
                                 LoanOrderVO loanOrderVO = new LoanOrderVO();
                                 // 填充订单信息
-                                fillOrderMsg(loanOrderVO, processInstanceId, query.getTaskDefinitionKey(), query.getTaskStatus(), query.getMultipartType());
+                                fillOrderMsg(e, loanOrderVO, processInstanceId, query.getTaskDefinitionKey(), query.getTaskStatus(), query.getMultipartType());
                                 return loanOrderVO;
                             }
 
@@ -194,7 +194,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                                 // 业务单
                                 LoanOrderVO loanOrderVO = new LoanOrderVO();
                                 // 填充订单信息
-                                fillOrderMsg(loanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), query.getTaskStatus(), null);
+                                fillOrderMsg(null, loanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), query.getTaskStatus(), null);
                                 return loanOrderVO;
                             }
 
@@ -720,20 +720,30 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     /**
      * 填充订单信息
      *
+     * @param taskInfo
      * @param loanOrderVO
      * @param processInstanceId
      * @param taskDefinitionKey
      * @param taskStatus
      * @param multipartType
      */
-    private void fillOrderMsg(LoanOrderVO loanOrderVO, String processInstanceId, String taskDefinitionKey,
+    private void fillOrderMsg(TaskInfo taskInfo, LoanOrderVO loanOrderVO, String processInstanceId, String taskDefinitionKey,
                               Integer taskStatus, Integer multipartType) {
         // 任务状态
-        if (null == taskStatus) {
-            loanOrderVO.setTaskStatus(TASK_TODO);
-        } else {
-            loanOrderVO.setTaskStatus(taskStatus);
+
+        if (null == taskInfo) {
+            List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
+                    .processInstanceId(processInstanceId)
+                    .taskDefinitionKey(taskDefinitionKey)
+                    .orderByTaskCreateTime()
+                    .desc()
+                    .listPage(0, 1);
+
+            if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
+                taskInfo = historicTaskInstanceList.get(0);
+            }
         }
+        loanOrderVO.setTaskStatus(getTaskStatus(taskInfo, taskStatus));
 
         // 贷款客户基本信息填充
         fillBaseMsg(loanOrderVO, processInstanceId);
@@ -1266,7 +1276,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             ResultBean<Void> resultBean = loanCustomerService.update(loanCustomerDO);
             Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
-            ResultBean<Void> updateFileResultBean = loanFileService.updateByCustomerIdAndUploadType(customerParam.getId(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
+            ResultBean<Void> updateFileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(customerParam.getId(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
             Preconditions.checkArgument(updateFileResultBean.getSuccess(), updateFileResultBean.getMsg());
         }
     }

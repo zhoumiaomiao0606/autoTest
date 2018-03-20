@@ -11,6 +11,9 @@ public enum LoanProcessEnum {
     CREDIT_APPLY_VERIFY("usertask_credit_apply_verify", "征信申请审核"),
     BANK_CREDIT_RECORD("usertask_bank_credit_record", "银行征信录入"),
     SOCIAL_CREDIT_RECORD("usertask_social_credit_record", "社会征信录入"),
+
+    CREDIT_RECORD_FILTER("credit_record_filter", "征信记录拦截任务"),
+
     LOAN_APPLY("usertask_loan_apply", "业务申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),
     TELEPHONE_VERIFY("usertask_telephone_verify", "电审信息"),

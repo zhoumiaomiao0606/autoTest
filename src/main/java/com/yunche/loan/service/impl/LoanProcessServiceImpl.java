@@ -94,15 +94,30 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 并行网关任务
 //        dealParallelTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey(), transientVariables, approval.getAction(), loanOrderDO.getLoanBaseInfoId());
 
-        // TODO 电审提交后，执行自动任务：servicetask_financial_scheme   -金融方案
-//        if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-//            taskService.complete(FINANCIAL_SCHEME.getCode());
-//        }
+        // TODO 征信申请记录拦截
+//        doCreditRecordFilterTask(approval, loanOrderDO);
+
 
         // 更新任务状态
         updateLoanOrderTaskDefinitionKey(approval.getOrderId(), approval.getTaskDefinitionKey());
 
         return ResultBean.ofSuccess(null, "审核成功");
+    }
+
+    /**
+     * 征信申请记录拦截
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void doCreditRecordFilterTask(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        if (CREDIT_RECORD_FILTER.getCode().equals(approval.getAction())) {
+
+
+        }
+
+
     }
 
     private void dealParallelTask(String processInstId, String taskDefinitionKey, Map<String, Object> transientVariables, Integer action, Long loanBaseInfoId) {
