@@ -43,29 +43,6 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
         return ResultBean.ofSuccess(orderId);
     }
 
-    /**
-     * 生成业务单ID
-     *
-     * @return
-     */
-    private Long createOrderNum() {
-        // 设置日期格式
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-        // new Date()为获取当前系统时间，也可使用当前时间戳
-        String orderNum = "" + df.format(new Date());
-
-        Random rm = new Random();
-        // 获得随机数
-        double pross = (1 + rm.nextDouble()) * Math.pow(10, 6);
-        // 将获得的获得随机数转化为字符串
-        String fixLenthString = String.valueOf(pross);
-        // 返回固定的长度的随机数
-        fixLenthString = fixLenthString.substring(1, 6);
-        orderNum = orderNum + fixLenthString;
-
-        return Long.valueOf(orderNum);
-    }
-
     @Override
     public ResultBean<Long> createLoanOrder(Long baseInfoId, Long customerId) {
         // 开启activiti流程
@@ -92,5 +69,28 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
         Preconditions.checkArgument(count > 0, "编辑失败");
 
         return ResultBean.ofSuccess(null, "编辑成功");
+    }
+
+    /**
+     * 生成业务单ID
+     *
+     * @return
+     */
+    private Long createOrderNum() {
+        // 设置日期格式
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        // new Date()为获取当前系统时间，也可使用当前时间戳
+        String orderNum = "" + df.format(new Date());
+
+        Random rm = new Random();
+        // 获得随机数
+        double pross = (1 + rm.nextDouble()) * Math.pow(10, 6);
+        // 将获得的获得随机数转化为字符串
+        String fixLenthString = String.valueOf(pross);
+        // 返回固定的长度的随机数
+        fixLenthString = fixLenthString.substring(1, 6);
+        orderNum = orderNum + fixLenthString;
+
+        return Long.valueOf(orderNum);
     }
 }

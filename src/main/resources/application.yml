@@ -1,9 +1,9 @@
 spring:
   profiles: dev
   datasource:
-    url: jdbc:mysql://rm-bp1uk11f20h4i65u9ao.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
-    username: yuncheadmin
-    password: Yunche_2018
+    url: jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&characterEncoding=utf-8
+    username: yunche
+    password: 123456
     driver-class-name: com.mysql.jdbc.Driver
     tomcat:
       max-wait: 10000
@@ -12,14 +12,14 @@ spring:
       test-on-borrow: true
 
   redis:
-    host: 127.0.0.1
-    port: 6379
-    password:
-    pool:
-      max-active: 8
-      max-idle: 8
-      min-idle: 0
-      max-wait: 10000
+      host: 47.97.122.31
+      port: 6379
+      password: yunche@1234
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: 10000
 
   mail:
     host: smtp.exmail.qq.com

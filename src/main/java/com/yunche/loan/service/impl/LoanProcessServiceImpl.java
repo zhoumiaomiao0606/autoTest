@@ -95,8 +95,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 //        dealParallelTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey(), transientVariables, approval.getAction(), loanOrderDO.getLoanBaseInfoId());
 
         // TODO 征信申请记录拦截
-//        doCreditRecordFilterTask(approval, loanOrderDO);
-
+//        doCreditRecordFilterTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO.getLoanBaseInfoId(), variables);
 
         // 更新任务状态
         updateLoanOrderTaskDefinitionKey(approval.getOrderId(), approval.getTaskDefinitionKey());
@@ -107,17 +106,50 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 征信申请记录拦截
      *
-     * @param approval
-     * @param loanOrderDO
+     * @param processInstId
+     * @param taskDefinitionKey
+     * @param action
+     * @param loanBaseInfoId
+     * @param variables
      */
-    private void doCreditRecordFilterTask(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    private void doCreditRecordFilterTask(String processInstId, String taskDefinitionKey, Integer action, Long loanBaseInfoId, Map<String, Object> variables) {
 
-        if (CREDIT_RECORD_FILTER.getCode().equals(approval.getAction())) {
-
-
+        // 银行&社会征信并行
+        Integer loanAmount = (Integer) variables.get("loanAmount");
+        if (null == loanAmount) {
+            // 贷款金额
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+            Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
+            Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
+            loanAmount = Integer.valueOf(loanBaseInfoDO.getLoanAmount());
         }
 
+        boolean isBankAndSocialCreditRecordTask = (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey))
+                && null != loanAmount && loanAmount >= 2;
 
+        if (isBankAndSocialCreditRecordTask) {
+
+            // 执行拦截任务
+
+            if (ACTION_PASS.equals(action)) {
+                // 是否都通过了
+
+
+                // 是 -> 放行
+
+
+                // 否 -> 等待
+
+            } else if (ACTION_REJECT.equals(action)) {
+                // 打回 -> 结束掉所有子任务，然后打回
+
+
+            } else if (ACTION_CANCEL.equals(action)) {
+                // 弃单 -> 结束掉所有子任务，然后弃单
+
+
+            }
+        }
     }
 
     private void dealParallelTask(String processInstId, String taskDefinitionKey, Map<String, Object> transientVariables, Integer action, Long loanBaseInfoId) {

@@ -37,10 +37,24 @@ public class AppOrderProcessVO {
      */
     private String salesmanName;
     /**
+     * 合伙人所属云车管辖部门
+     */
+    private String department;
+    /**
      * 贷款银行
      */
     private String bank;
-
+    /**
+     * 当前任务KEY
+     */
+    private String taskDefinitionKey;
+    /**
+     * 是否能够弃单
+     */
+    private Boolean canCancelTask;
+    /**
+     * 任务进度
+     */
     private List<Task> taskList;
 
     @Data

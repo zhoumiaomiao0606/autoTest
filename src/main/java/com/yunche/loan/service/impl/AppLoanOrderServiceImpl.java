@@ -13,8 +13,6 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.HistoryService;
-import org.activiti.engine.RuntimeService;
-import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.history.HistoricVariableInstanceQuery;
@@ -35,9 +33,9 @@ import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
-import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.REMIT_REVIEW;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 
 
@@ -71,9 +69,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private LoanHomeVisitDOMapper loanHomeVisitDOMapper;
 
     @Autowired
-    private LoanFileDOMapper loanFileDOMapper;
-
-    @Autowired
     private DepartmentDOMapper departmentDOMapper;
 
     @Autowired
@@ -90,6 +85,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanProcessOrderService loanProcessOrderService;
+
+    @Autowired
+    private LoanProcessService loanProcessService;
 
     @Autowired
     private LoanFinancialPlanService loanFinancialPlanService;
@@ -123,12 +121,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private HistoryService historyService;
-
-    @Autowired
-    private TaskService taskService;
-
-    @Autowired
-    private RuntimeService runtimeService;
 
 
     @Override
@@ -1111,9 +1103,20 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanBaseInfoVO loanBaseInfoVO = loanBaseInfoResultBean.getData();
         if (null != loanBaseInfoVO) {
             if (null != loanBaseInfoVO.getPartner()) {
+                // 合伙人
                 appOrderProcessVO.setPartnerName(loanBaseInfoVO.getPartner().getName());
+
+                // 合伙人所属云车管辖部门
+                PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoVO.getId(), null);
+                if (null != partnerDO) {
+                    DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(partnerDO.getDepartmentId(), null);
+                    if (null != departmentDO) {
+                        appOrderProcessVO.setDepartment(departmentDO.getName());
+                    }
+                }
             }
             if (null != loanBaseInfoVO.getSalesman()) {
+                // 业务员
                 appOrderProcessVO.setSalesmanName(loanBaseInfoVO.getSalesman().getName());
             }
         }
@@ -1159,6 +1162,21 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
+        }
+
+        // 当前任务KEY
+        ResultBean<TaskStateVO> taskStateVOResultBean = loanProcessService.currentTask(loanOrderDO.getId());
+        Preconditions.checkArgument(taskStateVOResultBean.getSuccess(), taskStateVOResultBean.getMsg());
+        TaskStateVO taskStateVO = taskStateVOResultBean.getData();
+        if (null != taskStateVO) {
+            appOrderProcessVO.setTaskDefinitionKey(taskStateVO.getTaskDefinitionKey());
+        }
+
+        // 是否可以弃单 -> 【打款确认】为界限
+        if (REMIT_REVIEW.getCode().equals(appOrderProcessVO.getTaskDefinitionKey())) {
+            appOrderProcessVO.setCanCancelTask(false);
+        } else {
+            appOrderProcessVO.setCanCancelTask(true);
         }
 
         appOrderProcessVO.setTaskList(taskList);
