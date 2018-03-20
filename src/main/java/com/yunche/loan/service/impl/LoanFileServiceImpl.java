@@ -10,6 +10,8 @@ import com.yunche.loan.domain.param.LoanFileParam;
 import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.service.LoanFileService;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanFileConst.TYPE_NAME_MAP;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 
 /**
  * @author liuzhe
@@ -124,7 +127,7 @@ public class LoanFileServiceImpl implements LoanFileService {
 
                         FileVO fileVO = new FileVO();
                         fileVO.setType(e.getType());
-                        // TODO   Object Key  --> URL
+                        fileVO.setName(TYPE_NAME_MAP.get(e.getType()));
                         List<String> urls = JSON.parseArray(e.getPath(), String.class);
                         fileVO.setUrls(urls);
                         return fileVO;
@@ -212,6 +215,124 @@ public class LoanFileServiceImpl implements LoanFileService {
 
             ResultBean<Void> resultBean = batchInsert(loanFileDOS);
             Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+        }
+
+        return ResultBean.ofSuccess(null);
+    }
+
+    /**
+     * 已经增补过的图片 ——> 正常上传
+     *
+     * @param customerId
+     * @param type
+     * @return
+     */
+    @Override
+    public ResultBean<Void> moveOldSupplementToNormal(Long customerId, Byte type) {
+
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, type, null);
+        if (!CollectionUtils.isEmpty(loanFileDOS)) {
+
+            final LoanFileDO[] supplementFile = {null};
+            final LoanFileDO[] normalFile = {null};
+
+            loanFileDOS.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(f -> {
+
+                        if (UPLOAD_TYPE_SUPPLEMENT.equals(f.getType())) {
+                            supplementFile[0] = f;
+                        } else if (UPLOAD_TYPE_NORMAL.equals(f.getType())) {
+                            normalFile[0] = f;
+                        }
+                    });
+
+            if (ArrayUtils.isNotEmpty(supplementFile)) {
+                LoanFileDO supplementFileDO = supplementFile[0];
+                if (null != supplementFileDO) {
+
+                    String existSupplementPath = supplementFileDO.getPath();
+                    if (StringUtils.isNotBlank(existSupplementPath)) {
+
+                        // B - y
+                        List<String> existSupplementPathList = JSON.parseArray(existSupplementPath, String.class);
+                        if (!CollectionUtils.isEmpty(existSupplementPathList)) {
+
+                            // A -y  编辑
+                            if (ArrayUtils.isNotEmpty(normalFile)) {
+                                LoanFileDO normalFileDO = normalFile[0];
+
+                                String existNormalPath = normalFileDO.getPath();
+                                if (StringUtils.isNotBlank(existNormalPath)) {
+                                    List<String> existNormalPathList = JSON.parseArray(existNormalPath, String.class);
+
+                                    existNormalPathList.add(existSupplementPath);
+                                    normalFileDO.setPath(JSON.toJSONString(existNormalPathList));
+                                    ResultBean<Void> updateResult = update(normalFileDO);
+                                    Preconditions.checkArgument(updateResult.getSuccess(), updateResult.getMsg());
+
+                                    supplementFileDO.setPath(null);
+                                    ResultBean<Void> updateSupplementFileResult = update(supplementFileDO);
+                                    Preconditions.checkArgument(updateSupplementFileResult.getSuccess(), updateSupplementFileResult.getMsg());
+                                }
+                            } else {
+
+                                // A -n  新增
+                                LoanFileDO normalFileDO = new LoanFileDO();
+                                normalFileDO.setPath(JSON.toJSONString(existSupplementPathList));
+                                normalFileDO.setType(UPLOAD_TYPE_NORMAL);
+                                normalFileDO.setCustomerId(customerId);
+
+                                ResultBean<Long> insertResult = create(normalFileDO);
+                                Preconditions.checkArgument(insertResult.getSuccess(), insertResult.getMsg());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return ResultBean.ofSuccess(null);
+    }
+
+    /**
+     * 保存新增补的文件
+     *
+     * @param customerId
+     * @param type
+     * @param urls
+     * @return
+     */
+    @Override
+    public ResultBean<Void> saveNewSupplementFiles(Long customerId, Byte type, List<String> urls) {
+
+        if (!CollectionUtils.isEmpty(urls)) {
+            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, type, UPLOAD_TYPE_SUPPLEMENT);
+            if (!CollectionUtils.isEmpty(loanFileDOS)) {
+                LoanFileDO loanFileDO = loanFileDOS.get(0);
+                if (null != loanFileDO) {
+
+                    loanFileDO.setPath(JSON.toJSONString(urls));
+                    ResultBean<Void> resultBean = update(loanFileDO);
+                    Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+                } else {
+
+                    loanFileDO.setType(type);
+                    loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
+                    loanFileDO.setCustomerId(customerId);
+                    loanFileDO.setPath(JSON.toJSONString(urls));
+                    ResultBean<Long> resultBean = create(loanFileDO);
+                    Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+                }
+            } else {
+                LoanFileDO loanFileDO = new LoanFileDO();
+                loanFileDO.setType(type);
+                loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
+                loanFileDO.setCustomerId(customerId);
+                loanFileDO.setPath(JSON.toJSONString(urls));
+                ResultBean<Long> resultBean = create(loanFileDO);
+                Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+            }
         }
 
         return ResultBean.ofSuccess(null);

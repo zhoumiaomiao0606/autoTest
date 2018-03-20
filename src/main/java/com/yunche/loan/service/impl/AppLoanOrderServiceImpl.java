@@ -420,10 +420,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 .forEach(e -> {
 
                     // 已经增补过的图片 ——> 正常上传
-                    moveOldSupplementToNormal(infoSupplementParam.getCustomerId(), e.getType());
+                    ResultBean<Void> moveResultBean = loanFileService.moveOldSupplementToNormal(infoSupplementParam.getCustomerId(), e.getType());
+                    Preconditions.checkArgument(moveResultBean.getSuccess(), moveResultBean.getMsg());
 
                     // 保存新增补的文件 ——> 增补上传
-                    saveNewSupplementFiles(infoSupplementParam.getCustomerId(), e.getType(), e.getUrls());
+                    ResultBean<Void> saveResultBean = loanFileService.saveNewSupplementFiles(infoSupplementParam.getCustomerId(), e.getType(), e.getUrls());
+                    Preconditions.checkArgument(saveResultBean.getSuccess(), saveResultBean.getMsg());
                 });
 
         return ResultBean.ofSuccess(null, "资料增补成功");
@@ -877,112 +879,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private void fillCustomerInfo(CustomerVO customerVO, AppCustomerInfoVO.CustomerInfo customerInfo) {
         if (null != customerVO) {
             BeanUtils.copyProperties(customerVO, customerInfo);
-        }
-    }
-
-    /**
-     * 保存新增补的文件
-     *
-     * @param customerId
-     * @param type
-     * @param urls
-     */
-    private void saveNewSupplementFiles(Long customerId, Byte type, List<String> urls) {
-        if (CollectionUtils.isEmpty(urls)) {
-            return;
-        }
-
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, type, UPLOAD_TYPE_SUPPLEMENT);
-        if (!CollectionUtils.isEmpty(loanFileDOS)) {
-            LoanFileDO loanFileDO = loanFileDOS.get(0);
-            if (null != loanFileDO) {
-
-                loanFileDO.setPath(JSON.toJSONString(urls));
-                ResultBean<Void> resultBean = loanFileService.update(loanFileDO);
-                Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-            } else {
-
-                loanFileDO.setType(type);
-                loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
-                loanFileDO.setCustomerId(customerId);
-                loanFileDO.setPath(JSON.toJSONString(urls));
-                ResultBean<Long> resultBean = loanFileService.create(loanFileDO);
-                Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-            }
-        } else {
-            LoanFileDO loanFileDO = new LoanFileDO();
-            loanFileDO.setType(type);
-            loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
-            loanFileDO.setCustomerId(customerId);
-            loanFileDO.setPath(JSON.toJSONString(urls));
-            ResultBean<Long> resultBean = loanFileService.create(loanFileDO);
-            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-        }
-    }
-
-
-    private void moveOldSupplementToNormal(Long customerId, Byte type) {
-
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, type, null);
-        if (!CollectionUtils.isEmpty(loanFileDOS)) {
-
-            final LoanFileDO[] supplementFile = {null};
-            final LoanFileDO[] normalFile = {null};
-
-            loanFileDOS.parallelStream()
-                    .filter(Objects::nonNull)
-                    .forEach(f -> {
-
-                        if (UPLOAD_TYPE_SUPPLEMENT.equals(f.getType())) {
-                            supplementFile[0] = f;
-                        } else if (UPLOAD_TYPE_NORMAL.equals(f.getType())) {
-                            normalFile[0] = f;
-                        }
-                    });
-
-            if (ArrayUtils.isNotEmpty(supplementFile)) {
-                LoanFileDO supplementFileDO = supplementFile[0];
-                if (null != supplementFileDO) {
-
-                    String existSupplementPath = supplementFileDO.getPath();
-                    if (StringUtils.isNotBlank(existSupplementPath)) {
-
-                        // B - y
-                        List<String> existSupplementPathList = JSON.parseArray(existSupplementPath, String.class);
-                        if (!CollectionUtils.isEmpty(existSupplementPathList)) {
-
-                            // A -y  编辑
-                            if (ArrayUtils.isNotEmpty(normalFile)) {
-                                LoanFileDO normalFileDO = normalFile[0];
-
-                                String existNormalPath = normalFileDO.getPath();
-                                if (StringUtils.isNotBlank(existNormalPath)) {
-                                    List<String> existNormalPathList = JSON.parseArray(existNormalPath, String.class);
-
-                                    existNormalPathList.add(existSupplementPath);
-                                    normalFileDO.setPath(JSON.toJSONString(existNormalPathList));
-                                    ResultBean<Void> updateResult = loanFileService.update(normalFileDO);
-                                    Preconditions.checkArgument(updateResult.getSuccess(), updateResult.getMsg());
-
-                                    supplementFileDO.setPath(null);
-                                    ResultBean<Void> updateSupplementFileResult = loanFileService.update(supplementFileDO);
-                                    Preconditions.checkArgument(updateSupplementFileResult.getSuccess(), updateSupplementFileResult.getMsg());
-                                }
-                            } else {
-
-                                // A -n  新增
-                                LoanFileDO normalFileDO = new LoanFileDO();
-                                normalFileDO.setPath(JSON.toJSONString(existSupplementPathList));
-                                normalFileDO.setType(UPLOAD_TYPE_NORMAL);
-                                normalFileDO.setCustomerId(customerId);
-
-                                ResultBean<Long> insertResult = loanFileService.create(normalFileDO);
-                                Preconditions.checkArgument(insertResult.getSuccess(), insertResult.getMsg());
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 

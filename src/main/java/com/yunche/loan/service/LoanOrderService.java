@@ -39,7 +39,7 @@ public interface LoanOrderService {
 
     ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam);
 
-    ResultBean<Void> infoSupplement(InfoSupplementParam infoSupplementParam);
+    ResultBean<Void> infoSupplementUpload(InfoSupplementParam infoSupplementParam);
 
     ResultBean<String> createCreditApplyOrder(CreditApplyOrderParam param);
 
@@ -61,5 +61,5 @@ public interface LoanOrderService {
 
     ResultBean<List<LoanSimpleCustomerInfoVO>> simpleCustomerInfo(Long orderId);
 
-    ResultBean<TelephoneVerifyVO> telephoneVerifyDetail(Long orderId);
+    ResultBean<InfoSupplementVO> infoSupplementDetail(Long orderId);
 }

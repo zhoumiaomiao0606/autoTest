@@ -46,4 +46,23 @@ public interface LoanFileService {
     ResultBean<Void> updateByCustomerIdAndUploadType(Long customerId, List<FileVO> files, Byte uploadType);
 
     ResultBean<Void> batchInsert(Long customerId, List<FileVO> files);
+
+    /**
+     * 已经增补过的图片 ——> 正常上传
+     *
+     * @param customerId
+     * @param type
+     * @return
+     */
+    ResultBean<Void> moveOldSupplementToNormal(Long customerId, Byte type);
+
+    /**
+     * 保存新增补的文件
+     *
+     * @param customerId
+     * @param type
+     * @param urls
+     * @return
+     */
+    ResultBean<Void> saveNewSupplementFiles(Long customerId, Byte type, List<String> urls);
 }

@@ -269,9 +269,20 @@ public class LoanOrderController {
      * @param infoSupplementParam
      * @return
      */
-    @PostMapping(value = "/infosupplement", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> infoSupplement(@RequestBody InfoSupplementParam infoSupplementParam) {
-        return loanOrderService.infoSupplement(infoSupplementParam);
+    @PostMapping(value = "/infosupplement/upload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> infoSupplementUpload(@RequestBody InfoSupplementParam infoSupplementParam) {
+        return loanOrderService.infoSupplementUpload(infoSupplementParam);
+    }
+
+    /**
+     * 资料增补详情页
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/infosupplement/detail")
+    public ResultBean<InfoSupplementVO> infoSupplementDetail(@RequestParam Long orderId) {
+        return loanOrderService.infoSupplementDetail(orderId);
     }
 
     /**
@@ -296,16 +307,16 @@ public class LoanOrderController {
         return loanOrderService.simpleCustomerInfo(orderId);
     }
 
-    /**
-     * 电审页详情展示
-     *
-     * @param orderId
-     * @return
-     */
-    @GetMapping(value = "/telephoneverify/detail")
-    public ResultBean<TelephoneVerifyVO> telephoneVerifyDetail(@RequestParam Long orderId) {
-        return loanOrderService.telephoneVerifyDetail(orderId);
-    }
+//    /**
+//     * 电审页详情展示
+//     *
+//     * @param orderId
+//     * @return
+//     */
+//    @GetMapping(value = "/telephoneverify/detail")
+//    public ResultBean<TelephoneVerifyVO> telephoneVerifyDetail(@RequestParam Long orderId) {
+//        return loanOrderService.telephoneVerifyDetail(orderId);
+//    }
 }
 
 
