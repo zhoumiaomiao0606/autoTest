@@ -51,4 +51,6 @@ public class EmployeeDO implements Serializable {
     private Byte status;
 
     private String feature;
+
+    private String machineId;
 }

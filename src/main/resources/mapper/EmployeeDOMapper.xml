@@ -19,11 +19,12 @@
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="machine_id" jdbcType="VARCHAR" property="machineId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id, name, password, id_card, mobile, email, ding_ding, department_id, parent_id,
-        title, entry_date, level, type, gmt_create, gmt_modify, feature, status
+        title, entry_date, level, type, gmt_create, gmt_modify, feature, status,machine_id
     </sql>
 
     <sql id="Base_Query_List">
@@ -429,6 +430,9 @@
             </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="machineId != null">
+                machine_id = #{machineId,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

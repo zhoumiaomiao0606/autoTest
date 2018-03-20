@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.mapper.*;
@@ -348,6 +349,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Subject subject = SecurityUtils.getSubject();
         String username = employeeParam.getUsername();
         String password = employeeParam.getPassword();
+        String machineId = employeeParam.getMachineId();
+
         AuthenticationToken token = new UsernamePasswordToken(username, password);
 
         try {
@@ -368,6 +371,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         Boolean isTerminal = employeeParam.getIsTerminal();
         if (isTerminal) {
             SecurityUtils.getSubject().getSession().setTimeout(TERMINAL_SESSION_TIMEOUT);
+        }
+
+        if (isTerminal) {
+            //如果是移动端登陆 必须要加入设备id进去
+            if(StringUtils.isBlank(machineId)){
+                throw new BizException("设备id为空");
+            }
+            EmployeeDO emp  =  (EmployeeDO) subject.getPrincipal();
+            EmployeeDO emp_ = new EmployeeDO();
+            emp_.setId(emp.getId());
+            emp_.setMachineId(machineId);
+            employeeDOMapper.updateByPrimaryKeySelective(emp_);
         }
 
         // 返回data

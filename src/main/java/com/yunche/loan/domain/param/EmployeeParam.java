@@ -31,4 +31,8 @@ public class EmployeeParam extends EmployeeDO {
      * 是否为移动端登录
      */
     private Boolean isTerminal = false;
+
+
+    //机器id
+    private String machineId;
 }
