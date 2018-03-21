@@ -11,6 +11,8 @@
         <setting name="defaultStatementTimeout" value="30"/>
     </settings>
 
+
+
     <typeAliases>
         <typeAlias type="java.lang.Integer" alias="int"/>
         <typeAlias type="java.lang.String" alias="string"/>
@@ -19,6 +21,11 @@
         <typeAlias type="java.util.Set" alias="set"/>
         <package name="com.yunche.loan.mapper"></package>
     </typeAliases>
+
+
+    <typeHandlers>
+        <typeHandler handler="com.yunche.loan.web.aop.AmountTypeHandler"/>
+    </typeHandlers>
 
     <plugins>
         <!-- com.github.pagehelper为PageHelper类所在包名 -->
@@ -39,6 +46,7 @@
             <property name="returnPageInfo" value="check"/>
         </plugin>
     </plugins>
+
 
 </configuration>
 

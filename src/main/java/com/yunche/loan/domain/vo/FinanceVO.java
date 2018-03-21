@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class FinanceVO {
 
@@ -55,6 +57,7 @@ public class FinanceVO {
     private String gps_num;//gps安装个数
     private String car_key;//是否留备用钥匙 0-否;1-是;
     private String car_name;//车名
+    private String small_car_name;//车辆缩写
     private String sale_price;//车价格
     private String assess_price;//评估价格
     private String production_type;//生产类型（1;//国产;2;//合资）
@@ -68,5 +71,8 @@ public class FinanceVO {
     private String survey_report;//调查报告
     private String verify_status;//电审结果
     private String verify_report;//电审描述
+    private String address;//现居地址
+    private String engine_number;//引擎编号
+    private String birth;//生日
 
 }
