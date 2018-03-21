@@ -249,7 +249,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         creditApplyOrderVO.setOrderId(loanOrderDO.getId());
 
         // 关联的-客户信息(主贷人/共贷人/担保人/紧急联系人)
-        ResultBean<CustDetailVO> custDetailVOResultBean = loanCustomerService.detailAll(orderId);
+        ResultBean<CustDetailVO> custDetailVOResultBean = loanCustomerService.detailAll(orderId, null);
         BeanUtils.copyProperties(custDetailVOResultBean.getData(), creditApplyOrderVO);
 
         // 关联的-贷款基本信息
@@ -300,7 +300,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkNotNull(orderId, "业务单ID不能为空");
 
         // 根据主贷人ID获取客户详情列表
-        ResultBean<CustDetailVO> resultBean = loanCustomerService.detailAll(orderId);
+        ResultBean<CustDetailVO> resultBean = loanCustomerService.detailAll(orderId, null);
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
         AppCustDetailVO appCustDetailVO = new AppCustDetailVO();
@@ -426,7 +426,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
         // 客户基本信息
-        ResultBean<CustDetailVO> custDetailVOResultBean = loanCustomerService.detailAll(orderId);
+        ResultBean<CustDetailVO> custDetailVOResultBean = loanCustomerService.detailAll(orderId, null);
         Preconditions.checkArgument(custDetailVOResultBean.getSuccess(), custDetailVOResultBean.getMsg());
 
         AppCustomerInfoVO customerInfoVO = new AppCustomerInfoVO();

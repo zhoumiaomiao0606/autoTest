@@ -11,9 +11,13 @@ import java.util.Date;
 @Data
 public class LoanSimpleInfoVO {
     /**
+     * 主贷人ID
+     */
+    private Long customerId;
+    /**
      * 主贷人姓名
      */
-    private String principalCustName;
+    private String customerName;
 
     private String idCard;
 
@@ -23,7 +27,9 @@ public class LoanSimpleInfoVO {
 
     private String area;
 
-    private String partner;
+    private Long partnerId;
+
+    private String partnerName;
 
     private String bank;
     /**

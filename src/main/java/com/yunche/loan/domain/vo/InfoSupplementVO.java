@@ -67,8 +67,37 @@ public class InfoSupplementVO {
      * 增补单生成日期
      */
     private Date supplementStartDate;
+
     /**
-     * 文件分类 URL列表
+     * 主贷人
      */
-    private List<FileVO> files;
+    private CustomerFile principalLender;
+    /**
+     * 共贷人列表
+     */
+    private List<CustomerFile> commonLenderList;
+    /**
+     * 担保人列表
+     */
+    private List<CustomerFile> guarantorList;
+    /**
+     * 紧急联系人列表
+     */
+    private List<CustomerFile> emergencyContactList;
+
+    @Data
+    public static class CustomerFile {
+        /**
+         * 客户ID
+         */
+        private Long customerId;
+        /**
+         * 客户名称
+         */
+        private String customerName;
+        /**
+         * 文件分类 URL列表
+         */
+        private List<FileVO> files;
+    }
 }

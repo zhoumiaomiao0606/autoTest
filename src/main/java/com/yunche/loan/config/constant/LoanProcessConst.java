@@ -78,6 +78,9 @@ public class LoanProcessConst {
 //     */
 //    public static final String DELETE_RELEASE_HAS_DONE = "completed";
 
+
+    public static final String PARALLEL_TASK_FILTER_RELEASE_CANCEL = "filter_auto_cancel";
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
