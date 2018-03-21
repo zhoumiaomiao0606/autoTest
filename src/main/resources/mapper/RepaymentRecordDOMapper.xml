@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.RepaymentRecordDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.RepaymentRecordDO">
+    <id column="id_card" jdbcType="VARCHAR" property="idCard" />
+    <id column="repay_card_id" jdbcType="VARCHAR" property="repayCardId" />
+    <id column="current_overdue_times" jdbcType="INTEGER" property="currentOverdueTimes" />
+    <result column="biz_order" jdbcType="BIGINT" property="bizOrder" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="optimal_return" jdbcType="DECIMAL" property="optimalReturn" />
+    <result column="min_payment" jdbcType="DECIMAL" property="minPayment" />
+    <result column="past_due" jdbcType="DECIMAL" property="pastDue" />
+    <result column="cumulative_overdue_times" jdbcType="INTEGER" property="cumulativeOverdueTimes" />
+    <result column="card_balance" jdbcType="DECIMAL" property="cardBalance" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+    <result column="feature" jdbcType="VARCHAR" property="feature" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id_card, repay_card_id, current_overdue_times, biz_order, user_name, optimal_return, 
+    min_payment, past_due, cumulative_overdue_times, card_balance, gmt_create, gmt_modify, 
+    feature
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from repayment_record
+    where id_card = #{idCard,jdbcType=VARCHAR}
+      and repay_card_id = #{repayCardId,jdbcType=VARCHAR}
+      and current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDOKey">
+    delete from repayment_record
+    where id_card = #{idCard,jdbcType=VARCHAR}
+      and repay_card_id = #{repayCardId,jdbcType=VARCHAR}
+      and current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDO">
+    insert into repayment_record (id_card, repay_card_id, current_overdue_times, 
+      biz_order, user_name, optimal_return, 
+      min_payment, past_due, cumulative_overdue_times, 
+      card_balance, gmt_create, gmt_modify, 
+      feature)
+    values (#{idCard,jdbcType=VARCHAR}, #{repayCardId,jdbcType=VARCHAR}, #{currentOverdueTimes,jdbcType=INTEGER}, 
+      #{bizOrder,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{optimalReturn,jdbcType=DECIMAL}, 
+      #{minPayment,jdbcType=DECIMAL}, #{pastDue,jdbcType=DECIMAL}, #{cumulativeOverdueTimes,jdbcType=INTEGER}, 
+      #{cardBalance,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, 
+      #{feature,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDO">
+    insert into repayment_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="idCard != null">
+        id_card,
+      </if>
+      <if test="repayCardId != null">
+        repay_card_id,
+      </if>
+      <if test="currentOverdueTimes != null">
+        current_overdue_times,
+      </if>
+      <if test="bizOrder != null">
+        biz_order,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="optimalReturn != null">
+        optimal_return,
+      </if>
+      <if test="minPayment != null">
+        min_payment,
+      </if>
+      <if test="pastDue != null">
+        past_due,
+      </if>
+      <if test="cumulativeOverdueTimes != null">
+        cumulative_overdue_times,
+      </if>
+      <if test="cardBalance != null">
+        card_balance,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+      <if test="feature != null">
+        feature,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="idCard != null">
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="repayCardId != null">
+        #{repayCardId,jdbcType=VARCHAR},
+      </if>
+      <if test="currentOverdueTimes != null">
+        #{currentOverdueTimes,jdbcType=INTEGER},
+      </if>
+      <if test="bizOrder != null">
+        #{bizOrder,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="optimalReturn != null">
+        #{optimalReturn,jdbcType=DECIMAL},
+      </if>
+      <if test="minPayment != null">
+        #{minPayment,jdbcType=DECIMAL},
+      </if>
+      <if test="pastDue != null">
+        #{pastDue,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeOverdueTimes != null">
+        #{cumulativeOverdueTimes,jdbcType=INTEGER},
+      </if>
+      <if test="cardBalance != null">
+        #{cardBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="feature != null">
+        #{feature,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDO">
+    update repayment_record
+    <set>
+      <if test="bizOrder != null">
+        biz_order = #{bizOrder,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="optimalReturn != null">
+        optimal_return = #{optimalReturn,jdbcType=DECIMAL},
+      </if>
+      <if test="minPayment != null">
+        min_payment = #{minPayment,jdbcType=DECIMAL},
+      </if>
+      <if test="pastDue != null">
+        past_due = #{pastDue,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeOverdueTimes != null">
+        cumulative_overdue_times = #{cumulativeOverdueTimes,jdbcType=INTEGER},
+      </if>
+      <if test="cardBalance != null">
+        card_balance = #{cardBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="feature != null">
+        feature = #{feature,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id_card = #{idCard,jdbcType=VARCHAR}
+      and repay_card_id = #{repayCardId,jdbcType=VARCHAR}
+      and current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDO">
+    update repayment_record
+    set biz_order = #{bizOrder,jdbcType=BIGINT},
+      user_name = #{userName,jdbcType=VARCHAR},
+      optimal_return = #{optimalReturn,jdbcType=DECIMAL},
+      min_payment = #{minPayment,jdbcType=DECIMAL},
+      past_due = #{pastDue,jdbcType=DECIMAL},
+      cumulative_overdue_times = #{cumulativeOverdueTimes,jdbcType=INTEGER},
+      card_balance = #{cardBalance,jdbcType=DECIMAL},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      feature = #{feature,jdbcType=VARCHAR}
+    where id_card = #{idCard,jdbcType=VARCHAR}
+      and repay_card_id = #{repayCardId,jdbcType=VARCHAR}
+      and current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER}
+  </update>
+</mapper>
