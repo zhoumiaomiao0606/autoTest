@@ -24,9 +24,9 @@ public interface RepaymentRecordDOMapper {
     int updateByPrimaryKey(RepaymentRecordDO record);
 
     //还款记录列表
-    List<RepaymentRecordVO> selectCustomerOverdueRepayList(@Param("partnerId") int partnerId, @Param("areaId") int areaId);
+    List<RepaymentRecordVO> selectCustomerOverdueRepayList();
 
     //还款记录详情查询
-    RepaymentRecordParam selectCustomerOverdueRepayDetail(Long orderId);
+    RepaymentRecordParam selectCustomerOverdueRepayDetail(@Param("orderId")Long orderId);
 
 }

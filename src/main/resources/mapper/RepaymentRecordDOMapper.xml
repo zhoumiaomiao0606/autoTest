@@ -200,33 +200,40 @@
 
   <select id="selectCustomerOverdueRepayList" resultType="com.yunche.loan.domain.vo.RepaymentRecordVO"  >
     SELECT
-        a.biz_order,
-        a.user_name,
-        a.id_card,
-        d.loan_amount,
-        a.optimal_return,
-        a.past_due,
-        a.cumulative_overdue_times,
-        a.gmt_create
+        a.biz_order as bizOrder,
+        a.user_name as userName,
+        a.id_card   as idCard,
+        d.loan_amount as loanAmount,
+        a.optimal_return as optimalReturn,
+        a.past_due as pastDue,
+        a.cumulative_overdue_times as cumulativeOverdueTimes,
+        a.gmt_create as gmtreate
     FROM
         repayment_record a
         LEFT JOIN loan_order b on a.biz_order=b.id
         LEFT JOIN loan_financial_plan d on b.loan_financial_plan_id=d.id
-        LEFT JOIN loan_base_info c on b.loan_base_info_id=c.id
-    where c.partner_id=#{partnerId} and c.area_id=#{areaId} ;
+        LEFT JOIN loan_base_info c on b.loan_base_info_id=c.id ;
 
   </select>
 
   <select id="selectCustomerOverdueRepayDetail" resultType="com.yunche.loan.domain.param.RepaymentRecordParam"  >
     SELECT
-    a.*,
-    d.loan_amount,
-    (select name from partner where  id=c.partner_id  ) name,
-    d.bank_period_principal,
-    d.loan_time,
-    e.mobile
-
-
+    a.biz_order AS 	bizOrder,
+    a.user_name AS  userName,
+    a.id_card   AS  idCard,
+    a.repay_card_id AS repayCardId,
+    a.optimal_return AS optimalReturn,
+    a.min_payment AS minPayment,
+    a.past_due  AS  pastDue,
+    a.current_overdue_times AS currentOverdueTimes,
+    a.cumulative_overdue_times AS cumulativeOverdueTimes,
+    a.card_balance AS cardBalance,
+    a.gmt_create AS gmtCreate,
+    d.loan_amount AS loanAmount,
+    (select name from partner where  id=c.partner_id  ) AS partnerName,
+    d.bank_period_principal AS bankPeriodPrincipal,
+    d.loan_time AS loanTime,
+    e.mobile AS mobile
     FROM
     repayment_record a
     LEFT JOIN loan_order b on a.biz_order=b.id

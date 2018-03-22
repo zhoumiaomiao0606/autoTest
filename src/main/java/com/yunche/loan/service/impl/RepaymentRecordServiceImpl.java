@@ -35,16 +35,14 @@ public class RepaymentRecordServiceImpl implements RepaymentRecordService {
     @Autowired
     LoanQueryDOMapper loanQueryDOMapper;
     @Override
-    public ResultBean<List<RepaymentRecordVO>> query(int partnerId,int areaId) {
-        Preconditions.checkNotNull(partnerId,"请求数据不能为空");
-        Preconditions.checkNotNull(areaId,"身份证号不能为空");
+    public ResultBean<List<RepaymentRecordVO>> query() {
         //TODO 界面展示相关字段组装
-        return ResultBean.ofSuccess(repaymentRecordDOMapper.selectCustomerOverdueRepayList(partnerId,areaId));
+        return ResultBean.ofSuccess(repaymentRecordDOMapper.selectCustomerOverdueRepayList());
     }
 
 //    @Override
     //TODO  接口增加详情查询
-    public ResultBean<RepaymentRecordParam> detail(Long  orderId) {
+    public ResultBean<RepaymentRecordParam> detail(Long orderId) {
 //        Preconditions.checkNotNull(repaymentRecordDOKey,"请求数据不能为空");
 //        Preconditions.checkNotNull(repaymentRecordDOKey.getIdCard(),"身份证号不能为空");
 //        Preconditions.checkNotNull(repaymentRecordDOKey.getRepayCardId(),"还款卡号不能为空");
@@ -151,15 +149,15 @@ public class RepaymentRecordServiceImpl implements RepaymentRecordService {
         return ResultBean.ofSuccess("导入成功");
     }
 
-    private InputStream getInputStream(String fileName) {
-        File f= new File(fileName) ;
-        InputStream input = null ;
-        try {
-            input = new FileInputStream(f);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return input;
-    }
+//    private InputStream getInputStream(String fileName) {
+//        File f= new File(fileName) ;
+//        InputStream input = null ;
+//        try {
+//            input = new FileInputStream(f);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        return input;
+//    }
 
 }

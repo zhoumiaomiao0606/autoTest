@@ -46,4 +46,9 @@ public class RepaymentRecordParam  extends RepaymentRecordVO{
      *客户详细信息
      */
     List<UniversalCustomerVO> universalCustomerVOS;
+
+    /**
+     * 合伙人姓名
+     */
+    private String parternerName;
 }

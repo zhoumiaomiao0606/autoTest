@@ -17,8 +17,8 @@ public class RepaymentRecordController {
     RepaymentRecordService repaymentRecordService;
 
     @GetMapping(value = "/query")
-    public ResultBean query(@RequestParam("partnerId")  int partnerId,@RequestParam("areaId") int  areaId ) {
-        return repaymentRecordService.query(partnerId,areaId);
+    public ResultBean query() {
+        return repaymentRecordService.query();
     }
 
     @GetMapping(value = "/imp")
