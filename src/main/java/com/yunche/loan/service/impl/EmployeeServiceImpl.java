@@ -374,10 +374,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (isTerminal) {
-            //如果是移动端登陆 必须要加入设备id进去
-            if(StringUtils.isBlank(machineId)){
-                throw new BizException("设备id为空");
-            }
             EmployeeDO emp  =  (EmployeeDO) subject.getPrincipal();
             EmployeeDO emp_ = new EmployeeDO();
             emp_.setId(emp.getId());

@@ -74,5 +74,11 @@ public class FinanceVO {
     private String address;//现居地址
     private String engine_number;//引擎编号
     private String birth;//生日
+    private String postcode;//邮编
+    private String company_name;//公司名称
+    private String company_address;//公司地址
+    private String working_years;//工作年限
+    private String duty;//职务
+    private String sex;//性别
 
 }

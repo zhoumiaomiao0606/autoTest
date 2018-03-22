@@ -10,6 +10,7 @@ import java.util.List;
 public class UniversalCustomerFileVO {
     private String urls;
     private String type;
+    private String name;
 
     public List<String> getUrls() {
         if(StringUtils.isBlank(urls)){

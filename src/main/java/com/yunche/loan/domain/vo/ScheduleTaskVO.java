@@ -14,6 +14,9 @@ public class ScheduleTaskVO {
     //生成待办任务日期
     private String createScheduleDate;
 
+    //任务描述
+    private String taskDescription;
+
     //订单id
     private String orderId;
 

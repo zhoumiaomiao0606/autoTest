@@ -205,7 +205,14 @@
              (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report,
              c.address,
              l.engine_number,
-             c.birth
+             c.birth,
+             c.postcode,
+             c.company_name,
+             c.company_address,
+             c.working_years,
+             c.duty,
+             c.sex
+
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
     left join loan_customer c on o.loan_customer_id= c.id
@@ -278,7 +285,13 @@
              (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report,
              c.address,
              l.engine_number,
-             c.birth
+             c.birth,
+             c.postcode,
+             c.company_name,
+             c.company_address,
+             c.working_years,
+             c.duty,
+             c.sex
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -418,6 +431,9 @@
         c.id_card,
         c.mobile,
         c.cust_relation,
+        c.sex,
+        c.company_name,
+        c.company_address,
         case when
             (select result from loan_credit_info where customer_id = 128 and type = 1)  is null
         then
@@ -452,6 +468,7 @@
                 mobile_area,
                 education,
                 company_name,
+                company_address,
                 company_phone,
                 month_income,
                 house_type,
@@ -473,12 +490,12 @@
 
   <!--客户附件信息-->
   <select id="selectUniversalCustomerFile" resultType="com.yunche.loan.domain.vo.UniversalCustomerFileVO" parameterType="java.lang.Long" >
-    select path as urls,type from  loan_file  where customer_id = #{customerId,jdbcType=BIGINT}
+    select path as urls,type,useFileTypeCastName(type) as name from  loan_file  where customer_id = #{customerId,jdbcType=BIGINT}
   </select>
 
   <!--资料增补-->
   <select id="selectUniversalMaterialRecord" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO" parameterType="java.lang.Long" >
-    select path as urls,type from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
+    select path as urls,type,useFileTypeCastName(type) as name from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
   </select>
 
     <!--计算明细的信息-->

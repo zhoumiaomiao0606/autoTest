@@ -19,6 +19,7 @@ public class UniversalCustomerDetailVO {
     private String mobile_area;//手机号归属地
     private String education;//学历：1-高中及以下;2-专科;3-本科;4-硕士;5-博士;
     private String company_name;//单位名字
+    private String company_address;
     private String company_phone;//单位电话
     private String month_income;//月入
     private String house_type;//房产情况:1-自有商品房有贷款;2-自有商品房无贷款;
@@ -33,4 +34,5 @@ public class UniversalCustomerDetailVO {
     private String society_addition;//社会征信附加条件
     private String society_result;//社会征信结果
     private String society_result_info;//社会征信内容
+
 }
