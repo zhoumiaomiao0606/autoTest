@@ -493,7 +493,7 @@
                 house_address,
                 postcode,
                 working_years,
-                duty
+                duty,
                 (select gmt_create from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_gmt_create,
                 ('需要') as bank_addition,
                 (select result from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_result,
