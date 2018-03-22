@@ -277,7 +277,7 @@
              (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','action')) as verify_status,
              (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report,
              c.address,
-             l.engine_number，
+             l.engine_number,
              c.birth
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o

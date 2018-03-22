@@ -4,6 +4,10 @@ import lombok.Data;
 
 @Data
 public class ScheduleTaskVO {
+
+    //任务id
+    private String processId;
+
     //任务key
     private String taskKey;
 
