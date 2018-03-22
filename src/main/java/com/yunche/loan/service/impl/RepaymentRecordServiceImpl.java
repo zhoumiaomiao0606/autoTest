@@ -2,12 +2,15 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.RepaymentRecordDO;
 import com.yunche.loan.domain.entity.RepaymentRecordDOKey;
+import com.yunche.loan.domain.param.RepaymentRecordParam;
 import com.yunche.loan.domain.vo.RepaymentRecordVO;
+import com.yunche.loan.domain.vo.UniversalCustomerVO;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.RepaymentRecordDOMapper;
 import com.yunche.loan.service.RepaymentRecordService;
-import com.yunche.loan.config.util.POIUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,17 +31,31 @@ public class RepaymentRecordServiceImpl implements RepaymentRecordService {
 
     @Autowired
     RepaymentRecordDOMapper repaymentRecordDOMapper;
+
+    @Autowired
+    LoanQueryDOMapper loanQueryDOMapper;
     @Override
-    public ResultBean<RepaymentRecordVO> query(RepaymentRecordDOKey repaymentRecordDOKey) {
-        Preconditions.checkNotNull(repaymentRecordDOKey,"请求数据不能为空");
-        Preconditions.checkNotNull(repaymentRecordDOKey.getIdCard(),"身份证号不能为空");
-        Preconditions.checkNotNull(repaymentRecordDOKey.getRepayCardId(),"还款卡号不能为空");
-        Preconditions.checkNotNull(repaymentRecordDOKey.getCurrentOverdueTimes(),"当前逾期期数不能为空");
-        RepaymentRecordVO repaymentRecordVO= new RepaymentRecordVO();
-        RepaymentRecordDO repaymentRecordDO= repaymentRecordDOMapper.selectByPrimaryKey(repaymentRecordDOKey);
-        BeanUtils.copyProperties(repaymentRecordDO,repaymentRecordVO);
+    public ResultBean<List<RepaymentRecordVO>> query(int partnerId,int areaId) {
+        Preconditions.checkNotNull(partnerId,"请求数据不能为空");
+        Preconditions.checkNotNull(areaId,"身份证号不能为空");
         //TODO 界面展示相关字段组装
-        return ResultBean.ofSuccess(repaymentRecordVO);
+        return ResultBean.ofSuccess(repaymentRecordDOMapper.selectCustomerOverdueRepayList(partnerId,areaId));
+    }
+
+//    @Override
+    //TODO  接口增加详情查询
+    public ResultBean<RepaymentRecordParam> detail(Long  orderId) {
+//        Preconditions.checkNotNull(repaymentRecordDOKey,"请求数据不能为空");
+//        Preconditions.checkNotNull(repaymentRecordDOKey.getIdCard(),"身份证号不能为空");
+//        Preconditions.checkNotNull(repaymentRecordDOKey.getRepayCardId(),"还款卡号不能为空");
+
+
+        //TODO 界面展示相关字段组装
+        //查询客户详细信息
+        RepaymentRecordParam repaymentRecordparam = repaymentRecordDOMapper.selectCustomerOverdueRepayDetail(orderId);
+        List<UniversalCustomerVO> universalCustomerVOS =  loanQueryDOMapper.selectUniversalCustomer(orderId);
+        repaymentRecordparam.setUniversalCustomerVOS(universalCustomerVOS);
+        return ResultBean.ofSuccess(repaymentRecordparam);
     }
 
     @Override
@@ -61,8 +78,13 @@ public class RepaymentRecordServiceImpl implements RepaymentRecordService {
                 repaymentRecordDO.setCumulativeOverdueTimes(Integer.parseInt(tmp[7].trim()));
                 repaymentRecordDO.setCardBalance(new BigDecimal(tmp[8].trim()));
 
+                repaymentRecordDO.setGmtCreate(new Date());
 
-                //TODO 先查询是否存在记录,存在则更新,不存在就插入
+
+                //TODO 根据身份证号+贷款账号查询单号 repaymentRecordDO.setBizOrder();
+
+
+                //TODO
                 RepaymentRecordDOKey repaymentRecordDOKey=new RepaymentRecordDOKey();
                 BeanUtils.copyProperties(repaymentRecordDO,repaymentRecordDOKey);
 
@@ -72,8 +94,6 @@ public class RepaymentRecordServiceImpl implements RepaymentRecordService {
                     int count= repaymentRecordDOMapper.insert(repaymentRecordDO);
                     Preconditions.checkArgument(count > 0, "IDCard:"+repaymentRecordDO.getIdCard()+",对应记录导入出错");
                 }else{
-                    repaymentRecordDO.setGmtCreate(repaymentRecordDOCheck.getGmtCreate());
-                    repaymentRecordDO.setGmtModify(new Date());
                     int count= repaymentRecordDOMapper.updateByPrimaryKeySelective(repaymentRecordDO);
                     Preconditions.checkArgument(count > 0, "IDCard:"+repaymentRecordDO.getIdCard()+",对应记录更新出错");
                 }

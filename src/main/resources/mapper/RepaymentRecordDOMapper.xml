@@ -4,22 +4,23 @@
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.RepaymentRecordDO">
     <id column="id_card" jdbcType="VARCHAR" property="idCard" />
     <id column="repay_card_id" jdbcType="VARCHAR" property="repayCardId" />
-    <id column="current_overdue_times" jdbcType="INTEGER" property="currentOverdueTimes" />
     <result column="biz_order" jdbcType="BIGINT" property="bizOrder" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="optimal_return" jdbcType="DECIMAL" property="optimalReturn" />
     <result column="min_payment" jdbcType="DECIMAL" property="minPayment" />
     <result column="past_due" jdbcType="DECIMAL" property="pastDue" />
+    <result column="current_overdue_times" jdbcType="INTEGER" property="currentOverdueTimes" />
     <result column="cumulative_overdue_times" jdbcType="INTEGER" property="cumulativeOverdueTimes" />
     <result column="card_balance" jdbcType="DECIMAL" property="cardBalance" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="feature" jdbcType="VARCHAR" property="feature" />
+    <result column="status" jdbcType="TINYINT" property="status" />
   </resultMap>
   <sql id="Base_Column_List">
-    id_card, repay_card_id, current_overdue_times, biz_order, user_name, optimal_return, 
-    min_payment, past_due, cumulative_overdue_times, card_balance, gmt_create, gmt_modify, 
-    feature
+    id_card, repay_card_id, biz_order, user_name, optimal_return, min_payment, past_due, 
+    current_overdue_times, cumulative_overdue_times, card_balance, gmt_create, gmt_modify, 
+    feature, status
   </sql>
   <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDOKey" resultMap="BaseResultMap">
     select 
@@ -27,25 +28,23 @@
     from repayment_record
     where id_card = #{idCard,jdbcType=VARCHAR}
       and repay_card_id = #{repayCardId,jdbcType=VARCHAR}
-      and current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDOKey">
     delete from repayment_record
     where id_card = #{idCard,jdbcType=VARCHAR}
       and repay_card_id = #{repayCardId,jdbcType=VARCHAR}
-      and current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDO">
-    insert into repayment_record (id_card, repay_card_id, current_overdue_times, 
-      biz_order, user_name, optimal_return, 
-      min_payment, past_due, cumulative_overdue_times, 
+    insert into repayment_record (id_card, repay_card_id, biz_order, 
+      user_name, optimal_return, min_payment, 
+      past_due, current_overdue_times, cumulative_overdue_times, 
       card_balance, gmt_create, gmt_modify, 
-      feature)
-    values (#{idCard,jdbcType=VARCHAR}, #{repayCardId,jdbcType=VARCHAR}, #{currentOverdueTimes,jdbcType=INTEGER}, 
-      #{bizOrder,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{optimalReturn,jdbcType=DECIMAL}, 
-      #{minPayment,jdbcType=DECIMAL}, #{pastDue,jdbcType=DECIMAL}, #{cumulativeOverdueTimes,jdbcType=INTEGER}, 
+      feature, status)
+    values (#{idCard,jdbcType=VARCHAR}, #{repayCardId,jdbcType=VARCHAR}, #{bizOrder,jdbcType=BIGINT}, 
+      #{userName,jdbcType=VARCHAR}, #{optimalReturn,jdbcType=DECIMAL}, #{minPayment,jdbcType=DECIMAL}, 
+      #{pastDue,jdbcType=DECIMAL}, #{currentOverdueTimes,jdbcType=INTEGER}, #{cumulativeOverdueTimes,jdbcType=INTEGER}, 
       #{cardBalance,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, 
-      #{feature,jdbcType=VARCHAR})
+      #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDO">
     insert into repayment_record
@@ -55,9 +54,6 @@
       </if>
       <if test="repayCardId != null">
         repay_card_id,
-      </if>
-      <if test="currentOverdueTimes != null">
-        current_overdue_times,
       </if>
       <if test="bizOrder != null">
         biz_order,
@@ -74,6 +70,9 @@
       <if test="pastDue != null">
         past_due,
       </if>
+      <if test="currentOverdueTimes != null">
+        current_overdue_times,
+      </if>
       <if test="cumulativeOverdueTimes != null">
         cumulative_overdue_times,
       </if>
@@ -89,6 +88,9 @@
       <if test="feature != null">
         feature,
       </if>
+      <if test="status != null">
+        status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="idCard != null">
@@ -96,9 +98,6 @@
       </if>
       <if test="repayCardId != null">
         #{repayCardId,jdbcType=VARCHAR},
-      </if>
-      <if test="currentOverdueTimes != null">
-        #{currentOverdueTimes,jdbcType=INTEGER},
       </if>
       <if test="bizOrder != null">
         #{bizOrder,jdbcType=BIGINT},
@@ -115,6 +114,9 @@
       <if test="pastDue != null">
         #{pastDue,jdbcType=DECIMAL},
       </if>
+      <if test="currentOverdueTimes != null">
+        #{currentOverdueTimes,jdbcType=INTEGER},
+      </if>
       <if test="cumulativeOverdueTimes != null">
         #{cumulativeOverdueTimes,jdbcType=INTEGER},
       </if>
@@ -129,6 +131,9 @@
       </if>
       <if test="feature != null">
         #{feature,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -150,6 +155,9 @@
       <if test="pastDue != null">
         past_due = #{pastDue,jdbcType=DECIMAL},
       </if>
+      <if test="currentOverdueTimes != null">
+        current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER},
+      </if>
       <if test="cumulativeOverdueTimes != null">
         cumulative_overdue_times = #{cumulativeOverdueTimes,jdbcType=INTEGER},
       </if>
@@ -165,10 +173,12 @@
       <if test="feature != null">
         feature = #{feature,jdbcType=VARCHAR},
       </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
     </set>
     where id_card = #{idCard,jdbcType=VARCHAR}
       and repay_card_id = #{repayCardId,jdbcType=VARCHAR}
-      and current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RepaymentRecordDO">
     update repayment_record
@@ -177,13 +187,54 @@
       optimal_return = #{optimalReturn,jdbcType=DECIMAL},
       min_payment = #{minPayment,jdbcType=DECIMAL},
       past_due = #{pastDue,jdbcType=DECIMAL},
+      current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER},
       cumulative_overdue_times = #{cumulativeOverdueTimes,jdbcType=INTEGER},
       card_balance = #{cardBalance,jdbcType=DECIMAL},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      feature = #{feature,jdbcType=VARCHAR}
+      feature = #{feature,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT}
     where id_card = #{idCard,jdbcType=VARCHAR}
       and repay_card_id = #{repayCardId,jdbcType=VARCHAR}
-      and current_overdue_times = #{currentOverdueTimes,jdbcType=INTEGER}
   </update>
+
+  <select id="selectCustomerOverdueRepayList" resultType="com.yunche.loan.domain.vo.RepaymentRecordVO"  >
+    SELECT
+        a.biz_order,
+        a.user_name,
+        a.id_card,
+        d.loan_amount,
+        a.optimal_return,
+        a.past_due,
+        a.cumulative_overdue_times,
+        a.gmt_create
+    FROM
+        repayment_record a
+        LEFT JOIN loan_order b on a.biz_order=b.id
+        LEFT JOIN loan_financial_plan d on b.loan_financial_plan_id=d.id
+        LEFT JOIN loan_base_info c on b.loan_base_info_id=c.id
+    where c.partner_id=#{partnerId} and c.area_id=#{areaId} ;
+
+  </select>
+
+  <select id="selectCustomerOverdueRepayDetail" resultType="com.yunche.loan.domain.param.RepaymentRecordParam"  >
+    SELECT
+    a.*,
+    d.loan_amount,
+    (select name from partner where  id=c.partner_id  ) name,
+    d.bank_period_principal,
+    d.loan_time,
+    e.mobile
+
+
+    FROM
+    repayment_record a
+    LEFT JOIN loan_order b on a.biz_order=b.id
+    LEFT JOIN loan_financial_plan d on b.loan_financial_plan_id=d.id
+    LEFT JOIN loan_base_info c on b.loan_base_info_id=c.id
+    LEFT JOIN loan_customer e on b.loan_customer_id=e.id
+    where a.biz_order=#{orderId};
+
+  </select>
+
 </mapper>

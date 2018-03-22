@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.RepaymentRecordDOKey;
 import com.yunche.loan.service.RepaymentRecordService;
@@ -15,14 +16,9 @@ public class RepaymentRecordController {
     @Autowired
     RepaymentRecordService repaymentRecordService;
 
-    @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam("idCard") String idCard,@RequestParam("repayCardId") String repayCardId,@RequestParam("currentOverdueTimes") Integer currentOverdueTimes ) {
-        RepaymentRecordDOKey repaymentRecordDOKey=new RepaymentRecordDOKey();
-        repaymentRecordDOKey.setIdCard(idCard);
-        repaymentRecordDOKey.setRepayCardId(repayCardId);
-        repaymentRecordDOKey.setCurrentOverdueTimes(currentOverdueTimes);
-
-        return repaymentRecordService.query(repaymentRecordDOKey);
+    @GetMapping(value = "/query")
+    public ResultBean query(@RequestParam("partnerId")  int partnerId,@RequestParam("areaId") int  areaId ) {
+        return repaymentRecordService.query(partnerId,areaId);
     }
 
     @GetMapping(value = "/imp")
@@ -30,6 +26,12 @@ public class RepaymentRecordController {
 
       return repaymentRecordService.importFile(filePathName);
 
+    }
+
+    @GetMapping(value = "/detail")
+    public ResultBean detail(@RequestParam("orderId") Long orderId ) {
+        Preconditions.checkNotNull(orderId,"业务单号不能为空");
+        return repaymentRecordService.detail(orderId);
     }
 
 

@@ -8,7 +8,6 @@ public class RepaymentRecordDOKey {
 
     private String repayCardId;
 
-    private Integer currentOverdueTimes;
 
 
 }

@@ -17,6 +17,8 @@ public class RepaymentRecordDO extends RepaymentRecordDOKey {
 
     private BigDecimal pastDue;
 
+    private Integer currentOverdueTimes;
+
     private Integer cumulativeOverdueTimes;
 
     private BigDecimal cardBalance;
@@ -26,6 +28,8 @@ public class RepaymentRecordDO extends RepaymentRecordDOKey {
     private Date gmtModify;
 
     private String feature;
+
+    private Byte status;
 
 
 }

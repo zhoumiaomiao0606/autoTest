@@ -36,4 +36,7 @@ public class RepaymentRecordVO {
 
     private String feature;
 
+    //实际贷款金额
+    private BigDecimal loanAmount;
+
 }
