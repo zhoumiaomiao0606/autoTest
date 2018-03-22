@@ -67,4 +67,10 @@ public class LoanCustomerDO {
     private Date gmtModify;
 
     private String feature;
+
+    private String postcode;
+
+    private Long workingYears;
+
+    private String duty;
 }

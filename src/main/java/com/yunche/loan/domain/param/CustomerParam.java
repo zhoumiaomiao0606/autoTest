@@ -68,5 +68,11 @@ public class CustomerParam {
 
     private Byte status;
 
+    private String postcode;
+
+    private Long workingYears;
+
+    private String duty;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

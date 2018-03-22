@@ -34,5 +34,8 @@ public class UniversalCustomerDetailVO {
     private String society_addition;//社会征信附加条件
     private String society_result;//社会征信结果
     private String society_result_info;//社会征信内容
+    private String postcode;//邮编
+    private String working_years;//工作年限
+    private String duty;//职业
 
 }

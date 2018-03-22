@@ -33,6 +33,9 @@
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="postcode" jdbcType="VARCHAR" property="postcode"/>
+        <result column="working_years" jdbcType="BIGINT" property="workingYears"/>
+        <result column="duty" jdbcType="VARCHAR" property="duty"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -40,7 +43,7 @@
         address, marry, identity_address, mobile_area, education, company_name, company_phone,
         company_address, month_income, house_type, house_owner, house_feature, house_address,
         info, cust_type, principal_cust_id, cust_relation, status, gmt_create, gmt_modify,
-        feature
+        feature,postcode,working_years,duty
     </sql>
 
     <!--listByPrincipalCustIdAndType-->
@@ -215,6 +218,15 @@
             <if test="feature != null">
                 feature,
             </if>
+            <if test="postcode != null">
+                postcode,
+            </if>
+            <if test="workingYears != null">
+                working_years,
+            </if>
+            <if test="duty != null">
+                duty,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -309,6 +321,15 @@
             </if>
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="postcode != null">
+                #{postcode,jdbcType=VARCHAR},
+            </if>
+            <if test="workingYears != null">
+                #{working_years,jdbcType=BIGINT},
+            </if>
+            <if test="duty != null">
+                #{duty,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -405,6 +426,15 @@
             </if>
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="postcode != null">
+                #{postcode,jdbcType=VARCHAR},
+            </if>
+            <if test="workingYears != null">
+                #{working_years,jdbcType=BIGINT},
+            </if>
+            <if test="duty != null">
+                #{duty,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
