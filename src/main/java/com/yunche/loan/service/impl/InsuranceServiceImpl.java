@@ -44,8 +44,12 @@ public class InsuranceServiceImpl implements InsuranceService {
     public RecombinationVO detail(Long orderId) {
         List<InsuranceCustomerVO> insuranceCustomerVOList = loanQueryDOMapper.selectInsuranceCustomer(orderId);
         for(InsuranceCustomerVO obj:insuranceCustomerVOList){
-            List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(obj.getInsurance_info_id()));
-            obj.setInsurance_relevance_list(insurance_relevance_list);
+            if(obj!=null) {
+                if (obj.getInsurance_info_id() != null) {
+                    List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(obj.getInsurance_info_id()));
+                    obj.setInsurance_relevance_list(insurance_relevance_list);
+                }
+            }
         }
         RecombinationVO<List<InsuranceCustomerVO>> recombinationVO = new RecombinationVO<List<InsuranceCustomerVO>>();
         recombinationVO.setInfo(insuranceCustomerVOList);
@@ -56,9 +60,11 @@ public class InsuranceServiceImpl implements InsuranceService {
     public RecombinationVO query(Long orderId) {
         InsuranceCustomerVO insuranceCustomerVO = loanQueryDOMapper.selectInsuranceCustomerNormalizeInsuranceYear(orderId);
         if(insuranceCustomerVO!=null){
-            List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(insuranceCustomerVO.getInsurance_info_id()));
-            insuranceCustomerVO.setInsurance_relevance_list(insurance_relevance_list);
-        }
+            if(insuranceCustomerVO.getInsurance_info_id()!=null){
+                List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(insuranceCustomerVO.getInsurance_info_id()));
+                insuranceCustomerVO.setInsurance_relevance_list(insurance_relevance_list);
+            }
+         }
         RecombinationVO<InsuranceCustomerVO> recombinationVO = new RecombinationVO<InsuranceCustomerVO>();
         recombinationVO.setInfo(insuranceCustomerVO);
         return recombinationVO;

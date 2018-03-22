@@ -3,6 +3,7 @@ package com.yunche.loan.domain.vo;
 import lombok.Data;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,6 +20,6 @@ public class UniversalCustomerVO {
     private String sex;
     private String company_name;
     private String company_address;
-    private List<UniversalCustomerFileVO> files;
+    private List<UniversalCustomerFileVO> files = new ArrayList<UniversalCustomerFileVO>();
 
 }

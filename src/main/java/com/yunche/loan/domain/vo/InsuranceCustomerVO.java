@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,6 +18,6 @@ public class InsuranceCustomerVO {
     private String issue_bills_date;//出单日期
     private String residential_address;//现居地址
     private String total_insurance_amount;//保险总金额
-    private List<InsuranceRelevanceVO> insurance_relevance_list;
+    private List<InsuranceRelevanceVO> insurance_relevance_list = new ArrayList<InsuranceRelevanceVO>();
 
 }

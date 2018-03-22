@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -69,6 +70,11 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
 
     @Override
     public List<GpsVO> query(Long orderId) {
-        return loanQueryDOMapper.selectGpsByOrderId(orderId);
+        List<GpsVO> list = new ArrayList<GpsVO>();
+        List<GpsVO> result = loanQueryDOMapper.selectGpsByOrderId(orderId);
+        if(result == null){
+                return list;
+        }
+        return result;
     }
 }
