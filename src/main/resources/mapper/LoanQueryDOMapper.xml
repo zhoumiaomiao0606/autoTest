@@ -188,7 +188,8 @@
              f.each_month_repay,
              (select count(id) from install_gps where order_id = o.id) as gps_num,
              i.car_key,
-             CONCAT(case when (select name from car_model where id = (select model_id from car_detail where id = i.car_detail_id)) = '' or (select name from car_model where id = (select model_id from car_detail where id = i.car_detail_id)) is null then '' else (select name from car_model where id = (select model_id from car_detail where id = i.car_detail_id)) end,"-",case when (select name from car_detail where id = i.car_detail_id) = '' or (select name from car_detail where id = i.car_detail_id) is null then '' else (select name from car_detail where id = i.car_detail_id) end) as car_name,
+             useGetCarName(i.car_detail_id) as car_name,
+             useGetSmallCarName(i.car_detail_id) as small_car_name,
              (f.car_price) as sale_price,
              (select price from car_detail where id = i.car_detail_id) as assess_price,
              (select production_type from car_model where id = (select model_id from car_detail where id = i.car_detail_id) ) as production_type,
@@ -201,8 +202,10 @@
              v.visit_address,
              v.survey_report,
              (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','action')) as verify_status,
-             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report
-
+             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report,
+             c.address,
+             l.engine_number,
+             c.birth
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
     left join loan_customer c on o.loan_customer_id= c.id
@@ -258,7 +261,8 @@
              f.each_month_repay,
              (select count(id) from install_gps where order_id = o.id) as gps_num,
              i.car_key,
-             CONCAT(case when (select name from car_model where id = (select model_id from car_detail where id = i.car_detail_id)) = '' or (select name from car_model where id = (select model_id from car_detail where id = i.car_detail_id)) is null then '' else (select name from car_model where id = (select model_id from car_detail where id = i.car_detail_id)) end,"-",case when (select name from car_detail where id = i.car_detail_id) = '' or (select name from car_detail where id = i.car_detail_id) is null then '' else (select name from car_detail where id = i.car_detail_id) end) as car_name,
+             useGetCarName(i.car_detail_id) as car_name,
+             useGetSmallCarName(i.car_detail_id) as small_car_name,
              (f.car_price) as sale_price,
              (select price from car_detail where id = i.car_detail_id) as assess_price,
              (select production_type from car_model where id = (select model_id from car_detail where id = i.car_detail_id) ) as production_type,
@@ -271,7 +275,10 @@
              v.visit_address,
              v.survey_report,
              (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','action')) as verify_status,
-             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report
+             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report,
+             c.address,
+             l.engine_number，
+             c.birth
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 

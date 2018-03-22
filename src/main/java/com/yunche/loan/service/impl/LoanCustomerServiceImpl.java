@@ -82,7 +82,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     }
 
     @Override
-    public ResultBean<CustDetailVO> detailAll(Long orderId) {
+    public ResultBean<CustDetailVO> detailAll(Long orderId, Byte fileUploadType) {
         Preconditions.checkNotNull(orderId, "业务单ID不能为空");
 
         // 根据orderId获取主贷人ID
@@ -94,7 +94,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         CustDetailVO custDetailVO = new CustDetailVO();
         if (!CollectionUtils.isEmpty(loanCustomerDOList)) {
             // 填充客户详情信息
-            fillCustInfo(custDetailVO, loanCustomerDOList);
+            fillCustInfo(custDetailVO, loanCustomerDOList, fileUploadType);
         }
 
         return ResultBean.ofSuccess(custDetailVO);
@@ -165,8 +165,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
      *
      * @param custDetailVO
      * @param loanCustomerDOList
+     * @param fileUploadType
      */
-    private void fillCustInfo(CustDetailVO custDetailVO, List<LoanCustomerDO> loanCustomerDOList) {
+    private void fillCustInfo(CustDetailVO custDetailVO, List<LoanCustomerDO> loanCustomerDOList, Byte fileUploadType) {
 
         List<CustomerVO> commonLenderList = Lists.newArrayList();
         List<CustomerVO> guarantorList = Lists.newArrayList();
@@ -182,7 +183,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         BeanUtils.copyProperties(e, principalLender);
 
                         // fillFiles
-                        fillFiles(principalLender);
+                        fillFiles(principalLender, fileUploadType);
 
                         // fillCredit
                         fillCredit(principalLender, e.getId());
@@ -196,7 +197,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         BeanUtils.copyProperties(e, commonLender);
 
                         // fillFiles
-                        fillFiles(commonLender);
+                        fillFiles(commonLender, fileUploadType);
 
                         // fillCredit
                         fillCredit(commonLender, e.getId());
@@ -209,7 +210,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         BeanUtils.copyProperties(e, guarantor);
 
                         // fillFiles
-                        fillFiles(guarantor);
+                        fillFiles(guarantor, fileUploadType);
 
                         // fillCredit
                         fillCredit(guarantor, e.getId());
@@ -222,7 +223,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         BeanUtils.copyProperties(e, emergencyContact);
 
                         // fillFiles
-                        fillFiles(emergencyContact);
+                        fillFiles(emergencyContact, fileUploadType);
 
                         // fillCredit
                         fillCredit(emergencyContact, e.getId());
@@ -263,8 +264,8 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         }
     }
 
-    private void fillFiles(CustomerVO customerVO) {
-        ResultBean<List<FileVO>> fileResultBean = loanFileService.listByCustomerId(customerVO.getId());
+    private void fillFiles(CustomerVO customerVO, Byte fileUploadType) {
+        ResultBean<List<FileVO>> fileResultBean = loanFileService.listByCustomerId(customerVO.getId(), fileUploadType);
         Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
         customerVO.setFiles(fileResultBean.getData());
     }

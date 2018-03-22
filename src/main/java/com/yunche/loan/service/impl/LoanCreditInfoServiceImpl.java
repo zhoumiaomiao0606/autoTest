@@ -8,7 +8,6 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.vo.CreditRecordVO;
 import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.domain.vo.LoanCreditInfoVO;
-import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.service.LoanCreditInfoService;
@@ -100,7 +99,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         List<LoanCustomerDO> loanCustomerDOList = loanCustomerDOMapper.listByPrincipalCustIdAndType(customerId, null, VALID_STATUS);
         if (!CollectionUtils.isEmpty(loanCustomerDOList)) {
 
-            // 填充客户信息 和 征信结果
+            // 填充客户信息 和 征信结果 和 文件信息
             fillCustInfoAndCreditRecord(creditRecordVO, loanCustomerDOList, creditType);
         }
 
@@ -198,7 +197,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
      * @param customerId
      */
     private void fillFiles(CreditRecordVO.CustomerCreditRecord customerCreditRecord, Long customerId) {
-        ResultBean<List<FileVO>> filesResultBean = loanFileService.listByCustomerId(customerId);
+        ResultBean<List<FileVO>> filesResultBean = loanFileService.listByCustomerId(customerId, null);
         Preconditions.checkArgument(filesResultBean.getSuccess(), filesResultBean.getMsg());
         customerCreditRecord.setFiles(filesResultBean.getData());
     }

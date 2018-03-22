@@ -26,6 +26,9 @@
         <logger level="debug" name="com.yunche.loan">
             <AppenderRef ref="App-File-Appender"/>
         </logger>
+        <logger level="debug" name="org.activiti.engine.impl.persistence.entity">
+            <AppenderRef ref="App-File-Appender"/>
+        </logger>
         <Root level="info">
             <AppenderRef ref="Console" />
         </Root>

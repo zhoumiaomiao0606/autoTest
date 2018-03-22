@@ -13,7 +13,7 @@ public interface LoanCustomerService {
 
     ResultBean<Void> faceOff(Long orderId, Long principalLenderId, Long commonLenderId);
 
-    ResultBean<CustDetailVO> detailAll(Long orderId);
+    ResultBean<CustDetailVO> detailAll(Long orderId, Byte fileUploadType);
 
     ResultBean<Long> updateAll(AllCustDetailParam allCustDetailParam);
 

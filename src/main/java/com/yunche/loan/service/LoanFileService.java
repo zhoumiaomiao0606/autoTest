@@ -2,10 +2,8 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanFileDO;
-import com.yunche.loan.domain.param.LoanFileParam;
 import com.yunche.loan.domain.vo.FileVO;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -18,7 +16,7 @@ public interface LoanFileService {
 
     ResultBean<Void> update(LoanFileDO loanFileDO);
 
-    ResultBean<List<FileVO>> listByCustomerId(Long customerId);
+    ResultBean<List<FileVO>> listByCustomerId(Long customerId, Byte fileUploadType);
 
     /**
      * @param customerId

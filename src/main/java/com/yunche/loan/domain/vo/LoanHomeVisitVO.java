@@ -12,8 +12,17 @@ import java.util.List;
  */
 @Data
 public class LoanHomeVisitVO {
+    /**
+     * 上门家访单ID
+     */
     private Long id;
-
+    /**
+     * 客户ID
+     */
+    private Long customerId;
+    /**
+     * 上门调查员ID
+     */
     private Long visitSalesmanId;
 
     private Date visitDate;

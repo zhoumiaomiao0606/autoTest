@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanFileDO;
-import com.yunche.loan.domain.param.LoanFileParam;
 import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.service.LoanFileService;
@@ -64,12 +63,12 @@ public class LoanFileServiceImpl implements LoanFileService {
     }
 
     @Override
-    public ResultBean<List<FileVO>> listByCustomerId(Long customerId) {
+    public ResultBean<List<FileVO>> listByCustomerId(Long customerId, Byte fileUploadType) {
         Preconditions.checkNotNull(customerId, "客户ID不能为空");
 
         Map<Byte, FileVO> typeFilesMap = Maps.newConcurrentMap();
 
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerId(customerId);
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, null, fileUploadType);
         if (!CollectionUtils.isEmpty(loanFileDOS)) {
 
             loanFileDOS.stream()
