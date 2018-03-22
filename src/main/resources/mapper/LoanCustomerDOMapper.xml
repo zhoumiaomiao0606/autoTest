@@ -326,7 +326,7 @@
                 #{postcode,jdbcType=VARCHAR},
             </if>
             <if test="workingYears != null">
-                #{working_years,jdbcType=BIGINT},
+                #{workingYears,jdbcType=BIGINT},
             </if>
             <if test="duty != null">
                 #{duty,jdbcType=VARCHAR},
@@ -428,13 +428,13 @@
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
             <if test="postcode != null">
-                #{postcode,jdbcType=VARCHAR},
+                postcode = #{postcode,jdbcType=VARCHAR},
             </if>
             <if test="workingYears != null">
-                #{working_years,jdbcType=BIGINT},
+                working_years = #{workingYears,jdbcType=BIGINT},
             </if>
             <if test="duty != null">
-                #{duty,jdbcType=VARCHAR},
+                duty = #{duty,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
