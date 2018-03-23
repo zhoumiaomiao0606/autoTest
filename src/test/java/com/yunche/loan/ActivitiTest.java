@@ -2,6 +2,8 @@ package com.yunche.loan;
 
 import com.google.common.collect.Lists;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.repository.*;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
@@ -23,6 +25,33 @@ public class ActivitiTest extends BaseTest {
 
     @Autowired
     private ProcessEngine processEngine;
+
+    @Autowired
+    private TaskService taskService;
+
+
+    @Autowired
+    private RuntimeService runtimeService;
+
+
+    @Test
+    public void test21() {  // 790001    2018032212063246319-790008   2018032212071035757-790015
+
+        // 2018032213302143959-
+        String processInstanceId = "790015";
+        runtimeService.deleteProcessInstance(processInstanceId, "弃单");
+        System.out.println("del success");
+    }
+
+    @Test
+    public void test22() {  // 790001    2018032212063246319-790008   2018032212071035757-790015
+        String taskId = "790012";
+        taskService.deleteTask(taskId);
+//        taskService.deleteTask(taskId, true);
+//        taskService.deleteTask(taskId, "弃单");
+        System.out.println("del task success");
+    }
+
 
     /**
      * 部署流程定义 方式一：加载单个的流程定义文件 方式二：加载zip压缩文件

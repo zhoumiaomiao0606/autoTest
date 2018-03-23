@@ -73,6 +73,16 @@ public class LoanProcessConst {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 业务申请：[打回] - 自于【资料审核】
+     */
+    public static final Integer LOAN_APPLY_REJECT_FROM_METERIAL_REVIEW = 1;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 //    /**
 //     * 删除理由  【task被删除的理由-任务已被执行】
 //     */
@@ -99,9 +109,6 @@ public class LoanProcessConst {
         PROCESS_MAP.put(VISIT_VERIFY.getCode(), "上门调查");
         PROCESS_MAP.put(TELEPHONE_VERIFY.getCode(), "电审信息");
         PROCESS_MAP.put(INFO_SUPPLEMENT.getCode(), "资料增补");
-
-//        TELEPHONE_VERIFY_REVIEW("usertask_telephone_verify_review", "电审复审信息");
-
 
         PROCESS_MAP.put("usertask_car_insurance_record", "车辆保险");
         PROCESS_MAP.put("usertask_gps_install", "GPS安装");

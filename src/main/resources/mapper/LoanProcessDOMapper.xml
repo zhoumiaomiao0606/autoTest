@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.LoanProcessDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="telephone_verify" jdbcType="TINYINT" property="telephoneVerify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, telephone_verify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from loan_process
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from loan_process
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
+    insert into loan_process (order_id, telephone_verify)
+    values (#{orderId,jdbcType=BIGINT}, #{telephoneVerify,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
+    insert into loan_process
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="telephoneVerify != null">
+        telephone_verify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="telephoneVerify != null">
+        #{telephoneVerify,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
+    update loan_process
+    <set>
+      <if test="telephoneVerify != null">
+        telephone_verify = #{telephoneVerify,jdbcType=TINYINT},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
+    update loan_process
+    set telephone_verify = #{telephoneVerify,jdbcType=TINYINT}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+</mapper>

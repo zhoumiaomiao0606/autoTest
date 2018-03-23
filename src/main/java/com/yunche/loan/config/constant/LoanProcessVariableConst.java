@@ -16,6 +16,10 @@ public class LoanProcessVariableConst {
      */
     public static final String PROCESS_VARIABLE_INFO = "info";
     /**
+     * 电审进度：审核角色进程
+     */
+    public static final String PROCESS_VARIABLE_TELEPHONE_VERIFY_ROLE_LEVEL_PROGRESS = "telephone_verify_role_level_process";
+    /**
      * 审核人ID
      */
     public static final String PROCESS_VARIABLE_USER_ID = "user_id";

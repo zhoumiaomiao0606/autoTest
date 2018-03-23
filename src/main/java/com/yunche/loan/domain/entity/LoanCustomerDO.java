@@ -2,6 +2,7 @@ package com.yunche.loan.domain.entity;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -42,7 +43,7 @@ public class LoanCustomerDO {
 
     private String companyAddress;
 
-    private Integer monthIncome;
+    private BigDecimal monthIncome;
 
     private Byte houseType;
 

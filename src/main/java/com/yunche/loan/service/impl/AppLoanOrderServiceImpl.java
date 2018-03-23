@@ -33,6 +33,7 @@ import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.REMIT_REVIEW;
@@ -319,9 +320,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         ResultBean<Void> updateCustResult = loanCustomerService.update(loanCustomerDO);
         Preconditions.checkArgument(updateCustResult.getSuccess(), updateCustResult.getMsg());
 
-        // TODO 文件编辑
-//        ResultBean<Void> updateFileResult = loanFileService.update(param.getId(), param.getFiles());
-//        Preconditions.checkArgument(updateFileResult.getSuccess(), updateFileResult.getMsg());
+        // 文件编辑
+        ResultBean<Void> updateFileResult = loanFileService.updateOrInsertByCustomerIdAndUploadType(param.getId(), param.getFiles(), UPLOAD_TYPE_NORMAL);
+        Preconditions.checkArgument(updateFileResult.getSuccess(), updateFileResult.getMsg());
 
         return ResultBean.ofSuccess(null);
     }

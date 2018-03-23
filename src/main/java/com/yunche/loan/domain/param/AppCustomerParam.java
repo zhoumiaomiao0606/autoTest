@@ -3,6 +3,7 @@ package com.yunche.loan.domain.param;
 import com.yunche.loan.domain.vo.FileVO;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -45,9 +46,13 @@ public class AppCustomerParam {
 
     private String companyName;
 
-    private String companyPhone;
+    private String companyAddress;
 
-    private Integer monthIncome;
+    private String companyPhone;
+    /**
+     * 月收入
+     */
+    private BigDecimal monthIncome;
 
     private Byte houseType;
 

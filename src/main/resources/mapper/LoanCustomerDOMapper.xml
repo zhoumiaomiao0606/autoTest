@@ -20,7 +20,7 @@
         <result column="company_name" jdbcType="VARCHAR" property="companyName"/>
         <result column="company_phone" jdbcType="VARCHAR" property="companyPhone"/>
         <result column="company_address" jdbcType="VARCHAR" property="companyAddress"/>
-        <result column="month_income" jdbcType="INTEGER" property="monthIncome"/>
+        <result column="month_income" jdbcType="DECIMAL" property="monthIncome"/>
         <result column="house_type" jdbcType="TINYINT" property="houseType"/>
         <result column="house_owner" jdbcType="TINYINT" property="houseOwner"/>
         <result column="house_feature" jdbcType="TINYINT" property="houseFeature"/>
@@ -110,7 +110,7 @@
         #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT}, #{applyDate,jdbcType=DATE},
         #{address,jdbcType=VARCHAR}, #{marry,jdbcType=TINYINT}, #{identityAddress,jdbcType=VARCHAR},
         #{mobileArea,jdbcType=VARCHAR}, #{education,jdbcType=TINYINT}, #{companyName,jdbcType=VARCHAR},
-        #{companyPhone,jdbcType=VARCHAR}, #{companyAddress,jdbcType=VARCHAR}, #{monthIncome,jdbcType=INTEGER},
+        #{companyPhone,jdbcType=VARCHAR}, #{companyAddress,jdbcType=VARCHAR}, #{monthIncome,jdbcType=DECIMAL},
         #{houseType,jdbcType=TINYINT}, #{houseOwner,jdbcType=TINYINT}, #{houseFeature,jdbcType=TINYINT},
         #{houseAddress,jdbcType=VARCHAR}, #{info,jdbcType=VARCHAR}, #{custType,jdbcType=TINYINT},
         #{principalCustId,jdbcType=BIGINT}, #{custRelation,jdbcType=TINYINT}, #{status,jdbcType=TINYINT},
@@ -284,7 +284,7 @@
                 #{companyAddress,jdbcType=VARCHAR},
             </if>
             <if test="monthIncome != null">
-                #{monthIncome,jdbcType=INTEGER},
+                #{monthIncome,jdbcType=DECIMAL},
             </if>
             <if test="houseType != null">
                 #{houseType,jdbcType=TINYINT},
@@ -389,7 +389,7 @@
                 company_address = #{companyAddress,jdbcType=VARCHAR},
             </if>
             <if test="monthIncome != null">
-                month_income = #{monthIncome,jdbcType=INTEGER},
+                month_income = #{monthIncome,jdbcType=DECIMAL},
             </if>
             <if test="houseType != null">
                 house_type = #{houseType,jdbcType=TINYINT},
@@ -459,7 +459,7 @@
       company_name = #{companyName,jdbcType=VARCHAR},
       company_phone = #{companyPhone,jdbcType=VARCHAR},
       company_address = #{companyAddress,jdbcType=VARCHAR},
-      month_income = #{monthIncome,jdbcType=INTEGER},
+      month_income = #{monthIncome,jdbcType=DECIMAL},
       house_type = #{houseType,jdbcType=TINYINT},
       house_owner = #{houseOwner,jdbcType=TINYINT},
       house_feature = #{houseFeature,jdbcType=TINYINT},

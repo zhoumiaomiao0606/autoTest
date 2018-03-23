@@ -37,6 +37,7 @@ import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
+import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_USER_ID;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_USER_NAME;
@@ -95,6 +96,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private ApplyLicensePlateRecordDOMapper applyLicensePlateRecordDOMapper;
+
+    @Autowired
+    private LoanProcessDOMapper loanProcessDOMapper;
 
     @Autowired
     private BaseAreaService baseAreaService;
@@ -251,7 +255,22 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // 创建订单
         Long orderId = createLoanOrder(baseInfoId, customerId);
 
+        // 创建流程记录
+        createLoanProcess(orderId);
+
         return ResultBean.ofSuccess(String.valueOf(orderId));
+    }
+
+    /**
+     * 创建流程记录
+     *
+     * @param orderId
+     */
+    private void createLoanProcess(Long orderId) {
+        LoanProcessDO loanProcessDO = new LoanProcessDO();
+        loanProcessDO.setOrderId(orderId);
+        int count = loanProcessDOMapper.insertSelective(loanProcessDO);
+        Preconditions.checkArgument(count > 0, "创建流程记录失败");
     }
 
     @Override
@@ -539,7 +558,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // 增补类型、备注 & 时间
         List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
                 .processInstanceId(loanOrderDO.getProcessInstId())
-                .taskDefinitionKey(loanOrderDO.getCurrentTaskDefKey())
+                .taskDefinitionKey(TELEPHONE_VERIFY.getCode())
                 .orderByTaskCreateTime()
                 .desc()
                 .listPage(0, 1);
@@ -550,7 +569,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             infoSupplementVO.setSupplementStartDate(historicTaskInstance.getCreateTime());
 //            infoSupplementVO.setSupplementEndDate(historicTaskInstance.getEndTime());
 
-            String taskVariablePrefix = loanOrderDO.getCurrentTaskDefKey() + ":" + loanOrderDO.getProcessInstId() + ":"
+            String taskVariablePrefix = TELEPHONE_VERIFY.getCode() + ":" + loanOrderDO.getProcessInstId() + ":"
                     + historicTaskInstance.getExecutionId() + ":";
 
             String taskVariableTypeKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
