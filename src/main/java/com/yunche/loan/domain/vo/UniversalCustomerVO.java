@@ -20,6 +20,13 @@ public class UniversalCustomerVO {
     private String sex;
     private String company_name;
     private String company_address;
+    private String education;
+    private String month_income;
+    private String address;
+    private String postcode;
+    private String working_years;
+    private String duty;
+
     private List<UniversalCustomerFileVO> files = new ArrayList<UniversalCustomerFileVO>();
 
 }

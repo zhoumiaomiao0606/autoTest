@@ -211,7 +211,11 @@
              c.company_address,
              c.working_years,
              c.duty,
-             c.sex
+             c.sex,
+             l.vehicle_identification_number,
+             c.education,
+             c.month_income,
+             c.age
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -291,7 +295,11 @@
              c.company_address,
              c.working_years,
              c.duty,
-             c.sex
+             c.sex,
+             l.vehicle_identification_number,
+             c.education,
+             c.month_income,
+             c.age
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -450,6 +458,12 @@
         c.sex,
         c.company_name,
         c.company_address,
+        c.education,
+        c.month_income,
+        c.address,
+        c.postcode,
+        c.working_years,
+        c.duty,
         case when
             (select result from loan_credit_info where customer_id = 128 and type = 1)  is null
         then

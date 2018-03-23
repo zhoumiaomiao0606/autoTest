@@ -80,5 +80,9 @@ public class FinanceVO {
     private String working_years;//工作年限
     private String duty;//职务
     private String sex;//性别
+    private String vehicle_identification_number;
+    private String education;
+    private String month_income;
+    private String age;
 
 }

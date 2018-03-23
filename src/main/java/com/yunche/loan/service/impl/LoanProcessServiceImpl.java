@@ -2,7 +2,9 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.Jpush;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
@@ -20,6 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
@@ -33,6 +36,7 @@ import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
  */
 @Service
 public class LoanProcessServiceImpl implements LoanProcessService {
+    private static org.apache.log4j.Logger logger  = org.apache.log4j.Logger.getLogger(LoanProcessServiceImpl.class);
 
     @Autowired
     private RuntimeService runtimeService;
@@ -58,6 +62,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private LoanProcessDOMapper loanProcessDOMapper;
 
+    @Autowired
+    private JpushService jpushService;
+
+    @Autowired
+    private EmployeeDOMapper employeeDOMapper;
+
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
 
     /**
      * 根据当前节点ID获取下一个节点ID
@@ -107,7 +119,68 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 更新任务状态
         updateLoanOrderTaskDefinitionKey(approval.getOrderId(), approval.getTaskDefinitionKey());
 
+        push(loanOrderDO,approval.getTaskDefinitionKey(),approval.getAction(),approval);
+
         return ResultBean.ofSuccess(null, "审核成功");
+    }
+    /**
+     * 换行
+     */
+    public static String NEW_LINE = System.getProperty("line.separator");
+
+    //推送
+    private void push(LoanOrderDO loanOrderDO,String taskDefinitionKey,Integer action,ApprovalParam approval){
+        Long baseInfoId = loanOrderDO.getLoanBaseInfoId();
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseInfoId);
+        if(loanBaseInfoDO != null){
+            StringBuffer cstr = new StringBuffer("客户:");
+            StringBuffer bstr= new StringBuffer("您所提交的");
+            StringBuffer msg = new StringBuffer("");
+           LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(),new Byte("0"));
+            String customerName = null;
+            if(loanCustomerDO!=null){
+                    customerName = loanCustomerDO.getName();
+            }
+            cstr.append("<"+customerName+">").append(LoanProcessEnum.getNameByCode(taskDefinitionKey));
+            bstr.append(LoanProcessEnum.getNameByCode(taskDefinitionKey));
+            //0 未知 1 正常 2 提示  3 错误 4 警告
+            //* 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
+            Byte type = new Byte("0");
+            //贷款信息不为空时候才会进行push 不然不知道推给谁
+            if(action.intValue() == 0){
+                cstr.append("被打回");
+                bstr.append("被打回");
+                msg.append(approval.getInfo());
+                type = new Byte("3");
+            }
+
+            if(action.intValue() == 1){
+                cstr.append("审核通过");
+                bstr.append("审核通过");
+                msg.append(approval.getInfo());
+                type = new Byte("1");
+            }
+
+            if(action.intValue() == 2){
+                cstr.append("弃单");
+                bstr.append("弃单");
+                msg.append(approval.getInfo());
+                type = new Byte("4");
+            }
+
+            if(action.intValue() == 3){
+                cstr.append("需要资料增补");
+                bstr.append("需要资料增补");
+                msg.append("增补说明"+approval.getSupplementInfo()+NEW_LINE+"内容:"+approval.getSupplementContent());
+                type = new Byte("2");
+            }
+
+            jpushService.push(loanBaseInfoDO.getSalesmanId(),loanOrderDO.getId(),cstr.toString(),bstr.toString(),msg.toString(),taskDefinitionKey,type);
+
+
+        }
+
+
     }
 
     /**

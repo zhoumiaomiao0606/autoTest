@@ -60,4 +60,15 @@ public enum LoanProcessEnum {
     public void setCode(String code) {
         this.code = code;
     }
+
+    public static String getNameByCode(String code){
+
+        for(LoanProcessEnum e : LoanProcessEnum.values()){
+            if(e.getCode().equals( code)){
+
+                return e.name;
+            }
+        }
+        return null;
+    }
 }
