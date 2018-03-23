@@ -43,7 +43,7 @@ public class ActivitiTest extends BaseTest {
     public void test23() {
         String orderId = "2018032315372694978";
         String taskDefinitionKey = "usertask_credit_apply";
-        ApprovalInfoVO approvalInfoVO = approvalInfoUtil.getApprovalInfoVO(orderId, taskDefinitionKey);
+        ApprovalInfoVO approvalInfoVO = approvalInfoUtil.getApprovalInfoVO(Long.valueOf(orderId), taskDefinitionKey);
         System.out.println(JSON.toJSONString(approvalInfoVO));
     }
 

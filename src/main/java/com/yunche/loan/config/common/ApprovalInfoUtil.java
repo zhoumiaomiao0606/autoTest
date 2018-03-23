@@ -37,8 +37,8 @@ public class ApprovalInfoUtil {
      * @param taskDefinitionKey
      * @return
      */
-    public ApprovalInfoVO getApprovalInfoVO(String orderId, String taskDefinitionKey) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(orderId), "订单ID不能为空");
+    public ApprovalInfoVO getApprovalInfoVO(Long orderId, String taskDefinitionKey) {
+        Preconditions.checkNotNull(orderId, "订单ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "任务节点不能为空");
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderId), null);

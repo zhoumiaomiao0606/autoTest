@@ -201,8 +201,6 @@
              (select name from employee where id = v.visit_salesman_id) as vname,
              v.visit_address,
              v.survey_report,
-             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','action')) as verify_status,
-             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report,
              c.address,
              l.engine_number,
              c.birth,
@@ -285,8 +283,6 @@
              (select name from employee where id = v.visit_salesman_id) as vname,
              v.visit_address,
              v.survey_report,
-             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','action')) as verify_status,
-             (select TEXT_ from act_hi_varinst where NAME_ = CONCAT('usertask_telephone_verify',':',o.process_inst_id,':',(select EXECUTION_ID_ from act_hi_taskinst where TASK_DEF_KEY_ = 'usertask_telephone_verify' and PROC_INST_ID_ = o.process_inst_id ORDER BY START_TIME_ desc LIMIT 1),':','info')) as verify_report,
              c.address,
              l.engine_number,
              c.birth,
@@ -509,12 +505,10 @@
                 working_years,
                 duty,
                 (select gmt_create from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_gmt_create,
-                ('需要') as bank_addition,
                 (select result from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_result,
                 (select info from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_result_info,
 
                 (select gmt_create from loan_credit_info where customer_id = loan_customer.id and type = 2) as society_gmt_create,
-                ('需要') as society_addition,
                 (select result from loan_credit_info where customer_id = loan_customer.id and type = 2) as society_result,
                 (select info from loan_credit_info where customer_id = loan_customer.id and type = 2) as society_result_info
         from loan_customer where id = #{customerId,jdbcType=BIGINT}

@@ -172,7 +172,12 @@
             AND status = #{status}
         </if>
     </select>
-
+    <select id="selectByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_order
+        where loan_customer_id = #{customerId,jdbcType=BIGINT} and status = '0'
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from loan_order
         where id = #{id,jdbcType=BIGINT}

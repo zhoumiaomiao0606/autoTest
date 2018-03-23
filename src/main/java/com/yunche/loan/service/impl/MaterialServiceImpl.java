@@ -1,5 +1,7 @@
 package com.yunche.loan.service.impl;
 
+import com.yunche.loan.config.common.ApprovalInfoUtil;
+import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.ApplyLicensePlateRecordDO;
@@ -31,10 +33,19 @@ public class MaterialServiceImpl implements MaterialService {
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
 
+    @Resource
+    private ApprovalInfoUtil approvalInfoUtil;
+
     @Override
     public RecombinationVO detail(Long orderId) {
         MaterialVO materialVO = loanQueryDOMapper.selectMaterial(orderId);
-
+        if(materialVO!=null){
+            ApprovalInfoVO E = approvalInfoUtil.getApprovalInfoVO(orderId,LoanProcessEnum.TELEPHONE_VERIFY.getCode());
+            if(E!=null){
+                materialVO.setVerify_status(E.getAction()==null?"-1":String.valueOf(E.getAction()));
+                materialVO.setVerify_report(E.getInfo());
+            }
+        }
         List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
         for(UniversalCustomerVO universalCustomerVO:customers){
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
