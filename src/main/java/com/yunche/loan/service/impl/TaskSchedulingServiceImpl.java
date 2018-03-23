@@ -25,8 +25,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     private TaskSchedulingDOMapper taskSchedulingDOMapper;
 
     @Override
-    public ResultBean scheduleTaskList(Integer startRow, Integer pageSize) {
-            PageHelper.startPage(startRow, pageSize, true);
+    public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
+            PageHelper.startPage(pageIndex, pageSize, true);
 
             EmployeeDO loginUser = SessionUtils.getLoginUser();
             List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId());
@@ -34,8 +34,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             // 取分页信息
             PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<ScheduleTaskVO>(list);
 
-            return ResultBean.ofSuccess(list,new Long(pageInfo.getTotal()).intValue(),pageInfo.getPageNum(),pageInfo.getPageSize());
 
+            return ResultBean.ofSuccess(list,new Long(pageInfo.getTotal()).intValue(),pageInfo.getPageNum(),pageInfo.getPageSize());
     }
 
 }
