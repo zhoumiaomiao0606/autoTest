@@ -1,9 +1,7 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.domain.vo.ScheduleTaskVO;
-
-import java.util.List;
+import com.yunche.loan.config.result.ResultBean;
 
 public interface TaskSchedulingService {
-    public List<ScheduleTaskVO> scheduleTaskList();
+    public ResultBean scheduleTaskList(Integer startRow, Integer pageSize);
 }

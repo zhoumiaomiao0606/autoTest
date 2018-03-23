@@ -1,6 +1,10 @@
 package com.yunche.loan.service.impl;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.vo.ScheduleTaskVO;
@@ -21,9 +25,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     private TaskSchedulingDOMapper taskSchedulingDOMapper;
 
     @Override
-    public List<ScheduleTaskVO> scheduleTaskList() {
+    public ResultBean scheduleTaskList(Integer startRow, Integer pageSize) {
+            PageHelper.startPage(startRow, pageSize, true);
+
             EmployeeDO loginUser = SessionUtils.getLoginUser();
-            return taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId());
+            List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId());
+
+            // 取分页信息
+            PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<ScheduleTaskVO>(list);
+
+            return ResultBean.ofSuccess(list,new Long(pageInfo.getTotal()).intValue(),pageInfo.getPageNum(),pageInfo.getPageSize());
+
     }
 
 }

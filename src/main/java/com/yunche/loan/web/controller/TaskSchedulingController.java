@@ -18,8 +18,8 @@ public class TaskSchedulingController {
      * 待办任务列表
      */
     @GetMapping(value = "/scheduletasklist")
-    public ResultBean scheduleTaskList() {
-        return ResultBean.ofSuccess(taskSchedulingService.scheduleTaskList());
+    public ResultBean scheduleTaskList(@RequestParam Integer startRow, @RequestParam Integer pageSize) {
+        return taskSchedulingService.scheduleTaskList(startRow,pageSize);
     }
 
 }
