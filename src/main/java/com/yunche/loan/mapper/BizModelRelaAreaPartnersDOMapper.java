@@ -3,6 +3,7 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO;
 import com.yunche.loan.domain.query.BizModelQuery;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public interface BizModelRelaAreaPartnersDOMapper {
     int delete(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
-    int deleteByPrimaryKey(Long bizId, Long areaId, Long groupId);
+    int deleteByPrimaryKey(@Param("bizId") Long bizId,@Param("areaId") Long areaId, @Param("groupId")Long groupId);
 
     int insert(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 

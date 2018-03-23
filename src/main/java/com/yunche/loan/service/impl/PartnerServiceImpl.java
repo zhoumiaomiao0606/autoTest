@@ -452,7 +452,7 @@ public class PartnerServiceImpl implements PartnerService {
                         return;
                     } else {
                         // delete
-                        int delCount = bizModelRelaAreaPartnersDOMapper.delete(e);
+                        int delCount = bizModelRelaAreaPartnersDOMapper.deleteByPrimaryKey(e.getBizId(),e.getAreaId(),e.getGroupId());
                         Preconditions.checkArgument(delCount > 0, "编辑业务区域失败");
 
                         // insert
