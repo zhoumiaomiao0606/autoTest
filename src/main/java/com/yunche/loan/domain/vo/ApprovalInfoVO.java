@@ -18,11 +18,11 @@ public class ApprovalInfoVO implements Serializable {
     /**
      * 审核人ID
      */
-    private Long id;
+    private Long userId;
     /**
      * 审核人名称
      */
-    private String name;
+    private String userName;
     /**
      * 审核结果
      */
@@ -32,9 +32,62 @@ public class ApprovalInfoVO implements Serializable {
      */
     private String info;
 
-    public ApprovalInfoVO(Long id, String name, Integer action, String info) {
-        this.id = id;
-        this.name = name;
+    /**
+     * 预贷款额度档次：1 - 13W以下; 2 - 13至20W; 3 - 20W以上;
+     */
+    private Byte loanAmount;
+
+    /**
+     * 打回源头任务：从哪个节点打回的
+     */
+    private String rejectOriginTask;
+    /**
+     * 打回任务的：源头-目的TASK
+     */
+    private String rejectTaskOriginAndDest;
+
+
+    /**
+     *
+     */
+    private String originTaskKey;
+    /**
+     *
+     */
+    private String originTaskId;
+    /**
+     *
+     */
+    private String destTaskKey;
+    /**
+     *
+     */
+    private String destTaskId;
+
+    ///////////////////////////////////////////////////--资料增补--///////////////////////////////////////////////////////
+
+    /**
+     * 资料增补类型
+     */
+    private Byte infoSupplementType;
+    /**
+     * 资料增补内容
+     */
+    private String infoSupplementContent;
+    /**
+     * 资料增补说明
+     */
+    private String infoSupplementInfo;
+    /**
+     * 增补源头任务节点：从哪个节点发起的增补
+     */
+    private String infoSupplementOriginTask;
+
+    ///////////////////////////////////////////////////--资料增补--///////////////////////////////////////////////////////
+
+    public ApprovalInfoVO(Long userId, String userName, Integer action, String info) {
+        this.userId = userId;
+        this.userName = userName;
         this.action = action;
         this.info = info;
     }

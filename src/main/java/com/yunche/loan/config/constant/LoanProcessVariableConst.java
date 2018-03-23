@@ -11,6 +11,13 @@ public class LoanProcessVariableConst {
      * 审核结果
      */
     public static final String PROCESS_VARIABLE_ACTION = "action";
+
+    /**
+     * 打回来源
+     */
+    public static final String PROCESS_VARIABLE_REJECT_ORIGIN_TASK = "reject_origin_task";
+
+
     /**
      * 审核备注
      */
@@ -51,8 +58,5 @@ public class LoanProcessVariableConst {
      * 增补源头任务节点：从哪个节点发起的增补
      */
     public static final String PROCESS_VARIABLE_INFO_SUPPLEMENT_ORIGIN_TASK = "info_supplement_origin_task";
-    /**
-     * 订单打回
-     */
-    public static final String PROCESS_VARIABLE_REJECT_ORDER_ORIGIN_TASK = "reject_order_origin_task";
+
 }

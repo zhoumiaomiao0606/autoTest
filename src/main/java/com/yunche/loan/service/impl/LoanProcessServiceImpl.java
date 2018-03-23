@@ -1,10 +1,10 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.Jpush;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
@@ -21,11 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REJECT;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
@@ -117,7 +116,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey(), approval.getAction());
 
         // 更新任务状态
-        updateLoanOrderTaskDefinitionKey(approval.getOrderId(), approval.getTaskDefinitionKey());
+//        updateLoanOrderTaskDefinitionKey(approval.getOrderId(), approval.getTaskDefinitionKey());
 
         push(loanOrderDO,approval.getTaskDefinitionKey(),approval.getAction(),approval);
 
@@ -192,13 +191,55 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanOrderDO
      */
     private void execTask(Task task, Map<String, Object> variables, ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        // 先获取提交之前的待执行任务列表
+        List<Task> startTaskList = taskService.createTaskQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .list();
+
         if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
             // 执行电审任务
             execTelephoneVerifyTask(task, variables, approval, loanOrderDO.getId(), loanOrderDO.getLoanFinancialPlanId());
         } else {
             // 执行其他任务
             taskService.complete(task.getId(), variables);
+
+            LoanProcessDO loanProcessDO = new LoanProcessDO();
+            loanProcessDO.setOrderId(approval.getOrderId());
+
+            // TODO 更新已执行的任务状态为：1-已提交
+//            switch (approval.getTaskDefinitionKey()) {
+////                case CREDIT_APPLY.getCode():
+//                    System.out.println("");
+//                    break;
+//            }
+
+//            loanProcessDO.setxxx(TASK_PROCESS_DONE);
         }
+
+        // 再获取提交之后的待执行任务列表
+        List<Task> endTaskList = taskService.createTaskQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .list();
+
+        List<Task> newTaskList = Lists.newArrayList();
+        List<Task> oldTaskList = Lists.newArrayList();
+        List<Task> dealTaskList = Lists.newArrayList();
+
+        startTaskList.parallelStream()
+                .forEach(e -> {
+
+                    if (endTaskList.contains(e)) {
+                        // 仍然在：无变化
+                        oldTaskList.add(e);
+                    } else {
+                        // 不存在：被执行了
+                        dealTaskList.add(e);
+                    }
+                });
+
+        // TODO 更新当前待执行的任务列表
+//        updateLoanProcess(loanProcessDO);
     }
 
     /**
@@ -226,39 +267,27 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void execTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval, Long orderId, Long loanFinancialPlanId) {
         // 角色
         List<String> userGroupNameList = getUserGroupNameList();
-        // 最大电审角色
-        String maxRole = getTelephoneVerifyMaxRole(userGroupNameList);
-        Preconditions.checkArgument(StringUtils.isNotBlank(maxRole), "您无电审权限");
-        // 电审角色等级
-        Byte roleLevel = TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.get(maxRole);
+        // 最大电审角色等级
+        Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameList);
+        // 电审专员及以上有权电审
+        Preconditions.checkArgument(null != maxRoleLevel && maxRoleLevel >= LEVEL_TELEPHONE_VERIFY_COMMISSIONER, "您无电审权限");
 
         // 是否已电审 及 电审员角色
 
-        // TODO 用对象记录操作日志
+        // 用对象记录操作日志      -- KEY加上roleLevel，放覆盖！！！
         String taskId = task.getId();
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         ApprovalInfoVO approvalInfoVO = new ApprovalInfoVO(loginUser.getId(), loginUser.getName(), approval.getAction(), approval.getInfo());
-        variables.put(taskId + ":" + roleLevel, approvalInfoVO);
-
-        // 记录操作日志
-        variables.put(taskId + ":" + PROCESS_VARIABLE_INFO + ":" + roleLevel, approval.getInfo());
-        variables.put(taskId + ":" + PROCESS_VARIABLE_ACTION + ":" + roleLevel, approval.getAction());
-
+        String telephoneVerifyRoleLevelProcessKey = taskId + ":" + maxRoleLevel;
+        variables.put(telephoneVerifyRoleLevelProcessKey, approvalInfoVO);
 
         // 如果是审核通过
         if (ACTION_PASS.equals(approval.getAction())) {
 
-            String telephoneVerifyRoleLevelProcessKey = taskId + ":" + PROCESS_VARIABLE_TELEPHONE_VERIFY_ROLE_LEVEL_PROGRESS;
-            Object telephoneVerifyRoleLevelProcess = taskService.getVariable(taskId, telephoneVerifyRoleLevelProcessKey);
-            if (null != telephoneVerifyRoleLevelProcess) {
-                Integer roleLevelProcess = (Integer) telephoneVerifyRoleLevelProcess;
-            }
-
-            // TODO 获取贷款额度
+            // 获取贷款额度
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
-            double loanAmount = 100000;
-//            Preconditions.checkArgument(null != loanFinancialPlanDO && null != loanFinancialPlanDO.getLoanAmount(), "贷款额不能为空");
-//            double loanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
+            Preconditions.checkArgument(null != loanFinancialPlanDO && null != loanFinancialPlanDO.getLoanAmount(), "贷款额不能为空");
+            double loanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
 
             // 直接通过
             if (loanAmount >= 0 && loanAmount <= 100000) {
@@ -266,9 +295,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 passTelephoneVerifyTask(taskId, variables, orderId);
             } else if (loanAmount > 100000 && loanAmount <= 300000) {
                 // 电审主管以上可过单
-                if (roleLevel < LEVEL_TELEPHONE_VERIFY_LEADER) {
+                if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_LEADER) {
                     // 记录
-                    updateTelephoneVerify(orderId, roleLevel);
+                    updateTelephoneVerify(orderId, maxRoleLevel);
                 } else {
                     // 提交并记录
                     passTelephoneVerifyTask(taskId, variables, orderId);
@@ -276,18 +305,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             } else if (loanAmount > 300000 && loanAmount <= 500000) {
                 // 电审经理以上可过单
-                if (roleLevel < LEVEL_TELEPHONE_VERIFY_MANAGER) {
+                if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_MANAGER) {
                     // 记录
-                    updateTelephoneVerify(orderId, roleLevel);
+                    updateTelephoneVerify(orderId, maxRoleLevel);
                 } else {
                     // 提交并记录
                     passTelephoneVerifyTask(taskId, variables, orderId);
                 }
             } else if (loanAmount > 500000) {
                 // 总监以上可过单
-                if (roleLevel < LEVEL_DIRECTOR) {
+                if (maxRoleLevel < LEVEL_DIRECTOR) {
                     // 记录
-                    updateTelephoneVerify(orderId, roleLevel);
+                    updateTelephoneVerify(orderId, maxRoleLevel);
                 } else {
                     // 提交并记录
                     passTelephoneVerifyTask(taskId, variables, orderId);
@@ -320,31 +349,25 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param telephoneVerifyProcess
      */
     private void updateTelephoneVerify(Long orderId, Byte telephoneVerifyProcess) {
-//        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-//        Preconditions.checkNotNull(loanProcessDO, "数据有误，流程记录为空");
         LoanProcessDO loanProcessDO = new LoanProcessDO();
         loanProcessDO.setOrderId(orderId);
         loanProcessDO.setTelephoneVerify(telephoneVerifyProcess);
 
-        int count = loanProcessDOMapper.updateByPrimaryKeySelective(loanProcessDO);
-        Preconditions.checkArgument(count > 0, "修改失败");
+        updateLoanProcess(loanProcessDO);
     }
 
     /**
-     * 获取改账号在【电审】中最大角色
+     * 获取改账号在【电审】中最大角色level
      *
      * @param userGroupNameList
      * @return
      */
-    private String getTelephoneVerifyMaxRole(List<String> userGroupNameList) {
+    private Byte getTelephoneVerifyMaxRole(List<String> userGroupNameList) {
         if (CollectionUtils.isEmpty(userGroupNameList)) {
             return null;
         }
 
-//        userGroupNameList.removeAll(USER_GROUP_TELEPHONE_VERIFY_LIST);
-
         final Byte[] maxLevel = {0};
-        final String[] maxRole = {null};
 
         userGroupNameList.parallelStream()
                 .filter(e -> StringUtils.isNotBlank(e))
@@ -354,12 +377,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     if (null != level) {
                         if (maxLevel[0] < level) {
                             maxLevel[0] = level;
-                            maxRole[0] = e;
                         }
                     }
                 });
 
-        return maxRole[0];
+        return maxLevel[0];
     }
 
     /**
@@ -757,8 +779,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param action
      * @param taskDefinitionKey
      * @param loanBaseInfoId
+     * @param approvalInfoVO
      */
-    private void fillLoanAmount(Map<String, Object> variables, Integer action, String taskDefinitionKey, Long loanBaseInfoId) {
+    private void fillLoanAmount(Map<String, Object> variables, Integer action, String taskDefinitionKey, Long loanBaseInfoId, ApprovalInfoVO approvalInfoVO) {
         // 征信申请审核且审核通过时
         boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY_VERIFY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
         // 银行&社会征信录入
@@ -768,7 +791,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
             Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
             Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
-            variables.put(PROCESS_VARIABLE_LOAN_AMOUNT, Integer.valueOf(loanBaseInfoDO.getLoanAmount()));
+            // 日志记录
+            approvalInfoVO.setLoanAmount(loanBaseInfoDO.getLoanAmount());
+            // 流程变量
+            variables.put(PROCESS_VARIABLE_LOAN_AMOUNT, loanBaseInfoDO.getLoanAmount());
         }
     }
 
@@ -793,37 +819,40 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * TODO 设置并返回流程变量
      *
-     * @param task
+     * @param currentExecTask
      * @param approval
      * @param loanBaseInfoId
      */
-    private Map<String, Object> setAndGetVariables(Task task, ApprovalParam approval, Long loanBaseInfoId) {
+    private Map<String, Object> setAndGetVariables(Task currentExecTask, ApprovalParam approval, Long loanBaseInfoId) {
         Map<String, Object> variables = Maps.newHashMap();
 
-        // 审核人ID、NAME、审核结果、审核备注
+        // 流程变量
+        variables.put(PROCESS_VARIABLE_ACTION, approval.getAction());
+
+        // 操作日志：审核人ID、NAME、审核结果、审核备注
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         ApprovalInfoVO approvalInfoVO = new ApprovalInfoVO(loginUser.getId(), loginUser.getName(), approval.getAction(), approval.getInfo());
-        variables.put(task.getId(), approvalInfoVO);
-
-        // 前缀   KEY:ProcessInstId:ExecutionId:
-        String taskVariablePrefix = task.getTaskDefinitionKey() + ":" + task.getProcessInstanceId() + ":" + task.getExecutionId() + ":";
-
-        // 审核结果
-        variables.put(PROCESS_VARIABLE_ACTION, approval.getAction());
-        variables.put(taskVariablePrefix + PROCESS_VARIABLE_ACTION, approval.getAction());
-
-        // 审核备注
-        variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO, approval.getInfo());
-
-        // 审核人ID、NAM
-        variables.put(taskVariablePrefix + PROCESS_VARIABLE_USER_ID, loginUser.getId());
-        variables.put(taskVariablePrefix + PROCESS_VARIABLE_USER_NAME, loginUser.getName());
+        variables.put(currentExecTask.getId(), approvalInfoVO);
+//
+//        // 前缀   KEY:ProcessInstId:ExecutionId:
+//        String taskVariablePrefix = task.getTaskDefinitionKey() + ":" + task.getProcessInstanceId() + ":" + task.getExecutionId() + ":";
+//
+//        // 审核结果
+//        variables.put(PROCESS_VARIABLE_ACTION, approval.getAction());
+//        variables.put(taskVariablePrefix + PROCESS_VARIABLE_ACTION, approval.getAction());
+//
+//        // 审核备注
+//        variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO, approval.getInfo());
+//
+//        // 审核人ID、NAM
+//        variables.put(taskVariablePrefix + PROCESS_VARIABLE_USER_ID, loginUser.getId());
+//        variables.put(taskVariablePrefix + PROCESS_VARIABLE_USER_NAME, loginUser.getName());
 
         // 添加流程变量-贷款金额
-        fillLoanAmount(variables, approval.getAction(), task.getTaskDefinitionKey(), loanBaseInfoId);
+        fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanBaseInfoId, approvalInfoVO);
 
         // 填充其他的流程变量
-        fillOtherVariables(variables, taskVariablePrefix, approval, task.getProcessInstanceId());
+        fillOtherVariables(variables, approval, currentExecTask, approvalInfoVO);
 
         return variables;
     }
@@ -832,41 +861,77 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 填充其他的流程变量
      *
      * @param variables
-     * @param taskVariablePrefix
      * @param approval
-     * @param processInstanceId
+     * @param currentExecTask
+     * @param approvalInfoVO
      */
-    private void fillOtherVariables(Map<String, Object> variables, String taskVariablePrefix, ApprovalParam approval, String processInstanceId) {
+    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, Task currentExecTask, ApprovalInfoVO approvalInfoVO) {
         // 资料增补
         if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
-            variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE, approval.getSupplementType());
-            variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_CONTENT, approval.getSupplementContent());
-            variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_INFO, approval.getSupplementInfo());
-            variables.put(taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_ORIGIN_TASK, approval.getTaskDefinitionKey());
+            approvalInfoVO.setInfoSupplementType(approval.getSupplementType());
+            approvalInfoVO.setInfoSupplementContent(approval.getSupplementContent());
+            approvalInfoVO.setInfoSupplementInfo(approval.getSupplementInfo());
+            approvalInfoVO.setInfoSupplementOriginTask(approval.getTaskDefinitionKey());
         }
 
         // TODO 【资料审核】打回到【业务申请】 标记
         else if (METERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT.equals(approval.getAction())) {
-            variables.put(taskVariablePrefix + PROCESS_VARIABLE_REJECT_ORDER_ORIGIN_TASK, LOAN_APPLY_REJECT_FROM_METERIAL_REVIEW);
+            // 记录 打回来源KEY、来源TaskId、去向KEY、去向TaskId
+//            String originTaskKey = METERIAL_REVIEW.getCode();
+//            String originTaskId = currentExecTask.getId();
+//            String destTaskKey = LOAN_APPLY.getCode();
+//
+//            approvalInfoVO.setOriginTaskKey(originTaskKey);
+//            approvalInfoVO.setOriginTaskId(originTaskId);
+//            approvalInfoVO.setDestTaskKey(destTaskKey);
+
+            // 更新本地审核流程记录
+            LoanProcessDO loanProcessDO = new LoanProcessDO();
+            loanProcessDO.setOrderId(approval.getOrderId());
+            loanProcessDO.setLoanApply(TASK_PROCESS_REJECT);
+            loanProcessDO.setLoanApplyRejectOrginTask(METERIAL_REVIEW.getCode());
+            updateLoanProcess(loanProcessDO);
         }
 
         // 业务申请
-//        else if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
-//
-//            // TODO 是否 [打回] - 自于【资料审核】
-//            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
-//                    .processInstanceId(processInstanceId)
-//                    .singleResult();
-//
-//            if (null != historicTaskInstance) {
-//                variables.put(PROCESS_VARIABLE_REJECT_ORDER_ORIGIN_TASK, LOAN_APPLY_REJECT_FROM_METERIAL_REVIEW);
-//            }
-//        }
+        else if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            // 是否 [打回] - 自于【资料审核】
+
+            // 1.是否为打回
+            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(approval.getOrderId());
+            Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+
+            Byte loanApply = loanProcessDO.getLoanApply();
+            if (TASK_PROCESS_REJECT.equals(loanApply)) {
+
+                // 2.打回自【资料审核】
+                String loanApplyRejectOrginTask = loanProcessDO.getLoanApplyRejectOrginTask();
+                if (METERIAL_REVIEW.getCode().equals(loanApplyRejectOrginTask)) {
+                    // 添加流程变量 -打回来源 -> reject_origin_task
+                    variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, METERIAL_REVIEW.getCode());
+                }
+            }
+        }
 
         // 电审
         else if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
 
+            //
+
+
         }
+    }
+
+    /**
+     * 更新本地流程记录
+     *
+     * @param loanProcessDO
+     */
+    private void updateLoanProcess(LoanProcessDO loanProcessDO) {
+        int count = loanProcessDOMapper.updateByPrimaryKeySelective(loanProcessDO);
+        loanProcessDO.setGmtModify(new Date());
+        Preconditions.checkArgument(count > 0, "更新本地流程记录失败");
     }
 
     /**
@@ -903,7 +968,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     public boolean isBankAndSocialCreditRecordTask(Map<String, Object> variables, String taskDefinitionKey) {
-        Integer loanAmount = (Integer) variables.get("loanAmount");
+        Byte loanAmount = (Byte) variables.get("loanAmount");
         boolean isBankAndSocialCreditRecordTask = (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey))
                 && null != loanAmount && loanAmount >= 2;
         return isBankAndSocialCreditRecordTask;
