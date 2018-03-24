@@ -67,4 +67,9 @@ public class ScheduleTaskVO {
 
     //资料增补/合同
     private String usertaskInfoSupplementStatus;
+
+    private String partnerId;
+
+    private String salesmanId;
+
 }

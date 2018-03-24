@@ -54,7 +54,9 @@
                jf.down_payment_ratio               AS downPaymentRatio,
                jf.loan_time                        AS loanTime,
                jf.loan_amount                      AS loanAmount,
-               CONCAT('待办',result.NAME_)          AS taskStatusExplanation
+               CONCAT('待办',result.NAME_)          AS taskStatusExplanation,
+               jb.partner_id                       AS  partnerId,
+               jb.salesman_id                      AS  salesmanId
 
         FROM
           (
