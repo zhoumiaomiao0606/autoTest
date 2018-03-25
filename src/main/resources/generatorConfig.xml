@@ -232,14 +232,14 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
+        <table tableName="flow_operation_msg" domainObjectName="FlowOperationMsgDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
         -->
 
 
-        <!--<table tableName="loan_process" domainObjectName="LoanProcessDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
-
-        <table tableName="flow_operation_msg" domainObjectName="FlowOperationMsgDO"
+        <table tableName="loan_process" domainObjectName="LoanProcessDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 

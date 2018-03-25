@@ -13,5 +13,5 @@ public class TaskStateVO {
 
     private String taskName;
 
-    private Integer taskStatus;
+    private Byte taskStatus;
 }

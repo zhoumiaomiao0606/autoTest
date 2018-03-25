@@ -18,19 +18,19 @@ public class LoanProcessConst {
     /**
      * 打回
      */
-    public static final Integer ACTION_REJECT = 0;
+    public static final Byte ACTION_REJECT = 0;
     /**
      * 通过
      */
-    public static final Integer ACTION_PASS = 1;
+    public static final Byte ACTION_PASS = 1;
     /**
      * 弃单
      */
-    public static final Integer ACTION_CANCEL = 2;
+    public static final Byte ACTION_CANCEL = 2;
     /**
      * 资料增补
      */
-    public static final Integer ACTION_INFO_SUPPLEMENT = 3;
+    public static final Byte ACTION_INFO_SUPPLEMENT = 3;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -62,12 +62,12 @@ public class LoanProcessConst {
     /**
      * 任务类别：1-未提交;
      */
-    public static final Integer TASK_TYPE_UN_SUBMIT = 1;
+    public static final Byte TASK_TYPE_UN_SUBMIT = 1;
     public static final String TASK_TYPE_TEXT_UN_SUBMIT = "打回";
     /**
      * 任务类别：2-(被)打回;
      */
-    public static final Integer TASK_TYPE_REJECT = 2;
+    public static final Byte TASK_TYPE_REJECT = 2;
     public static final String TASK_TYPE_TEXT_REJECT = "未提交";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ public class LoanProcessConst {
     /**
      * 业务申请：[打回] - 自于【资料审核】
      */
-    public static final Integer LOAN_APPLY_REJECT_FROM_METERIAL_REVIEW = 1;
+    public static final Byte LOAN_APPLY_REJECT_FROM_METERIAL_REVIEW = 1;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

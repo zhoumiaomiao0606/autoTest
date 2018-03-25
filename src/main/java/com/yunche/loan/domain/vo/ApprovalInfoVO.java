@@ -3,6 +3,7 @@ package com.yunche.loan.domain.vo;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 审核信息对象
@@ -26,11 +27,16 @@ public class ApprovalInfoVO implements Serializable {
     /**
      * 审核结果
      */
-    private Integer action;
+    private Byte action;
     /**
      * 审核备注
      */
     private String info;
+    /**
+     * 操作日期
+     */
+    private Date approvalDate;
+
 
     /**
      * 预贷款额度档次：1 - 13W以下; 2 - 13至20W; 3 - 20W以上;
@@ -85,10 +91,11 @@ public class ApprovalInfoVO implements Serializable {
 
     ///////////////////////////////////////////////////--资料增补--///////////////////////////////////////////////////////
 
-    public ApprovalInfoVO(Long userId, String userName, Integer action, String info) {
+    public ApprovalInfoVO(Long userId, String userName, Byte action, String info) {
         this.userId = userId;
         this.userName = userName;
         this.action = action;
         this.info = info;
+        this.approvalDate = new Date();
     }
 }

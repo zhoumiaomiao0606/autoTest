@@ -16,4 +16,6 @@ public interface LoanProcessDOMapper {
     int updateByPrimaryKeySelective(LoanProcessDO record);
 
     int updateByPrimaryKey(LoanProcessDO record);
+
+    int updateLoanApplyRejectOrginTaskIsNull(Long orderId);
 }

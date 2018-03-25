@@ -2,6 +2,7 @@ package com.yunche.loan.web.aop;
 
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
+import org.activiti.engine.ActivitiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,8 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof MailException) {
             return ResultBean.ofError("邮件发送失败");
+        } else if (e instanceof ActivitiException) {
+            return ResultBean.ofError("流程审核参数有误");
         } else if (e instanceof BadSqlGrammarException) {
             return ResultBean.ofError("糟糕，出错啦！");
         } else if (e instanceof RuntimeException) {

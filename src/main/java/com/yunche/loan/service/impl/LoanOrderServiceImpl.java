@@ -35,6 +35,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
@@ -269,6 +270,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private void createLoanProcess(Long orderId) {
         LoanProcessDO loanProcessDO = new LoanProcessDO();
         loanProcessDO.setOrderId(orderId);
+        loanProcessDO.setCreditApply(TASK_PROCESS_TODO);
+        loanProcessDO.setGmtCreate(new Date());
+        loanProcessDO.setGmtModify(new Date());
         int count = loanProcessDOMapper.insertSelective(loanProcessDO);
         Preconditions.checkArgument(count > 0, "创建流程记录失败");
     }

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 消费贷-业务单流程
  * Created by zhouguoliang on 2018/1/30.
@@ -38,7 +40,7 @@ public class LoanProcessController {
      * @return
      */
     @GetMapping(value = "/task/current")
-    public ResultBean<TaskStateVO> currentTask(@RequestParam("orderId") Long orderId) {
+    public ResultBean<List<TaskStateVO>> currentTask(@RequestParam("orderId") Long orderId) {
         return loanProcessService.currentTask(orderId);
     }
 

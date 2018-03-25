@@ -1165,13 +1165,13 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     .collect(Collectors.toList());
         }
 
-        // 当前任务KEY
-        ResultBean<TaskStateVO> taskStateVOResultBean = loanProcessService.currentTask(loanOrderDO.getId());
-        Preconditions.checkArgument(taskStateVOResultBean.getSuccess(), taskStateVOResultBean.getMsg());
-        TaskStateVO taskStateVO = taskStateVOResultBean.getData();
-        if (null != taskStateVO) {
-            appOrderProcessVO.setTaskDefinitionKey(taskStateVO.getTaskDefinitionKey());
-        }
+        // TODO 当前任务KEY
+//        ResultBean<TaskStateVO> taskStateVOResultBean = loanProcessService.currentTask(loanOrderDO.getId());
+//        Preconditions.checkArgument(taskStateVOResultBean.getSuccess(), taskStateVOResultBean.getMsg());
+//        TaskStateVO taskStateVO = taskStateVOResultBean.getData();
+//        if (null != taskStateVO) {
+//            appOrderProcessVO.setTaskDefinitionKey(taskStateVO.getTaskDefinitionKey());
+//        }
 
         // 是否可以弃单 -> 【打款确认】为界限
         if (REMIT_REVIEW.getCode().equals(appOrderProcessVO.getTaskDefinitionKey())) {
