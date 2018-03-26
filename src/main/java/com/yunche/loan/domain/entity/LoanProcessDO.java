@@ -32,6 +32,8 @@ public class LoanProcessDO {
 
     private Byte commitKey;
 
+    private Byte vehicleInformation;
+
     private Byte materialReview;
 
     private Byte materialPrintReview;
