@@ -16,7 +16,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanprocess")
+@RequestMapping("/loanprocess")
 public class LoanProcessController {
 
     @Autowired
@@ -52,7 +52,7 @@ public class LoanProcessController {
      * @return
      */
     @GetMapping(value = "/task/status")
-    public ResultBean<Integer> currentTask(@RequestParam("orderId") Long orderId,
+    public ResultBean<TaskStateVO> currentTask(@RequestParam("orderId") Long orderId,
                                            @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
         return loanProcessService.taskStatus(orderId, taskDefinitionKey);
     }

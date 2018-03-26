@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 //任务调度中心
 @CrossOrigin
 @RestController
-@RequestMapping(value = {"/api/v1/taskscheduling","/api/v1/app/taskscheduling"})
+@RequestMapping(value = {"/taskscheduling","/app/taskscheduling"})
 public class TaskSchedulingController {
 
     @Resource

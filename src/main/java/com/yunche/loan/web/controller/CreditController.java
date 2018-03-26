@@ -22,7 +22,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/credit")
+@RequestMapping("/credit")
 public class CreditController {
 
     private static final Logger logger = LoggerFactory.getLogger(CreditController.class);

@@ -101,23 +101,31 @@ public class LoanProcessConst {
     static {
         PROCESS_MAP.put(START.getCode(), "流程启动");
         PROCESS_MAP.put(END.getCode(), "流程终止");
+
         PROCESS_MAP.put(CREDIT_APPLY.getCode(), "发起征信申请");
         PROCESS_MAP.put(CREDIT_APPLY_VERIFY.getCode(), "征信申请审核");
         PROCESS_MAP.put(BANK_CREDIT_RECORD.getCode(), "银行征信录入");
         PROCESS_MAP.put(SOCIAL_CREDIT_RECORD.getCode(), "社会征信录入");
+
         PROCESS_MAP.put(LOAN_APPLY.getCode(), "业务申请");
         PROCESS_MAP.put(VISIT_VERIFY.getCode(), "上门调查");
         PROCESS_MAP.put(TELEPHONE_VERIFY.getCode(), "电审信息");
         PROCESS_MAP.put(INFO_SUPPLEMENT.getCode(), "资料增补");
 
-        PROCESS_MAP.put("usertask_car_insurance_record", "车辆保险");
-        PROCESS_MAP.put("usertask_gps_install", "GPS安装");
-        PROCESS_MAP.put("usertask_busi_examine", "业务审批");
-        PROCESS_MAP.put("usertask_contract_print", "合同套打");
-        PROCESS_MAP.put("usertask_license_mortgage", "上牌抵押");
-        PROCESS_MAP.put("usertask_pay_approve", "放款审批");
-        PROCESS_MAP.put("usertask_pay_process", "财务打款");
+        PROCESS_MAP.put(CAR_INSURANCE.getCode(), "车辆保险");
+        PROCESS_MAP.put(APPLY_LICENSE_PLATE_RECORD.getCode(), "上牌记录");
+        PROCESS_MAP.put(APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode(), "上牌抵押");
+        PROCESS_MAP.put(INSTALL_GPS.getCode(), "GPS安装");
+        PROCESS_MAP.put(COMMIT_KEY.getCode(), "待收钥匙");
+        PROCESS_MAP.put(VEHICLE_INFORMATION.getCode(), "提车资料");
+
+        PROCESS_MAP.put(BUSINESS_REVIEW.getCode(), "业务审批");
+        PROCESS_MAP.put(LOAN_REVIEW.getCode(), "放款审批");
+        PROCESS_MAP.put(REMIT_REVIEW.getCode(), "打款确认");
+        PROCESS_MAP.put(MATERIAL_REVIEW.getCode(), "资料审核");
+        PROCESS_MAP.put(MATERIAL_PRINT_REVIEW.getCode(), "合同套打");
     }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

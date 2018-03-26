@@ -23,7 +23,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/partner")
+@RequestMapping("/partner")
 public class PartnerController {
 
     @Autowired

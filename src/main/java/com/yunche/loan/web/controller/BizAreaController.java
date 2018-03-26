@@ -20,7 +20,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/biz/area")
+@RequestMapping("/biz/area")
 public class BizAreaController {
 
     @Autowired

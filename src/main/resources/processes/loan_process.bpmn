@@ -215,9 +215,9 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action ==1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_vehicle_information" name="提车资料" activiti:candidateGroups="合伙人"></userTask>
-    <sequenceFlow id="flow144" sourceRef="parallelgateway3" targetRef="usertask_pick_up_car_info"></sequenceFlow>
     <endEvent id="endevent26" name="End"></endEvent>
-    <sequenceFlow id="flow145" name="提交" sourceRef="usertask_pick_up_car_info" targetRef="endevent26">
+    <sequenceFlow id="flow146" sourceRef="parallelgateway3" targetRef="usertask_vehicle_information"></sequenceFlow>
+    <sequenceFlow id="flow147" name="提交" sourceRef="usertask_vehicle_information" targetRef="endevent26">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
   </process>
@@ -809,6 +809,18 @@
         <omgdi:waypoint x="2896.0" y="283.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="16.0" width="22.0" x="2823.0" y="266.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow146" id="BPMNEdge_flow146">
+        <omgdi:waypoint x="3250.0" y="523.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3250.0" y="624.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3350.0" y="624.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow147" id="BPMNEdge_flow147">
+        <omgdi:waypoint x="3455.0" y="624.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3556.0" y="624.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="100.0" x="3455.0" y="624.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

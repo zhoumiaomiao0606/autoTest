@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/finance")
+@RequestMapping("/loanorder/finance")
 public class FinanceController {
 
     @Resource

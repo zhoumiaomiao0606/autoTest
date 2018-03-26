@@ -24,7 +24,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/employee")
+@RequestMapping("/employee")
 public class EmployeeController {
 
     @Autowired

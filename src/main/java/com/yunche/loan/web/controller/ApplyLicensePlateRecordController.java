@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/applylicenseplaterecord")
+@RequestMapping("/loanorder/applylicenseplaterecord")
 public class ApplyLicensePlateRecordController {
 
     @Resource

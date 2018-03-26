@@ -12,7 +12,7 @@ import javax.validation.Valid;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/auxiliary")
+@RequestMapping("/loanorder/auxiliary")
 public class AuxiliaryController {
     @Resource
     private AuxiliaryService auxiliaryService;

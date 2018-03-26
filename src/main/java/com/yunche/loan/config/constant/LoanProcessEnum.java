@@ -20,7 +20,6 @@ public enum LoanProcessEnum {
     LOAN_APPLY("usertask_loan_apply", "业务申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),
     TELEPHONE_VERIFY("usertask_telephone_verify", "电审信息"),
-
     INFO_SUPPLEMENT("usertask_info_supplement", "资料增补"),
 
     CAR_INSURANCE("usertask_car_insurance", "车辆保险"),
@@ -28,6 +27,7 @@ public enum LoanProcessEnum {
     APPLY_LICENSE_PLATE_DEPOSIT_INFO("usertask_apply_license_plate_deposit_info", "上牌抵押"),
     INSTALL_GPS("usertask_install_gps", "GPS安装"),
     COMMIT_KEY("usertask_commit_key", "待收钥匙"),
+    VEHICLE_INFORMATION("usertask_vehicle_information", "提车资料"),
 
     BUSINESS_REVIEW("usertask_business_review", "业务审批"),
     LOAN_REVIEW("usertask_loan_review", "放款审批"),

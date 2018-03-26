@@ -17,7 +17,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/financialProduct")
+@RequestMapping("/financialProduct")
 public class FinancialProductController {
 
     @Autowired

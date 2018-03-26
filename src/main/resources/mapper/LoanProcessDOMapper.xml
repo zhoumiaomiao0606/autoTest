@@ -36,7 +36,7 @@
   </sql>
 
     <!--updateLoanApplyRejectOrginTaskIsNull-->
-    <update id="updateLoanApplyRejectOrginTaskIsNull" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
+    <update id="updateLoanApplyRejectOrginTaskIsNull" parameterType="java.lang.Long">
         update loan_process
         set loan_apply_reject_orgin_task = NULL
         where order_id = #{orderId,jdbcType=BIGINT}

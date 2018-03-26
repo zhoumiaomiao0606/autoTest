@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 //任务调度中心
 @CrossOrigin
 @RestController
-@RequestMapping(value = {"/api/v1/msg","/api/v1/app/msg"})
+@RequestMapping(value = {"/msg","/app/msg"})
 public class MsgController {
 
 

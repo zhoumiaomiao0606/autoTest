@@ -17,7 +17,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/app/version")
+@RequestMapping("/app/version")
 public class AppVersionController {
 
     @Autowired
