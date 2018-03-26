@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/loanorder/businessreview")
+@RequestMapping("/api/v1/loanorder/businessreview")
 public class BusinessReviewController {
     @Resource
     private BusinessReviewService businessReviewService;
