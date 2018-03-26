@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/computemode")
+@RequestMapping("/api/v1/computemode")
 public class ComputeModeController {
     private static final Logger logger = LoggerFactory.getLogger(ComputeModeController.class);
     @Autowired

@@ -18,7 +18,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/bizModel")
+@RequestMapping("/api/v1/bizModel")
 public class BizModelController {
 
     @Autowired

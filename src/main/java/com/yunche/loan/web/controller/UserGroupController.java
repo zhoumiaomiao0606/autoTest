@@ -18,7 +18,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/user/group")
+@RequestMapping("/api/v1/user/group")
 public class UserGroupController {
 
     @Autowired

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/customer")
+@RequestMapping("/api/v1/customer")
 public class CustomerController {
 
     @Autowired

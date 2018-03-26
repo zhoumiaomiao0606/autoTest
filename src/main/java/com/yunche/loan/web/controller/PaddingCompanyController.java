@@ -17,7 +17,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/padding")
+@RequestMapping("/api/v1/padding")
 public class PaddingCompanyController {
 
     @Autowired

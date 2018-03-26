@@ -18,7 +18,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/area")
+@RequestMapping("/api/v1/area")
 public class BaseAreaController {
 
     @Autowired
