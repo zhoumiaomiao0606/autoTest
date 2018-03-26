@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yunche.loan.config.constant.LoanProcessConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -13,9 +12,10 @@ import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.*;
-import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,16 +85,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
 
-        // 【发起/提交】资料增补单
-        if (isStartOrEndInfoSupplement(approval)) {
-            return execInfoSupplementTask(approval);
-        }
-
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
 
         // 获取任务
         Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
+
+        // 【发起/提交】资料增补单
+        if (isStartOrEndInfoSupplement(approval)) {
+            return execInfoSupplementTask(approval, task.getId());
+        }
 
         // 流程变量
         Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO.getLoanBaseInfoId());
@@ -103,10 +103,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         execTask(task, variables, approval, loanOrderDO);
 
         // 征信申请记录拦截
-        execCreditRecordFilterTask(task, loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey(), approval.getAction(), variables);
+        execCreditRecordFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables);
 
         // 业务申请 & 上门调查 拦截
-        execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey(), approval.getAction(), variables);
+        execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables);
 
         // 推送
         push(loanOrderDO, approval.getTaskDefinitionKey(), approval.getAction(), approval);
@@ -131,9 +131,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 执行资料增补任务
      *
      * @param approval
+     * @param taskId
      * @return
      */
-    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval) {
+    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, String taskId) {
 
         // 【发起】资料增补单
         if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
@@ -151,9 +152,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return ResultBean.ofSuccess(null, "资料增补提交成功");
         }
 
+        // 增补单数量   -> 作为日志记录KEY
+        int infoSupplementCount = loanInfoSupplementDOMapper.countByOrderId(approval.getOrderId());
+
+        Map<String, Object> variables = Maps.newHashMap();
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        ApprovalInfoVO approvalInfoVO = new ApprovalInfoVO(loginUser.getId(), loginUser.getName(), approval.getTaskDefinitionKey(), approval.getAction(), approval.getInfo());
+        variables.put(String.valueOf(infoSupplementCount + 1), approvalInfoVO);
+
+        // 操作日志：审核人ID、NAME、审核结果、审核备注            -KEY：taskId; -VAL：ApprovalInfoVO对象;
+        taskService.setVariables(taskId, variables);
+
         return ResultBean.ofSuccess(null, "action参数有误");
     }
-
 
     /**
      * 推送
@@ -283,7 +294,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 更新当前执行的任务状态
-        updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_DONE);
+        Byte taskProcessStatus = null;
+        if (ACTION_REJECT.equals(approval.getAction())) {
+            taskProcessStatus = TASK_PROCESS_IS_NULL;
+        } else {
+            taskProcessStatus = TASK_PROCESS_DONE;
+        }
+        updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), taskProcessStatus);
 
         // 更新新产生的任务状态
         updateNextTaskProcessStatus(loanProcessDO, task.getProcessInstanceId(), startTaskIdList, approval.getAction());
@@ -500,8 +517,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 用对象记录操作日志      -- KEY加上roleLevel，假提交->防覆盖！！！
         String taskId = task.getId();
+        // 清除taskId， 用taskId:maxRoleLevel替代
+        variables.remove(taskId);
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        ApprovalInfoVO approvalInfoVO = new ApprovalInfoVO(loginUser.getId(), loginUser.getName(), approval.getAction(), approval.getInfo());
+        ApprovalInfoVO approvalInfoVO = new ApprovalInfoVO(loginUser.getId(), loginUser.getName(), approval.getTaskDefinitionKey(), approval.getAction(), approval.getInfo());
         String telephoneVerifyRoleLevelProcessKey = taskId + ":" + maxRoleLevel;
         variables.put(telephoneVerifyRoleLevelProcessKey, approvalInfoVO);
 
@@ -625,15 +644,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param currentTask
      * @param processInstId
-     * @param taskDefinitionKey
-     * @param action
+     * @param approval
      * @param variables
      */
-    private void execLoanApplyVisitVerifyFilterTask(Task currentTask, String processInstId, String taskDefinitionKey,
-                                                    Byte action, Map<String, Object> variables) {
+    private void execLoanApplyVisitVerifyFilterTask(Task currentTask, String processInstId, ApprovalParam approval, Map<String, Object> variables) {
 
         // 执行拦截任务
-        if (isLoanApplyVisitVerifyFilterTask(taskDefinitionKey, variables)) {
+        if (isLoanApplyVisitVerifyFilterTask(approval.getTaskDefinitionKey(), variables)) {
             // 获取所有正在执行的并行任务
             List<Task> tasks = taskService.createTaskQuery()
                     .processInstanceId(processInstId)
@@ -641,11 +658,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 上门调查：只有【提交】;  业务申请：只有【提交】&【弃单】;      -均无[打回]
             // PASS
-            if (ACTION_PASS.equals(action)) {
-                dealLoanApplyVisitVerifyFilterPassTask(currentTask, tasks);
+            if (ACTION_PASS.equals(approval.getAction())) {
+                dealLoanApplyVisitVerifyFilterPassTask(currentTask, tasks, approval);
             }
             // CANCEL
-            else if (ACTION_CANCEL.equals(action)) {
+            else if (ACTION_CANCEL.equals(approval.getAction())) {
                 dealCancelTask(processInstId);
             }
         }
@@ -656,8 +673,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param currentTask
      * @param tasks
+     * @param approval
      */
-    private void dealLoanApplyVisitVerifyFilterPassTask(Task currentTask, List<Task> tasks) {
+    private void dealLoanApplyVisitVerifyFilterPassTask(Task currentTask, List<Task> tasks, ApprovalParam approval) {
 
         // 是否都通过了      -> 既非LOAN_APPLY，也非VISIT_VERIFY
         if (!CollectionUtils.isEmpty(tasks)) {
@@ -682,7 +700,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             // 拿到当前"主任务"
                             if (currentTask.getExecutionId().equals(task.getExecutionId())) {
                                 // "主任务"  ->  通过
-                                taskService.complete(task.getId(), passVariables);
+                                completeTask(task, passVariables, approval);
                             } else if (LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())
                                     && !currentTask.getExecutionId().equals(task.getExecutionId())) {
                                 // 其他filter"子任务"全部弃掉
@@ -733,15 +751,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param currentTask
      * @param processInstId
-     * @param taskDefinitionKey
-     * @param action
+     * @param approval
      * @param variables
      */
-    private void execCreditRecordFilterTask(Task currentTask, String processInstId, String taskDefinitionKey, Byte action,
-                                            Map<String, Object> variables) {
+    private void execCreditRecordFilterTask(Task currentTask, String processInstId, ApprovalParam approval, Map<String, Object> variables) {
 
         // 执行拦截任务
-        if (isBankAndSocialCreditRecordTask(variables, taskDefinitionKey)) {
+        if (isBankAndSocialCreditRecordTask(variables, approval.getTaskDefinitionKey())) {
 
             // 获取所有正在执行的并行任务
             List<Task> tasks = taskService.createTaskQuery()
@@ -749,15 +765,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     .list();
 
             // PASS
-            if (ACTION_PASS.equals(action)) {
-                dealPassTask(currentTask, tasks);
+            if (ACTION_PASS.equals(approval.getAction())) {
+                dealPassTask(currentTask, tasks, approval);
             }
             // REJECT
-            else if (ACTION_REJECT.equals(action)) {
+            else if (ACTION_REJECT.equals(approval.getAction())) {
                 dealRejectTask(currentTask, tasks);
             }
             // CANCEL
-            else if (ACTION_CANCEL.equals(action)) {
+            else if (ACTION_CANCEL.equals(approval.getAction())) {
                 dealCancelTask(currentTask.getProcessInstanceId());
             }
         }
@@ -856,6 +872,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         TaskStateVO.setTaskStatus(taskStatus);
         switch (taskStatus) {
+            case 0:
+                TaskStateVO.setTaskStatusText("未执行到此");
+                break;
             case 1:
                 TaskStateVO.setTaskStatusText("已提交");
                 break;
@@ -867,11 +886,129 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 break;
             // null
             default:
-                TaskStateVO.setTaskStatusText("未执行到此");
+                TaskStateVO.setTaskStatusText("-");
                 break;
         }
 
         return ResultBean.ofSuccess(TaskStateVO, "查询当前流程任务节点状态成功");
+    }
+
+    @Override
+    public ResultBean<List<String>> orderHistory(Long orderId, Integer limit) {
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+
+        List<HistoricVariableInstance> historicVariableInstanceList = historyService.createHistoricVariableInstanceQuery()
+                .processInstanceId(loanOrderDO.getProcessInstId())
+                .list();
+
+        List<String> historyList = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(historicVariableInstanceList)) {
+
+            if (null != limit) {
+
+                historicVariableInstanceList.stream()
+                        .filter(Objects::nonNull)
+                        .filter(e -> null != e.getValue() && e.getValue() instanceof ApprovalInfoVO)
+                        .sorted(Comparator.comparing(HistoricVariableInstance::getCreateTime))
+                        .limit(limit)
+                        .forEach(e -> {
+
+                            ApprovalInfoVO approvalInfoVO = (ApprovalInfoVO) e.getValue();
+
+                            // 王希  于 2017-12-29 13:07:00  创建 本业务信息
+                            String history = approvalInfoVO.getUserName()
+                                    + " 于 "
+                                    + convertApprovalDate(approvalInfoVO.getApprovalDate())
+                                    + " "
+                                    + convertActionText(approvalInfoVO.getAction())
+                                    + " "
+                                    + convertTaskDefKeyText(approvalInfoVO.getTaskDefinitionKey());
+
+                            historyList.add(history);
+                        });
+
+            } else {
+
+                historicVariableInstanceList.stream()
+                        .filter(Objects::nonNull)
+                        .filter(e -> null != e.getValue() && e.getValue() instanceof ApprovalInfoVO)
+                        .sorted(Comparator.comparing(HistoricVariableInstance::getCreateTime))
+                        .forEach(e -> {
+
+                            ApprovalInfoVO approvalInfoVO = (ApprovalInfoVO) e.getValue();
+
+                            // 王希  于 2017-12-29 13:07:00  创建 本业务信息
+                            String history = approvalInfoVO.getUserName()
+                                    + " 于 "
+                                    + convertApprovalDate(approvalInfoVO.getApprovalDate())
+                                    + " "
+                                    + convertActionText(approvalInfoVO.getAction())
+                                    + " "
+                                    + convertTaskDefKeyText(approvalInfoVO.getTaskDefinitionKey());
+
+                            historyList.add(history);
+                        });
+            }
+        }
+
+        return ResultBean.ofSuccess(historyList, "订单日志查询成功");
+    }
+
+    /**
+     * action字面意义转换
+     *
+     * @param action 0-打回; 1-通过(提交); 2-弃单; 3-资料增补;
+     * @return
+     */
+
+    private String convertActionText(Byte action) {
+        String actionText = null;
+
+        switch (action) {
+            case 0:
+                actionText = "打回";
+                break;
+            case 1:
+                actionText = "提交";
+                break;
+            case 2:
+                actionText = "弃单";
+                break;
+            case 3:
+                actionText = "资料增补";
+                break;
+            default:
+                actionText = "-";
+        }
+        return actionText;
+    }
+
+    /**
+     * 审核时间转换
+     *
+     * @param approvalDate
+     * @return
+     */
+    private String convertApprovalDate(Date approvalDate) {
+        String approvalDateStr = null;
+        if (null != approvalDate) {
+            approvalDateStr = DateFormatUtils.format(approvalDate, "yyyy-MM-dd HH:mm:ss");
+        }
+        return approvalDateStr;
+    }
+
+    /**
+     * 任务名称转换
+     *
+     * @param taskDefinitionKey
+     * @return
+     */
+    private String convertTaskDefKeyText(String taskDefinitionKey) {
+        String taskName = PROCESS_MAP.get(taskDefinitionKey);
+        return taskName;
     }
 
     /**
@@ -951,7 +1088,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 操作日志：审核人ID、NAME、审核结果、审核备注            -KEY：taskId; -VAL：ApprovalInfoVO对象;
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        ApprovalInfoVO approvalInfoVO = new ApprovalInfoVO(loginUser.getId(), loginUser.getName(), approval.getAction(), approval.getInfo());
+        ApprovalInfoVO approvalInfoVO = new ApprovalInfoVO(loginUser.getId(), loginUser.getName(), approval.getTaskDefinitionKey(), approval.getAction(), approval.getInfo());
         variables.put(currentExecTask.getId(), approvalInfoVO);
 
         // 添加流程变量-贷款金额
@@ -1257,9 +1394,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param currentTask
      * @param tasks
+     * @param approval
      */
 
-    private void dealPassTask(Task currentTask, List<Task> tasks) {
+    private void dealPassTask(Task currentTask, List<Task> tasks, ApprovalParam approval) {
 
         // 是否都通过了    -> 既非BANK，也非SOCIAL
         if (!CollectionUtils.isEmpty(tasks)) {
@@ -1285,7 +1423,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             // 拿到当前"主任务"
                             if (currentTask.getExecutionId().equals(task.getExecutionId())) {
                                 // "主任务"  ->  通过
-                                taskService.complete(task.getId(), passVariables);
+                                completeTask(task, passVariables, approval);
                             } else if (BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(task.getTaskDefinitionKey())
                                     && !currentTask.getExecutionId().equals(task.getExecutionId())) {
                                 // 其他filter"子任务"全部弃掉

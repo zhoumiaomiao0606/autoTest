@@ -41,14 +41,11 @@ public class ResultBean<T> implements Serializable {
     private Integer totalPage;
 
     public static <T> ResultBean of(T data, boolean success, BaseExceptionEnum baseExceptionEnum) {
-        ResultBean resultBean = new ResultBean<>();
-        resultBean.setData(data);
-        resultBean.setSuccess(success);
         if (null != baseExceptionEnum) {
-            resultBean.setCode(baseExceptionEnum.getCode());
-            resultBean.setMsg(baseExceptionEnum.getMessage());
+            return of(data, true, baseExceptionEnum.getCode(), baseExceptionEnum.getMessage());
+        } else {
+            return of(data, true, null, null);
         }
-        return resultBean;
     }
 
     public static <T> ResultBean of(T data, boolean success, String code, String msg) {

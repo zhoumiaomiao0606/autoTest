@@ -12,5 +12,5 @@ public class LoanInfoSupplementConst {
     /**
      * 资料增补单：未提交（未处理状态）
      */
-    public static final Byte STATUS_TODO = 1;
+    public static final Byte STATUS_TODO = 2;
 }

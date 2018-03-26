@@ -102,7 +102,7 @@ public class LoanProcessConst {
         PROCESS_MAP.put(START.getCode(), "流程启动");
         PROCESS_MAP.put(END.getCode(), "流程终止");
 
-        PROCESS_MAP.put(CREDIT_APPLY.getCode(), "发起征信申请");
+        PROCESS_MAP.put(CREDIT_APPLY.getCode(), "征信申请");
         PROCESS_MAP.put(CREDIT_APPLY_VERIFY.getCode(), "征信申请审核");
         PROCESS_MAP.put(BANK_CREDIT_RECORD.getCode(), "银行征信录入");
         PROCESS_MAP.put(SOCIAL_CREDIT_RECORD.getCode(), "社会征信录入");

@@ -53,8 +53,21 @@ public class LoanProcessController {
      */
     @GetMapping(value = "/task/status")
     public ResultBean<TaskStateVO> currentTask(@RequestParam("orderId") Long orderId,
-                                           @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
+                                               @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
         return loanProcessService.taskStatus(orderId, taskDefinitionKey);
+    }
+
+    /**
+     * 日志    -订单生命周期      -从 Start -> End
+     *
+     * @param orderId
+     * @param limit
+     * @return
+     */
+    @GetMapping(value = "/history")
+    public ResultBean<List<String>> orderHistory(@RequestParam("orderId") Long orderId,
+                                                 @RequestParam("limit") Integer limit) {
+        return loanProcessService.orderHistory(orderId, limit);
     }
 }
 

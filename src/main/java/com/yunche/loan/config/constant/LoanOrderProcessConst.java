@@ -4,13 +4,15 @@ import com.google.common.collect.Maps;
 
 import java.util.Map;
 
-import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
-
 /**
  * @author liuzhe
  * @date 2018/3/23
  */
 public class LoanOrderProcessConst {
+    /**
+     * 任务状态:  默认值0-未执行到此节点;
+     */
+    public static final Byte TASK_PROCESS_IS_NULL = 0;
     /**
      * 任务状态:  1-已处理(审核);
      */

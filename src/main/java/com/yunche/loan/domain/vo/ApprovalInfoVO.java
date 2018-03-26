@@ -29,6 +29,10 @@ public class ApprovalInfoVO implements Serializable {
      */
     private Byte action;
     /**
+     * 任务key
+     */
+    private String taskDefinitionKey;
+    /**
      * 审核备注
      */
     private String info;
@@ -91,9 +95,10 @@ public class ApprovalInfoVO implements Serializable {
 
     ///////////////////////////////////////////////////--资料增补--///////////////////////////////////////////////////////
 
-    public ApprovalInfoVO(Long userId, String userName, Byte action, String info) {
+    public ApprovalInfoVO(Long userId, String userName, String taskDefinitionKey, Byte action, String info) {
         this.userId = userId;
         this.userName = userName;
+        this.taskDefinitionKey = taskDefinitionKey;
         this.action = action;
         this.info = info;
         this.approvalDate = new Date();

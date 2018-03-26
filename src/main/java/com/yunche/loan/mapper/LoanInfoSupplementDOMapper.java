@@ -16,4 +16,6 @@ public interface LoanInfoSupplementDOMapper {
     int updateByPrimaryKeySelective(LoanInfoSupplementDO record);
 
     int updateByPrimaryKey(LoanInfoSupplementDO record);
+
+    int countByOrderId(Long orderId);
 }
