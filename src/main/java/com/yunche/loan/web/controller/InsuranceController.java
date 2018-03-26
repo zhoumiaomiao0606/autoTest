@@ -11,11 +11,12 @@ import javax.annotation.Resource;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1loanorder/insurance")
+@RequestMapping("/api/v1/loanorder/insurance")
 public class InsuranceController {
 
     @Resource
     private InsuranceService insuranceService;
+
     /**
      * 车辆保险详情
      */
@@ -24,6 +25,7 @@ public class InsuranceController {
 
         return ResultBean.ofSuccess(insuranceService.detail(Long.valueOf(order_id)));
     }
+
     /**
      * 车辆保险详情
      */
@@ -32,13 +34,14 @@ public class InsuranceController {
 
         return ResultBean.ofSuccess(insuranceService.query(Long.valueOf(order_id)));
     }
+
     /**
      * 录入车辆保险
      */
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody @Validated InsuranceUpdateParam param) {
         insuranceService.update(param);
-        return ResultBean.ofSuccess(null,"保存成功");
+        return ResultBean.ofSuccess(null, "保存成功");
     }
 
 }
