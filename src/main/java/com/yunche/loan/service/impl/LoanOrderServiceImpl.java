@@ -536,6 +536,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         InfoSupplementVO infoSupplementVO = new InfoSupplementVO();
 
         // 增补信息
+        infoSupplementVO.setSupplementOrderId(supplementOrderId);
         infoSupplementVO.setSupplementType(loanInfoSupplementDO.getType());
         infoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());
         infoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());

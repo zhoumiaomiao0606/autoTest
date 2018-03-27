@@ -137,6 +137,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         AppInfoSupplementVO appInfoSupplementVO = new AppInfoSupplementVO();
 
         // 增补信息
+        appInfoSupplementVO.setSupplementOrderId(supplementOrderId);
         appInfoSupplementVO.setSupplementType(loanInfoSupplementDO.getType());
         appInfoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());
         appInfoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());

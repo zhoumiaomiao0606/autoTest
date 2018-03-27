@@ -12,6 +12,10 @@ import java.util.List;
 @Data
 public class InfoSupplementVO {
     /**
+     * 资料增补单ID
+     */
+    private Long supplementOrderId;
+    /**
      * 单号
      */
     private String orderId;
