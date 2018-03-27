@@ -87,23 +87,23 @@
         left  join employee join_e                   on join_e.id             = join_b.salesman_id
         left  join department join_d                 on join_d.id             = join_p.department_id
         left  join apply_license_plate_record join_l on join_l.id             = main.apply_license_plate_record_id
-        where 1=1
+        where 1=1 AND
         <choose>
             <when test="multipartType == 1">
-                and (deputy.credit_apply_verify != 0 or  deputy.bank_credit_record != 0 or  deputy.social_credit_record != 0)
+                 (deputy.credit_apply_verify != 0 or  deputy.bank_credit_record != 0 or  deputy.social_credit_record != 0)
             </when>
             <when test="multipartType == 2">
-                and (deputy.loan_apply != 0 or  deputy.visit_verify != 0 or  deputy.telephone_verify != 0 or  deputy.car_insurance != 0 or
+                (deputy.loan_apply != 0 or  deputy.visit_verify != 0 or  deputy.telephone_verify != 0 or  deputy.car_insurance != 0 or
                 deputy.apply_license_plate_record != 0 or  deputy.apply_license_plate_deposit_info != 0 or  deputy.install_gps != 0 or
                 deputy.commit_key != 0 or  deputy.vehicle_information != 0 or   deputy.business_review != 0 or  deputy.loan_review != 0 or
                 deputy.remit_review != 0 or  deputy.material_review != 0 or  deputy.material_print_review != 0)
 
             </when>
             <when test="multipartType == 3">
-                and deputy.telephone_verify != 0
+                deputy.telephone_verify != 0
             </when>
             <when test="multipartType == 4">
-                and (
+                (
                 deputy.car_insurance != 0 or
                 deputy.apply_license_plate_record != 0 or  deputy.apply_license_plate_deposit_info != 0 or  deputy.install_gps != 0 or
                 deputy.commit_key != 0 or  deputy.vehicle_information != 0 or  deputy.business_review != 0 or  deputy.loan_review != 0 or
@@ -111,7 +111,7 @@
                 )
             </when>
             <when test="multipartType == 5">
-                and (
+                (
                 deputy.car_insurance != 0 or
                 deputy.apply_license_plate_record != 0 or  deputy.apply_license_plate_deposit_info  != 0 or  deputy.install_gps != 0 or
                 deputy.commit_key != 0 or  deputy.vehicle_information != 0 or  deputy.business_review != 0 or  deputy.loan_review  != 0 or
@@ -119,10 +119,10 @@
                 )
             </when>
             <when test="multipartType == 6">
-                and deputy.remit_review != 0
+                deputy.remit_review != 0
             </when>
             <otherwise>
-                and 1=2
+                1=2
             </otherwise>
         </choose>
         ) tab
