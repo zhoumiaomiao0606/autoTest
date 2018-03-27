@@ -10,6 +10,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
+import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 
 import com.yunche.loan.domain.vo.ScheduleTaskVO;
@@ -68,6 +69,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             list = taskSchedulingDOMapper.selectOtherTaskList(taskListQuery);
         }
 
+        // 取分页信息
+        PageInfo<TaskListVO> pageInfo = new PageInfo<TaskListVO>(list);
+
+        return ResultBean.ofSuccess(list,new Long(pageInfo.getTotal()).intValue(),pageInfo.getPageNum(),pageInfo.getPageSize());
+    }
+
+    @Override
+    public ResultBean queryAppTaskList(AppTaskListQuery appTaskListQuery) {
+        PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
+
+        List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery.getMultipartType(),appTaskListQuery.getCustomer());
         // 取分页信息
         PageInfo<TaskListVO> pageInfo = new PageInfo<TaskListVO>(list);
 

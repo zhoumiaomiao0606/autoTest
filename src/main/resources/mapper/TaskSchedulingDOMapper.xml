@@ -29,6 +29,110 @@
     ) t
     </select>
 
+    <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        select tab.* from
+        (
+        select
+        main.id                      AS id,
+        join_e.id                    AS salesmanId,
+        join_p.id                    AS partnerId,
+        join_b.area_id               AS bizAreaId,
+        join_c.name                  AS customer,
+        DATE_FORMAT(main.gmt_create,'%Y-%m-%d')      AS orderGmtCreate,
+        join_c.id_card               AS idCard,
+        join_c.mobile                AS mobile,
+        join_e.name                  AS salesman,
+        (select
+        case when
+        END_TIME_ = null
+        then null
+        else
+        DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
+        end
+        from act_hi_taskinst
+        where PROC_INST_ID_ = main.process_inst_id
+        and TASK_DEF_KEY_ = 'usertask_credit_apply'
+        order by START_TIME_
+        desc limit 1)                AS creditGmtCreate,
+        join_b.bank                  AS bank,
+        join_d.name                  AS departmentName,
+        join_f.loan_amount           AS loanAmount,
+        join_f.bank_period_principal AS bankPeriodPrincipal,
+        join_f.sign_rate             AS signRate,
+        (select
+        case when
+        END_TIME_ = null
+        then null
+        else
+        DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
+        end
+        from act_hi_taskinst
+        where PROC_INST_ID_ = main.process_inst_id
+        and TASK_DEF_KEY_ = 'usertask_loan_apply'
+        order by START_TIME_
+        desc limit 1)               AS loanGmtCreate,
+        join_i.car_type             AS carType,
+        join_l.license_plate_number AS licensePlateNumber,
+        join_p.name                 AS partner,
+        join_f.loan_time            AS loanTime,
+        join_f.down_payment_money   AS downPaymentMoney
+        from loan_order main
+        inner join loan_process deputy               on main.id               = deputy.order_id
+        left  join loan_customer join_c              on join_c.id             = main.loan_customer_id
+        left  join loan_base_info join_b             on join_b.id             = main.loan_base_info_id
+        left  join loan_financial_plan join_f        on join_f.id             = main.loan_financial_plan_id
+        left  join loan_car_info join_i              on join_i.id             = main.loan_car_info_id
+        left  join partner join_p                    on join_p.id             = join_b.partner_id
+        left  join employee join_e                   on join_e.id             = join_b.salesman_id
+        left  join department join_d                 on join_d.id             = join_p.department_id
+        left  join apply_license_plate_record join_l on join_l.id             = main.apply_license_plate_record_id
+        where 1=1
+        <choose>
+            <when test="multipartType == 1">
+                and (deputy.credit_apply_verify != 0 or  deputy.bank_credit_record != 0 or  deputy.social_credit_record != 0)
+            </when>
+            <when test="multipartType == 2">
+                and (deputy.loan_apply != 0 or  deputy.visit_verify != 0 or  deputy.telephone_verify != 0 or  deputy.car_insurance != 0 or
+                deputy.apply_license_plate_record != 0 or  deputy.apply_license_plate_deposit_info != 0 or  deputy.install_gps != 0 or
+                deputy.commit_key != 0 or  deputy.vehicle_information != 0 or   deputy.business_review != 0 or  deputy.loan_review != 0 or
+                deputy.remit_review != 0 or  deputy.material_review != 0 or  deputy.material_print_review != 0)
+
+            </when>
+            <when test="multipartType == 3">
+                and deputy.telephone_verify != 0
+            </when>
+            <when test="multipartType == 4">
+                and (
+                deputy.car_insurance != 0 or
+                deputy.apply_license_plate_record != 0 or  deputy.apply_license_plate_deposit_info != 0 or  deputy.install_gps != 0 or
+                deputy.commit_key != 0 or  deputy.vehicle_information != 0 or  deputy.business_review != 0 or  deputy.loan_review != 0 or
+                deputy.remit_review != 0 or  deputy.material_review != 0 or  deputy.material_print_review != 0
+                )
+            </when>
+            <when test="multipartType == 5">
+                and (
+                deputy.car_insurance != 0 or
+                deputy.apply_license_plate_record != 0 or  deputy.apply_license_plate_deposit_info  != 0 or  deputy.install_gps != 0 or
+                deputy.commit_key != 0 or  deputy.vehicle_information != 0 or  deputy.business_review != 0 or  deputy.loan_review  != 0 or
+                deputy.material_review != 0 or  deputy.material_print_review != 0
+                )
+            </when>
+            <when test="multipartType == 6">
+                and deputy.remit_review != 0
+            </when>
+            <otherwise>
+                and 1=2
+            </otherwise>
+        </choose>
+        ) tab
+        where 1=1
+        <if test="customer != null">
+            AND tab.customer = #{customer}
+        </if>
+    </select>
+
+
 
 
     <select id="selectSupplementInfoTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -383,55 +487,55 @@
             join_f.down_payment_money   AS downPaymentMoney,
             0                           AS overdueNum,
             <choose>
-                <when test="taskDefinitionKey = 'usertask_credit_apply'">
+                <when test="taskDefinitionKey == 'usertask_credit_apply'">
                     deputy.credit_apply AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_credit_apply_verify'">
+                <when test="taskDefinitionKey == 'usertask_credit_apply_verify'">
                     deputy.credit_apply_verify AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_bank_credit_record'">
+                <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
                     deputy.bank_credit_record AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_social_credit_record'">
+                <when test="taskDefinitionKey == 'usertask_social_credit_record'">
                     deputy.social_credit_record AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_loan_apply'">
+                <when test="taskDefinitionKey == 'usertask_loan_apply'">
                     deputy.loan_apply AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_visit_verify'">
+                <when test="taskDefinitionKey == 'usertask_visit_verify'">
                     deputy.visit_verify AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_car_insurance'">
+                <when test="taskDefinitionKey == 'usertask_car_insurance'">
                     deputy.car_insurance AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_apply_license_plate_record'">
+                <when test="taskDefinitionKey == 'usertask_apply_license_plate_record'">
                     deputy.apply_license_plate_record AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_apply_license_plate_deposit_info'">
+                <when test="taskDefinitionKey == 'usertask_apply_license_plate_deposit_info'">
                     deputy.apply_license_plate_deposit_info AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_install_gps'">
+                <when test="taskDefinitionKey == 'usertask_install_gps'">
                     deputy.install_gps AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_commit_key'">
+                <when test="taskDefinitionKey == 'usertask_commit_key'">
                     deputy.commit_key AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_vehicle_information'">
+                <when test="taskDefinitionKey == 'usertask_vehicle_information'">
                     deputy.vehicle_information AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_material_review'">
+                <when test="taskDefinitionKey == 'usertask_material_review'">
                     deputy.material_review AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_material_print_review'">
+                <when test="taskDefinitionKey == 'usertask_material_print_review'">
                     deputy.material_print_review AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_business_review'">
+                <when test="taskDefinitionKey == 'usertask_business_review'">
                     deputy.business_review AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_loan_review'">
+                <when test="taskDefinitionKey == 'usertask_loan_review'">
                     deputy.loan_review AS taskStatus
                 </when>
-                <when test="taskDefinitionKey = 'usertask_remit_review'">
+                <when test="taskDefinitionKey == 'usertask_remit_review'">
                     deputy.remit_review AS taskStatus
                 </when>
                 <otherwise>
@@ -450,55 +554,55 @@
             left  join apply_license_plate_record join_l on join_l.id             = main.apply_license_plate_record_id
             where 1=1 and
             <choose>
-                <when test="taskDefinitionKey = 'usertask_credit_apply'">
+                <when test="taskDefinitionKey == 'usertask_credit_apply'">
                     case when #{taskStatus} = 0 then deputy.credit_apply != 0                     else deputy.credit_apply                     = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_credit_apply_verify'">
+                <when test="taskDefinitionKey == 'usertask_credit_apply_verify'">
                     case when #{taskStatus} = 0 then deputy.credit_apply_verify != 0              else deputy.credit_apply_verify              = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_bank_credit_record'">
+                <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
                     case when #{taskStatus} = 0 then deputy.bank_credit_record != 0               else deputy.bank_credit_record               = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_social_credit_record'">
+                <when test="taskDefinitionKey == 'usertask_social_credit_record'">
                     case when #{taskStatus} = 0 then deputy.social_credit_record != 0             else deputy.social_credit_record             = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_loan_apply'">
+                <when test="taskDefinitionKey == 'usertask_loan_apply'">
                     case when #{taskStatus} = 0 then deputy.loan_apply != 0                       else deputy.loan_apply                       = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_visit_verify'">
+                <when test="taskDefinitionKey == 'usertask_visit_verify'">
                     case when #{taskStatus} = 0 then deputy.visit_verify != 0                     else deputy.visit_verify                     = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_car_insurance'">
+                <when test="taskDefinitionKey == 'usertask_car_insurance'">
                     case when #{taskStatus} = 0 then deputy.car_insurance != 0                    else deputy.car_insurance                    = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_apply_license_plate_record'">
+                <when test="taskDefinitionKey == 'usertask_apply_license_plate_record'">
                     case when #{taskStatus} = 0 then deputy.apply_license_plate_record != 0       else deputy.apply_license_plate_record       = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_apply_license_plate_deposit_info'">
+                <when test="taskDefinitionKey == 'usertask_apply_license_plate_deposit_info'">
                     case when #{taskStatus} = 0 then deputy.apply_license_plate_deposit_info != 0 else deputy.apply_license_plate_deposit_info = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_install_gps'">
+                <when test="taskDefinitionKey == 'usertask_install_gps'">
                     case when #{taskStatus} = 0 then deputy.install_gps != 0                      else deputy.install_gps                      = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_commit_key'">
+                <when test="taskDefinitionKey == 'usertask_commit_key'">
                     case when #{taskStatus} = 0 then deputy.commit_key != 0                       else deputy.commit_key                       = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_vehicle_information'">
+                <when test="taskDefinitionKey == 'usertask_vehicle_information'">
                     case when #{taskStatus} = 0 then deputy.vehicle_information != 0              else deputy.vehicle_information              = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_material_review'">
+                <when test="taskDefinitionKey == 'usertask_material_review'">
                     case when #{taskStatus} = 0 then deputy.material_review != 0                  else deputy.material_review                  = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_material_print_review'">
+                <when test="taskDefinitionKey == 'usertask_material_print_review'">
                     case when #{taskStatus} = 0 then deputy.material_print_review != 0            else deputy.material_print_review            = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_business_review'">
+                <when test="taskDefinitionKey == 'usertask_business_review'">
                     case when #{taskStatus} = 0 then deputy.business_review != 0                  else deputy.business_review                  = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_loan_review'">
+                <when test="taskDefinitionKey == 'usertask_loan_review'">
                     case when #{taskStatus} = 0 then deputy.loan_review != 0                      else deputy.loan_review                      = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey = 'usertask_remit_review'">
+                <when test="taskDefinitionKey == 'usertask_remit_review'">
                     case when #{taskStatus} = 0 then deputy.remit_review  != 0                    else deputy.remit_review                     = #{taskStatus} end
                 </when>
                 <otherwise>

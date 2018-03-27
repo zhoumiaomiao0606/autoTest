@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.service.JpushService;
 import com.yunche.loan.service.TaskSchedulingService;
@@ -34,5 +35,12 @@ public class TaskSchedulingController {
         return taskSchedulingService.queryTaskList(taskListQuery);
     }
 
+    /**
+     * 查询接口
+     */
+    @PostMapping(value = "/queryAppTaskList")
+    public ResultBean queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
+        return taskSchedulingService.queryAppTaskList(appTaskListQuery);
+    }
 
 }
