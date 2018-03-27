@@ -8,6 +8,7 @@ import com.yunche.loan.config.constant.BaseExceptionEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.EmployeeParam;
@@ -374,7 +375,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (isTerminal) {
-            EmployeeDO emp  =  (EmployeeDO) subject.getPrincipal();
+            EmployeeDO emp = (EmployeeDO) subject.getPrincipal();
             EmployeeDO emp_ = new EmployeeDO();
             emp_.setId(emp.getId());
             emp_.setMachineId(machineId);
@@ -404,24 +405,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         Preconditions.checkArgument(!employeeParam.getOldPassword().equals(employeeParam.getNewPassword()), "新旧密码不能相同");
 
         // 从session中获取User
-        Subject subject = SecurityUtils.getSubject();
-        Object principal = subject.getPrincipal();
-        if (null == principal) {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        if (null == loginUser) {
             return ResultBean.ofError(BaseExceptionEnum.NOT_LOGIN);
         }
-        EmployeeDO employeeDO = new EmployeeDO();
-        BeanUtils.copyProperties(principal, employeeDO);
-        Preconditions.checkArgument(MD5Utils.verify(employeeParam.getOldPassword(), employeeDO.getPassword()), "原密码有误");
+        Preconditions.checkArgument(MD5Utils.verify(employeeParam.getOldPassword(), loginUser.getPassword()), "原密码有误");
 
         EmployeeDO updateEmployee = new EmployeeDO();
-        updateEmployee.setId(employeeDO.getId());
+        updateEmployee.setId(loginUser.getId());
         updateEmployee.setPassword(MD5Utils.md5(employeeParam.getNewPassword()));
         updateEmployee.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(updateEmployee);
         Preconditions.checkArgument(count > 0, "密码修改失败");
 
         // 登出
-        subject.logout();
+        logout();
 
         return ResultBean.ofSuccess(null, "密码修改成功，请重新登录！");
     }

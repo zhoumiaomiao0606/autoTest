@@ -33,8 +33,8 @@ public class LoanCarInfoServiceImpl implements LoanCarInfoService {
         Preconditions.checkNotNull(loanCarInfoDO.getCarDetailId(), "车型不能为空");
         Preconditions.checkNotNull(loanCarInfoDO.getCarType(), "车辆属性不能为空");
         Preconditions.checkNotNull(loanCarInfoDO.getPartnerId(), "合伙人不能为空");
-        Preconditions.checkNotNull(loanCarInfoDO.getGpsNum(), "GPS个数不能为空");
-        Preconditions.checkNotNull(loanCarInfoDO.getCarKey(), "留备用钥匙不能为空");
+//        Preconditions.checkNotNull(loanCarInfoDO.getGpsNum(), "GPS个数不能为空");
+//        Preconditions.checkNotNull(loanCarInfoDO.getCarKey(), "留备用钥匙不能为空");
         Preconditions.checkNotNull(loanCarInfoDO.getOpenBank(), "收款银行不能为空");
         Preconditions.checkNotNull(loanCarInfoDO.getAccountName(), "收款账户不能为空");
         Preconditions.checkNotNull(loanCarInfoDO.getBankAccount(), "收款账号不能为空");
@@ -56,7 +56,6 @@ public class LoanCarInfoServiceImpl implements LoanCarInfoService {
         Preconditions.checkNotNull(loanCarInfoDO.getId(), "车辆信息ID不能为空");
 
         loanCarInfoDO.setGmtModify(new Date());
-
         int count = loanCarInfoDOMapper.updateByPrimaryKeySelective(loanCarInfoDO);
         Preconditions.checkArgument(count > 0, "编辑贷款车辆信息失败");
 

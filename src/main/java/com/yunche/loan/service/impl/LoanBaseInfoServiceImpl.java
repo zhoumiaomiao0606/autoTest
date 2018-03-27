@@ -64,7 +64,6 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
             }
         }
 
-
         loanBaseInfoDO.setGmtCreate(new Date());
         loanBaseInfoDO.setGmtModify(new Date());
         int count = loanBaseInfoDOMapper.insertSelective(loanBaseInfoDO);
@@ -90,6 +89,9 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(id);
         LoanBaseInfoVO loanBaseInfoVO = new LoanBaseInfoVO();
         BeanUtils.copyProperties(loanBaseInfoDO, loanBaseInfoVO);
+
+        // 申请日期
+        loanBaseInfoVO.setApplyDate(loanBaseInfoDO.getGmtModify());
 
         // 实际贷款额
         Byte loanAmount = loanBaseInfoDO.getLoanAmount();

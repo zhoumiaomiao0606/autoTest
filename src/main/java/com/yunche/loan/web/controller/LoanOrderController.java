@@ -22,7 +22,6 @@ import java.util.List;
 public class LoanOrderController {
 
     @Autowired
-
     private LoanOrderService loanOrderService;
 
 

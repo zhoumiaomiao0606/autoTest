@@ -1055,7 +1055,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 征信申请审核且审核通过时
         boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY_VERIFY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
         // 银行&社会征信录入
-        boolean isBankAndSocialCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey);
+        boolean isBankAndSocialCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey);
         if (isApplyVerifyTaskAndActionIsPass || isBankAndSocialCreditRecordTask) {
             // 贷款金额
             LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
@@ -1466,7 +1466,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 其他子任务全部弃掉
             if (!CollectionUtils.isEmpty(tasks)) {
 
-                Map<String, Object> cancelVariables = Maps.newConcurrentMap();
+                Map<String, Object> cancelVariables = Maps.newHashMap();
 
                 tasks.stream()
                         .filter(Objects::nonNull)
