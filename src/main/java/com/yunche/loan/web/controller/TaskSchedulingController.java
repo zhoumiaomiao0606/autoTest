@@ -1,8 +1,10 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.service.JpushService;
 import com.yunche.loan.service.TaskSchedulingService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
@@ -23,5 +25,14 @@ public class TaskSchedulingController {
     public ResultBean scheduleTaskList(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
         return taskSchedulingService.scheduleTaskList(pageIndex,pageSize);
     }
+
+    /**
+     * 查询接口
+     */
+    @GetMapping(value = "/queryTaskList")
+    public ResultBean scheduleTaskList(@Validated TaskListQuery taskListQuery) {
+        return taskSchedulingService.queryTaskList(taskListQuery);
+    }
+
 
 }

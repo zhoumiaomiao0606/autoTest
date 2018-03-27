@@ -73,4 +73,15 @@ public enum LoanProcessEnum {
         }
         return null;
     }
+
+    public static boolean havingCode(String code) {
+
+        for (LoanProcessEnum e : LoanProcessEnum.values()) {
+            if (e.getCode().equals(code)) {
+
+                return true;
+            }
+        }
+        return false;
+    }
 }
