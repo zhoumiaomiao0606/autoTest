@@ -1078,6 +1078,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     private Task getTask(String processInstId, String taskDefinitionKey) {
+
+        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
+            List<Task> tasks = taskService.createTaskQuery()
+                    .processInstanceId(processInstId)
+                    .listPage(0, 1);
+            Preconditions.checkArgument(!CollectionUtils.isEmpty(tasks), "订单已结清或已弃单");
+            return tasks.get(0);
+        }
+
         // 获取当前流程taskId
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstId)

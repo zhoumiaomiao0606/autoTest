@@ -18,7 +18,6 @@ import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -30,7 +29,6 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS
 
 
 @Service
-@Transactional
 public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Resource

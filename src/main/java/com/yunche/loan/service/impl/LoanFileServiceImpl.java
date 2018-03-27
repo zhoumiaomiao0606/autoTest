@@ -259,19 +259,20 @@ public class LoanFileServiceImpl implements LoanFileService {
                             // A -y  编辑
                             if (ArrayUtils.isNotEmpty(normalFile)) {
                                 LoanFileDO normalFileDO = normalFile[0];
+                                if (null != normalFileDO) {
+                                    String existNormalPath = normalFileDO.getPath();
+                                    if (StringUtils.isNotBlank(existNormalPath)) {
+                                        List<String> existNormalPathList = JSON.parseArray(existNormalPath, String.class);
 
-                                String existNormalPath = normalFileDO.getPath();
-                                if (StringUtils.isNotBlank(existNormalPath)) {
-                                    List<String> existNormalPathList = JSON.parseArray(existNormalPath, String.class);
+                                        existNormalPathList.add(existSupplementPath);
+                                        normalFileDO.setPath(JSON.toJSONString(existNormalPathList));
+                                        ResultBean<Void> updateResult = update(normalFileDO);
+                                        Preconditions.checkArgument(updateResult.getSuccess(), updateResult.getMsg());
 
-                                    existNormalPathList.add(existSupplementPath);
-                                    normalFileDO.setPath(JSON.toJSONString(existNormalPathList));
-                                    ResultBean<Void> updateResult = update(normalFileDO);
-                                    Preconditions.checkArgument(updateResult.getSuccess(), updateResult.getMsg());
-
-                                    supplementFileDO.setPath(null);
-                                    ResultBean<Void> updateSupplementFileResult = update(supplementFileDO);
-                                    Preconditions.checkArgument(updateSupplementFileResult.getSuccess(), updateSupplementFileResult.getMsg());
+                                        supplementFileDO.setPath(null);
+                                        ResultBean<Void> updateSupplementFileResult = update(supplementFileDO);
+                                        Preconditions.checkArgument(updateSupplementFileResult.getSuccess(), updateSupplementFileResult.getMsg());
+                                    }
                                 }
                             } else {
 

@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
-//任务调度中心
+/**
+ * 任务调度中心
+ */
 @CrossOrigin
 @RestController
 @RequestMapping(value = {"/taskscheduling", "/app/taskscheduling"})
@@ -40,11 +42,6 @@ public class TaskSchedulingController {
      */
     @PostMapping(value = "/queryAppTaskList")
     public ResultBean queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
-        return taskSchedulingService.queryAppTaskList(appTaskListQuery);
-    }
-
-    @PostMapping(value = "/queryInfoSupplement")
-    public ResultBean queryInfoSupplement(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
         return taskSchedulingService.queryAppTaskList(appTaskListQuery);
     }
 }
