@@ -137,7 +137,7 @@
 
     <select id="selectSupplementInfoTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
 
-        select * from
+        select tab.* from
         (
         select
         main.id AS id,
