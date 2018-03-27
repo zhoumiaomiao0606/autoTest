@@ -62,4 +62,8 @@ public interface LoanOrderService {
     ResultBean<List<LoanSimpleCustomerInfoVO>> simpleCustomerInfo(Long orderId);
 
     ResultBean<InfoSupplementVO> infoSupplementDetail(Long orderId);
+    /**
+     * 提车资料查询
+     */
+    ResultBean<VehicleInfoVO> vehicleInformationQuery(Long orderId);
 }

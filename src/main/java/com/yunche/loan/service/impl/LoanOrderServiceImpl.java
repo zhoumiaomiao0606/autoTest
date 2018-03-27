@@ -128,6 +128,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     @Autowired
     private HistoryService historyService;
 
+    @Autowired
+    private LoanQueryDOMapper loanQueryDOMapper;
+
 
     @Override
     public ResultBean<List<LoanOrderVO>> query(LoanOrderQuery query) {
@@ -627,6 +630,22 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         fillCustomerAndFile(infoSupplementVO, orderId);
 
         return ResultBean.ofSuccess(infoSupplementVO);
+    }
+
+    /**
+     * 提车资料查询
+     * @param orderId
+     * @return
+     */
+    @Override
+    public ResultBean<VehicleInfoVO> vehicleInformationQuery(Long orderId) {
+        Preconditions.checkNotNull(orderId,"业务单号不能为空");
+        VehicleInfoVO vehicleInfoVO =  loanQueryDOMapper.selectVehicleInformation(orderId);
+
+        ResultBean<List<FileVO>> listResultBean = loanFileService.listByCustomerId(vehicleInfoVO.getCustomerId(), Byte.valueOf("1"));
+        List<FileVO> fileVOS = listResultBean.getData();
+        vehicleInfoVO.setFileVOS(fileVOS);
+        return ResultBean.ofSuccess(vehicleInfoVO);
     }
 
     @Override

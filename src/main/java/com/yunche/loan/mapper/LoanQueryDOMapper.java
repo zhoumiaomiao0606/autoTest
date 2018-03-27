@@ -38,4 +38,8 @@ public interface LoanQueryDOMapper {
 
     List<GpsVO> selectGpsByOrderId(Long orderId);
 
+    /**
+     * 提车资料查询
+     */
+    VehicleInfoVO selectVehicleInformation(Long orderId);
 }

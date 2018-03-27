@@ -9,11 +9,10 @@ import lombok.Setter;
  */
 public enum LoanFileEnum {
     /**
-     * 文件类型：1-身份证;2-身份证正面;3-身份证反面;4-授权书;5-授权书签字照;
+     * 文件类型：
+     * 1-身份证;2-身份证正面;3-身份证反面;4-授权书;5-授权书签字照;
      * 6-驾驶证;7- 户口本;8- 银行流水;9-结婚证;10-房产证;
-     * 11-定位照;12-合影照片;13-家访视频; 14-收入证明; 15-面签照;
-     * 16-家访照片; 17-车辆照片; 18-其他资料;19-发票;20-合格证/登记证书;
-     * 21-保单;22-提车合影;
+     * 11-定位照;12-合影;13-房子照片;14-家访视频
      */
     ID_CARD((byte) 1, "身份证"),
     ID_CARD_FRONT((byte) 2, "身份证正面"),
@@ -27,8 +26,16 @@ public enum LoanFileEnum {
     HOUSE_CERTIFICATE((byte) 10, "房产证"),
     LOCATION_PHOTO((byte) 11, "定位照"),
     FAMILY_PHOTO((byte) 12, "合影"),
-    HOUSE_PHOTO((byte) 13, "房子照片"),
-    HOME_VISIT_VIDEO((byte) 14, "家访视频");
+    HOME_VISIT_VIDEO((byte) 13, "家访视频"),
+    CERTIFICATE_INCOME((byte) 14,"收入证明"),
+    ACCORDING_INTERVIEW((byte) 15,"面签照"),
+    HOME_VISIT_PHOTOS((byte) 16,"家访照片"),
+    VEHICLE_PHOTO((byte) 17,"车辆照片"),
+    OTHER_INFO((byte) 18,"其他资料"),
+    INVOICE((byte) 19,"发票"),
+    CERTIFICATE((byte) 20,"合格证/登记证书"),
+    POLICY((byte) 21,"保单"),
+    PICK_UP_CAR((byte) 22,"提车合影");
 
     @Getter
     @Setter

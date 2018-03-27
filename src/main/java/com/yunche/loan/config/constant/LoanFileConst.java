@@ -42,8 +42,19 @@ public class LoanFileConst {
         TYPE_NAME_MAP.put((byte) 9, "结婚证");
         TYPE_NAME_MAP.put((byte) 10, "房产证");
         TYPE_NAME_MAP.put((byte) 11, "定位照");
-        TYPE_NAME_MAP.put((byte) 12, "合影");
-        TYPE_NAME_MAP.put((byte) 13, "房子照片");
-        TYPE_NAME_MAP.put((byte) 14, "家访视频");
+        TYPE_NAME_MAP.put((byte) 12, "合影照片");
+        TYPE_NAME_MAP.put((byte) 13, "家访视频");
+        TYPE_NAME_MAP.put((byte) 14, "收入证明");
+        TYPE_NAME_MAP.put((byte) 15, "面签照");
+        TYPE_NAME_MAP.put((byte) 16, "家访照片");
+        TYPE_NAME_MAP.put((byte) 17, "车辆照片");
+        TYPE_NAME_MAP.put((byte) 18, "其他资料");
+        TYPE_NAME_MAP.put((byte) 19, "发票");
+        TYPE_NAME_MAP.put((byte) 20, "合格证/登记证书");
+        TYPE_NAME_MAP.put((byte) 21, "保单");
+        TYPE_NAME_MAP.put((byte) 22, "提车合影");
+
+
+        //
     }
 }

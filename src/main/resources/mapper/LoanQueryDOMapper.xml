@@ -546,4 +546,29 @@
         where order_id = #{orderId,jdbcType=BIGINT}
     </select>
 
+    <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInfoVO"  parameterType="java.lang.Long">
+        SELECT
+        a.id AS orderId,
+        b.id_card AS idCard,
+        b.name AS principalLenderName,
+        (
+        SELECT
+        name
+        FROM
+        employee
+        WHERE
+        id = c.salesman_id
+        ) AS salesman,
+        e. NAME AS partnerName,
+        a.loan_customer_id AS customerId,
+        a.gmt_create AS gmtCreate
+        FROM
+        loan_order a
+        LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
+        LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
+        LEFT JOIN partner d ON c.partner_id = d.id
+        LEFT JOIN department e ON d.department_id = e.id
+        WHERE
+        a.id = #{orderId};
+    </select>
 </mapper>
