@@ -75,15 +75,15 @@ public class InfoSupplementVO {
     /**
      * 共贷人列表
      */
-    private List<CustomerFile> commonLenderList;
+//    private List<CustomerFile> commonLenderList;
     /**
      * 担保人列表
      */
-    private List<CustomerFile> guarantorList;
+//    private List<CustomerFile> guarantorList;
     /**
      * 紧急联系人列表
      */
-    private List<CustomerFile> emergencyContactList;
+//    private List<CustomerFile> emergencyContactList;
 
     @Data
     public static class CustomerFile {

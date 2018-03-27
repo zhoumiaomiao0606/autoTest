@@ -188,6 +188,7 @@
         join_s.type AS supplementType,
         join_s.content AS supplementContent,
         join_s.start_time AS supplementStartTime,
+        join_s.id AS supplementOrderId,
         0 AS overdueNum,
         join_s.status AS taskStatus
 

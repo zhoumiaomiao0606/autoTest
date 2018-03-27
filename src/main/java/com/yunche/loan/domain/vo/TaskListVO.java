@@ -24,11 +24,10 @@ public class TaskListVO {
     private String downPaymentMoney;
     private String overdueNum;
     private String taskStatus;
+    private String supplementOrderId;
     private String supplementType;
     private String supplementContent;
     private String supplementStartTime;
-
-    private String currentTask;
 }
 
 
