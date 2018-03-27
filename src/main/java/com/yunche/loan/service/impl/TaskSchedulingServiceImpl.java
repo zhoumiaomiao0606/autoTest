@@ -16,6 +16,7 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.TaskSchedulingService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+import static com.yunche.loan.config.constant.LoanProcessConst.PROCESS_MAP;
 
 
 @Service
@@ -42,7 +44,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId(),level);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId(), level);
 
         // 取分页信息
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
@@ -69,6 +71,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         } else {
             list = taskSchedulingDOMapper.selectOtherTaskList(taskListQuery);
         }
+
+        fillMsg(list, taskListQuery.getTaskDefinitionKey());
 
         // 取分页信息
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
@@ -120,38 +124,79 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             appTaskVO.setCurrentTask("已结单");
         } else {
             TaskStateVO taskStateVO = taskStateVOS.get(0);
-            appTaskVO.setTaskStatus(String.valueOf(taskStateVO.getTaskStatus()));
-            appTaskVO.setCurrentTask(taskStateVO.getTaskName());
+
+            if (null != taskStateVO) {
+                String taskStatus = String.valueOf(taskStateVO.getTaskStatus());
+
+                appTaskVO.setTaskStatus(taskStatus);
+                appTaskVO.setCurrentTask(taskStateVO.getTaskName());
+
+                appTaskVO.setTaskType(taskStatus);
+                // 文本值
+                String taskTypeText = getTaskTypeText(taskStatus);
+                appTaskVO.setTaskTypeText(taskTypeText);
+            }
+
         }
     }
 
-//    /**
-//     * 任务状态
-//     *
-//     * @param loanOrderVO
-//     */
-//    private void fillTaskStatus(LoanOrderVO loanOrderVO) {
-//
-//        ResultBean<List<TaskStateVO>> taskStateVOResult = loanProcessService.currentTask(Long.valueOf(loanOrderVO.getId()));
-//        Preconditions.checkArgument(taskStateVOResult.getSuccess(), taskStateVOResult.getMsg());
-//
-//        List<TaskStateVO> taskStateVOS = taskStateVOResult.getData();
-//
-//        if (CollectionUtils.isEmpty(taskStateVOS)) {
-//            loanOrderVO.setTaskStatus(TASK_PROCESS_DONE);
-//            loanOrderVO.setCurrentTask("已结单");
-//        } else {
-//            TaskStateVO taskStateVO = taskStateVOS.get(0);
-//            loanOrderVO.setTaskStatus(taskStateVO.getTaskStatus());
-//            loanOrderVO.setCurrentTask(taskStateVO.getTaskName());
-//        }
-//    }
 
-//    private void fillMsg(List<TaskListVO> list) {
-//        list.parallelStream()
-//                .forEach(e -> {
-//                    fillTaskStatus(e);
-//                });
-//    }
+    private void fillMsg(List<TaskListVO> list, String taskDefinitionKey) {
+        list.parallelStream()
+                .forEach(e -> {
+                    fillMsg(e, taskDefinitionKey);
+                });
+    }
+
+    private void fillMsg(TaskListVO taskListVO, String taskDefinitionKey) {
+
+        String taskStatus = taskListVO.getTaskStatus();
+
+        // 1-已提交;  2-未提交;  3-打回;
+        taskListVO.setTaskType(taskStatus);
+        // 文本值
+        String taskTypeText = getTaskTypeText(taskStatus);
+        taskListVO.setTaskTypeText(taskTypeText);
+
+        taskListVO.setCurrentTask(PROCESS_MAP.get(taskDefinitionKey));
+    }
+
+    private String getTaskTypeText(String taskStatus) {
+
+        String taskTypeText = null;
+
+        if (StringUtils.isNotBlank(taskStatus)) {
+            switch (taskStatus) {
+                case "0":
+                    taskTypeText = "未执行到此";
+                    break;
+                case "1":
+                    taskTypeText = "已提交";
+                    break;
+                case "2":
+                    taskTypeText = "未提交";
+                    break;
+                case "3":
+                    taskTypeText = "打回";
+                    break;
+                case "4":
+                    taskTypeText = "未提交";
+                    break;
+                case "5":
+                    taskTypeText = "未提交";
+                    break;
+                case "6":
+                    taskTypeText = "未提交";
+                    break;
+                case "7":
+                    taskTypeText = "已提交";
+                    break;
+                default:
+                    taskTypeText = "未知状态";
+            }
+        }
+
+        return taskTypeText;
+    }
 
 }

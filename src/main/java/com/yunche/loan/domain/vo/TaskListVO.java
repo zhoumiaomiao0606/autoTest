@@ -30,6 +30,16 @@ public class TaskListVO {
     private String supplementType;
     private String supplementContent;
     private String supplementStartTime;
+
+    private String currentTask;
+    /**
+     * 任务类型：1-已提交;  2-未提交;  3-打回;
+     */
+    private String taskType;
+    /**
+     * 任务类型文本：1-已提交;  2-未提交;  3-打回;
+     */
+    private String taskTypeText;
 }
 
 
