@@ -56,7 +56,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         }
         List<TaskListVO> list= new ArrayList<TaskListVO>();
         if(LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
-            taskListQuery.setLoginUserId(SessionUtils.getLoginUser().getId());
+            taskListQuery.setLevel(taskSchedulingDOMapper.selectLevel(SessionUtils.getLoginUser().getId()));
             list = taskSchedulingDOMapper.selectTelephoneVerifyTaskList(taskListQuery);
         }
 

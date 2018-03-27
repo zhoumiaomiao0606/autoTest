@@ -18,4 +18,6 @@ public interface TaskSchedulingDOMapper {
     List<TaskListVO> selectTelephoneVerifyTaskList(TaskListQuery taskListQuery);
 
     List<TaskListVO> selectOtherTaskList(TaskListQuery taskListQuery);
+
+    Integer selectLevel(Long loginUserId);
 }

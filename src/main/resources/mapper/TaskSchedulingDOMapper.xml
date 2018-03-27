@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.TaskSchedulingDOMapper" >
+
+
+    <select id="selectLevel" resultType="java.lang.Integer">
+
+    SELECT
+    max( t.LEVEL )
+    FROM
+    (
+    SELECT
+    CASE
+
+    WHEN
+    g.NAME IN ( '总监' ) THEN
+    7
+    WHEN g.NAME IN ( '电审经理' ) THEN
+    6
+    WHEN g.NAME IN ( '电审主管' ) THEN
+    5
+    WHEN g.NAME IN ( '电审专员' ) THEN
+    4 ELSE 1
+    END AS LEVEL
+    FROM
+    employee_rela_user_group r
+    INNER JOIN user_group g ON r.user_group_id = g.id
+    AND r.employee_id = #{loginUserId}
+    ) t
+    </select>
+
+
+
     <select id="selectSupplementInfoTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
 
         select * from
@@ -9,8 +39,9 @@
         main.id AS id,
         join_e.id AS salesmanId,
         join_p.id AS partnerId,
+        join_p.area_id AS bizAreaId,
         join_c.name AS customer,
-        main.gmt_create AS orderGmtCreate,
+        DATE_FORMAT(main.gmt_create,'%Y-%m-%d')   AS orderGmtCreate,
         join_c.id_card AS idCard,
         join_c.mobile AS mobile,
         join_e.name AS salesman,
@@ -68,62 +99,70 @@
         left join loan_info_supplement join_s on main.id = join_s.order_id
         where 1=1 and case when #{taskStatus} = 0 then join_s.status != 0 else join_s.status = #{taskStatus} end
         ) tab where 1=1
-            <if test="orderId != null">
-                AND tab.id = #{orderId}
+        <if test="orderId != null">
+            AND tab.id = #{orderId}
+        </if>
+        <if test="customer != null">
+            AND tab.customer = #{customer}
+        </if>
+        <if test="mobile != null">
+            AND tab.mobile = #{mobile}
+        </if>
+        <if test="idCard != null">
+            AND tab.idCard = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+            AND tab.salesmanId = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND tab.bizAreaId = #{bizAreaId}
+        </if>
+        <if test="startCreditGmtCreate != null">
+            AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
+        </if>
+        <if test="loanBank != null">
+            AND tab.bank = #{loanBank}
+        </if>
+        <if test="supplementType != null">
+            AND tab.supplementType = #{supplementType}
+        </if>
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND tab.loanAmount &lt;= 100000
             </if>
-            <if test="customer != null">
-                AND tab.customer = #{customer}
+            <if test="loanAmountType == 2">
+                AND tab.loanAmount &gt; 100000 AND tab.loanAmount &lt;= 300000
             </if>
-            <if test="mobile != null">
-                AND tab.mobile = #{mobile}
+            <if test="loanAmountType == 3">
+                AND tab.loanAmount &gt; 300000
             </if>
-            <if test="idCard != null">
-                AND tab.idCard = #{idCard}
+        </if>
+        <if test="signType != null">
+            <if test="signType == 1">
+                AND tab.signRate &lt;= 10
             </if>
-            <if test="salesmanId != null">
-                AND tab.salesmanId = #{salesmanId}
+            <if test="signType == 2">
+                AND tab.signRate &gt; 10 AND tab.signRate &lt;= 20
             </if>
-            <!--<if test="bizAreaId != null">
-                AND tab.bizAreaId =
-            </if>-->
-            <if test="startCreditGmtCreate != null">
-                AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+            <if test="signType == 3">
+                AND tab.signRate &gt; 20
             </if>
-            <if test="endCreditGmtCreate != null">
-                AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
-            </if>
-            <if test="loanBank != null">
-                AND tab.bank = #{loanBank}
-            </if>
-            <if test="loanAmountType != null">
-                <if test="loanAmountType == 1">
-                    AND tab.loanAmount &lt;= 100000
-                </if>
-                <if test="loanAmountType == 2">
-                    AND tab.loanAmount &gt; 100000 AND tab.loanAmount &lt;= 300000
-                </if>
-                <if test="loanAmountType == 3">
-                    AND tab.loanAmount &gt; 300000
-                </if>
-            </if>
-            <if test="loanAmountType != null">
-                AND tab.loanAmountType =
-            </if>
-            <if test="signType != null">
-                AND tab.signType = #{signType}
-            </if>
-            <if test="loanGmtCreate != null">
-                AND tab.loanGmtCreate  = #{loanGmtCreate}
-            </if>
-            <if test="carType != null">
-                AND tab.carType = #{carType}
-            </if>
-            <if test="partnerId != null">
-                AND tab.partnerId = #{partnerId}
-            </if>
-            <if test="loanTime != null">
-                AND tab.loanTime = #{loanTime}
-            </if>
+        </if>
+        <if test="loanGmtCreate != null">
+            AND tab.loanGmtCreate  = #{loanGmtCreate}
+        </if>
+        <if test="carType != null">
+            AND tab.carType = #{carType}
+        </if>
+        <if test="partnerId != null">
+            AND tab.partnerId = #{partnerId}
+        </if>
+        <if test="loanTime != null">
+            AND tab.loanTime = #{loanTime}
+        </if>
 
     </select>
 
@@ -131,30 +170,15 @@
 
     <select id="selectTelephoneVerifyTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
 
-            set @level = (
-                select max(t.level)
-                from
-                (
-                    select
-                    case
-                    when g.name    in ('总监') then 7
-                    when g.name    in ('电审经理') then 6
-                    when g.name    in ('电审主管') then 5
-                    when g.name    in ('电审专员') then 4
-                    else 1
-                    end as level
-                    from employee_rela_user_group r inner join user_group g
-                    on r.user_group_id = g.id and r.employee_id = #{loginUserId}
-                ) t
-            );
           select tab.* from
             (
             select
             main.id                      AS id,
             join_e.id                    AS salesmanId,
             join_p.id                    AS partnerId,
+            join_p.area_id               AS bizAreaId,
             join_c.name                  AS customer,
-            main.gmt_create              AS orderGmtCreate,
+            DATE_FORMAT(main.gmt_create,'%Y-%m-%d')      AS orderGmtCreate,
             join_c.id_card               AS idCard,
             join_c.mobile                AS mobile,
             join_e.name                  AS salesman,
@@ -194,10 +218,10 @@
             join_f.down_payment_money   AS downPaymentMoney,
             0                           AS overdueNum,
             case
-                    when @level  = 7  then case when deputy.telephone_verify &lt;  7 and  deputy.telephone_verify!= 1  then 2 else 1 end
-                    when @level  = 6  then case when deputy.telephone_verify &lt;  6 and  deputy.telephone_verify!= 1  then 2 else 1 end
-                    when @level  = 5  then case when deputy.telephone_verify &lt;  5 and  deputy.telephone_verify!= 1  then 2 else 1 end
-                    when @level  = 4  then case when deputy.telephone_verify &lt;  4 and  deputy.telephone_verify!= 1  then 2 else 1 end
+                    when #{level}  = 7  then case when deputy.telephone_verify &lt;  7 and  deputy.telephone_verify!= 1  then 2 else 1 end
+                    when #{level}  = 6  then case when deputy.telephone_verify &lt;  6 and  deputy.telephone_verify!= 1  then 2 else 1 end
+                    when #{level}  = 5  then case when deputy.telephone_verify &lt;  5 and  deputy.telephone_verify!= 1  then 2 else 1 end
+                    when #{level}  = 4  then case when deputy.telephone_verify &lt;  4 and  deputy.telephone_verify!= 1  then 2 else 1 end
                     else -1
             end                         AS taskStatus
 
@@ -214,62 +238,70 @@
             ) tab
             where 1=1 and tab.taskStatus != -1 and case when #{taskStatus} = 0 then tab.taskStatus != 0 else tab.taskStatus = #{taskStatus} end
 
-            <if test="orderId != null">
-                AND tab.id = #{orderId}
+        <if test="orderId != null">
+            AND tab.id = #{orderId}
+        </if>
+        <if test="customer != null">
+            AND tab.customer = #{customer}
+        </if>
+        <if test="mobile != null">
+            AND tab.mobile = #{mobile}
+        </if>
+        <if test="idCard != null">
+            AND tab.idCard = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+            AND tab.salesmanId = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND tab.bizAreaId = #{bizAreaId}
+        </if>
+        <if test="startCreditGmtCreate != null">
+            AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
+        </if>
+        <if test="loanBank != null">
+            AND tab.bank = #{loanBank}
+        </if>
+        <!--<if test="supplementType != null">
+            AND tab.supplementType = #{supplementType}
+        </if>-->
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND tab.loanAmount &lt;= 100000
             </if>
-            <if test="customer != null">
-                AND tab.customer = #{customer}
+            <if test="loanAmountType == 2">
+                AND tab.loanAmount &gt; 100000 AND tab.loanAmount &lt;= 300000
             </if>
-            <if test="mobile != null">
-                AND tab.mobile = #{mobile}
+            <if test="loanAmountType == 3">
+                AND tab.loanAmount &gt; 300000
             </if>
-            <if test="idCard != null">
-                AND tab.idCard = #{idCard}
+        </if>
+        <if test="signType != null">
+            <if test="signType == 1">
+                AND tab.signRate &lt;= 10
             </if>
-            <if test="salesmanId != null">
-                AND tab.salesmanId = #{salesmanId}
+            <if test="signType == 2">
+                AND tab.signRate &gt; 10 AND tab.signRate &lt;= 20
             </if>
-            <!--<if test="bizAreaId != null">
-                AND tab.bizAreaId =
-            </if>-->
-            <if test="startCreditGmtCreate != null">
-                AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+            <if test="signType == 3">
+                AND tab.signRate &gt; 20
             </if>
-            <if test="endCreditGmtCreate != null">
-                AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
-            </if>
-            <if test="loanBank != null">
-                AND tab.bank = #{loanBank}
-            </if>
-            <if test="supplementType != null">
-                AND tab.supplementType = #{supplementType}
-            </if>
-            <if test="loanAmountType != null">
-                <if test="loanAmountType == 1">
-                    AND tab.loanAmount &lt;= 100000
-                </if>
-                <if test="loanAmountType == 2">
-                    AND tab.loanAmount &gt; 100000 AND tab.loanAmount &lt;= 300000
-                </if>
-                <if test="loanAmountType == 3">
-                    AND tab.loanAmount &gt; 300000
-                </if>
-            </if>
-            <if test="signType != null">
-                AND tab.signType = #{signType}
-            </if>
-            <if test="loanGmtCreate != null">
-                AND tab.loanGmtCreate  = #{loanGmtCreate}
-            </if>
-            <if test="carType != null">
-                AND tab.carType = #{carType}
-            </if>
-            <if test="partnerId != null">
-                AND tab.partnerId = #{partnerId}
-            </if>
-            <if test="loanTime != null">
-                AND tab.loanTime = #{loanTime}
-            </if>
+        </if>
+        <if test="loanGmtCreate != null">
+            AND tab.loanGmtCreate  = #{loanGmtCreate}
+        </if>
+        <if test="carType != null">
+            AND tab.carType = #{carType}
+        </if>
+        <if test="partnerId != null">
+            AND tab.partnerId = #{partnerId}
+        </if>
+        <if test="loanTime != null">
+            AND tab.loanTime = #{loanTime}
+        </if>
 
 </select>
 
@@ -282,8 +314,9 @@
             main.id                      AS id,
             join_e.id                    AS salesmanId,
             join_p.id                    AS partnerId,
+            join_p.area_id               AS bizAreaId,
             join_c.name                  AS customer,
-            main.gmt_create              AS orderGmtCreate,
+            DATE_FORMAT(main.gmt_create,'%Y-%m-%d')      AS orderGmtCreate,
             join_c.id_card               AS idCard,
             join_c.mobile                AS mobile,
             join_e.name                  AS salesman,
@@ -392,9 +425,9 @@
             <if test="salesmanId != null">
                 AND tab.salesmanId = #{salesmanId}
             </if>
-            <!--<if test="bizAreaId != null">
-                AND tab.bizAreaId =
-            </if>-->
+            <if test="bizAreaId != null">
+                AND tab.bizAreaId = #{bizAreaId}
+            </if>
             <if test="startCreditGmtCreate != null">
                 AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
             </if>
@@ -404,9 +437,9 @@
             <if test="loanBank != null">
                 AND tab.bank = #{loanBank}
             </if>
-            <if test="supplementType != null">
+            <!--<if test="supplementType != null">
                 AND tab.supplementType = #{supplementType}
-            </if>
+            </if>-->
             <if test="loanAmountType != null">
                 <if test="loanAmountType == 1">
                     AND tab.loanAmount &lt;= 100000
@@ -419,7 +452,15 @@
                 </if>
             </if>
             <if test="signType != null">
-                AND tab.signType = #{signType}
+                <if test="signType == 1">
+                    AND tab.signRate &lt;= 10
+                </if>
+                <if test="signType == 2">
+                    AND tab.signRate &gt; 10 AND tab.signRate &lt;= 20
+                </if>
+                <if test="signType == 3">
+                    AND tab.signRate &gt; 20
+                </if>
             </if>
             <if test="loanGmtCreate != null">
                 AND tab.loanGmtCreate  = #{loanGmtCreate}

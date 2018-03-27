@@ -3,26 +3,31 @@ package com.yunche.loan.domain.query;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
+
+import javax.validation.constraints.NotNull;
+
+
 @Data
 public class TaskListQuery {
     /**
      * 当前页数  默认值：1
      */
-    @NotBlank
+    @NotNull
     private Integer pageIndex = 1;
     /**
      * 页面大小  默认值：10
      */
-    @NotBlank
+    @NotNull
     private Integer pageSize = 10;
 
     @NotBlank
     private String taskDefinitionKey;
 
-    @NotBlank
+    @NotNull
     private Integer taskStatus;
 
-    private Long loginUserId;
+
+    private Integer level;
 
     private String orderId;//业务编号
 
