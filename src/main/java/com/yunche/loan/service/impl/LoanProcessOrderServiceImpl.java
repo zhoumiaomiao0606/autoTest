@@ -57,6 +57,7 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
         loanOrderDO.setStatus(VALID_STATUS);
         ResultBean<Long> createResultBean = create(loanOrderDO);
         Preconditions.checkArgument(createResultBean.getSuccess(), createResultBean.getMsg());
+
         return createResultBean;
     }
 

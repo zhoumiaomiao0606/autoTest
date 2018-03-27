@@ -15,7 +15,6 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
-import org.activiti.engine.history.HistoricVariableInstanceQuery;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.TaskInfo;
@@ -38,10 +37,7 @@ import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEME
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
-import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
-import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_USER_ID;
-import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_USER_NAME;
 import static com.yunche.loan.config.constant.MultipartTypeConst.MULTIPART_TYPE_CUSTOMER_LOAN_DONE;
 
 /**
@@ -1292,20 +1288,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
     private Long createLoanOrder(Long baseInfoId, Long customerId) {
-        // 开启activiti流程
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("loan_process");
-        Preconditions.checkNotNull(processInstance, "开启流程实例异常");
-        Preconditions.checkNotNull(processInstance.getProcessInstanceId(), "开启流程实例异常");
-
-        LoanOrderDO loanOrderDO = new LoanOrderDO();
-        loanOrderDO.setProcessInstId(processInstance.getProcessInstanceId());
-        loanOrderDO.setLoanCustomerId(customerId);
-        loanOrderDO.setLoanBaseInfoId(baseInfoId);
-        loanOrderDO.setCurrentTaskDefKey("usertask_credit_apply");
-        loanOrderDO.setStatus(VALID_STATUS);
-        ResultBean<Long> createResultBean = loanProcessOrderService.create(loanOrderDO);
-        Preconditions.checkArgument(createResultBean.getSuccess(), createResultBean.getMsg());
-        return createResultBean.getData();
+        ResultBean<Long> createLoanOrderResult = loanProcessOrderService.createLoanOrder(baseInfoId, customerId);
+        Preconditions.checkArgument(createLoanOrderResult.getSuccess(), createLoanOrderResult.getMsg());
+        return createLoanOrderResult.getData();
     }
 
     private Long createLoanCustomer(CreditApplyOrderParam param) {

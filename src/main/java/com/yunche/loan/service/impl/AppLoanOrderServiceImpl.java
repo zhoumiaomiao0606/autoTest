@@ -15,7 +15,6 @@ import com.yunche.loan.service.*;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
-import org.activiti.engine.history.HistoricVariableInstanceQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
@@ -35,6 +34,7 @@ import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.REMIT_REVIEW;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
@@ -80,6 +80,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
+
+    @Autowired
+    private LoanProcessDOMapper loanProcessDOMapper;
 
     @Autowired
     private LoanCustomerService loanCustomerService;
@@ -246,12 +249,14 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Long customerId = createLoanCustomer(customerParam);
 
         // 业务单创建
-        ResultBean<Long> createLoanOrderResult = loanProcessOrderService.createLoanOrder(null, customerId);
-        Preconditions.checkArgument(createLoanOrderResult.getSuccess(), createLoanOrderResult.getMsg());
+        Long orderId = createLoanOrder(null, customerId);
 
-        // 业务单ID & 客户ID
+        // 创建流程记录
+        createLoanProcess(orderId);
+
+        // 返回信息：业务单ID & 客户ID
         AppCreditApplyVO appCreditApplyVO = new AppCreditApplyVO();
-        appCreditApplyVO.setOrderId(createLoanOrderResult.getData());
+        appCreditApplyVO.setOrderId(orderId);
         appCreditApplyVO.setCustomerId(customerId);
 
         return ResultBean.ofSuccess(appCreditApplyVO);
@@ -780,6 +785,21 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     /**
+     * 创建流程记录
+     *
+     * @param orderId
+     */
+    private void createLoanProcess(Long orderId) {
+        LoanProcessDO loanProcessDO = new LoanProcessDO();
+        loanProcessDO.setOrderId(orderId);
+        loanProcessDO.setCreditApply(TASK_PROCESS_TODO);
+        loanProcessDO.setGmtCreate(new Date());
+        loanProcessDO.setGmtModify(new Date());
+        int count = loanProcessDOMapper.insertSelective(loanProcessDO);
+        Preconditions.checkArgument(count > 0, "创建流程记录失败");
+    }
+
+    /**
      * insert贷款金融方案
      *
      * @param appLoanFinancialPlanParam
@@ -944,6 +964,19 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     /**
+     * 创建订单
+     *
+     * @param baseInfoId
+     * @param customerId
+     * @return
+     */
+    private Long createLoanOrder(Long baseInfoId, Long customerId) {
+        ResultBean<Long> createLoanOrderResult = loanProcessOrderService.createLoanOrder(baseInfoId, customerId);
+        Preconditions.checkArgument(createLoanOrderResult.getSuccess(), createLoanOrderResult.getMsg());
+        return createLoanOrderResult.getData();
+    }
+
+    /**
      * 创建客户信息
      *
      * @param customerParam
@@ -959,9 +992,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         ResultBean<Long> createCustomerResult = loanCustomerService.create(loanCustomerDO);
         Preconditions.checkArgument(createCustomerResult.getSuccess(), createCustomerResult.getMsg());
 
-        // todo 文件上传
-//        ResultBean<Void> createFileResultBean = loanFileService.create(createCustomerResult.getData(), customerParam.getFiles());
-//        Preconditions.checkArgument(createFileResultBean.getSuccess(), createFileResultBean.getMsg());
+        // 文件KEY列表保存
+        ResultBean<Void> insertFileResultBean = loanFileService.batchInsert(createCustomerResult.getData(), customerParam.getFiles());
+        Preconditions.checkArgument(insertFileResultBean.getSuccess(), insertFileResultBean.getMsg());
 
         // 返回客户ID
         return createCustomerResult.getData();
