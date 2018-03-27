@@ -1469,9 +1469,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         if (null != custDetailVO) {
 
             CustomerVO principalLenderVO = custDetailVO.getPrincipalLender();
-            List<CustomerVO> commonLenderVOList = custDetailVO.getCommonLenderList();
-            List<CustomerVO> guarantorVOList = custDetailVO.getGuarantorList();
-            List<CustomerVO> emergencyContactVOList = custDetailVO.getEmergencyContactList();
+//            List<CustomerVO> commonLenderVOList = custDetailVO.getCommonLenderList();
+//            List<CustomerVO> guarantorVOList = custDetailVO.getGuarantorList();
+//            List<CustomerVO> emergencyContactVOList = custDetailVO.getEmergencyContactList();
 
             if (null != principalLenderVO) {
                 InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
@@ -1479,43 +1479,43 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 infoSupplementVO.setPrincipalLender(customerFile);
             }
 
-            if (!CollectionUtils.isEmpty(commonLenderVOList)) {
-
-                List<InfoSupplementVO.CustomerFile> commonLenderList = Lists.newArrayList();
-                commonLenderVOList.parallelStream()
-                        .filter(Objects::nonNull)
-                        .forEach(e -> {
-                            InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
-                            fillCustomerFile(e, customerFile);
-                            commonLenderList.add(customerFile);
-                        });
-                infoSupplementVO.setCommonLenderList(commonLenderList);
-            }
-
-            if (!CollectionUtils.isEmpty(guarantorVOList)) {
-
-                List<InfoSupplementVO.CustomerFile> guarantorList = Lists.newArrayList();
-                guarantorVOList.parallelStream()
-                        .filter(Objects::nonNull)
-                        .forEach(e -> {
-                            InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
-                            fillCustomerFile(e, customerFile);
-                            guarantorList.add(customerFile);
-                        });
-                infoSupplementVO.setGuarantorList(guarantorList);
-            }
-
-            if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
-                List<InfoSupplementVO.CustomerFile> emergencyContactList = Lists.newArrayList();
-                emergencyContactVOList.parallelStream()
-                        .filter(Objects::nonNull)
-                        .forEach(e -> {
-                            InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
-                            fillCustomerFile(e, customerFile);
-                            emergencyContactList.add(customerFile);
-                        });
-                infoSupplementVO.setEmergencyContactList(emergencyContactList);
-            }
+//            if (!CollectionUtils.isEmpty(commonLenderVOList)) {
+//
+//                List<InfoSupplementVO.CustomerFile> commonLenderList = Lists.newArrayList();
+//                commonLenderVOList.parallelStream()
+//                        .filter(Objects::nonNull)
+//                        .forEach(e -> {
+//                            InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
+//                            fillCustomerFile(e, customerFile);
+//                            commonLenderList.add(customerFile);
+//                        });
+//                infoSupplementVO.setCommonLenderList(commonLenderList);
+//            }
+//
+//            if (!CollectionUtils.isEmpty(guarantorVOList)) {
+//
+//                List<InfoSupplementVO.CustomerFile> guarantorList = Lists.newArrayList();
+//                guarantorVOList.parallelStream()
+//                        .filter(Objects::nonNull)
+//                        .forEach(e -> {
+//                            InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
+//                            fillCustomerFile(e, customerFile);
+//                            guarantorList.add(customerFile);
+//                        });
+//                infoSupplementVO.setGuarantorList(guarantorList);
+//            }
+//
+//            if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
+//                List<InfoSupplementVO.CustomerFile> emergencyContactList = Lists.newArrayList();
+//                emergencyContactVOList.parallelStream()
+//                        .filter(Objects::nonNull)
+//                        .forEach(e -> {
+//                            InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
+//                            fillCustomerFile(e, customerFile);
+//                            emergencyContactList.add(customerFile);
+//                        });
+//                infoSupplementVO.setEmergencyContactList(emergencyContactList);
+//            }
         }
     }
 

@@ -6,12 +6,13 @@ import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import javax.annotation.Resource;
 
 //任务调度中心
 @CrossOrigin
 @RestController
-@RequestMapping(value = {"/taskscheduling","/app/taskscheduling"})
+@RequestMapping(value = {"/taskscheduling", "/app/taskscheduling"})
 public class TaskSchedulingController {
 
     @Resource
@@ -23,7 +24,7 @@ public class TaskSchedulingController {
      */
     @GetMapping(value = "/scheduletasklist")
     public ResultBean scheduleTaskList(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
-        return taskSchedulingService.scheduleTaskList(pageIndex,pageSize);
+        return taskSchedulingService.scheduleTaskList(pageIndex, pageSize);
     }
 
     /**
@@ -42,4 +43,8 @@ public class TaskSchedulingController {
         return taskSchedulingService.queryAppTaskList(appTaskListQuery);
     }
 
+    @PostMapping(value = "/queryInfoSupplement")
+    public ResultBean queryInfoSupplement(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
+        return taskSchedulingService.queryAppTaskList(appTaskListQuery);
+    }
 }

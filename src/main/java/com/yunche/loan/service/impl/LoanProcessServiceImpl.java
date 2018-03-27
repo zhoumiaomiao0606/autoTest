@@ -411,6 +411,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanProcessDO.setInstallGps(taskProcessStatus);
         } else if (COMMIT_KEY.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setCommitKey(taskProcessStatus);
+        } else if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)) {
+            loanProcessDO.setVehicleInformation(taskProcessStatus);
         } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setBusinessReview(taskProcessStatus);
         } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {

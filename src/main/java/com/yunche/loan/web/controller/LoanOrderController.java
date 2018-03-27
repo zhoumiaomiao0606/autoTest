@@ -318,10 +318,10 @@ public class LoanOrderController {
 //    }
 
     /**
-     *提车资料查询
+     * 提车资料查询
      */
     @GetMapping(value = "/carinfo/vehicleinfo")
-    public  ResultBean<VehicleInfoVO> vehicleInformationQuery(@RequestParam Long orderId){
+    public ResultBean<VehicleInfoVO> vehicleInformationQuery(@RequestParam Long orderId) {
         return loanOrderService.vehicleInformationQuery(orderId);
     }
 }
