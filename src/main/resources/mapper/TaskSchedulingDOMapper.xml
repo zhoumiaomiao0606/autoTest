@@ -29,7 +29,7 @@
     ) t
     </select>
 
-    <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+    <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO">
 
         select tab.* from
         (
