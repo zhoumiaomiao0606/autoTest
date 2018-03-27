@@ -66,7 +66,7 @@ public class LoanProcessController {
      */
     @GetMapping(value = "/history")
     public ResultBean<List<String>> orderHistory(@RequestParam("orderId") Long orderId,
-                                                 @RequestParam("limit") Integer limit) {
+                                                 @RequestParam(value = "limit", required = false) Integer limit) {
         return loanProcessService.orderHistory(orderId, limit);
     }
 }

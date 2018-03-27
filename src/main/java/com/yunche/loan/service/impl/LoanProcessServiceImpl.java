@@ -802,6 +802,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                         taskStateVO.setTaskDefinitionKey(task.getTaskDefinitionKey());
                         taskStateVO.setTaskName(task.getName());
                         taskStateVO.setTaskStatus(TASK_PROCESS_TODO);
+                        taskStateVO.setTaskStatusText(getTaskStatusText(TASK_PROCESS_TODO));
 
                         return taskStateVO;
                     })
@@ -866,31 +867,43 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             taskStatus = loanProcessDO.getMaterialPrintReview();
         }
 
-        TaskStateVO TaskStateVO = new TaskStateVO();
-        TaskStateVO.setTaskDefinitionKey(taskDefinitionKey);
-        TaskStateVO.setTaskName(PROCESS_MAP.get(taskDefinitionKey));
+        TaskStateVO taskStateVO = new TaskStateVO();
+        taskStateVO.setTaskDefinitionKey(taskDefinitionKey);
+        taskStateVO.setTaskName(PROCESS_MAP.get(taskDefinitionKey));
 
-        TaskStateVO.setTaskStatus(taskStatus);
+        taskStateVO.setTaskStatus(taskStatus);
+        taskStateVO.setTaskStatusText(getTaskStatusText(taskStatus));
+
+        return ResultBean.ofSuccess(taskStateVO, "查询当前流程任务节点状态成功");
+    }
+
+    /**
+     * 任务状态文本值
+     *
+     * @param taskStatus
+     * @return
+     */
+    private String getTaskStatusText(Byte taskStatus) {
+        String taskStatusText = null;
         switch (taskStatus) {
             case 0:
-                TaskStateVO.setTaskStatusText("未执行到此");
+                taskStatusText = "未执行到此";
                 break;
             case 1:
-                TaskStateVO.setTaskStatusText("已提交");
+                taskStatusText = "已提交";
                 break;
             case 2:
-                TaskStateVO.setTaskStatusText("未提交");
+                taskStatusText = "未提交";
                 break;
             case 3:
-                TaskStateVO.setTaskStatusText("已打回");
+                taskStatusText = "已打回";
                 break;
             // null
             default:
-                TaskStateVO.setTaskStatusText("-");
+                taskStatusText = "-";
                 break;
         }
-
-        return ResultBean.ofSuccess(TaskStateVO, "查询当前流程任务节点状态成功");
+        return taskStatusText;
     }
 
     @Override

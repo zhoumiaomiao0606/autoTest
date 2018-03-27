@@ -41,27 +41,27 @@ public class SessionUtils {
     }
 
     /**
-     * 获取用户组名称
+     * 获取当前登录用户-用户组列表
      *
      * @return
      */
-    public List<String> getUserGroupNameList() {
-        // getUser
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-
-        // getUserGroup
-        List<UserGroupDO> baseUserGroup = userGroupDOMapper.getBaseUserGroupByEmployeeId(loginUser.getId());
-
-        // getUserGroupName
-        List<String> userGroupNameList = null;
-        if (!CollectionUtils.isEmpty(baseUserGroup)) {
-            userGroupNameList = baseUserGroup.parallelStream()
-                    .filter(Objects::nonNull)
-                    .map(e -> {
-                        return e.getName();
-                    })
-                    .collect(Collectors.toList());
-        }
-        return userGroupNameList;
-    }
+//    public List<String> getUserGroupNameList() {
+//        // getUser
+//        EmployeeDO loginUser = SessionUtils.getLoginUser();
+//
+//        // getUserGroup
+//        List<UserGroupDO> baseUserGroup = userGroupDOMapper.getBaseUserGroupByEmployeeId(loginUser.getId());
+//
+//        // getUserGroupName
+//        List<String> userGroupNameList = null;
+//        if (!CollectionUtils.isEmpty(baseUserGroup)) {
+//            userGroupNameList = baseUserGroup.parallelStream()
+//                    .filter(Objects::nonNull)
+//                    .map(e -> {
+//                        return e.getName();
+//                    })
+//                    .collect(Collectors.toList());
+//        }
+//        return userGroupNameList;
+//    }
 }
