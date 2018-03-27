@@ -15,7 +15,6 @@ public class RepaymentRecordVO {
 
     private Integer currentOverdueTimes;
 
-
     private Long bizOrder;
 
     private String userName;

@@ -75,7 +75,6 @@ public class RepaymentRecordServiceImpl implements RepaymentRecordService {
                 repaymentRecordDO.setCurrentOverdueTimes(Integer.parseInt(tmp[6].trim()));
                 repaymentRecordDO.setCumulativeOverdueTimes(Integer.parseInt(tmp[7].trim()));
                 repaymentRecordDO.setCardBalance(new BigDecimal(tmp[8].trim()));
-
                 repaymentRecordDO.setGmtCreate(new Date());
 
 
