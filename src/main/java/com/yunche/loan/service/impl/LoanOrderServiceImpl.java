@@ -102,6 +102,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private LoanProcessDOMapper loanProcessDOMapper;
 
     @Autowired
+    private LoanInfoSupplementDOMapper loanInfoSupplementDOMapper;
+
+    @Autowired
     private BaseAreaService baseAreaService;
 
     @Autowired
@@ -523,15 +526,26 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         return ResultBean.ofSuccess(loanSimpleCustomerInfoVOS);
     }
 
-
     @Override
-    public ResultBean<InfoSupplementVO> infoSupplementDetail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+    public ResultBean<InfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
+        Preconditions.checkNotNull(supplementOrderId, "增补单不能为空");
 
+        LoanInfoSupplementDO loanInfoSupplementDO = loanInfoSupplementDOMapper.selectByPrimaryKey(supplementOrderId);
+        Preconditions.checkNotNull(loanInfoSupplementDO, "增补单不存在");
+
+        InfoSupplementVO infoSupplementVO = new InfoSupplementVO();
+
+        // 增补信息
+        infoSupplementVO.setSupplementType(loanInfoSupplementDO.getType());
+        infoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());
+        infoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());
+        infoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
+
+
+        Long orderId = loanInfoSupplementDO.getOrderId();
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
-        InfoSupplementVO infoSupplementVO = new InfoSupplementVO();
 
         // 客户信息
         if (null != loanOrderDO.getLoanCustomerId()) {
@@ -560,70 +574,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 infoSupplementVO.setPartnerId(partner.getId());
                 infoSupplementVO.setPartnerName(partner.getName());
             }
-        }
-
-        // 增补类型、备注 & 时间
-        List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(loanOrderDO.getProcessInstId())
-                .taskDefinitionKey(TELEPHONE_VERIFY.getCode())
-                .orderByTaskCreateTime()
-                .desc()
-                .listPage(0, 1);
-
-        if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
-            HistoricTaskInstance historicTaskInstance = historicTaskInstanceList.get(0);
-            // 时间
-            infoSupplementVO.setSupplementStartDate(historicTaskInstance.getCreateTime());
-//            infoSupplementVO.setSupplementEndDate(historicTaskInstance.getEndTime());
-
-            String taskVariablePrefix = TELEPHONE_VERIFY.getCode() + ":" + loanOrderDO.getProcessInstId() + ":"
-                    + historicTaskInstance.getExecutionId() + ":";
-
-            String taskVariableTypeKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
-            String taskVariableContentKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_CONTENT;
-            String taskVariableInfoKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_INFO;
-            String taskVariableUserIdKey = taskVariablePrefix + PROCESS_VARIABLE_USER_ID;
-            String taskVariableUserNameKey = taskVariablePrefix + PROCESS_VARIABLE_USER_NAME;
-
-            HistoricVariableInstanceQuery historicVariableInstanceQuery = historyService.createHistoricVariableInstanceQuery()
-                    .processInstanceId(loanOrderDO.getProcessInstId());
-
-            HistoricVariableInstance typeHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableTypeKey).singleResult();
-            HistoricVariableInstance contentHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableContentKey).singleResult();
-            HistoricVariableInstance infoHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableInfoKey).singleResult();
-            HistoricVariableInstance userIdHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableUserIdKey).singleResult();
-            HistoricVariableInstance userNameHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableUserNameKey).singleResult();
-
-            // 增补类型
-            if (null != typeHistoricVariableInstance) {
-                infoSupplementVO.setSupplementType((Integer) typeHistoricVariableInstance.getValue());
-            }
-            // 增补内容
-            if (null != contentHistoricVariableInstance) {
-                infoSupplementVO.setSupplementContent((String) contentHistoricVariableInstance.getValue());
-            }
-            // 增补说明
-            if (null != infoHistoricVariableInstance) {
-                infoSupplementVO.setSupplementInfo((String) infoHistoricVariableInstance.getValue());
-            }
-            // 要求增补人员
-            if (null != userNameHistoricVariableInstance) {
-                infoSupplementVO.setInitiator((String) userNameHistoricVariableInstance.getValue());
-            }
-            // 要求增补部门
-//            if (null != userIdHistoricVariableInstance) {
-//                Object value = userIdHistoricVariableInstance.getValue();
-//                if (null != value) {
-//                    Long userId = (Long) value;
-//                    EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(userId, null);
-//                    if (null != employeeDO) {
-//                        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(employeeDO.getDepartmentId(), null);
-//                        if (null != departmentDO) {
-//                            infoSupplementVO.setInitiatorUnit(departmentDO.getName());
-//                        }
-//                    }
-//                }
-//            }
         }
 
         // 客户及文件分类列表

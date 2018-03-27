@@ -46,7 +46,7 @@ public class AppInfoSupplementVO {
     /**
      * 增补类型：  1-电审资料增补;  2-资料审核增补;
      */
-    private Integer supplementType;
+    private Byte supplementType;
     /**
      * 要求增补内容
      */

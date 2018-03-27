@@ -54,7 +54,7 @@ public interface AppLoanOrderService {
 
     ResultBean<AppLoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId);
 
-    ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long orderId);
+    ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId);
 
     ResultBean<AppCustomerInfoVO> customerInfo(Long orderId);
 

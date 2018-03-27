@@ -60,7 +60,7 @@ public interface LoanOrderService {
 
     ResultBean<List<LoanSimpleCustomerInfoVO>> simpleCustomerInfo(Long orderId);
 
-    ResultBean<InfoSupplementVO> infoSupplementDetail(Long orderId);
+    ResultBean<InfoSupplementVO> infoSupplementDetail(Long supplementOrderId);
     /**
      * 提车资料查询
      */

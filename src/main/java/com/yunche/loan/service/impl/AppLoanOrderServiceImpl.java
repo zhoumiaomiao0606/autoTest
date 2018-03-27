@@ -118,6 +118,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private InsuranceRelevanceDOMapper insuranceRelevanceDOMapper;
 
     @Autowired
+    private LoanInfoSupplementDOMapper loanInfoSupplementDOMapper;
+
+    @Autowired
     private CarService carService;
 
     @Autowired
@@ -125,13 +128,25 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
 
     @Override
-    public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+    public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
+        Preconditions.checkNotNull(supplementOrderId, "增补单不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
-        Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
+        LoanInfoSupplementDO loanInfoSupplementDO = loanInfoSupplementDOMapper.selectByPrimaryKey(supplementOrderId);
+        Preconditions.checkNotNull(loanInfoSupplementDO, "增补单不存在");
 
         AppInfoSupplementVO appInfoSupplementVO = new AppInfoSupplementVO();
+
+        // 增补信息
+        appInfoSupplementVO.setSupplementType(loanInfoSupplementDO.getType());
+        appInfoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());
+        appInfoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());
+        appInfoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
+        appInfoSupplementVO.setSupplementEndDate(loanInfoSupplementDO.getEndTime());
+        appInfoSupplementVO.setInitiator(loanInfoSupplementDO.getInitiatorName());
+
+        Long orderId = loanInfoSupplementDO.getOrderId();
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
         // 客户信息
         if (null != loanOrderDO.getLoanCustomerId()) {
@@ -165,67 +180,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             }
         }
 
-        // 增补类型、备注 & 时间
-        List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(loanOrderDO.getProcessInstId())
-                .taskDefinitionKey(loanOrderDO.getCurrentTaskDefKey())
-                .orderByTaskCreateTime()
-                .desc()
-                .listPage(0, 1);
-
-        if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
-            HistoricTaskInstance historicTaskInstance = historicTaskInstanceList.get(0);
-            // 时间
-            appInfoSupplementVO.setSupplementStartDate(historicTaskInstance.getCreateTime());
-            appInfoSupplementVO.setSupplementEndDate(historicTaskInstance.getEndTime());
-
-            String taskVariablePrefix = loanOrderDO.getCurrentTaskDefKey() + ":" + loanOrderDO.getProcessInstId() + ":"
-                    + historicTaskInstance.getExecutionId() + ":";
-
-            String taskVariableTypeKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
-            String taskVariableContentKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_CONTENT;
-            String taskVariableInfoKey = taskVariablePrefix + PROCESS_VARIABLE_INFO_SUPPLEMENT_INFO;
-            String taskVariableUserIdKey = taskVariablePrefix + PROCESS_VARIABLE_USER_ID;
-            String taskVariableUserNameKey = taskVariablePrefix + PROCESS_VARIABLE_USER_NAME;
-
-            HistoricVariableInstanceQuery historicVariableInstanceQuery = historyService.createHistoricVariableInstanceQuery()
-                    .processInstanceId(loanOrderDO.getProcessInstId());
-
-            HistoricVariableInstance typeHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableTypeKey).singleResult();
-            HistoricVariableInstance contentHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableContentKey).singleResult();
-            HistoricVariableInstance infoHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableInfoKey).singleResult();
-            HistoricVariableInstance userIdHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableUserIdKey).singleResult();
-            HistoricVariableInstance userNameHistoricVariableInstance = historicVariableInstanceQuery.variableName(taskVariableUserNameKey).singleResult();
-
-            // 增补类型
-            if (null != typeHistoricVariableInstance) {
-                appInfoSupplementVO.setSupplementType((Integer) typeHistoricVariableInstance.getValue());
-            }
-            // 增补内容
-            if (null != contentHistoricVariableInstance) {
-                appInfoSupplementVO.setSupplementContent((String) contentHistoricVariableInstance.getValue());
-            }
-            // 增补说明
-            if (null != infoHistoricVariableInstance) {
-                appInfoSupplementVO.setSupplementInfo((String) infoHistoricVariableInstance.getValue());
-            }
-            // 要求增补人员
-            if (null != userNameHistoricVariableInstance) {
-                appInfoSupplementVO.setInitiator((String) userNameHistoricVariableInstance.getValue());
-            }
-            // 要求增补部门
-            if (null != userIdHistoricVariableInstance) {
-                Object value = userIdHistoricVariableInstance.getValue();
-                if (null != value) {
-                    Long userId = (Long) value;
-                    EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(userId, null);
-                    if (null != employeeDO) {
-                        DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(employeeDO.getDepartmentId(), null);
-                        if (null != departmentDO) {
-                            appInfoSupplementVO.setInitiatorUnit(departmentDO.getName());
-                        }
-                    }
-                }
+        // 要求增补部门
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(loanInfoSupplementDO.getInitiatorId(), null);
+        if (null != employeeDO) {
+            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(employeeDO.getDepartmentId(), null);
+            if (null != departmentDO) {
+                appInfoSupplementVO.setInitiatorUnit(departmentDO.getName());
             }
         }
 

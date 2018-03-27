@@ -276,12 +276,12 @@ public class LoanOrderController {
     /**
      * 资料增补详情页
      *
-     * @param orderId
+     * @param supplementOrderId
      * @return
      */
     @GetMapping(value = "/infosupplement/detail")
-    public ResultBean<InfoSupplementVO> infoSupplementDetail(@RequestParam Long orderId) {
-        return loanOrderService.infoSupplementDetail(orderId);
+    public ResultBean<InfoSupplementVO> infoSupplementDetail(@RequestParam Long supplementOrderId) {
+        return loanOrderService.infoSupplementDetail(supplementOrderId);
     }
 
     /**
