@@ -29,7 +29,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
-    @GetMapping(value = "/queryTaskList")
+    @PostMapping(value = "/queryTaskList")
     public ResultBean scheduleTaskList(@Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.queryTaskList(taskListQuery);
     }
