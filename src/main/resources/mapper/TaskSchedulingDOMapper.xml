@@ -161,24 +161,24 @@
             AND tab.loanTime = #{loanTime}
         </if>
         <if test="startOrderGmtCreate != null">
-            AND tab.orderGmtCreate &gt;= #{startOrderGmtCreate}
+            AND TO_DAYS(tab.orderGmtCreate) &gt;= TO_DAYS(#{startOrderGmtCreate})
         </if>
         <if test="endOrderGmtCreate != null">
-            AND tab.orderGmtCreate &lt;= #{endOrderGmtCreate}
+            AND TO_DAYS(tab.orderGmtCreate) &lt;= TO_DAYS(#{endOrderGmtCreate})
         </if>
         <if test="startLoanGmtCreate != null">
-            AND tab.loanGmtCreate &gt;= #{startLoanGmtCreate}
+            AND TO_DAYS(tab.loanGmtCreate) &gt;= TO_DAYS(#{startLoanGmtCreate})
         </if>
         <if test="endLoanGmtCreate != null">
-            AND tab.loanGmtCreate &lt;= #{endLoanGmtCreate}
+            AND TO_DAYS(tab.loanGmtCreate) &lt;= TO_DAYS(#{endLoanGmtCreate})
         </if>
         <if test="startCreditGmtCreate != null">
-            AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+            AND TO_DAYS(tab.creditGmtCreate) &gt;= TO_DAYS(#{startCreditGmtCreate})
         </if>
         <if test="endCreditGmtCreate != null">
-            AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
+            AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
         </if>
-    </select>
+       </select>
 
 
 
@@ -251,7 +251,6 @@
             left  join apply_license_plate_record join_l on join_l.id             = main.apply_license_plate_record_id
             ) tab
             where 1=1 and tab.taskStatus != -1 and case when #{taskStatus} = 0 then tab.taskStatus != 0 else tab.taskStatus = #{taskStatus} end
-
         <if test="orderId != null">
             AND tab.id = #{orderId}
         </if>
@@ -314,24 +313,23 @@
             AND tab.loanTime = #{loanTime}
         </if>
         <if test="startOrderGmtCreate != null">
-            AND tab.orderGmtCreate &gt;= #{startOrderGmtCreate}
+            AND TO_DAYS(tab.orderGmtCreate) &gt;= TO_DAYS(#{startOrderGmtCreate})
         </if>
         <if test="endOrderGmtCreate != null">
-            AND tab.orderGmtCreate &lt;= #{endOrderGmtCreate}
+            AND TO_DAYS(tab.orderGmtCreate) &lt;= TO_DAYS(#{endOrderGmtCreate})
         </if>
         <if test="startLoanGmtCreate != null">
-            AND tab.loanGmtCreate &gt;= #{startLoanGmtCreate}
+            AND TO_DAYS(tab.loanGmtCreate) &gt;= TO_DAYS(#{startLoanGmtCreate})
         </if>
         <if test="endLoanGmtCreate != null">
-            AND tab.loanGmtCreate &lt;= #{endLoanGmtCreate}
+            AND TO_DAYS(tab.loanGmtCreate) &lt;= TO_DAYS(#{endLoanGmtCreate})
         </if>
         <if test="startCreditGmtCreate != null">
-            AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+            AND TO_DAYS(tab.creditGmtCreate) &gt;= TO_DAYS(#{startCreditGmtCreate})
         </if>
         <if test="endCreditGmtCreate != null">
-            AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
+            AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
         </if>
-
 </select>
 
 
@@ -571,22 +569,22 @@
                 AND tab.loanTime = #{loanTime}
             </if>
             <if test="startOrderGmtCreate != null">
-                AND tab.orderGmtCreate &gt;= #{startOrderGmtCreate}
+                AND TO_DAYS(tab.orderGmtCreate) &gt;= TO_DAYS(#{startOrderGmtCreate})
             </if>
             <if test="endOrderGmtCreate != null">
-                AND tab.orderGmtCreate &lt;= #{endOrderGmtCreate}
+                AND TO_DAYS(tab.orderGmtCreate) &lt;= TO_DAYS(#{endOrderGmtCreate})
             </if>
             <if test="startLoanGmtCreate != null">
-                AND tab.loanGmtCreate &gt;= #{startLoanGmtCreate}
+                AND TO_DAYS(tab.loanGmtCreate) &gt;= TO_DAYS(#{startLoanGmtCreate})
             </if>
             <if test="endLoanGmtCreate != null">
-                AND tab.loanGmtCreate &lt;= #{endLoanGmtCreate}
+                AND TO_DAYS(tab.loanGmtCreate) &lt;= TO_DAYS(#{endLoanGmtCreate})
             </if>
             <if test="startCreditGmtCreate != null">
-                AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+                AND TO_DAYS(tab.creditGmtCreate) &gt;= TO_DAYS(#{startCreditGmtCreate})
             </if>
             <if test="endCreditGmtCreate != null">
-                AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
+                AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
             </if>
         </select>
 
