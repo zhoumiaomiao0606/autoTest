@@ -39,7 +39,7 @@
         main.id AS id,
         join_e.id AS salesmanId,
         join_p.id AS partnerId,
-        join_p.area_id AS bizAreaId,
+        join_b.area_id AS bizAreaId,
         join_c.name AS customer,
         DATE_FORMAT(main.gmt_create,'%Y-%m-%d')   AS orderGmtCreate,
         join_c.id_card AS idCard,
@@ -57,7 +57,7 @@
         and TASK_DEF_KEY_ = 'usertask_credit_apply'
         order by START_TIME_
         desc limit 1) AS creditGmtCreate,
-        join_f.bank AS bank,
+        join_b.bank AS bank,
         join_d.name AS departmentName,
         join_f.loan_amount AS loanAmount,
         join_f.bank_period_principal AS bankPeriodPrincipal,
@@ -115,13 +115,13 @@
             AND tab.salesmanId = #{salesmanId}
         </if>
         <if test="bizAreaId != null">
-            AND tab.bizAreaId = #{bizAreaId}
-        </if>
-        <if test="startCreditGmtCreate != null">
-            AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
-        </if>
-        <if test="endCreditGmtCreate != null">
-            AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then tab.bizAreaId in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then tab.bizAreaId = #{bizAreaId}
+            else 1=2
+            end
         </if>
         <if test="loanBank != null">
             AND tab.bank = #{loanBank}
@@ -151,9 +151,6 @@
                 AND tab.signRate &gt; 20
             </if>
         </if>
-        <if test="loanGmtCreate != null">
-            AND tab.loanGmtCreate  = #{loanGmtCreate}
-        </if>
         <if test="carType != null">
             AND tab.carType = #{carType}
         </if>
@@ -163,7 +160,24 @@
         <if test="loanTime != null">
             AND tab.loanTime = #{loanTime}
         </if>
-
+        <if test="startOrderGmtCreate != null">
+            AND tab.orderGmtCreate &gt;= #{startOrderGmtCreate}
+        </if>
+        <if test="endOrderGmtCreate != null">
+            AND tab.orderGmtCreate &lt;= #{endOrderGmtCreate}
+        </if>
+        <if test="startLoanGmtCreate != null">
+            AND tab.loanGmtCreate &gt;= #{startLoanGmtCreate}
+        </if>
+        <if test="endLoanGmtCreate != null">
+            AND tab.loanGmtCreate &lt;= #{endLoanGmtCreate}
+        </if>
+        <if test="startCreditGmtCreate != null">
+            AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
+        </if>
     </select>
 
 
@@ -176,7 +190,7 @@
             main.id                      AS id,
             join_e.id                    AS salesmanId,
             join_p.id                    AS partnerId,
-            join_p.area_id               AS bizAreaId,
+            join_b.area_id               AS bizAreaId,
             join_c.name                  AS customer,
             DATE_FORMAT(main.gmt_create,'%Y-%m-%d')      AS orderGmtCreate,
             join_c.id_card               AS idCard,
@@ -194,7 +208,7 @@
             and TASK_DEF_KEY_ = 'usertask_credit_apply'
             order by START_TIME_
             desc limit 1)                AS creditGmtCreate,
-            join_f.bank                  AS bank,
+            join_b.bank                  AS bank,
             join_d.name                  AS departmentName,
             join_f.loan_amount           AS loanAmount,
             join_f.bank_period_principal AS bankPeriodPrincipal,
@@ -254,13 +268,13 @@
             AND tab.salesmanId = #{salesmanId}
         </if>
         <if test="bizAreaId != null">
-            AND tab.bizAreaId = #{bizAreaId}
-        </if>
-        <if test="startCreditGmtCreate != null">
-            AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
-        </if>
-        <if test="endCreditGmtCreate != null">
-            AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then tab.bizAreaId in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then tab.bizAreaId = #{bizAreaId}
+            else 1=2
+            end
         </if>
         <if test="loanBank != null">
             AND tab.bank = #{loanBank}
@@ -290,9 +304,6 @@
                 AND tab.signRate &gt; 20
             </if>
         </if>
-        <if test="loanGmtCreate != null">
-            AND tab.loanGmtCreate  = #{loanGmtCreate}
-        </if>
         <if test="carType != null">
             AND tab.carType = #{carType}
         </if>
@@ -301,6 +312,24 @@
         </if>
         <if test="loanTime != null">
             AND tab.loanTime = #{loanTime}
+        </if>
+        <if test="startOrderGmtCreate != null">
+            AND tab.orderGmtCreate &gt;= #{startOrderGmtCreate}
+        </if>
+        <if test="endOrderGmtCreate != null">
+            AND tab.orderGmtCreate &lt;= #{endOrderGmtCreate}
+        </if>
+        <if test="startLoanGmtCreate != null">
+            AND tab.loanGmtCreate &gt;= #{startLoanGmtCreate}
+        </if>
+        <if test="endLoanGmtCreate != null">
+            AND tab.loanGmtCreate &lt;= #{endLoanGmtCreate}
+        </if>
+        <if test="startCreditGmtCreate != null">
+            AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
         </if>
 
 </select>
@@ -314,7 +343,7 @@
             main.id                      AS id,
             join_e.id                    AS salesmanId,
             join_p.id                    AS partnerId,
-            join_p.area_id               AS bizAreaId,
+            join_b.area_id               AS bizAreaId,
             join_c.name                  AS customer,
             DATE_FORMAT(main.gmt_create,'%Y-%m-%d')      AS orderGmtCreate,
             join_c.id_card               AS idCard,
@@ -332,7 +361,7 @@
             and TASK_DEF_KEY_ = 'usertask_credit_apply'
             order by START_TIME_
             desc limit 1)                AS creditGmtCreate,
-            join_f.bank                  AS bank,
+            join_b.bank                  AS bank,
             join_d.name                  AS departmentName,
             join_f.loan_amount           AS loanAmount,
             join_f.bank_period_principal AS bankPeriodPrincipal,
@@ -355,29 +384,62 @@
             join_f.loan_time            AS loanTime,
             join_f.down_payment_money   AS downPaymentMoney,
             0                           AS overdueNum,
-            case
-            when #{taskDefinitionKey}  = 'usertask_credit_apply'                    then deputy.credit_apply
-            when #{taskDefinitionKey}  = 'usertask_credit_apply_verify'             then deputy.credit_apply_verify
-            when #{taskDefinitionKey}  = 'usertask_bank_credit_record'              then deputy.bank_credit_record
-            when #{taskDefinitionKey}  = 'usertask_social_credit_record'            then deputy.social_credit_record
-            when #{taskDefinitionKey}  = 'usertask_loan_apply'                      then deputy.loan_apply
-            when #{taskDefinitionKey}  = 'usertask_visit_verify'                    then deputy.visit_verify
-            when #{taskDefinitionKey}  = 'usertask_car_insurance'                   then deputy.car_insurance
-            when #{taskDefinitionKey}  = 'usertask_apply_license_plate_record'      then deputy.apply_license_plate_record
-            when #{taskDefinitionKey}  = 'usertask_apply_license_plate_deposit_info'then deputy.apply_license_plate_deposit_info
-            when #{taskDefinitionKey}  = 'usertask_install_gps'                     then deputy.install_gps
-            when #{taskDefinitionKey}  = 'usertask_commit_key'                      then deputy.commit_key
-            when #{taskDefinitionKey}  = 'usertask_vehicle_information'             then deputy.vehicle_information
-            when #{taskDefinitionKey}  = 'usertask_material_review'                 then deputy.material_review
-            when #{taskDefinitionKey}  = 'usertask_material_print_review'           then deputy.material_print_review
-            when #{taskDefinitionKey}  = 'usertask_business_review'                 then deputy.business_review
-            when #{taskDefinitionKey}  = 'usertask_loan_review'                     then deputy.loan_review
-            when #{taskDefinitionKey}  = 'usertask_remit_review'                    then deputy.remit_review
-            else 0
-            end                             AS taskStatus
-
-
-
+            <choose>
+                <when test="taskDefinitionKey = 'usertask_credit_apply'">
+                    deputy.credit_apply AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_credit_apply_verify'">
+                    deputy.credit_apply_verify AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_bank_credit_record'">
+                    deputy.bank_credit_record AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_social_credit_record'">
+                    deputy.social_credit_record AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_loan_apply'">
+                    deputy.loan_apply AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_visit_verify'">
+                    deputy.visit_verify AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_car_insurance'">
+                    deputy.car_insurance AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_apply_license_plate_record'">
+                    deputy.apply_license_plate_record AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_apply_license_plate_deposit_info'">
+                    deputy.apply_license_plate_deposit_info AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_install_gps'">
+                    deputy.install_gps AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_commit_key'">
+                    deputy.commit_key AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_vehicle_information'">
+                    deputy.vehicle_information AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_material_review'">
+                    deputy.material_review AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_material_print_review'">
+                    deputy.material_print_review AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_business_review'">
+                    deputy.business_review AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_loan_review'">
+                    deputy.loan_review AS taskStatus
+                </when>
+                <when test="taskDefinitionKey = 'usertask_remit_review'">
+                    deputy.remit_review AS taskStatus
+                </when>
+                <otherwise>
+                  0 AS taskStatus
+                </otherwise>
+            </choose>
             from loan_order main
             inner join loan_process deputy               on main.id               = deputy.order_id
             left  join loan_customer join_c              on join_c.id             = main.loan_customer_id
@@ -389,25 +451,62 @@
             left  join department join_d                 on join_d.id             = join_p.department_id
             left  join apply_license_plate_record join_l on join_l.id             = main.apply_license_plate_record_id
             where 1=1 and
-            case
-            when #{taskDefinitionKey} = 'usertask_credit_apply'                        then case when #{taskStatus} = 0 then deputy.credit_apply != 0                     else deputy.credit_apply                     = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_credit_apply_verify'                 then case when #{taskStatus} = 0 then deputy.credit_apply_verify != 0              else deputy.credit_apply_verify              = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_bank_credit_record'                  then case when #{taskStatus} = 0 then deputy.bank_credit_record != 0               else deputy.bank_credit_record               = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_social_credit_record'                then case when #{taskStatus} = 0 then deputy.social_credit_record != 0             else deputy.social_credit_record             = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_loan_apply'                          then case when #{taskStatus} = 0 then deputy.loan_apply != 0                       else deputy.loan_apply                       = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_visit_verify'                        then case when #{taskStatus} = 0 then deputy.visit_verify != 0                     else deputy.visit_verify                     = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_car_insurance'                       then case when #{taskStatus} = 0 then deputy.car_insurance != 0                    else deputy.car_insurance                    = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_apply_license_plate_record'          then case when #{taskStatus} = 0 then deputy.apply_license_plate_record != 0       else deputy.apply_license_plate_record       = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_apply_license_plate_deposit_info'    then case when #{taskStatus} = 0 then deputy.apply_license_plate_deposit_info != 0 else deputy.apply_license_plate_deposit_info = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_install_gps'                         then case when #{taskStatus} = 0 then deputy.install_gps != 0                      else deputy.install_gps                      = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_commit_key'                          then case when #{taskStatus} = 0 then deputy.commit_key != 0                       else deputy.commit_key                       = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_vehicle_information'                 then case when #{taskStatus} = 0 then deputy.vehicle_information != 0              else deputy.vehicle_information              = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_material_review'                     then case when #{taskStatus} = 0 then deputy.material_review != 0                  else deputy.material_review                  = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_material_print_review'               then case when #{taskStatus} = 0 then deputy.material_print_review != 0            else deputy.material_print_review            = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_business_review'                     then case when #{taskStatus} = 0 then deputy.business_review != 0                  else deputy.business_review                  = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_loan_review'                         then case when #{taskStatus} = 0 then deputy.loan_review != 0                      else deputy.loan_review                      = #{taskStatus} end
-            when #{taskDefinitionKey} = 'usertask_remit_review'                        then case when #{taskStatus} = 0 then deputy.remit_review  != 0                    else deputy.remit_review                     = #{taskStatus} end
-            else 1=2 end
+            <choose>
+                <when test="taskDefinitionKey = 'usertask_credit_apply'">
+                    case when #{taskStatus} = 0 then deputy.credit_apply != 0                     else deputy.credit_apply                     = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_credit_apply_verify'">
+                    case when #{taskStatus} = 0 then deputy.credit_apply_verify != 0              else deputy.credit_apply_verify              = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_bank_credit_record'">
+                    case when #{taskStatus} = 0 then deputy.bank_credit_record != 0               else deputy.bank_credit_record               = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_social_credit_record'">
+                    case when #{taskStatus} = 0 then deputy.social_credit_record != 0             else deputy.social_credit_record             = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_loan_apply'">
+                    case when #{taskStatus} = 0 then deputy.loan_apply != 0                       else deputy.loan_apply                       = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_visit_verify'">
+                    case when #{taskStatus} = 0 then deputy.visit_verify != 0                     else deputy.visit_verify                     = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_car_insurance'">
+                    case when #{taskStatus} = 0 then deputy.car_insurance != 0                    else deputy.car_insurance                    = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_apply_license_plate_record'">
+                    case when #{taskStatus} = 0 then deputy.apply_license_plate_record != 0       else deputy.apply_license_plate_record       = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_apply_license_plate_deposit_info'">
+                    case when #{taskStatus} = 0 then deputy.apply_license_plate_deposit_info != 0 else deputy.apply_license_plate_deposit_info = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_install_gps'">
+                    case when #{taskStatus} = 0 then deputy.install_gps != 0                      else deputy.install_gps                      = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_commit_key'">
+                    case when #{taskStatus} = 0 then deputy.commit_key != 0                       else deputy.commit_key                       = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_vehicle_information'">
+                    case when #{taskStatus} = 0 then deputy.vehicle_information != 0              else deputy.vehicle_information              = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_material_review'">
+                    case when #{taskStatus} = 0 then deputy.material_review != 0                  else deputy.material_review                  = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_material_print_review'">
+                    case when #{taskStatus} = 0 then deputy.material_print_review != 0            else deputy.material_print_review            = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_business_review'">
+                    case when #{taskStatus} = 0 then deputy.business_review != 0                  else deputy.business_review                  = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_loan_review'">
+                    case when #{taskStatus} = 0 then deputy.loan_review != 0                      else deputy.loan_review                      = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey = 'usertask_remit_review'">
+                    case when #{taskStatus} = 0 then deputy.remit_review  != 0                    else deputy.remit_review                     = #{taskStatus} end
+                </when>
+                <otherwise>
+                    1=2
+                </otherwise>
+            </choose>
             ) tab
             where 1=1
             <if test="orderId != null">
@@ -426,13 +525,13 @@
                 AND tab.salesmanId = #{salesmanId}
             </if>
             <if test="bizAreaId != null">
-                AND tab.bizAreaId = #{bizAreaId}
-            </if>
-            <if test="startCreditGmtCreate != null">
-                AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
-            </if>
-            <if test="endCreditGmtCreate != null">
-                AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
+                AND
+                case
+                  when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+                  when (select level from base_area where area_id = #{bizAreaId}) = 1 then tab.bizAreaId in (select area_id from base_area where parent_area_id = #{bizAreaId})
+                  when (select level from base_area where area_id = #{bizAreaId}) = 2 then tab.bizAreaId = #{bizAreaId}
+                else 1=2
+                end
             </if>
             <if test="loanBank != null">
                 AND tab.bank = #{loanBank}
@@ -462,9 +561,6 @@
                     AND tab.signRate &gt; 20
                 </if>
             </if>
-            <if test="loanGmtCreate != null">
-                AND tab.loanGmtCreate  = #{loanGmtCreate}
-            </if>
             <if test="carType != null">
                 AND tab.carType = #{carType}
             </if>
@@ -473,6 +569,24 @@
             </if>
             <if test="loanTime != null">
                 AND tab.loanTime = #{loanTime}
+            </if>
+            <if test="startOrderGmtCreate != null">
+                AND tab.orderGmtCreate &gt;= #{startOrderGmtCreate}
+            </if>
+            <if test="endOrderGmtCreate != null">
+                AND tab.orderGmtCreate &lt;= #{endOrderGmtCreate}
+            </if>
+            <if test="startLoanGmtCreate != null">
+                AND tab.loanGmtCreate &gt;= #{startLoanGmtCreate}
+            </if>
+            <if test="endLoanGmtCreate != null">
+                AND tab.loanGmtCreate &lt;= #{endLoanGmtCreate}
+            </if>
+            <if test="startCreditGmtCreate != null">
+                AND tab.creditGmtCreate &gt;= #{startCreditGmtCreate}
+            </if>
+            <if test="endCreditGmtCreate != null">
+                AND tab.creditGmtCreate &lt;= #{endCreditGmtCreate}
             </if>
         </select>
 

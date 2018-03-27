@@ -55,11 +55,18 @@ public class TaskListQuery {
 
     private String signType;//执行利率
 
-    private String loanGmtCreate;//贷款时间
-
     private String carType;//车辆类型
 
     private String partnerId;//合伙人团队
 
     private String loanTime;//贷款期限
+
+    private String startOrderGmtCreate;//创建时间
+
+    private String endOrderGmtCreate;//创建时间
+
+    private String startLoanGmtCreate;//贷款时间
+
+    private String endLoanGmtCreate;//贷款时间
+
 }
