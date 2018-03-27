@@ -35,7 +35,7 @@ public class LoanOrderQuery extends BaseQuery {
     /**
      * 当前任务节点审核状态:  0-全部;   1-已提交(审核);   2-未提交(审核);
      */
-    private Integer taskStatus;
+    private Byte taskStatus;
 
     /**
      * 多节点查询类型：

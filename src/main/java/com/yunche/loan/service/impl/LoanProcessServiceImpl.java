@@ -1030,8 +1030,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param endTime
      * @return
      */
-    public Integer getTaskStatus(Date endTime) {
-        Integer taskStatus = null;
+    public Byte getTaskStatus(Date endTime) {
+        Byte taskStatus = null;
         if (null != endTime) {
             // 已处理
             taskStatus = TASK_DONE;

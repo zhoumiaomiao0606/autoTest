@@ -12,4 +12,12 @@ public class BaseVO {
     private Long id;
 
     private String name;
+
+    public BaseVO() {
+    }
+
+    public BaseVO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

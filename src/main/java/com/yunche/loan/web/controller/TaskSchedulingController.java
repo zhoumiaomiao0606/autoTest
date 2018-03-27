@@ -3,7 +3,6 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
-import com.yunche.loan.service.JpushService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

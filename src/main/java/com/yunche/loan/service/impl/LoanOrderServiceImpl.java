@@ -634,13 +634,14 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     /**
      * 提车资料查询
+     *
      * @param orderId
      * @return
      */
     @Override
     public ResultBean<VehicleInfoVO> vehicleInformationQuery(Long orderId) {
-        Preconditions.checkNotNull(orderId,"业务单号不能为空");
-        VehicleInfoVO vehicleInfoVO =  loanQueryDOMapper.selectVehicleInformation(orderId);
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+        VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInformation(orderId);
 
         ResultBean<List<FileVO>> listResultBean = loanFileService.listByCustomerId(vehicleInfoVO.getCustomerId(), Byte.valueOf("1"));
         List<FileVO> fileVOS = listResultBean.getData();
@@ -776,7 +777,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * @param multipartType
      */
     private void fillOrderMsg(TaskInfo taskInfo, LoanOrderVO loanOrderVO, String processInstanceId, String taskDefinitionKey,
-                              Integer taskStatus, Integer multipartType) {
+                              Byte taskStatus, Integer multipartType) {
         // 任务状态
         if (null == taskInfo) {
             List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
@@ -1002,8 +1003,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * @param taskStatusCondition
      * @return
      */
-    private Integer getTaskStatus(TaskInfo taskInfo, Integer taskStatusCondition) {
-        Integer taskStatus = taskStatusCondition;
+    private Byte getTaskStatus(TaskInfo taskInfo, Byte taskStatusCondition) {
+        Byte taskStatus = taskStatusCondition;
         if (TASK_ALL.equals(taskStatusCondition)) {
             HistoricTaskInstanceEntity historicTaskInstanceEntity = (HistoricTaskInstanceEntity) taskInfo;
             Date endTime = historicTaskInstanceEntity.getEndTime();

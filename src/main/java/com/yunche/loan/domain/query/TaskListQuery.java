@@ -1,6 +1,7 @@
 package com.yunche.loan.domain.query;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 
@@ -69,4 +70,10 @@ public class TaskListQuery {
 
     private String endLoanGmtCreate;//贷款时间
 
+    public String getCustomer() {
+        if (StringUtils.isBlank(customer)) {
+            return null;
+        }
+        return customer;
+    }
 }

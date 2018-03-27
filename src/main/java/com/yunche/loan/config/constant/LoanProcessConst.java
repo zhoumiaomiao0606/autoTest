@@ -40,19 +40,19 @@ public class LoanProcessConst {
     /**
      * 任务状态:  0-全部;
      */
-    public static final Integer TASK_ALL = 0;
+    public static final Byte TASK_ALL = 0;
     /**
      * 任务状态:  1-已处理(审核);
      */
-    public static final Integer TASK_DONE = 1;
+    public static final Byte TASK_DONE = 1;
     /**
      * 任务状态:  2-未处理(待审核);
      */
-    public static final Integer TASK_TODO = 2;
+    public static final Byte TASK_TODO = 2;
     /**
      * 任务状态：还未执行到当前任务节点
      */
-    public static final Integer TASK_NOT_REACH_CURRENT = 3;
+    public static final Byte TASK_NOT_REACH_CURRENT = 3;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

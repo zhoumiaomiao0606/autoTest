@@ -78,7 +78,7 @@ public class LoanOrderVO {
     /**
      * 当前任务节点审核状态:   1-已提交(审核);   2-未提交(审核);
      */
-    private Integer taskStatus;
+    private Byte taskStatus;
 
     /**
      * 首付款
@@ -86,7 +86,7 @@ public class LoanOrderVO {
     private BigDecimal downPaymentMoney;
 
     /**
-     * 当前任务节点
+     * 当前任务节点 名称
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String currentTask;

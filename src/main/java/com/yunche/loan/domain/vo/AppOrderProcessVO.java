@@ -82,7 +82,7 @@ public class AppOrderProcessVO {
         /**
          * 任务状态
          */
-        private Integer taskStatus;
+        private Byte taskStatus;
         /**
          * 任务状态文本
          */

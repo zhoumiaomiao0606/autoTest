@@ -1,23 +1,22 @@
 package com.yunche.loan.domain.query;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
 
 @Data
-public class AppTaskListQuery {
-
-    @NotNull
-    private Integer pageIndex = 1;
-    /**
-     * 页面大小  默认值：10
-     */
-    @NotNull
-    private Integer pageSize = 10;
+public class AppTaskListQuery extends BaseQuery {
 
     @NotNull
     private Integer multipartType;
 
     private String customer;
 
+    public String getCustomer() {
+        if (StringUtils.isBlank(customer)) {
+            return null;
+        }
+        return customer;
+    }
 }
