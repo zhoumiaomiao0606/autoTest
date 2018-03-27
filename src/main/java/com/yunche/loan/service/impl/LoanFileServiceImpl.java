@@ -88,7 +88,6 @@ public class LoanFileServiceImpl implements LoanFileService {
                                 urls.addAll(existUrls);
                             }
                             fileVO.setUrls(urls);
-
                             typeFilesMap.put(type, fileVO);
 
                         } else {

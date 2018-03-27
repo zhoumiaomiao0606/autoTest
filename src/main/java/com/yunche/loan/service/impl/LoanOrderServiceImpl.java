@@ -643,7 +643,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
         VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInformation(orderId);
 
-        ResultBean<List<FileVO>> listResultBean = loanFileService.listByCustomerId(vehicleInfoVO.getCustomerId(), Byte.valueOf("1"));
+        ResultBean<List<FileVO>> listResultBean = loanFileService.listByCustomerId(vehicleInfoVO.getCustomerId(), Byte.valueOf("2"));
         List<FileVO> fileVOS = listResultBean.getData();
         vehicleInfoVO.setFileVOS(fileVOS);
         return ResultBean.ofSuccess(vehicleInfoVO);
