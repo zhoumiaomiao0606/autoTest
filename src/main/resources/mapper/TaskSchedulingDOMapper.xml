@@ -130,6 +130,8 @@
         <if test="customer != null">
             AND tab.customer = #{customer}
         </if>
+
+        order by tab.orderGmtCreate desc
     </select>
 
 
@@ -282,7 +284,10 @@
         <if test="endCreditGmtCreate != null">
             AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
         </if>
-       </select>
+
+        order by tab.orderGmtCreate desc
+
+    </select>
 
 
 
@@ -434,7 +439,10 @@
         <if test="endCreditGmtCreate != null">
             AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
         </if>
-</select>
+
+        order by tab.orderGmtCreate desc
+
+    </select>
 
 
 
@@ -690,6 +698,8 @@
             <if test="endCreditGmtCreate != null">
                 AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
             </if>
+
+            order by tab.orderGmtCreate desc
         </select>
 
 
