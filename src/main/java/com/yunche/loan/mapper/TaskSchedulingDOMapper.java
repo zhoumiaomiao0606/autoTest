@@ -12,7 +12,7 @@ import java.util.List;
 
 @Mapper
 public interface TaskSchedulingDOMapper {
-    List<ScheduleTaskVO> selectScheduleTaskList(Long employeeId);
+    List<ScheduleTaskVO> selectScheduleTaskList(@Param("employeeId") Long employeeId,@Param("level") Integer level);
 
     List<TaskListVO> selectSupplementInfoTaskList(TaskListQuery taskListQuery);
 

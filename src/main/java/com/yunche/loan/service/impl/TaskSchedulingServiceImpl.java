@@ -41,10 +41,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
-        PageHelper.startPage(pageIndex, pageSize, true);
-
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId());
+        Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
+        PageHelper.startPage(pageIndex, pageSize, true);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId(),level);
 
         // 取分页信息
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
@@ -54,14 +54,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean queryTaskList(TaskListQuery taskListQuery) {
-        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
 
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
         }
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
+
         List<TaskListVO> list = new ArrayList<>();
         if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-            taskListQuery.setLevel(taskSchedulingDOMapper.selectLevel(SessionUtils.getLoginUser().getId()));
+            taskListQuery.setLevel(level);
             list = taskSchedulingDOMapper.selectTelephoneVerifyTaskList(taskListQuery);
         } else if (LoanProcessEnum.INFO_SUPPLEMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = taskSchedulingDOMapper.selectSupplementInfoTaskList(taskListQuery);

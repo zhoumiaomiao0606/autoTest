@@ -707,7 +707,7 @@
 
 
 
-        <select id="selectScheduleTaskList" resultType="com.yunche.loan.domain.vo.ScheduleTaskVO" parameterType="java.lang.Long" >
+        <select id="selectScheduleTaskList" resultType="com.yunche.loan.domain.vo.ScheduleTaskVO" >
 
 
         /*备注:? 指 传入的用户id  （集合说明）为集合 ∩ 交集符号  u 并集符号
@@ -739,9 +739,8 @@
         ）
           u
         （此用户排除掉合伙人这个角色的其他角色的待办列表）*/
-
-
-
+        select tab.* from
+        (
         SELECT
                result.PROC_INST_ID_                AS processId,
                result.TASK_DEF_KEY_                AS taskKey,
@@ -761,7 +760,10 @@
                jf.loan_amount                      AS loanAmount,
                CONCAT('待办',result.NAME_)          AS taskStatusExplanation,
                jb.partner_id                       AS  partnerId,
-               jb.salesman_id                      AS  salesmanId
+               jb.salesman_id                      AS  salesmanId,
+               case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
+                  case when lp.telephone_verify  &lt; ${level} and lp.telephone_verify!=1 then 2 else 1 end
+               else 2 end                          AS filtration
 
         FROM
           (
@@ -816,6 +818,7 @@
                   )
                 )
           ) result
+
         INNER JOIN loan_order jorder     ON jorder.process_inst_id = result.PROC_INST_ID_
         LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
         LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
@@ -823,8 +826,9 @@
         LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
         LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
         LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
-
-        order by result.CREATE_TIME_ ASC
+        INNER JOIN loan_process lp       ON jorder.id              = lp.order_id
+        ) tab where tab.filtration = 2
+        order by tab.createScheduleDate ASC
         </select>
 
 </mapper>
