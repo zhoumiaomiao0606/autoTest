@@ -285,7 +285,7 @@
             AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
         </if>
 
-        order by tab.orderGmtCreate desc
+        order by tab.orderGmtCreate asc,tab.taskStatus asc
 
     </select>
 
@@ -440,7 +440,7 @@
             AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
         </if>
 
-        order by tab.orderGmtCreate desc
+        order by tab.orderGmtCreate asc,tab.taskStatus asc
 
     </select>
 
@@ -698,8 +698,7 @@
             <if test="endCreditGmtCreate != null">
                 AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
             </if>
-
-            order by tab.orderGmtCreate desc
+            order by tab.orderGmtCreate asc,tab.taskStatus asc
         </select>
 
 
@@ -745,7 +744,7 @@
         SELECT
                result.PROC_INST_ID_                AS processId,
                result.TASK_DEF_KEY_                AS taskKey,
-               result.CREATE_TIME_                 AS createScheduleDate,
+               DATE_FORMAT(result.CREATE_TIME_,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
                result.DESCRIPTION_                 AS taskDescription,
                jorder.id                           AS orderId,
                jp.name                             AS partner,
@@ -823,6 +822,8 @@
         LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
         LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
         LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
+
+        order by result.CREATE_TIME_ ASC
         </select>
 
 </mapper>
