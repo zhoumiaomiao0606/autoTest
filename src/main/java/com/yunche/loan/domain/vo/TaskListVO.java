@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class TaskListVO {
     private String id;
+    private String salesmanId;
+    private String partnerId;
     private String customer;
     private String orderGmtCreate;
     private String idCard;
