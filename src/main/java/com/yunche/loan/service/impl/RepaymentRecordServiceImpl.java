@@ -43,10 +43,6 @@ public class RepaymentRecordServiceImpl implements RepaymentRecordService {
 //    @Override
     //TODO  接口增加详情查询
     public ResultBean<RepaymentRecordParam> detail(Long orderId) {
-//        Preconditions.checkNotNull(repaymentRecordDOKey,"请求数据不能为空");
-//        Preconditions.checkNotNull(repaymentRecordDOKey.getIdCard(),"身份证号不能为空");
-//        Preconditions.checkNotNull(repaymentRecordDOKey.getRepayCardId(),"还款卡号不能为空");
-
 
         //TODO 界面展示相关字段组装
         //查询客户详细信息
@@ -100,63 +96,9 @@ public class RepaymentRecordServiceImpl implements RepaymentRecordService {
             Preconditions.checkArgument(false, e.getMessage());
         }
 
-
-
-
-
-
-//            // 解析每行结果在listener中处理
-//            ExcelListener listener = new ExcelListener();
-//
-//            ExcelReader excelReader = new ExcelReader(inputStream, ExcelTypeEnum.XLSX, null, listener);
-//
-//            excelReader.read(new Sheet(1, 1, RepaymentRecordExcelVO.class));
-//            List<Object> list =  listener.getDatas();
-//            RepaymentRecordDO repaymentRecordDO =new RepaymentRecordDO();
-//            if(list==null){
-//                return ResultBean.ofSuccess("文件为空");
-//            }
-//            for(int i=0;i<list.size();i++){
-//                RepaymentRecordExcelVO repaymentRecordExcelVO =  (RepaymentRecordExcelVO)list.get(i);
-//                BeanUtils.copyProperties(repaymentRecordExcelVO,repaymentRecordDO);
-//                //TODO 先查询是否存在记录,存在则更新,不存在就插入
-//                RepaymentRecordDOKey repaymentRecordDOKey=new RepaymentRecordDOKey();
-//                BeanUtils.copyProperties(repaymentRecordDO,repaymentRecordDOKey);
-//
-//                RepaymentRecordDO repaymentRecordDOCheck= repaymentRecordDOMapper.selectByPrimaryKey(repaymentRecordDOKey);
-//                if(repaymentRecordDOCheck==null){
-//                    int count= repaymentRecordDOMapper.insert(repaymentRecordDO);
-//                    Preconditions.checkArgument(count > 0, "IDCard:"+repaymentRecordDO.getIdCard()+",对应记录导入出错");
-//                }else{
-//                    int count= repaymentRecordDOMapper.updateByPrimaryKeySelective(repaymentRecordDO);
-//                    Preconditions.checkArgument(count > 0, "IDCard:"+repaymentRecordDO.getIdCard()+",对应记录更新出错");
-//                }
-//
-//
-//
-//            }
-//
-//        } catch (Exception e) {
-//
-//        } finally {
-//            try {
-//                inputStream.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-
         return ResultBean.ofSuccess("导入成功");
     }
 
-//    private InputStream getInputStream(String fileName) {
-//        File f= new File(fileName) ;
-//        InputStream input = null ;
-//        try {
-//            input = new FileInputStream(f);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        return input;
-//    }
+
 
 }
