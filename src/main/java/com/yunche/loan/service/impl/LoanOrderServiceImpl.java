@@ -517,6 +517,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                             fillLoanSimpleCustomerInfoVO(e, loanSimpleCustomerInfoVOS);
                         });
             }
+
         }
 
         return ResultBean.ofSuccess(loanSimpleCustomerInfoVOS);
@@ -657,16 +658,20 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
+
         LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanOrderDO.getLoanHomeVisitId());
         LoanHomeVisitVO loanHomeVisitVO = new LoanHomeVisitVO();
         if (null != loanHomeVisitDO) {
             BeanUtils.copyProperties(loanHomeVisitDO, loanHomeVisitVO);
         }
 
-        // 文件
-        ResultBean<List<FileVO>> listFileResultBean = loanFileService.listByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), UPLOAD_TYPE_NORMAL);
-        Preconditions.checkArgument(listFileResultBean.getSuccess(), listFileResultBean.getMsg());
-        loanHomeVisitVO.setFiles(listFileResultBean.getData());
+
+        List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for(UniversalCustomerVO universalCustomerVO:customers){
+            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+        loanHomeVisitVO.setCustomers(customers);
 
         return ResultBean.ofSuccess(loanHomeVisitVO);
     }
@@ -1368,6 +1373,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private void fillLoanSimpleCustomerInfoVO(CustomerVO customerVO, List<LoanSimpleCustomerInfoVO> loanSimpleCustomerInfoVOS) {
         // 客户信息
         LoanSimpleCustomerInfoVO simpleCustomerInfoVO = new LoanSimpleCustomerInfoVO();
+
         BeanUtils.copyProperties(customerVO, simpleCustomerInfoVO);
 
         // 征信信息
@@ -1387,6 +1393,27 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         });
             }
         }
+
+        //根据客户号查询上传的文件
+        ResultBean<List<FileVO>> listFileResultBean = loanFileService.listByCustomerIdAndUploadType(customerVO.getId(), UPLOAD_TYPE_NORMAL);
+        Preconditions.checkArgument(listFileResultBean.getSuccess(), listFileResultBean.getMsg());
+
+        List<FileVO> fileVOS =  listFileResultBean.getData().parallelStream()
+                .filter(Objects::nonNull)
+                .map(e -> {
+                     if(e.getUrls()==null || e.getUrls().equals("")){
+                         return null;
+                     }else{
+                         FileVO fileVO = new FileVO();
+                         BeanUtils.copyProperties(e, fileVO);
+                         return fileVO;
+                     }
+
+                }).collect(Collectors.toList());
+
+        simpleCustomerInfoVO.setFiles(fileVOS);
+
+
         loanSimpleCustomerInfoVOS.add(simpleCustomerInfoVO);
     }
 
