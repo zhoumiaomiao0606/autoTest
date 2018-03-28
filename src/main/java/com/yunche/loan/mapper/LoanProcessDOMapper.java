@@ -18,4 +18,12 @@ public interface LoanProcessDOMapper {
     int updateByPrimaryKey(LoanProcessDO record);
 
     int updateLoanApplyRejectOrginTaskIsNull(Long orderId);
+
+    /**
+     * 获取弃单字段
+     *
+     * @param orderId
+     * @return
+     */
+    String getCancelTaskDefKey(String orderId);
 }

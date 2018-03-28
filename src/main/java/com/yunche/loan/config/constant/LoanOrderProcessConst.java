@@ -25,6 +25,14 @@ public class LoanOrderProcessConst {
      * 任务状态:  3-打回修改(待审核);
      */
     public static final Byte TASK_PROCESS_REJECT = 3;
+    /**
+     * 任务状态:  11-弃单;
+     */
+    public static final Byte TASK_PROCESS_CANCEL = 11;
+    /**
+     * 任务状态:  2-已结清;
+     */
+    public static final Byte TASK_PROCESS_CLOSED = 12;
 
     /**
      * 电审任务状态：电审专员已审核

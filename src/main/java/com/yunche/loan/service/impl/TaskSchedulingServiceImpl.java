@@ -10,8 +10,11 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
-
-import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.domain.vo.AppTaskVO;
+import com.yunche.loan.domain.vo.ScheduleTaskVO;
+import com.yunche.loan.domain.vo.TaskListVO;
+import com.yunche.loan.domain.vo.TaskStateVO;
+import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.TaskSchedulingService;
@@ -25,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_CANCEL;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_CLOSED;
 import static com.yunche.loan.config.constant.LoanProcessConst.PROCESS_MAP;
 import static com.yunche.loan.config.constant.MappingConst.SUPPLEMENT_TYPE_TEXT_MAP;
 
@@ -35,6 +39,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Resource
     private TaskSchedulingDOMapper taskSchedulingDOMapper;
+
+    @Resource
+    private LoanProcessDOMapper loanProcessDOMapper;
 
     @Resource
     private LoanProcessService loanProcessService;
@@ -111,8 +118,15 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         if (CollectionUtils.isEmpty(taskStateVOS)) {
             // 无节点信息
-            appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_DONE));
-            appTaskVO.setCurrentTask("已结单");
+            String cancelTaskDefKey = loanProcessDOMapper.getCancelTaskDefKey(appTaskVO.getId());
+            // 弃单
+            if (StringUtils.isNotBlank(cancelTaskDefKey)) {
+                appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CANCEL));
+                appTaskVO.setCurrentTask("已弃单");
+            } else {
+                appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CLOSED));
+                appTaskVO.setCurrentTask("已结单");
+            }
         } else {
             TaskStateVO taskStateVO = taskStateVOS.get(0);
 
@@ -127,7 +141,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                 String taskTypeText = getTaskTypeText(taskStatus);
                 appTaskVO.setTaskTypeText(taskTypeText);
             }
-
         }
     }
 
