@@ -90,10 +90,18 @@
         where 1=1
         <choose>
             <when test="multipartType == 1">
-                AND deputy.credit_apply = 1 AND (deputy.bank_credit_record != 1 or  deputy.social_credit_record != 1)
+                AND case when join_b.loan_amount >  1 then
+                   deputy.credit_apply = 1 AND deputy.bank_credit_record != 1 AND  deputy.social_credit_record != 1
+                         else
+                   deputy.credit_apply = 1 AND deputy.bank_credit_record != 1
+                  end
             </when>
             <when test="multipartType == 2">
-                AND deputy.bank_credit_record = 1 AND deputy.social_credit_record = 1
+                AND case when join_b.loan_amount >  1 then
+                   deputy.bank_credit_record = 1 AND deputy.social_credit_record = 1
+                        else
+                   deputy.bank_credit_record = 1
+                end
             </when>
             <when test="multipartType == 3">
                 AND deputy.loan_apply = 1 AND deputy.visit_verify !=1  AND deputy.telephone_verify != 1
