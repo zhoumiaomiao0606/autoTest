@@ -85,6 +85,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private LoanProcessDOMapper loanProcessDOMapper;
 
     @Autowired
+    private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
+
+    @Autowired
     private LoanCustomerService loanCustomerService;
 
     @Autowired
@@ -248,8 +251,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // 客户信息创建
         Long customerId = createLoanCustomer(customerParam);
 
+        // 初始化贷款业余员相关信息  -根据当前登录账户
+        Long baseInfoId = initBaseInfo();
+
         // 业务单创建
-        Long orderId = createLoanOrder(null, customerId);
+        Long orderId = createLoanOrder(baseInfoId, customerId);
 
         // 创建流程记录
         createLoanProcess(orderId);
@@ -260,6 +266,31 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         appCreditApplyVO.setCustomerId(customerId);
 
         return ResultBean.ofSuccess(appCreditApplyVO);
+    }
+
+    /**
+     * 初始化贷款业余员相关信息   -根据当前登录账户
+     *
+     * @return
+     */
+    private Long initBaseInfo() {
+        LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        loanBaseInfoDO.setSalesmanId(loginUser.getId());
+
+        Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(loginUser.getId());
+        loanBaseInfoDO.setPartnerId(partnerId);
+
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(partnerId, null);
+        if (null != partnerDO) {
+            loanBaseInfoDO.setAreaId(partnerDO.getAreaId());
+        }
+
+        ResultBean<Long> resultBean = loanBaseInfoService.create(loanBaseInfoDO);
+        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+
+        return resultBean.getData();
     }
 
     @Override
@@ -669,6 +700,18 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkNotNull(param.getLoanBaseInfo(), "贷款基本信息不能为空");
 
         LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        loanBaseInfoDO.setSalesmanId(loginUser.getId());
+
+        Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(loginUser.getId());
+        loanBaseInfoDO.setPartnerId(partnerId);
+
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(partnerId, null);
+        if (null != partnerDO) {
+            loanBaseInfoDO.setAreaId(partnerDO.getAreaId());
+        }
+
         convertLoanBaseInfo(param.getLoanBaseInfo(), loanBaseInfoDO);
 
         ResultBean<Long> resultBean = loanBaseInfoService.create(loanBaseInfoDO);

@@ -46,9 +46,9 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
     public ResultBean<Long> create(LoanBaseInfoDO loanBaseInfoDO) {
 //        Preconditions.checkNotNull(loanBaseInfoDO.getPartnerId(), "合伙人不能为空");
 //        Preconditions.checkNotNull(loanBaseInfoDO.getSalesmanId(), "业务员不能为空");
-        Preconditions.checkNotNull(loanBaseInfoDO.getAreaId(), "区域不能为空");
+//        Preconditions.checkNotNull(loanBaseInfoDO.getAreaId(), "区域不能为空");
 //        Preconditions.checkNotNull(param.getCarType(), "车辆类型不能为空");
-        Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "预计贷款不能为空");
+//        Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "预计贷款不能为空");
 
         // 业务员ID  -> 当前操作人
         if (null == loanBaseInfoDO.getSalesmanId()) {
