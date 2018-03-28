@@ -341,13 +341,15 @@
             join_f.loan_time            AS loanTime,
             join_f.down_payment_money   AS downPaymentMoney,
             0                           AS overdueNum,
-            case
-                    when #{level}  = 7  then case when deputy.telephone_verify &lt;  7 and  deputy.telephone_verify!= 1  then 2 else 1 end
-                    when #{level}  = 6  then case when deputy.telephone_verify &lt;  6 and  deputy.telephone_verify!= 1  then 2 else 1 end
-                    when #{level}  = 5  then case when deputy.telephone_verify &lt;  5 and  deputy.telephone_verify!= 1  then 2 else 1 end
-                    when #{level}  = 4  then case when deputy.telephone_verify &lt;  4 and  deputy.telephone_verify!= 1  then 2 else 1 end
-                    else -1
-            end                         AS taskStatus
+            case when deputy.telephone_verify !=0 then
+                case
+                        when #{level}  = 7  then case when deputy.telephone_verify &lt;  7 and  deputy.telephone_verify!= 1  then 2 else 1 end
+                        when #{level}  = 6  then case when deputy.telephone_verify &lt;  6 and  deputy.telephone_verify!= 1  then 2 else 1 end
+                        when #{level}  = 5  then case when deputy.telephone_verify &lt;  5 and  deputy.telephone_verify!= 1  then 2 else 1 end
+                        when #{level}  = 4  then case when deputy.telephone_verify &lt;  4 and  deputy.telephone_verify!= 1  then 2 else 1 end
+                        else -1
+                end
+            else 0 end                  AS taskStatus
 
             from loan_order main
             inner join loan_process deputy               on main.id               = deputy.order_id
