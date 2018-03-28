@@ -8,14 +8,14 @@ import java.util.List;
 
 @Data
 public class UniversalCustomerFileVO {
-    private String urls;
+    private List<String> urls;
     private String type;
     private String name;
 
-    public List<String> getUrls() {
-        if(StringUtils.isBlank(urls)){
-            return null;
-        }
-        return JSON.parseArray(urls,String.class);
-    }
+//    public List<String> getUrls() {
+//        if(StringUtils.isBlank(urls)){
+//            return null;
+//        }
+//        return JSON.parseArray(urls,String.class);
+//    }
 }
