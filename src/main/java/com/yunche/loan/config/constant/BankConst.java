@@ -15,24 +15,18 @@ public class BankConst {
     public static final Map<Long, String> BANK_MAP = Maps.newHashMap();
 
     static {
-        BANK_MAP.put(1L, "中国工商银行");
-        BANK_MAP.put(2L, "中国农业银行");
-        BANK_MAP.put(3L, "中国建设银行");
-        BANK_MAP.put(4L, "中国人民银行");
-        BANK_MAP.put(5L, "中国招商银行");
-        BANK_MAP.put(6L, "杭州银行");
-        BANK_MAP.put(7L, "网商银行");
+        BANK_MAP.put(1L, "中国工商银行杭州城站支行");
+        BANK_MAP.put(2L, "中国工商银行哈尔滨顾乡支行");
+        BANK_MAP.put(3L, "中国工商银行台州路桥支行");
+        BANK_MAP.put(4L, "中国工商银行南京江宁支行");
     }
 
     public static final List<String> BANK_LIST = Lists.newArrayList();
 
     static {
-        BANK_LIST.add("中国工商银行");
-        BANK_LIST.add("中国农业银行");
-        BANK_LIST.add("中国建设银行");
-        BANK_LIST.add("中国人民银行");
-        BANK_LIST.add("中国招商银行");
-        BANK_LIST.add("杭州银行");
-        BANK_LIST.add("网商银行");
+        BANK_LIST.add("中国工商银行杭州城站支行");
+        BANK_LIST.add("中国工商银行哈尔滨顾乡支行");
+        BANK_LIST.add("中国工商银行台州路桥支行");
+        BANK_LIST.add("中国工商银行南京江宁支行");
     }
 }

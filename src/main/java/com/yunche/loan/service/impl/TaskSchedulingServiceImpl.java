@@ -152,7 +152,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         String supplementType = taskListVO.getSupplementType();
         if (StringUtils.isNotBlank(supplementType)) {
-            taskListVO.setSupplementTypeText(SUPPLEMENT_TYPE_TEXT_MAP.get(supplementType));
+            taskListVO.setSupplementTypeText(SUPPLEMENT_TYPE_TEXT_MAP.get(Byte.valueOf(supplementType)));
         }
 
         String taskStatus = taskListVO.getTaskStatus();
