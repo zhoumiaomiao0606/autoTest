@@ -326,7 +326,7 @@
                     AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(${level},deputy.telephone_verify) != 0 else useLevelGetTaskStatus(${level},deputy.telephone_verify) = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_info_supplement'">
-                    case when #{taskStatus} = 0 then join_s.status  != 0                          else join_s.status                           = #{taskStatus} end
+                    AND case when #{taskStatus} = 0 then join_s.status  != 0                          else join_s.status                           = #{taskStatus} end
                 </when>
                 <otherwise>
                     1=2
