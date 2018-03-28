@@ -35,4 +35,12 @@ public class LoanSimpleCustomerInfoVO {
      * 社会征信结果
      */
     private Byte socialCreditResult;
+
+    /**
+     * 文件列表
+     */
+    private List<FileVO> files = Collections.EMPTY_LIST;
+
+
+
 }

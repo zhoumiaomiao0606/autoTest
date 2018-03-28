@@ -38,4 +38,6 @@ public class LoanHomeVisitVO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    List<UniversalCustomerVO> customers;
 }
