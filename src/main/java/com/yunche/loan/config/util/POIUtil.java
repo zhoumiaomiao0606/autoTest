@@ -37,7 +37,7 @@ public class POIUtil {
         //创建返回对象，把每行中的值作为一个数组，所有行作为一个集合返回  
         List<String[]> list = new ArrayList<String[]>();
         if(workbook != null){
-            for(int sheetNo = 0;sheetNum < workbook.getNumberOfSheets();sheetNum++){
+//            for(int sheetNo = 0;sheetNum < workbook.getNumberOfSheets();sheetNum++){
                 //获得当前sheet工作表  
                 Sheet sheet = workbook.getSheetAt(sheetNum);
                 if(sheet == null){
@@ -67,7 +67,7 @@ public class POIUtil {
 
                     list.add(cells);
                 }
-            }
+//            }
 
         }
         return list;
