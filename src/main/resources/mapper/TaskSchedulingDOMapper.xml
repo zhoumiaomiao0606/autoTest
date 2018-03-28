@@ -34,15 +34,15 @@
         select tab.* from
         (
         select
-        main.id                      AS id,
-        join_e.id                    AS salesmanId,
-        join_p.id                    AS partnerId,
-        join_b.area_id               AS bizAreaId,
-        join_c.name                  AS customer,
-        DATE_FORMAT(main.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
-        join_c.id_card               AS idCard,
-        join_c.mobile                AS mobile,
-        join_e.name                  AS salesman,
+        main.id AS id,
+        join_e.id AS salesmanId,
+        join_p.id AS partnerId,
+        join_b.area_id AS bizAreaId,
+        join_c.name AS customer,
+        DATE_FORMAT(main.gmt_create,'%Y-%m-%d %H:%i:%S') AS orderGmtCreate,
+        join_c.id_card AS idCard,
+        join_c.mobile AS mobile,
+        join_e.name AS salesman,
         (select
         case when
         END_TIME_ = null
@@ -54,12 +54,12 @@
         where PROC_INST_ID_ = main.process_inst_id
         and TASK_DEF_KEY_ = 'usertask_credit_apply'
         order by START_TIME_
-        desc limit 1)                AS creditGmtCreate,
-        join_b.bank                  AS bank,
-        join_d.name                  AS departmentName,
-        join_f.loan_amount           AS loanAmount,
+        desc limit 1) AS creditGmtCreate,
+        join_b.bank AS bank,
+        join_d.name AS departmentName,
+        join_f.loan_amount AS loanAmount,
         join_f.bank_period_principal AS bankPeriodPrincipal,
-        join_f.sign_rate             AS signRate,
+        join_f.sign_rate AS signRate,
         (select
         case when
         END_TIME_ = null
@@ -71,58 +71,44 @@
         where PROC_INST_ID_ = main.process_inst_id
         and TASK_DEF_KEY_ = 'usertask_loan_apply'
         order by START_TIME_
-        desc limit 1)               AS loanGmtCreate,
-        join_i.car_type             AS carType,
+        desc limit 1) AS loanGmtCreate,
+        join_i.car_type AS carType,
         join_l.license_plate_number AS licensePlateNumber,
-        join_p.name                 AS partner,
-        join_f.loan_time            AS loanTime,
-        join_f.down_payment_money   AS downPaymentMoney
+        join_p.name AS partner,
+        join_f.loan_time AS loanTime,
+        join_f.down_payment_money AS downPaymentMoney
         from loan_order main
-        inner join loan_process deputy               on main.id               = deputy.order_id
-        left  join loan_customer join_c              on join_c.id             = main.loan_customer_id
-        left  join loan_base_info join_b             on join_b.id             = main.loan_base_info_id
-        left  join loan_financial_plan join_f        on join_f.id             = main.loan_financial_plan_id
-        left  join loan_car_info join_i              on join_i.id             = main.loan_car_info_id
-        left  join partner join_p                    on join_p.id             = join_b.partner_id
-        left  join employee join_e                   on join_e.id             = join_b.salesman_id
-        left  join department join_d                 on join_d.id             = join_p.department_id
-        left  join apply_license_plate_record join_l on join_l.id             = main.apply_license_plate_record_id
-        where 1=1 AND
+        inner join loan_process deputy on main.id = deputy.order_id
+        left join loan_customer join_c on join_c.id = main.loan_customer_id
+        left join loan_base_info join_b on join_b.id = main.loan_base_info_id
+        left join loan_financial_plan join_f on join_f.id = main.loan_financial_plan_id
+        left join loan_car_info join_i on join_i.id = main.loan_car_info_id
+        left join partner join_p on join_p.id = join_b.partner_id
+        left join employee join_e on join_e.id = join_b.salesman_id
+        left join department join_d on join_d.id = join_p.department_id
+        left join apply_license_plate_record join_l on join_l.id = main.apply_license_plate_record_id
+        where 1=1
         <choose>
             <when test="multipartType == 1">
-                 (deputy.credit_apply_verify != 0 or  deputy.bank_credit_record != 0 or  deputy.social_credit_record != 0)
+                AND deputy.credit_apply = 1 AND (deputy.bank_credit_record != 1 or  deputy.social_credit_record != 1)
             </when>
             <when test="multipartType == 2">
-                (deputy.loan_apply != 0 or  deputy.visit_verify != 0 or  deputy.telephone_verify != 0 or  deputy.car_insurance != 0 or
-                deputy.apply_license_plate_record != 0 or  deputy.apply_license_plate_deposit_info != 0 or  deputy.install_gps != 0 or
-                deputy.commit_key != 0 or  deputy.vehicle_information != 0 or   deputy.business_review != 0 or  deputy.loan_review != 0 or
-                deputy.remit_review != 0 or  deputy.material_review != 0 or  deputy.material_print_review != 0)
-
+                AND deputy.bank_credit_record = 1 AND deputy.social_credit_record = 1
             </when>
             <when test="multipartType == 3">
-                deputy.telephone_verify != 0
+                AND deputy.loan_apply = 1 AND deputy.visit_verify !=1  AND deputy.telephone_verify != 1
             </when>
             <when test="multipartType == 4">
-                (
-                deputy.car_insurance != 0 or
-                deputy.apply_license_plate_record != 0 or  deputy.apply_license_plate_deposit_info != 0 or  deputy.install_gps != 0 or
-                deputy.commit_key != 0 or  deputy.vehicle_information != 0 or  deputy.business_review != 0 or  deputy.loan_review != 0 or
-                deputy.remit_review != 0 or  deputy.material_review != 0 or  deputy.material_print_review != 0
-                )
+                AND deputy.telephone_verify = 1
             </when>
             <when test="multipartType == 5">
-                (
-                deputy.car_insurance != 0 or
-                deputy.apply_license_plate_record != 0 or  deputy.apply_license_plate_deposit_info  != 0 or  deputy.install_gps != 0 or
-                deputy.commit_key != 0 or  deputy.vehicle_information != 0 or  deputy.business_review != 0 or  deputy.loan_review  != 0 or
-                deputy.material_review != 0 or  deputy.material_print_review != 0
-                )
+                AND deputy.remit_review != 1
             </when>
             <when test="multipartType == 6">
-                deputy.remit_review != 0
+                AND deputy.remit_review = 1
             </when>
             <otherwise>
-                1=2
+                AND 1=2
             </otherwise>
         </choose>
         ) tab
@@ -329,7 +315,7 @@
                     AND case when #{taskStatus} = 0 then join_s.status  != 0                          else join_s.status                           = #{taskStatus} end
                 </when>
                 <otherwise>
-                    1=2
+                    AND 1=2
                 </otherwise>
             </choose>
             ) tab

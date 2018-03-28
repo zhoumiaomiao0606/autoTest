@@ -25,6 +25,7 @@ public class MsgController {
 
     @GetMapping(value = "/read")
     public ResultBean read(@RequestParam Long id) {
+        jpushService.read(id);
         return ResultBean.ofSuccess(null);
     }
 }
