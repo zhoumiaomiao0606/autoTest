@@ -118,7 +118,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         if (CollectionUtils.isEmpty(taskStateVOS)) {
             // 无节点信息
-            String cancelTaskDefKey = loanProcessDOMapper.getCancelTaskDefKey(appTaskVO.getId());
+            String cancelTaskDefKey = loanProcessDOMapper.getCancelTaskDefKey(Long.valueOf(appTaskVO.getId()));
             // 弃单
             if (StringUtils.isNotBlank(cancelTaskDefKey)) {
                 appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CANCEL));

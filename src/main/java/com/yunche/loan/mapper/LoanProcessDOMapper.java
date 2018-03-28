@@ -25,5 +25,5 @@ public interface LoanProcessDOMapper {
      * @param orderId
      * @return
      */
-    String getCancelTaskDefKey(String orderId);
+    String getCancelTaskDefKey(Long orderId);
 }
