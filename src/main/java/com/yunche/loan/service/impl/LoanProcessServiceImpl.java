@@ -927,7 +927,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 historicVariableInstanceList.stream()
                         .filter(Objects::nonNull)
                         .filter(e -> null != e.getValue() && e.getValue() instanceof ApprovalInfoVO)
-                        .sorted(Comparator.comparing(HistoricVariableInstance::getCreateTime))
+                        .sorted(Comparator.comparing(HistoricVariableInstance::getCreateTime).reversed())
                         .limit(limit)
                         .forEach(e -> {
 
@@ -950,7 +950,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 historicVariableInstanceList.stream()
                         .filter(Objects::nonNull)
                         .filter(e -> null != e.getValue() && e.getValue() instanceof ApprovalInfoVO)
-                        .sorted(Comparator.comparing(HistoricVariableInstance::getCreateTime))
+                        .sorted(Comparator.comparing(HistoricVariableInstance::getCreateTime).reversed())
                         .forEach(e -> {
 
                             ApprovalInfoVO approvalInfoVO = (ApprovalInfoVO) e.getValue();
