@@ -478,8 +478,11 @@
                jb.partner_id                       AS  partnerId,
                jb.salesman_id                      AS  salesmanId,
                case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
-                  case when lp.telephone_verify  &lt; ${level} and lp.telephone_verify!=1 then 2 else 1 end
-               else 2 end                          AS filtration
+                  case when lp.telephone_verify  &lt; ${level} and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
+               else 2 end                          AS filtration,
+               case when result.TASK_DEF_KEY_ = 'usertask_info_supplement' then
+                (select id from loan_info_supplement where order_id = jorder.id order by start_time desc limit 1)
+               else null end                       AS supplementOrderId
 
         FROM
           (

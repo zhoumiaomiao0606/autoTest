@@ -72,4 +72,6 @@ public class ScheduleTaskVO {
 
     private String salesmanId;
 
+    private String supplementOrderId;
+
 }
