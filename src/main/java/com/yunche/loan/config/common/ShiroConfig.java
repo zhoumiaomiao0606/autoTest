@@ -65,12 +65,12 @@ public class ShiroConfig {
 
         // 注意过滤器配置顺序 不能颠倒
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap();
-        if("true".equals(anno)){
+        if ("true".equals(anno)) {
             filterChainDefinitionMap.put("/**", "anon");
-        }else {
-            filterChainDefinitionMap.put("/employee/logout", "anon");
-            filterChainDefinitionMap.put("/employee/login", "anon");
-  //        filterChainDefinitionMap.put("/**", "authc,perms");
+        } else {
+            filterChainDefinitionMap.put("/api/v1/employee/logout", "anon");
+            filterChainDefinitionMap.put("/api/v1/employee/login", "anon");
+            //        filterChainDefinitionMap.put("/**", "authc,perms");
             filterChainDefinitionMap.put("/**", "authc");
         }
 
