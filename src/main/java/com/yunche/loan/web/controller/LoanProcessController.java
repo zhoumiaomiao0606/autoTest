@@ -16,7 +16,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/loanprocess")
+@RequestMapping("/api/v1/loanprocess")
 public class LoanProcessController {
 
     @Autowired

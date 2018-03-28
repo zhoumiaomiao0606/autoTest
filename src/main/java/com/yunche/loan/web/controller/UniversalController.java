@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/loanorder/universal")
+@RequestMapping("/api/v1/loanorder/universal")
 public class UniversalController {
 
     @Resource

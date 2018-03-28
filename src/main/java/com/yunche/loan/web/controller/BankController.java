@@ -13,7 +13,7 @@ import static com.yunche.loan.config.constant.BankConst.BANK_LIST;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/bank")
+@RequestMapping("/api/v1/bank")
 public class BankController {
 
     /**

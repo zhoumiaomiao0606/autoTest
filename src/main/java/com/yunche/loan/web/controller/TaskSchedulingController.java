@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  */
 @CrossOrigin
 @RestController
-@RequestMapping(value = {"/taskscheduling", "/app/taskscheduling"})
+@RequestMapping(value = {"/api/v1/taskscheduling", "/api/v1/app/taskscheduling"})
 public class TaskSchedulingController {
 
     @Resource
