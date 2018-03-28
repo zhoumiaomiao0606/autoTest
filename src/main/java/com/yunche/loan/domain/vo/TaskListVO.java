@@ -28,6 +28,7 @@ public class TaskListVO {
     private String taskStatus;
     private String supplementOrderId;
     private String supplementType;
+    private String supplementTypeText;
     private String supplementContent;
     private String supplementStartTime;
 
