@@ -14,13 +14,10 @@ import java.util.List;
 public interface TaskSchedulingDOMapper {
     List<ScheduleTaskVO> selectScheduleTaskList(@Param("employeeId") Long employeeId,@Param("level") Integer level);
 
-    List<TaskListVO> selectSupplementInfoTaskList(TaskListQuery taskListQuery);
-
-    List<TaskListVO> selectTelephoneVerifyTaskList(TaskListQuery taskListQuery);
-
-    List<TaskListVO> selectOtherTaskList(TaskListQuery taskListQuery);
-
     Integer selectLevel(Long loginUserId);
 
     List<TaskListVO> selectAppTaskList(@Param("multipartType") Integer multipartType, @Param("customer") String customer);
+
+    List<TaskListVO> selectTaskList(TaskListQuery taskListQuery);
+
 }

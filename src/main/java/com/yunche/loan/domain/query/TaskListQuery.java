@@ -28,7 +28,7 @@ public class TaskListQuery {
     private Integer taskStatus;
 
 
-    private Integer level;
+    private Integer level; //级别
 
     private String orderId;//业务编号
 

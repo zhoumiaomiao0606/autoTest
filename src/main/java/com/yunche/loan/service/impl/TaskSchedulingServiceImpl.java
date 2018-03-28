@@ -63,17 +63,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
 
         List<TaskListVO> list = new ArrayList<>();
-        if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-            taskListQuery.setLevel(level);
-            list = taskSchedulingDOMapper.selectTelephoneVerifyTaskList(taskListQuery);
-        } else if (LoanProcessEnum.INFO_SUPPLEMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-            list = taskSchedulingDOMapper.selectSupplementInfoTaskList(taskListQuery);
-        } else {
-            list = taskSchedulingDOMapper.selectOtherTaskList(taskListQuery);
-        }
-
-        fillMsg(list, taskListQuery.getTaskDefinitionKey());
-
+        taskListQuery.setLevel(level);
+        list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         // 取分页信息
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
