@@ -705,6 +705,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         ResultBean<Long> resultBean = loanCustomerService.create(loanCustomerDO);
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
+        // 文件保存
+        ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(resultBean.getData(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
+        Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
+
         return ResultBean.ofSuccess(resultBean.getData(), "创建关联人成功");
     }
 

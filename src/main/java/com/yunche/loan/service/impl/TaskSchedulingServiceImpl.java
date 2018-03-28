@@ -1,6 +1,5 @@
 package com.yunche.loan.service.impl;
 
-
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -28,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanProcessConst.PROCESS_MAP;
+import static com.yunche.loan.config.constant.MappingConst.SUPPLEMENT_TYPE_TEXT_MAP;
 
 
 @Service
@@ -140,6 +140,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     private void fillMsg(TaskListVO taskListVO, String taskDefinitionKey) {
+
+        String supplementType = taskListVO.getSupplementType();
+        if (StringUtils.isNotBlank(supplementType)) {
+            taskListVO.setSupplementTypeText(SUPPLEMENT_TYPE_TEXT_MAP.get(Byte.valueOf(supplementType)));
+        }
 
         String taskStatus = taskListVO.getTaskStatus();
 
