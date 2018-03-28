@@ -319,7 +319,7 @@
                     AND case when #{taskStatus} = 0 then deputy.loan_review != 0                      else deputy.loan_review                      = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_remit_review'">
-                    case when #{taskStatus} = 0 then deputy.remit_review  != 0                        else deputy.remit_review                     = #{taskStatus} end
+                    AND case when #{taskStatus} = 0 then deputy.remit_review  != 0                        else deputy.remit_review                     = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_telephone_verify'">
                     AND useLevelGetTaskStatus(${level},deputy.telephone_verify) !=-1
