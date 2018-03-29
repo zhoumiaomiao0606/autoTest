@@ -6,7 +6,7 @@
     <select id="selectLevel" resultType="java.lang.Integer">
 
     SELECT
-    max( t.LEVEL )
+    case when max( t.LEVEL ) is null or max( t.LEVEL ) = '' then 0 else max( t.LEVEL ) end as levels
     FROM
     (
     SELECT
