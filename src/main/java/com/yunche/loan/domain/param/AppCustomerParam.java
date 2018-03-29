@@ -14,6 +14,7 @@ import java.util.List;
  */
 @Data
 public class AppCustomerParam {
+
     private Long id;
 
     private String name;
@@ -83,6 +84,18 @@ public class AppCustomerParam {
     private Date gmtModify;
 
     private Byte status;
+    /**
+     * 邮编
+     */
+    private String postcode;
+    /**
+     * 工作年限
+     */
+    private Long workingYears;
+    /**
+     * 职务
+     */
+    private String duty;
 
     private List<FileVO> files = Collections.EMPTY_LIST;
 }
