@@ -54,12 +54,12 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             throw new BizException("此业务单不存在");
         }
 
-        CostCalculateInfoVO costCalculateInfoVO = loanQueryDOMapper.selectCostCalculateInfo(Long.valueOf(param.getOrder_id()));
+        /*CostCalculateInfoVO costCalculateInfoVO = loanQueryDOMapper.selectCostCalculateInfo(Long.valueOf(param.getOrder_id()));
         if(costCalculateInfoVO == null){
             throw new BizException("异常:无法计算打款金额");
-        }
+        }*/
         //打款金额校验=================================start
-        //银行分期本金
+        /*//银行分期本金
         BigDecimal bank_period_principal = costCalculateInfoVO.getBank_period_principal();
         //返利金额
         BigDecimal return_rate_amount = initDecimal(param.getReturn_rate_amount());
@@ -104,7 +104,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         }
         if(remitAmt.compareTo(new BigDecimal(param.getRemit_amount())) !=0 ){
             throw new BizException("打款金额计算错误");
-        }
+        }*/
 
         //打款金额校验=================================end
         Long costDetailsId  = loanOrderDO.getCostDetailsId();//关联ID
