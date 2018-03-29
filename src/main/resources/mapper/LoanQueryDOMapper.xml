@@ -95,7 +95,7 @@
              f.sign_rate,
              f.bank_period_principal,
              f.bank_fee,
-             i.pay_month,
+             p.pay_month,
              d.service_fee,
              d.apply_license_plate_deposit_fee,
              d.performance_fee,
@@ -133,6 +133,8 @@
 
     left join remit_details r on o.remit_details_id = r.id
 
+    left join partner p       on p.id = b.partner_id
+
 
   </select>
 
@@ -147,7 +149,7 @@
              c.mobile,
              f.loan_amount,
              (select name from partner where id = b.partner_id) as pname,
-             i.pay_month,
+             p.pay_month,
              r.return_rate_amount,
              r.beneficiary_bank,
              r.beneficiary_account,
@@ -236,6 +238,9 @@
     left join material_audit m on o.material_audit_id = m.id
 
     left join loan_home_visit v on o.loan_home_visit_id = v.id
+
+    left join partner p       on p.id = b.partner_id
+
 
 
   </select>
@@ -529,14 +534,17 @@
         select
 
                  f.bank_period_principal,
-                 i.pay_month
+                 p.pay_month
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+        left join loan_base_info b on o.loan_base_info_id = b.id
 
         left join loan_car_info i on o.loan_car_info_id = i.id
 
         left join loan_financial_plan f on o.loan_financial_plan_id = f.id
 
+        left join partner p       on p.id = b.partner_id
     </select>
 
     <select id="selectGpsByOrderId" resultType="com.yunche.loan.domain.vo.GpsVO" parameterType="java.lang.Long" >
