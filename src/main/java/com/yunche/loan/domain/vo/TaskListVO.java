@@ -13,6 +13,7 @@ public class TaskListVO {
     private String mobile;
     private String salesman;
     private String creditGmtCreate;
+    private String remitGmtCreate;
     private String bank;
     private String departmentName;
     private String loanAmount;

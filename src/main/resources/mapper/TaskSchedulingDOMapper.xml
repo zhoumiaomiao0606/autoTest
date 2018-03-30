@@ -159,6 +159,18 @@
             and TASK_DEF_KEY_ = 'usertask_credit_apply'
             order by START_TIME_
             desc limit 1)                                AS creditGmtCreate,
+            (select
+            case when
+            END_TIME_ = null
+            then null
+            else
+            DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
+            end
+            from act_hi_taskinst
+            where PROC_INST_ID_ = main.process_inst_id
+            and TASK_DEF_KEY_ = 'usertask_remit_review'
+            order by START_TIME_
+            desc limit 1)                                AS remitGmtCreate,
             join_b.bank                                  AS bank,
             join_d.name                                  AS departmentName,
             join_f.loan_amount                           AS loanAmount,
