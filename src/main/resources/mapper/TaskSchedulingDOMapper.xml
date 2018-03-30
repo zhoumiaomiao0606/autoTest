@@ -253,6 +253,9 @@
                     join_s.id                                 AS supplementOrderId,
                     join_s.status                             AS taskStatus
                 </when>
+                <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
+                    deputy.financial_scheme                    AS taskStatus
+                </when>
                 <otherwise>
                   0                                           AS taskStatus
 
@@ -327,6 +330,9 @@
                 </when>
                 <when test="taskDefinitionKey == 'usertask_info_supplement'">
                     AND case when #{taskStatus} = 0 then join_s.status  != 0                          else join_s.status                           = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
+                    AND case when #{taskStatus} = 0 then deputy.financial_scheme  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
                 </when>
                 <otherwise>
                     AND 1=2
