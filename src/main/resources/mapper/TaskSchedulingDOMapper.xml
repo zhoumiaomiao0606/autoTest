@@ -228,9 +228,6 @@
                 <when test="taskDefinitionKey == 'usertask_commit_key'">
                     deputy.commit_key                       AS taskStatus
                 </when>
-                <when test="taskDefinitionKey == 'usertask_vehicle_information'">
-                    deputy.vehicle_information              AS taskStatus
-                </when>
                 <when test="taskDefinitionKey == 'usertask_material_review'">
                     deputy.material_review                  AS taskStatus
                 </when>
@@ -308,9 +305,6 @@
                 </when>
                 <when test="taskDefinitionKey == 'usertask_commit_key'">
                     AND case when #{taskStatus} = 0 then deputy.commit_key != 0                       else deputy.commit_key                       = #{taskStatus} end
-                </when>
-                <when test="taskDefinitionKey == 'usertask_vehicle_information'">
-                    AND case when #{taskStatus} = 0 then deputy.vehicle_information != 0              else deputy.vehicle_information              = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_material_review'">
                     AND case when #{taskStatus} = 0 then deputy.material_review != 0                  else deputy.material_review                  = #{taskStatus} end
