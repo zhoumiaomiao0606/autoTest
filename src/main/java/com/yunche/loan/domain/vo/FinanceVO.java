@@ -39,9 +39,6 @@ public class FinanceVO {
     private String based_margin_fee_type;//基础保证金 1 打款内扣 2 返利内扣 3 实收
     private String total_cost;//费用总额
     private String complete_material_date;//资料完整日期
-    private String rate_type;//手续费收取方式 1 一次性 2 分期
-    private String is_pledge;//是否抵押 0-否;1-是;
-    private String is_guarantee;//是否担保 0-否;1-是;
     private String biz_area;//业务区域
     private String financial_product_name;//金融产品名称
     private String loan_time;//贷款时间
