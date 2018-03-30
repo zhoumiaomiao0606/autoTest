@@ -7,8 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface LoanFinancialPlanDOMapper {
     int deleteByPrimaryKey(Long id);
 
-    int insert(LoanFinancialPlanDO record);
-
     int insertSelective(LoanFinancialPlanDO record);
 
     LoanFinancialPlanDO selectByPrimaryKey(Long id);
@@ -17,5 +15,4 @@ public interface LoanFinancialPlanDOMapper {
 
     int updateByPrimaryKeyWithBLOBs(LoanFinancialPlanDO record);
 
-    int updateByPrimaryKey(LoanFinancialPlanDO record);
 }

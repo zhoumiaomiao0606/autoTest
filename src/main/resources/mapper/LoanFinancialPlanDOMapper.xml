@@ -17,6 +17,8 @@
         <result column="principal_interest_sum" jdbcType="DECIMAL" property="principalInterestSum"/>
         <result column="first_month_repay" jdbcType="DECIMAL" property="firstMonthRepay"/>
         <result column="each_month_repay" jdbcType="DECIMAL" property="eachMonthRepay"/>
+        <result column="cash_deposit" jdbcType="DECIMAL" property="cashDeposit"/>
+        <result column="extra_fee" jdbcType="DECIMAL" property="extraFee"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
@@ -26,7 +28,7 @@
     <sql id="Base_Column_List">
         id, car_price, financial_product_id, financial_product_name, bank, sign_rate, loan_amount,
         loan_time, down_payment_ratio, down_payment_money, bank_period_principal, bank_fee,
-        principal_interest_sum, first_month_repay, each_month_repay, status, gmt_create,
+        principal_interest_sum, first_month_repay, each_month_repay,cash_deposit,extra_fee,status, gmt_create,
         gmt_modify, feature
     </sql>
 
@@ -41,27 +43,6 @@
         delete from loan_financial_plan
         where id = #{id,jdbcType=BIGINT}
     </delete>
-
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id"
-                   order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
-        insert into loan_financial_plan (id, car_price, financial_product_id,
-        financial_product_name, bank, sign_rate,
-        loan_amount, loan_time, down_payment_ratio,
-        down_payment_money, bank_period_principal,
-        bank_fee, principal_interest_sum, first_month_repay,
-        each_month_repay, status, gmt_create,
-        gmt_modify, feature)
-        values (#{id,jdbcType=BIGINT}, #{carPrice,jdbcType=DECIMAL}, #{financialProductId,jdbcType=BIGINT},
-        #{financialProductName,jdbcType=VARCHAR}, #{bank,jdbcType=VARCHAR}, #{signRate,jdbcType=DECIMAL},
-        #{loanAmount,jdbcType=DECIMAL}, #{loanTime,jdbcType=INTEGER}, #{downPaymentRatio,jdbcType=DECIMAL},
-        #{downPaymentMoney,jdbcType=DECIMAL}, #{bankPeriodPrincipal,jdbcType=DECIMAL},
-        #{bankFee,jdbcType=DECIMAL}, #{principalInterestSum,jdbcType=DECIMAL}, #{firstMonthRepay,jdbcType=DECIMAL},
-        #{eachMonthRepay,jdbcType=DECIMAL}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR})
-    </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
@@ -114,6 +95,12 @@
             </if>
             <if test="eachMonthRepay != null">
                 each_month_repay,
+            </if>
+            <if test="cashDeposit != null">
+                cash_deposit,
+            </if>
+            <if test="extraFee != null">
+                extra_fee,
             </if>
             <if test="status != null">
                 status,
@@ -173,6 +160,12 @@
             </if>
             <if test="eachMonthRepay != null">
                 #{eachMonthRepay,jdbcType=DECIMAL},
+            </if>
+            <if test="cashDeposit != null">
+                #{cashDeposit,jdbcType=DECIMAL},
+            </if>
+            <if test="extraFee != null">
+                #{extraFee,jdbcType=DECIMAL},
             </if>
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
@@ -234,6 +227,12 @@
             <if test="eachMonthRepay != null">
                 each_month_repay = #{eachMonthRepay,jdbcType=DECIMAL},
             </if>
+            <if test="cashDeposit != null">
+                cash_deposit = #{cash_deposit,jdbcType=DECIMAL},
+            </if>
+            <if test="extraFee != null">
+                extra_fee = #{extra_fee,jdbcType=DECIMAL},
+            </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
@@ -249,28 +248,4 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
-        update loan_financial_plan
-        set car_price = #{carPrice,jdbcType=DECIMAL},
-        financial_product_id = #{financialProductId,jdbcType=BIGINT},
-        financial_product_name = #{financialProductName,jdbcType=VARCHAR},
-        bank = #{bank,jdbcType=VARCHAR},
-        sign_rate = #{signRate,jdbcType=DECIMAL},
-        loan_amount = #{loanAmount,jdbcType=DECIMAL},
-        loan_time = #{loanTime,jdbcType=INTEGER},
-        down_payment_ratio = #{downPaymentRatio,jdbcType=DECIMAL},
-        down_payment_money = #{downPaymentMoney,jdbcType=DECIMAL},
-        bank_period_principal = #{bankPeriodPrincipal,jdbcType=DECIMAL},
-        bank_fee = #{bankFee,jdbcType=DECIMAL},
-        principal_interest_sum = #{principalInterestSum,jdbcType=DECIMAL},
-        first_month_repay = #{firstMonthRepay,jdbcType=DECIMAL},
-        each_month_repay = #{eachMonthRepay,jdbcType=DECIMAL},
-        status = #{status,jdbcType=TINYINT},
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        feature = #{feature,jdbcType=VARCHAR}
-        where id = #{id,jdbcType=BIGINT}
-    </update>
-
 </mapper>

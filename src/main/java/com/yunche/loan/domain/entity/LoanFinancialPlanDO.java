@@ -58,6 +58,14 @@ public class LoanFinancialPlanDO {
      * 每月还款
      */
     private BigDecimal eachMonthRepay;
+    /**
+     * 保证金
+     */
+    private BigDecimal cashDeposit;
+    /**
+     * 额外费用
+     */
+    private BigDecimal extraFee;
 
     private Byte status;
 
