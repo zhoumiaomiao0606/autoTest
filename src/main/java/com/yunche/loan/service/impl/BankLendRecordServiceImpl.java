@@ -115,8 +115,19 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
     /**
      * 业务员手工录入银行放款记录
      */
-    public ResultBean<Void> manualInput(BankLendRecordVO bankLendRecordVO) {
-        return null;
+    public ResultBean manualInput(BankLendRecordVO bankLendRecordVO) {
+
+        Preconditions.checkNotNull(bankLendRecordVO,"银行放款记录不能为空");
+        BankLendRecordDO bankLendRecordDO =  new BankLendRecordDO();
+        bankLendRecordDO.setLoanOrder(bankLendRecordVO.getOrderId());
+        bankLendRecordDO.setLendAmount(new BigDecimal(bankLendRecordVO.getLendAmount()));
+        bankLendRecordDO.setLendDate(bankLendRecordVO.getLendDate());
+        bankLendRecordDO.setRecordStatus(Byte.valueOf("1"));//正常
+        bankLendRecordDO.setStatus(Byte.valueOf("0"));
+        bankLendRecordDO.setGmtCreate(new Date());
+        bankLendRecordDOMapper.insert(bankLendRecordDO);
+
+        return ResultBean.ofSuccess("录入成功");
     }
 
 
