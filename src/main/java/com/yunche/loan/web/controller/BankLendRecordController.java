@@ -40,7 +40,7 @@ public class BankLendRecordController {
     @GetMapping(value = "/detail")
     public ResultBean detail(@RequestParam("orderId") Long orderId ) {
         Preconditions.checkNotNull(orderId,"业务单号不能为空");
-        return ResultBean.ofSuccess(bankLendRecordService.detail(orderId));
+        return bankLendRecordService.detail(orderId);
     }
 
 
