@@ -70,7 +70,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
             returnList = POIUtil.readExcel(0,1,pathFileName);
             BankLendRecordDO bankLendRecordDO =new BankLendRecordDO();
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(String[] tmp :returnList){
 //                tmp[0].trim();//客户姓名
 //                tmp[1].trim();//身份证号
@@ -81,20 +81,27 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 bankLendRecordDO.setLendDate(df.parse(tmp[2].trim()));
                 bankLendRecordDO.setLendAmount(new BigDecimal(tmp[3].trim()));
                 bankLendRecordDO.setRecordStatus(Byte.valueOf("1"));
+                bankLendRecordDO.setStatus(Byte.valueOf("0"));
+                bankLendRecordDO.setGmtCreate(new Date());
                 //兼容重复导入
-                bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
-                if(bankLendRecordDO == null){
+                BankLendRecordDO  tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+                if(tmpBankLendRecordDO == null){
                    int count  =  bankLendRecordDOMapper.insert(bankLendRecordDO);
-                    Preconditions.checkArgument(count > 0, "业务单号:"+bankLendRecordDO.getLoanOrder()+",对应记录导入出错");
+                    Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录导入出错");
                 }else{
                     int count  =  bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
-                    Preconditions.checkArgument(count > 0, "业务单号:"+bankLendRecordDO.getLoanOrder()+",对应记录更新出错");
+                    Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录更新出错");
                 }
-                ApprovalParam approvalParam =  new ApprovalParam();
-                approvalParam.setOrderId(orderId);
-                approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
-                approvalParam.setAction(Byte.valueOf("1"));
-                loanProcessService.approval(approvalParam);
+                bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,null);
+                loanOrderDO.setBankLendRecordId((long)bankLendRecordDO.getId());
+                int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
+                Preconditions.checkArgument(count > 0, "业务单号为:"+orderId+",对应记录更新出错");
+//                ApprovalParam approvalParam =  new ApprovalParam();
+//                approvalParam.setOrderId(orderId);
+//                approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
+//                approvalParam.setAction(Byte.valueOf("1"));
+//                loanProcessService.approval(approvalParam);
             }
 
         } catch (Exception e) {

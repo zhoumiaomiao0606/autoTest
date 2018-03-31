@@ -40,6 +40,8 @@ public class LoanOrderDO {
     private Long applyLicensePlateRecordId;
 
     private Long applyLicensePlateDepositInfoId;
+	
+	 private Long bankLendRecordId;
     /**
      * 当前任务节点的taskDefinitionKey
      */

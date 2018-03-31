@@ -27,13 +27,13 @@ public class BankLendRecordController {
         //TODO
 
 
-        return null;
+        return  bankLendRecordService.importFile(filePathName);
 
     }
     @GetMapping(value = "/input")
     public ResultBean manualInput(@RequestParam("filePathName") String filePathName){
         //TODO
-        return null;
+        return bankLendRecordService.importFile(filePathName);
 
     }
 
