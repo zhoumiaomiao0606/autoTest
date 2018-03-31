@@ -42,4 +42,16 @@ public interface LoanQueryDOMapper {
      * 提车资料查询
      */
     VehicleInfoVO selectVehicleInformation(Long orderId);
+
+    /**
+     * 银行放款记录明细查询
+     */
+    BankLendRecordVO selectBankLendRecordDetail(Long orderId);
+
+    /**
+     *
+     * @param idCard 身份证号
+     * @return
+     */
+   Long  selectOrderIdByIDCard(String idCard);
 }

@@ -124,6 +124,7 @@ public class LoanProcessConst {
         PROCESS_MAP.put(REMIT_REVIEW.getCode(), "打款确认");
         PROCESS_MAP.put(MATERIAL_REVIEW.getCode(), "资料审核");
         PROCESS_MAP.put(MATERIAL_PRINT_REVIEW.getCode(), "合同套打");
+        PROCESS_MAP.put(BANK_LEND_RECORD.getCode(),"银行放款");
     }
 
 

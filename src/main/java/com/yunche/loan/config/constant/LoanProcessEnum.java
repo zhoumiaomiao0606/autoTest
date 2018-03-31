@@ -36,7 +36,9 @@ public enum LoanProcessEnum {
     MATERIAL_REVIEW("usertask_material_review", "资料审核"),
     MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),
 
-    FINANCIAL_SCHEME("servicetask_financial_scheme", "金融方案展示");
+    FINANCIAL_SCHEME("servicetask_financial_scheme", "金融方案展示"),
+    BANK_LEND_RECORD("usertask_bank_lend_record","银行放款记录录入");
+
 
     private String code;
 

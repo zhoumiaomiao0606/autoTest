@@ -571,6 +571,67 @@
         LEFT JOIN partner d ON c.partner_id = d.id
         LEFT JOIN department e ON d.department_id = e.id
         WHERE
-        a.id = #{orderId};
+        a.id = #{orderId}
+    </select>
+
+
+
+    <select id="selectOrderIdByIDCard" resultType="java.lang.Long" >
+        SELECT
+         id
+        FROM
+        loan_order
+        WHERE
+        loan_customer_id = (
+        SELECT
+        id
+        FROM
+        loan_customer
+        WHERE
+        id_card =#{idCard}
+        AND cust_type = '1'
+        )
+    </select>
+
+    <select id="selectBankLendRecordDetail" resultType="com.yunche.loan.domain.vo.BankLendRecordVO" parameterType="java.lang.Long">
+        SELECT
+        a.id AS orderId,
+        b.id_card AS idCard,
+        b.name AS principalLenderName,
+        (
+        SELECT
+        name
+        FROM
+        employee
+        WHERE
+        id = c.salesman_id
+        ) AS salesman,
+        e. NAME AS partnerName,
+        a.loan_customer_id AS customerId,
+        a.gmt_create AS gmtCreate,
+        c.bank,
+        (select
+        case when
+        END_TIME_ = null
+        then null
+        else
+        DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
+        end
+        from act_hi_taskinst
+        where PROC_INST_ID_ = a.process_inst_id
+        and TASK_DEF_KEY_ = 'usertask_bank_lend_record'
+        order by START_TIME_
+        desc limit 1) AS remitGmtCreate,
+        f.lend_date AS lendDate,
+        f.lend_amount AS lendAmount
+        FROM
+        loan_order a
+        LEFT JOIN  bank_lend_record f on a.bank_lend_record_id=f.id
+        LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
+        LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
+        LEFT JOIN partner d ON c.partner_id = d.id
+        LEFT JOIN department e ON d.department_id = e.id
+        WHERE
+        a.id =#{orderId}
     </select>
 </mapper>
