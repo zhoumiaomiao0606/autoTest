@@ -46,6 +46,6 @@ public class BankLendRecordVO {
     /**
      * 放款金额
      */
-    private double lendAmount;
+    private BigDecimal lendAmount;
 
 }

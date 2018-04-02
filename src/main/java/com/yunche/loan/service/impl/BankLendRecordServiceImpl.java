@@ -18,6 +18,7 @@ import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.RepaymentRecordDOMapper;
 import com.yunche.loan.service.BankLendRecordService;
 import com.yunche.loan.service.LoanProcessService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,7 +125,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         Preconditions.checkNotNull(bankLendRecordVO,"银行放款记录不能为空");
         BankLendRecordDO bankLendRecordDO =  new BankLendRecordDO();
         bankLendRecordDO.setLoanOrder(bankLendRecordVO.getOrderId());
-        bankLendRecordDO.setLendAmount(new BigDecimal(bankLendRecordVO.getLendAmount()));
+        bankLendRecordDO.setLendAmount(bankLendRecordVO.getLendAmount());
         bankLendRecordDO.setLendDate(bankLendRecordVO.getLendDate());
         bankLendRecordDO.setRecordStatus(Byte.valueOf("1"));//正常
         bankLendRecordDO.setStatus(Byte.valueOf("0"));
@@ -132,6 +133,17 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         bankLendRecordDOMapper.insert(bankLendRecordDO);
 
         return ResultBean.ofSuccess("录入成功");
+    }
+
+    @Override
+    public ResultBean<BankLendRecordVO> querySave(BankLendRecordVO bankLendRecordVO) {
+
+        Preconditions.checkNotNull(bankLendRecordVO,"银行放款记录不能为空");
+        Preconditions.checkNotNull(bankLendRecordVO.getOrderId(),"业务单号不能为空");
+        BankLendRecordDO bankLendRecordDO =  bankLendRecordDOMapper.selectByLoanOrder(bankLendRecordVO.getOrderId());
+        bankLendRecordVO.setLendDate(bankLendRecordDO.getLendDate());
+        bankLendRecordVO.setLendAmount(bankLendRecordDO.getLendAmount());
+        return ResultBean.ofSuccess(bankLendRecordVO);
     }
 
 
