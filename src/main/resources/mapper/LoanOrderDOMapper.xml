@@ -12,8 +12,7 @@
         <result column="material_audit_id" jdbcType="BIGINT" property="materialAuditId"/>
         <result column="cost_details_id" jdbcType="BIGINT" property="costDetailsId"/>
         <result column="remit_details_id" jdbcType="BIGINT" property="remitDetailsId"/>
-        <result column="apply_license_plate_record_id" jdbcType="BIGINT" property="applyLicensePlateRecordId"/>
-        <result column="apply_license_plate_deposit_info_id" jdbcType="BIGINT" property="applyLicensePlateDepositInfoId"/>	
+        <result column="apply_license_plate_deposit_info_id" jdbcType="BIGINT" property="applyLicensePlateDepositInfoId"/>
 	      <result column="bank_lend_record_id" property="bankLendRecordId" jdbcType="BIGINT" />
 	      <result column="current_task_def_key" jdbcType="VARCHAR" property="currentTaskDefKey"/>
         <result column="previous_task_def_key" jdbcType="VARCHAR" property="previousTaskDefKey"/>

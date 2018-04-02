@@ -38,49 +38,7 @@
     left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
 
   </select>
-
-  <!--上牌记录-->
-  <select id="selectApplyLicensePlateRecord" resultType="com.yunche.loan.domain.vo.ApplyLicensePlateRecordVO" parameterType="java.lang.Long" >
-    select
-         o.id as order_id,
-             c.id as customer_id,
-             c.name as cname,
-             c.id_card,
-             (select name from employee where id = b.salesman_id) as ename,
-             (select name from partner where id = b.partner_id) as pname,
-             i.car_type,
-             l.vehicle_identification_number,
-             l.license_plate_number,
-             l.apply_license_plate_date,
-             l.engine_number,
-             l.license_plate_type,
-             (select area_id from base_area where area_id = l.apply_license_plate_area_id) as apply_license_plate_area_id,
-             (select parent_area_id from base_area where area_id = l.apply_license_plate_area_id) as  apply_license_plate_parent_area_id,
-             l.registration_certificate_number,
-             l.qualified_certificate_number,
-             l.car_model,
-             l.transfer_ownership_date,
-             l.license_plate_readiness_date
-
-    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
-
-    left join loan_customer c on o.loan_customer_id= c.id
-
-    left join loan_base_info b on o.loan_base_info_id = b.id
-
-    left join loan_car_info i on o.loan_car_info_id = i.id
-
-    left join loan_financial_plan f on o.loan_financial_plan_id = f.id
-
-    left join cost_details d on o.cost_details_id = d.id
-
-    left join remit_details r on o.remit_details_id = r.id
-
-    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
-
-
-  </select>
-
+    
   <!--业务审批单-->
   <select id="selectBusinessReview" resultType="com.yunche.loan.domain.vo.BusinessReviewVO" parameterType="java.lang.Long" >
     select

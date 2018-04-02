@@ -116,7 +116,6 @@ public class LoanProcessConst {
         PROCESS_MAP.put(INFO_SUPPLEMENT.getCode(), "资料增补");
 
         PROCESS_MAP.put(CAR_INSURANCE.getCode(), "车辆保险");
-//        PROCESS_MAP.put(APPLY_LICENSE_PLATE_RECORD.getCode(), "上牌记录");
         PROCESS_MAP.put(APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode(), "上牌抵押");
         PROCESS_MAP.put(INSTALL_GPS.getCode(), "GPS安装");
         PROCESS_MAP.put(COMMIT_KEY.getCode(), "待收钥匙");
