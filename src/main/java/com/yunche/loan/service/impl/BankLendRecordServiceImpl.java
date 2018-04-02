@@ -97,11 +97,15 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 loanOrderDO.setBankLendRecordId((long)bankLendRecordDO.getId());
                 int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
                 Preconditions.checkArgument(count > 0, "业务单号为:"+orderId+",对应记录更新出错");
-//                ApprovalParam approvalParam =  new ApprovalParam();
-//                approvalParam.setOrderId(orderId);
-//                approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
-//                approvalParam.setAction(Byte.valueOf("1"));
-//                loanProcessService.approval(approvalParam);
+
+
+                // 对应记录更新出错
+                ApprovalParam approvalParam =  new ApprovalParam();
+                approvalParam.setOrderId(orderId);
+                approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
+                approvalParam.setAction(Byte.valueOf("1"));
+                ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             }
 
         } catch (Exception e) {
