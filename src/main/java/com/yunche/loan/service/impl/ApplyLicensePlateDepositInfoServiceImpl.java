@@ -4,12 +4,16 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.VehicleInformationDO;
 import com.yunche.loan.domain.param.ApplyLicensePlateDepositInfoUpdateParam;
+import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.ApplyLicensePlateDepositInfoDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.VehicleInformationDOMapper;
 import com.yunche.loan.service.ApplyLicensePlateDepositInfoService;
+import com.yunche.loan.service.VehicleInformationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,9 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
 
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Resource
+    private VehicleInformationService vehicleInformationService;
 
 
     @Override
@@ -81,5 +88,7 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
 
             }
         }
+
+        vehicleInformationService.update(BeanPlasticityUtills.copy(VehicleInformationUpdateParam.class,param));
     }
 }
