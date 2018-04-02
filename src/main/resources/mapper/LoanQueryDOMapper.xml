@@ -568,7 +568,7 @@
         from install_gps
         where order_id = #{orderId,jdbcType=BIGINT}
     </select>
-    
+
 
 
     <select id="selectOrderIdByIDCard" resultType="java.lang.Long" >
