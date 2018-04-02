@@ -11,8 +11,6 @@ public class ApplyLicensePlateDepositInfoDO {
 
     private Date apply_license_plate_deposit_date;
 
-    private String registration_certificate_number;
-
     private Byte status;
 
     private String feature;

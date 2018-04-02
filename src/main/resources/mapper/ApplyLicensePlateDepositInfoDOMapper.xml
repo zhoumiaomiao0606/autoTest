@@ -4,12 +4,11 @@
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="apply_license_plate_deposit_date" property="apply_license_plate_deposit_date" jdbcType="DATE" />
-    <result column="registration_certificate_number" property="registration_certificate_number" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, apply_license_plate_deposit_date, registration_certificate_number, status, feature
+    id, apply_license_plate_deposit_date, status, feature
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -30,9 +29,6 @@
       <if test="apply_license_plate_deposit_date != null" >
         apply_license_plate_deposit_date,
       </if>
-      <if test="registration_certificate_number != null" >
-        registration_certificate_number,
-      </if>
       <if test="status != null" >
         status,
       </if>
@@ -47,9 +43,6 @@
       <if test="apply_license_plate_deposit_date != null" >
         #{apply_license_plate_deposit_date,jdbcType=DATE},
       </if>
-      <if test="registration_certificate_number != null" >
-        #{registration_certificate_number,jdbcType=VARCHAR},
-      </if>
       <if test="status != null" >
         #{status,jdbcType=TINYINT},
       </if>
@@ -63,9 +56,6 @@
     <set >
       <if test="apply_license_plate_deposit_date != null" >
         apply_license_plate_deposit_date = #{apply_license_plate_deposit_date,jdbcType=DATE},
-      </if>
-      <if test="registration_certificate_number != null" >
-        registration_certificate_number = #{registration_certificate_number,jdbcType=VARCHAR},
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=TINYINT},
