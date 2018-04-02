@@ -197,7 +197,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                                 // 业务单
                                 LoanOrderVO loanOrderVO = new LoanOrderVO();
                                 // 填充订单信息
-                                fillOrderMsg(null, loanOrderVO, processInstanceId, e.getCurrentTaskDefKey(), query.getTaskStatus(), null);
+                                fillOrderMsg(null, loanOrderVO, processInstanceId, null, query.getTaskStatus(), null);
                                 return loanOrderVO;
                             }
 
@@ -662,8 +662,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         }
 
 
-        List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
-        for(UniversalCustomerVO universalCustomerVO:customers){
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
@@ -774,7 +774,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         if (null != loanOrderVO.getId()) {
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(loanOrderVO.getId()), null);
             if (null != loanOrderDO) {
-                String previousTaskDefKey = loanOrderDO.getPreviousTaskDefKey();
+//                String previousTaskDefKey = loanOrderDO.getPreviousTaskDefKey();
+                String previousTaskDefKey = null;
                 if (StringUtils.isNotBlank(previousTaskDefKey)) {
 
                     List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
@@ -1388,16 +1389,16 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         ResultBean<List<FileVO>> listFileResultBean = loanFileService.listByCustomerIdAndUploadType(customerVO.getId(), UPLOAD_TYPE_NORMAL);
         Preconditions.checkArgument(listFileResultBean.getSuccess(), listFileResultBean.getMsg());
 
-        List<FileVO> fileVOS =  listFileResultBean.getData().parallelStream()
+        List<FileVO> fileVOS = listFileResultBean.getData().parallelStream()
                 .filter(Objects::nonNull)
                 .map(e -> {
-                     if(e.getUrls()==null || e.getUrls().equals("")){
-                         return null;
-                     }else{
-                         FileVO fileVO = new FileVO();
-                         BeanUtils.copyProperties(e, fileVO);
-                         return fileVO;
-                     }
+                    if (e.getUrls() == null || e.getUrls().equals("")) {
+                        return null;
+                    } else {
+                        FileVO fileVO = new FileVO();
+                        BeanUtils.copyProperties(e, fileVO);
+                        return fileVO;
+                    }
 
                 }).collect(Collectors.toList());
 

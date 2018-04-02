@@ -6,11 +6,10 @@ import java.util.Date;
 
 @Data
 public class LoanProcessDO {
+
     private Long orderId;
 
     private Byte creditApply;
-
-    private Byte creditApplyVerify;
 
     private Byte bankCreditRecord;
 
@@ -22,15 +21,19 @@ public class LoanProcessDO {
 
     private Byte telephoneVerify;
 
+    private Byte financialScheme;
+
+    private Byte bankCardRecord;
+
     private Byte carInsurance;
+
+    private Byte vehicleInformation;
 
     private Byte applyLicensePlateDepositInfo;
 
     private Byte installGps;
 
     private Byte commitKey;
-
-    private Byte vehicleInformation;
 
     private Byte materialReview;
 
@@ -42,6 +45,8 @@ public class LoanProcessDO {
 
     private Byte remitReview;
 
+    private Byte bankLendRecord;
+
     private Date gmtCreate;
 
     private Date gmtModify;
@@ -49,4 +54,6 @@ public class LoanProcessDO {
     private String cancelTaskDefKey;
 
     private String loanApplyRejectOrginTask;
+
+    private Byte orderStatus;
 }

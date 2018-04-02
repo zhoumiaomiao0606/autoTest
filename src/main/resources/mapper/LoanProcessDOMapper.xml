@@ -4,36 +4,38 @@
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessDO">
         <id column="order_id" jdbcType="BIGINT" property="orderId"/>
         <result column="credit_apply" jdbcType="TINYINT" property="creditApply"/>
-        <result column="credit_apply_verify" jdbcType="TINYINT" property="creditApplyVerify"/>
         <result column="bank_credit_record" jdbcType="TINYINT" property="bankCreditRecord"/>
         <result column="social_credit_record" jdbcType="TINYINT" property="socialCreditRecord"/>
         <result column="loan_apply" jdbcType="TINYINT" property="loanApply"/>
         <result column="visit_verify" jdbcType="TINYINT" property="visitVerify"/>
         <result column="telephone_verify" jdbcType="TINYINT" property="telephoneVerify"/>
+        <result column="financial_scheme" jdbcType="TINYINT" property="financialScheme"/>
+        <result column="bank_card_record" jdbcType="TINYINT" property="bankCardRecord"/>
         <result column="car_insurance" jdbcType="TINYINT" property="carInsurance"/>
-        <result column="apply_license_plate_record" jdbcType="TINYINT" property="applyLicensePlateRecord"/>
+        <result column="vehicle_information" jdbcType="TINYINT" property="vehicleInformation"/>
         <result column="apply_license_plate_deposit_info" jdbcType="TINYINT" property="applyLicensePlateDepositInfo"/>
         <result column="install_gps" jdbcType="TINYINT" property="installGps"/>
         <result column="commit_key" jdbcType="TINYINT" property="commitKey"/>
-        <result column="vehicle_information" jdbcType="TINYINT" property="vehicleInformation"/>
         <result column="material_review" jdbcType="TINYINT" property="materialReview"/>
         <result column="material_print_review" jdbcType="TINYINT" property="materialPrintReview"/>
         <result column="business_review" jdbcType="TINYINT" property="businessReview"/>
         <result column="loan_review" jdbcType="TINYINT" property="loanReview"/>
         <result column="remit_review" jdbcType="TINYINT" property="remitReview"/>
+        <result column="bank_lend_record" jdbcType="TINYINT" property="bankLendRecord"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="cancel_task_def_key" jdbcType="VARCHAR" property="cancelTaskDefKey"/>
         <result column="loan_apply_reject_orgin_task" jdbcType="VARCHAR" property="loanApplyRejectOrginTask"/>
+        <result column="order_status" jdbcType="TINYINT" property="orderStatus"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-    order_id, credit_apply, credit_apply_verify, bank_credit_record, social_credit_record, 
-    loan_apply, visit_verify, telephone_verify, car_insurance, apply_license_plate_record, 
-    apply_license_plate_deposit_info, install_gps, commit_key, vehicle_information, material_review, 
-    material_print_review, business_review, loan_review, remit_review, gmt_create, gmt_modify, 
-    cancel_task_def_key, loan_apply_reject_orgin_task
-  </sql>
+        order_id, credit_apply, bank_credit_record, social_credit_record, loan_apply, visit_verify,
+        telephone_verify, financial_scheme, bank_card_record, car_insurance, vehicle_information,
+        apply_license_plate_deposit_info, install_gps, commit_key, material_review, material_print_review,
+        business_review, loan_review, remit_review, bank_lend_record, gmt_create, gmt_modify,
+        cancel_task_def_key, loan_apply_reject_orgin_task, order_status
+    </sql>
 
     <!--updateLoanApplyRejectOrginTaskIsNull-->
     <update id="updateLoanApplyRejectOrginTaskIsNull" parameterType="java.lang.Long">
@@ -58,30 +60,30 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from loan_process
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </delete>
+        delete from loan_process
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
-    insert into loan_process (order_id, credit_apply, credit_apply_verify, 
-      bank_credit_record, social_credit_record, loan_apply, 
-      visit_verify, telephone_verify, car_insurance, 
-      apply_license_plate_record, apply_license_plate_deposit_info, 
-      install_gps, commit_key, vehicle_information, 
-      material_review, material_print_review, business_review, 
-      loan_review, remit_review, gmt_create, 
-      gmt_modify, cancel_task_def_key, loan_apply_reject_orgin_task
-      )
-    values (#{orderId,jdbcType=BIGINT}, #{creditApply,jdbcType=TINYINT}, #{creditApplyVerify,jdbcType=TINYINT}, 
-      #{bankCreditRecord,jdbcType=TINYINT}, #{socialCreditRecord,jdbcType=TINYINT}, #{loanApply,jdbcType=TINYINT}, 
-      #{visitVerify,jdbcType=TINYINT}, #{telephoneVerify,jdbcType=TINYINT}, #{carInsurance,jdbcType=TINYINT}, 
-      #{applyLicensePlateRecord,jdbcType=TINYINT}, #{applyLicensePlateDepositInfo,jdbcType=TINYINT}, 
-      #{installGps,jdbcType=TINYINT}, #{commitKey,jdbcType=TINYINT}, #{vehicleInformation,jdbcType=TINYINT}, 
-      #{materialReview,jdbcType=TINYINT}, #{materialPrintReview,jdbcType=TINYINT}, #{businessReview,jdbcType=TINYINT}, 
-      #{loanReview,jdbcType=TINYINT}, #{remitReview,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
-      #{gmtModify,jdbcType=TIMESTAMP}, #{cancelTaskDefKey,jdbcType=VARCHAR}, #{loanApplyRejectOrginTask,jdbcType=VARCHAR}
-      )
-  </insert>
+        insert into loan_process (order_id, credit_apply, bank_credit_record,
+        social_credit_record, loan_apply, visit_verify,
+        telephone_verify, financial_scheme, bank_card_record,
+        car_insurance, vehicle_information, apply_license_plate_deposit_info,
+        install_gps, commit_key, material_review,
+        material_print_review, business_review, loan_review,
+        remit_review, bank_lend_record, gmt_create,
+        gmt_modify, cancel_task_def_key, loan_apply_reject_orgin_task,
+        order_status)
+        values (#{orderId,jdbcType=BIGINT}, #{creditApply,jdbcType=TINYINT}, #{bankCreditRecord,jdbcType=TINYINT},
+        #{socialCreditRecord,jdbcType=TINYINT}, #{loanApply,jdbcType=TINYINT}, #{visitVerify,jdbcType=TINYINT},
+        #{telephoneVerify,jdbcType=TINYINT}, #{financialScheme,jdbcType=TINYINT}, #{bankCardRecord,jdbcType=TINYINT},
+        #{carInsurance,jdbcType=TINYINT}, #{vehicleInformation,jdbcType=TINYINT}, #{applyLicensePlateDepositInfo,jdbcType=TINYINT},
+        #{installGps,jdbcType=TINYINT}, #{commitKey,jdbcType=TINYINT}, #{materialReview,jdbcType=TINYINT},
+        #{materialPrintReview,jdbcType=TINYINT}, #{businessReview,jdbcType=TINYINT}, #{loanReview,jdbcType=TINYINT},
+        #{remitReview,jdbcType=TINYINT}, #{bankLendRecord,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP}, #{cancelTaskDefKey,jdbcType=VARCHAR}, #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
+        #{orderStatus,jdbcType=TINYINT})
+    </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
         insert into loan_process
@@ -91,9 +93,6 @@
             </if>
             <if test="creditApply != null">
                 credit_apply,
-            </if>
-            <if test="creditApplyVerify != null">
-                credit_apply_verify,
             </if>
             <if test="bankCreditRecord != null">
                 bank_credit_record,
@@ -110,11 +109,17 @@
             <if test="telephoneVerify != null">
                 telephone_verify,
             </if>
+            <if test="financialScheme != null">
+                financial_scheme,
+            </if>
+            <if test="bankCardRecord != null">
+                bank_card_record,
+            </if>
             <if test="carInsurance != null">
                 car_insurance,
             </if>
-            <if test="applyLicensePlateRecord != null">
-                apply_license_plate_record,
+            <if test="vehicleInformation != null">
+                vehicle_information,
             </if>
             <if test="applyLicensePlateDepositInfo != null">
                 apply_license_plate_deposit_info,
@@ -124,9 +129,6 @@
             </if>
             <if test="commitKey != null">
                 commit_key,
-            </if>
-            <if test="vehicleInformation != null">
-                vehicle_information,
             </if>
             <if test="materialReview != null">
                 material_review,
@@ -143,6 +145,9 @@
             <if test="remitReview != null">
                 remit_review,
             </if>
+            <if test="bankLendRecord != null">
+                bank_lend_record,
+            </if>
             <if test="gmtCreate != null">
                 gmt_create,
             </if>
@@ -155,6 +160,9 @@
             <if test="loanApplyRejectOrginTask != null">
                 loan_apply_reject_orgin_task,
             </if>
+            <if test="orderStatus != null">
+                order_status,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderId != null">
@@ -162,9 +170,6 @@
             </if>
             <if test="creditApply != null">
                 #{creditApply,jdbcType=TINYINT},
-            </if>
-            <if test="creditApplyVerify != null">
-                #{creditApplyVerify,jdbcType=TINYINT},
             </if>
             <if test="bankCreditRecord != null">
                 #{bankCreditRecord,jdbcType=TINYINT},
@@ -181,11 +186,17 @@
             <if test="telephoneVerify != null">
                 #{telephoneVerify,jdbcType=TINYINT},
             </if>
+            <if test="financialScheme != null">
+                #{financialScheme,jdbcType=TINYINT},
+            </if>
+            <if test="bankCardRecord != null">
+                #{bankCardRecord,jdbcType=TINYINT},
+            </if>
             <if test="carInsurance != null">
                 #{carInsurance,jdbcType=TINYINT},
             </if>
-            <if test="applyLicensePlateRecord != null">
-                #{applyLicensePlateRecord,jdbcType=TINYINT},
+            <if test="vehicleInformation != null">
+                #{vehicleInformation,jdbcType=TINYINT},
             </if>
             <if test="applyLicensePlateDepositInfo != null">
                 #{applyLicensePlateDepositInfo,jdbcType=TINYINT},
@@ -195,9 +206,6 @@
             </if>
             <if test="commitKey != null">
                 #{commitKey,jdbcType=TINYINT},
-            </if>
-            <if test="vehicleInformation != null">
-                #{vehicleInformation,jdbcType=TINYINT},
             </if>
             <if test="materialReview != null">
                 #{materialReview,jdbcType=TINYINT},
@@ -214,6 +222,9 @@
             <if test="remitReview != null">
                 #{remitReview,jdbcType=TINYINT},
             </if>
+            <if test="bankLendRecord != null">
+                #{bankLendRecord,jdbcType=TINYINT},
+            </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -226,16 +237,17 @@
             <if test="loanApplyRejectOrginTask != null">
                 #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
             </if>
+            <if test="orderStatus != null">
+                #{orderStatus,jdbcType=TINYINT},
+            </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
         update loan_process
         <set>
             <if test="creditApply != null">
                 credit_apply = #{creditApply,jdbcType=TINYINT},
-            </if>
-            <if test="creditApplyVerify != null">
-                credit_apply_verify = #{creditApplyVerify,jdbcType=TINYINT},
             </if>
             <if test="bankCreditRecord != null">
                 bank_credit_record = #{bankCreditRecord,jdbcType=TINYINT},
@@ -252,11 +264,17 @@
             <if test="telephoneVerify != null">
                 telephone_verify = #{telephoneVerify,jdbcType=TINYINT},
             </if>
+            <if test="financialScheme != null">
+                financial_scheme = #{financialScheme,jdbcType=TINYINT},
+            </if>
+            <if test="bankCardRecord != null">
+                bank_card_record = #{bankCardRecord,jdbcType=TINYINT},
+            </if>
             <if test="carInsurance != null">
                 car_insurance = #{carInsurance,jdbcType=TINYINT},
             </if>
-            <if test="applyLicensePlateRecord != null">
-                apply_license_plate_record = #{applyLicensePlateRecord,jdbcType=TINYINT},
+            <if test="vehicleInformation != null">
+                vehicle_information = #{vehicleInformation,jdbcType=TINYINT},
             </if>
             <if test="applyLicensePlateDepositInfo != null">
                 apply_license_plate_deposit_info = #{applyLicensePlateDepositInfo,jdbcType=TINYINT},
@@ -266,9 +284,6 @@
             </if>
             <if test="commitKey != null">
                 commit_key = #{commitKey,jdbcType=TINYINT},
-            </if>
-            <if test="vehicleInformation != null">
-                vehicle_information = #{vehicleInformation,jdbcType=TINYINT},
             </if>
             <if test="materialReview != null">
                 material_review = #{materialReview,jdbcType=TINYINT},
@@ -285,6 +300,9 @@
             <if test="remitReview != null">
                 remit_review = #{remitReview,jdbcType=TINYINT},
             </if>
+            <if test="bankLendRecord != null">
+                bank_lend_record = #{bankLendRecord,jdbcType=TINYINT},
+            </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -297,33 +315,40 @@
             <if test="loanApplyRejectOrginTask != null">
                 loan_apply_reject_orgin_task = #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
             </if>
+            <if test="orderStatus != null">
+                order_status = #{orderStatus,jdbcType=TINYINT},
+            </if>
         </set>
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
-    update loan_process
-    set credit_apply = #{creditApply,jdbcType=TINYINT},
-      credit_apply_verify = #{creditApplyVerify,jdbcType=TINYINT},
-      bank_credit_record = #{bankCreditRecord,jdbcType=TINYINT},
-      social_credit_record = #{socialCreditRecord,jdbcType=TINYINT},
-      loan_apply = #{loanApply,jdbcType=TINYINT},
-      visit_verify = #{visitVerify,jdbcType=TINYINT},
-      telephone_verify = #{telephoneVerify,jdbcType=TINYINT},
-      car_insurance = #{carInsurance,jdbcType=TINYINT},
-      apply_license_plate_record = #{applyLicensePlateRecord,jdbcType=TINYINT},
-      apply_license_plate_deposit_info = #{applyLicensePlateDepositInfo,jdbcType=TINYINT},
-      install_gps = #{installGps,jdbcType=TINYINT},
-      commit_key = #{commitKey,jdbcType=TINYINT},
-      vehicle_information = #{vehicleInformation,jdbcType=TINYINT},
-      material_review = #{materialReview,jdbcType=TINYINT},
-      material_print_review = #{materialPrintReview,jdbcType=TINYINT},
-      business_review = #{businessReview,jdbcType=TINYINT},
-      loan_review = #{loanReview,jdbcType=TINYINT},
-      remit_review = #{remitReview,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      cancel_task_def_key = #{cancelTaskDefKey,jdbcType=VARCHAR},
-      loan_apply_reject_orgin_task = #{loanApplyRejectOrginTask,jdbcType=VARCHAR}
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </update>
+        update loan_process
+        set credit_apply = #{creditApply,jdbcType=TINYINT},
+        bank_credit_record = #{bankCreditRecord,jdbcType=TINYINT},
+        social_credit_record = #{socialCreditRecord,jdbcType=TINYINT},
+        loan_apply = #{loanApply,jdbcType=TINYINT},
+        visit_verify = #{visitVerify,jdbcType=TINYINT},
+        telephone_verify = #{telephoneVerify,jdbcType=TINYINT},
+        financial_scheme = #{financialScheme,jdbcType=TINYINT},
+        bank_card_record = #{bankCardRecord,jdbcType=TINYINT},
+        car_insurance = #{carInsurance,jdbcType=TINYINT},
+        vehicle_information = #{vehicleInformation,jdbcType=TINYINT},
+        apply_license_plate_deposit_info = #{applyLicensePlateDepositInfo,jdbcType=TINYINT},
+        install_gps = #{installGps,jdbcType=TINYINT},
+        commit_key = #{commitKey,jdbcType=TINYINT},
+        material_review = #{materialReview,jdbcType=TINYINT},
+        material_print_review = #{materialPrintReview,jdbcType=TINYINT},
+        business_review = #{businessReview,jdbcType=TINYINT},
+        loan_review = #{loanReview,jdbcType=TINYINT},
+        remit_review = #{remitReview,jdbcType=TINYINT},
+        bank_lend_record = #{bankLendRecord,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        cancel_task_def_key = #{cancelTaskDefKey,jdbcType=VARCHAR},
+        loan_apply_reject_orgin_task = #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
+        order_status = #{orderStatus,jdbcType=TINYINT}
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
+
 </mapper>

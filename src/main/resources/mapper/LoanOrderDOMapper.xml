@@ -12,9 +12,11 @@
         <result column="material_audit_id" jdbcType="BIGINT" property="materialAuditId"/>
         <result column="cost_details_id" jdbcType="BIGINT" property="costDetailsId"/>
         <result column="remit_details_id" jdbcType="BIGINT" property="remitDetailsId"/>
-        <result column="apply_license_plate_deposit_info_id" jdbcType="BIGINT" property="applyLicensePlateDepositInfoId"/>
-	      <result column="bank_lend_record_id" property="bankLendRecordId" jdbcType="BIGINT" />
-	      <result column="current_task_def_key" jdbcType="VARCHAR" property="currentTaskDefKey"/>
+        <result column="vehicle_information_id" jdbcType="BIGINT" property="vehicleInformationId"/>
+        <result column="apply_license_plate_deposit_info_id" jdbcType="BIGINT"
+                property="applyLicensePlateDepositInfoId"/>
+        <result column="bank_lend_record_id" jdbcType="BIGINT" property="bankLendRecordId"/>
+        <result column="current_task_def_key" jdbcType="VARCHAR" property="currentTaskDefKey"/>
         <result column="previous_task_def_key" jdbcType="VARCHAR" property="previousTaskDefKey"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
@@ -24,107 +26,10 @@
 
     <sql id="Base_Column_List">
         id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
-        loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, apply_license_plate_record_id,
-        apply_license_plate_deposit_info_id, bank_lend_record_id,current_task_def_key, previous_task_def_key,
+        loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, vehicle_information_id,
+        apply_license_plate_deposit_info_id, bank_lend_record_id, current_task_def_key, previous_task_def_key,
         status, gmt_create, gmt_modify, feature
     </sql>
-
-    <!--countMultipartQuery-->
-    <select id="countMultipartQuery" parameterType="com.yunche.loan.domain.query.LoanOrderQuery"
-            resultType="java.lang.Integer">
-        SELECT COUNT(*)
-        FROM loan_order
-        WHERE current_task_def_key
-        <if test="multipartType == 1">
-            IN ('usertask_credit_apply','usertask_credit_apply_verify',
-            'usertask_bank_credit_record','usertask_social_credit_record')
-        </if>
-        <if test="multipartType == 2">
-            IN ('usertask_loan_apply','usertask_visit_verify',
-            'usertask_telephone_verify','usertask_info_supplement',
-            'usertask_business_review','usertask_loan_review',
-            'usertask_remit_review','usertask_material_review',
-            'usertask_material_print_review','usertask_car_insurance',
-            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
-            'usertask_install_gps','usertask_commit_key')
-        </if>
-        <if test="multipartType == 3">
-            IN ('usertask_visit_verify','usertask_telephone_verify',
-            'usertask_info_supplement')
-        </if>
-        <if test="multipartType == 4">
-            IN ('usertask_business_review','usertask_loan_review',
-            'usertask_remit_review','usertask_material_review',
-            'usertask_material_print_review','usertask_car_insurance',
-            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
-            'usertask_install_gps','usertask_commit_key')
-        </if>
-        <if test="multipartType == 5">
-            IN (
-            'usertask_credit_apply_verify','usertask_bank_credit_record',
-            'usertask_social_credit_record','usertask_loan_apply',
-            'usertask_visit_verify','usertask_telephone_verify',
-            'usertask_info_supplement','usertask_business_review',
-            'usertask_loan_review','usertask_material_review',
-            'usertask_material_print_review','usertask_car_insurance',
-            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
-            'usertask_install_gps','usertask_commit_key')
-        </if>
-        <if test="multipartType == 6">
-            IN ('usertask_remit_review')
-        </if>
-        AND `status` = 0
-    </select>
-
-    <!--listMultipartQuery-->
-    <select id="listMultipartQuery" parameterType="com.yunche.loan.domain.query.LoanOrderQuery"
-            resultMap="BaseResultMap">
-        SELECT
-        <include refid="Base_Column_List"/>
-        FROM loan_order
-        WHERE current_task_def_key
-        <if test="multipartType == 1">
-            IN ('usertask_credit_apply','usertask_credit_apply_verify',
-            'usertask_bank_credit_record','usertask_social_credit_record')
-        </if>
-        <if test="multipartType == 2">
-            IN ('usertask_loan_apply','usertask_visit_verify',
-            'usertask_telephone_verify','usertask_info_supplement',
-            'usertask_business_review','usertask_loan_review',
-            'usertask_remit_review','usertask_material_review',
-            'usertask_material_print_review','usertask_car_insurance',
-            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
-            'usertask_install_gps','usertask_commit_key')
-        </if>
-        <if test="multipartType == 3">
-            IN ('usertask_visit_verify','usertask_telephone_verify',
-            'usertask_info_supplement')
-        </if>
-        <if test="multipartType == 4">
-            IN ('usertask_business_review','usertask_loan_review',
-            'usertask_remit_review','usertask_material_review',
-            'usertask_material_print_review','usertask_car_insurance',
-            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
-            'usertask_install_gps','usertask_commit_key')
-        </if>
-        <if test="multipartType == 5">
-            IN (
-            'usertask_credit_apply_verify','usertask_bank_credit_record',
-            'usertask_social_credit_record','usertask_loan_apply',
-            'usertask_visit_verify','usertask_telephone_verify',
-            'usertask_info_supplement','usertask_business_review',
-            'usertask_loan_review','usertask_material_review',
-            'usertask_material_print_review','usertask_car_insurance',
-            'usertask_apply_license_plate_record','usertask_apply_license_plate_deposit_info',
-            'usertask_install_gps','usertask_commit_key')
-        </if>
-        <if test="multipartType == 6">
-            IN ('usertask_remit_review')
-        </if>
-        AND `status` = 0
-        ORDER BY gmt_create DESC
-        LIMIT #{startRow}, #{pageSize}
-    </select>
 
     <!--getCustIdById-->
     <select id="getCustIdById" parameterType="java.lang.Long" resultType="java.lang.Long">
@@ -162,6 +67,14 @@
         WHERE process_inst_id = #{processInstId}
     </select>
 
+    <!--selectByCustomerId-->
+    <select id="selectByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_order
+        where loan_customer_id = #{customerId,jdbcType=BIGINT} and status = '0'
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -171,12 +84,7 @@
             AND status = #{status}
         </if>
     </select>
-    <select id="selectByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from loan_order
-        where loan_customer_id = #{customerId,jdbcType=BIGINT} and status = '0'
-    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from loan_order
         where id = #{id,jdbcType=BIGINT}
@@ -186,19 +94,17 @@
         insert into loan_order (id, process_inst_id, loan_base_info_id,
         loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id,
-        remit_details_id, apply_license_plate_record_id,
-        apply_license_plate_deposit_info_id, bank_lend_record_id,
-	    current_task_def_key,previous_task_def_key,
-	    status, gmt_create,gmt_modify,
-	    feature)
+        remit_details_id, vehicle_information_id, apply_license_plate_deposit_info_id,
+        bank_lend_record_id, current_task_def_key, previous_task_def_key,
+        status, gmt_create, gmt_modify,
+        feature)
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
         #{loanHomeVisitId,jdbcType=BIGINT}, #{materialAuditId,jdbcType=BIGINT}, #{costDetailsId,jdbcType=BIGINT},
-        #{remitDetailsId,jdbcType=BIGINT}, #{applyLicensePlateRecordId,jdbcType=BIGINT},
-        #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},#{bankLendRecordId,jdbcType=BIGINT}, 
-        #{currentTaskDefKey,jdbcType=VARCHAR},
-        #{previousTaskDefKey,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR})
+        #{remitDetailsId,jdbcType=BIGINT}, #{vehicleInformationId,jdbcType=BIGINT}, #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
+        #{bankLendRecordId,jdbcType=BIGINT}, #{currentTaskDefKey,jdbcType=VARCHAR}, #{previousTaskDefKey,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{feature,jdbcType=VARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanOrderDO">
@@ -234,14 +140,14 @@
             <if test="remitDetailsId != null">
                 remit_details_id,
             </if>
-            <if test="applyLicensePlateRecordId != null">
-                apply_license_plate_record_id,
+            <if test="vehicleInformationId != null">
+                vehicle_information_id,
             </if>
             <if test="applyLicensePlateDepositInfoId != null">
                 apply_license_plate_deposit_info_id,
- 	          </if>
-      	    <if test="bankLendRecordId != null" >
-        	      bank_lend_record_id,
+            </if>
+            <if test="bankLendRecordId != null">
+                bank_lend_record_id,
             </if>
             <if test="currentTaskDefKey != null">
                 current_task_def_key,
@@ -293,13 +199,13 @@
             <if test="remitDetailsId != null">
                 #{remitDetailsId,jdbcType=BIGINT},
             </if>
-            <if test="applyLicensePlateRecordId != null">
-                #{applyLicensePlateRecordId,jdbcType=BIGINT},
+            <if test="vehicleInformationId != null">
+                #{vehicleInformationId,jdbcType=BIGINT},
             </if>
             <if test="applyLicensePlateDepositInfoId != null">
                 #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
             </if>
-	          <if test="bankLendRecordId != null" >
+            <if test="bankLendRecordId != null">
                 #{bankLendRecordId,jdbcType=BIGINT},
             </if>
             <if test="currentTaskDefKey != null">
@@ -353,13 +259,13 @@
             <if test="remitDetailsId != null">
                 remit_details_id = #{remitDetailsId,jdbcType=BIGINT},
             </if>
-            <if test="applyLicensePlateRecordId != null">
-                apply_license_plate_record_id = #{applyLicensePlateRecordId,jdbcType=BIGINT},
+            <if test="vehicleInformationId != null">
+                vehicle_information_id = #{vehicleInformationId,jdbcType=BIGINT},
             </if>
             <if test="applyLicensePlateDepositInfoId != null">
                 apply_license_plate_deposit_info_id = #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
             </if>
-            <if test="bankLendRecordId != null" >
+            <if test="bankLendRecordId != null">
                 bank_lend_record_id = #{bankLendRecordId,jdbcType=BIGINT},
             </if>
             <if test="currentTaskDefKey != null">
@@ -395,7 +301,7 @@
         material_audit_id = #{materialAuditId,jdbcType=BIGINT},
         cost_details_id = #{costDetailsId,jdbcType=BIGINT},
         remit_details_id = #{remitDetailsId,jdbcType=BIGINT},
-        apply_license_plate_record_id = #{applyLicensePlateRecordId,jdbcType=BIGINT},
+        vehicle_information_id = #{vehicleInformationId,jdbcType=BIGINT},
         apply_license_plate_deposit_info_id = #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
         bank_lend_record_id = #{bankLendRecordId,jdbcType=BIGINT},
         current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},

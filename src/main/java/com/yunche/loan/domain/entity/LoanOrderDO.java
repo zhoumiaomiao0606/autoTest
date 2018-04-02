@@ -37,18 +37,11 @@ public class LoanOrderDO {
 
     private Long remitDetailsId;
 
+    private Long vehicleInformationId;
 
     private Long applyLicensePlateDepositInfoId;
-	
-	 private Long bankLendRecordId;
-    /**
-     * 当前任务节点的taskDefinitionKey
-     */
-    private String currentTaskDefKey;
-    /**
-     * 上一个执行任务节点的taskDefinitionKey
-     */
-    private String previousTaskDefKey;
+
+    private Long bankLendRecordId;
 
     private Byte status;
 
