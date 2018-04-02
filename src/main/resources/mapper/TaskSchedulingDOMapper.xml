@@ -194,6 +194,7 @@
             join_f.loan_time                             AS loanTime,
             join_f.down_payment_money                    AS downPaymentMoney,
             0                                            AS overdueNum,
+            DATE_FORMAT(join_r.lend_date,'%Y-%m-%d %H:%i:%S') AS lendDate,
             <choose>
                 <when test="taskDefinitionKey == 'usertask_credit_apply'">
                     deputy.credit_apply                     AS taskStatus
@@ -254,7 +255,10 @@
                     join_s.status                             AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
-                    deputy.financial_scheme                    AS taskStatus
+                    deputy.financial_scheme                   AS taskStatus
+                </when>
+                <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
+                    deputy.bank_lend_record                   AS taskStatus
                 </when>
                 <otherwise>
                   0                                           AS taskStatus
@@ -271,6 +275,7 @@
             left  join employee join_e                   on join_e.id             = join_b.salesman_id
             left  join department join_d                 on join_d.id             = join_p.department_id
             left  join apply_license_plate_record join_l on join_l.id             = main.apply_license_plate_record_id
+            left  join bank_loan_record join_r           on join_r.id             = main.bank_lend_record_id
             <if test="taskDefinitionKey == 'usertask_info_supplement'">
             left join loan_info_supplement join_s        on main.id               = join_s.order_id
             </if>
@@ -333,6 +338,9 @@
                 </when>
                 <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
                     AND case when #{taskStatus} = 0 then deputy.financial_scheme  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
+                    AND case when #{taskStatus} = 0 then deputy.bank_lend_record  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
                 </when>
                 <otherwise>
                     AND 1=2

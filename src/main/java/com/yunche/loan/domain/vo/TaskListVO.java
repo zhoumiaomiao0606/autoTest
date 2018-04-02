@@ -32,6 +32,7 @@ public class TaskListVO {
     private String supplementTypeText;
     private String supplementContent;
     private String supplementStartTime;
+    private String lendDate;
 
     private String currentTask;
     /**
