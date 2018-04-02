@@ -51,5 +51,12 @@ public interface LoanQueryDOMapper {
      * @param idCard 身份证号
      * @return
      */
-   Long  selectOrderIdByIDCard(String idCard);
+    Long  selectOrderIdByIDCard(String idCard);
+
+    /**
+     * 银行卡录入
+     * @param orderId
+     * @return
+     */
+    BankCardRecordVO selectBankCardRecordDetail(Long orderId);
 }
