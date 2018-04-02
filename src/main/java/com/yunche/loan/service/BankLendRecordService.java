@@ -15,4 +15,6 @@ public interface BankLendRecordService {
 
     ResultBean<Void>  manualInput(BankLendRecordVO bankLendRecordVO);
 
+    ResultBean<BankLendRecordVO> querySave(BankLendRecordVO bankLendRecordVO);
+
 }

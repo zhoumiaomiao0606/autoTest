@@ -44,6 +44,11 @@ public class BankLendRecordController {
     }
 
 
+    @PostMapping(value = "/querysave")
+    public ResultBean querySave(@RequestBody BankLendRecordVO bankLendRecordVO){
+        Preconditions.checkNotNull(bankLendRecordVO,"银行放款记录不能为空");
+        return bankLendRecordService.querySave(bankLendRecordVO);
 
+    }
 
 }
