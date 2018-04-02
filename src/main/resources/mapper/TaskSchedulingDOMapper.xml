@@ -260,6 +260,9 @@
                 <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
                     deputy.bank_lend_record                   AS taskStatus
                 </when>
+                <when test="taskDefinitionKey == 'usertask_bank_card_record'">
+                    deputy.bank_card_record                   AS taskStatus
+                </when>
                 <otherwise>
                   0                                           AS taskStatus
 
@@ -340,7 +343,10 @@
                     AND case when #{taskStatus} = 0 then deputy.financial_scheme  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
-                    AND case when #{taskStatus} = 0 then deputy.bank_lend_record  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
+                    AND case when #{taskStatus} = 0 then deputy.bank_lend_record  != 0                          else deputy.bank_lend_record                           = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'usertask_bank_card_record'">
+                    AND case when #{taskStatus} = 0 then deputy.bank_card_record  != 0                          else deputy.bank_card_record                           = #{taskStatus} end
                 </when>
                 <otherwise>
                     AND 1=2
