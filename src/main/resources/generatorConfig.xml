@@ -236,12 +236,14 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
-        -->
+
 
 
         <table tableName="loan_process" domainObjectName="LoanProcessDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        -->
 
         <table tableName="loan_order" domainObjectName="LoanOrderDO"
                enableCountByExample="false" enableUpdateByExample="false"

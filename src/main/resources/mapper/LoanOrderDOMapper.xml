@@ -1,35 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.LoanOrderDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanOrderDO">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="process_inst_id" jdbcType="VARCHAR" property="processInstId"/>
-        <result column="loan_base_info_id" jdbcType="BIGINT" property="loanBaseInfoId"/>
-        <result column="loan_customer_id" jdbcType="BIGINT" property="loanCustomerId"/>
-        <result column="loan_car_info_id" jdbcType="BIGINT" property="loanCarInfoId"/>
-        <result column="loan_financial_plan_id" jdbcType="BIGINT" property="loanFinancialPlanId"/>
-        <result column="loan_home_visit_id" jdbcType="BIGINT" property="loanHomeVisitId"/>
-        <result column="material_audit_id" jdbcType="BIGINT" property="materialAuditId"/>
-        <result column="cost_details_id" jdbcType="BIGINT" property="costDetailsId"/>
-        <result column="remit_details_id" jdbcType="BIGINT" property="remitDetailsId"/>
-        <result column="vehicle_information_id" jdbcType="BIGINT" property="vehicleInformationId"/>
-        <result column="apply_license_plate_deposit_info_id" jdbcType="BIGINT"
-                property="applyLicensePlateDepositInfoId"/>
-        <result column="bank_lend_record_id" jdbcType="BIGINT" property="bankLendRecordId"/>
-        <result column="current_task_def_key" jdbcType="VARCHAR" property="currentTaskDefKey"/>
-        <result column="previous_task_def_key" jdbcType="VARCHAR" property="previousTaskDefKey"/>
-        <result column="status" jdbcType="TINYINT" property="status"/>
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR"/>
+        <result column="loan_base_info_id" property="loanBaseInfoId" jdbcType="BIGINT"/>
+        <result column="loan_customer_id" property="loanCustomerId" jdbcType="BIGINT"/>
+        <result column="loan_car_info_id" property="loanCarInfoId" jdbcType="BIGINT"/>
+        <result column="loan_financial_plan_id" property="loanFinancialPlanId" jdbcType="BIGINT"/>
+        <result column="loan_home_visit_id" property="loanHomeVisitId" jdbcType="BIGINT"/>
+        <result column="material_audit_id" property="materialAuditId" jdbcType="BIGINT"/>
+        <result column="cost_details_id" property="costDetailsId" jdbcType="BIGINT"/>
+        <result column="remit_details_id" property="remitDetailsId" jdbcType="BIGINT"/>
+        <result column="vehicle_information_id" property="vehicleInformationId" jdbcType="BIGINT"/>
+        <result column="apply_license_plate_deposit_info_id" property="applyLicensePlateDepositInfoId"
+                jdbcType="BIGINT"/>
+        <result column="bank_card_record_id" property="bankCardRecordId" jdbcType="BIGINT"/>
+        <result column="bank_lend_record_id" property="bankLendRecordId" jdbcType="BIGINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+        <result column="feature" property="feature" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, vehicle_information_id,
-        apply_license_plate_deposit_info_id, bank_lend_record_id, current_task_def_key, previous_task_def_key,
-        status, gmt_create, gmt_modify, feature
+        apply_license_plate_deposit_info_id, bank_card_record_id, bank_lend_record_id, status,
+        gmt_create, gmt_modify, feature
     </sql>
+
 
     <!--getCustIdById-->
     <select id="getCustIdById" parameterType="java.lang.Long" resultType="java.lang.Long">
@@ -95,16 +95,16 @@
         loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id,
         remit_details_id, vehicle_information_id, apply_license_plate_deposit_info_id,
-        bank_lend_record_id, current_task_def_key, previous_task_def_key,
-        status, gmt_create, gmt_modify,
-        feature)
+        bank_card_record_id, bank_lend_record_id, status,
+        gmt_create, gmt_modify, feature
+        )
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
         #{loanHomeVisitId,jdbcType=BIGINT}, #{materialAuditId,jdbcType=BIGINT}, #{costDetailsId,jdbcType=BIGINT},
         #{remitDetailsId,jdbcType=BIGINT}, #{vehicleInformationId,jdbcType=BIGINT}, #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
-        #{bankLendRecordId,jdbcType=BIGINT}, #{currentTaskDefKey,jdbcType=VARCHAR}, #{previousTaskDefKey,jdbcType=VARCHAR},
-        #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{feature,jdbcType=VARCHAR})
+        #{bankCardRecordId,jdbcType=BIGINT}, #{bankLendRecordId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}
+        )
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanOrderDO">
@@ -146,14 +146,11 @@
             <if test="applyLicensePlateDepositInfoId != null">
                 apply_license_plate_deposit_info_id,
             </if>
+            <if test="bankCardRecordId != null">
+                bank_card_record_id,
+            </if>
             <if test="bankLendRecordId != null">
                 bank_lend_record_id,
-            </if>
-            <if test="currentTaskDefKey != null">
-                current_task_def_key,
-            </if>
-            <if test="previousTaskDefKey != null">
-                previous_task_def_key,
             </if>
             <if test="status != null">
                 status,
@@ -205,14 +202,11 @@
             <if test="applyLicensePlateDepositInfoId != null">
                 #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
             </if>
+            <if test="bankCardRecordId != null">
+                #{bankCardRecordId,jdbcType=BIGINT},
+            </if>
             <if test="bankLendRecordId != null">
                 #{bankLendRecordId,jdbcType=BIGINT},
-            </if>
-            <if test="currentTaskDefKey != null">
-                #{currentTaskDefKey,jdbcType=VARCHAR},
-            </if>
-            <if test="previousTaskDefKey != null">
-                #{previousTaskDefKey,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
@@ -265,14 +259,11 @@
             <if test="applyLicensePlateDepositInfoId != null">
                 apply_license_plate_deposit_info_id = #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
             </if>
+            <if test="bankCardRecordId != null">
+                bank_card_record_id = #{bankCardRecordId,jdbcType=BIGINT},
+            </if>
             <if test="bankLendRecordId != null">
                 bank_lend_record_id = #{bankLendRecordId,jdbcType=BIGINT},
-            </if>
-            <if test="currentTaskDefKey != null">
-                current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},
-            </if>
-            <if test="previousTaskDefKey != null">
-                previous_task_def_key = #{previousTaskDefKey,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
@@ -303,9 +294,8 @@
         remit_details_id = #{remitDetailsId,jdbcType=BIGINT},
         vehicle_information_id = #{vehicleInformationId,jdbcType=BIGINT},
         apply_license_plate_deposit_info_id = #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
+        bank_card_record_id = #{bankCardRecordId,jdbcType=BIGINT},
         bank_lend_record_id = #{bankLendRecordId,jdbcType=BIGINT},
-        current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},
-        previous_task_def_key = #{previousTaskDefKey,jdbcType=VARCHAR},
         status = #{status,jdbcType=TINYINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
