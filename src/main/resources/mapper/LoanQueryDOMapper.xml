@@ -592,42 +592,4 @@
         WHERE
         a.id =#{orderId}
     </select>
-
-
-    <select id="selectBankCardRecordDetail" resultType="com.yunche.loan.domain.vo.BankCardRecordVO" parameterType="java.lang.Long">
-        SELECT
-        a.id AS orderId,
-        b.id_card AS idCard,
-        b.name AS principalLenderName,
-        (
-        SELECT
-        name
-        FROM
-        employee
-        WHERE
-        id = c.salesman_id
-        ) AS salesman,
-        e. NAME AS partnerName,
-        a.loan_customer_id AS customerId,
-        a.gmt_create AS gmtCreate,
-        c.bank,
-        f.lend_date AS lendDate,
-        g.billing_date AS billingDate,
-        g.first_billing_date AS firstBillingDate,
-        g.repay_date AS repayDate,
-        g.first_repayment_date AS firstRepaymentDate,
-        g.repay_card_id AS repayCardId,
-        g.receive_date AS receiveDate,
-        g.sendee
-        FROM
-        loan_order a
-        LEFT JOIN  bank_card_record g  on a.id= g.order_id
-        LEFT JOIN  bank_lend_record f on a.bank_lend_record_id=f.id
-        LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
-        LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
-        LEFT JOIN partner d ON c.partner_id = d.id
-        LEFT JOIN department e ON d.department_id = e.id
-        WHERE
-        a.id =#{orderId}
-    </select>
 </mapper>

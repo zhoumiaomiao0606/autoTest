@@ -16,7 +16,6 @@
         <result column="apply_license_plate_deposit_info_id" jdbcType="BIGINT"
                 property="applyLicensePlateDepositInfoId"/>
         <result column="bank_lend_record_id" jdbcType="BIGINT" property="bankLendRecordId"/>
-        <result column="bank_card_record_id" jdbcType="BIGINT" property="bankCardRecordId"/>
         <result column="current_task_def_key" jdbcType="VARCHAR" property="currentTaskDefKey"/>
         <result column="previous_task_def_key" jdbcType="VARCHAR" property="previousTaskDefKey"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
@@ -28,7 +27,7 @@
     <sql id="Base_Column_List">
         id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, vehicle_information_id,
-        apply_license_plate_deposit_info_id, bank_lend_record_id,bank_card_record_id, current_task_def_key, previous_task_def_key,
+        apply_license_plate_deposit_info_id, bank_lend_record_id, current_task_def_key, previous_task_def_key,
         status, gmt_create, gmt_modify, feature
     </sql>
 
@@ -96,14 +95,14 @@
         loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id,
         remit_details_id, vehicle_information_id, apply_license_plate_deposit_info_id,
-        bank_lend_record_id, bank_card_record_id, current_task_def_key, previous_task_def_key,
+        bank_lend_record_id, current_task_def_key, previous_task_def_key,
         status, gmt_create, gmt_modify,
         feature)
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
         #{loanHomeVisitId,jdbcType=BIGINT}, #{materialAuditId,jdbcType=BIGINT}, #{costDetailsId,jdbcType=BIGINT},
         #{remitDetailsId,jdbcType=BIGINT}, #{vehicleInformationId,jdbcType=BIGINT}, #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
-        #{bankLendRecordId,jdbcType=BIGINT}, #{bankCardRecordId,jdbcType=BIGINT}, #{currentTaskDefKey,jdbcType=VARCHAR}, #{previousTaskDefKey,jdbcType=VARCHAR},
+        #{bankLendRecordId,jdbcType=BIGINT}, #{currentTaskDefKey,jdbcType=VARCHAR}, #{previousTaskDefKey,jdbcType=VARCHAR},
         #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
         #{feature,jdbcType=VARCHAR})
     </insert>
@@ -149,9 +148,6 @@
             </if>
             <if test="bankLendRecordId != null">
                 bank_lend_record_id,
-            </if>
-            <if test="bankCardRecordId != null">
-                bank_card_record_id,
             </if>
             <if test="currentTaskDefKey != null">
                 current_task_def_key,
@@ -211,9 +207,6 @@
             </if>
             <if test="bankLendRecordId != null">
                 #{bankLendRecordId,jdbcType=BIGINT},
-            </if>
-            <if test="bankCardRecordId != null">
-                #{bankCardRecordId,jdbcType=BIGINT},
             </if>
             <if test="currentTaskDefKey != null">
                 #{currentTaskDefKey,jdbcType=VARCHAR},
@@ -275,9 +268,6 @@
             <if test="bankLendRecordId != null">
                 bank_lend_record_id = #{bankLendRecordId,jdbcType=BIGINT},
             </if>
-            <if test="bankCardRecordId != null">
-                bank_card_record_id = #{bankCardRecordId,jdbcType=BIGINT},
-            </if>
             <if test="currentTaskDefKey != null">
                 current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},
             </if>
@@ -314,7 +304,6 @@
         vehicle_information_id = #{vehicleInformationId,jdbcType=BIGINT},
         apply_license_plate_deposit_info_id = #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
         bank_lend_record_id = #{bankLendRecordId,jdbcType=BIGINT},
-        bank_card_record_id = #{bankcardRecordId,jdbcType=BIGINT},
         current_task_def_key = #{currentTaskDefKey,jdbcType=VARCHAR},
         previous_task_def_key = #{previousTaskDefKey,jdbcType=VARCHAR},
         status = #{status,jdbcType=TINYINT},

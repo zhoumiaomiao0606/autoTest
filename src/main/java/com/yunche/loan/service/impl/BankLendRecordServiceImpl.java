@@ -68,6 +68,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
         List<String[]>  returnList;
         try {
+
             returnList = POIUtil.readExcel(0,1,pathFileName);
             BankLendRecordDO bankLendRecordDO =new BankLendRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

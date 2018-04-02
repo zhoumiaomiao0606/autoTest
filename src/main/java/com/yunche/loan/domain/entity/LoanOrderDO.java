@@ -43,8 +43,6 @@ public class LoanOrderDO {
 
     private Long bankLendRecordId;
 
-    private Long bankCardRecordId;
-
     private Byte status;
 
     private Date gmtCreate;
