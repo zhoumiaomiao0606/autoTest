@@ -16,7 +16,6 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
-import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.TaskInfo;
 import org.activiti.engine.task.TaskInfoQuery;
 import org.apache.commons.lang3.StringUtils;
@@ -90,9 +89,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private CarDetailDOMapper carDetailDOMapper;
-
-    @Autowired
-    private ApplyLicensePlateRecordDOMapper applyLicensePlateRecordDOMapper;
 
     @Autowired
     private LoanProcessDOMapper loanProcessDOMapper;
@@ -878,12 +874,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         if (null != loanCarInfoDO) {
             // 车辆类型：1-新车; 2-二手车;
             loanOrderVO.setCarType(loanCarInfoDO.getCarType());
-        }
-
-        ApplyLicensePlateRecordDO applyLicensePlateRecordDO = applyLicensePlateRecordDOMapper.selectByPrimaryKey(loanOrderDO.getApplyLicensePlateRecordId());
-        if (null != applyLicensePlateRecordDO) {
-            // 车牌号
-            loanOrderVO.setLicensePlateNumber(applyLicensePlateRecordDO.getLicense_plate_number());
         }
 
         // TODO 逾期次数

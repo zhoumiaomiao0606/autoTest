@@ -37,7 +37,6 @@ public class LoanOrderDO {
 
     private Long remitDetailsId;
 
-    private Long applyLicensePlateRecordId;
 
     private Long applyLicensePlateDepositInfoId;
 	

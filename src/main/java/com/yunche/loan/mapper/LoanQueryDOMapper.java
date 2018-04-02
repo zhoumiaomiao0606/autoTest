@@ -10,8 +10,6 @@ public interface LoanQueryDOMapper {
 
     public ApplyLicensePlateDepositInfoVO selectApplyLicensePlateDepositInfo(Long orderId);
 
-    public ApplyLicensePlateRecordVO selectApplyLicensePlateRecord(Long orderId);
-
     public BusinessReviewVO selectBusinessReview(Long orderId);
 
     public FinanceVO selectFinance(Long orderId);

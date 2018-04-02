@@ -112,9 +112,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private LoanCreditInfoService loanCreditInfoService;
 
     @Autowired
-    private ApplyLicensePlateRecordDOMapper applyLicensePlateRecordDOMapper;
-
-    @Autowired
     private ApplyLicensePlateDepositInfoDOMapper applyLicensePlateDepositInfoDOMapper;
 
     @Autowired
@@ -550,14 +547,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setEachMonthRepay(loanFinancialPlanDO.getEachMonthRepay());
                 // 按揭期限
                 businessInfoVO.setLoanTime(loanFinancialPlanDO.getLoanTime());
-            }
-
-            ApplyLicensePlateRecordDO applyLicensePlateRecordDO = applyLicensePlateRecordDOMapper.selectByPrimaryKey(loanOrderDO.getApplyLicensePlateRecordId());
-            if (null != applyLicensePlateRecordDO) {
-                // 车牌号
-                businessInfoVO.setLicensePlateNumber(applyLicensePlateRecordDO.getLicense_plate_number());
-                // 上牌日期
-                businessInfoVO.setLicensePlateDate(applyLicensePlateRecordDO.getApply_license_plate_date());
             }
 
             ApplyLicensePlateDepositInfoDO applyLicensePlateDepositInfoDO = applyLicensePlateDepositInfoDOMapper.selectByPrimaryKey(loanOrderDO.getApplyLicensePlateDepositInfoId());

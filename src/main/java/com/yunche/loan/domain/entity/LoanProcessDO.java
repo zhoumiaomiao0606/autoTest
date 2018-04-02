@@ -24,8 +24,6 @@ public class LoanProcessDO {
 
     private Byte carInsurance;
 
-    private Byte applyLicensePlateRecord;
-
     private Byte applyLicensePlateDepositInfo;
 
     private Byte installGps;

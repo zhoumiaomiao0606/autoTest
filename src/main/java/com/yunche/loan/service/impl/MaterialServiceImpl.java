@@ -4,7 +4,6 @@ import com.yunche.loan.config.common.ApprovalInfoUtil;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
-import com.yunche.loan.domain.entity.ApplyLicensePlateRecordDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.MaterialAuditDO;
 import com.yunche.loan.domain.param.MaterialUpdateParam;
