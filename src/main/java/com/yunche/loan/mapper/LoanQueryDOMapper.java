@@ -43,4 +43,6 @@ public interface LoanQueryDOMapper {
     BankLendRecordVO selectBankLendRecordDetail(Long orderId);
 
     Long  selectOrderIdByIDCard(String idCard);
+
+    BankCardRecordVO selectBankCardRecordDetail(Long orderId);
 }
