@@ -25,6 +25,7 @@ public class VehicleInformationVO {
     private String license_plate_number;
     private String apply_license_plate_date;
     private String apply_license_plate_area_id;
+    private String apply_license_plate_parent_area_id;
     private String transfer_ownership_date;
     private String now_driving_license_owner;
     private String old_driving_license_owner;

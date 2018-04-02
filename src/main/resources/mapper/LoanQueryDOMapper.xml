@@ -26,7 +26,8 @@
             v.displacement                    AS displacement,
             v.license_plate_number            AS license_plate_number,
             v.apply_license_plate_date        AS apply_license_plate_date,
-            v.apply_license_plate_area_id     AS apply_license_plate_area_id,
+            t.area_id                         AS apply_license_plate_area_id,
+            t.parent_area_id                  AS apply_license_plate_parent_area_id,
             v.transfer_ownership_date         AS transfer_ownership_date,
             v.now_driving_license_owner       AS now_driving_license_owner,
             v.old_driving_license_owner       AS old_driving_license_owner,
@@ -60,23 +61,30 @@
 
             left join car_model m on model_id = m.id
 
+            left join base_area t on  v.apply_license_plate_area_id = t.area_id
+
     </select>
   <!--上牌抵押-->
   <select id="selectApplyLicensePlateDepositInfo" resultType="com.yunche.loan.domain.vo.ApplyLicensePlateDepositInfoVO" parameterType="java.lang.Long" >
 
     select
-         o.id as order_id,
-             c.id as customer_id,
-             c.name as cname,
-             c.id_card,
-             (select name from employee where id = b.salesman_id) as ename,
-             (select name from partner where id = b.partner_id) as pname,
-             i.car_type,
-             h.license_plate_number,
-             b.bank,
-             a.apply_license_plate_deposit_date,
-             a.registration_certificate_number
-
+             o.id                               AS order_id,
+             c.id                               AS customer_id,
+             c.name                             AS cname,
+             1                                  AS card_type,
+             c.id_card                          AS id_card,
+             e.name                             AS ename,
+             p.name                             AS pname,
+             h.old_driving_license_owner        AS old_driving_license_owner,
+             i.car_type                         AS car_type,
+             b.bank                             AS bank,
+             h.license_plate_number             AS license_plate_number,
+             h.transfer_ownership_date          AS transfer_ownership_date,
+             t.area_id                          AS apply_license_plate_area_id,
+             t.parent_area_id                   AS apply_license_plate_parent_area_id,
+             h.apply_license_plate_date         AS apply_license_plate_date,
+             a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
+             h.registration_certificate_number  AS registration_certificate_number
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -86,55 +94,55 @@
 
     left join loan_car_info i on o.loan_car_info_id = i.id
 
-    left join loan_financial_plan f on o.loan_financial_plan_id = f.id
-
-    left join cost_details d on o.cost_details_id = d.id
-
-    left join remit_details r on o.remit_details_id = r.id
-
     left join vehicle_information h on o.vehicle_information_id = h.id
 
     left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
 
+    left join partner p on b.partner_id = p.id
+
+    left join employee e on b.salesman_id = e.id
+
+    left join base_area t on h.apply_license_plate_area_id = t.area_id
   </select>
     
   <!--业务审批单-->
   <select id="selectBusinessReview" resultType="com.yunche.loan.domain.vo.BusinessReviewVO" parameterType="java.lang.Long" >
     select
-             o.id as order_id,
-             c.id as customer_id,
-             (select id from partner where id = b.partner_id) as pid,
-             c.name as cname,
-             (select name from employee where id = b.salesman_id) as ename,
-             c.id_card,
-             (select name from partner where id = b.partner_id) as pname,
-             f.loan_amount,
-             f.sign_rate,
-             f.bank_period_principal,
-             f.bank_fee,
-             p.pay_month,
-             d.service_fee,
-             d.apply_license_plate_deposit_fee,
-             d.performance_fee,
-             d.install_gps_fee,
-             d.risk_fee,
-             d.fair_assess_fee,
-             d.apply_license_plate_out_province_fee,
-             d.based_margin_fee,
-             d.service_fee_type,
-             d.apply_license_plate_deposit_fee_type,
-             d.performance_fee_type,
-             d.install_gps_fee_type,
-             d.risk_fee_type,
-             d.fair_assess_fee_type,
-             d.apply_license_plate_out_province_fee_type,
-             d.based_margin_fee_type,
-             (d.service_fee+d.apply_license_plate_deposit_fee+d.performance_fee+d.install_gps_fee+d.risk_fee+d.fair_assess_fee+d.apply_license_plate_out_province_fee+d.based_margin_fee) as total_cost,
-             r.beneficiary_bank,
-             r.beneficiary_account,
-             r.beneficiary_account_number,
-             r.return_rate_amount,
-             r.remit_amount
+             o.id                                         AS order_id,
+             c.id                                         AS customer_id,
+             p.id                                         AS pid,
+             c.name                                       AS cname,
+             e.name                                       AS ename,
+             c.id_card                                    AS id_card,
+             p.name                                       AS pname,
+             f.loan_amount                                AS loan_amount,
+             f.sign_rate                                  AS sign_rate,
+             f.bank_period_principal                      AS bank_period_principal,
+             f.bank_fee                                   AS bank_fee,
+             p.pay_month                                  AS pay_month,
+             d.service_fee                                AS service_fee,
+             d.apply_license_plate_deposit_fee            AS apply_license_plate_deposit_fee,
+             d.performance_fee                            AS performance_fee,
+             d.install_gps_fee                            AS install_gps_fee,
+             d.risk_fee                                   AS risk_fee,
+             d.fair_assess_fee                            AS fair_assess_fee,
+             d.apply_license_plate_out_province_fee       AS apply_license_plate_out_province_fee,
+             d.based_margin_fee                           AS based_margin_fee,
+             d.service_fee_type                           AS service_fee_type,
+             d.apply_license_plate_deposit_fee_type       AS apply_license_plate_deposit_fee_type,
+             d.performance_fee_type                       AS performance_fee_type,
+             d.install_gps_fee_type                       AS install_gps_fee_type,
+             d.risk_fee_type                              AS risk_fee_type,
+             d.fair_assess_fee_type                       AS fair_assess_fee_type,
+             d.apply_license_plate_out_province_fee_type  AS apply_license_plate_out_province_fee_type,
+             d.based_margin_fee_type                      AS based_margin_fee_type,
+             (d.service_fee+d.apply_license_plate_deposit_fee+d.performance_fee+d.install_gps_fee+d.risk_fee+d.fair_assess_fee+d.apply_license_plate_out_province_fee+d.based_margin_fee)
+                                                          AS total_cost,
+             r.beneficiary_bank                           AS beneficiary_bank,
+             r.beneficiary_account                        AS beneficiary_account,
+             r.beneficiary_account_number                 AS beneficiary_account_number,
+             r.return_rate_amount                         AS return_rate_amount,
+             r.remit_amount                               AS remit_amount
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -152,6 +160,7 @@
 
     left join partner p       on p.id = b.partner_id
 
+    left join employee e      on b.salesman_id = e.id
 
   </select>
 
@@ -159,77 +168,81 @@
   <select id="selectFinance" resultType="com.yunche.loan.domain.vo.FinanceVO" parameterType="java.lang.Long" >
     select
          o.id as order_id,
-             c.id as customer_id,
-             c.name as cname,
-             c.id_card,
-             (select name from employee where id = b.salesman_id) as ename,
-             c.mobile,
-             f.loan_amount,
-             (select name from partner where id = b.partner_id) as pname,
-             p.pay_month,
-             r.return_rate_amount,
-             r.beneficiary_bank,
-             r.beneficiary_account,
-             r.beneficiary_account_number,
-             r.remit_amount,
-             d.service_fee,
-             d.apply_license_plate_deposit_fee,
-             d.performance_fee,
-             d.install_gps_fee,
-             d.risk_fee,
-             d.fair_assess_fee,
-             d.apply_license_plate_out_province_fee,
-             d.based_margin_fee,
-             d.service_fee_type,
-             d.apply_license_plate_deposit_fee_type,
-             d.performance_fee_type,
-             d.install_gps_fee_type,
-             d.risk_fee_type,
-             d.fair_assess_fee_type,
-             d.apply_license_plate_out_province_fee_type,
-             d.based_margin_fee_type,
-             (d.service_fee+d.apply_license_plate_deposit_fee+d.performance_fee+d.install_gps_fee+d.risk_fee+d.fair_assess_fee+d.apply_license_plate_out_province_fee+d.based_margin_fee) as total_cost,
-             m.complete_material_date,
-             (select CONCAT(case when parent_area_name = '' or parent_area_name is null then '' else parent_area_name end,case when area_name = '' or area_name is null then '' else area_name end ) from base_area where area_id = b.area_id) as biz_area,
-             f.financial_product_name,
-             f.loan_time,
-             f.bank,
-             f.bank_period_principal,
-	         (useCalculateStagingRatio((select formula_id from financial_product where prod_id = f.financial_product_id),f.loan_amount,f.sign_rate,(select bank_rate from product_rate where prod_id = f.financial_product_id and loan_time = f.loan_time),f.car_price)) AS bank_per_rate,
-             f.bank_fee,
-             f.down_payment_money,
-             f.down_payment_ratio,
-             f.sign_rate,
-             f.first_month_repay,
-             f.each_month_repay,
-             (select count(id) from install_gps where order_id = o.id) as gps_num,
-             i.car_key,
-             useGetCarName(i.car_detail_id) as car_name,
-             useGetSmallCarName(i.car_detail_id) as small_car_name,
-             (f.car_price) as sale_price,
-             (select price from car_detail where id = i.car_detail_id) as assess_price,
-             (select production_type from car_model where id = (select model_id from car_detail where id = i.car_detail_id) ) as production_type,
-             h.license_plate_type,
-             i.car_type,
-             (select area_id from base_area where area_id = h.apply_license_plate_area_id) as apply_license_plate_area_id,
-             (select parent_area_id from base_area where area_id = h.apply_license_plate_area_id) as  apply_license_plate_parent_area_id,
-             v.visit_date,
-             (select name from employee where id = v.visit_salesman_id) as vname,
-             v.visit_address,
-             v.survey_report,
-             c.address,
-             h.engine_number,
-             c.birth,
-             c.postcode,
-             c.company_name,
-             c.company_address,
-             c.working_years,
-             c.duty,
-             c.sex,
-             h.vehicle_identification_number,
-             c.education,
-             c.month_income,
-             c.age
+             c.id                                         AS customer_id,
+             c.name                                       AS cname,
+             c.id_card                                    AS id_card,
+             e.name                                       AS ename,
+             c.mobile                                     AS mobile,
+             f.loan_amount                                AS loan_amount,
+             p.name                                       AS pname,
+             p.pay_month                                  AS pay_month,
+             r.return_rate_amount                         AS return_rate_amount,
+             r.beneficiary_bank                           AS beneficiary_bank,
+             r.beneficiary_account                        AS beneficiary_account,
+             r.beneficiary_account_number                 AS beneficiary_account_number,
+             r.remit_amount                               AS remit_amount,
+             d.service_fee                                AS service_fee,
+             d.apply_license_plate_deposit_fee            AS apply_license_plate_deposit_fee,
+             d.performance_fee                            AS performance_fee,
+             d.install_gps_fee                            AS install_gps_fee,
+             d.risk_fee                                   AS risk_fee,
+             d.fair_assess_fee                            AS fair_assess_fee,
+             d.apply_license_plate_out_province_fee       AS apply_license_plate_out_province_fee,
+             d.based_margin_fee                           AS based_margin_fee,
+             d.service_fee_type                           AS service_fee_type,
+             d.apply_license_plate_deposit_fee_type       AS apply_license_plate_deposit_fee_type,
+             d.performance_fee_type                       AS performance_fee_type,
+             d.install_gps_fee_type                       AS install_gps_fee_type,
+             d.risk_fee_type                              AS risk_fee_type,
+             d.fair_assess_fee_type                       AS fair_assess_fee_type,
+             d.apply_license_plate_out_province_fee_type  AS apply_license_plate_out_province_fee_type,
+             d.based_margin_fee_type                      AS based_margin_fee_type,
+             (d.service_fee+d.apply_license_plate_deposit_fee+d.performance_fee+d.install_gps_fee+d.risk_fee+d.fair_assess_fee+d.apply_license_plate_out_province_fee+d.based_margin_fee)
+                                                          AS total_cost,
+             m.complete_material_date                     AS complete_material_date,
+             (select CONCAT(case when parent_area_name = '' or parent_area_name is null then '' else parent_area_name end,case when area_name = '' or area_name is null then '' else area_name end ) from base_area where area_id = b.area_id)
+                                                          AS biz_area,
+             f.financial_product_name                     AS financial_product_name,
+             f.loan_time                                  AS loan_time,
+             f.bank                                       AS bank,
+             f.bank_period_principal                      AS bank_period_principal,
+	         (useCalculateStagingRatio((select formula_id from financial_product where prod_id = f.financial_product_id),f.loan_amount,f.sign_rate,(select bank_rate from product_rate where prod_id = f.financial_product_id and loan_time = f.loan_time),f.car_price))
+	                                                      AS bank_per_rate,
+             f.bank_fee                                   AS bank_fee,
+             f.down_payment_money                         AS down_payment_money,
+             f.down_payment_ratio                         AS down_payment_ratio,
+             f.sign_rate                                  AS sign_rate,
+             f.first_month_repay                          AS first_month_repay,
+             f.each_month_repay                           AS each_month_repay,
+             (select count(id) from install_gps where order_id = o.id)
+                                                          AS gps_num,
+             i.car_key                                    AS car_key,
+             useGetCarName(i.car_detail_id)               AS car_name,
+             useGetSmallCarName(i.car_detail_id)          AS small_car_name,
+             f.car_price                                  AS sale_price,
+             de.price                                     AS assess_price,
+             mo.production_type                           AS production_type,
+             h.license_plate_type                         AS license_plate_type,
+             i.car_type                                   AS car_type,
+             t.area_id                                    AS apply_license_plate_area_id,
+             t.parent_area_id                             AS apply_license_plate_parent_area_id,
+             v.visit_date                                 AS visit_date,
+             ev.name                                      AS vname,
+             v.visit_address                              AS visit_address,
+             v.survey_report                              AS survey_report,
+             c.address                                    AS address,
+             h.engine_number                              AS engine_number,
+             c.birth                                      AS birth,
+             c.postcode                                   AS postcode,
+             c.company_name                               AS company_name,
+             c.company_address                            AS company_address,
+             c.working_years                              AS working_years,
+             c.duty                                       AS duty,
+             c.sex                                        AS sex,
+             h.vehicle_identification_number              AS vehicle_identification_number,
+             c.education                                  AS education,
+             c.month_income                               AS month_income,
+             c.age                                        AS age
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -254,6 +267,16 @@
     left join loan_home_visit v on o.loan_home_visit_id = v.id
 
     left join partner p       on p.id = b.partner_id
+
+    left join employee e      on b.salesman_id = e.id
+
+    left join base_area t on h.apply_license_plate_area_id = t.area_id
+
+    left join employee ev on v.visit_salesman_id = ev.id
+
+    left join car_detail de on i.car_detail_id = de.id
+
+    left join car_model mo on model_id = mo.id
 
 
 
@@ -262,56 +285,59 @@
   <!--资料-->
   <select id="selectMaterial" resultType="com.yunche.loan.domain.vo.MaterialVO" parameterType="java.lang.Long" >
         select
-             o.id as order_id,
-             c.id as customer_id,
-             c.name as cname,
-             c.id_card,
-             (select name from employee where id = b.salesman_id) as ename,
-             c.mobile,
-             f.loan_amount,
-             (select name from partner where id = b.partner_id) as pname,
-             m.complete_material_date,
-             (select CONCAT(case when parent_area_name = '' or parent_area_name is null then '' else parent_area_name end,case when area_name = '' or area_name is null then '' else area_name end ) from base_area where area_id = b.area_id) as biz_area,
-             f.financial_product_name,
-             f.loan_time,
-             f.bank,
-             f.bank_period_principal,
-	         (useCalculateStagingRatio((select formula_id from financial_product where prod_id = f.financial_product_id),f.loan_amount,f.sign_rate,(select bank_rate from product_rate where prod_id = f.financial_product_id and loan_time = f.loan_time),f.car_price)) AS bank_per_rate,
-             f.bank_fee,
-             f.down_payment_money,
-             f.down_payment_ratio,
-             d.performance_fee,
-             f.sign_rate,
-             f.first_month_repay,
-             f.each_month_repay,
-             (select count(id) from install_gps where order_id = o.id) as gps_num,
-             i.car_key,
-             useGetCarName(i.car_detail_id) as car_name,
-             useGetSmallCarName(i.car_detail_id) as small_car_name,
-             (f.car_price) as sale_price,
-             (select price from car_detail where id = i.car_detail_id) as assess_price,
-             (select production_type from car_model where id = (select model_id from car_detail where id = i.car_detail_id) ) as production_type,
-             h.license_plate_type,
-             i.car_type,
-             (select area_id from base_area where area_id = h.apply_license_plate_area_id) as apply_license_plate_area_id,
-             (select parent_area_id from base_area where area_id = h.apply_license_plate_area_id) as  apply_license_plate_parent_area_id,
-             v.visit_date,
-             (select name from employee where id = v.visit_salesman_id) as vname,
-             v.visit_address,
-             v.survey_report,
-             c.address,
-             h.engine_number,
-             c.birth,
-             c.postcode,
-             c.company_name,
-             c.company_address,
-             c.working_years,
-             c.duty,
-             c.sex,
-             h.vehicle_identification_number,
-             c.education,
-             c.month_income,
-             c.age
+             o.id                                 AS order_id,
+             c.id                                 AS customer_id,
+             c.name                               AS cname,
+             c.id_card                            AS id_card,
+             e.name                               AS ename,
+             c.mobile                             AS mobile,
+             f.loan_amount                        AS loan_amount,
+             p.name                               AS pname,
+             m.complete_material_date             AS complete_material_date,
+             (select CONCAT(case when parent_area_name = '' or parent_area_name is null then '' else parent_area_name end,case when area_name = '' or area_name is null then '' else area_name end ) from base_area where area_id = b.area_id)
+                                                  AS biz_area,
+             f.financial_product_name             AS financial_product_name,
+             f.loan_time                          AS loan_time,
+             f.bank                               AS bank,
+             f.bank_period_principal              AS bank_period_principal,
+	         (useCalculateStagingRatio((select formula_id from financial_product where prod_id = f.financial_product_id),f.loan_amount,f.sign_rate,(select bank_rate from product_rate where prod_id = f.financial_product_id and loan_time = f.loan_time),f.car_price))
+	                                              AS bank_per_rate,
+             f.bank_fee                           AS bank_fee,
+             f.down_payment_money                 AS down_payment_money,
+             f.down_payment_ratio                 AS down_payment_ratio,
+             d.performance_fee                    AS performance_fee,
+             f.sign_rate                          AS sign_rate,
+             f.first_month_repay                  AS first_month_repay,
+             f.each_month_repay                   AS each_month_repay,
+             (select count(id) from install_gps where order_id = o.id)
+                                                  AS gps_num,
+             i.car_key                            AS car_key,
+             useGetCarName(i.car_detail_id)       AS car_name,
+             useGetSmallCarName(i.car_detail_id)  AS small_car_name,
+             f.car_price                          AS sale_price,
+             de.price                             AS assess_price,
+             mo.production_type                   AS production_type,
+             h.license_plate_type                 AS license_plate_type,
+             i.car_type                           AS car_type,
+             t.area_id                            AS apply_license_plate_area_id,
+             t.parent_area_id                     AS  apply_license_plate_parent_area_id,
+             v.visit_date                         AS visit_date,
+             ev.name                              AS vname,
+             v.visit_address                      AS visit_address,
+             v.survey_report                      AS survey_report,
+             c.address                            AS address,
+             h.engine_number                      AS engine_number,
+             c.birth                              AS birth,
+             c.postcode                           AS postcode,
+             c.company_name                       AS company_name,
+             c.company_address                    AS company_address,
+             c.working_years                      AS working_years,
+             c.duty                               AS duty,
+             c.sex                                AS sex,
+             h.vehicle_identification_number      AS vehicle_identification_number,
+             c.education                          AS education,
+             c.month_income                       AS month_income,
+             c.age                                AS age
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -335,23 +361,36 @@
 
     left join loan_home_visit v on o.loan_home_visit_id = v.id
 
+    left join partner p       on p.id = b.partner_id
+
+    left join employee e      on b.salesman_id = e.id
+
+    left join base_area t on h.apply_license_plate_area_id = t.area_id
+
+    left join employee ev on v.visit_salesman_id = ev.id
+
+    left join car_detail de on i.car_detail_id = de.id
+
+    left join car_model mo on model_id = mo.id
+
 
   </select>
 
   <!--保险客户信息-->
   <select id="selectInsuranceCustomer" resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO" parameterType="java.lang.Long" >
       select
-              o.id as order_id,
-              i.id as insurance_info_id,
-              c.id as customer_id,
-              c.name as cname,
-              c.id_card as id_card,
-              e.name as ename,
-              p.name as pname,
-              i.insurance_year,
-              i.issue_bills_date,
-              c.address as residential_address,
-              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )as total_insurance_amount
+              o.id                              AS order_id,
+              i.id                              AS insurance_info_id,
+              c.id                              AS customer_id,
+              c.name                            AS cname,
+              c.id_card                         AS id_card,
+              e.name                            AS ename,
+              p.name                            AS pname,
+              i.insurance_year                  AS insurance_year,
+              i.issue_bills_date                AS issue_bills_date,
+              c.address                         AS residential_address,
+              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )
+                                                AS total_insurance_amount
 
       from
             (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
@@ -369,17 +408,18 @@
     <!--保险客户信息-->
     <select id="selectInsuranceCustomerNormalizeInsuranceYear" resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO" parameterType="java.lang.Long" >
      select
-              o.id as order_id,
-              i.id as insurance_info_id,
-              c.id as customer_id,
-              c.name as cname,
-              c.id_card as id_card,
-              e.name as ename,
-              p.name as pname,
-              i.insurance_year,
-              i.issue_bills_date,
-              c.address as residential_address,
-              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )as total_insurance_amount
+              o.id                    AS order_id,
+              i.id                    AS insurance_info_id,
+              c.id                    AS customer_id,
+              c.name                  AS cname,
+              c.id_card               AS id_card,
+              e.name                  AS ename,
+              p.name                  AS pname,
+              i.insurance_year        AS insurance_year,
+              i.issue_bills_date      AS issue_bills_date,
+              c.address               AS residential_address,
+              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )
+                                      AS total_insurance_amount
 
       from
             (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
@@ -396,13 +436,14 @@
   <select id="selectInsuranceRelevance" resultType="com.yunche.loan.domain.vo.InsuranceRelevanceVO" parameterType="java.lang.Long" >
 
     select
-             insurance_info_id,
-             insurance_company_name,
-             insurance_number,
-             insurance_amount,
-             start_date,
-             end_date,
-             insurance_type
+             insurance_info_id      AS insurance_info_id,
+             insurance_company_name AS insurance_company_name,
+             insurance_number       AS insurance_number,
+             insurance_amount       AS insurance_amount,
+             start_date             AS start_date,
+             end_date               AS end_date,
+             insurance_type         AS insurance_type
+
     from insurance_relevance where insurance_info_id = #{insuranceInfoId,jdbcType=BIGINT}
 
   </select>
@@ -410,27 +451,27 @@
   <!--金融方案-->
   <select id="selectFinancialScheme" resultType="com.yunche.loan.domain.vo.FinancialSchemeVO" parameterType="java.lang.Long" >
     select
-         o.id as order_id,
-             c.id as customer_id,
-             c.name as cname,
-             c.id_card,
-             f.financial_product_name,
-             h.license_plate_number,
-             h.registration_certificate_number,
-             h.apply_license_plate_date,
-             a.apply_license_plate_deposit_date,
-             f.loan_time,
-             f.car_price,
-             b.bank,
-             f.sign_rate,
-             f.down_payment_money,
-             f.loan_amount,
-             f.down_payment_ratio,
-             f.bank_period_principal,
-             f.bank_fee,
-             f.principal_interest_sum,
-             f.first_month_repay,
-             f.each_month_repay
+             o.id                                 AS order_id,
+             c.id                                 AS customer_id,
+             c.name                               AS cname,
+             c.id_card                            AS id_card,
+             f.financial_product_name             AS financial_product_name,
+             h.license_plate_number               AS license_plate_number,
+             h.registration_certificate_number    AS registration_certificate_number,
+             h.apply_license_plate_date           AS apply_license_plate_date,
+             a.apply_license_plate_deposit_date   AS apply_license_plate_deposit_date,
+             f.loan_time                          AS loan_time,
+             f.car_price                          AS car_price,
+             b.bank                               AS bank,
+             f.sign_rate                          AS sign_rate,
+             f.down_payment_money                 AS down_payment_money,
+             f.loan_amount                        AS loan_amount,
+             f.down_payment_ratio                 AS down_payment_ratio,
+             f.bank_period_principal              AS bank_period_principal,
+             f.bank_fee                           AS bank_fee,
+             f.principal_interest_sum             AS principal_interest_sum,
+             f.first_month_repay                  AS first_month_repay,
+             f.each_month_repay                   AS each_month_repay
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -460,102 +501,115 @@
   <!--客户信息-->
   <select id="selectUniversalCustomer" resultType="com.yunche.loan.domain.vo.UniversalCustomerVO" parameterType="java.lang.Long" >
     select
-        o.id as order_id,
-        c.id as customer_id,
-        c.cust_type,
-        c.name,
-        c.id_card,
-        c.mobile,
-        c.cust_relation,
-        c.sex,
-        c.company_name,
-        c.company_address,
-        c.education,
-        c.month_income,
-        c.address,
-        c.postcode,
-        c.working_years,
-        c.duty,
+        o.id                      AS order_id,
+        c.id                      AS customer_id,
+        c.cust_type               AS cust_type,
+        c.name                    AS name,
+        c.id_card                 AS id_card,
+        c.mobile                  AS mobile,
+        c.cust_relation           AS cust_relation,
+        c.sex                     AS sex,
+        c.company_name            AS company_name,
+        c.company_address         AS company_address,
+        c.education               AS education,
+        c.month_income            AS month_income,
+        c.address                 AS address,
+        c.postcode                AS postcode,
+        c.working_years           AS working_years,
+        c.duty                    AS duty,
         case when
-            (select result from loan_credit_info where customer_id = 128 and type = 1)  is null
+            cb.result   is null
         then
-            (select result from loan_credit_info where customer_id = c.id and type = 1) else 1 end as bank_result,
+            cb.result else 1 end  AS bank_result,
 		case when
-            (select result from loan_credit_info where customer_id = 128 and type = 2)  is null
+            cs.result  is null
         then
-            (select result from loan_credit_info where customer_id = c.id and type = 2) else 2 end as society_result
-
+            cs.result else 2 end  AS society_result
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
     left join loan_customer c on o.loan_customer_id= c.id or o.loan_customer_id = c.principal_cust_id
 
+    left join loan_credit_info cb on cb.customer_id = c.id and cb.type = 1
+
+    left join loan_credit_info cs on cb.customer_id = c.id and cs.type = 2
 
   </select>
 
     <!--客户信息-->
     <select id="selectUniversalCustomerDetail" resultType="com.yunche.loan.domain.vo.UniversalCustomerDetailVO" parameterType="java.lang.Long" >
               select
-                id as customer_id,
-                cust_type,
-                name,
-                id_card,
-                mobile,
-                age,
-                sex,
-                apply_date,
-                address,
-                marry,
-                identity_address,
-                mobile_area,
-                education,
-                company_name,
-                company_address,
-                company_phone,
-                month_income,
-                house_type,
-                house_owner,
-                house_feature,
-                house_address,
-                postcode,
-                working_years,
-                duty,
-                (select gmt_create from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_gmt_create,
-                (select result from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_result,
-                (select info from loan_credit_info where customer_id = loan_customer.id and type = 1) as bank_result_info,
+                t.id                AS customer_id,
+                t.cust_type         AS cust_type,
+                t.name              AS name,
+                t.id_card           AS id_card,
+                t.mobile            AS mobile,
+                t.age               AS age,
+                t.sex               AS sex,
+                t.apply_date        AS apply_date,
+                t.address           AS address,
+                t.marry             AS marry,
+                t.identity_address  AS identity_address,
+                t.mobile_area       AS mobile_area,
+                t.education         AS education,
+                t.company_name      AS company_name,
+                t.company_address   AS company_address,
+                t.company_phone     AS company_phone,
+                t.month_income      AS month_income,
+                t.house_type        AS house_type,
+                t.house_owner       AS house_owner,
+                t.house_feature     AS house_feature,
+                t.house_address     AS house_address,
+                t.postcode          AS postcode,
+                t.working_years     AS working_years,
+                t.duty              AS duty,
+                cb.gmt_create       AS bank_gmt_create,
+                cb.result           AS bank_result,
+                cb.info             AS bank_result_info,
+                cs.gmt_create       AS society_gmt_create,
+                cs.result           AS society_result,
+                cs.info             AS society_result_info
+        from
+        (select * from loan_customer where id = #{customerId,jdbcType=BIGINT}) t
 
-                (select gmt_create from loan_credit_info where customer_id = loan_customer.id and type = 2) as society_gmt_create,
-                (select result from loan_credit_info where customer_id = loan_customer.id and type = 2) as society_result,
-                (select info from loan_credit_info where customer_id = loan_customer.id and type = 2) as society_result_info
-        from loan_customer where id = #{customerId,jdbcType=BIGINT}
+        left join loan_credit_info cb on cb.customer_id = t.id and cb.type = 1
+
+        left join loan_credit_info cs on cs.customer_id = t.id and cs.type = 2
     </select>
 
   <!--客户附件信息-->
   <select id="selectUniversalCustomerFile" resultType="com.yunche.loan.domain.vo.UniversalCustomerFileVO" parameterType="java.lang.Long" >
-    select path as urls,type,useFileTypeCastName(type) as name from  loan_file  where customer_id = #{customerId,jdbcType=BIGINT}
+    select
+            path                      AS urls,
+            type                      AS type,
+            useFileTypeCastName(type) AS name
+    from  loan_file  where customer_id = #{customerId,jdbcType=BIGINT}
   </select>
 
   <!--资料增补-->
   <select id="selectUniversalMaterialRecord" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO" parameterType="java.lang.Long" >
-    select path as urls,type,useFileTypeCastName(type) as name from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
+    select
+            path                      AS urls,
+            type                      AS type,
+            useFileTypeCastName(type) AS name
+    from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
   </select>
 
   <!--资料增补根据type-->
   <select id="selectUniversalMaterialRecordByType" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
-    select path as urls,type,useFileTypeCastName(type) as name from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = #{uploadType,jdbcType=TINYINT}
+    select
+            path                      AS urls,
+            type                      AS type,
+            useFileTypeCastName(type) AS name
+    from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = #{uploadType,jdbcType=TINYINT}
   </select>
     <!--计算明细的信息-->
     <select id="selectCostCalculateInfo" resultType="com.yunche.loan.domain.vo.CostCalculateInfoVO" parameterType="java.lang.Long" >
         select
-
-                 f.bank_period_principal,
-                 p.pay_month
+                f.bank_period_principal AS bank_period_principal,
+                p.pay_month             AS pay_month
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
-
-        left join loan_base_info b on o.loan_base_info_id = b.id
-
-        left join loan_car_info i on o.loan_car_info_id = i.id
 
         left join loan_financial_plan f on o.loan_financial_plan_id = f.id
 
@@ -564,7 +618,7 @@
 
     <select id="selectGpsByOrderId" resultType="com.yunche.loan.domain.vo.GpsVO" parameterType="java.lang.Long" >
         select
-        order_id,gps_number
+                order_id,gps_number AS gps_number
         from install_gps
         where order_id = #{orderId,jdbcType=BIGINT}
     </select>
