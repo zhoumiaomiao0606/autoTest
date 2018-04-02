@@ -316,14 +316,6 @@ public class LoanOrderController {
 //    public ResultBean<TelephoneVerifyVO> telephoneVerifyDetail(@RequestParam Long orderId) {
 //        return loanOrderService.telephoneVerifyDetail(orderId);
 //    }
-
-    /**
-     * 提车资料查询
-     */
-    @GetMapping(value = "/carinfo/vehicleinfo")
-    public ResultBean<VehicleInfoVO> vehicleInformationQuery(@RequestParam Long orderId) {
-        return loanOrderService.vehicleInformationQuery(orderId);
-    }
 }
 
 

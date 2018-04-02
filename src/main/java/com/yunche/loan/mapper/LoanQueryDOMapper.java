@@ -2,11 +2,13 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface LoanQueryDOMapper {
+    VehicleInformationVO selectVehicleInformation(Long orderId);
 
     public ApplyLicensePlateDepositInfoVO selectApplyLicensePlateDepositInfo(Long orderId);
 
@@ -32,24 +34,13 @@ public interface LoanQueryDOMapper {
 
     public List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
+    public List<UniversalMaterialRecordVO> selectUniversalMaterialRecordByType(@Param("orderId") Long orderId, @Param("uploadType") Byte uploadType);
+
     CostCalculateInfoVO selectCostCalculateInfo(Long orderId);
 
     List<GpsVO> selectGpsByOrderId(Long orderId);
 
-    /**
-     * 提车资料查询
-     */
-    VehicleInfoVO selectVehicleInformation(Long orderId);
-
-    /**
-     * 银行放款记录明细查询
-     */
     BankLendRecordVO selectBankLendRecordDetail(Long orderId);
 
-    /**
-     *
-     * @param idCard 身份证号
-     * @return
-     */
-   Long  selectOrderIdByIDCard(String idCard);
+    Long  selectOrderIdByIDCard(String idCard);
 }

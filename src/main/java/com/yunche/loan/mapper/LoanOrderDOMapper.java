@@ -3,7 +3,6 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.query.LoanOrderQuery;
-import com.yunche.loan.domain.vo.VehicleInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

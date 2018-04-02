@@ -575,24 +575,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         return ResultBean.ofSuccess(infoSupplementVO);
     }
-
-    /**
-     * 提车资料查询
-     *
-     * @param orderId
-     * @return
-     */
-    @Override
-    public ResultBean<VehicleInfoVO> vehicleInformationQuery(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单号不能为空");
-        VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInformation(orderId);
-
-        ResultBean<List<FileVO>> listResultBean = loanFileService.listByCustomerId(vehicleInfoVO.getCustomerId(), Byte.valueOf("2"));
-        List<FileVO> fileVOS = listResultBean.getData();
-        vehicleInfoVO.setFileVOS(fileVOS);
-        return ResultBean.ofSuccess(vehicleInfoVO);
-    }
-
     @Override
     public ResultBean<LoanCarInfoVO> loanCarInfoDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");

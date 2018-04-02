@@ -2,6 +2,65 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.LoanQueryDOMapper" >
 
+
+    <!--提车资料-->
+    <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInformationVO"  parameterType="java.lang.Long">
+        select
+
+            o.id                              AS order_id,
+            c.id                              AS customer_id,
+            c.name                            AS cname,
+            c.id_card                         AS id_card,
+            e.name                            AS ename,
+            p.name                            AS pname,
+            useGetCarName(i.car_detail_id)    AS car_name,
+            f.car_price                       AS car_price,
+            d.price                           AS assess_price,
+            m.production_type                 AS production_type,
+            i.car_type                        AS car_type,
+            v.license_plate_type              AS license_plate_type,
+            v.color                           AS color,
+            v.qualified_certificate_number    AS qualified_certificate_number,
+            v.register_date                   AS register_date,
+            v.vehicle_identification_number   AS vehicle_identification_number,
+            v.displacement                    AS displacement,
+            v.license_plate_number            AS license_plate_number,
+            v.apply_license_plate_date        AS apply_license_plate_date,
+            v.apply_license_plate_area_id     AS apply_license_plate_area_id,
+            v.transfer_ownership_date         AS transfer_ownership_date,
+            v.now_driving_license_owner       AS now_driving_license_owner,
+            v.old_driving_license_owner       AS old_driving_license_owner,
+            v.engine_number                   AS engine_number,
+            v.registration_certificate_number AS registration_certificate_number,
+            v.invoice_car_dealer              AS invoice_car_dealer,
+            v.purchase_car_invoice_num        AS purchase_car_invoice_num,
+            v.purchase_car_invoice_price      AS purchase_car_invoice_price,
+            v.invoice_down_payment            AS invoice_down_payment,
+            v.purchase_car_invoice_date       AS purchase_car_invoice_date,
+            v.retrieve_key                    AS retrieve_key
+
+
+            from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+            left join loan_customer c on o.loan_customer_id = c.id
+
+            left join vehicle_information v on o.vehicle_information_id = v.id
+
+            left join loan_base_info b on o.loan_base_info_id = b.id
+
+            left join partner p on b.partner_id = p.id
+
+            left join employee e on b.salesman_id = e.id
+
+            left join loan_car_info i on o.loan_car_info_id  = i.id
+
+            left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+            left join car_detail d on i.car_detail_id = d.id
+
+            left join car_model m on model_id = m.id
+
+    </select>
   <!--上牌抵押-->
   <select id="selectApplyLicensePlateDepositInfo" resultType="com.yunche.loan.domain.vo.ApplyLicensePlateDepositInfoVO" parameterType="java.lang.Long" >
 
@@ -13,7 +72,7 @@
              (select name from employee where id = b.salesman_id) as ename,
              (select name from partner where id = b.partner_id) as pname,
              i.car_type,
-             l.license_plate_number,
+             h.license_plate_number,
              b.bank,
              a.apply_license_plate_deposit_date,
              a.registration_certificate_number
@@ -33,7 +92,7 @@
 
     left join remit_details r on o.remit_details_id = r.id
 
-    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
+    left join vehicle_information h on o.vehicle_information_id = h.id
 
     left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
 
@@ -42,7 +101,7 @@
   <!--业务审批单-->
   <select id="selectBusinessReview" resultType="com.yunche.loan.domain.vo.BusinessReviewVO" parameterType="java.lang.Long" >
     select
-         o.id as order_id,
+             o.id as order_id,
              c.id as customer_id,
              (select id from partner where id = b.partner_id) as pid,
              c.name as cname,
@@ -150,16 +209,16 @@
              (f.car_price) as sale_price,
              (select price from car_detail where id = i.car_detail_id) as assess_price,
              (select production_type from car_model where id = (select model_id from car_detail where id = i.car_detail_id) ) as production_type,
-             l.license_plate_type,
+             h.license_plate_type,
              i.car_type,
-             (select area_id from base_area where area_id = l.apply_license_plate_area_id) as apply_license_plate_area_id,
-             (select parent_area_id from base_area where area_id = l.apply_license_plate_area_id) as  apply_license_plate_parent_area_id,
+             (select area_id from base_area where area_id = h.apply_license_plate_area_id) as apply_license_plate_area_id,
+             (select parent_area_id from base_area where area_id = h.apply_license_plate_area_id) as  apply_license_plate_parent_area_id,
              v.visit_date,
              (select name from employee where id = v.visit_salesman_id) as vname,
              v.visit_address,
              v.survey_report,
              c.address,
-             l.engine_number,
+             h.engine_number,
              c.birth,
              c.postcode,
              c.company_name,
@@ -167,7 +226,7 @@
              c.working_years,
              c.duty,
              c.sex,
-             l.vehicle_identification_number,
+             h.vehicle_identification_number,
              c.education,
              c.month_income,
              c.age
@@ -186,7 +245,7 @@
 
     left join remit_details r on o.remit_details_id = r.id
 
-    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
+    left join vehicle_information h on o.vehicle_information_id = h.id
 
     left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
 
@@ -203,7 +262,7 @@
   <!--资料-->
   <select id="selectMaterial" resultType="com.yunche.loan.domain.vo.MaterialVO" parameterType="java.lang.Long" >
         select
-         o.id as order_id,
+             o.id as order_id,
              c.id as customer_id,
              c.name as cname,
              c.id_card,
@@ -232,16 +291,16 @@
              (f.car_price) as sale_price,
              (select price from car_detail where id = i.car_detail_id) as assess_price,
              (select production_type from car_model where id = (select model_id from car_detail where id = i.car_detail_id) ) as production_type,
-             l.license_plate_type,
+             h.license_plate_type,
              i.car_type,
-             (select area_id from base_area where area_id = l.apply_license_plate_area_id) as apply_license_plate_area_id,
-             (select parent_area_id from base_area where area_id = l.apply_license_plate_area_id) as  apply_license_plate_parent_area_id,
+             (select area_id from base_area where area_id = h.apply_license_plate_area_id) as apply_license_plate_area_id,
+             (select parent_area_id from base_area where area_id = h.apply_license_plate_area_id) as  apply_license_plate_parent_area_id,
              v.visit_date,
              (select name from employee where id = v.visit_salesman_id) as vname,
              v.visit_address,
              v.survey_report,
              c.address,
-             l.engine_number,
+             h.engine_number,
              c.birth,
              c.postcode,
              c.company_name,
@@ -249,7 +308,7 @@
              c.working_years,
              c.duty,
              c.sex,
-             l.vehicle_identification_number,
+             h.vehicle_identification_number,
              c.education,
              c.month_income,
              c.age
@@ -268,7 +327,7 @@
 
     left join remit_details r on o.remit_details_id = r.id
 
-    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
+    left join vehicle_information h on o.vehicle_information_id = h.id
 
     left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
 
@@ -356,9 +415,9 @@
              c.name as cname,
              c.id_card,
              f.financial_product_name,
-             l.license_plate_number,
-             l.registration_certificate_number,
-             l.apply_license_plate_date,
+             h.license_plate_number,
+             h.registration_certificate_number,
+             h.apply_license_plate_date,
              a.apply_license_plate_deposit_date,
              f.loan_time,
              f.car_price,
@@ -387,7 +446,7 @@
 
     left join remit_details r on o.remit_details_id = r.id
 
-    left join apply_license_plate_record l on o.apply_license_plate_record_id = l.id
+    left join vehicle_information h on o.vehicle_information_id = h.id
 
     left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
 
@@ -481,6 +540,10 @@
     select path as urls,type,useFileTypeCastName(type) as name from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
   </select>
 
+  <!--资料增补根据type-->
+  <select id="selectUniversalMaterialRecordByType" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
+    select path as urls,type,useFileTypeCastName(type) as name from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = #{uploadType,jdbcType=TINYINT}
+  </select>
     <!--计算明细的信息-->
     <select id="selectCostCalculateInfo" resultType="com.yunche.loan.domain.vo.CostCalculateInfoVO" parameterType="java.lang.Long" >
         select
@@ -505,33 +568,7 @@
         from install_gps
         where order_id = #{orderId,jdbcType=BIGINT}
     </select>
-
-    <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInfoVO"  parameterType="java.lang.Long">
-        SELECT
-        a.id AS orderId,
-        b.id_card AS idCard,
-        b.name AS principalLenderName,
-        (
-        SELECT
-        name
-        FROM
-        employee
-        WHERE
-        id = c.salesman_id
-        ) AS salesman,
-        e. NAME AS partnerName,
-        a.loan_customer_id AS customerId,
-        a.gmt_create AS gmtCreate
-        FROM
-        loan_order a
-        LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
-        LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
-        LEFT JOIN partner d ON c.partner_id = d.id
-        LEFT JOIN department e ON d.department_id = e.id
-        WHERE
-        a.id = #{orderId}
-    </select>
-
+    
 
 
     <select id="selectOrderIdByIDCard" resultType="java.lang.Long" >

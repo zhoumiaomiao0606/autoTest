@@ -73,7 +73,7 @@
         order by START_TIME_
         desc limit 1) AS loanGmtCreate,
         join_i.car_type AS carType,
-        join_l.license_plate_number AS licensePlateNumber,
+        join_h.license_plate_number AS licensePlateNumber,
         join_p.name AS partner,
         join_f.loan_time AS loanTime,
         join_f.down_payment_money AS downPaymentMoney
@@ -86,7 +86,7 @@
         left join partner join_p on join_p.id = join_b.partner_id
         left join employee join_e on join_e.id = join_b.salesman_id
         left join department join_d on join_d.id = join_p.department_id
-        left join apply_license_plate_record join_l on join_l.id = main.apply_license_plate_record_id
+        left join vehicle_information join_h on join_h.id = main.vehicle_information_id
         where 1=1
         <choose>
             <when test="multipartType == 1">
@@ -189,7 +189,7 @@
             order by START_TIME_
             desc limit 1)                                AS loanGmtCreate,
             join_i.car_type                              AS carType,
-            join_l.license_plate_number                  AS licensePlateNumber,
+            join_h.license_plate_number                  AS licensePlateNumber,
             join_p.name                                  AS partner,
             join_f.loan_time                             AS loanTime,
             join_f.down_payment_money                    AS downPaymentMoney,
@@ -217,8 +217,8 @@
                 <when test="taskDefinitionKey == 'usertask_car_insurance'">
                     deputy.car_insurance                    AS taskStatus
                 </when>
-                <when test="taskDefinitionKey == 'usertask_apply_license_plate_record'">
-                    deputy.apply_license_plate_record       AS taskStatus
+                <when test="taskDefinitionKey == 'usertask_vehicle_information'">
+                    deputy.vehicle_information       AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'usertask_apply_license_plate_deposit_info'">
                     deputy.apply_license_plate_deposit_info AS taskStatus
@@ -274,8 +274,8 @@
             left  join partner join_p                    on join_p.id             = join_b.partner_id
             left  join employee join_e                   on join_e.id             = join_b.salesman_id
             left  join department join_d                 on join_d.id             = join_p.department_id
-            left  join apply_license_plate_record join_l on join_l.id             = main.apply_license_plate_record_id
-            left  join bank_loan_record join_r           on join_r.id             = main.bank_lend_record_id
+            left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
+            left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
             <if test="taskDefinitionKey == 'usertask_info_supplement'">
             left join loan_info_supplement join_s        on main.id               = join_s.order_id
             </if>
@@ -302,8 +302,8 @@
                 <when test="taskDefinitionKey == 'usertask_car_insurance'">
                     AND case when #{taskStatus} = 0 then deputy.car_insurance != 0                    else deputy.car_insurance                    = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey == 'usertask_apply_license_plate_record'">
-                    AND case when #{taskStatus} = 0 then deputy.apply_license_plate_record != 0       else deputy.apply_license_plate_record       = #{taskStatus} end
+                <when test="taskDefinitionKey == 'usertask_vehicle_information'">
+                    AND case when #{taskStatus} = 0 then deputy.vehicle_information != 0              else deputy.vehicle_information              = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_apply_license_plate_deposit_info'">
                     AND case when #{taskStatus} = 0 then deputy.apply_license_plate_deposit_info != 0 else deputy.apply_license_plate_deposit_info = #{taskStatus} end
