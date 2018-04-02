@@ -801,7 +801,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         if (null != actionHistoricVariableInstance) {
                             Integer action = (Integer) actionHistoricVariableInstance.getValue();
                             // 打回 OR 未提交
-                            if (ACTION_REJECT.equals(action)) {
+                            if (ACTION_REJECT_MANUAL.equals(action)) {
                                 loanOrderVO.setTaskTypeText(TASK_TYPE_TEXT_REJECT);
                             } else if (ACTION_PASS.equals(action)) {
                                 loanOrderVO.setTaskTypeText(TASK_TYPE_TEXT_UN_SUBMIT);

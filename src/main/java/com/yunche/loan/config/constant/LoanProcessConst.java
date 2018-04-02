@@ -14,11 +14,14 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.*;
  */
 public class LoanProcessConst {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
-     * 打回
+     * 打回:自动
      */
-    public static final Byte ACTION_REJECT = 0;
+    public static final Byte ACTION_REJECT_AUTO = -1;
+    /**
+     * 打回:手动
+     */
+    public static final Byte ACTION_REJECT_MANUAL = 0;
     /**
      * 通过
      */
@@ -103,7 +106,7 @@ public class LoanProcessConst {
         PROCESS_MAP.put(END.getCode(), "流程终止");
 
         PROCESS_MAP.put(CREDIT_APPLY.getCode(), "征信申请");
-        PROCESS_MAP.put(CREDIT_APPLY_VERIFY.getCode(), "征信申请审核");
+//        PROCESS_MAP.put(CREDIT_APPLY_VERIFY.getCode(), "征信申请审核");
         PROCESS_MAP.put(BANK_CREDIT_RECORD.getCode(), "银行征信录入");
         PROCESS_MAP.put(SOCIAL_CREDIT_RECORD.getCode(), "社会征信录入");
 
@@ -113,7 +116,7 @@ public class LoanProcessConst {
         PROCESS_MAP.put(INFO_SUPPLEMENT.getCode(), "资料增补");
 
         PROCESS_MAP.put(CAR_INSURANCE.getCode(), "车辆保险");
-        PROCESS_MAP.put(APPLY_LICENSE_PLATE_RECORD.getCode(), "上牌记录");
+//        PROCESS_MAP.put(APPLY_LICENSE_PLATE_RECORD.getCode(), "上牌记录");
         PROCESS_MAP.put(APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode(), "上牌抵押");
         PROCESS_MAP.put(INSTALL_GPS.getCode(), "GPS安装");
         PROCESS_MAP.put(COMMIT_KEY.getCode(), "待收钥匙");
@@ -142,7 +145,7 @@ public class LoanProcessConst {
         TASK_USER_GROUP_MAP.put(START.getCode(), "流程启动");
         TASK_USER_GROUP_MAP.put(END.getCode(), "流程终止");
         TASK_USER_GROUP_MAP.put(CREDIT_APPLY.getCode(), "业务员");
-        TASK_USER_GROUP_MAP.put(CREDIT_APPLY_VERIFY.getCode(), "征信资料审核员");
+//        TASK_USER_GROUP_MAP.put(CREDIT_APPLY_VERIFY.getCode(), "征信资料审核员");
         TASK_USER_GROUP_MAP.put(BANK_CREDIT_RECORD.getCode(), "银行征信员");
         TASK_USER_GROUP_MAP.put(SOCIAL_CREDIT_RECORD.getCode(), "社会征信员");
         TASK_USER_GROUP_MAP.put(LOAN_APPLY.getCode(), "业务员");

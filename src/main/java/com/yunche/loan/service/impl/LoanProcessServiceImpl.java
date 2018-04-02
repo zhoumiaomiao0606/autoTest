@@ -88,6 +88,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
 
+        // 征信增补
+        execCreditSupplementTask(approval, loanOrderDO.getProcessInstId());
+
         // 获取任务
         Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
 
@@ -112,6 +115,57 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         push(loanOrderDO, approval.getTaskDefinitionKey(), approval.getAction(), approval);
 
         return ResultBean.ofSuccess(null, "[" + task.getName() + "]任务审核成功");
+    }
+
+    private void execCreditSupplementTask(ApprovalParam approval, String processInstanceId) {
+        // 监听
+
+        boolean isCreditSupplementTask = CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_AUTO.equals(approval.getAction());
+        if (!isCreditSupplementTask) {
+            return;
+        }
+
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(approval.getOrderId());
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+
+        // 判断当前任务流程   是否在电审前
+        Preconditions.checkArgument(TASK_PROCESS_NOT_REACH.equals(loanProcessDO.getTelephoneVerify()), "流程已过电审环节，无法发起征信增补");
+//        Preconditions.checkArgument(!TASK_PROCESS_NOT_REACH.equals(loanProcessDO.getLoanApply())
+//                && MATERIAL_REVIEW.getCode().equals(loanProcessDO.getLoanApplyRejectOrginTask()), "流程已过电审环节，无法发起征信增补");
+
+        // 当前所有task
+        List<Task> taskList = taskService.createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .list();
+
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(taskList), "无可执行任务");
+
+
+        taskList.parallelStream()
+                .filter(Objects::nonNull)
+                .forEach(task -> {
+
+                    String taskDefinitionKey = task.getTaskDefinitionKey();
+
+                    boolean isBankAndSocialCreditRecordTask = (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey));
+
+                    boolean isLoanApplyVisitVerifyFilterTask = (LOAN_APPLY.getCode().equals(taskDefinitionKey) || VISIT_VERIFY.getCode().equals(taskDefinitionKey))
+                            && !MATERIAL_REVIEW.getCode().equals(loanProcessDO.getLoanApplyRejectOrginTask());
+
+
+                    if (isBankAndSocialCreditRecordTask) {
+                        // 提交 -> filter -> 自动打回
+
+                    } else if (isLoanApplyVisitVerifyFilterTask) {
+                        // 提交 -> filter -> 自动打回
+
+                    }
+
+                });
+
+
+        // 从 ServiceTask 节点开始
+
     }
 
     /**
@@ -278,7 +332,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         //【资料审核】打回到【业务申请】 标记
-        if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT.equals(approval.getAction())) {
+        if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
             // 记录 打回来源KEY、来源TaskId、去向KEY、去向TaskId
 //            String originTaskKey = METERIAL_REVIEW.getCode();
 //            String originTaskId = currentExecTask.getId();
@@ -295,8 +349,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 更新当前执行的任务状态
         Byte taskProcessStatus = null;
-        if (ACTION_REJECT.equals(approval.getAction())) {
-            taskProcessStatus = TASK_PROCESS_IS_NULL;
+        if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+            taskProcessStatus = TASK_PROCESS_NOT_REACH;
         } else {
             taskProcessStatus = TASK_PROCESS_DONE;
         }
@@ -345,7 +399,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (ACTION_PASS.equals(action)) {
             // TO DO
             updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_TODO);
-        } else if (ACTION_REJECT.equals(action)) {
+        } else if (ACTION_REJECT_MANUAL.equals(action)) {
             // REJECT
             updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT);
         } else if (ACTION_CANCEL.equals(action)) {
@@ -383,8 +437,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setCreditApply(taskProcessStatus);
-        } else if (CREDIT_APPLY_VERIFY.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setCreditApplyVerify(taskProcessStatus);
         } else if (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setBankCreditRecord(taskProcessStatus);
         } else if (SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
@@ -403,8 +455,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanProcessDO.setRemitReview(taskProcessStatus);
         } else if (CAR_INSURANCE.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setCarInsurance(taskProcessStatus);
-        } else if (APPLY_LICENSE_PLATE_RECORD.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setApplyLicensePlateRecord(taskProcessStatus);
         } else if (APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setApplyLicensePlateDepositInfo(taskProcessStatus);
         } else if (INSTALL_GPS.getCode().equals(taskDefinitionKey)) {
@@ -738,7 +788,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 dealPassTask1(currentTask, tasks);
             }
             // REJECT
-            else if (ACTION_REJECT.equals(action)) {
+            else if (ACTION_REJECT_MANUAL.equals(action)) {
                 dealRejectTask2(currentTask, tasks);
             }
             // CANCEL
@@ -771,7 +821,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 dealPassTask(currentTask, tasks, approval);
             }
             // REJECT
-            else if (ACTION_REJECT.equals(approval.getAction())) {
+            else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
                 dealRejectTask(currentTask, tasks);
             }
             // CANCEL
@@ -827,8 +877,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Byte taskStatus = null;
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getCreditApply();
-        } else if (CREDIT_APPLY_VERIFY.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getCreditApplyVerify();
         } else if (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getBankCreditRecord();
         } else if (SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
@@ -847,8 +895,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             taskStatus = loanProcessDO.getRemitReview();
         } else if (CAR_INSURANCE.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getCarInsurance();
-        } else if (APPLY_LICENSE_PLATE_RECORD.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getApplyLicensePlateRecord();
         } else if (APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getApplyLicensePlateDepositInfo();
         } else if (INSTALL_GPS.getCode().equals(taskDefinitionKey)) {
@@ -1054,8 +1100,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approvalInfoVO
      */
     private void fillLoanAmount(Map<String, Object> variables, Byte action, String taskDefinitionKey, Long loanBaseInfoId, ApprovalInfoVO approvalInfoVO) {
-        // 征信申请审核且审核通过时
-        boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY_VERIFY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
+        // 征信申请且审核通过时
+        boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
         // 银行&社会征信录入
         boolean isBankAndSocialCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey);
         if (isApplyVerifyTaskAndActionIsPass || isBankAndSocialCreditRecordTask) {
@@ -1334,7 +1380,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // "主任务"  ->  打回
                 Task currentFilterTask = mainTask[0];
                 if (null != currentFilterTask) {
-                    variables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT);
+                    variables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT_MANUAL);
                     taskService.complete(currentFilterTask.getId(), variables);
                 }
 
@@ -1503,7 +1549,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             }
             Map<String, Object> rejectVariables = Maps.newHashMap();
-            rejectVariables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT);
+            rejectVariables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT_MANUAL);
             taskService.complete(currentFilterTask.getId(), rejectVariables);
         }
     }
