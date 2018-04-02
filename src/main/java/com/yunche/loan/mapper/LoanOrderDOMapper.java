@@ -11,7 +11,6 @@ import java.util.List;
 @Mapper
 public interface LoanOrderDOMapper {
 
-    LoanOrderDO selectByCustomerId(Long customerId);
     int deleteByPrimaryKey(Long id);
 
     int insert(LoanOrderDO record);
@@ -96,4 +95,5 @@ public interface LoanOrderDOMapper {
      */
     List<LoanOrderDO> listMultipartQuery(LoanOrderQuery query);
 
+    LoanOrderDO selectByCustomerId(Long customerId);
 }

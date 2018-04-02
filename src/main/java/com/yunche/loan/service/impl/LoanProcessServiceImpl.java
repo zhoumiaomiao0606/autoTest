@@ -134,14 +134,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 //                && MATERIAL_REVIEW.getCode().equals(loanProcessDO.getLoanApplyRejectOrginTask()), "流程已过电审环节，无法发起征信增补");
 
         // 当前所有task
-        List<Task> taskList = taskService.createTaskQuery()
+        List<Task> tasks = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .list();
 
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(taskList), "无可执行任务");
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(tasks), "无可执行任务");
 
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approval.getOrderId(), null);
+        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
 
-        taskList.parallelStream()
+        tasks.parallelStream()
                 .filter(Objects::nonNull)
                 .forEach(task -> {
 
@@ -156,8 +158,30 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     if (isBankAndSocialCreditRecordTask) {
                         // 提交 -> filter -> 自动打回
 
+                        // 13W
+                        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+                        Preconditions.checkNotNull(loanBaseInfoDO, "贷款基本信息不存在");
+
+                        Byte loanAmount = loanBaseInfoDO.getLoanAmount();
+                        Preconditions.checkNotNull(loanAmount, "数据异常，贷款额为空！");
+
+                        Map<String, Object> variables = Maps.newHashMap();
+                        // 流程变量
+                        variables.put(PROCESS_VARIABLE_LOAN_AMOUNT, loanAmount);
+                        variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
+
+                        // PASS
+                        ApprovalParam currentTaskApproval = new ApprovalParam();
+                        currentTaskApproval.setOrderId(approval.getOrderId());
+                        currentTaskApproval.setAction(ACTION_PASS);
+                        currentTaskApproval.setTaskDefinitionKey(taskDefinitionKey);
+
+                        // 全部通行
+                        completeTask(task, variables, currentTaskApproval);
+
                     } else if (isLoanApplyVisitVerifyFilterTask) {
                         // 提交 -> filter -> 自动打回
+
 
                     }
 
