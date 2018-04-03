@@ -20,7 +20,7 @@
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
         <result column="feature" property="feature" jdbcType="VARCHAR"/>
         <result column="first_register_date" property="firstRegisterDate" jdbcType="DATE"/>
-        <result column="business_source" property="businessSource" jdbcType="VARCHAR"/>
+        <result column="business_source" property="businessSource" jdbcType="TINYINT"/>
         <result column="cooperation_dealer" property="cooperationDealer" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
@@ -52,7 +52,7 @@
         #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
         #{info,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
         #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{firstRegisterDate,jdbcType=DATE},
-        #{businessSource,jdbcType=VARCHAR}, #{cooperationDealer,jdbcType=VARCHAR})
+        #{businessSource,jdbcType=TINYINT}, #{cooperationDealer,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
         insert into loan_car_info
@@ -174,7 +174,7 @@
                 #{firstRegisterDate,jdbcType=DATE},
             </if>
             <if test="businessSource != null">
-                #{businessSource,jdbcType=VARCHAR},
+                #{businessSource,jdbcType=TINYINT},
             </if>
             <if test="cooperationDealer != null">
                 #{cooperationDealer,jdbcType=VARCHAR},
@@ -236,7 +236,7 @@
                 first_register_date = #{firstRegisterDate,jdbcType=DATE},
             </if>
             <if test="businessSource != null">
-                business_source = #{businessSource,jdbcType=VARCHAR},
+                business_source = #{businessSource,jdbcType=TINYINT},
             </if>
             <if test="cooperationDealer != null">
                 cooperation_dealer = #{cooperationDealer,jdbcType=VARCHAR},
@@ -263,7 +263,7 @@
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         feature = #{feature,jdbcType=VARCHAR},
         first_register_date = #{firstRegisterDate,jdbcType=DATE},
-        business_source = #{businessSource,jdbcType=VARCHAR},
+        business_source = #{businessSource,jdbcType=TINYINT},
         cooperation_dealer = #{cooperationDealer,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
