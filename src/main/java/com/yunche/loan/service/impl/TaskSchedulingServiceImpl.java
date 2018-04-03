@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_CANCEL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_CLOSED;
-import static com.yunche.loan.config.constant.LoanProcessConst.PROCESS_MAP;
 import static com.yunche.loan.config.constant.MappingConst.SUPPLEMENT_TYPE_TEXT_MAP;
 
 
@@ -167,7 +166,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         String taskTypeText = getTaskTypeText(taskStatus);
         taskListVO.setTaskTypeText(taskTypeText);
 
-        taskListVO.setCurrentTask(PROCESS_MAP.get(taskDefinitionKey));
+        taskListVO.setCurrentTask(LoanProcessEnum.getNameByCode(taskDefinitionKey));
     }
 
     private String getTaskTypeText(String taskStatus) {

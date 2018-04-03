@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.mapper.*;
@@ -361,7 +362,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         ResultBean<Void> updateRelaResultBean = loanProcessOrderService.update(loanOrderDO);
         Preconditions.checkArgument(updateRelaResultBean.getSuccess(), updateRelaResultBean.getMsg());
 
-        VehicleInformationUpdateParam  vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
+        VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
         vehicleInformationUpdateParam.setApply_license_plate_area_id(loanCarInfoParam.getApplyLicensePlateAreaId());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
@@ -383,7 +384,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
 
         ResultBean<Void> resultBean = loanCarInfoService.update(loanCarInfoDO);
-        VehicleInformationUpdateParam  vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
+        VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
         vehicleInformationUpdateParam.setApply_license_plate_area_id(loanCarInfoParam.getApplyLicensePlateAreaId());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
@@ -597,7 +598,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
 
-
     private String applyLicensePlateAreaId;
 
     private String applyLicensePlateParentAreaId;
@@ -637,12 +637,12 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
-        if(vehicleInformationDO!=null){
-            loanCarInfoVO.setApplyLicensePlateAreaId(vehicleInformationDO.getApply_license_plate_area_id() == null?null:vehicleInformationDO.getApply_license_plate_area_id().toString());
-            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(vehicleInformationDO.getApply_license_plate_area_id(),new Byte("0"));
-            loanCarInfoVO.setApplyLicensePlateParentAreaId(baseAreaDO == null?null:baseAreaDO.getParentAreaId().toString());
+        if (vehicleInformationDO != null) {
+            loanCarInfoVO.setApplyLicensePlateAreaId(vehicleInformationDO.getApply_license_plate_area_id() == null ? null : vehicleInformationDO.getApply_license_plate_area_id().toString());
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(vehicleInformationDO.getApply_license_plate_area_id(), new Byte("0"));
+            loanCarInfoVO.setApplyLicensePlateParentAreaId(baseAreaDO == null ? null : baseAreaDO.getParentAreaId().toString());
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
-            loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null?null:vehicleInformationDO.getLicense_plate_type().toString());
+            loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());
         }
 
@@ -956,7 +956,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * @param taskDefinitionKey
      */
     private void fillCurrentTask(LoanOrderVO loanOrderVO, String taskDefinitionKey) {
-        String currentTask = PROCESS_MAP.get(taskDefinitionKey);
+        String currentTask = LoanProcessEnum.getNameByCode(taskDefinitionKey);
         loanOrderVO.setCurrentTask(currentTask);
     }
 

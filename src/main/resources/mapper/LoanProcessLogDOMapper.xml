@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LoanProcessLogDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessLogDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="task_definition_key" property="taskDefinitionKey" jdbcType="VARCHAR"/>
+        <result column="action" property="action" jdbcType="TINYINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, order_id, task_definition_key, action, user_id, user_name, info, create_time
+    </sql>
+
+    <select id="lastLogByOrderIdAndTaskDefinitionKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_log
+        WHERE
+        order_id = #{orderId}
+        AND task_definition_key = #{taskDefinitionKey}
+    </select>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_log
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_log
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from loan_process_log
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessLogDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into loan_process_log (id, order_id, task_definition_key,
+        action, user_id, user_name,
+        info, create_time)
+        values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{taskDefinitionKey,jdbcType=VARCHAR},
+        #{action,jdbcType=TINYINT}, #{userId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR},
+        #{info,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessLogDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into loan_process_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="taskDefinitionKey != null">
+                task_definition_key,
+            </if>
+            <if test="action != null">
+                action,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="info != null">
+                info,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="taskDefinitionKey != null">
+                #{taskDefinitionKey,jdbcType=VARCHAR},
+            </if>
+            <if test="action != null">
+                #{action,jdbcType=TINYINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="info != null">
+                #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessLogDO">
+        update loan_process_log
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="taskDefinitionKey != null">
+                task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR},
+            </if>
+            <if test="action != null">
+                action = #{action,jdbcType=TINYINT},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessLogDO">
+    update loan_process_log
+    set order_id = #{orderId,jdbcType=BIGINT},
+      task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR},
+      action = #{action,jdbcType=TINYINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      user_name = #{userName,jdbcType=VARCHAR},
+      info = #{info,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

@@ -1,5 +1,7 @@
 package com.yunche.loan.config.constant;
 
+import org.apache.commons.lang3.EnumUtils;
+
 /**
  * Created by zhouguoliang on 2018/1/31.
  */
@@ -8,7 +10,7 @@ public enum LoanProcessEnum {
     START("start_process", "流程启动"),
     END("end_process", "流程终止"),
 
-    CREDIT_APPLY("usertask_credit_apply", "发起征信申请"),
+    CREDIT_APPLY("usertask_credit_apply", "征信申请"),
     BANK_CREDIT_RECORD("usertask_bank_credit_record", "银行征信录入"),
     SOCIAL_CREDIT_RECORD("usertask_social_credit_record", "社会征信录入"),
 

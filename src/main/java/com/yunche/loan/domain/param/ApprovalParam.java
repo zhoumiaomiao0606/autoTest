@@ -46,6 +46,10 @@ public class ApprovalParam {
      */
     private String supplementInfo;
     /**
+     * 是否需要记录日志    默认：true
+     */
+    private boolean needLog = true;
+    /**
      * 增补源头任务节点
      */
 //    private String supplementOriginTask;

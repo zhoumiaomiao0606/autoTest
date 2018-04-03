@@ -256,7 +256,7 @@
         -->
 
 
-        <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
+        <table tableName="loan_process_log" domainObjectName="LoanProcessLogDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 

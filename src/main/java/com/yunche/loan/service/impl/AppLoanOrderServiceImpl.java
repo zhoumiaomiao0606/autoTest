@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
@@ -1177,7 +1178,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
                         AppOrderProcessVO.Task task = new AppOrderProcessVO.Task();
                         // 任务节点名
-                        task.setTask(PROCESS_MAP.get(e.getTaskDefinitionKey()));
+                        task.setTask(LoanProcessEnum.getNameByCode(e.getTaskDefinitionKey()));
                         //办理时间
                         task.setApprovalTime(e.getEndTime());
                         // 任务状态

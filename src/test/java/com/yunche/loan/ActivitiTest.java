@@ -1,9 +1,6 @@
 package com.yunche.loan;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.util.ApprovalInfoUtil;
-import com.yunche.loan.domain.vo.ApprovalInfoVO;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -35,17 +32,6 @@ public class ActivitiTest extends BaseTest {
 
     @Autowired
     private RuntimeService runtimeService;
-
-    @Autowired
-    private ApprovalInfoUtil approvalInfoUtil;
-
-    @Test
-    public void test23() {
-        String orderId = "2018032315372694978";
-        String taskDefinitionKey = "usertask_credit_apply";
-        ApprovalInfoVO approvalInfoVO = approvalInfoUtil.getApprovalInfoVO(Long.valueOf(orderId), taskDefinitionKey);
-        System.out.println(JSON.toJSONString(approvalInfoVO));
-    }
 
 
     @Test
