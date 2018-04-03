@@ -48,4 +48,5 @@ public interface LoanCustomerDOMapper {
      * @return
      */
     String getFilesById(Long id);
+
 }

@@ -17,11 +17,14 @@ public class LoanProcessVariableConst {
      */
     public static final String PROCESS_VARIABLE_REJECT_ORIGIN_TASK = "reject_origin_task";
 
-
     /**
      * 审核备注
      */
     public static final String PROCESS_VARIABLE_INFO = "info";
+    /**
+     * 打回目标节点
+     */
+    public static final String PROCESS_VARIABLE_TARGET = "target";
     /**
      * 电审进度：审核角色进程
      */

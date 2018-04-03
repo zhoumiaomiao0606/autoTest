@@ -14,14 +14,15 @@ public enum LoanProcessEnum {
 
     BANK_SOCIAL_CREDIT_RECORD_FILTER("filter_bank_social_credit_record", "征信记录拦截任务"),
     LOAN_APPLY_VISIT_VERIFY_FILTER("filter_loan_apply_visit_verify", "业务申请&上门调查拦截任务"),
-
-    BUSINESS_MATERIAL_REVIEW_FILTER("filter_business_material_review", "业务审批&资料审批拦截任务"),
+//    BUSINESS_MATERIAL_REVIEW_FILTER("filter_business_material_review", "业务审批&资料审批拦截任务"),
 
     LOAN_APPLY("usertask_loan_apply", "业务申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),
 
     TELEPHONE_VERIFY("usertask_telephone_verify", "电审信息"),
+
     INFO_SUPPLEMENT("usertask_info_supplement", "资料增补"),
+    CREDIT_SUPPLEMENT("usertask_credit_supplement", "征信增补"),
 
     FINANCIAL_SCHEME("servicetask_financial_scheme", "金融方案展示"),
 

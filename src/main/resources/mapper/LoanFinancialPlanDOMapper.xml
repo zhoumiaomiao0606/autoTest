@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.LoanFinancialPlanDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="car_price" jdbcType="DECIMAL" property="carPrice"/>
-        <result column="financial_product_id" jdbcType="BIGINT" property="financialProductId"/>
-        <result column="financial_product_name" jdbcType="VARCHAR" property="financialProductName"/>
-        <result column="bank" jdbcType="VARCHAR" property="bank"/>
-        <result column="sign_rate" jdbcType="DECIMAL" property="signRate"/>
-        <result column="loan_amount" jdbcType="DECIMAL" property="loanAmount"/>
-        <result column="loan_time" jdbcType="INTEGER" property="loanTime"/>
-        <result column="down_payment_ratio" jdbcType="DECIMAL" property="downPaymentRatio"/>
-        <result column="down_payment_money" jdbcType="DECIMAL" property="downPaymentMoney"/>
-        <result column="bank_period_principal" jdbcType="DECIMAL" property="bankPeriodPrincipal"/>
-        <result column="bank_fee" jdbcType="DECIMAL" property="bankFee"/>
-        <result column="principal_interest_sum" jdbcType="DECIMAL" property="principalInterestSum"/>
-        <result column="first_month_repay" jdbcType="DECIMAL" property="firstMonthRepay"/>
-        <result column="each_month_repay" jdbcType="DECIMAL" property="eachMonthRepay"/>
-        <result column="cash_deposit" jdbcType="DECIMAL" property="cashDeposit"/>
-        <result column="extra_fee" jdbcType="DECIMAL" property="extraFee"/>
-        <result column="status" jdbcType="TINYINT" property="status"/>
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanFinancialPlanDO" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="car_price" property="carPrice" jdbcType="DECIMAL" />
+        <result column="financial_product_id" property="financialProductId" jdbcType="BIGINT" />
+        <result column="financial_product_name" property="financialProductName" jdbcType="VARCHAR" />
+        <result column="bank" property="bank" jdbcType="VARCHAR" />
+        <result column="sign_rate" property="signRate" jdbcType="DECIMAL" />
+        <result column="loan_amount" property="loanAmount" jdbcType="DECIMAL" />
+        <result column="loan_time" property="loanTime" jdbcType="INTEGER" />
+        <result column="down_payment_ratio" property="downPaymentRatio" jdbcType="DECIMAL" />
+        <result column="down_payment_money" property="downPaymentMoney" jdbcType="DECIMAL" />
+        <result column="bank_period_principal" property="bankPeriodPrincipal" jdbcType="DECIMAL" />
+        <result column="bank_fee" property="bankFee" jdbcType="DECIMAL" />
+        <result column="principal_interest_sum" property="principalInterestSum" jdbcType="DECIMAL" />
+        <result column="first_month_repay" property="firstMonthRepay" jdbcType="DECIMAL" />
+        <result column="each_month_repay" property="eachMonthRepay" jdbcType="DECIMAL" />
+        <result column="status" property="status" jdbcType="TINYINT" />
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
+        <result column="feature" property="feature" jdbcType="VARCHAR" />
+        <result column="cash_deposit" property="cashDeposit" jdbcType="DECIMAL" />
+        <result column="extra_fee" property="extraFee" jdbcType="DECIMAL" />
+        <result column="appraisal" property="appraisal" jdbcType="DECIMAL" />
     </resultMap>
 
-    <sql id="Base_Column_List">
-        id, car_price, financial_product_id, financial_product_name, bank, sign_rate, loan_amount,
-        loan_time, down_payment_ratio, down_payment_money, bank_period_principal, bank_fee,
-        principal_interest_sum, first_month_repay, each_month_repay,cash_deposit,extra_fee,status, gmt_create,
-        gmt_modify, feature
-    </sql>
+    <sql id="Base_Column_List" >
+    id, car_price, financial_product_id, financial_product_name, bank, sign_rate, loan_amount,
+    loan_time, down_payment_ratio, down_payment_money, bank_period_principal, bank_fee,
+    principal_interest_sum, first_month_repay, each_month_repay, status, gmt_create,
+    gmt_modify, feature, cash_deposit, extra_fee, appraisal
+  </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -44,206 +45,211 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id"
-                   order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO" >
         insert into loan_financial_plan
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
                 id,
             </if>
-            <if test="carPrice != null">
+            <if test="carPrice != null" >
                 car_price,
             </if>
-            <if test="financialProductId != null">
+            <if test="financialProductId != null" >
                 financial_product_id,
             </if>
-            <if test="financialProductName != null">
+            <if test="financialProductName != null" >
                 financial_product_name,
             </if>
-            <if test="bank != null">
+            <if test="bank != null" >
                 bank,
             </if>
-            <if test="signRate != null">
+            <if test="signRate != null" >
                 sign_rate,
             </if>
-            <if test="loanAmount != null">
+            <if test="loanAmount != null" >
                 loan_amount,
             </if>
-            <if test="loanTime != null">
+            <if test="loanTime != null" >
                 loan_time,
             </if>
-            <if test="downPaymentRatio != null">
+            <if test="downPaymentRatio != null" >
                 down_payment_ratio,
             </if>
-            <if test="downPaymentMoney != null">
+            <if test="downPaymentMoney != null" >
                 down_payment_money,
             </if>
-            <if test="bankPeriodPrincipal != null">
+            <if test="bankPeriodPrincipal != null" >
                 bank_period_principal,
             </if>
-            <if test="bankFee != null">
+            <if test="bankFee != null" >
                 bank_fee,
             </if>
-            <if test="principalInterestSum != null">
+            <if test="principalInterestSum != null" >
                 principal_interest_sum,
             </if>
-            <if test="firstMonthRepay != null">
+            <if test="firstMonthRepay != null" >
                 first_month_repay,
             </if>
-            <if test="eachMonthRepay != null">
+            <if test="eachMonthRepay != null" >
                 each_month_repay,
             </if>
-            <if test="cashDeposit != null">
-                cash_deposit,
-            </if>
-            <if test="extraFee != null">
-                extra_fee,
-            </if>
-            <if test="status != null">
+            <if test="status != null" >
                 status,
             </if>
-            <if test="gmtCreate != null">
+            <if test="gmtCreate != null" >
                 gmt_create,
             </if>
-            <if test="gmtModify != null">
+            <if test="gmtModify != null" >
                 gmt_modify,
             </if>
-            <if test="feature != null">
+            <if test="feature != null" >
                 feature,
             </if>
+            <if test="cashDeposit != null" >
+                cash_deposit,
+            </if>
+            <if test="extraFee != null" >
+                extra_fee,
+            </if>
+            <if test="appraisal != null" >
+                appraisal,
+            </if>
         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
                 #{id,jdbcType=BIGINT},
             </if>
-            <if test="carPrice != null">
+            <if test="carPrice != null" >
                 #{carPrice,jdbcType=DECIMAL},
             </if>
-            <if test="financialProductId != null">
+            <if test="financialProductId != null" >
                 #{financialProductId,jdbcType=BIGINT},
             </if>
-            <if test="financialProductName != null">
+            <if test="financialProductName != null" >
                 #{financialProductName,jdbcType=VARCHAR},
             </if>
-            <if test="bank != null">
+            <if test="bank != null" >
                 #{bank,jdbcType=VARCHAR},
             </if>
-            <if test="signRate != null">
+            <if test="signRate != null" >
                 #{signRate,jdbcType=DECIMAL},
             </if>
-            <if test="loanAmount != null">
+            <if test="loanAmount != null" >
                 #{loanAmount,jdbcType=DECIMAL},
             </if>
-            <if test="loanTime != null">
+            <if test="loanTime != null" >
                 #{loanTime,jdbcType=INTEGER},
             </if>
-            <if test="downPaymentRatio != null">
+            <if test="downPaymentRatio != null" >
                 #{downPaymentRatio,jdbcType=DECIMAL},
             </if>
-            <if test="downPaymentMoney != null">
+            <if test="downPaymentMoney != null" >
                 #{downPaymentMoney,jdbcType=DECIMAL},
             </if>
-            <if test="bankPeriodPrincipal != null">
+            <if test="bankPeriodPrincipal != null" >
                 #{bankPeriodPrincipal,jdbcType=DECIMAL},
             </if>
-            <if test="bankFee != null">
+            <if test="bankFee != null" >
                 #{bankFee,jdbcType=DECIMAL},
             </if>
-            <if test="principalInterestSum != null">
+            <if test="principalInterestSum != null" >
                 #{principalInterestSum,jdbcType=DECIMAL},
             </if>
-            <if test="firstMonthRepay != null">
+            <if test="firstMonthRepay != null" >
                 #{firstMonthRepay,jdbcType=DECIMAL},
             </if>
-            <if test="eachMonthRepay != null">
+            <if test="eachMonthRepay != null" >
                 #{eachMonthRepay,jdbcType=DECIMAL},
             </if>
-            <if test="cashDeposit != null">
-                #{cashDeposit,jdbcType=DECIMAL},
-            </if>
-            <if test="extraFee != null">
-                #{extraFee,jdbcType=DECIMAL},
-            </if>
-            <if test="status != null">
+            <if test="status != null" >
                 #{status,jdbcType=TINYINT},
             </if>
-            <if test="gmtCreate != null">
+            <if test="gmtCreate != null" >
                 #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
-            <if test="gmtModify != null">
+            <if test="gmtModify != null" >
                 #{gmtModify,jdbcType=TIMESTAMP},
             </if>
-            <if test="feature != null">
+            <if test="feature != null" >
                 #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="cashDeposit != null" >
+                #{cashDeposit,jdbcType=DECIMAL},
+            </if>
+            <if test="extraFee != null" >
+                #{extraFee,jdbcType=DECIMAL},
+            </if>
+            <if test="appraisal != null" >
+                #{appraisal,jdbcType=DECIMAL},
             </if>
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO" >
         update loan_financial_plan
-        <set>
-            <if test="carPrice != null">
+        <set >
+            <if test="carPrice != null" >
                 car_price = #{carPrice,jdbcType=DECIMAL},
             </if>
-            <if test="financialProductId != null">
+            <if test="financialProductId != null" >
                 financial_product_id = #{financialProductId,jdbcType=BIGINT},
             </if>
-            <if test="financialProductName != null">
+            <if test="financialProductName != null" >
                 financial_product_name = #{financialProductName,jdbcType=VARCHAR},
             </if>
-            <if test="bank != null">
+            <if test="bank != null" >
                 bank = #{bank,jdbcType=VARCHAR},
             </if>
-            <if test="signRate != null">
+            <if test="signRate != null" >
                 sign_rate = #{signRate,jdbcType=DECIMAL},
             </if>
-            <if test="loanAmount != null">
+            <if test="loanAmount != null" >
                 loan_amount = #{loanAmount,jdbcType=DECIMAL},
             </if>
-            <if test="loanTime != null">
+            <if test="loanTime != null" >
                 loan_time = #{loanTime,jdbcType=INTEGER},
             </if>
-            <if test="downPaymentRatio != null">
+            <if test="downPaymentRatio != null" >
                 down_payment_ratio = #{downPaymentRatio,jdbcType=DECIMAL},
             </if>
-            <if test="downPaymentMoney != null">
+            <if test="downPaymentMoney != null" >
                 down_payment_money = #{downPaymentMoney,jdbcType=DECIMAL},
             </if>
-            <if test="bankPeriodPrincipal != null">
+            <if test="bankPeriodPrincipal != null" >
                 bank_period_principal = #{bankPeriodPrincipal,jdbcType=DECIMAL},
             </if>
-            <if test="bankFee != null">
+            <if test="bankFee != null" >
                 bank_fee = #{bankFee,jdbcType=DECIMAL},
             </if>
-            <if test="principalInterestSum != null">
+            <if test="principalInterestSum != null" >
                 principal_interest_sum = #{principalInterestSum,jdbcType=DECIMAL},
             </if>
-            <if test="firstMonthRepay != null">
+            <if test="firstMonthRepay != null" >
                 first_month_repay = #{firstMonthRepay,jdbcType=DECIMAL},
             </if>
-            <if test="eachMonthRepay != null">
+            <if test="eachMonthRepay != null" >
                 each_month_repay = #{eachMonthRepay,jdbcType=DECIMAL},
             </if>
-            <if test="cashDeposit != null">
-                cash_deposit = #{cash_deposit,jdbcType=DECIMAL},
-            </if>
-            <if test="extraFee != null">
-                extra_fee = #{extra_fee,jdbcType=DECIMAL},
-            </if>
-            <if test="status != null">
+            <if test="status != null" >
                 status = #{status,jdbcType=TINYINT},
             </if>
-            <if test="gmtCreate != null">
+            <if test="gmtCreate != null" >
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
-            <if test="gmtModify != null">
+            <if test="gmtModify != null" >
                 gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
             </if>
-            <if test="feature != null">
+            <if test="feature != null" >
                 feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="cashDeposit != null" >
+                cash_deposit = #{cashDeposit,jdbcType=DECIMAL},
+            </if>
+            <if test="extraFee != null" >
+                extra_fee = #{extraFee,jdbcType=DECIMAL},
+            </if>
+            <if test="appraisal != null" >
+                appraisal = #{appraisal,jdbcType=DECIMAL},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

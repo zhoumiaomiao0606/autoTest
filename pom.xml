@@ -196,11 +196,11 @@
         <!--Http 请求-->
 
         <!--热部署-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional> <!-- 这个需要为 true 才有效 -->
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-devtools</artifactId>-->
+            <!--<optional>true</optional> &lt;!&ndash; 这个需要为 true 才有效 &ndash;&gt;-->
+        <!--</dependency>-->
         <!--热部署-->
 
         <!-- oss -->

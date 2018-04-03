@@ -31,6 +31,8 @@ public interface LoanOrderDOMapper {
      */
     Long getCustIdById(Long id);
 
+    Long getVehicleInformationIdById(Long id);
+
     /**
      * 根据流程实例ID获取业务单
      *

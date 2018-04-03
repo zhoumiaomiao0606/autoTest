@@ -38,6 +38,13 @@
     </select>
 
     <!--getLoanCarInfoIdById-->
+    <select id="getVehicleInformationIdById" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select vehicle_information_id
+        from loan_order
+        WHERE id = #{id}
+    </select>
+
+    <!--getLoanCarInfoIdById-->
     <select id="getLoanCarInfoIdById" parameterType="java.lang.Long" resultType="java.lang.Long">
         select loan_car_info_id
         from loan_order

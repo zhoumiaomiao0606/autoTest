@@ -50,4 +50,10 @@ public class LoanFinancialPlanVO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private BigDecimal cashDeposit;
+
+    private BigDecimal extraFee;
+
+    private BigDecimal appraisal;
 }

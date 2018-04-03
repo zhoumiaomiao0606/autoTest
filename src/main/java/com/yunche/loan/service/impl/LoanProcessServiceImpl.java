@@ -91,6 +91,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 征信增补
         execCreditSupplementTask(approval, loanOrderDO.getProcessInstId());
 
+        // log
+        log(approval);
+
         // 获取任务
         Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
 
@@ -114,16 +117,25 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 推送
         push(loanOrderDO, approval.getTaskDefinitionKey(), approval.getAction(), approval);
 
-        return ResultBean.ofSuccess(null, "[" + task.getName() + "]任务审核成功");
+        return ResultBean.ofSuccess(null, "[" + task.getName() + "]任务执行成功");
+    }
+
+    private void log(ApprovalParam approval) {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+
+
     }
 
     private void execCreditSupplementTask(ApprovalParam approval, String processInstanceId) {
         // 监听
 
-        boolean isCreditSupplementTask = CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_AUTO.equals(approval.getAction());
+        boolean isCreditSupplementTask = CREDIT_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction());
+
         if (!isCreditSupplementTask) {
             return;
         }
+
+        approval.setTaskDefinitionKey_(approval.getTaskDefinitionKey());
 
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(approval.getOrderId());
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
@@ -143,7 +155,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approval.getOrderId(), null);
         Preconditions.checkNotNull(loanOrderDO, "订单不存在");
 
-        tasks.parallelStream()
+//        Map<String, Object> variables = Maps.newHashMap();
+//        ApprovalParam autoRejectApproval = new ApprovalParam();
+//        autoRejectApproval.setTaskDefinitionKey();
+//        autoRejectApproval.setAction(ACTION_REJECT_MANUAL);
+//        autoRejectApproval.setOrderId(approval.getOrderId());
+
+        approval.setAction(ACTION_REJECT_AUTO);
+
+        tasks.stream()
                 .filter(Objects::nonNull)
                 .forEach(task -> {
 
@@ -154,42 +174,68 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     boolean isLoanApplyVisitVerifyFilterTask = (LOAN_APPLY.getCode().equals(taskDefinitionKey) || VISIT_VERIFY.getCode().equals(taskDefinitionKey))
                             && !MATERIAL_REVIEW.getCode().equals(loanProcessDO.getLoanApplyRejectOrginTask());
 
+//                    boolean isCreditFilterTask = BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(task.getTaskDefinitionKey());
+//                    boolean isLoanVisitFilterTask = LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey());
 
-                    if (isBankAndSocialCreditRecordTask) {
-                        // 提交 -> filter -> 自动打回
-
-                        // 13W
-                        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-                        Preconditions.checkNotNull(loanBaseInfoDO, "贷款基本信息不存在");
-
-                        Byte loanAmount = loanBaseInfoDO.getLoanAmount();
-                        Preconditions.checkNotNull(loanAmount, "数据异常，贷款额为空！");
-
-                        Map<String, Object> variables = Maps.newHashMap();
-                        // 流程变量
-                        variables.put(PROCESS_VARIABLE_LOAN_AMOUNT, loanAmount);
-                        variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
-
-                        // PASS
-                        ApprovalParam currentTaskApproval = new ApprovalParam();
-                        currentTaskApproval.setOrderId(approval.getOrderId());
-                        currentTaskApproval.setAction(ACTION_PASS);
-                        currentTaskApproval.setTaskDefinitionKey(taskDefinitionKey);
-
-                        // 全部通行
-                        completeTask(task, variables, currentTaskApproval);
-
-                    } else if (isLoanApplyVisitVerifyFilterTask) {
-                        // 提交 -> filter -> 自动打回
-
-
+                    if (isBankAndSocialCreditRecordTask || isLoanApplyVisitVerifyFilterTask/* || isCreditFilterTask || isLoanVisitFilterTask*/) {
+                        approval.setTaskDefinitionKey(task.getTaskDefinitionKey());
+                        return;
                     }
+
+
+//                    else if (BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(task.getTaskDefinitionKey())
+//                            && !currentTask.getExecutionId().equals(task.getExecutionId())) {
+//                        // 其他filter"子任务"全部弃掉
+//                        taskService.complete(task.getId(), cancelVariables);
+//                    }
+
+//                    if (isBankAndSocialCreditRecordTask) {
+//                        // 提交 -> filter -> 自动打回
+//
+//                        currentTaskApproval.setOrderId(approval.getOrderId());
+//                        currentTaskApproval.setAction(ACTION_PASS);
+//                        currentTaskApproval.setTaskDefinitionKey(taskDefinitionKey);
+//
+//
+//                        // 13W
+//                        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+//                        Preconditions.checkNotNull(loanBaseInfoDO, "贷款基本信息不存在");
+//
+//                        Byte loanAmount = loanBaseInfoDO.getLoanAmount();
+//                        Preconditions.checkNotNull(loanAmount, "数据异常，贷款额为空！");
+//
+//                        // 流程变量
+//                        variables.put(PROCESS_VARIABLE_LOAN_AMOUNT, loanAmount);
+//                        variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
+//
+//                        // PASS
+//                        ApprovalParam currentTaskApproval = new ApprovalParam();
+//                        currentTaskApproval.setOrderId(approval.getOrderId());
+//                        currentTaskApproval.setAction(ACTION_PASS);
+//                        currentTaskApproval.setTaskDefinitionKey(taskDefinitionKey);
+//
+//                        // 全部通行
+//                        completeTask(task, variables, currentTaskApproval);
+//
+//                    } else if (isLoanApplyVisitVerifyFilterTask) {
+//                        // 提交 -> filter -> 自动打回
+//                        variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
+//
+//
+//                    } else {
+//                        // filter 任务 -> 自动打回
+//                        variables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT_AUTO);
+//
+//
+//                    }
 
                 });
 
 
         // 从 ServiceTask 节点开始
 
+
+//        return ResultBean.ofSuccess(null, "发起【征信增补】成功");
     }
 
     /**
@@ -343,6 +389,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 })
                 .collect(Collectors.toList());
 
+        // 【征信增补】
+        if (ACTION_REJECT_AUTO.equals(approval.getAction()) && CREDIT_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey_())) {
+//            HashMap<String, Object> variables_ = Maps.newHashMap();
+//            variables_.putAll(variables);
+//            EmployeeDO loginUser = SessionUtils.getLoginUser();
+//            ApprovalInfoVO approvalInfoVO = new ApprovalInfoVO(loginUser.getId(), loginUser.getName(), CREDIT_SUPPLEMENT.getCode(), ACTION_REJECT_AUTO, approval.getInfo());
+//            variables_.put(task.getId() + "征信增补", approvalInfoVO);
+//            taskService.setVariables(task.getId(), variables_);
+        }
+
         // 执行任务
         taskService.complete(task.getId(), variables);
 
@@ -373,7 +429,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 更新当前执行的任务状态
         Byte taskProcessStatus = null;
-        if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+        if (ACTION_REJECT_MANUAL.equals(approval.getAction()) || ACTION_REJECT_AUTO.equals(approval.getAction())) {
             taskProcessStatus = TASK_PROCESS_NOT_REACH;
         } else {
             taskProcessStatus = TASK_PROCESS_DONE;
@@ -640,8 +696,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     completeTask(task, variables, approval);
                 }
             }
-        } else {
-            // 否则，直接提交     -含：打回、弃单
+        } else if (ACTION_CANCEL.equals(approval.getAction())) {
+            // 弃单，直接提交
+            completeTask(task, variables, approval);
+        } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+            // 手动打回
+            variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY.getCode());
+            completeTask(task, variables, approval);
+        } else if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
+            // 自动打回
+            variables.put(PROCESS_VARIABLE_TARGET, CREDIT_APPLY.getCode());
             completeTask(task, variables, approval);
         }
     }
@@ -741,7 +805,28 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             else if (ACTION_CANCEL.equals(approval.getAction())) {
                 dealCancelTask(processInstId);
             }
+            // AUTO_REJECT
+            else if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
+                dealLoanApplyVisitVerifyAutoRejectTask(currentTask, tasks, approval);
+            }
         }
+    }
+
+    /**
+     * 【业务申请】&【上门调查】自动打回任务
+     *
+     * @param currentTask
+     * @param tasks
+     * @param approval
+     */
+    private void dealLoanApplyVisitVerifyAutoRejectTask(Task currentTask, List<Task> tasks, ApprovalParam approval) {
+        // 打回
+        dealLoanApplyVisitVerifyAutoRejectTask(currentTask, tasks);
+
+        // 自动提交打回的【征信申请】
+        approval.setTaskDefinitionKey(CREDIT_APPLY.getCode());
+        approval.setAction(ACTION_PASS);
+        approval(approval);
     }
 
     /**
@@ -790,39 +875,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 业务审核 & 资料审核 拦截
-     *
-     * @param currentTask
-     * @param processInstId
-     * @param taskDefinitionKey
-     * @param action
-     * @param variables
-     */
-    private void doBusinessMaterialReviewFilterTask(Task currentTask, String processInstId, String taskDefinitionKey, Integer action,
-                                                    Map<String, Object> variables) {
-        // 执行拦截任务
-        if (isBusinessMaterialReviewFilterTask(taskDefinitionKey)) {
-            // 获取所有正在执行的并行任务
-            List<Task> tasks = taskService.createTaskQuery()
-                    .processInstanceId(processInstId)
-                    .list();
-
-            // PASS
-            if (ACTION_PASS.equals(action)) {
-                dealPassTask1(currentTask, tasks);
-            }
-            // REJECT
-            else if (ACTION_REJECT_MANUAL.equals(action)) {
-                dealRejectTask2(currentTask, tasks);
-            }
-            // CANCEL
-            else if (ACTION_CANCEL.equals(action)) {
-                dealCancelTask3(processInstId, tasks);
-            }
-        }
-    }
-
-    /**
      * 征信申请记录拦截
      *
      * @param currentTask
@@ -852,7 +904,28 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             else if (ACTION_CANCEL.equals(approval.getAction())) {
                 dealCancelTask(currentTask.getProcessInstanceId());
             }
+            // AUTO_REJECT
+            else if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
+                dealCreditRecordAutoRejectTask(currentTask, tasks, approval);
+            }
         }
+    }
+
+    /**
+     * 【银行征信】&【社会征信】自动打回任务
+     *
+     * @param currentTask
+     * @param tasks
+     * @param approval
+     */
+    private void dealCreditRecordAutoRejectTask(Task currentTask, List<Task> tasks, ApprovalParam approval) {
+        // 打回
+        dealRejectTask(currentTask, tasks);
+
+        // 自动提交打回的【征信申请】
+        approval.setTaskDefinitionKey(CREDIT_APPLY.getCode());
+        approval.setAction(ACTION_PASS);
+        approval(approval);
     }
 
     @Override
@@ -1299,189 +1372,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private boolean isLoanApplyVisitVerifyFilterTask(String taskDefinitionKey, Map<String, Object> variables) {
         // 业务申请 或 上门调查    但是非【资料审核】打回
-        boolean isBusinessMaterialReviewFilterTask = (LOAN_APPLY.getCode().equals(taskDefinitionKey) || VISIT_VERIFY.getCode().equals(taskDefinitionKey))
+        boolean isLoanApplyVisitVerifyFilterTask = (LOAN_APPLY.getCode().equals(taskDefinitionKey) || VISIT_VERIFY.getCode().equals(taskDefinitionKey))
                 && !MATERIAL_REVIEW.getCode().equals(variables.get(PROCESS_VARIABLE_REJECT_ORIGIN_TASK));
-        return isBusinessMaterialReviewFilterTask;
+        return isLoanApplyVisitVerifyFilterTask;
     }
-
-    /**
-     * 并行任务 -通过
-     *
-     * @param currentTask
-     * @param tasks
-     */
-    private void dealPassTask1(Task currentTask, List<Task> tasks) {
-
-        // 是否都通过了
-        if (!CollectionUtils.isEmpty(tasks)) {
-            long count = tasks.parallelStream()
-                    .filter(Objects::nonNull)
-                    .filter(e -> !BUSINESS_MATERIAL_REVIEW_FILTER.getCode().equals(e.getTaskDefinitionKey()))
-                    .count();
-
-            // 是 -> 放行
-            if (count == 0) {
-
-                // 仅保留一个子任务  当做 -> 主任务
-                final Task[] mainTask = {null};
-
-                // 其他子任务全部弃掉
-                Map<String, Object> variables = Maps.newConcurrentMap();
-
-                tasks.stream()
-                        .filter(Objects::nonNull)
-                        .forEach((Task task) -> {
-
-                            if (currentTask.getExecutionId().equals(task.getExecutionId())) {
-                                // 拿到当前子任务
-                                mainTask[0] = task;
-                            } else {
-                                // 子任务 -> 弃单
-                                variables.put(PROCESS_VARIABLE_ACTION, ACTION_CANCEL);
-                                taskService.complete(task.getId(), variables);
-                            }
-
-                        });
-
-                // "主任务"  ->  通过
-                Task currentFilterTask = mainTask[0];
-                if (null != currentFilterTask) {
-                    variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
-                    taskService.complete(currentFilterTask.getId(), variables);
-                }
-            }
-
-            // 否 -> 等待  不做处理
-        }
-    }
-
-    /**
-     * 并行任务 -打回
-     *
-     * @param currentTask
-     * @param tasks
-     */
-    private void dealRejectTask2(Task currentTask, List<Task> tasks) {
-        // 打回 -> 结束掉其他子任务，然后打回
-        if (!CollectionUtils.isEmpty(tasks)) {
-
-            // 仅保留一个子任务  当做 -> 主任务
-            final Task[] mainTask = {null};
-
-            // 其他子任务全部  提交&弃掉
-            if (!CollectionUtils.isEmpty(tasks)) {
-
-                Map<String, Object> variables = Maps.newHashMap();
-                Map<String, Object> cancelVariables = Maps.newHashMap();
-                variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
-                cancelVariables.put(PROCESS_VARIABLE_ACTION, ACTION_CANCEL);
-
-                tasks.stream()
-                        .filter(Objects::nonNull)
-                        .forEach((Task task) -> {
-
-                            if (currentTask.getExecutionId().equals(task.getExecutionId())) {
-                                // 拿到当前子任务
-                                mainTask[0] = task;
-                            } else {
-                                // 子任务
-                                if (!BUSINESS_MATERIAL_REVIEW_FILTER.getCode().equals(task.getTaskDefinitionKey())) {
-                                    if (MATERIAL_REVIEW.getCode().equals(task.getTaskDefinitionKey()) ||
-                                            BUSINESS_REVIEW.getCode().equals(task.getTaskDefinitionKey())) {
-                                        // action == 2 走拦截路线
-                                        taskService.complete(task.getId(), cancelVariables);
-                                    } else {
-                                        // 未提交 -> 先提交
-                                        taskService.complete(task.getId(), variables);
-                                    }
-                                } else {
-                                    // 已提交 -> 弃单
-                                    taskService.complete(task.getId(), cancelVariables);
-                                }
-                            }
-                        });
-
-                // "主任务"  ->  打回
-                Task currentFilterTask = mainTask[0];
-                if (null != currentFilterTask) {
-                    variables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT_MANUAL);
-                    taskService.complete(currentFilterTask.getId(), variables);
-                }
-
-                // 剩下子任务 -> 弃单
-                List<Task> taskList = taskService.createTaskQuery()
-                        .processInstanceId(currentTask.getProcessInstanceId())
-                        .list();
-                if (!CollectionUtils.isEmpty(taskList)) {
-                    // 刚提交 ->  再弃单
-                    taskList.stream()
-                            .filter(Objects::nonNull)
-                            .filter(task -> !currentFilterTask.getExecutionId().equals(task.getExecutionId()))
-                            .forEach(task -> {
-                                // 弃单
-                                taskService.complete(task.getId(), cancelVariables);
-                            });
-                }
-            }
-        }
-    }
-
-    /**
-     * 并行任务 -弃单
-     *
-     * @param processInstId
-     * @param tasks
-     */
-    private void dealCancelTask3(String processInstId, List<Task> tasks) {
-
-        // 弃单 -> 将所有子任务弃单
-        if (!CollectionUtils.isEmpty(tasks)) {
-
-            // 全部弃掉
-            if (!CollectionUtils.isEmpty(tasks)) {
-
-                Map<String, Object> passVariables = Maps.newHashMap();
-                Map<String, Object> cancelVariables = Maps.newHashMap();
-                passVariables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
-                cancelVariables.put(PROCESS_VARIABLE_ACTION, ACTION_CANCEL);
-
-                tasks.stream()
-                        .filter(Objects::nonNull)
-                        .forEach(task -> {
-                            if (!BUSINESS_MATERIAL_REVIEW_FILTER.getCode().equals(task.getTaskDefinitionKey())) {
-                                // 未提交 -> 先提交
-                                if (MATERIAL_REVIEW.getCode().equals(task.getTaskDefinitionKey()) ||
-                                        BUSINESS_REVIEW.getCode().equals(task.getTaskDefinitionKey())) {
-                                    // action == 2 走拦截路线
-                                    taskService.complete(task.getId(), cancelVariables);
-                                } else {
-                                    // 未提交 -> 先提交
-                                    taskService.complete(task.getId(), passVariables);
-                                }
-                            } else {
-                                // 已提交 -> 弃单
-                                taskService.complete(task.getId(), cancelVariables);
-                            }
-                        });
-
-
-                // 剩下子任务 -> 弃单
-                List<Task> taskList = taskService.createTaskQuery()
-                        .processInstanceId(processInstId)
-                        .list();
-                if (!CollectionUtils.isEmpty(taskList)) {
-                    // 刚提交 ->  再弃单
-                    taskList.stream()
-                            .filter(Objects::nonNull)
-                            .forEach(task -> {
-                                // 弃单
-                                taskService.complete(task.getId(), cancelVariables);
-                            });
-                }
-            }
-        }
-    }
-
 
     /**
      * 并行任务 -通过
@@ -1569,12 +1463,75 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // "主任务"  ->  打回
             Task currentFilterTask = onlyAsMainTask[0];
-            if (null == currentFilterTask) {
-
-            }
             Map<String, Object> rejectVariables = Maps.newHashMap();
             rejectVariables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT_MANUAL);
             taskService.complete(currentFilterTask.getId(), rejectVariables);
+        }
+    }
+
+    /**
+     * @param currentTask
+     * @param tasks
+     */
+    private void dealLoanApplyVisitVerifyAutoRejectTask(Task currentTask, List<Task> tasks) {
+
+        // 打回 -> 先提交-再弃单掉其他子任务， 然后打回
+        if (!CollectionUtils.isEmpty(tasks)) {
+
+            // 仅保留一个子任务  当做 -> 主任务
+            final Task[] onlyAsMainTask = {null};
+
+            // 其他子任务全部弃掉
+            if (!CollectionUtils.isEmpty(tasks)) {
+
+                Map<String, Object> passVariables = Maps.newHashMap();
+                Map<String, Object> cancelVariables = Maps.newHashMap();
+                passVariables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
+                cancelVariables.put(PROCESS_VARIABLE_ACTION, ACTION_CANCEL);
+
+                tasks.stream()
+                        .filter(Objects::nonNull)
+                        .forEach(task -> {
+
+                            if (currentTask.getExecutionId().equals(task.getExecutionId())) {
+                                // 拿到当前子任务
+                                onlyAsMainTask[0] = task;
+                            } else if (LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())) {
+                                // 其他filter任务 -> 弃单
+                                taskService.complete(task.getId(), cancelVariables);
+                            } else {
+                                // 子任务 -> 全部提交
+                                taskService.complete(task.getId(), passVariables);
+                            }
+
+                        });
+            }
+
+            List<Task> taskList = taskService.createTaskQuery()
+                    .processInstanceId(currentTask.getProcessInstanceId())
+                    .list();
+
+            if (!CollectionUtils.isEmpty(taskList)) {
+
+                Map<String, Object> cancelVariables = Maps.newHashMap();
+                cancelVariables.put(PROCESS_VARIABLE_ACTION, ACTION_CANCEL);
+
+                // filter任务
+                taskList.stream()
+                        .filter(Objects::nonNull)
+                        .filter(task -> LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())
+                                && !currentTask.getExecutionId().equals(task.getExecutionId()))
+                        .forEach(task -> {
+                            // 其他filter任务 -> 弃单
+                            taskService.complete(task.getId(), cancelVariables);
+                        });
+            }
+
+            // "主任务"  ->  自动打回
+            Task currentFilterTask = onlyAsMainTask[0];
+            Map<String, Object> autuRejectVariables = Maps.newHashMap();
+            autuRejectVariables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT_AUTO);
+            taskService.complete(currentFilterTask.getId(), autuRejectVariables);
         }
     }
 

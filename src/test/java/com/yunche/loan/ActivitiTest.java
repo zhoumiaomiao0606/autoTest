@@ -2,7 +2,7 @@ package com.yunche.loan;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.common.ApprovalInfoUtil;
+import com.yunche.loan.config.util.ApprovalInfoUtil;
 import com.yunche.loan.domain.vo.ApprovalInfoVO;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;

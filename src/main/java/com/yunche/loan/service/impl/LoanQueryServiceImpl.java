@@ -1,6 +1,6 @@
 package com.yunche.loan.service.impl;
 
-import com.yunche.loan.config.common.ApprovalInfoUtil;
+import com.yunche.loan.config.util.ApprovalInfoUtil;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.vo.ApprovalInfoVO;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @Service
 @Transactional

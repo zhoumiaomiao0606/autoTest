@@ -126,6 +126,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
 
+    @Autowired
+    private VehicleInformationService vehicleInformationService;
+
 
     @Override
     public ResultBean<List<LoanOrderVO>> query(LoanOrderQuery query) {
@@ -358,6 +361,15 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         ResultBean<Void> updateRelaResultBean = loanProcessOrderService.update(loanOrderDO);
         Preconditions.checkArgument(updateRelaResultBean.getSuccess(), updateRelaResultBean.getMsg());
 
+        VehicleInformationUpdateParam  vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
+        vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
+        vehicleInformationUpdateParam.setApply_license_plate_area_id(loanCarInfoParam.getApplyLicensePlateAreaId());
+        vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
+        vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+        vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+
+        vehicleInformationService.update(vehicleInformationUpdateParam);
+
         return ResultBean.ofSuccess(createResultBean.getData(), "创建成功");
     }
 
@@ -371,6 +383,14 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
 
         ResultBean<Void> resultBean = loanCarInfoService.update(loanCarInfoDO);
+        VehicleInformationUpdateParam  vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
+        vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
+        vehicleInformationUpdateParam.setApply_license_plate_area_id(loanCarInfoParam.getApplyLicensePlateAreaId());
+        vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
+        vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+        vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+
+        vehicleInformationService.update(vehicleInformationUpdateParam);
         return resultBean;
     }
 
@@ -575,6 +595,25 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         return ResultBean.ofSuccess(infoSupplementVO);
     }
+
+
+
+    private String applyLicensePlateAreaId;
+
+    private String applyLicensePlateParentAreaId;
+
+    private String licensePlateType;
+
+    private String color;
+
+    private String nowDrivingLicenseOwner;
+
+    @Autowired
+    private VehicleInformationDOMapper vehicleInformationDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+
     @Override
     public ResultBean<LoanCarInfoVO> loanCarInfoDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
@@ -595,6 +634,18 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             BeanUtils.copyProperties(loanCarInfoDO, partnerAccountInfo);
             loanCarInfoVO.setPartnerAccountInfo(partnerAccountInfo);
         }
+
+        Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
+        VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
+        if(vehicleInformationDO!=null){
+            loanCarInfoVO.setApplyLicensePlateAreaId(vehicleInformationDO.getApply_license_plate_area_id() == null?null:vehicleInformationDO.getApply_license_plate_area_id().toString());
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(vehicleInformationDO.getApply_license_plate_area_id(),new Byte("0"));
+            loanCarInfoVO.setApplyLicensePlateParentAreaId(baseAreaDO == null?null:baseAreaDO.getParentAreaId().toString());
+            loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
+            loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null?null:vehicleInformationDO.getLicense_plate_type().toString());
+            loanCarInfoVO.setColor(vehicleInformationDO.getColor());
+        }
+
 
         return ResultBean.ofSuccess(loanCarInfoVO);
     }
@@ -1078,11 +1129,11 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     /**
      * update贷款金融方案
      *
-     * @param loanFinancialPlanVO
+     * @param loanFinancialPlanParam
      */
-    private ResultBean<Long> updateLoanFinancialPlan(LoanFinancialPlanVO loanFinancialPlanVO) {
+    private ResultBean<Long> updateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
-        BeanUtils.copyProperties(loanFinancialPlanVO, loanFinancialPlanDO);
+        BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
         loanFinancialPlanDO.setGmtModify(new Date());
 
         int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
@@ -1155,7 +1206,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoDO.setCarDetailName(carDetail.getName());
         }
 
-        LoanCarInfoParam.PartnerAccountInfo partnerAccountInfo = loanCarInfoParam.getPartnerAccountInfo();
+        AppLoanCarInfoParam.PartnerAccountInfo partnerAccountInfo = loanCarInfoParam.getPartnerAccountInfo();
         if (null != partnerAccountInfo) {
             BeanUtils.copyProperties(partnerAccountInfo, loanCarInfoDO);
         }

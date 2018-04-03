@@ -30,17 +30,49 @@ public class LoanCarInfoParam {
     /**
      * 合伙人收款账户信息
      */
-    private PartnerAccountInfo partnerAccountInfo;
+    private AppLoanCarInfoParam.PartnerAccountInfo partnerAccountInfo;
     /**
      * 备注
      */
     private String info;
+
+    private Long carDetailId;
+
+    private String carDetailName;
+
+    private Long partnerId;
+
+    private String partnerName;
+
+    private String openBank;
+
+    private String accountName;
+
+    private String bankAccount;
+
+    private Byte payMonth;
 
     private Byte status;
 
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String feature;
+
+    private Date firstRegisterDate;
+
+    private String businessSource;
+
+    private String cooperationDealer;
+
+    private String applyLicensePlateAreaId;
+
+    private String licensePlateType;
+
+    private String color;
+
+    private String nowDrivingLicenseOwner;
 
     @Data
     public static class PartnerAccountInfo {
