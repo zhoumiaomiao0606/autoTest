@@ -18,4 +18,6 @@ public interface BankCardRecordDOMapper {
     int updateByPrimaryKey(BankCardRecordDO record);
 
     BankCardRecordDO selectByOrderId(Long orderId);
+
+    int updateByOrderId(BankCardRecordDO record);
 }

@@ -18,4 +18,5 @@ public interface BankLendRecordDOMapper {
     int updateByPrimaryKey(BankLendRecordDO record);
 
     BankLendRecordDO selectByLoanOrder(Long loanOrder);
+    int updateByOrderId(BankLendRecordDO record);
 }

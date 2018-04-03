@@ -17,10 +17,14 @@ import com.yunche.loan.service.BankCardRecordService;
 import com.yunche.loan.service.LoanProcessService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+@Service
+@Transactional
 public class BankCardRecordServiceImpl implements BankCardRecordService {
 
 
@@ -117,7 +121,13 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
         Preconditions.checkNotNull(bankCardRecordVO,"银行卡登记信息不能为空");
         BankCardRecordDO bankCardRecordDO =  new BankCardRecordDO();
         BeanUtils.copyProperties(bankCardRecordVO,bankCardRecordDO);
-        bankCardRecordDOMapper.insert(bankCardRecordDO);
+        BankCardRecordDO tmpBankCardRecordDO = bankCardRecordDOMapper.selectByOrderId(bankCardRecordVO.getOrderId());
+        if(tmpBankCardRecordDO==null){
+            bankCardRecordDOMapper.insert(bankCardRecordDO);
+        }else{
+            bankCardRecordDOMapper.updateByOrderId(bankCardRecordDO);
+        }
+
         return ResultBean.ofSuccess("录入成功",bankCardRecordDO.toString());
     }
 

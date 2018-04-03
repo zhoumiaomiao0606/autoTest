@@ -130,7 +130,14 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         bankLendRecordDO.setRecordStatus(Byte.valueOf("1"));//正常
         bankLendRecordDO.setStatus(Byte.valueOf("0"));
         bankLendRecordDO.setGmtCreate(new Date());
-        bankLendRecordDOMapper.insert(bankLendRecordDO);
+        BankLendRecordDO  tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(bankLendRecordVO.getOrderId());
+        if(tmpBankLendRecordDO==null){
+            bankLendRecordDOMapper.insert(bankLendRecordDO);
+        }else{
+//            bankLendRecordDOMapper.updateByPrimaryKeySelective(bankLendRecordDO);
+            bankLendRecordDOMapper.updateByOrderId(bankLendRecordDO);
+        }
+
 
         return ResultBean.ofSuccess("录入成功");
     }

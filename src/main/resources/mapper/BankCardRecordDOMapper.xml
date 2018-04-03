@@ -186,6 +186,22 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
+  <update id="updateByOrderId" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO" >
+    update bank_card_record
+    user_name = #{userName,jdbcType=VARCHAR},
+    id_card = #{idCard,jdbcType=VARCHAR},
+    billing_date = #{billingDate,jdbcType=TIMESTAMP},
+    first_billing_date = #{firstBillingDate,jdbcType=TIMESTAMP},
+    repay_date = #{repayDate,jdbcType=TIMESTAMP},
+    first_repayment_date = #{firstRepaymentDate,jdbcType=TIMESTAMP},
+    repay_card_id = #{repayCardId,jdbcType=VARCHAR},
+    receive_date = #{receiveDate,jdbcType=TIMESTAMP},
+    sendee = #{sendee,jdbcType=VARCHAR},
+    status = #{status,jdbcType=TINYINT},
+    feature = #{feature,jdbcType=VARCHAR}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+
   <select id="selectByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
