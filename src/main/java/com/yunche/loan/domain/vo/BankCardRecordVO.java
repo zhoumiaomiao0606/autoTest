@@ -28,6 +28,10 @@ public class BankCardRecordVO {
      */
     private String  partnerName;
     /**
+     *业务组织
+     */
+    private String departmentName;
+    /**
      *贷款银行
      */
     private String  bank;

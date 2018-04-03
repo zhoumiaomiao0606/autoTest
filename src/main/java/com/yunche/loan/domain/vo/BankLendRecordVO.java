@@ -31,6 +31,7 @@ public class BankLendRecordVO {
     /**
      *业务组织
      */
+    private String departmentName;
     /**
      *贷款银行
      */
