@@ -62,7 +62,7 @@ public class LoanCarInfoParam {
 
     private Date firstRegisterDate;
 
-    private String businessSource;
+    private Byte businessSource;
 
     private String cooperationDealer;
 
