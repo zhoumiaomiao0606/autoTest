@@ -11,6 +11,7 @@ import java.util.Date;
  */
 @Data
 public class AppLoanCarInfoParam {
+
     /**
      * 业务单ID
      */
@@ -41,6 +42,26 @@ public class AppLoanCarInfoParam {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private Long carDetailId;
+
+    private String carDetailName;
+
+    private Long partnerId;
+
+    private String partnerName;
+
+    private String openBank;
+
+    private String accountName;
+
+    private String bankAccount;
+
+    private Byte payMonth;
+
+    private String feature;
+
+    private Date firstRegisterDate;
 
     @Data
     public static class PartnerAccountInfo {

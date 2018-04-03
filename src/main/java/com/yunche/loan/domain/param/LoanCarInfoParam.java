@@ -16,13 +16,6 @@ public class LoanCarInfoParam {
      */
     private Long orderId;
 
-    private Long id;
-
-    private Byte carType;
-
-    private Integer gpsNum;
-
-    private Byte carKey;
     /**
      * 车型信息
      */
@@ -36,11 +29,39 @@ public class LoanCarInfoParam {
      */
     private String info;
 
+    private Long id;
+
+    private Long carDetailId;
+
+    private String carDetailName;
+
+    private Byte carType;
+
+    private Integer gpsNum;
+
+    private Byte carKey;
+
+    private Long partnerId;
+
+    private String partnerName;
+
+    private String openBank;
+
+    private String accountName;
+
+    private String bankAccount;
+
+    private Byte payMonth;
+
     private Byte status;
 
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String feature;
+
+    private Date firstRegisterDate;
 
     @Data
     public static class PartnerAccountInfo {
