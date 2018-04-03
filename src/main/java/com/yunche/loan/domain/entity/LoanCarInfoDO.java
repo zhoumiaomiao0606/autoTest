@@ -6,6 +6,7 @@ import java.util.Date;
 
 @Data
 public class LoanCarInfoDO {
+
     private Long id;
 
     private Long carDetailId;
@@ -41,4 +42,8 @@ public class LoanCarInfoDO {
     private String feature;
 
     private Date firstRegisterDate;
+
+    private String businessSource;
+
+    private String cooperationDealer;
 }

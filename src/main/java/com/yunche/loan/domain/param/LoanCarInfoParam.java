@@ -16,6 +16,13 @@ public class LoanCarInfoParam {
      */
     private Long orderId;
 
+    private Long id;
+
+    private Byte carType;
+
+    private Integer gpsNum;
+
+    private Byte carKey;
     /**
      * 车型信息
      */
@@ -23,23 +30,15 @@ public class LoanCarInfoParam {
     /**
      * 合伙人收款账户信息
      */
-    private PartnerAccountInfo partnerAccountInfo;
+    private AppLoanCarInfoParam.PartnerAccountInfo partnerAccountInfo;
     /**
      * 备注
      */
     private String info;
 
-    private Long id;
-
     private Long carDetailId;
 
     private String carDetailName;
-
-    private Byte carType;
-
-    private Integer gpsNum;
-
-    private Byte carKey;
 
     private Long partnerId;
 
@@ -62,6 +61,18 @@ public class LoanCarInfoParam {
     private String feature;
 
     private Date firstRegisterDate;
+
+    private String businessSource;
+
+    private String cooperationDealer;
+
+    private Long applyLicensePlateAreaId;
+
+    private Byte licensePlateType;
+
+    private String color;
+
+    private String nowDrivingLicenseOwner;
 
     @Data
     public static class PartnerAccountInfo {

@@ -37,12 +37,6 @@ public class AppLoanCarInfoParam {
      */
     private String info;
 
-    private Byte status;
-
-    private Date gmtCreate;
-
-    private Date gmtModify;
-
     private Long carDetailId;
 
     private String carDetailName;
@@ -59,9 +53,27 @@ public class AppLoanCarInfoParam {
 
     private Byte payMonth;
 
+    private Byte status;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
+
     private String feature;
 
     private Date firstRegisterDate;
+
+    private String businessSource;
+
+    private String cooperationDealer;
+
+    private Long applyLicensePlateAreaId;
+
+    private Byte licensePlateType;
+
+    private String color;
+
+    private String nowDrivingLicenseOwner;
 
     @Data
     public static class PartnerAccountInfo {
