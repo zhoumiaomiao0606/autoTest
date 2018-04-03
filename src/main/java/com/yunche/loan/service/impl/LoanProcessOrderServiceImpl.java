@@ -7,6 +7,8 @@ import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.service.LoanProcessOrderService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,25 +75,34 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
     }
 
     /**
-     * 生成业务单ID
+     * 生成业务单ID     -19位
      *
      * @return
      */
-    private Long createOrderNum() {
-        // 设置日期格式
+    private static Long createOrderNum() {
+        // 日期格式   -12位
         SimpleDateFormat df = new SimpleDateFormat("yyMMddHHmmss");
-        // new Date()为获取当前系统时间，也可使用当前时间戳
-        String orderNum = df.format(new Date()).toString();
+        // 获取当前系统时间，也可使用当前时间戳
+        String nowTime = df.format(new Date()).toString();
 
+        // 返回固定长度的随机数    -7位
+        String fixLenthString = getFixLenthString(7);
+
+        // 订单号拼接
+        String orderNum = nowTime + fixLenthString;
+
+        return Long.valueOf(orderNum);
+    }
+
+    /**
+     * 返回长度为【strLength】的随机数
+     */
+    private static String getFixLenthString(int strLength) {
         Random rm = new Random();
-        // 获得随机数
-        double pross = (1 + rm.nextDouble()) * Math.pow(10, 6);
+        double pross = (1 + rm.nextDouble()) * Math.pow(10, strLength);
         // 将获得的获得随机数转化为字符串
         String fixLenthString = String.valueOf(pross);
         // 返回固定的长度的随机数
-        fixLenthString = fixLenthString.substring(1, 6);
-        orderNum = orderNum + fixLenthString;
-
-        return Long.valueOf(orderNum);
+        return fixLenthString.substring(2, strLength + 2);
     }
 }

@@ -50,10 +50,16 @@ public class LoanProcessDO {
     private Date gmtCreate;
 
     private Date gmtModify;
-
+    /**
+     * 弃单任务节点KEY
+     */
     private String cancelTaskDefKey;
-
+    /**
+     * 贷款申请打回来源任务节点KEY（仅当loan_apply节点状态为3时可能[由资料审核打回]有值）
+     */
     private String loanApplyRejectOrginTask;
-
+    /**
+     * 当前订单状态(1:进行中;2:已完结;3:已弃单;)
+     */
     private Byte orderStatus;
 }

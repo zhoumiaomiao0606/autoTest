@@ -20,8 +20,6 @@ public interface LoanProcessLogDOMapper {
 
     int updateByPrimaryKey(LoanProcessLogDO record);
 
-    List<LoanProcessLogDO> listAll();
-
     /**
      * 查询指定订单-指定任务的最后一条操作记录
      *
@@ -30,4 +28,13 @@ public interface LoanProcessLogDOMapper {
      * @return
      */
     LoanProcessLogDO lastLogByOrderIdAndTaskDefinitionKey(@Param("orderId") Long orderId, @Param("taskDefinitionKey") String taskDefinitionKey);
+
+    /**
+     * 获取指定订单的操作记录列表
+     *
+     * @param orderId
+     * @param limit
+     * @return
+     */
+    List<LoanProcessLogDO> listByOrderId(@Param("orderId") Long orderId, @Param("limit") Integer limit);
 }

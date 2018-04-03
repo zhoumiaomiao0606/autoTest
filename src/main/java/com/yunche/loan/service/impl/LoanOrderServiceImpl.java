@@ -34,6 +34,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
@@ -273,6 +274,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanProcessDO loanProcessDO = new LoanProcessDO();
         loanProcessDO.setOrderId(orderId);
         loanProcessDO.setCreditApply(TASK_PROCESS_TODO);
+        loanProcessDO.setOrderStatus(ORDER_STATUS_DOING);
         loanProcessDO.setGmtCreate(new Date());
         loanProcessDO.setGmtModify(new Date());
         int count = loanProcessDOMapper.insertSelective(loanProcessDO);

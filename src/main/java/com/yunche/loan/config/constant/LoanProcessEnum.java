@@ -31,18 +31,18 @@ public enum LoanProcessEnum {
     VEHICLE_INFORMATION("usertask_vehicle_information", "提车资料"),
     APPLY_LICENSE_PLATE_DEPOSIT_INFO("usertask_apply_license_plate_deposit_info", "车辆抵押"),
 
+    BANK_CARD_RECORD("usertask_bank_card_record", "银行卡录入"),
     CAR_INSURANCE("usertask_car_insurance", "车辆保险"),
     INSTALL_GPS("usertask_install_gps", "GPS安装"),
     COMMIT_KEY("usertask_commit_key", "待收钥匙"),
 
+    MATERIAL_REVIEW("usertask_material_review", "资料审核"),
+    MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),
+
     BUSINESS_REVIEW("usertask_business_review", "业务审批"),
     LOAN_REVIEW("usertask_loan_review", "放款审批"),
     REMIT_REVIEW("usertask_remit_review", "打款确认"),
-    BANK_LEND_RECORD("usertask_bank_lend_record", "银行放款记录"),
-    BANK_CARD_RECORD("usertask_bank_card_record", "银行卡录入"),
-
-    MATERIAL_REVIEW("usertask_material_review", "资料审核"),
-    MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打");
+    BANK_LEND_RECORD("usertask_bank_lend_record", "银行放款记录");
 
     private String code;
 

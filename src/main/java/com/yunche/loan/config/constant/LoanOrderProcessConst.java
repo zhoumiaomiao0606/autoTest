@@ -51,6 +51,21 @@ public class LoanOrderProcessConst {
      */
     public static final Byte TASK_PROCESS_TELEPHONE_VERIFY_DIRECTOR = 7;
 
+
+    /**
+     * 订单状态：进行中
+     */
+    public static final Byte ORDER_STATUS_DOING = 1;
+    /**
+     * 订单状态：已完结
+     */
+    public static final Byte ORDER_STATUS_END = 2;
+    /**
+     * 订单状态：已弃单
+     */
+    public static final Byte ORDER_STATUS_CANCEL = 3;
+
+
     public static final Map<String, String> taskDefinitionKeyFiledMap = Maps.newHashMap();
 
     static {

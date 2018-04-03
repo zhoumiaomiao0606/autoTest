@@ -15,6 +15,7 @@ import org.activiti.engine.*;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,7 +114,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 推送
         push(loanOrderDO, approval.getTaskDefinitionKey(), approval.getAction(), approval);
 
-        return ResultBean.ofSuccess(null, "[" + task.getName() + "]任务执行成功");
+        return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
 
     /**
@@ -128,10 +129,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         LoanProcessLogDO loanProcessLogDO = new LoanProcessLogDO();
-
-        loanProcessLogDO.setOrderId(approval.getOrderId());
-        loanProcessLogDO.setAction(approval.getAction());
-        loanProcessLogDO.setTaskDefinitionKey(approval.getTaskDefinitionKey());
+        BeanUtils.copyProperties(approval, loanProcessLogDO);
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         loanProcessLogDO.setUserId(loginUser.getId());
@@ -316,7 +314,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      */
     private void completeTask(Task task, Map<String, Object> variables, ApprovalParam approval) {
-
         // 先获取提交之前的待执行任务列表
         List<Task> startTaskList = taskService.createTaskQuery()
                 .processInstanceId(task.getProcessInstanceId())
@@ -339,7 +336,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 如果弃单，则记录弃单节点
         if (ACTION_CANCEL.equals(approval.getAction())) {
+            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
             loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
+        }
+
+        // 结单 ending
+        if (BANK_LEND_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
         }
 
         //【资料审核】打回到【业务申请】 标记
@@ -484,6 +487,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanProcessDO.setMaterialReview(taskProcessStatus);
         } else if (MATERIAL_PRINT_REVIEW.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setMaterialPrintReview(taskProcessStatus);
+        } else if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey)) {
+            loanProcessDO.setBankCreditRecord(taskProcessStatus);
+        } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
+            loanProcessDO.setFinancialScheme(taskProcessStatus);
         }
     }
 
@@ -977,121 +984,30 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         return taskStatusText;
     }
 
-//    @Override
-//    public ResultBean<List<String>> orderHistory(Long orderId, Integer limit) {
-//        Preconditions.checkNotNull(orderId, "业务单号不能为空");
-//
-//        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
-//        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
-//
-//        List<HistoricVariableInstance> historicVariableInstanceList = historyService.createHistoricVariableInstanceQuery()
-//                .processInstanceId(loanOrderDO.getProcessInstId())
-//                .list();
-//
-//        List<String> historyList = Lists.newArrayList();
-//        if (!CollectionUtils.isEmpty(historicVariableInstanceList)) {
-//
-//            if (null != limit) {
-//
-//                historicVariableInstanceList.stream()
-//                        .filter(Objects::nonNull)
-//                        .filter(e -> null != e.getValue() && e.getValue() instanceof ApprovalInfoVO)
-//                        .sorted(Comparator.comparing(HistoricVariableInstance::getCreateTime).reversed())
-//                        .limit(limit)
-//                        .forEach(e -> {
-//
-//                            ApprovalInfoVO approvalInfoVO = (ApprovalInfoVO) e.getValue();
-//
-//                            // 王希  于 2017-12-29 13:07:00  创建 本业务信息
-//                            String history = approvalInfoVO.getUserName()
-//                                    + " 于 "
-//                                    + convertApprovalDate(approvalInfoVO.getApprovalDate())
-//                                    + " "
-//                                    + convertActionText(approvalInfoVO.getAction())
-//                                    + " "
-//                                    + convertTaskDefKeyText(approvalInfoVO.getTaskDefinitionKey());
-//
-//                            historyList.add(history);
-//                        });
-//
-//            } else {
-//
-//                historicVariableInstanceList.stream()
-//                        .filter(Objects::nonNull)
-//                        .filter(e -> null != e.getValue() && e.getValue() instanceof ApprovalInfoVO)
-//                        .sorted(Comparator.comparing(HistoricVariableInstance::getCreateTime).reversed())
-//                        .forEach(e -> {
-//
-//                            ApprovalInfoVO approvalInfoVO = (ApprovalInfoVO) e.getValue();
-//
-//                            // 王希  于 2017-12-29 13:07:00  创建 本业务信息
-//                            String history = approvalInfoVO.getUserName()
-//                                    + " 于 "
-//                                    + convertApprovalDate(approvalInfoVO.getApprovalDate())
-//                                    + " "
-//                                    + convertActionText(approvalInfoVO.getAction())
-//                                    + " "
-//                                    + convertTaskDefKeyText(approvalInfoVO.getTaskDefinitionKey());
-//
-//                            historyList.add(history);
-//                        });
-//            }
-//        }
-//
-//        return ResultBean.ofSuccess(historyList, "订单日志查询成功");
-//    }
-
     @Override
     public ResultBean<List<String>> orderHistory(Long orderId, Integer limit) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
-        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
-
-        List<LoanProcessLogDO> loanProcessLogDOList = loanProcessLogDOMapper.listAll();
+        List<LoanProcessLogDO> loanProcessLogDOList = loanProcessLogDOMapper.listByOrderId(orderId, limit);
 
         List<String> historyList = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(loanProcessLogDOList)) {
 
-            if (null != limit) {
+            loanProcessLogDOList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
 
-                loanProcessLogDOList.stream()
-                        .filter(Objects::nonNull)
-                        .sorted(Comparator.comparing(LoanProcessLogDO::getCreateTime).reversed())
-                        .limit(limit)
-                        .forEach(e -> {
+                        // 王希  于 2017-12-29 13:07:00  创建 xx业务信息
+                        String history = e.getUserName()
+                                + " 于 "
+                                + convertApprovalDate(e.getCreateTime())
+                                + " "
+                                + convertActionText(e.getAction())
+                                + " "
+                                + convertTaskDefKeyText(e.getTaskDefinitionKey());
 
-                            // 王希  于 2017-12-29 13:07:00  创建 本业务信息
-                            String history = e.getUserName()
-                                    + " 于 "
-                                    + convertApprovalDate(e.getCreateTime())
-                                    + " "
-                                    + convertActionText(e.getAction())
-                                    + " "
-                                    + convertTaskDefKeyText(e.getTaskDefinitionKey());
-
-                            historyList.add(history);
-                        });
-
-            } else {
-
-                loanProcessLogDOList.stream()
-                        .filter(Objects::nonNull)
-                        .sorted(Comparator.comparing(LoanProcessLogDO::getCreateTime).reversed())
-                        .forEach(e -> {
-
-                            // 王希  于 2017-12-29 13:07:00  创建 本业务信息
-                            String history = e.getUserName()
-                                    + " 于 "
-                                    + convertApprovalDate(e.getCreateTime())
-                                    + " "
-                                    + convertActionText(e.getAction())
-                                    + " "
-                                    + convertTaskDefKeyText(e.getTaskDefinitionKey());
-
-                            historyList.add(history);
-                        });
-            }
+                        historyList.add(history);
+                    });
         }
 
         return ResultBean.ofSuccess(historyList, "订单日志查询成功");
@@ -1103,7 +1019,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param action 0-打回; 1-通过(提交); 2-弃单; 3-资料增补;
      * @return
      */
-
     private String convertActionText(Byte action) {
         String actionText = null;
 
@@ -1149,24 +1064,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private String convertTaskDefKeyText(String taskDefinitionKey) {
         String name = LoanProcessEnum.getNameByCode(taskDefinitionKey);
         return name;
-    }
-
-    /**
-     * 任务状态
-     *
-     * @param endTime
-     * @return
-     */
-    public Byte getTaskStatus(Date endTime) {
-        Byte taskStatus = null;
-        if (null != endTime) {
-            // 已处理
-            taskStatus = TASK_DONE;
-        } else {
-            // 未处理
-            taskStatus = TASK_TODO;
-        }
-        return taskStatus;
     }
 
     /**

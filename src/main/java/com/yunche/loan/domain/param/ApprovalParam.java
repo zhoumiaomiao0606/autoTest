@@ -18,8 +18,6 @@ public class ApprovalParam {
      */
     private String taskDefinitionKey;
 
-    private String taskDefinitionKey_;
-
     /**
      * 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
      */
@@ -53,4 +51,14 @@ public class ApprovalParam {
      * 增补源头任务节点
      */
 //    private String supplementOriginTask;
+
+
+    private String taskDefinitionKey_;
+
+    public String getTaskDefinitionKey_() {
+        if (null != taskDefinitionKey_) {
+            return taskDefinitionKey_;
+        }
+        return taskDefinitionKey;
+    }
 }

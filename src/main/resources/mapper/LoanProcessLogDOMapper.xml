@@ -25,10 +25,16 @@
         AND task_definition_key = #{taskDefinitionKey}
     </select>
 
-    <select id="listAll" resultMap="BaseResultMap">
+    <select id="listByOrderId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from loan_process_log
+        WHERE
+        order_id = #{orderId}
+        ORDER BY create_time DESC
+        <if test="limit != null">
+            limit #{limit}
+        </if>
     </select>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
