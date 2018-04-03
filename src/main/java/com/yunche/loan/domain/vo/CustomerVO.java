@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -84,6 +85,45 @@ public class CustomerVO {
     private Long workingYears;
 
     private String duty;
+
+    private Byte householdNature;
+
+    private String childrenNum;
+
+    private String reserveMobile;
+
+    private Byte companyNature;
+
+    private Byte industryCategory;
+
+    private String incomeCertificateCompanyName;
+
+    private String incomeCertificateCompanyAddress;
+
+    private String familyAddress;
+
+    private Long familyMobile;
+
+    private BigDecimal personMonthlyIncome;
+
+    private BigDecimal familyMonthlyIncome;
+
+    private Long feedingNum;
+
+    private Long floorSpace;
+
+    private Byte houseOwnerRelation;
+
+    private String bankCardTransmitAddress;
+
+    private String bankCardTransmitPostcode;
+
+    private Byte houseCertificateType;
+
+    private Byte bankCardTransmitAddressType;
+
+    private String companyPostcode;
+
 
     private List<FileVO> files = Collections.EMPTY_LIST;
 }
