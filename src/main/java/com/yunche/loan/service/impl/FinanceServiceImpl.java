@@ -1,6 +1,6 @@
 package com.yunche.loan.service.impl;
 
-import com.yunche.loan.config.common.ApprovalInfoUtil;
+import com.yunche.loan.config.util.ApprovalInfoUtil;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanQueryDOMapper;

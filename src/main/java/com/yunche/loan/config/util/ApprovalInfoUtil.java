@@ -1,4 +1,4 @@
-package com.yunche.loan.config.common;
+package com.yunche.loan.config.util;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.domain.entity.LoanOrderDO;

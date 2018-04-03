@@ -1,6 +1,6 @@
 package com.yunche.loan.service.impl;
 
-import com.yunche.loan.config.common.ApprovalInfoUtil;
+import com.yunche.loan.config.util.ApprovalInfoUtil;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
