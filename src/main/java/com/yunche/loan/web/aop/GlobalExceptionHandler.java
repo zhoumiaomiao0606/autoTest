@@ -44,9 +44,9 @@ public class GlobalExceptionHandler {
         } else if (e instanceof ActivitiException) {
             return ResultBean.ofError("流程审核参数有误");
         } else if (e instanceof BadSqlGrammarException) {
-            return ResultBean.ofError("糟糕，出错啦！");
+            return ResultBean.ofError("服务器异常,请联系管理员!");
         } else if (e instanceof RuntimeException) {
-            return ResultBean.ofError("糟糕，出错啦！");
+            return ResultBean.ofError("服务器异常,请联系管理员!");
         } else {
             String errorMsg = e.toString() == null ? e.getMessage() : e.toString();
             return ResultBean.ofError(errorMsg == null || errorMsg.equals("") ? "未知错误" : e.toString());

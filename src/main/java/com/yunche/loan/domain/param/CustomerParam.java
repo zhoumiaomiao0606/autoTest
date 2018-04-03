@@ -117,6 +117,10 @@ public class CustomerParam {
 
     private String bankCardTransmitPostcode;
 
+    private Byte houseCertificateType;
+
+    private Byte bankCardTransmitAddressType;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 
 }

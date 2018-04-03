@@ -88,11 +88,47 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankLendRecordDO" >
+  update bank_lend_record
+  <set >
+    <if test="loanOrder != null" >
+      loan_order = #{loanOrder,jdbcType=BIGINT},
+    </if>
+    <if test="lendDate != null" >
+      lend_date = #{lendDate,jdbcType=TIMESTAMP},
+    </if>
+    <if test="lendAmount != null" >
+      lend_amount = #{lendAmount,jdbcType=DECIMAL},
+    </if>
+    <if test="status != null" >
+      status = #{status,jdbcType=TINYINT},
+    </if>
+    <if test="recordStatus != null" >
+      record_status = #{recordStatus,jdbcType=TINYINT},
+    </if>
+    <if test="gmtCreate != null" >
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+    </if>
+    <if test="feature != null" >
+      feature = #{feature,jdbcType=VARCHAR},
+    </if>
+  </set>
+  where id = #{id,jdbcType=INTEGER}
+</update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankLendRecordDO" >
+    update bank_lend_record
+    set loan_order = #{loanOrder,jdbcType=BIGINT},
+      lend_date = #{lendDate,jdbcType=TIMESTAMP},
+      lend_amount = #{lendAmount,jdbcType=DECIMAL},
+      status = #{status,jdbcType=TINYINT},
+      record_status = #{recordStatus,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      feature = #{feature,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByOrderId" parameterType="com.yunche.loan.domain.entity.BankLendRecordDO" >
     update bank_lend_record
     <set >
-      <if test="loanOrder != null" >
-        loan_order = #{loanOrder,jdbcType=BIGINT},
-      </if>
       <if test="lendDate != null" >
         lend_date = #{lendDate,jdbcType=TIMESTAMP},
       </if>
@@ -112,21 +148,8 @@
         feature = #{feature,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where loan_order=#{loanOrder,jdbcType=BIGINT} and record_status='1'
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankLendRecordDO" >
-    update bank_lend_record
-    set loan_order = #{loanOrder,jdbcType=BIGINT},
-      lend_date = #{lendDate,jdbcType=TIMESTAMP},
-      lend_amount = #{lendAmount,jdbcType=DECIMAL},
-      status = #{status,jdbcType=TINYINT},
-      record_status = #{recordStatus,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      feature = #{feature,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-
-
   <select id="selectByLoanOrder" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

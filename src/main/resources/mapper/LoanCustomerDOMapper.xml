@@ -53,6 +53,8 @@
         <result column="house_owner_relation" property="houseOwnerRelation" jdbcType="TINYINT" />
         <result column="bank_card_transmit_address" property="bankCardTransmitAddress" jdbcType="VARCHAR" />
         <result column="bank_card_transmit_postcode" property="bankCardTransmitPostcode" jdbcType="VARCHAR" />
+        <result column="house_certificate_type" property="houseCertificateType" jdbcType="TINYINT" />
+        <result column="bank_card_transmit_address_type" property="bankCardTransmitAddressType" jdbcType="TINYINT" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -64,7 +66,7 @@
     reserve_mobile, company_nature, industry_category, income_certificate_company_name,
     income_certificate_company_address, family_address, family_mobile, person_monthly_income,
     family_monthly_income, feeding_num, floor_space, house_owner_relation, bank_card_transmit_address,
-    bank_card_transmit_postcode
+    bank_card_transmit_postcode, house_certificate_type, bank_card_transmit_address_type
   </sql>
 
     <!--listByPrincipalCustIdAndType-->
@@ -128,7 +130,8 @@
       family_address, family_mobile, person_monthly_income,
       family_monthly_income, feeding_num, floor_space,
       house_owner_relation, bank_card_transmit_address,
-      bank_card_transmit_postcode)
+      bank_card_transmit_postcode, house_certificate_type,
+      bank_card_transmit_address_type)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
       #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=DATE}, #{lendCard,jdbcType=VARCHAR},
       #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT},
@@ -146,7 +149,8 @@
       #{familyAddress,jdbcType=VARCHAR}, #{familyMobile,jdbcType=BIGINT}, #{personMonthlyIncome,jdbcType=DECIMAL},
       #{familyMonthlyIncome,jdbcType=DECIMAL}, #{feedingNum,jdbcType=BIGINT}, #{floorSpace,jdbcType=BIGINT},
       #{houseOwnerRelation,jdbcType=TINYINT}, #{bankCardTransmitAddress,jdbcType=VARCHAR},
-      #{bankCardTransmitPostcode,jdbcType=VARCHAR})
+      #{bankCardTransmitPostcode,jdbcType=VARCHAR}, #{houseCertificateType,jdbcType=TINYINT},
+      #{bankCardTransmitAddressType,jdbcType=TINYINT})
   </insert>
 
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO" >
@@ -305,6 +309,12 @@
             <if test="bankCardTransmitPostcode != null" >
                 bank_card_transmit_postcode,
             </if>
+            <if test="houseCertificateType != null" >
+                house_certificate_type,
+            </if>
+            <if test="bankCardTransmitAddressType != null" >
+                bank_card_transmit_address_type,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -459,6 +469,12 @@
             </if>
             <if test="bankCardTransmitPostcode != null" >
                 #{bankCardTransmitPostcode,jdbcType=VARCHAR},
+            </if>
+            <if test="houseCertificateType != null" >
+                #{houseCertificateType,jdbcType=TINYINT},
+            </if>
+            <if test="bankCardTransmitAddressType != null" >
+                #{bankCardTransmitAddressType,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
@@ -616,6 +632,12 @@
             <if test="bankCardTransmitPostcode != null" >
                 bank_card_transmit_postcode = #{bankCardTransmitPostcode,jdbcType=VARCHAR},
             </if>
+            <if test="houseCertificateType != null" >
+                house_certificate_type = #{houseCertificateType,jdbcType=TINYINT},
+            </if>
+            <if test="bankCardTransmitAddressType != null" >
+                bank_card_transmit_address_type = #{bankCardTransmitAddressType,jdbcType=TINYINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -671,7 +693,9 @@
       floor_space = #{floorSpace,jdbcType=BIGINT},
       house_owner_relation = #{houseOwnerRelation,jdbcType=TINYINT},
       bank_card_transmit_address = #{bankCardTransmitAddress,jdbcType=VARCHAR},
-      bank_card_transmit_postcode = #{bankCardTransmitPostcode,jdbcType=VARCHAR}
+      bank_card_transmit_postcode = #{bankCardTransmitPostcode,jdbcType=VARCHAR},
+      house_certificate_type = #{houseCertificateType,jdbcType=TINYINT},
+      bank_card_transmit_address_type = #{bankCardTransmitAddressType,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
