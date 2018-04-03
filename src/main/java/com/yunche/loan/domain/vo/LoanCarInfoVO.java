@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.entity.VehicleInformationDO;
 import lombok.Data;
 
 import java.util.Date;
@@ -27,6 +28,7 @@ public class LoanCarInfoVO {
      * 合伙人收款账户信息
      */
     private PartnerAccountInfo partnerAccountInfo;
+
     /**
      * 备注
      */
@@ -37,6 +39,16 @@ public class LoanCarInfoVO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String applyLicensePlateAreaId;
+
+    private String applyLicensePlateParentAreaId;
+
+    private String licensePlateType;
+
+    private String color;
+
+    private String nowDrivingLicenseOwner;
 
     @Data
     public static class PartnerAccountInfo {

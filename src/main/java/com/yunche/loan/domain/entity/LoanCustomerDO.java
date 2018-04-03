@@ -108,4 +108,8 @@ public class LoanCustomerDO {
     private String bankCardTransmitAddress;
 
     private String bankCardTransmitPostcode;
+
+    private Byte houseCertificateType;
+
+    private Byte bankCardTransmitAddressType;
 }
