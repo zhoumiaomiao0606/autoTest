@@ -79,9 +79,9 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
      */
     private Long createOrderNum() {
         // 设置日期格式
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat df = new SimpleDateFormat("yyMMddHHmmss");
         // new Date()为获取当前系统时间，也可使用当前时间戳
-        String orderNum = "" + df.format(new Date());
+        String orderNum = df.format(new Date()).toString();
 
         Random rm = new Random();
         // 获得随机数
