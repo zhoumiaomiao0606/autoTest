@@ -10,7 +10,7 @@ public class BankLendRecordVO {
     /**
      *业务编号
      */
-    private Long orderId;
+    private String  orderId;
     /**
      *主贷人姓名
      */
