@@ -98,7 +98,7 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
     @Override
     public ResultBean<BankCardRecordVO> query(BankCardRecordVO bankCardRecordVO) {
         Preconditions.checkNotNull(bankCardRecordVO.getOrderId(),"业务单号不能为空");
-        BankCardRecordDO bankCardRecordDO =  bankCardRecordDOMapper.selectByOrderId(bankCardRecordVO.getOrderId());
+        BankCardRecordDO bankCardRecordDO =  bankCardRecordDOMapper.selectByOrderId(Long.valueOf(bankCardRecordVO.getOrderId()));
         BeanUtils.copyProperties(bankCardRecordDO,bankCardRecordVO);
         return ResultBean.ofSuccess(bankCardRecordVO);
     }

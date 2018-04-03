@@ -112,4 +112,6 @@ public class LoanCustomerDO {
     private Byte houseCertificateType;
 
     private Byte bankCardTransmitAddressType;
+
+    private String companyPostcode;
 }

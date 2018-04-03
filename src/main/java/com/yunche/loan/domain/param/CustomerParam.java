@@ -121,6 +121,8 @@ public class CustomerParam {
 
     private Byte bankCardTransmitAddressType;
 
+    private String companyPostcode;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 
 }

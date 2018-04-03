@@ -124,13 +124,13 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
         Preconditions.checkNotNull(bankLendRecordVO,"银行放款记录不能为空");
         BankLendRecordDO bankLendRecordDO =  new BankLendRecordDO();
-        bankLendRecordDO.setLoanOrder(bankLendRecordVO.getOrderId());
+        bankLendRecordDO.setLoanOrder(Long.valueOf(bankLendRecordVO.getOrderId()));
         bankLendRecordDO.setLendAmount(bankLendRecordVO.getLendAmount());
         bankLendRecordDO.setLendDate(bankLendRecordVO.getLendDate());
         bankLendRecordDO.setRecordStatus(Byte.valueOf("1"));//正常
         bankLendRecordDO.setStatus(Byte.valueOf("0"));
         bankLendRecordDO.setGmtCreate(new Date());
-        BankLendRecordDO  tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(bankLendRecordVO.getOrderId());
+        BankLendRecordDO  tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(Long.valueOf(bankLendRecordVO.getOrderId()));
         if(tmpBankLendRecordDO==null){
             bankLendRecordDOMapper.insert(bankLendRecordDO);
         }else{
@@ -147,7 +147,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
         Preconditions.checkNotNull(bankLendRecordVO,"银行放款记录不能为空");
         Preconditions.checkNotNull(bankLendRecordVO.getOrderId(),"业务单号不能为空");
-        BankLendRecordDO bankLendRecordDO =  bankLendRecordDOMapper.selectByLoanOrder(bankLendRecordVO.getOrderId());
+        BankLendRecordDO bankLendRecordDO =  bankLendRecordDOMapper.selectByLoanOrder(Long.valueOf(bankLendRecordVO.getOrderId()));
         bankLendRecordVO.setLendDate(bankLendRecordDO.getLendDate());
         bankLendRecordVO.setLendAmount(bankLendRecordDO.getLendAmount());
         return ResultBean.ofSuccess(bankLendRecordVO);
