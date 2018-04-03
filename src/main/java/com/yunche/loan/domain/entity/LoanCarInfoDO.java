@@ -39,4 +39,6 @@ public class LoanCarInfoDO {
     private Date gmtModify;
 
     private String feature;
+
+    private Date firstRegisterDate;
 }

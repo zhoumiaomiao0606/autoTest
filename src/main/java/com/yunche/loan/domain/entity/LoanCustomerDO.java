@@ -17,6 +17,8 @@ public class LoanCustomerDO {
 
     private Date identityValidity;
 
+    private String lendCard;
+
     private String idCard;
 
     private String mobile;
@@ -74,4 +76,36 @@ public class LoanCustomerDO {
     private Long workingYears;
 
     private String duty;
+
+    private Byte householdNature;
+
+    private String childrenNum;
+
+    private String reserveMobile;
+
+    private Byte companyNature;
+
+    private Byte industryCategory;
+
+    private String incomeCertificateCompanyName;
+
+    private String incomeCertificateCompanyAddress;
+
+    private String familyAddress;
+
+    private Long familyMobile;
+
+    private BigDecimal personMonthlyIncome;
+
+    private BigDecimal familyMonthlyIncome;
+
+    private Long feedingNum;
+
+    private Long floorSpace;
+
+    private Byte houseOwnerRelation;
+
+    private String bankCardTransmitAddress;
+
+    private String bankCardTransmitPostcode;
 }
