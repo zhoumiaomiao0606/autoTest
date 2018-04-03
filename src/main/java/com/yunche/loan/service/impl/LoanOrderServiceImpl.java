@@ -575,6 +575,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         return ResultBean.ofSuccess(infoSupplementVO);
     }
+
     @Override
     public ResultBean<LoanCarInfoVO> loanCarInfoDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
@@ -1078,11 +1079,11 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     /**
      * update贷款金融方案
      *
-     * @param loanFinancialPlanVO
+     * @param loanFinancialPlanParam
      */
-    private ResultBean<Long> updateLoanFinancialPlan(LoanFinancialPlanVO loanFinancialPlanVO) {
+    private ResultBean<Long> updateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
-        BeanUtils.copyProperties(loanFinancialPlanVO, loanFinancialPlanDO);
+        BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
         loanFinancialPlanDO.setGmtModify(new Date());
 
         int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
@@ -1155,7 +1156,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoDO.setCarDetailName(carDetail.getName());
         }
 
-        LoanCarInfoParam.PartnerAccountInfo partnerAccountInfo = loanCarInfoParam.getPartnerAccountInfo();
+        AppLoanCarInfoParam.PartnerAccountInfo partnerAccountInfo = loanCarInfoParam.getPartnerAccountInfo();
         if (null != partnerAccountInfo) {
             BeanUtils.copyProperties(partnerAccountInfo, loanCarInfoDO);
         }
