@@ -218,7 +218,7 @@
              mo.production_type                           AS production_type,
              h.license_plate_type                         AS license_plate_type,
              i.car_type                                   AS car_type,
-             h.apply_license_plate_area                   AS apply_license_plate_area_id,
+             h.apply_license_plate_area                   AS apply_license_plate_area,
              v.visit_date                                 AS visit_date,
              ev.name                                      AS vname,
              v.visit_address                              AS visit_address,
