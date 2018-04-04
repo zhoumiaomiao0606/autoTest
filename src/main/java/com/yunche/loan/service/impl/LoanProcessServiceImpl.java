@@ -91,13 +91,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 征信增补
         execCreditSupplementTask(approval, loanOrderDO.getProcessInstId());
 
-        // 获取任务
-        Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
-
         // 【发起/提交】资料增补单
         if (isStartOrEndInfoSupplement(approval)) {
-            return execInfoSupplementTask(approval, task.getId());
+            return execInfoSupplementTask(approval);
         }
+
+        // 获取任务
+        Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
 
         // 流程变量
         Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO.getLoanBaseInfoId());
@@ -205,16 +205,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 执行资料增补任务
      *
      * @param approval
-     * @param taskId
      * @return
      */
-    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, String taskId) {
+    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval) {
 
         // 【发起】资料增补单
         if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
             // 创建增补单
             startInfoSupplement(approval);
-
             return ResultBean.ofSuccess(null, "资料增补发起成功");
         }
 
@@ -222,7 +220,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         else if (INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
             // 提交增补单
             endInfoSupplement(approval);
-
             return ResultBean.ofSuccess(null, "资料增补提交成功");
         }
 
@@ -546,6 +543,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanInfoSupplementDO.setSupplementerId(loginUser.getId());
         loanInfoSupplementDO.setSupplementerName(loginUser.getName());
         loanInfoSupplementDO.setEndTime(new Date());
+
+        // 审核备注
+        loanInfoSupplementDO.setRemark(approval.getInfo());
 
         // 已处理状态
         loanInfoSupplementDO.setStatus(TASK_PROCESS_DONE);
