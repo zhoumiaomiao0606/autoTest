@@ -65,7 +65,7 @@ public class AppLoanCarInfoParam {
 
     private Byte businessSource;
 
-    private String cooperationDealer;
+    private Byte cooperationDealer;
 
     private Long applyLicensePlateAreaId;
 

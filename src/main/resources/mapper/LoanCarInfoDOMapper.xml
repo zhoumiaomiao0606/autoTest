@@ -21,7 +21,7 @@
         <result column="feature" property="feature" jdbcType="VARCHAR"/>
         <result column="first_register_date" property="firstRegisterDate" jdbcType="DATE"/>
         <result column="business_source" property="businessSource" jdbcType="TINYINT"/>
-        <result column="cooperation_dealer" property="cooperationDealer" jdbcType="VARCHAR"/>
+        <result column="cooperation_dealer" property="cooperationDealer" jdbcType="TINYINT"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, car_detail_id, car_detail_name, car_type, gps_num, car_key, partner_id, partner_name,
@@ -52,7 +52,7 @@
         #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
         #{info,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
         #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{firstRegisterDate,jdbcType=DATE},
-        #{businessSource,jdbcType=TINYINT}, #{cooperationDealer,jdbcType=VARCHAR})
+        #{businessSource,jdbcType=TINYINT}, #{cooperationDealer,jdbcType=TINYINT})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
         insert into loan_car_info
@@ -239,7 +239,7 @@
                 business_source = #{businessSource,jdbcType=TINYINT},
             </if>
             <if test="cooperationDealer != null">
-                cooperation_dealer = #{cooperationDealer,jdbcType=VARCHAR},
+                cooperation_dealer = #{cooperationDealer,jdbcType=TINYINT},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
@@ -264,7 +264,7 @@
         feature = #{feature,jdbcType=VARCHAR},
         first_register_date = #{firstRegisterDate,jdbcType=DATE},
         business_source = #{businessSource,jdbcType=TINYINT},
-        cooperation_dealer = #{cooperationDealer,jdbcType=VARCHAR}
+        cooperation_dealer = #{cooperationDealer,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
 </mapper>

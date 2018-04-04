@@ -45,5 +45,5 @@ public class LoanCarInfoDO {
 
     private String businessSource;
 
-    private String cooperationDealer;
+    private Byte cooperationDealer;
 }
