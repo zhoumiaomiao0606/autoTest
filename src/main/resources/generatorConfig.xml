@@ -254,9 +254,11 @@
 
 
         -->
-        <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
+        <table tableName="vehicle_information" domainObjectName="VehicleInformationDO"
                enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <property name="useActualColumnNames" value="true" />
+        </table>
 
         <!--<table tableName="loan_car_info" domainObjectName="LoanCarInfoDO"
                enableCountByExample="false" enableUpdateByExample="false"

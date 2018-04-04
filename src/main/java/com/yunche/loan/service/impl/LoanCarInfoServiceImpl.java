@@ -35,10 +35,10 @@ public class LoanCarInfoServiceImpl implements LoanCarInfoService {
         Preconditions.checkNotNull(loanCarInfoDO.getPartnerId(), "合伙人不能为空");
 //        Preconditions.checkNotNull(loanCarInfoDO.getGpsNum(), "GPS个数不能为空");
 //        Preconditions.checkNotNull(loanCarInfoDO.getCarKey(), "留备用钥匙不能为空");
-        Preconditions.checkNotNull(loanCarInfoDO.getOpenBank(), "收款银行不能为空");
+/*        Preconditions.checkNotNull(loanCarInfoDO.getOpenBank(), "收款银行不能为空");
         Preconditions.checkNotNull(loanCarInfoDO.getAccountName(), "收款账户不能为空");
-        Preconditions.checkNotNull(loanCarInfoDO.getBankAccount(), "收款账号不能为空");
-        Preconditions.checkNotNull(loanCarInfoDO.getPayMonth(), "是否月结不能为空");
+        Preconditions.checkNotNull(loanCarInfoDO.getBankAccount(), "收款账号不能为空");*/
+        /*Preconditions.checkNotNull(loanCarInfoDO.getPayMonth(), "是否月结不能为空");*/
 
         // insert
         loanCarInfoDO.setGmtCreate(new Date());
