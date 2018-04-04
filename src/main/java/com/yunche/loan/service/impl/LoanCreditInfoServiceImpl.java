@@ -10,6 +10,7 @@ import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.domain.vo.LoanCreditInfoVO;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanFileService;
 import org.springframework.beans.BeanUtils;
@@ -44,6 +45,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
 
     @Autowired
     private LoanFileService loanFileService;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
 
 
     @Override
@@ -133,7 +137,10 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         fillFiles(principalLender, principalLender.getCustomerId());
                         // 征信结果
                         fillCreditMsg(principalLender, creditType);
-
+                        List<Long> relevanceOrderlist = loanOrderDOMapper.selectRelevanceLoanOrderIdByCustomerId(principalLender.getCustomerId());
+                        if(principalLender!=null){
+                            principalLender.setRelevanceOrderlist(relevanceOrderlist);
+                        }
                         creditRecordVO.setPrincipalLender(principalLender);
                     }
 
@@ -147,7 +154,10 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         fillFiles(commonLender, commonLender.getCustomerId());
                         // 征信结果
                         fillCreditMsg(commonLender, creditType);
-
+                        List<Long> relevanceOrderlist = loanOrderDOMapper.selectRelevanceLoanOrderIdByCustomerId(commonLender.getCustomerId());
+                        if(commonLender!=null){
+                            commonLender.setRelevanceOrderlist(relevanceOrderlist);
+                        }
                         commonLenderList.add(commonLender);
                     }
                     // 担保人
@@ -160,7 +170,10 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         fillFiles(guarantor, guarantor.getCustomerId());
                         // 征信结果
                         fillCreditMsg(guarantor, creditType);
-
+                        List<Long> relevanceOrderlist = loanOrderDOMapper.selectRelevanceLoanOrderIdByCustomerId(guarantor.getCustomerId());
+                        if(guarantor!=null){
+                            guarantor.setRelevanceOrderlist(relevanceOrderlist);
+                        }
                         guarantorList.add(guarantor);
                     }
                     // 紧急联系人

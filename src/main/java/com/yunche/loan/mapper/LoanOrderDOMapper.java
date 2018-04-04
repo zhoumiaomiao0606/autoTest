@@ -23,6 +23,8 @@ public interface LoanOrderDOMapper {
 
     int updateByPrimaryKey(LoanOrderDO record);
 
+    List<Long> selectRelevanceLoanOrderIdByCustomerId(Long customerId);
+
     /**
      * 获取主贷人ID            
      *

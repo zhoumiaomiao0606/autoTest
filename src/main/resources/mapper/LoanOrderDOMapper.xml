@@ -51,6 +51,15 @@
         WHERE id = #{id}
     </select>
 
+    <!--getrelevanceLoanOrderIdByCustomerId-->
+    <select id="selectRelevanceLoanOrderIdByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Long">
+            select o.id from loan_order o
+              inner join
+            (select distinct id from loan_customer where principal_cust_id = #{customerId}) t
+            on t.id = o.loan_customer_id
+    </select>
+
+
     <!--getLoanFinancialPlanIdById-->
     <select id="getLoanFinancialPlanIdById" parameterType="java.lang.Long" resultType="java.lang.Long">
         select loan_financial_plan_id
