@@ -559,11 +559,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         infoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
         infoSupplementVO.setRemark(loanInfoSupplementDO.getRemark());
 
-
         Long orderId = loanInfoSupplementDO.getOrderId();
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
-
 
         // 客户信息
         if (null != loanOrderDO.getLoanCustomerId()) {
