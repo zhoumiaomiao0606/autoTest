@@ -120,7 +120,14 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
         Preconditions.checkNotNull(bankCardRecordVO,"银行卡登记信息不能为空");
         BankCardRecordDO bankCardRecordDO =  new BankCardRecordDO();
         BeanUtils.copyProperties(bankCardRecordVO,bankCardRecordDO);
-        bankCardRecordDOMapper.insert(bankCardRecordDO);
+
+        BankCardRecordDO tmpBankCardRecordDO = bankCardRecordDOMapper.selectByOrderId(Long.valueOf(bankCardRecordVO.getOrderId()));
+        if(tmpBankCardRecordDO==null){
+            bankCardRecordDOMapper.insert(bankCardRecordDO);
+        }else{
+            bankCardRecordDOMapper.updateByOrderId(bankCardRecordDO);
+        }
+
         return ResultBean.ofSuccess("录入成功",bankCardRecordDO.toString());
     }
 
