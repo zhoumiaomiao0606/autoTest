@@ -40,9 +40,7 @@ public class LoanCarInfoVO {
 
     private Date gmtModify;
 
-    private String applyLicensePlateAreaId;
-
-    private String applyLicensePlateParentAreaId;
+    private String applyLicensePlateArea;
 
     private String licensePlateType;
 

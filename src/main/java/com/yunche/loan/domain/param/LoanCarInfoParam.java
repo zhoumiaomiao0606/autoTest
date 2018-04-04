@@ -66,7 +66,7 @@ public class LoanCarInfoParam {
 
     private Byte cooperationDealer;
 
-    private String applyLicensePlateAreaId;
+    private String applyLicensePlateArea;
 
     private String licensePlateType;
 

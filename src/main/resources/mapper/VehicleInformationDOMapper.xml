@@ -11,7 +11,7 @@
     <result column="displacement" property="displacement" jdbcType="VARCHAR" />
     <result column="license_plate_number" property="license_plate_number" jdbcType="VARCHAR" />
     <result column="apply_license_plate_date" property="apply_license_plate_date" jdbcType="DATE" />
-    <result column="apply_license_plate_area_id" property="apply_license_plate_area_id" jdbcType="BIGINT" />
+    <result column="apply_license_plate_area" property="apply_license_plate_area" jdbcType="VARCHAR" />
     <result column="transfer_ownership_date" property="transfer_ownership_date" jdbcType="DATE" />
     <result column="now_driving_license_owner" property="now_driving_license_owner" jdbcType="VARCHAR" />
     <result column="old_driving_license_owner" property="old_driving_license_owner" jdbcType="VARCHAR" />
@@ -28,7 +28,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, license_plate_type, color, qualified_certificate_number, register_date, vehicle_identification_number,
-    displacement, license_plate_number, apply_license_plate_date, apply_license_plate_area_id,
+    displacement, license_plate_number, apply_license_plate_date, apply_license_plate_area,
     transfer_ownership_date, now_driving_license_owner, old_driving_license_owner, engine_number,
     registration_certificate_number, invoice_car_dealer, purchase_car_invoice_num, purchase_car_invoice_price,
     invoice_down_payment, purchase_car_invoice_date, retrieve_key, status, feature
@@ -73,8 +73,8 @@
       <if test="apply_license_plate_date != null" >
         apply_license_plate_date,
       </if>
-      <if test="apply_license_plate_area_id != null" >
-        apply_license_plate_area_id,
+      <if test="apply_license_plate_area != null" >
+        apply_license_plate_area,
       </if>
       <if test="transfer_ownership_date != null" >
         transfer_ownership_date,
@@ -144,8 +144,8 @@
       <if test="apply_license_plate_date != null" >
         #{apply_license_plate_date,jdbcType=DATE},
       </if>
-      <if test="apply_license_plate_area_id != null" >
-        #{apply_license_plate_area_id,jdbcType=BIGINT},
+      <if test="apply_license_plate_area != null" >
+        #{apply_license_plate_area,jdbcType=VARCHAR},
       </if>
       <if test="transfer_ownership_date != null" >
         #{transfer_ownership_date,jdbcType=DATE},
@@ -215,8 +215,8 @@
       <if test="apply_license_plate_date != null" >
         apply_license_plate_date = #{apply_license_plate_date,jdbcType=DATE},
       </if>
-      <if test="apply_license_plate_area_id != null" >
-        apply_license_plate_area_id = #{apply_license_plate_area_id,jdbcType=BIGINT},
+      <if test="apply_license_plate_area != null" >
+        apply_license_plate_area = #{apply_license_plate_area,jdbcType=VARCHAR},
       </if>
       <if test="transfer_ownership_date != null" >
         transfer_ownership_date = #{transfer_ownership_date,jdbcType=DATE},

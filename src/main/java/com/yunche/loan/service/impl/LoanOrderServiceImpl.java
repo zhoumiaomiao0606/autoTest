@@ -340,7 +340,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
-        vehicleInformationUpdateParam.setApply_license_plate_area_id(loanCarInfoParam.getApplyLicensePlateAreaId());
+        vehicleInformationUpdateParam.setApply_license_plate_area(loanCarInfoParam.getApplyLicensePlateArea());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
         vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
         vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
@@ -362,7 +362,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         ResultBean<Void> resultBean = loanCarInfoService.update(loanCarInfoDO);
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
-        vehicleInformationUpdateParam.setApply_license_plate_area_id(loanCarInfoParam.getApplyLicensePlateAreaId());
+        vehicleInformationUpdateParam.setApply_license_plate_area(loanCarInfoParam.getApplyLicensePlateArea());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
         vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
         vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
@@ -571,9 +571,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
         if (vehicleInformationDO != null) {
-            loanCarInfoVO.setApplyLicensePlateAreaId(vehicleInformationDO.getApply_license_plate_area_id() == null ? null : vehicleInformationDO.getApply_license_plate_area_id().toString());
-            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(vehicleInformationDO.getApply_license_plate_area_id(), new Byte("0"));
-            loanCarInfoVO.setApplyLicensePlateParentAreaId(baseAreaDO == null ? null : baseAreaDO.getParentAreaId().toString());
+            loanCarInfoVO.setApplyLicensePlateArea(vehicleInformationDO.getApply_license_plate_area());
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());

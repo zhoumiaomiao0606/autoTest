@@ -25,7 +25,7 @@ public class VehicleInformationUpdateParam {
 
     private String apply_license_plate_date;
 
-    private String apply_license_plate_area_id;
+    private String apply_license_plate_area;
 
     private String transfer_ownership_date;
     @NotBlank
