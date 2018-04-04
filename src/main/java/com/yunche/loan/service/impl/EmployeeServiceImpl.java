@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -379,6 +378,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             EmployeeDO emp_ = new EmployeeDO();
             emp_.setId(emp.getId());
             emp_.setMachineId(machineId);
+            emp_.setGmtModify(new Date());
             employeeDOMapper.updateByPrimaryKeySelective(emp_);
         }
 

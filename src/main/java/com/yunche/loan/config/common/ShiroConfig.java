@@ -41,6 +41,7 @@ public class ShiroConfig {
      */
 //    private static final Integer CACHE_EXPIRE = 1800;
     private static final Integer CACHE_EXPIRE = 86400;
+
     /**
      * TODO Redis键值对过期时间：30min
      */
