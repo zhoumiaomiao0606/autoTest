@@ -72,6 +72,8 @@ public class InfoSupplementVO {
      */
     private Date supplementStartDate;
 
+    private String remark;
+
     /**
      * 主贷人
      */
