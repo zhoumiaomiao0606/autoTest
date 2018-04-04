@@ -14,7 +14,7 @@ public class BankCardRecordVO {
     /**
      *主贷人姓名
      */
-    private String principalLenderName;
+    private String userName;
     /**
      *身份证号码
      */

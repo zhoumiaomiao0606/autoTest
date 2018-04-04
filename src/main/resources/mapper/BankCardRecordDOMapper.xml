@@ -188,17 +188,38 @@
 
   <update id="updateByOrderId" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO" >
     update bank_card_record
-    user_name = #{userName,jdbcType=VARCHAR},
-    id_card = #{idCard,jdbcType=VARCHAR},
-    billing_date = #{billingDate,jdbcType=TIMESTAMP},
-    first_billing_date = #{firstBillingDate,jdbcType=TIMESTAMP},
-    repay_date = #{repayDate,jdbcType=TIMESTAMP},
-    first_repayment_date = #{firstRepaymentDate,jdbcType=TIMESTAMP},
-    repay_card_id = #{repayCardId,jdbcType=VARCHAR},
-    receive_date = #{receiveDate,jdbcType=TIMESTAMP},
-    sendee = #{sendee,jdbcType=VARCHAR},
-    status = #{status,jdbcType=TINYINT},
-    feature = #{feature,jdbcType=VARCHAR}
+    <set >
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="billingDate != null" >
+        billing_date = #{billingDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="firstBillingDate != null" >
+        first_billing_date = #{firstBillingDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="repayCardId != null" >
+        repay_card_id = #{repayCardId,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveDate != null" >
+        receive_date = #{receiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="repayDate != null" >
+        repay_date = #{repayDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="firstRepaymentDate!=null">
+        first_repayment_date = #{firstRepaymentDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendee != null" >
+        sendee = #{sendee,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null" >
+        feature = #{feature,jdbcType=VARCHAR},
+      </if>
+    </set>
     where order_id = #{orderId,jdbcType=BIGINT}
   </update>
 

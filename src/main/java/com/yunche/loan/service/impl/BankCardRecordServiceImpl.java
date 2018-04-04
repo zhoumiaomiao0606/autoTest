@@ -96,11 +96,10 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
     }
 
     @Override
-    public ResultBean<BankCardRecordVO> query(BankCardRecordVO bankCardRecordVO) {
-        Preconditions.checkNotNull(bankCardRecordVO.getOrderId(),"业务单号不能为空");
-        BankCardRecordDO bankCardRecordDO =  bankCardRecordDOMapper.selectByOrderId(Long.valueOf(bankCardRecordVO.getOrderId()));
-        BeanUtils.copyProperties(bankCardRecordDO,bankCardRecordVO);
-        return ResultBean.ofSuccess(bankCardRecordVO);
+    public ResultBean<BankCardRecordDO> query(Long  orderId) {
+        Preconditions.checkNotNull(orderId,"业务单号不能为空");
+        BankCardRecordDO bankCardRecordDO =  bankCardRecordDOMapper.selectByOrderId(orderId);
+        return ResultBean.ofSuccess(bankCardRecordDO);
     }
 
     @Override
@@ -120,14 +119,13 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
         Preconditions.checkNotNull(bankCardRecordVO,"银行卡登记信息不能为空");
         BankCardRecordDO bankCardRecordDO =  new BankCardRecordDO();
         BeanUtils.copyProperties(bankCardRecordVO,bankCardRecordDO);
-
+        bankCardRecordDO.setOrderId(Long.valueOf(bankCardRecordVO.getOrderId()));
         BankCardRecordDO tmpBankCardRecordDO = bankCardRecordDOMapper.selectByOrderId(Long.valueOf(bankCardRecordVO.getOrderId()));
         if(tmpBankCardRecordDO==null){
             bankCardRecordDOMapper.insert(bankCardRecordDO);
         }else{
             bankCardRecordDOMapper.updateByOrderId(bankCardRecordDO);
         }
-
         return ResultBean.ofSuccess("录入成功",bankCardRecordDO.toString());
     }
 
