@@ -86,10 +86,12 @@ public class LoanCustomerController {
      * 客户重复贷款校验
      *
      * @param idCard
+     * @param orderId
      * @return
      */
-    @GetMapping(value = "/checkRepeatLoan")
-    public ResultBean<LoanRepeatVO> checkRepeatLoan(@RequestParam String idCard) {
-        return loanCustomerService.checkRepeatLoan(idCard);
+    @GetMapping(value = "/checkRepeat")
+    public ResultBean<LoanRepeatVO> checkRepeat(@RequestParam String idCard,
+                                                @RequestParam(required = false) Long orderId) {
+        return loanCustomerService.checkRepeat(idCard, orderId);
     }
 }

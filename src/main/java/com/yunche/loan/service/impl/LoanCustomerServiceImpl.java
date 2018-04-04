@@ -2,7 +2,6 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.constant.LoanOrderProcessConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
@@ -156,13 +155,14 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(id, null);
         CustomerVO customerVO = new CustomerVO();
         BeanUtils.copyProperties(loanCustomerDO, customerVO);
-//        customerVO.setFiles(JSON.parseArray(loanCustomerDO.getFiles(), CustomerVO.File.class));
+
+        // 无files
 
         return ResultBean.ofSuccess(customerVO);
     }
 
     @Override
-    public ResultBean<LoanRepeatVO> checkRepeatLoan(String idCard) {
+    public ResultBean<LoanRepeatVO> checkRepeat(String idCard, Long orderId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(idCard), "身份证号不能为空");
 
         LoanRepeatVO loanRepeatVO = new LoanRepeatVO();
@@ -184,6 +184,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                     .filter(Objects::nonNull)
                     .distinct()
                     .collect(Collectors.toList());
+
+
+            if (null != orderId && !CollectionUtils.isEmpty(orderIdList)) {
+                orderIdList.remove(String.valueOf(orderId));
+            }
 
             loanRepeatVO.setRepeat(true);
             loanRepeatVO.setOrderIdList(orderIdList);

@@ -25,7 +25,7 @@ public interface LoanCustomerService {
 
     ResultBean<CustomerVO> getById(Long id);
 
-    ResultBean<LoanRepeatVO> checkRepeatLoan(String idCard);
+    ResultBean<LoanRepeatVO> checkRepeat(String idCard, Long orderId);
 
     ResultBean<CustDetailVO> customerDetail(Long orderId);
 
