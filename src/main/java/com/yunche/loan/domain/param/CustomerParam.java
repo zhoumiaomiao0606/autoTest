@@ -103,8 +103,6 @@ public class CustomerParam {
 
     private Long familyMobile;
 
-    private BigDecimal personMonthlyIncome;
-
     private BigDecimal familyMonthlyIncome;
 
     private Long feedingNum;
@@ -126,6 +124,10 @@ public class CustomerParam {
     private String elementarySchool;
 
     private String professional;
+
+    private Long familyPersonNum;
+
+    private BigDecimal debtRatio;
 
     private List<FileVO> files = Collections.EMPTY_LIST;
 

@@ -115,8 +115,6 @@ public class AppCustomerParam {
 
     private Long familyMobile;
 
-    private BigDecimal personMonthlyIncome;
-
     private BigDecimal familyMonthlyIncome;
 
     private Long feedingNum;
@@ -128,6 +126,24 @@ public class AppCustomerParam {
     private String bankCardTransmitAddress;
 
     private String bankCardTransmitPostcode;
+
+    private Long familyPersonNum;
+
+    private BigDecimal debtRatio;
+
+    private Byte houseCertificateType;
+
+    private Byte bankCardTransmitAddressType;
+
+    private String companyPostcode;
+
+    private String elementarySchool;
+
+    private String professional;
+
+
+
+
 
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

@@ -95,8 +95,6 @@ public class LoanCustomerDO {
 
     private Long familyMobile;
 
-    private BigDecimal personMonthlyIncome;
-
     private BigDecimal familyMonthlyIncome;
 
     private Long feedingNum;
@@ -118,4 +116,8 @@ public class LoanCustomerDO {
     private String elementarySchool;
 
     private String professional;
+
+    private Long familyPersonNum;
+
+    private BigDecimal debtRatio;
 }
