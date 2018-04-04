@@ -123,6 +123,8 @@ public class CustomerParam {
 
     private String companyPostcode;
 
+    private String elementarySchool;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 
 }
