@@ -25,7 +25,7 @@ public class VehicleInformationDO {
 
     private Date apply_license_plate_date;
 
-    private Long apply_license_plate_area_id;
+    private String apply_license_plate_area;
 
     private Date transfer_ownership_date;
 

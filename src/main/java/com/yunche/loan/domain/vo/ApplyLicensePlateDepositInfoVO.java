@@ -16,8 +16,7 @@ public class ApplyLicensePlateDepositInfoVO {
     private String bank;
     private String license_plate_number;
     private String transfer_ownership_date;
-    private String apply_license_plate_area_id;
-    private String apply_license_plate_parent_area_id;
+    private String apply_license_plate_area;
     private String apply_license_plate_date;
     private String apply_license_plate_deposit_date;
     private String registration_certificate_number;

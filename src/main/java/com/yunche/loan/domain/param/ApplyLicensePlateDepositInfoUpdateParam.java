@@ -16,7 +16,7 @@ public class ApplyLicensePlateDepositInfoUpdateParam{
 
     private String transfer_ownership_date;
 
-    private String apply_license_plate_area_id;
+    private String apply_license_plate_area;
 
     private String apply_license_plate_date;
     @NotBlank

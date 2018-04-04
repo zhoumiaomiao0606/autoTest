@@ -26,8 +26,7 @@
             v.displacement                    AS displacement,
             v.license_plate_number            AS license_plate_number,
             v.apply_license_plate_date        AS apply_license_plate_date,
-            t.area_id                         AS apply_license_plate_area_id,
-            t.parent_area_id                  AS apply_license_plate_parent_area_id,
+            v.apply_license_plate_area        AS apply_license_plate_area,
             v.transfer_ownership_date         AS transfer_ownership_date,
             v.now_driving_license_owner       AS now_driving_license_owner,
             v.old_driving_license_owner       AS old_driving_license_owner,
@@ -60,9 +59,6 @@
             left join car_detail d on i.car_detail_id = d.id
 
             left join car_model m on model_id = m.id
-
-            left join base_area t on  v.apply_license_plate_area_id = t.area_id
-
     </select>
   <!--上牌抵押-->
   <select id="selectApplyLicensePlateDepositInfo" resultType="com.yunche.loan.domain.vo.ApplyLicensePlateDepositInfoVO" parameterType="java.lang.Long" >
@@ -80,8 +76,7 @@
              b.bank                             AS bank,
              h.license_plate_number             AS license_plate_number,
              h.transfer_ownership_date          AS transfer_ownership_date,
-             t.area_id                          AS apply_license_plate_area_id,
-             t.parent_area_id                   AS apply_license_plate_parent_area_id,
+             h.apply_license_plate_area         AS apply_license_plate_area,
              h.apply_license_plate_date         AS apply_license_plate_date,
              a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
              h.registration_certificate_number  AS registration_certificate_number
@@ -102,7 +97,6 @@
 
     left join employee e on b.salesman_id = e.id
 
-    left join base_area t on h.apply_license_plate_area_id = t.area_id
   </select>
     
   <!--业务审批单-->
@@ -224,8 +218,7 @@
              mo.production_type                           AS production_type,
              h.license_plate_type                         AS license_plate_type,
              i.car_type                                   AS car_type,
-             t.area_id                                    AS apply_license_plate_area_id,
-             t.parent_area_id                             AS apply_license_plate_parent_area_id,
+             h.apply_license_plate_area                   AS apply_license_plate_area_id,
              v.visit_date                                 AS visit_date,
              ev.name                                      AS vname,
              v.visit_address                              AS visit_address,
@@ -269,8 +262,6 @@
     left join partner p       on p.id = b.partner_id
 
     left join employee e      on b.salesman_id = e.id
-
-    left join base_area t on h.apply_license_plate_area_id = t.area_id
 
     left join employee ev on v.visit_salesman_id = ev.id
 
@@ -319,8 +310,7 @@
              mo.production_type                   AS production_type,
              h.license_plate_type                 AS license_plate_type,
              i.car_type                           AS car_type,
-             t.area_id                            AS apply_license_plate_area_id,
-             t.parent_area_id                     AS  apply_license_plate_parent_area_id,
+             h.apply_license_plate_area           AS apply_license_plate_area,
              v.visit_date                         AS visit_date,
              ev.name                              AS vname,
              v.visit_address                      AS visit_address,
@@ -364,8 +354,6 @@
     left join partner p       on p.id = b.partner_id
 
     left join employee e      on b.salesman_id = e.id
-
-    left join base_area t on h.apply_license_plate_area_id = t.area_id
 
     left join employee ev on v.visit_salesman_id = ev.id
 
