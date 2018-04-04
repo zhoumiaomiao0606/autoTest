@@ -30,19 +30,19 @@ public class CustomerVO {
 
     private Byte age;
 
-    private Byte sex;
+    private String sex;
 
     private Date applyDate;
 
     private String address;
 
-    private Byte marry;
+    private String marry;
 
     private String identityAddress;
 
     private String mobileArea;
 
-    private Byte education;
+    private String education;
 
     private String companyName;
 
@@ -50,11 +50,11 @@ public class CustomerVO {
 
     private Integer monthIncome;
 
-    private Byte houseType;
+    private String houseType;
 
-    private Byte houseOwner;
+    private String houseOwner;
 
-    private Byte houseFeature;
+    private String houseFeature;
 
     private String houseAddress;
 
@@ -66,11 +66,11 @@ public class CustomerVO {
 
     private Byte custRelation;
 
-    private Byte bankCreditResult;
+    private String bankCreditResult;
 
     private String bankCreditInfo;
 
-    private Byte socialCreditResult;
+    private String socialCreditResult;
 
     private String socialCreditInfo;
 

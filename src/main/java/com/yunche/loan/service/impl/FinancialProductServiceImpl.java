@@ -260,6 +260,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
                 financialProduct = new CascadeFinancialProductVO.FinancialProduct();
                 financialProduct.setId(subProductBybank.get(i).getProdId());
                 financialProduct.setName(subProductBybank.get(i).getProdName());
+                financialProduct.setCategorySuperior(subProductBybank.get(i).getCategorySuperior());
 
                 //赋值产品利率     BEG
                 List<ProductRateDO> productRateDOS = productRateDOMapper.selectByProdId(subProductBybank.get(i).getProdId());

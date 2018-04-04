@@ -74,6 +74,8 @@ public class LoanCarInfoParam {
 
     private String nowDrivingLicenseOwner;
 
+    private Byte vehicleProperty;
+
     @Data
     public static class PartnerAccountInfo {
         private Long partnerId;
