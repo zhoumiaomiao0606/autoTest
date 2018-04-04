@@ -254,10 +254,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                     .filter(Objects::nonNull)
                     .forEach(e -> {
                         if (CREDIT_TYPE_BANK.equals(e.getType())) {
-                            principalLender.setBankCreditResult(e.getResult() == null?null:e.getResult().toString());
+                            principalLender.setBankCreditResult(e.getResult());
                             principalLender.setBankCreditInfo(e.getInfo());
                         } else if (CREDIT_TYPE_SOCIAL.equals(e.getType())) {
-                            principalLender.setSocialCreditResult(e.getResult() == null?null:e.getResult().toString());
+                            principalLender.setSocialCreditResult(e.getResult());
                             principalLender.setSocialCreditInfo(e.getInfo());
                         }
                     });
