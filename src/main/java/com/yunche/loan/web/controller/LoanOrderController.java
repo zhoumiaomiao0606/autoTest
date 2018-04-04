@@ -149,8 +149,6 @@ public class LoanOrderController {
         return loanOrderService.loanCarInfoDetail(orderId);
     }
 
-
-
     /**
      * 根据订单号获取上门家访详情
      *
@@ -216,17 +214,6 @@ public class LoanOrderController {
     public ResultBean<List<LoanSimpleCustomerInfoVO>> simpleCustomerInfo(@RequestParam Long orderId) {
         return loanOrderService.simpleCustomerInfo(orderId);
     }
-
-//    /**
-//     * 电审页详情展示
-//     *
-//     * @param orderId
-//     * @return
-//     */
-//    @GetMapping(value = "/telephoneverify/detail")
-//    public ResultBean<TelephoneVerifyVO> telephoneVerifyDetail(@RequestParam Long orderId) {
-//        return loanOrderService.telephoneVerifyDetail(orderId);
-//    }
 }
 
 

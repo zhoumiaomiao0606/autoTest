@@ -31,6 +31,20 @@ public class AppLoanCarInfoVO {
      */
     private String info;
 
+    private String applyLicensePlateArea;
+
+    private String licensePlateType;
+
+    private String color;
+
+    private String nowDrivingLicenseOwner;
+
+    private Byte vehicleProperty;
+
+    private Date firstRegisterDate;
+
+    private Byte businessSource;
+
     private Byte status;
 
     private Date gmtCreate;

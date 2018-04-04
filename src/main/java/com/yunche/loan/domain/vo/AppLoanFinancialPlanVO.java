@@ -11,6 +11,7 @@ import java.util.Date;
  */
 @Data
 public class AppLoanFinancialPlanVO {
+
     private Long id;
 
     private BigDecimal carPrice;
@@ -43,6 +44,12 @@ public class AppLoanFinancialPlanVO {
     private BigDecimal firstMonthRepay;
 
     private BigDecimal eachMonthRepay;
+
+    private BigDecimal cashDeposit;
+
+    private BigDecimal extraFee;
+
+    private BigDecimal appraisal;
 
     private Byte status;
 
