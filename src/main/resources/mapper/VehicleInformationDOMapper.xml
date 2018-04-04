@@ -27,14 +27,14 @@
     <result column="feature" property="feature" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, license_plate_type, color, qualified_certificate_number, register_date, vehicle_identification_number, 
-    displacement, license_plate_number, apply_license_plate_date, apply_license_plate_area_id, 
-    transfer_ownership_date, now_driving_license_owner, old_driving_license_owner, engine_number, 
-    registration_certificate_number, invoice_car_dealer, purchase_car_invoice_num, purchase_car_invoice_price, 
+    id, license_plate_type, color, qualified_certificate_number, register_date, vehicle_identification_number,
+    displacement, license_plate_number, apply_license_plate_date, apply_license_plate_area_id,
+    transfer_ownership_date, now_driving_license_owner, old_driving_license_owner, engine_number,
+    registration_certificate_number, invoice_car_dealer, purchase_car_invoice_num, purchase_car_invoice_price,
     invoice_down_payment, purchase_car_invoice_date, retrieve_key, status, feature
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from vehicle_information
     where id = #{id,jdbcType=BIGINT}
