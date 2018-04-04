@@ -141,9 +141,5 @@ public class AppCustomerParam {
 
     private String professional;
 
-
-
-
-
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

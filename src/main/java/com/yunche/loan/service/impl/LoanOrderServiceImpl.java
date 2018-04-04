@@ -1061,7 +1061,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoDO.setCarDetailName(carDetail.getName());
         }
 
-        AppLoanCarInfoParam.PartnerAccountInfo partnerAccountInfo = loanCarInfoParam.getPartnerAccountInfo();
+        LoanCarInfoParam.PartnerAccountInfo partnerAccountInfo = loanCarInfoParam.getPartnerAccountInfo();
         if (null != partnerAccountInfo) {
             BeanUtils.copyProperties(partnerAccountInfo, loanCarInfoDO);
         }

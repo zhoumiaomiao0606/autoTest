@@ -11,7 +11,6 @@ import java.util.Date;
  */
 @Data
 public class AppLoanCarInfoParam {
-
     /**
      * 业务单ID
      */
@@ -74,6 +73,8 @@ public class AppLoanCarInfoParam {
     private String color;
 
     private String nowDrivingLicenseOwner;
+
+    private Byte vehicleProperty;
 
     @Data
     public static class PartnerAccountInfo {

@@ -30,7 +30,7 @@ public class LoanCarInfoParam {
     /**
      * 合伙人收款账户信息
      */
-    private AppLoanCarInfoParam.PartnerAccountInfo partnerAccountInfo;
+    private PartnerAccountInfo partnerAccountInfo;
     /**
      * 备注
      */
