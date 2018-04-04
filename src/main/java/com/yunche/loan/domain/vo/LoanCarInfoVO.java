@@ -52,6 +52,10 @@ public class LoanCarInfoVO {
 
     private Byte vehicleProperty;
 
+    private Date firstRegisterDate;
+
+    private Byte businessSource;
+
     @Data
     public static class PartnerAccountInfo {
         private Long partnerId;
