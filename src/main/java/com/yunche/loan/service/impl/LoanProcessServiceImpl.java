@@ -598,7 +598,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 直接通过
             if (loanAmount >= 0 && loanAmount <= 100000) {
                 // 完成任务：全部角色直接过单
-                completeTask(task, variables, approval);
+                passTelephoneVerifyTask(task, variables, approval);
             } else if (loanAmount > 100000 && loanAmount <= 300000) {
                 // 电审主管以上可过单
                 if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_LEADER) {
@@ -606,7 +606,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     updateTelephoneVerify(orderId, maxRoleLevel, taskId, variables);
                 } else {
                     // 完成任务
-                    completeTask(task, variables, approval);
+                    passTelephoneVerifyTask(task, variables, approval);
                 }
             } else if (loanAmount > 300000 && loanAmount <= 500000) {
                 // 电审经理以上可过单
@@ -615,7 +615,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     updateTelephoneVerify(orderId, maxRoleLevel, taskId, variables);
                 } else {
                     // 完成任务
-                    completeTask(task, variables, approval);
+                    passTelephoneVerifyTask(task, variables, approval);
                 }
             } else if (loanAmount > 500000) {
                 // 总监以上可过单
@@ -624,7 +624,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     updateTelephoneVerify(orderId, maxRoleLevel, taskId, variables);
                 } else {
                     // 完成任务
-                    completeTask(task, variables, approval);
+                    passTelephoneVerifyTask(task, variables, approval);
                 }
             }
         } else if (ACTION_CANCEL.equals(approval.getAction())) {
@@ -639,6 +639,46 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             variables.put(PROCESS_VARIABLE_TARGET, CREDIT_APPLY.getCode());
             completeTask(task, variables, approval);
         }
+    }
+
+    /**
+     * 【电审】过单
+     *
+     * @param task
+     * @param variables
+     * @param approval
+     */
+    private void passTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval) {
+        // 完成任务：全部角色直接过单
+        completeTask(task, variables, approval);
+        // 自动执行【金融方案】任务
+        completeFinancialSchemeTask(task.getProcessInstanceId(), approval.getOrderId());
+    }
+
+    /**
+     * 自动执行【金融方案】任务
+     *
+     * @param processInstanceId
+     * @param orderId
+     */
+    private void completeFinancialSchemeTask(String processInstanceId, Long orderId) {
+
+        Map<String, Object> variables = Maps.newHashMap();
+        variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
+
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .taskDefinitionKey(FINANCIAL_SCHEME.getCode())
+                .singleResult();
+
+        Preconditions.checkNotNull(task, "[金融方案展示]任务不存在");
+
+        ApprovalParam approval = new ApprovalParam();
+        approval.setOrderId(orderId);
+        approval.setAction(ACTION_PASS);
+        approval.setTaskDefinitionKey(FINANCIAL_SCHEME.getCode());
+
+        completeTask(task, variables, approval);
     }
 
     /**
