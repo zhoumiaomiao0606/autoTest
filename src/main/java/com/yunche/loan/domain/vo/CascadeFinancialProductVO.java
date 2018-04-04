@@ -30,6 +30,8 @@ public class CascadeFinancialProductVO {
          */
         private String name;
 
+        private String categorySuperior;
+
         /**
          * 银行利率列表
          */
