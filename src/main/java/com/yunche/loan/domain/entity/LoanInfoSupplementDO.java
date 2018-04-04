@@ -64,4 +64,6 @@ public class LoanInfoSupplementDO {
      * 增补提交时间
      */
     private Date endTime;
+
+    private String remark;
 }

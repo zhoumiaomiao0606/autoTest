@@ -557,6 +557,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         infoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());
         infoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());
         infoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
+        infoSupplementVO.setRemark(loanInfoSupplementDO.getRemark());
 
 
         Long orderId = loanInfoSupplementDO.getOrderId();

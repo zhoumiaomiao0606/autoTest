@@ -260,11 +260,16 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
 
-<!--
-        <table tableName="loan_process_log" domainObjectName="LoanProcessLogDO"
+        <table tableName="loan_info_supplement" domainObjectName="LoanInfoSupplementDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
--->
+
+
+        <!--
+                <table tableName="loan_process_log" domainObjectName="LoanProcessLogDO"
+                       enableCountByExample="false" enableUpdateByExample="false"
+                       enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+        -->
 
 
         <!-- 忽略列，不生成bean 字段

@@ -15,6 +15,8 @@ public class InfoSupplementParam {
      * 客户ID
      */
     private Long customerId;
+
+    private String remark;
     /**
      * 文件列表
      */

@@ -116,4 +116,6 @@ public class LoanCustomerDO {
     private String companyPostcode;
 
     private String elementarySchool;
+
+    private String professional;
 }

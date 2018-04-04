@@ -126,5 +126,7 @@ public class CustomerVO {
 
     private String elementarySchool;
 
+    private String professional;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 }
