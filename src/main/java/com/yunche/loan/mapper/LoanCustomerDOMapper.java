@@ -49,4 +49,11 @@ public interface LoanCustomerDOMapper {
      */
     String getFilesById(Long id);
 
+    /**
+     * 通过身份证获取主贷人ID列表
+     *
+     * @param idCard
+     * @return
+     */
+    List<Long> listPrincipalCustIdByIdCard(@Param("idCard") String idCard);
 }

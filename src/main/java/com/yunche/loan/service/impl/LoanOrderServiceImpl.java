@@ -12,7 +12,6 @@ import com.yunche.loan.domain.query.LoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.HistoryService;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
@@ -29,7 +28,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
@@ -99,6 +97,12 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private LoanInfoSupplementDOMapper loanInfoSupplementDOMapper;
 
     @Autowired
+    private VehicleInformationDOMapper vehicleInformationDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+
+    @Autowired
     private BaseAreaService baseAreaService;
 
     @Autowired
@@ -115,9 +119,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private LoanFinancialPlanService loanFinancialPlanService;
-
-    @Autowired
-    private RuntimeService runtimeService;
 
     @Autowired
     private TaskService taskService;
@@ -319,33 +320,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
     @Override
-    public ResultBean<CustDetailVO> customerDetail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单ID不能为空");
-
-        // 根据主贷人ID获取客户详情列表
-        ResultBean<CustDetailVO> resultBean = loanCustomerService.detailAll(orderId, null);
-
-        return resultBean;
-    }
-
-    @Override
-    @Transactional
-    public ResultBean<Void> updateCustomer(AllCustDetailParam allCustDetailParam) {
-        Preconditions.checkNotNull(allCustDetailParam, "客户信息不能为空");
-
-        loanCustomerService.updateAll(allCustDetailParam);
-
-        return ResultBean.ofSuccess(null, "客户信息编辑成功");
-    }
-
-    @Override
-    @Transactional
-    public ResultBean<Void> faceOff(Long orderId, Long principalLenderId, Long commonLenderId) {
-        ResultBean<Void> resultBean = loanCustomerService.faceOff(orderId, principalLenderId, commonLenderId);
-        return resultBean;
-    }
-
-    @Override
     @Transactional
     public ResultBean<Long> createLoanCarInfo(LoanCarInfoParam loanCarInfoParam) {
         Preconditions.checkNotNull(loanCarInfoParam.getOrderId(), "业务单号不能为空");
@@ -397,32 +371,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         return resultBean;
     }
 
-    @Override
-    @Transactional
-    public ResultBean<Long> addRelaCustomer(CustomerParam customerParam) {
-        // convert
-        LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
-        convertLoanCustomer(customerParam, loanCustomerDO);
-
-        ResultBean<Long> resultBean = loanCustomerService.create(loanCustomerDO);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-
-        return ResultBean.ofSuccess(resultBean.getData(), "创建关联人成功");
-    }
-
-    @Override
-    @Transactional
-    public ResultBean<Long> delRelaCustomer(Long customerId) {
-        Preconditions.checkNotNull(customerId, "客户ID不能为空");
-
-        LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
-        loanCustomerDO.setId(customerId);
-        loanCustomerDO.setStatus(INVALID_STATUS);
-        ResultBean<Void> resultBean = loanCustomerService.update(loanCustomerDO);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-
-        return ResultBean.ofSuccess(null, "删除关联人成功");
-    }
 
     @Override
     @Transactional
@@ -599,22 +547,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
 
-    private String applyLicensePlateAreaId;
-
-    private String applyLicensePlateParentAreaId;
-
-    private String licensePlateType;
-
-    private String color;
-
-    private String nowDrivingLicenseOwner;
-
-    @Autowired
-    private VehicleInformationDOMapper vehicleInformationDOMapper;
-
-    @Autowired
-    private BaseAreaDOMapper baseAreaDOMapper;
-
     @Override
     public ResultBean<LoanCarInfoVO> loanCarInfoDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
@@ -649,35 +581,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
 
         return ResultBean.ofSuccess(loanCarInfoVO);
-    }
-
-    @Override
-    public ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单号不能为空");
-
-        Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(orderId);
-
-        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
-        LoanFinancialPlanVO loanFinancialPlanVO = new LoanFinancialPlanVO();
-        if (null != loanFinancialPlanDO) {
-            BeanUtils.copyProperties(loanFinancialPlanDO, loanFinancialPlanVO);
-        }
-
-        return ResultBean.ofSuccess(loanFinancialPlanVO);
-    }
-
-    @Override
-    @Transactional
-    public ResultBean<Long> createOrUpdateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
-        Preconditions.checkNotNull(loanFinancialPlanParam, "贷款金融方案不能为空");
-
-        if (null == loanFinancialPlanParam.getId()) {
-            // 创建
-            return createLoanFinancialPlan(loanFinancialPlanParam);
-        } else {
-            // 编辑
-            return updateLoanFinancialPlan(loanFinancialPlanParam);
-        }
     }
 
 
@@ -718,12 +621,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             // 编辑
             return updateLoanHomeVisit(loanHomeVisitParam);
         }
-    }
-
-    @Override
-    public ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
-        ResultBean<LoanFinancialPlanVO> resultBean = loanFinancialPlanService.calc(loanFinancialPlanParam);
-        return resultBean;
     }
 
     @Override
@@ -1101,47 +998,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         return userGroupNameList;
     }
 
-    /**
-     * insert贷款金融方案
-     *
-     * @param loanFinancialPlanParam
-     */
-    private ResultBean<Long> createLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
-        Preconditions.checkNotNull(loanFinancialPlanParam.getOrderId(), "业务单号不能为空");
-
-        // insert
-        LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
-        BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
-
-        // insert
-        ResultBean<Long> resultBean = loanFinancialPlanService.create(loanFinancialPlanDO);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-
-        // 关联
-        LoanOrderDO loanOrderDO = new LoanOrderDO();
-        loanOrderDO.setId(loanFinancialPlanParam.getOrderId());
-        loanOrderDO.setLoanFinancialPlanId(loanFinancialPlanDO.getId());
-        ResultBean<Void> updateRelaResult = loanProcessOrderService.update(loanOrderDO);
-        Preconditions.checkArgument(updateRelaResult.getSuccess(), updateRelaResult.getMsg());
-
-        return resultBean;
-    }
-
-    /**
-     * update贷款金融方案
-     *
-     * @param loanFinancialPlanParam
-     */
-    private ResultBean<Long> updateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
-        LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
-        BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
-        loanFinancialPlanDO.setGmtModify(new Date());
-
-        int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
-        Preconditions.checkArgument(count > 0, "编辑贷款金融方案失败");
-
-        return ResultBean.ofSuccess(null, "保存贷款金融方案成功");
-    }
 
     /**
      * 创建上门家访资料
@@ -1271,12 +1127,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         Collections.reverse(cascadeCarDetail);
         loanCarInfoVO.setCarDetail(cascadeCarDetail);
-    }
-
-    private void convertLoanCustomer(CustomerParam customerParam, LoanCustomerDO loanCustomerDO) {
-        if (null != customerParam) {
-            BeanUtils.copyProperties(customerParam, loanCustomerDO);
-        }
     }
 
     private void updateLoanBaseInfo(LoanBaseInfoParam loanBaseInfoParam) {

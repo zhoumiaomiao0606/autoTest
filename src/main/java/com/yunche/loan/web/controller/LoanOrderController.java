@@ -115,64 +115,6 @@ public class LoanOrderController {
         return loanOrderService.updateCreditRecord(creditRecordParam);
     }
 
-    /**
-     * 获取贷款客户信息详情(主贷人/共贷人/担保人/紧急联系人)
-     *
-     * @param orderId 业务单ID
-     * @return
-     */
-    @GetMapping(value = "/customer/detail")
-    public ResultBean<CustDetailVO> customerDetail(@RequestParam("orderId") Long orderId) {
-        return loanOrderService.customerDetail(orderId);
-    }
-
-    /**
-     * 贷款客户信息编辑
-     *
-     * @param allCustDetailParam
-     * @return
-     */
-    @PostMapping(value = "/customer/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> updateCustomer(@RequestBody AllCustDetailParam allCustDetailParam) {
-        return loanOrderService.updateCustomer(allCustDetailParam);
-    }
-
-    /**
-     * 增加关联人（共贷人/担保人/紧急联系人）
-     *
-     * @param param
-     * @return
-     */
-    @PostMapping(value = "/customer/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> addRelaCustomer(@RequestBody CustomerParam param) {
-        return loanOrderService.addRelaCustomer(param);
-    }
-
-    /**
-     * 删除关联人（共贷人/担保人/紧急联系人）
-     *
-     * @param customerId
-     * @return
-     */
-    @GetMapping(value = "/customer/delrela")
-    public ResultBean<Long> delRelaCustomer(@RequestParam("customerId") Long customerId) {
-        return loanOrderService.delRelaCustomer(customerId);
-    }
-
-    /**
-     * 主贷人和共贷人切换
-     *
-     * @param orderId
-     * @param principalLenderId
-     * @param commonLenderId
-     * @return
-     */
-    @GetMapping(value = "/customer/faceoff")
-    public ResultBean<Void> faceOff(@RequestParam("orderId") Long orderId,
-                                    @RequestParam("principalLenderId") Long principalLenderId,
-                                    @RequestParam("commonLenderId") Long commonLenderId) {
-        return loanOrderService.faceOff(orderId, principalLenderId, commonLenderId);
-    }
 
     /**
      * 保存贷款车辆信息 -新增
@@ -207,38 +149,7 @@ public class LoanOrderController {
         return loanOrderService.loanCarInfoDetail(orderId);
     }
 
-    /**
-     * 根据订单号获取贷款金融方案详情
-     *
-     * @param orderId
-     * @return
-     */
-    @GetMapping(value = "/financialplan/detail")
-    public ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(@RequestParam("orderId") Long orderId) {
-        return loanOrderService.loanFinancialPlanDetail(orderId);
-    }
 
-    /**
-     * 金融方案计算
-     *
-     * @param loanFinancialPlanParam
-     * @return
-     */
-    @PostMapping(value = "/financialplan/calc", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(@RequestBody LoanFinancialPlanParam loanFinancialPlanParam) {
-        return loanOrderService.calcLoanFinancialPlan(loanFinancialPlanParam);
-    }
-
-    /**
-     * 保存贷款金融方案 【新增/编辑】
-     *
-     * @param loanFinancialPlanParam
-     * @return
-     */
-    @PostMapping(value = "/financialplan/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> saveLoanFinancialPlan(@RequestBody LoanFinancialPlanParam loanFinancialPlanParam) {
-        return loanOrderService.createOrUpdateLoanFinancialPlan(loanFinancialPlanParam);
-    }
 
     /**
      * 根据订单号获取上门家访详情

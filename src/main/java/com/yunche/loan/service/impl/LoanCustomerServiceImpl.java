@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.LoanOrderProcessConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
@@ -12,17 +13,17 @@ import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanFileService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
@@ -159,6 +160,91 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
         return ResultBean.ofSuccess(customerVO);
     }
+
+    @Override
+    public ResultBean<LoanRepeatVO> checkRepeatLoan(String idCard) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(idCard), "身份证号不能为空");
+
+        LoanRepeatVO loanRepeatVO = new LoanRepeatVO();
+
+        List<Long> principalCustIdList = loanCustomerDOMapper.listPrincipalCustIdByIdCard(idCard);
+
+        if (!CollectionUtils.isEmpty(principalCustIdList)) {
+
+            List<String> orderIdList = principalCustIdList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(customerId -> {
+
+                        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByCustomerId(customerId);
+                        if (null != loanOrderDO) {
+                            return String.valueOf(loanOrderDO.getId());
+                        }
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            loanRepeatVO.setRepeat(true);
+            loanRepeatVO.setOrderIdList(orderIdList);
+        }
+
+        return ResultBean.ofSuccess(loanRepeatVO, "成功");
+    }
+
+    @Override
+    public ResultBean<CustDetailVO> customerDetail(Long orderId) {
+        Preconditions.checkNotNull(orderId, "业务单ID不能为空");
+
+        // 根据主贷人ID获取客户详情列表
+        ResultBean<CustDetailVO> resultBean = detailAll(orderId, null);
+
+        return resultBean;
+    }
+
+    @Override
+    @Transactional
+    public ResultBean<Void> updateCustomer(AllCustDetailParam allCustDetailParam) {
+        Preconditions.checkNotNull(allCustDetailParam, "客户信息不能为空");
+
+        updateAll(allCustDetailParam);
+
+        return ResultBean.ofSuccess(null, "客户信息编辑成功");
+    }
+
+    @Override
+    @Transactional
+    public ResultBean<Long> addRelaCustomer(CustomerParam customerParam) {
+        // convert
+        LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
+        convertLoanCustomer(customerParam, loanCustomerDO);
+
+        ResultBean<Long> resultBean = create(loanCustomerDO);
+        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+
+        return ResultBean.ofSuccess(resultBean.getData(), "创建关联人成功");
+    }
+
+    @Override
+    @Transactional
+    public ResultBean<Long> delRelaCustomer(Long customerId) {
+        Preconditions.checkNotNull(customerId, "客户ID不能为空");
+
+        LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
+        loanCustomerDO.setId(customerId);
+        loanCustomerDO.setStatus(INVALID_STATUS);
+        ResultBean<Void> resultBean = update(loanCustomerDO);
+        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+
+        return ResultBean.ofSuccess(null, "删除关联人成功");
+    }
+
+    private void convertLoanCustomer(CustomerParam customerParam, LoanCustomerDO loanCustomerDO) {
+        if (null != customerParam) {
+            BeanUtils.copyProperties(customerParam, loanCustomerDO);
+        }
+    }
+
 
     /**
      * 填充客户详情信息

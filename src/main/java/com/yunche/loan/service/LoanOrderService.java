@@ -20,23 +20,11 @@ public interface LoanOrderService {
 
     ResultBean<CreditRecordVO> creditRecordDetail(Long orderId, Byte type);
 
-    ResultBean<CustDetailVO> customerDetail(Long orderId);
-
-    ResultBean<Void> updateCustomer(AllCustDetailParam allCustDetailParam);
-
-    ResultBean<Void> faceOff(Long orderId, Long principalLenderId, Long commonLenderId);
-
     ResultBean<LoanCarInfoVO> loanCarInfoDetail(Long orderId);
-
-    ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId);
-
-    ResultBean<Long> createOrUpdateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanVO);
 
     ResultBean<LoanHomeVisitVO> homeVisitDetail(Long orderId);
 
     ResultBean<Long> createOrUpdateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam);
-
-    ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam);
 
     ResultBean<Void> infoSupplementUpload(InfoSupplementParam infoSupplementParam);
 
@@ -47,10 +35,6 @@ public interface LoanOrderService {
     ResultBean<Long> createLoanCarInfo(LoanCarInfoParam loanCarInfoParam);
 
     ResultBean<Void> updateLoanCarInfo(LoanCarInfoParam loanCarInfoParam);
-
-    ResultBean<Long> addRelaCustomer(CustomerParam param);
-
-    ResultBean<Long> delRelaCustomer(Long customerId);
 
     ResultBean<Long> createCreditRecord(CreditRecordParam creditRecordParam);
 

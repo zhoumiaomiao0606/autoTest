@@ -17,4 +17,10 @@ public interface LoanFinancialPlanService {
     ResultBean<Void> update(LoanFinancialPlanDO loanFinancialPlanDO);
 
     ResultBean<LoanFinancialPlanVO> calc(LoanFinancialPlanParam loanFinancialPlanParam);
+
+    ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId);
+
+    ResultBean<LoanFinancialPlanVO> calcLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam);
+
+    ResultBean<Long> createOrUpdateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam);
 }

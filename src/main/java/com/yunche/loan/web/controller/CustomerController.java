@@ -9,6 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
+ * 废弃！！！
+ * 废弃！！！
+ * 废弃！！！
+ * <p>
  * 客户信息（主贷人/共贷人/担保人/紧急联系人）
  * Created by zhouguoliang on 2018/2/12.
  */
