@@ -43,7 +43,7 @@ public class LoanCarInfoDO {
 
     private Date firstRegisterDate;
 
-    private String businessSource;
+    private Byte businessSource;
 
     private Byte cooperationDealer;
 
