@@ -50,7 +50,7 @@ public class CustomerVO {
 
     private String companyAddress;
 
-    private Integer monthIncome;
+    private BigDecimal monthIncome;
 
     private Byte houseType;
 
