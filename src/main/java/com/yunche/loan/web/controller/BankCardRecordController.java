@@ -27,9 +27,9 @@ public class BankCardRecordController {
             return bankCardRecordService.input(bankCardRecordVO);
         }
         //银行卡接收（针对只保存不提交的数据回显查询）
-        @PostMapping(value = "/querysave")
-        public  ResultBean query(@RequestBody BankCardRecordVO bankCardRecordVO){
-            return bankCardRecordService.query(bankCardRecordVO);
+        @GetMapping(value = "/querysave")
+        public  ResultBean query(@RequestParam("orderId") Long orderId){
+            return bankCardRecordService.query(orderId);
         }
 
         //详情界面
