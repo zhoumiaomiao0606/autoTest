@@ -79,7 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private AreaCache areaCache;
 
     @Override
-    public ResultBean<Long> create(EmployeeParam employeeParam)  {
+    public ResultBean<Long> create(EmployeeParam employeeParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getName()), "姓名不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getIdCard()), "身份证号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getMobile()), "手机号不能为空");
@@ -652,6 +652,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
         if (null != employeeDO) {
+            employeeVO.setParentName(employeeDO.getName());
             BaseVO parentEmployee = new BaseVO();
             BeanUtils.copyProperties(employeeDO, parentEmployee);
             // 递归填充所有上层父级leader

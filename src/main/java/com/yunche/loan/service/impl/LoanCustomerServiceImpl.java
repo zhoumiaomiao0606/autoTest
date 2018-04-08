@@ -227,6 +227,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         ResultBean<Long> resultBean = create(loanCustomerDO);
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
+        // 文件信息保存
+        ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(customerParam.getId(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
+        Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
+
         return ResultBean.ofSuccess(resultBean.getData(), "创建关联人成功");
     }
 
