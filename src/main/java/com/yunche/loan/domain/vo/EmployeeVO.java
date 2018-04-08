@@ -45,4 +45,8 @@ public class EmployeeVO {
      * 直接上级
      */
     private List<BaseVO> parent;
+    /**
+     * 直接上级name
+     */
+    private String parentName;
 }

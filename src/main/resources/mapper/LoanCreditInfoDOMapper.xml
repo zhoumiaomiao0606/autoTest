@@ -11,14 +11,10 @@
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
         <result column="feature" property="feature" jdbcType="VARCHAR"/>
-        <result column="approve_result" property="approveResult" jdbcType="TINYINT"/>
-        <result column="approve_info" property="approveInfo" jdbcType="VARCHAR"/>
-        <result column="add_condition" property="addCondition" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, customer_id, result, info, type, gmt_create, gmt_modify, status, feature, approve_result,
-        approve_info, add_condition
+        id, customer_id, result, info, type, gmt_create, gmt_modify, status, feature
     </sql>
 
     <!--getByCustomerIdAndType-->
@@ -51,13 +47,11 @@
         </selectKey>
         insert into loan_credit_info (id, customer_id, result,
         info, type, gmt_create,
-        gmt_modify, status, feature,
-        approve_result, approve_info, add_condition
+        gmt_modify, status, feature
         )
         values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{result,jdbcType=TINYINT},
         #{info,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR},
-        #{approveResult,jdbcType=TINYINT}, #{approveInfo,jdbcType=VARCHAR}, #{addCondition,jdbcType=VARCHAR}
+        #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}
         )
     </insert>
 
@@ -95,15 +89,6 @@
             <if test="feature != null">
                 feature,
             </if>
-            <if test="approveResult != null">
-                approve_result,
-            </if>
-            <if test="approveInfo != null">
-                approve_info,
-            </if>
-            <if test="addCondition != null">
-                add_condition,
-            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -132,15 +117,6 @@
             </if>
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
-            </if>
-            <if test="approveResult != null">
-                #{approveResult,jdbcType=TINYINT},
-            </if>
-            <if test="approveInfo != null">
-                #{approveInfo,jdbcType=VARCHAR},
-            </if>
-            <if test="addCondition != null">
-                #{addCondition,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -172,15 +148,6 @@
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
-            <if test="approveResult != null">
-                approve_result = #{approveResult,jdbcType=TINYINT},
-            </if>
-            <if test="approveInfo != null">
-                approve_info = #{approveInfo,jdbcType=VARCHAR},
-            </if>
-            <if test="addCondition != null">
-                add_condition = #{addCondition,jdbcType=VARCHAR},
-            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -194,10 +161,7 @@
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         status = #{status,jdbcType=TINYINT},
-        feature = #{feature,jdbcType=VARCHAR},
-        approve_result = #{approveResult,jdbcType=TINYINT},
-        approve_info = #{approveInfo,jdbcType=VARCHAR},
-        add_condition = #{addCondition,jdbcType=VARCHAR}
+        feature = #{feature,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
 

@@ -127,6 +127,8 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
             loanFinancialPlanVO.setFirstMonthRepay(calcParamVO.getFirstRepayment());
             // 每月还款
             loanFinancialPlanVO.setEachMonthRepay(calcParamVO.getEachMonthRepay());
+            //银行分期比例
+            loanFinancialPlanVO.setStagingRatio(calcParamVO.getStagingRatio());
         }
 
         return ResultBean.ofSuccess(loanFinancialPlanVO, "计算成功");

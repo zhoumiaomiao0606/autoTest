@@ -20,7 +20,7 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    ResultBean<Long> create(EmployeeParam employeeParam);
+    ResultBean<Long> create(EmployeeParam employeeParam) ;
 
     ResultBean<Void> update(EmployeeDO employeeDO);
 

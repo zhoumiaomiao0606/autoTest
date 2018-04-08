@@ -5,15 +5,15 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
-import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.query.RelaQuery;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -36,7 +36,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AreaConst.COUNTRY_AREA_ID;
-import static com.yunche.loan.config.constant.BaseConst.*;
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
 import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
@@ -77,7 +78,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private AreaCache areaCache;
 
-
     @Override
     public ResultBean<Long> create(EmployeeParam employeeParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getName()), "姓名不能为空");
@@ -108,8 +108,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         doBindUserGroup(id, employeeParam.getUserGroupIdList());
 
         // 发送账号密码到邮箱
-        sentAccountAndPassword(employeeParam.getEmail(), password);
-
+        new Thread() {
+            public void run() {
+                sentAccountAndPassword(employeeParam.getEmail(), password);
+            }
+        }.start();
         // 刷新缓存
         employeeCache.refresh();
 
@@ -649,6 +652,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
         if (null != employeeDO) {
+            employeeVO.setParentName(employeeDO.getName());
             BaseVO parentEmployee = new BaseVO();
             BeanUtils.copyProperties(employeeDO, parentEmployee);
             // 递归填充所有上层父级leader

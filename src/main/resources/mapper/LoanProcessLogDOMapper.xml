@@ -10,10 +10,14 @@
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
         <result column="info" property="info" jdbcType="VARCHAR"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="credit_result" property="creditResult" jdbcType="TINYINT"/>
+        <result column="credit_info" property="creditInfo" jdbcType="VARCHAR"/>
+        <result column="add_condition" property="addCondition" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, order_id, task_definition_key, action, user_id, user_name, info, create_time
+        id, order_id, task_definition_key, action, user_id, user_name, info, create_time,
+        credit_result, credit_info, add_condition
     </sql>
 
     <select id="lastLogByOrderIdAndTaskDefinitionKey" resultMap="BaseResultMap">
@@ -56,10 +60,12 @@
         </selectKey>
         insert into loan_process_log (id, order_id, task_definition_key,
         action, user_id, user_name,
-        info, create_time)
+        info, create_time, credit_result,
+        credit_info, add_condition)
         values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{taskDefinitionKey,jdbcType=VARCHAR},
         #{action,jdbcType=TINYINT}, #{userId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR},
-        #{info,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+        #{info,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{creditResult,jdbcType=TINYINT},
+        #{creditInfo,jdbcType=VARCHAR}, #{addCondition,jdbcType=VARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessLogDO">
@@ -93,6 +99,15 @@
             <if test="createTime != null">
                 create_time,
             </if>
+            <if test="creditResult != null">
+                credit_result,
+            </if>
+            <if test="creditInfo != null">
+                credit_info,
+            </if>
+            <if test="addCondition != null">
+                add_condition,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -118,6 +133,15 @@
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creditResult != null">
+                #{creditResult,jdbcType=TINYINT},
+            </if>
+            <if test="creditInfo != null">
+                #{creditInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="addCondition != null">
+                #{addCondition,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -146,6 +170,15 @@
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="creditResult != null">
+                credit_result = #{creditResult,jdbcType=TINYINT},
+            </if>
+            <if test="creditInfo != null">
+                credit_info = #{creditInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="addCondition != null">
+                add_condition = #{addCondition,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -158,7 +191,10 @@
       user_id = #{userId,jdbcType=BIGINT},
       user_name = #{userName,jdbcType=VARCHAR},
       info = #{info,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      credit_result = #{creditResult,jdbcType=TINYINT},
+      credit_info = #{creditInfo,jdbcType=VARCHAR},
+      add_condition = #{addCondition,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 

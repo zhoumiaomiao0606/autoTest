@@ -18,8 +18,6 @@ public interface BizModelRelaFinancialProdService {
 
     ResultBean<Void> batchUpdate(List<BizModelRelaFinancialProdDO> bizModelRelaAreaDOList);
 
-    ResultBean<Void> delete(Long bizId);
-
     ResultBean<Void> deleteRelaFinancialProd(Long bizId, Long prodId);
 
     ResultBean<Void> addRelaFinancialProd(Long bizId, Long prodId);

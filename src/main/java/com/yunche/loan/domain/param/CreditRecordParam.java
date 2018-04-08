@@ -28,4 +28,16 @@ public class CreditRecordParam {
      * 备注
      */
     private String info;
+    /**
+     * 征信审核结果
+     */
+    private Byte approveResult;
+    /**
+     * 征信审核结果备注
+     */
+    private String approveInfo;
+    /**
+     * 附加条件
+     */
+    private String addCondition;
 }
