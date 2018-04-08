@@ -21,4 +21,10 @@ public class LoanProcessLogDO {
     private String info;
 
     private Date createTime;
+
+    private Byte creditResult;
+
+    private String creditInfo;
+
+    private String addCondition;
 }

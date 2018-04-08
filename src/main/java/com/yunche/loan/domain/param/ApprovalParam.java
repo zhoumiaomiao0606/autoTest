@@ -52,6 +52,18 @@ public class ApprovalParam {
      */
 //    private String supplementOriginTask;
 
+    /**
+     * 征信审核结果
+     */
+    private Byte creditResult;
+    /**
+     * 征信审核结果备注
+     */
+    private String creditInfo;
+    /**
+     * 征信审核附加条件
+     */
+    private String addCondition;
 
     private String taskDefinitionKey_;
 

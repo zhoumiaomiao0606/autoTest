@@ -277,7 +277,7 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 -->
 
-        <table tableName="biz_model" domainObjectName="BizModelDO"
+        <table tableName="loan_credit_info" domainObjectName="LoanCreditInfoDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
