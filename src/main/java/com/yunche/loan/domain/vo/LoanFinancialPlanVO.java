@@ -56,4 +56,6 @@ public class LoanFinancialPlanVO {
     private BigDecimal extraFee;
 
     private BigDecimal appraisal;
+
+    private BigDecimal stagingRatio;
 }
