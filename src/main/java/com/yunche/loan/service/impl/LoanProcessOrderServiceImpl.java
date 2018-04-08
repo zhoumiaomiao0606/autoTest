@@ -7,8 +7,6 @@ import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.service.LoanProcessOrderService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +22,6 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  * @date 2018/3/6
  */
 @Service
-@Transactional
 public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
 
     @Autowired
@@ -35,6 +32,7 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
 
 
     @Override
+    @Transactional
     public ResultBean<Long> create(LoanOrderDO loanOrderDO) {
         Long orderId = createOrderNum();
         loanOrderDO.setId(orderId);
@@ -46,6 +44,7 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Long> createLoanOrder(Long baseInfoId, Long customerId) {
         // 开启activiti流程
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("loan_process");
@@ -64,6 +63,7 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> update(LoanOrderDO loanOrderDO) {
         Preconditions.checkNotNull(loanOrderDO.getId(), "业务单ID不能为空");
 
