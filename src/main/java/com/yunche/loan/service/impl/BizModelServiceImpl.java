@@ -207,12 +207,10 @@ public class BizModelServiceImpl implements BizModelService {
         }
 
         List<BizModelRelaFinancialProdDO> bizModelRelaFinancialProdDOList = bizModelRelaFinancialProdService.getById(bizId).getData();
-        List<BizRelaFinancialProductVO> financialProductDOList = Lists.newArrayList();
+        List<FinancialProductVO> financialProductDOList = Lists.newArrayList();
         for (BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO : bizModelRelaFinancialProdDOList) {
             FinancialProductVO financialProductVO = financialProductService.getById(bizModelRelaFinancialProdDO.getProdId()).getData();
-            BizRelaFinancialProductVO bizRelaFinancialProductVO = new BizRelaFinancialProductVO();
-            BeanUtils.copyProperties(financialProductVO, bizRelaFinancialProductVO);
-            financialProductDOList.add(bizRelaFinancialProductVO);
+            financialProductDOList.add(financialProductVO);
         }
         bizModelVO.setFinancialProductDOList(financialProductDOList);
 
