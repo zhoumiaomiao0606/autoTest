@@ -12,7 +12,7 @@ public interface BizModelRelaFinancialProdDOMapper {
 
     BizModelRelaFinancialProdDO queryByBizIdAndProdId(@Param("bizId") Long bizId, @Param("prodId") Long prodId);
 
-    int deleteByPrimaryKey(Long bizId, Long prodId);
+    int deleteByPrimaryKey(@Param("bizId") Long bizId, @Param("prodId") Long prodId);
 
     int insert(BizModelRelaFinancialProdDO record);
 
