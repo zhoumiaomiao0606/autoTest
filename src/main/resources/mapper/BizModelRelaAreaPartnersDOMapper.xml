@@ -1,16 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.BizModelRelaAreaPartnersDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
-        <id column="biz_id" jdbcType="BIGINT" property="bizId"/>
-        <id column="area_id" jdbcType="BIGINT" property="areaId"/>
-        <id column="group_id" jdbcType="BIGINT" property="groupId"/>
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <id column="biz_id" property="bizId" jdbcType="BIGINT"/>
+        <id column="area_id" property="areaId" jdbcType="BIGINT"/>
+        <id column="group_id" property="groupId" jdbcType="BIGINT"/>
+        <result column="prov" property="prov" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
+
     <sql id="Base_Column_List">
-    biz_id, area_id, group_id, prov, city, gmt_create, gmt_modify
-  </sql>
+        biz_id, area_id, group_id, prov, city, gmt_create, gmt_modify
+    </sql>
+
+    <!--deleteByBizId-->
+    <delete id="deleteByBizId" parameterType="java.lang.Long">
+        delete from biz_model_rela_area_partners
+        where biz_id = #{bizId,jdbcType=BIGINT}
+    </delete>
 
     <!--listQuery-->
     <select id="listQuery" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO"
@@ -75,27 +84,112 @@
         where biz_id = #{bizId,jdbcType=BIGINT}
     </select>
 
-    <delete id="deleteByPrimaryKey">
-    delete from biz_model_rela_area_partners
-    where biz_id = #{bizId, jdbcType=BIGINT}
-      and area_id = #{areaId, jdbcType=BIGINT}
-      and group_id = #{groupId, jdbcType=BIGINT}
-  </delete>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap"
+            parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
+        select
+        <include refid="Base_Column_List"/>
+        from biz_model_rela_area_partners
+        where biz_id = #{bizId,jdbcType=BIGINT}
+        and area_id = #{areaId,jdbcType=BIGINT}
+        and group_id = #{groupId,jdbcType=BIGINT}
+    </select>
 
-
-
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
+        delete from biz_model_rela_area_partners
+        where biz_id = #{bizId,jdbcType=BIGINT}
+        and area_id = #{areaId,jdbcType=BIGINT}
+        and group_id = #{groupId,jdbcType=BIGINT}
+    </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
-    insert into biz_model_rela_area_partners (biz_id, area_id, group_id, prov, city,
-      gmt_create, gmt_modify)
-    values (#{bizId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT}, 
-      prov, city, now(), now())
-  </insert>
-    <update id="update" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
-    update biz_model_rela_area_partners
-    set gmt_modify = now()
-    where biz_id = #{bizId,jdbcType=BIGINT}
-      and area_id = #{areaId,jdbcType=BIGINT}
-      and group_id = #{groupId,jdbcType=BIGINT}
-  </update>
+        insert into biz_model_rela_area_partners (biz_id, area_id, group_id,
+        prov, city, gmt_create,
+        gmt_modify)
+        values (#{bizId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, #{groupId,jdbcType=BIGINT},
+        #{prov,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
+        insert into biz_model_rela_area_partners
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bizId != null">
+                biz_id,
+            </if>
+            <if test="areaId != null">
+                area_id,
+            </if>
+            <if test="groupId != null">
+                group_id,
+            </if>
+            <if test="prov != null">
+                prov,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bizId != null">
+                #{bizId,jdbcType=BIGINT},
+            </if>
+            <if test="areaId != null">
+                #{areaId,jdbcType=BIGINT},
+            </if>
+            <if test="groupId != null">
+                #{groupId,jdbcType=BIGINT},
+            </if>
+            <if test="prov != null">
+                #{prov,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
+        update biz_model_rela_area_partners
+        <set>
+            <if test="prov != null">
+                prov = #{prov,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where biz_id = #{bizId,jdbcType=BIGINT}
+        and area_id = #{areaId,jdbcType=BIGINT}
+        and group_id = #{groupId,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BizModelRelaAreaPartnersDO">
+        update biz_model_rela_area_partners
+        set prov = #{prov,jdbcType=VARCHAR},
+        city = #{city,jdbcType=VARCHAR},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        where biz_id = #{bizId,jdbcType=BIGINT}
+        and area_id = #{areaId,jdbcType=BIGINT}
+        and group_id = #{groupId,jdbcType=BIGINT}
+    </update>
+
 </mapper>

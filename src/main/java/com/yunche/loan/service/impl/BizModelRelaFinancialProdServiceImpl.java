@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,8 +25,10 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     @Override
     public ResultBean<Void> insert(BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO) {
         Preconditions.checkArgument(bizModelRelaFinancialProdDO != null, "bizModelRelaFinancialProdDO不能为空");
-        int count = bizModelRelaFinancialProdDOMapper.insert(bizModelRelaFinancialProdDO);
-//        Preconditions.checkArgument(count > 1, "创建失败");
+        bizModelRelaFinancialProdDO.setGmtCreate(new Date());
+        bizModelRelaFinancialProdDO.setGmtModify(new Date());
+        int count = bizModelRelaFinancialProdDOMapper.insertSelective(bizModelRelaFinancialProdDO);
+        Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
     }
 
@@ -33,8 +36,7 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     public ResultBean<Void> batchInsert(List<BizModelRelaFinancialProdDO> bizModelRelaAreaDOList) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(bizModelRelaAreaDOList), "bizModelRelaAreaDOList不能为空");
         for (BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO : bizModelRelaAreaDOList) {
-            int count = bizModelRelaFinancialProdDOMapper.insert(bizModelRelaFinancialProdDO);
-//            Preconditions.checkArgument(count > 1, "创建失败");
+            insert(bizModelRelaFinancialProdDO);
         }
         return ResultBean.ofSuccess(null, "创建成功");
     }
@@ -43,7 +45,7 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     public ResultBean<Void> update(BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO) {
         Preconditions.checkArgument(bizModelRelaFinancialProdDO != null, "bizModelRelaFinancialProdDO不能为空");
         int count = bizModelRelaFinancialProdDOMapper.update(bizModelRelaFinancialProdDO);
-//        Preconditions.checkArgument(count > 1, "创建失败");
+        Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "更新成功");
     }
 
@@ -52,7 +54,7 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(bizModelRelaAreaDOList), "bizModelRelaAreaDOList不能为空");
         for (BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO : bizModelRelaAreaDOList) {
             int count = bizModelRelaFinancialProdDOMapper.update(bizModelRelaFinancialProdDO);
-//            Preconditions.checkArgument(count > 1, "创建失败");
+            Preconditions.checkArgument(count > 0, "创建失败");
         }
         return ResultBean.ofSuccess(null, "更新成功");
     }
@@ -66,7 +68,7 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     public ResultBean<Void> deleteRelaFinancialProd(Long bizId, Long prodId) {
         Preconditions.checkArgument(bizId != null && prodId != null, "prodId");
         int count = bizModelRelaFinancialProdDOMapper.deleteByPrimaryKey(bizId, prodId);
-//        Preconditions.checkArgument(count > 1, "删除失败");
+        Preconditions.checkArgument(count > 0, "删除失败");
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
@@ -77,14 +79,14 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
         bizModelRelaFinancialProdDOMapper.queryByBizIdAndProdId(bizId, prodId);
         BizModelRelaFinancialProdDO instance = bizModelRelaFinancialProdDOMapper.queryByBizIdAndProdId(bizId, prodId);
         if (instance != null) {
-            return ResultBean.ofError( "该产品已存在, 请不要重复添加");
+            return ResultBean.ofError("该产品已存在, 请不要重复添加");
         }
 
         BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO = new BizModelRelaFinancialProdDO();
         bizModelRelaFinancialProdDO.setBizId(bizId);
         bizModelRelaFinancialProdDO.setProdId(prodId);
         int count = bizModelRelaFinancialProdDOMapper.insert(bizModelRelaFinancialProdDO);
-//        Preconditions.checkArgument(count > 1, "删除失败");
+        Preconditions.checkArgument(count > 0, "删除失败");
         return ResultBean.ofSuccess(null, "创建成功");
     }
 

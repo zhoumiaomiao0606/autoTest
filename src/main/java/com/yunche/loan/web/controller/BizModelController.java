@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.BizModelParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.vo.BizModelRegionVO;
 import com.yunche.loan.domain.vo.BizModelVO;
@@ -32,13 +33,13 @@ public class BizModelController {
     private BizModelRelaAreaPartnersService bizModelRelaAreaPartnersService;
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> create(@RequestBody BizModelVO bizModelVO) {
-        return bizModelService.insert(bizModelVO);
+    public ResultBean<Long> create(@RequestBody BizModelParam bizModelParam) {
+        return bizModelService.insert(bizModelParam);
     }
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> update(@RequestBody BizModelVO bizModelVO) {
-        return bizModelService.update(bizModelVO);
+    public ResultBean<Void> update(@RequestBody BizModelParam bizModelParam) {
+        return bizModelService.update(bizModelParam);
     }
 
     @GetMapping(value = "/delete")

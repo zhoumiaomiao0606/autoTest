@@ -452,7 +452,11 @@ public class PartnerServiceImpl implements PartnerService {
                         return;
                     } else {
                         // delete
-                        int delCount = bizModelRelaAreaPartnersDOMapper.deleteByPrimaryKey(e.getBizId(),e.getAreaId(),e.getGroupId());
+                        BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDOKey = new BizModelRelaAreaPartnersDO();
+                        bizModelRelaAreaPartnersDOKey.setBizId(e.getBizId());
+                        bizModelRelaAreaPartnersDOKey.setAreaId(e.getAreaId());
+                        bizModelRelaAreaPartnersDOKey.setGroupId(e.getGroupId());
+                        int delCount = bizModelRelaAreaPartnersDOMapper.deleteByPrimaryKey(bizModelRelaAreaPartnersDOKey);
                         Preconditions.checkArgument(delCount > 0, "编辑业务区域失败");
 
                         // insert

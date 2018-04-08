@@ -4,20 +4,22 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.BizModelParam;
 import com.yunche.loan.mapper.BizModelDOMapper;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.domain.vo.CascadeAreaVO;
+import com.yunche.loan.mapper.BizModelRelaAreaPartnersDOMapper;
+import com.yunche.loan.mapper.BizModelRelaFinancialProdDOMapper;
 import com.yunche.loan.service.*;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -26,8 +28,10 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  * Created by zhouguoliang on 2018/1/22.
  */
 @Service
-//@Transactional
 public class BizModelServiceImpl implements BizModelService {
+
+    public static final Long NOT_LIMIT_PARTNER = 0L;
+
     @Autowired
     private BizModelDOMapper bizModelDOMapper;
 
@@ -38,6 +42,12 @@ public class BizModelServiceImpl implements BizModelService {
     private BizModelRelaFinancialProdService bizModelRelaFinancialProdService;
 
     @Autowired
+    private BizModelRelaAreaPartnersDOMapper bizModelRelaAreaPartnersDOMapper;
+
+    @Autowired
+    private BizModelRelaFinancialProdDOMapper bizModelRelaFinancialProdDOMapper;
+
+    @Autowired
     private BaseAreaService baseAreaService;
 
     @Autowired
@@ -46,105 +56,64 @@ public class BizModelServiceImpl implements BizModelService {
     @Autowired
     private PartnerService partnerService;
 
+
     @Override
-    public ResultBean<Void> insert(BizModelVO bizModelVO) {
-        Preconditions.checkArgument(bizModelVO != null, "bizModelVO");
-        Preconditions.checkNotNull(bizModelVO.getStatus(), "状态不能为空");
-        Preconditions.checkArgument(VALID_STATUS.equals(bizModelVO.getStatus().byteValue()) || INVALID_STATUS.equals(bizModelVO.getStatus().byteValue()),
+    @Transactional
+    public ResultBean<Long> insert(BizModelParam bizModelParam) {
+        Preconditions.checkNotNull(bizModelParam, "参数不能为空");
+        Preconditions.checkNotNull(bizModelParam.getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(bizModelParam.getStatus().byteValue()) || INVALID_STATUS.equals(bizModelParam.getStatus().byteValue()),
                 "状态非法");
 
         BizModelDO bizModelDO = new BizModelDO();
-        BeanUtils.copyProperties(bizModelVO, bizModelDO);
+        bizModelDO.setGmtCreate(new Date());
+        bizModelDO.setGmtModify(new Date());
+        BeanUtils.copyProperties(bizModelParam, bizModelDO);
 
-        long count = bizModelDOMapper.insert(bizModelDO);
+        long count = bizModelDOMapper.insertSelective(bizModelDO);
+        Preconditions.checkArgument(count > 0, "创建失败");
 
-        List<BizModelRegionVO> bizModelRegionVOList = bizModelVO.getBizModelRegionVOList();
-        List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = Lists.newArrayList();
-        for (BizModelRegionVO bizModelRegionVO : bizModelRegionVOList) {
-            List<PartnerVO> partnerVOList = bizModelRegionVO.getPartnerVOList();
-            if (CollectionUtils.isNotEmpty(partnerVOList)) {
-                for (PartnerVO partnerVO : partnerVOList) {
-                    BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
-                    bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
-                    bizModelRelaAreaPartnersDO.setBizId(bizModelDO.getBizId());
-                    bizModelRelaAreaPartnersDO.setGroupId(partnerVO.getId());
-                    bizModelRelaAreaPartnersDO.setProv(bizModelRegionVO.getProv());
-                    bizModelRelaAreaPartnersDO.setCity(bizModelRegionVO.getCity());
-                    bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
-                }
-            } else {
-                BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
-                bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
-                bizModelRelaAreaPartnersDO.setBizId(bizModelDO.getBizId());
-                bizModelRelaAreaPartnersDO.setGroupId(0L);
-                bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
-            }
-        }
-        if (CollectionUtils.isNotEmpty(bizModelRelaAreaPartnersDOList)) {
-            bizModelRelaAreaPartnersService.batchInsert(bizModelRelaAreaPartnersDOList);
-        }
+        Long bizId = bizModelDO.getBizId();
 
-        List<BizRelaFinancialProductVO> financialProductDOList = bizModelVO.getFinancialProductDOList();
-        List<BizModelRelaFinancialProdDO> bizModelRelaFinancialProdDOList = Lists.newArrayList();
-        for (BizRelaFinancialProductVO bizRelaFinancialProductVO : financialProductDOList) {
-            BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO = new BizModelRelaFinancialProdDO();
-            bizModelRelaFinancialProdDO.setBizId(bizModelDO.getBizId());
-            bizModelRelaFinancialProdDO.setProdId(bizRelaFinancialProductVO.getProdId());
-            bizModelRelaFinancialProdDOList.add(bizModelRelaFinancialProdDO);
-        }
-        if (CollectionUtils.isNotEmpty(bizModelRelaFinancialProdDOList)) {
-            bizModelRelaFinancialProdService.batchInsert(bizModelRelaFinancialProdDOList);
-        }
+        // 绑定
+        List<BizModelParam.RelaAreaIdPartnerIdList> relaAreaIdPartnerIdList = bizModelParam.getRelaAreaIdPartnerIdList();
+        List<Long> financialProductIdList = bizModelParam.getFinancialProductIdList();
 
-        return ResultBean.ofSuccess(null, "创建成功");
+        bindAreaIdPartnerIdList(bizId, relaAreaIdPartnerIdList);
+        bindFinancialProductIdList(bizId, financialProductIdList);
+
+        return ResultBean.ofSuccess(bizId, "创建成功");
     }
 
     @Override
-    public ResultBean<Void> update(BizModelVO bizModelVO) {
-        Preconditions.checkArgument(bizModelVO != null, "bizModelVO");
+    @Transactional
+    public ResultBean<Void> update(BizModelParam bizModelParam) {
+        Preconditions.checkNotNull(bizModelParam, "参数不能为空");
+
         BizModelDO bizModelDO = new BizModelDO();
-        BeanUtils.copyProperties(bizModelVO, bizModelDO);
+        BeanUtils.copyProperties(bizModelParam, bizModelDO);
 
         long count = bizModelDOMapper.updateByPrimaryKeySelective(bizModelDO);
+        Preconditions.checkArgument(count > 0, "编辑失败");
 
-        List<BizModelRegionVO> bizModelRegionVOList = bizModelVO.getBizModelRegionVOList();
-        List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = Lists.newArrayList();
-        for (BizModelRegionVO bizModelRegionVO : bizModelRegionVOList) {
-            List<PartnerVO> partnerVOList = bizModelRegionVO.getPartnerVOList();
-            if (CollectionUtils.isNotEmpty(partnerVOList)) {
-                for (PartnerVO partnerVO : partnerVOList) {
-                    BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
-                    bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
-                    bizModelRelaAreaPartnersDO.setBizId(bizModelDO.getBizId());
-                    bizModelRelaAreaPartnersDO.setGroupId(partnerVO.getId());
-                    bizModelRelaAreaPartnersDO.setProv(bizModelRegionVO.getProv());
-                    bizModelRelaAreaPartnersDO.setCity(bizModelRegionVO.getCity());
-                    bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
-                }
-            } else {
-                BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
-                bizModelRelaAreaPartnersDO.setAreaId(bizModelRegionVO.getAreaId());
-                bizModelRelaAreaPartnersDO.setBizId(bizModelDO.getBizId());
-                bizModelRelaAreaPartnersDO.setGroupId(0L);
-                bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
-            }
-        }
-        bizModelRelaAreaPartnersService.batchUpdate(bizModelRelaAreaPartnersDOList);
+        Long bizId = bizModelParam.getBizId();
 
-        List<BizRelaFinancialProductVO> financialProductDOList = bizModelVO.getFinancialProductDOList();
-        List<BizModelRelaFinancialProdDO> bizModelRelaFinancialProdDOList = Lists.newArrayList();
-        for (BizRelaFinancialProductVO bizRelaFinancialProductVO : financialProductDOList) {
-            BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO = new BizModelRelaFinancialProdDO();
-            bizModelRelaFinancialProdDO.setBizId(bizModelDO.getBizId());
-            bizModelRelaFinancialProdDO.setProdId(bizRelaFinancialProductVO.getProdId());
-            bizModelRelaFinancialProdDOList.add(bizModelRelaFinancialProdDO);
-        }
-        bizModelRelaFinancialProdService.batchUpdate(bizModelRelaFinancialProdDOList);
+        // 先清空原有
+        int delAreaPartnersCount = bizModelRelaAreaPartnersDOMapper.deleteByBizId(bizId);
+        int delFinancialProdCount = bizModelRelaFinancialProdDOMapper.deleteByBizId(bizId);
+
+        // 再重新绑定
+        List<BizModelParam.RelaAreaIdPartnerIdList> relaAreaIdPartnerIdList = bizModelParam.getRelaAreaIdPartnerIdList();
+        List<Long> financialProductIdList = bizModelParam.getFinancialProductIdList();
+
+        bindAreaIdPartnerIdList(bizId, relaAreaIdPartnerIdList);
+        bindFinancialProductIdList(bizId, financialProductIdList);
 
         return ResultBean.ofSuccess(null, "修改成功");
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> delete(Long bizId) {
         Preconditions.checkNotNull(bizId, "bizId");
 
@@ -157,6 +126,7 @@ public class BizModelServiceImpl implements BizModelService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> disable(Long bizId) {
         Preconditions.checkNotNull(bizId, "bizId");
 
@@ -169,6 +139,7 @@ public class BizModelServiceImpl implements BizModelService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> enable(Long bizId) {
         Preconditions.checkNotNull(bizId, "bizId");
 
@@ -190,7 +161,7 @@ public class BizModelServiceImpl implements BizModelService {
         BizModelVO bizModelVO = new BizModelVO();
         BeanUtils.copyProperties(bizModelDO, bizModelVO);
         List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = bizModelRelaAreaPartnersService.getById(bizId).getData();
-        if (CollectionUtils.isNotEmpty(bizModelRelaAreaPartnersDOList)) {
+        if (!CollectionUtils.isEmpty(bizModelRelaAreaPartnersDOList)) {
             Map<Long, List<Long>> areaWithPartnerMap = Maps.newHashMap();
             for (BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO : bizModelRelaAreaPartnersDOList) {
                 if (areaWithPartnerMap.containsKey(bizModelRelaAreaPartnersDO.getAreaId())) {
@@ -257,7 +228,7 @@ public class BizModelServiceImpl implements BizModelService {
             for (CascadeAreaVO cascadeAreaVO : cascadeAreaVOList) {
                 if (cascadeAreaVO.getId().longValue() == bizModelQuery.getAreaId().longValue()) {
                     List<CascadeAreaVO.City> cityList = cascadeAreaVO.getCityList();
-                    if (CollectionUtils.isNotEmpty(cityList)) {
+                    if (!CollectionUtils.isEmpty(cityList)) {
                         for (CascadeAreaVO.City city : cityList) {
                             list.add(city.getId());
                         }
@@ -290,5 +261,87 @@ public class BizModelServiceImpl implements BizModelService {
             }
         }
         return ResultBean.ofSuccess(bizModelVOList);
+    }
+
+
+    /**
+     * bind  Area - Partners
+     *
+     * @param bizId
+     * @param relaAreaIdPartnerIdList
+     */
+    private void bindAreaIdPartnerIdList(Long bizId, List<BizModelParam.RelaAreaIdPartnerIdList> relaAreaIdPartnerIdList) {
+
+        if (!CollectionUtils.isEmpty(relaAreaIdPartnerIdList)) {
+
+            List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = Lists.newArrayList();
+            relaAreaIdPartnerIdList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        Long areaId = e.getAreaId();
+
+                        List<Long> partnerIdList = e.getPartnerIdList();
+                        if (!CollectionUtils.isEmpty(partnerIdList)) {
+
+                            partnerIdList.stream()
+                                    .filter(Objects::nonNull)
+                                    .forEach(partnerId -> {
+                                        BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
+                                        bizModelRelaAreaPartnersDO.setBizId(bizId);
+                                        bizModelRelaAreaPartnersDO.setAreaId(areaId);
+                                        bizModelRelaAreaPartnersDO.setGroupId(partnerId);
+                                        bizModelRelaAreaPartnersDO.setGmtCreate(new Date());
+                                        bizModelRelaAreaPartnersDO.setGmtModify(new Date());
+                                        bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
+                                    });
+
+                        } else {
+                            BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
+                            bizModelRelaAreaPartnersDO.setBizId(bizId);
+                            bizModelRelaAreaPartnersDO.setAreaId(areaId);
+                            bizModelRelaAreaPartnersDO.setGroupId(NOT_LIMIT_PARTNER);
+                            bizModelRelaAreaPartnersDO.setGmtCreate(new Date());
+                            bizModelRelaAreaPartnersDO.setGmtModify(new Date());
+                            bizModelRelaAreaPartnersDOList.add(bizModelRelaAreaPartnersDO);
+                        }
+
+                    });
+
+            // bind  Area - Partners
+            ResultBean<Void> bindAreaPartnersResultBean = bizModelRelaAreaPartnersService.batchInsert(bizModelRelaAreaPartnersDOList);
+            Preconditions.checkArgument(bindAreaPartnersResultBean.getSuccess(), bindAreaPartnersResultBean.getMsg());
+        }
+    }
+
+    /**
+     * bind  financialProduct
+     *
+     * @param bizId
+     * @param financialProductIdList
+     */
+    private void bindFinancialProductIdList(Long bizId, List<Long> financialProductIdList) {
+
+        if (!CollectionUtils.isEmpty(financialProductIdList)) {
+
+            List<BizModelRelaFinancialProdDO> bizModelRelaFinancialProdDOList = Lists.newArrayList();
+
+            financialProductIdList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(financialProductId -> {
+
+                        BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO = new BizModelRelaFinancialProdDO();
+                        bizModelRelaFinancialProdDO.setBizId(bizId);
+                        bizModelRelaFinancialProdDO.setProdId(financialProductId);
+                        bizModelRelaFinancialProdDO.setGmtCreate(new Date());
+                        bizModelRelaFinancialProdDO.setGmtModify(new Date());
+
+                        bizModelRelaFinancialProdDOList.add(bizModelRelaFinancialProdDO);
+                    });
+
+            // bind  financialProduct
+            ResultBean<Void> bindFinancialProductResultBean = bizModelRelaFinancialProdService.batchInsert(bizModelRelaFinancialProdDOList);
+            Preconditions.checkArgument(bindFinancialProductResultBean.getSuccess(), bindFinancialProductResultBean.getMsg());
+        }
     }
 }
