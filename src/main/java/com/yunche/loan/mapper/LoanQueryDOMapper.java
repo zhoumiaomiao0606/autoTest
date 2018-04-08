@@ -12,9 +12,33 @@ public interface LoanQueryDOMapper {
 
     public ApplyLicensePlateDepositInfoVO selectApplyLicensePlateDepositInfo(Long orderId);
 
-    public BusinessReviewVO selectBusinessReview(Long orderId);
+    public UniversalInfoVO selectUniversalInfo(Long orderId);
 
-    public FinanceVO selectFinance(Long orderId);
+    public UniversalApprovalInfo selectUniversalApprovalInfo(@Param("taskDefinitionKey") String taskDefinitionKey,@Param("orderId") Long orderId);
+
+    public UniversalLoanInfoVO selectUniversalLoanInfo(Long orderId);
+
+    public List<Long> selectUniversalRelevanceOrderId(Long orderId);
+
+    public UniversalCarInfoVO selectUniversalCarInfo(Long orderId);
+
+    public List<UniversalRelationCustomerVO> selectUniversalRelationCustomer(Long orderId);
+
+    public UniversalRemitDetails selectUniversalRemitDetails(Long orderId);
+
+    public UniversalCostDetailsVO selectUniversalCostDetails(Long orderId);
+
+    public List<UniversalCreditInfoVO> selectUniversalCreditInfo(Long orderId);
+
+    public UniversalHomeVisitInfoVO selectUniversalHomeVisitInfo(Long orderId);
+
+    public UniversalSupplementInfoVO selectUniversalSupplementInfo(Long orderId);
+
+    //=======================================================================
+
+
+
+
 
     public MaterialVO selectMaterial(Long orderId);
 

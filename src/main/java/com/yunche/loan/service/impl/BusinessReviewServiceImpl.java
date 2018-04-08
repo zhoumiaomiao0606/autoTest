@@ -8,9 +8,7 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.RemitDetailsDO;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
 import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
-import com.yunche.loan.domain.vo.BusinessReviewVO;
-import com.yunche.loan.domain.vo.CostCalculateInfoVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.CostDetailsDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
@@ -22,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @Transactional
@@ -41,9 +40,12 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
 
     @Override
     public RecombinationVO detail(Long orderId) {
-        BusinessReviewVO businessReviewVO = loanQueryDOMapper.selectBusinessReview(orderId);
-        RecombinationVO<BusinessReviewVO> recombinationVO = new RecombinationVO<BusinessReviewVO>();
-        recombinationVO.setInfo(businessReviewVO);
+
+        RecombinationVO recombinationVO = new RecombinationVO();
+        recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
+        recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
+        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_business_review",orderId));
         return recombinationVO;
     }
 

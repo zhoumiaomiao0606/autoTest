@@ -1,20 +1,17 @@
 package com.yunche.loan.service.impl;
 
-import com.yunche.loan.domain.entity.LoanProcessLogDO;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.service.FinanceService;
-import com.yunche.loan.service.LoanProcessLogService;
+import com.yunche.loan.service.TelephoneVerifyService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
 
-import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
-
 @Service
-public class FinanceServiceImpl implements FinanceService {
-
+@Transactional
+public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
 
@@ -30,15 +27,14 @@ public class FinanceServiceImpl implements FinanceService {
 
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
-        recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
-        recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
-        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_loan_review",orderId));
-        recombinationVO.setChannel_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_business_review",orderId));
-        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify",orderId));
-        recombinationVO.setLoan(loanQueryDOMapper.selectUniversalLoanInfo(orderId));
-        recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         recombinationVO.setCredits(loanQueryDOMapper.selectUniversalCreditInfo(orderId));
+        recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
+        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify",orderId));
+        recombinationVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderId(orderId));
+        recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
         recombinationVO.setCustomers(customers);
+
         return recombinationVO;
     }
 }

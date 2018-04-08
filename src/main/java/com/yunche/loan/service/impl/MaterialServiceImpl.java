@@ -37,26 +37,22 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public RecombinationVO detail(Long orderId) {
-        MaterialVO materialVO = loanQueryDOMapper.selectMaterial(orderId);
-        if (materialVO != null) {
-            LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(orderId, TELEPHONE_VERIFY.getCode());
-
-            if (null != loanProcessLog) {
-                materialVO.setVerify_status(loanProcessLog.getAction() == null ? "-1" : String.valueOf(loanProcessLog.getAction()));
-                materialVO.setVerify_report(loanProcessLog.getInfo());
-            }
-        }
-        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
-        for (UniversalCustomerVO universalCustomerVO : customers) {
+        List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for(UniversalCustomerVO universalCustomerVO:customers){
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
-        List<UniversalMaterialRecordVO> materials = loanQueryDOMapper.selectUniversalMaterialRecord(orderId);
 
-        RecombinationVO<MaterialVO> recombinationVO = new RecombinationVO<>();
-        recombinationVO.setInfo(materialVO);
+        RecombinationVO recombinationVO = new RecombinationVO();
+        recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        recombinationVO.setRelations(loanQueryDOMapper.selectUniversalRelationCustomer(orderId));
+        recombinationVO.setLoan(loanQueryDOMapper.selectUniversalLoanInfo(orderId));
+        recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
+        recombinationVO.setCredits(loanQueryDOMapper.selectUniversalCreditInfo(orderId));
+        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify",orderId));
+        recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
         recombinationVO.setCustomers(customers);
-        recombinationVO.setMaterials(materials);
         return recombinationVO;
     }
 
