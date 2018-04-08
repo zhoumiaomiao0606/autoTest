@@ -30,7 +30,7 @@ public class App {
             public void run(String... args) throws Exception {
                 repositoryService.createDeployment()
                         .name("消费贷流程")
-                        .addClasspathResource("processes/loan_process12.bpmn")
+                        .addClasspathResource("processes/loan_process.bpmn")
                         .deploy();
 //                System.out.println("Number of process definitions : "
 //                        + repositoryService.createProcessDefinitionQuery().count());
