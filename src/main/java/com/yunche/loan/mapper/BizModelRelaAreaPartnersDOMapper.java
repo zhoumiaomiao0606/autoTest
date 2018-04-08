@@ -9,11 +9,20 @@ import java.util.List;
 
 @Mapper
 public interface BizModelRelaAreaPartnersDOMapper {
+
+    int deleteByPrimaryKey(BizModelRelaAreaPartnersDO key);
+
+    int insert(BizModelRelaAreaPartnersDO record);
+
+    int insertSelective(BizModelRelaAreaPartnersDO record);
+
+    BizModelRelaAreaPartnersDO selectByPrimaryKey(BizModelRelaAreaPartnersDO key);
+
+    int updateByPrimaryKeySelective(BizModelRelaAreaPartnersDO record);
+
+    int updateByPrimaryKey(BizModelRelaAreaPartnersDO record);
+
     int delete(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
-
-    int deleteByPrimaryKey(@Param("bizId") Long bizId,@Param("areaId") Long areaId, @Param("groupId")Long groupId);
-
-    int insert(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
     BizModelRelaAreaPartnersDO query(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO);
 
@@ -37,4 +46,12 @@ public interface BizModelRelaAreaPartnersDOMapper {
      * @return
      */
     List<Long> getBizModelIdListByCondition(BizModelQuery query);
+
+    /**
+     * 根据bizId删除
+     *
+     * @param bizId
+     * @return
+     */
+    int deleteByBizId(Long bizId);
 }

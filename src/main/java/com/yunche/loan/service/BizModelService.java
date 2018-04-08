@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.BizModelParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.vo.BizModelVO;
 
@@ -11,9 +12,9 @@ import java.util.List;
  */
 public interface BizModelService {
 
-    ResultBean<Void> insert(BizModelVO bizModelVO);
+    ResultBean<Long> insert(BizModelParam bizModelParam);
 
-    ResultBean<Void> update(BizModelVO bizModelVO);
+    ResultBean<Void> update(BizModelParam bizModelParam);
 
     ResultBean<Void> delete(Long bizId);
 

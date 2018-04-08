@@ -12,71 +12,88 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by zhouguoliang on 2018/1/22.
  */
 @Service
-@Transactional
 public class BizModelRelaAreaPartnersServiceImpl implements BizModelRelaAreaPartnersService {
+
     @Autowired
     private BizModelRelaAreaPartnersDOMapper bizModelRelaAreaPartnersDOMapper;
 
     @Override
+    @Transactional
     public ResultBean<Void> insert(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO) {
         Preconditions.checkArgument(bizModelRelaAreaPartnersDO != null, "bizModelRelaAreaPartnersDO不能为空");
+
+        bizModelRelaAreaPartnersDO.setGmtCreate(new Date());
+        bizModelRelaAreaPartnersDO.setGmtModify(new Date());
         int count = bizModelRelaAreaPartnersDOMapper.insert(bizModelRelaAreaPartnersDO);
-//        Preconditions.checkArgument(count > 1, "创建失败");
+        Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "创建成功");
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> batchInsert(List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(bizModelRelaAreaPartnersDOList), "bizModelRelaAreaPartnersDOList不能为空");
+
         for (BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO : bizModelRelaAreaPartnersDOList) {
             BizModelRelaAreaPartnersDO instance = getByAllId(bizModelRelaAreaPartnersDO).getData();
             if (instance != null) {
                 return ResultBean.ofError("该区域的合伙人已存在, 请勿重复添加");
             }
-            int count = bizModelRelaAreaPartnersDOMapper.insert(bizModelRelaAreaPartnersDO);
-//            Preconditions.checkArgument(count > 1, "创建失败");
+            ResultBean<Void> resultBean = insert(bizModelRelaAreaPartnersDO);
+            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
         }
         return ResultBean.ofSuccess(null, "创建成功");
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> update(BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO) {
         Preconditions.checkArgument(bizModelRelaAreaPartnersDO != null, "bizModelRelaAreaPartnersDO不能为空");
         int count = bizModelRelaAreaPartnersDOMapper.update(bizModelRelaAreaPartnersDO);
-//        Preconditions.checkArgument(count > 1, "创建失败");
+        Preconditions.checkArgument(count > 0, "创建失败");
         return ResultBean.ofSuccess(null, "更新成功");
     }
 
     @Override
-    public ResultBean<Void> batchUpdate(List<BizModelRelaAreaPartnersDO>  bizModelRelaAreaPartnersDOList) {
+    @Transactional
+    public ResultBean<Void> batchUpdate(List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(bizModelRelaAreaPartnersDOList), "bizModelRelaAreaPartnersDOList不能为空");
         for (BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO : bizModelRelaAreaPartnersDOList) {
             int count = bizModelRelaAreaPartnersDOMapper.update(bizModelRelaAreaPartnersDO);
-//            Preconditions.checkArgument(count > 1, "创建失败");
+            Preconditions.checkArgument(count > 0, "创建失败");
         }
         return ResultBean.ofSuccess(null, "更新成功");
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> delete(Long bizId) {
         return null;
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> deleteRelaPartner(Long bizId, Long areaId, Long groupId) {
-        Preconditions.checkArgument(bizId != null && areaId != null && groupId != null, "prodId");
-        int count = bizModelRelaAreaPartnersDOMapper.deleteByPrimaryKey(bizId, areaId, groupId);
-//        Preconditions.checkArgument(count > 1, "删除失败");
+        Preconditions.checkArgument(bizId != null && areaId != null && groupId != null, "参数有误");
+
+        BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDOKey = new BizModelRelaAreaPartnersDO();
+        bizModelRelaAreaPartnersDOKey.setBizId(bizId);
+        bizModelRelaAreaPartnersDOKey.setAreaId(areaId);
+        bizModelRelaAreaPartnersDOKey.setGroupId(groupId);
+        int count = bizModelRelaAreaPartnersDOMapper.deleteByPrimaryKey(bizModelRelaAreaPartnersDOKey);
+        Preconditions.checkArgument(count > 0, "删除失败");
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> addRelaPartner(BizModelRegionVO bizModelRegionVO) {
         if (CollectionUtils.isNotEmpty(bizModelRegionVO.getPartnerVOList())) {
             List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = Lists.newArrayList();

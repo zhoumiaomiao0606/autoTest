@@ -19,4 +19,6 @@ public interface BizModelRelaFinancialProdDOMapper {
     int update(BizModelRelaFinancialProdDO record);
 
     int insertSelective(BizModelRelaFinancialProdDO record);
+
+    int deleteByBizId(Long bizId);
 }
