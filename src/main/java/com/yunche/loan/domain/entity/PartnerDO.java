@@ -46,6 +46,10 @@ public class PartnerDO {
     private String bankAccountTwo;
 
     private Byte payMonth;
+    /**
+     * 风险承担比例
+     */
+    private BigDecimal riskBearRate;
 
     private Date gmtCreate;
 

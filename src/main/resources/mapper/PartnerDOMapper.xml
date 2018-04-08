@@ -1,39 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.PartnerDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.PartnerDO">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="name" jdbcType="VARCHAR" property="name"/>
-        <result column="department_id" jdbcType="BIGINT" property="departmentId"/>
-        <result column="leader_name" jdbcType="VARCHAR" property="leaderName"/>
-        <result column="leader_mobile" jdbcType="VARCHAR" property="leaderMobile"/>
-        <result column="tel" jdbcType="VARCHAR" property="tel"/>
-        <result column="fax" jdbcType="VARCHAR" property="fax"/>
-        <result column="area_id" jdbcType="BIGINT" property="areaId"/>
-        <result column="biz_type" jdbcType="TINYINT" property="bizType"/>
-        <result column="sign" jdbcType="TINYINT" property="sign"/>
-        <result column="cooperation_scale" jdbcType="VARCHAR" property="cooperationScale"/>
-        <result column="exec_rate" jdbcType="DECIMAL" property="execRate"/>
-        <result column="cooperation_insurance_company" jdbcType="VARCHAR" property="cooperationInsuranceCompany"/>
-        <result column="open_bank" jdbcType="VARCHAR" property="openBank"/>
-        <result column="account_name" jdbcType="VARCHAR" property="accountName"/>
-        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
-        <result column="open_bank_two" jdbcType="VARCHAR" property="openBankTwo"/>
-        <result column="account_name_two" jdbcType="VARCHAR" property="accountNameTwo"/>
-        <result column="bank_account_two" jdbcType="VARCHAR" property="bankAccountTwo"/>
-        <result column="pay_month" jdbcType="TINYINT" property="payMonth"/>
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-        <result column="status" jdbcType="TINYINT" property="status"/>
-        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="department_id" property="departmentId" jdbcType="BIGINT"/>
+        <result column="leader_name" property="leaderName" jdbcType="VARCHAR"/>
+        <result column="leader_mobile" property="leaderMobile" jdbcType="VARCHAR"/>
+        <result column="tel" property="tel" jdbcType="VARCHAR"/>
+        <result column="fax" property="fax" jdbcType="VARCHAR"/>
+        <result column="area_id" property="areaId" jdbcType="BIGINT"/>
+        <result column="biz_type" property="bizType" jdbcType="TINYINT"/>
+        <result column="sign" property="sign" jdbcType="TINYINT"/>
+        <result column="cooperation_scale" property="cooperationScale" jdbcType="VARCHAR"/>
+        <result column="exec_rate" property="execRate" jdbcType="DECIMAL"/>
+        <result column="cooperation_insurance_company" property="cooperationInsuranceCompany" jdbcType="VARCHAR"/>
+        <result column="open_bank" property="openBank" jdbcType="VARCHAR"/>
+        <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
+        <result column="bank_account" property="bankAccount" jdbcType="VARCHAR"/>
+        <result column="open_bank_two" property="openBankTwo" jdbcType="VARCHAR"/>
+        <result column="account_name_two" property="accountNameTwo" jdbcType="VARCHAR"/>
+        <result column="bank_account_two" property="bankAccountTwo" jdbcType="VARCHAR"/>
+        <result column="pay_month" property="payMonth" jdbcType="TINYINT"/>
+        <result column="risk_bear_rate" property="riskBearRate" jdbcType="DECIMAL"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="feature" property="feature" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, name, department_id, leader_name, leader_mobile, tel, fax, area_id, biz_type, 
-    sign, cooperation_scale, exec_rate, cooperation_insurance_company, open_bank, account_name, 
-    bank_account, open_bank_two, account_name_two, bank_account_two, pay_month, gmt_create, 
-    gmt_modify, status, feature
-  </sql>
+        id, name, department_id, leader_name, leader_mobile, tel, fax, area_id, biz_type,
+        sign, cooperation_scale, exec_rate, cooperation_insurance_company, open_bank, account_name,
+        bank_account, open_bank_two, account_name_two, bank_account_two, pay_month, risk_bear_rate,
+        gmt_create, gmt_modify, status, feature
+    </sql>
 
     <sql id="Base_Query_List">
         <if test="name != null and name != '' ">
@@ -139,6 +140,7 @@
             AND status = #{status}
         </if>
     </select>
+
     <select id="batchSelectByPrimaryKey" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -152,10 +154,12 @@
             AND status = #{status}
         </if>
     </select>
+
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from partner
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+        delete from partner
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.PartnerDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
@@ -169,8 +173,8 @@
         cooperation_insurance_company, open_bank,
         account_name, bank_account, open_bank_two,
         account_name_two, bank_account_two, pay_month,
-        gmt_create, gmt_modify, status,
-        feature)
+        risk_bear_rate, gmt_create, gmt_modify,
+        status, feature)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT},
         #{leaderName,jdbcType=VARCHAR}, #{leaderMobile,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR},
         #{fax,jdbcType=VARCHAR}, #{areaId,jdbcType=BIGINT}, #{bizType,jdbcType=TINYINT},
@@ -178,8 +182,8 @@
         #{cooperationInsuranceCompany,jdbcType=VARCHAR}, #{openBank,jdbcType=VARCHAR},
         #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{openBankTwo,jdbcType=VARCHAR},
         #{accountNameTwo,jdbcType=VARCHAR}, #{bankAccountTwo,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
-        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT},
-        #{feature,jdbcType=VARCHAR})
+        #{riskBearRate,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.PartnerDO">
@@ -248,6 +252,9 @@
             </if>
             <if test="payMonth != null">
                 pay_month,
+            </if>
+            <if test="riskBearRate != null">
+                risk_bear_rate,
             </if>
             <if test="gmtCreate != null">
                 gmt_create,
@@ -322,6 +329,9 @@
             </if>
             <if test="payMonth != null">
                 #{payMonth,jdbcType=TINYINT},
+            </if>
+            <if test="riskBearRate != null">
+                #{riskBearRate,jdbcType=DECIMAL},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -398,6 +408,9 @@
             <if test="payMonth != null">
                 pay_month = #{payMonth,jdbcType=TINYINT},
             </if>
+            <if test="riskBearRate != null">
+                risk_bear_rate = #{riskBearRate,jdbcType=DECIMAL},
+            </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -415,31 +428,32 @@
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerDO">
-    update partner
-    set name = #{name,jdbcType=VARCHAR},
-      department_id = #{departmentId,jdbcType=BIGINT},
-      leader_name = #{leaderName,jdbcType=VARCHAR},
-      leader_mobile = #{leaderMobile,jdbcType=VARCHAR},
-      tel = #{tel,jdbcType=VARCHAR},
-      fax = #{fax,jdbcType=VARCHAR},
-      area_id = #{areaId,jdbcType=BIGINT},
-      biz_type = #{bizType,jdbcType=TINYINT},
-      sign = #{sign,jdbcType=TINYINT},
-      cooperation_scale = #{cooperationScale,jdbcType=VARCHAR},
-      exec_rate = #{execRate,jdbcType=DECIMAL},
-      cooperation_insurance_company = #{cooperationInsuranceCompany,jdbcType=VARCHAR},
-      open_bank = #{openBank,jdbcType=VARCHAR},
-      account_name = #{accountName,jdbcType=VARCHAR},
-      bank_account = #{bankAccount,jdbcType=VARCHAR},
-      open_bank_two = #{openBankTwo,jdbcType=VARCHAR},
-      account_name_two = #{accountNameTwo,jdbcType=VARCHAR},
-      bank_account_two = #{bankAccountTwo,jdbcType=VARCHAR},
-      pay_month = #{payMonth,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=TINYINT},
-      feature = #{feature,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update partner
+        set name = #{name,jdbcType=VARCHAR},
+        department_id = #{departmentId,jdbcType=BIGINT},
+        leader_name = #{leaderName,jdbcType=VARCHAR},
+        leader_mobile = #{leaderMobile,jdbcType=VARCHAR},
+        tel = #{tel,jdbcType=VARCHAR},
+        fax = #{fax,jdbcType=VARCHAR},
+        area_id = #{areaId,jdbcType=BIGINT},
+        biz_type = #{bizType,jdbcType=TINYINT},
+        sign = #{sign,jdbcType=TINYINT},
+        cooperation_scale = #{cooperationScale,jdbcType=VARCHAR},
+        exec_rate = #{execRate,jdbcType=DECIMAL},
+        cooperation_insurance_company = #{cooperationInsuranceCompany,jdbcType=VARCHAR},
+        open_bank = #{openBank,jdbcType=VARCHAR},
+        account_name = #{accountName,jdbcType=VARCHAR},
+        bank_account = #{bankAccount,jdbcType=VARCHAR},
+        open_bank_two = #{openBankTwo,jdbcType=VARCHAR},
+        account_name_two = #{accountNameTwo,jdbcType=VARCHAR},
+        bank_account_two = #{bankAccountTwo,jdbcType=VARCHAR},
+        pay_month = #{payMonth,jdbcType=TINYINT},
+        risk_bear_rate = #{riskBearRate,jdbcType=DECIMAL},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        status = #{status,jdbcType=TINYINT},
+        feature = #{feature,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
 </mapper>
