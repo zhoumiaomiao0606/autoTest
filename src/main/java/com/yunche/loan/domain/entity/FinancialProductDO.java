@@ -6,6 +6,7 @@ import java.util.Date;
 
 @Data
 public class FinancialProductDO {
+
     private Long prodId;
 
     private String prodName;

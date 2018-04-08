@@ -17,12 +17,13 @@ import java.util.List;
  * Created by zhouguoliang on 2018/1/22.
  */
 @Service
-@Transactional
 public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinancialProdService {
+
     @Autowired
     private BizModelRelaFinancialProdDOMapper bizModelRelaFinancialProdDOMapper;
 
     @Override
+    @Transactional
     public ResultBean<Void> insert(BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO) {
         Preconditions.checkArgument(bizModelRelaFinancialProdDO != null, "bizModelRelaFinancialProdDO不能为空");
         bizModelRelaFinancialProdDO.setGmtCreate(new Date());
@@ -33,6 +34,7 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> batchInsert(List<BizModelRelaFinancialProdDO> bizModelRelaAreaDOList) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(bizModelRelaAreaDOList), "bizModelRelaAreaDOList不能为空");
         for (BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO : bizModelRelaAreaDOList) {
@@ -42,6 +44,7 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> update(BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO) {
         Preconditions.checkArgument(bizModelRelaFinancialProdDO != null, "bizModelRelaFinancialProdDO不能为空");
         int count = bizModelRelaFinancialProdDOMapper.update(bizModelRelaFinancialProdDO);
@@ -50,6 +53,7 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> batchUpdate(List<BizModelRelaFinancialProdDO> bizModelRelaAreaDOList) {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(bizModelRelaAreaDOList), "bizModelRelaAreaDOList不能为空");
         for (BizModelRelaFinancialProdDO bizModelRelaFinancialProdDO : bizModelRelaAreaDOList) {
@@ -60,11 +64,7 @@ public class BizModelRelaFinancialProdServiceImpl implements BizModelRelaFinanci
     }
 
     @Override
-    public ResultBean<Void> delete(Long bizId) {
-        return null;
-    }
-
-    @Override
+    @Transactional
     public ResultBean<Void> deleteRelaFinancialProd(Long bizId, Long prodId) {
         Preconditions.checkArgument(bizId != null && prodId != null, "prodId");
         int count = bizModelRelaFinancialProdDOMapper.deleteByPrimaryKey(bizId, prodId);

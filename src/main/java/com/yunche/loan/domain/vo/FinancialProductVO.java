@@ -8,6 +8,7 @@ import java.util.List;
 
 @Data
 public class FinancialProductVO {
+
     private Long prodId;
 
     private String prodName;
@@ -22,7 +23,7 @@ public class FinancialProductVO {
 
     private String signBankCode;
 
-    private Integer bizType;
+    private Byte bizType;
 
     private String categorySuperior;
 
@@ -30,7 +31,7 @@ public class FinancialProductVO {
 
     private String rate;
 
-    private Integer mortgageTerm;
+    private Byte mortgageTerm;
 
     private Long areaId;
 
@@ -42,7 +43,7 @@ public class FinancialProductVO {
 
     private Long cityId;
 
-    private Integer status;
+    private Byte status;
 
     private Date gmtCreate;
 
@@ -53,5 +54,4 @@ public class FinancialProductVO {
     private List<FinancialProductParam.ProductRate> productRateList;
 
     private Integer formulaId;
-
 }
