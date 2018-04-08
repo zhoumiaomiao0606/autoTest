@@ -360,14 +360,15 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
 
         ResultBean<Void> resultBean = loanCarInfoService.update(loanCarInfoDO);
+
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
         vehicleInformationUpdateParam.setApply_license_plate_area(loanCarInfoParam.getApplyLicensePlateArea());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
         vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
         vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
-
         vehicleInformationService.update(vehicleInformationUpdateParam);
+
         return resultBean;
     }
 
