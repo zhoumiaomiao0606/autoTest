@@ -12,6 +12,7 @@ import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.MaterialAuditDOMapper;
 import com.yunche.loan.service.LoanProcessLogService;
 import com.yunche.loan.service.MaterialService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,12 +44,19 @@ public class MaterialServiceImpl implements MaterialService {
             universalCustomerVO.setFiles(files);
         }
 
+        List<UniversalCreditInfoVO> credits = loanQueryDOMapper.selectUniversalCreditInfo(orderId);
+        for(UniversalCreditInfoVO universalCreditInfoVO:credits){
+            if(!StringUtils.isBlank(universalCreditInfoVO.getCustomer_id())){
+                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(Long.valueOf(universalCreditInfoVO.getCustomer_id())));
+            }
+        }
+
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
         recombinationVO.setRelations(loanQueryDOMapper.selectUniversalRelationCustomer(orderId));
         recombinationVO.setLoan(loanQueryDOMapper.selectUniversalLoanInfo(orderId));
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
-        recombinationVO.setCredits(loanQueryDOMapper.selectUniversalCreditInfo(orderId));
+        recombinationVO.setCredits(credits);
         recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify",orderId));
         recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));

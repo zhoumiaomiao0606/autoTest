@@ -315,6 +315,7 @@
     <!--征信结果-->
   <select id="selectUniversalCreditInfo" resultType="com.yunche.loan.domain.vo.UniversalCreditInfoVO" parameterType="java.lang.Long" >
     select
+        customer.id                         AS customer_id,
         customer.cust_type                	AS customer_cust_type,
         customer.name					  	AS customer_name,
 		bank.info			      	        AS bank_info,
@@ -511,6 +512,14 @@
             select o.id from loan_order o
               inner join
             (select distinct id from loan_customer where principal_cust_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT})) t
+            on t.id = o.loan_customer_id
+    </select>
+
+    <!--关联订单-->
+    <select id="selectUniversalRelevanceOrderIdByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Long">
+            select o.id from loan_order o
+              inner join
+            (select distinct id from loan_customer where principal_cust_id = #{customerId,jdbcType=BIGINT}) t
             on t.id = o.loan_customer_id
     </select>
 

@@ -42,9 +42,16 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             universalCustomerVO.setFiles(files);
         }
 
+        List<UniversalCreditInfoVO> credits = loanQueryDOMapper.selectUniversalCreditInfo(orderId);
+        for(UniversalCreditInfoVO universalCreditInfoVO:credits){
+            if(!StringUtils.isBlank(universalCreditInfoVO.getCustomer_id())){
+                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(Long.valueOf(universalCreditInfoVO.getCustomer_id())));
+            }
+        }
+
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
-        recombinationVO.setCredits(loanQueryDOMapper.selectUniversalCreditInfo(orderId));
+        recombinationVO.setCredits(credits);
         recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify",orderId));
         recombinationVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderId(orderId));
