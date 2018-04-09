@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessLogDO;
+import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
@@ -28,21 +29,6 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
     @Override
     public UniversalCustomerDetailVO universalCustomerDetail(Long customerId) {
-        UniversalCustomerDetailVO VO = loanQueryDOMapper.selectUniversalCustomerDetail(customerId);
-        if (VO != null) {
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByCustomerId(customerId);
-            Long orderId = loanOrderDO == null ? null : loanOrderDO.getId();
-            if (orderId != null) {
-                LoanProcessLogDO bank = loanProcessLogService.getLoanProcessLog(orderId, BANK_CREDIT_RECORD.getCode());
-                LoanProcessLogDO scociety = loanProcessLogService.getLoanProcessLog(orderId, SOCIAL_CREDIT_RECORD.getCode());
-                if (bank != null) {
-                    VO.setBank_addition(bank.getInfo());
-                }
-                if (scociety != null) {
-                    VO.setSociety_addition(scociety.getInfo());
-                }
-            }
-        }
-        return VO;
+        return loanQueryDOMapper.selectUniversalCustomerDetail(customerId);
     }
 }

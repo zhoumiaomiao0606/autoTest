@@ -394,48 +394,87 @@
     left join loan_credit_info cb on cb.customer_id = c.id and cb.type = 1
 
     left join loan_credit_info cs on cs.customer_id = c.id and cs.type = 2
-    
 </select>
 
     <!--客户信息-->
     <select id="selectUniversalCustomerDetail" resultType="com.yunche.loan.domain.vo.UniversalCustomerDetailVO" parameterType="java.lang.Long" >
-              select
-                t.id                AS customer_id,
-                t.cust_type         AS cust_type,
-                t.name              AS name,
-                t.id_card           AS id_card,
-                t.mobile            AS mobile,
-                t.age               AS age,
-                t.sex               AS sex,
-                t.apply_date        AS apply_date,
-                t.address           AS address,
-                t.marry             AS marry,
-                t.identity_address  AS identity_address,
-                t.mobile_area       AS mobile_area,
-                t.education         AS education,
-                t.company_name      AS company_name,
-                t.company_address   AS company_address,
-                t.company_phone     AS company_phone,
-                t.month_income      AS month_income,
-                t.house_type        AS house_type,
-                t.house_owner       AS house_owner,
-                t.house_feature     AS house_feature,
-                t.house_address     AS house_address,
-                t.postcode          AS postcode,
-                t.working_years     AS working_years,
-                t.duty              AS duty,
-                cb.gmt_create       AS bank_gmt_create,
-                cb.result           AS bank_result,
-                cb.info             AS bank_result_info,
-                cs.gmt_create       AS society_gmt_create,
-                cs.result           AS society_result,
-                cs.info             AS society_result_info
+
+
+        set @order_id = (select id from loan_order where loan_customer_id  = (select principal_cust_id from loan_customer where id = #{customerId,jdbcType=BIGINT}));
+
+        select
+          customer.id                                    AS customer_id,
+          customer.name                                  AS customer_name,
+          customer.nation                                AS customer_nation,
+          customer.birth                                 AS customer_birth,
+          customer.identity_validity                     AS customer_identity_validity,
+          customer.lend_card                             AS customer_lend_card,
+          customer.id_card                               AS customer_id_card,
+          customer.mobile                                AS customer_mobile,
+          customer.age                                   AS customer_age,
+          customer.sex                                   AS customer_sex,
+          customer.apply_date                            AS customer_apply_date,
+          customer.address                               AS customer_address,
+          customer.marry                                 AS customer_marry,
+          customer.identity_address                      AS customer_identity_address,
+          customer.mobile_area                           AS customer_mobile_area,
+          customer.education                             AS customer_education,
+          customer.company_name                          AS customer_company_name,
+          customer.company_phone                         AS customer_company_phone,
+          customer.company_address                       AS customer_company_address,
+          customer.month_income                          AS customer_month_income,
+          customer.house_type                            AS customer_house_type,
+          customer.house_owner                           AS customer_house_owner,
+          customer.house_feature                         AS customer_house_feature,
+          customer.house_address                         AS customer_house_address,
+          customer.info                                  AS customer_info,
+          customer.cust_type                             AS customer_cust_type,
+          customer.principal_cust_id                     AS customer_principal_cust_id,
+          customer.cust_relation                         AS customer_cust_relation,
+          customer.gmt_create                            AS customer_gmt_create,
+          customer.gmt_modify                            AS customer_gmt_modify,
+          customer.postcode                              AS customer_postcode,
+          customer.working_years                         AS customer_working_years,
+          customer.duty                                  AS customer_duty,
+          customer.household_nature                      AS customer_household_nature,
+          customer.children_num                          AS customer_children_num,
+          customer.reserve_mobile                        AS customer_reserve_mobile,
+          customer.company_nature                        AS customer_company_nature,
+          customer.industry_category                     AS customer_industry_category,
+          customer.income_certificate_company_name       AS customer_income_certificate_company_name,
+          customer.income_certificate_company_address    AS customer_income_certificate_company_address,
+          customer.family_address                        AS customer_family_address,
+          customer.family_mobile                         AS customer_family_mobile,
+          customer.family_monthly_income                 AS customer_family_monthly_income,
+          customer.feeding_num                           AS customer_feeding_num,
+          customer.floor_space                           AS customer_floor_space,
+          customer.house_owner_relation                  AS customer_house_owner_relation,
+          customer.bank_card_transmit_address            AS customer_bank_card_transmit_address,
+          customer.bank_card_transmit_postcode           AS customer_bank_card_transmit_postcode,
+          customer.house_certificate_type                AS customer_house_certificate_type,
+          customer.bank_card_transmit_address_type       AS customer_bank_card_transmit_address_type,
+          customer.company_postcode                      AS customer_company_postcode,
+          customer.elementary_school                     AS customer_elementary_school,
+          customer.professional                          AS customer_professional,
+          customer.family_person_num                     AS customer_family_person_num,
+          customer.debt_ratio                            AS customer_debt_ratio,
+          bank.info			      	                     AS bank_info,
+          bank.result		          			         AS bank_result,
+          process_bank.credit_result         	         AS process_bank_credit_result,
+          process_bank.credit_info           	         AS process_bank_credit_info,
+          process_bank.add_condition         	         AS process_bank_add_condition,
+          society.info		          		             AS society_info,
+          society.result             			         AS society_result,
+          process_society.credit_result     	         AS process_society_credit_result,
+          process_society.credit_info       	         AS process_society_credit_info,
+          process_society.add_condition      	         AS process_society_add_condition
+
         from
-        (select * from loan_customer where id = #{customerId,jdbcType=BIGINT}) t
-
-        left join loan_credit_info cb on cb.customer_id = t.id and cb.type = 1
-
-        left join loan_credit_info cs on cs.customer_id = t.id and cs.type = 2
+        (select * from loan_customer where id = #{customerId,jdbcType=BIGINT}) customer
+        left join loan_credit_info bank on customer.id = bank.customer_id and bank.type = 1
+        left join loan_credit_info society on customer.id = society.customer_id and society.type = 2
+        left join (select * from loan_process_log  where order_id  = @order_id and task_definition_key = 'usertask_bank_credit_record' order by create_time LIMIT 1) process_bank on process_bank.order_id = @order_id
+        left join (select * from loan_process_log  where order_id  = @order_id and task_definition_key = 'usertask_social_credit_record' order by create_time LIMIT 1) process_society on process_society.order_id = @order_id
     </select>
 
     <!--客户附件信息-->
