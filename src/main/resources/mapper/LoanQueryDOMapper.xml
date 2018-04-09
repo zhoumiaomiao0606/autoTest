@@ -158,7 +158,7 @@
             financial.down_payment_money                                                            AS financial_down_payment_money,
             financial.bank_period_principal                                                         AS financial_bank_period_principal,
             financial.each_month_repay                                                              AS financial_each_month_repay,
-            financial.loan_amount                                                                   AS financial_total_repayment_amount,
+            financial.principal_interest_sum                                                        AS financial_total_repayment_amount,
             financial.extra_fee                                                                     AS financial_extra_fee,
             remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
             remit.beneficiary_account                                                               AS remit_beneficiary_account,
