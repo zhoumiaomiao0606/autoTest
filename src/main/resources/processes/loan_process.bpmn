@@ -133,7 +133,7 @@
     </sequenceFlow>
     <sequenceFlow id="flow116" sourceRef="filter_bank_social_credit_record" targetRef="exclusivegateway11"></sequenceFlow>
     <sequenceFlow id="flow117" name="&gt;13W 银行征信审核" sourceRef="exclusivegateway3" targetRef="filter_bank_social_credit_record">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanAmount >= 2 && action == 0 || action == 1 || action == -1}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanAmount >= 2 && (action == 0 || action == 1 || action == -1) }]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow118" name="社会征信审核" sourceRef="exclusivegateway13" targetRef="filter_bank_social_credit_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0 || action == 1 || action == -1}]]></conditionExpression>
@@ -636,7 +636,7 @@
         <omgdi:waypoint x="1169.0" y="437.0"></omgdi:waypoint>
         <omgdi:waypoint x="1169.0" y="590.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="99.0" x="1130.0" y="485.0"></omgdc:Bounds>
+          <omgdc:Bounds height="48.0" width="100.0" x="1130.0" y="485.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow118" id="BPMNEdge_flow118">

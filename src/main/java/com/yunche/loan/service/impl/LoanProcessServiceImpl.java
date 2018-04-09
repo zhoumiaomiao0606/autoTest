@@ -794,6 +794,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 打回
         dealLoanApplyVisitVerifyAutoRejectTask(currentTask, tasks);
 
+        // update process
+        LoanProcessDO loanProcessDO = new LoanProcessDO();
+        loanProcessDO.setOrderId(approvalParam.getOrderId());
+        loanProcessDO.setLoanApply(TASK_PROCESS_NOT_REACH);
+        loanProcessDO.setVisitVerify(TASK_PROCESS_NOT_REACH);
+        updateLoanProcess(loanProcessDO);
+
         // 自动提交打回的【征信申请】
         approvalParam.setTaskDefinitionKey(CREDIT_APPLY.getCode());
         approvalParam.setAction(ACTION_PASS);
@@ -881,6 +888,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 dealCreditRecordAutoRejectTask(currentTask, tasks, approval);
             }
         }
+
+        // 小于13W:  单银行征信录入 & 自动打回操作时
+        else if (isOnlyOneBankCreditRecordTask(variables, approval.getTaskDefinitionKey())) {
+            // AUTO_REJECT
+            if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
+
+                // 获取所有正在执行的并行任务
+                List<Task> tasks = taskService.createTaskQuery()
+                        .processInstanceId(processInstId)
+                        .list();
+
+                dealCreditRecordAutoRejectTask(currentTask, tasks, approval);
+            }
+        }
     }
 
     /**
@@ -890,9 +911,17 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param tasks
      * @param approvalParam
      */
+
     private void dealCreditRecordAutoRejectTask(Task currentTask, List<Task> tasks, ApprovalParam approvalParam) {
         // 打回
         dealRejectTask(currentTask, tasks);
+
+        // update process
+        LoanProcessDO loanProcessDO = new LoanProcessDO();
+        loanProcessDO.setOrderId(approvalParam.getOrderId());
+        loanProcessDO.setBankCreditRecord(TASK_PROCESS_NOT_REACH);
+        loanProcessDO.setSocialCreditRecord(TASK_PROCESS_NOT_REACH);
+        updateLoanProcess(loanProcessDO);
 
         // 自动提交打回的【征信申请】
         approvalParam.setTaskDefinitionKey(CREDIT_APPLY.getCode());
@@ -1239,7 +1268,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 是否为：银行&社会征信并行任务
+     * 是否为：银行&社会征信并行任务   大于13W
      *
      * @param variables
      * @param taskDefinitionKey
@@ -1251,6 +1280,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 && null != loanAmount && loanAmount >= 2;
         return isBankAndSocialCreditRecordTask;
     }
+
+    /**
+     * 小于13W
+     *
+     * @param variables
+     * @param taskDefinitionKey
+     * @return
+     */
+    public boolean isOnlyOneBankCreditRecordTask(Map<String, Object> variables, String taskDefinitionKey) {
+        Byte loanAmount = (Byte) variables.get("loanAmount");
+        boolean isOnlyOneBankCreditRecordTask = (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey))
+                && null != loanAmount && loanAmount == 1;
+        return isOnlyOneBankCreditRecordTask;
+    }
+
 
     /**
      * 是否为：业务审核&资料审核 并行任务
