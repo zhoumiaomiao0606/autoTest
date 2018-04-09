@@ -516,7 +516,13 @@
 
     <!--审核备注-->
     <select id="selectUniversalApprovalInfo" resultType="com.yunche.loan.domain.vo.UniversalApprovalInfo">
-       select action,info from loan_process_log where task_definition_key =  #{taskDefinitionKey,jdbcType=VARCHAR} and order_id = #{orderId,jdbcType=BIGINT} order by create_time desc limit 1
+       select
+           action,
+           info,
+           credit_result,
+           credit_info,
+           add_condition
+       from loan_process_log where task_definition_key =  #{taskDefinitionKey,jdbcType=VARCHAR} and order_id = #{orderId,jdbcType=BIGINT} order by create_time desc limit 1
     </select>
 
     <!--=============================================end===================================================-->
