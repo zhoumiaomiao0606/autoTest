@@ -98,8 +98,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 //        String password = MD5Utils.getRandomString(10);
         String password ="111111";
         // MD5加密
-        String md5Password = MD5Utils.md5(password);
-        employeeParam.setPassword(md5Password);
+//        String md5Password = MD5Utils.md5(password);
+        employeeParam.setPassword(password);
 
         // 创建实体，并返回ID
         Long id = insertAndGetId(employeeParam);
