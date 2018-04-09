@@ -62,7 +62,7 @@ public class LoanCustomerController {
      * @param customerId
      * @return
      */
-    @GetMapping(value = "/customer/delrela")
+    @GetMapping(value = "/delrela")
     public ResultBean<Long> delRelaCustomer(@RequestParam("customerId") Long customerId) {
         return loanCustomerService.delRelaCustomer(customerId);
     }

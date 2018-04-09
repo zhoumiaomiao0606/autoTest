@@ -154,7 +154,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
         // 判断当前任务流程   是否在电审前
-        Preconditions.checkArgument(TASK_PROCESS_NOT_REACH.equals(loanProcessDO.getTelephoneVerify()), "流程已过电审环节，无法发起征信增补");
+        Preconditions.checkArgument(TASK_PROCESS_INIT.equals(loanProcessDO.getTelephoneVerify()), "流程已过电审环节，无法发起征信增补");
 
         // 当前所有task
         List<Task> tasks = taskService.createTaskQuery()
@@ -316,6 +316,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 .processInstanceId(task.getProcessInstanceId())
                 .list();
 
+        // 执行任务
+        taskService.complete(task.getId(), variables);
+
         // 起始任务ID列表
         List<String> startTaskIdList = startTaskList.parallelStream()
                 .filter(Objects::nonNull)
@@ -323,9 +326,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     return e.getId();
                 })
                 .collect(Collectors.toList());
-
-        // 执行任务
-        taskService.complete(task.getId(), variables);
 
         // 更新状态
         LoanProcessDO loanProcessDO = new LoanProcessDO();
@@ -344,24 +344,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         //【资料审核】打回到【业务申请】 标记
         if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
-            // 记录 打回来源KEY、来源TaskId、去向KEY、去向TaskId
-//            String originTaskKey = METERIAL_REVIEW.getCode();
-//            String originTaskId = currentExecTask.getId();
-//            String destTaskKey = LOAN_APPLY.getCode();
-//
-//            approvalInfoVO.setOriginTaskKey(originTaskKey);
-//            approvalInfoVO.setOriginTaskId(originTaskId);
-//            approvalInfoVO.setDestTaskKey(destTaskKey);
-
-            // 更新本地审核流程记录
-//            loanProcessDO.setLoanApply(TASK_PROCESS_REJECT);
             loanProcessDO.setLoanApplyRejectOrginTask(MATERIAL_REVIEW.getCode());
         }
 
         // 更新当前执行的任务状态
         Byte taskProcessStatus = null;
         if (ACTION_REJECT_MANUAL.equals(approval.getAction()) || ACTION_REJECT_AUTO.equals(approval.getAction())) {
-            taskProcessStatus = TASK_PROCESS_NOT_REACH;
+            taskProcessStatus = TASK_PROCESS_INIT;
         } else {
             taskProcessStatus = TASK_PROCESS_DONE;
         }
@@ -393,26 +382,28 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return;
         }
 
-        // 筛选出新产生的任务
-        List<Task> newTaskList = endTaskList.parallelStream()
+        // 筛选出新产生和就有的任务
+        List<Task> newTaskList = Lists.newArrayList();
+        List<Task> oldTaskList = Lists.newArrayList();
+        endTaskList.parallelStream()
                 .filter(Objects::nonNull)
-                .map(e -> {
+                .forEach(e -> {
                     if (!startTaskIdList.contains(e.getId())) {
                         // 不存在：新产生的任务
-                        return e;
+                        newTaskList.add(e);
+                    } else {
+                        // 存在：旧有的任务
+                        oldTaskList.add(e);
                     }
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                });
 
-        // new  -> 状态变更
         if (ACTION_PASS.equals(action)) {
-            // TO DO
+            // new  -> TO_DO   old -> 不变
             updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_TODO);
         } else if (ACTION_REJECT_MANUAL.equals(action)) {
-            // REJECT
+            // new  -> REJECT   old -> INIT
             updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT);
+            updateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT);
         } else if (ACTION_CANCEL.equals(action)) {
             // nothing
         }
@@ -797,8 +788,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // update process
         LoanProcessDO loanProcessDO = new LoanProcessDO();
         loanProcessDO.setOrderId(approvalParam.getOrderId());
-        loanProcessDO.setLoanApply(TASK_PROCESS_NOT_REACH);
-        loanProcessDO.setVisitVerify(TASK_PROCESS_NOT_REACH);
+        loanProcessDO.setLoanApply(TASK_PROCESS_INIT);
+        loanProcessDO.setVisitVerify(TASK_PROCESS_INIT);
         updateLoanProcess(loanProcessDO);
 
         // 自动提交打回的【征信申请】
@@ -919,8 +910,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // update process
         LoanProcessDO loanProcessDO = new LoanProcessDO();
         loanProcessDO.setOrderId(approvalParam.getOrderId());
-        loanProcessDO.setBankCreditRecord(TASK_PROCESS_NOT_REACH);
-        loanProcessDO.setSocialCreditRecord(TASK_PROCESS_NOT_REACH);
+        loanProcessDO.setBankCreditRecord(TASK_PROCESS_INIT);
+        loanProcessDO.setSocialCreditRecord(TASK_PROCESS_INIT);
         updateLoanProcess(loanProcessDO);
 
         // 自动提交打回的【征信申请】

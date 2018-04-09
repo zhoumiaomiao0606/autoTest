@@ -12,7 +12,7 @@ public class LoanOrderProcessConst {
     /**
      * 任务状态:  默认值0-未执行到此节点;
      */
-    public static final Byte TASK_PROCESS_NOT_REACH = 0;
+    public static final Byte TASK_PROCESS_INIT = 0;
     /**
      * 任务状态:  1-已处理(审核);
      */
