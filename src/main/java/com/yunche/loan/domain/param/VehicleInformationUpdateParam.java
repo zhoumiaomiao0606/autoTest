@@ -3,6 +3,9 @@ package com.yunche.loan.domain.param;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.Valid;
+import java.util.List;
+
 @Data
 public class VehicleInformationUpdateParam {
 
@@ -49,4 +52,5 @@ public class VehicleInformationUpdateParam {
     @NotBlank
     private String retrieve_key;
 
+    private List<UniversalFileParam> files;
 }
