@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,6 +17,9 @@ public class AppCustomerInfoVO {
      * 业务单单号
      */
     private Long orderId;
+    /**
+     * 档案编号
+     */
 
     /**
      * 主贷人
@@ -53,6 +57,81 @@ public class AppCustomerInfoVO {
     public static class CustomerInfo extends EmergencyContact {
 
         private Byte sex;
+        /**
+         * 子女个数
+         */
+        private String childrenNum;
+        /**
+         * 备用手机号
+         */
+        private String reserveMobile;
+
+        /**
+         * 邮编
+         */
+        private String postcode;
+        /**
+         * 单位邮编
+         */
+        private String companyPostcode;
+        /**
+         * 单位性质
+         */
+        private Byte companyNature;
+
+        /**
+         * 职务
+         */
+        private String duty;
+        /**
+         * 行业类别
+         */
+        private Byte industryCategory;
+
+        /**
+         * 家庭月收入
+         */
+        private BigDecimal familyMonthlyIncome;
+
+        /**
+         * 债务比例
+         */
+        private  BigDecimal debtRatio;
+
+        /**
+         * 家庭人数
+         */
+        private Long familyPersonNum;
+        /**
+         * 收入证明单位
+         */
+        private String incomeCertificateCompanyName;
+        /**
+         * 收入证明单位地址
+         */
+        private String incomeCertificateCompanyAddress;
+        /**
+         * 家庭手机号
+         */
+        private Long familyMobile;
+        /**
+         * 供养人数
+         */
+        private Long feedingNum;
+
+        /**
+         * 房屋面积
+         */
+        private Long floorSpace;
+        /**
+         *户口性质
+         */
+        private Byte householdNature;
+
+
+
+
+
 
         private Byte age;
 
