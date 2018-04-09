@@ -349,8 +349,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         if (null != loanFinancialPlanDO) {
             BeanUtils.copyProperties(loanFinancialPlanDO, loanFinancialPlanVO);
         }
-        loanFinancialPlanVO.setCategorySuperior((String)map.get("categorySuperior"));
-        loanFinancialPlanVO.setBankRate((BigDecimal) map.get("bankRate"));
+        if(map!=null) {
+            loanFinancialPlanVO.setCategorySuperior((String) map.get("categorySuperior"));
+            loanFinancialPlanVO.setBankRate((BigDecimal) map.get("bankRate"));
+        }
+
         return ResultBean.ofSuccess(loanFinancialPlanVO);
     }
 
