@@ -86,9 +86,9 @@ spring:
       test-on-borrow: true
 
   redis:
-    host: 47.97.122.31
+    host: r-bp1b3d268c17de84.redis.rds.aliyuncs.com
     port: 6379
-    password: yunche@1234
+    password: Yunche2018
     pool:
       max-active: 8
       max-idle: 8
