@@ -153,8 +153,12 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         if (null != loanFinancialPlanDO) {
             BeanUtils.copyProperties(loanFinancialPlanDO, loanFinancialPlanVO);
         }
-        loanFinancialPlanVO.setCategorySuperior((String)map.get("categorySuperior"));
-        loanFinancialPlanVO.setBankRate((BigDecimal) map.get("bankRate"));
+        if(map!=null){
+            loanFinancialPlanVO.setCategorySuperior((String)map.get("categorySuperior"));
+            loanFinancialPlanVO.setBankRate((BigDecimal)map.get("bankRate"));
+            loanFinancialPlanVO.setStagingRatio((BigDecimal)map.get("stagingRatio"));
+        }
+
         return ResultBean.ofSuccess(loanFinancialPlanVO);
     }
 
