@@ -34,6 +34,16 @@ public interface LoanQueryDOMapper {
 
     public UniversalSupplementInfoVO selectUniversalSupplementInfo(Long orderId);
 
+    public List<UniversalCustomerVO> selectUniversalCustomer(Long orderId);
+
+    public UniversalCustomerDetailVO selectUniversalCustomerDetail(Long customerId);
+
+    public List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId);
+
+    public List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
+
+    public List<UniversalMaterialRecordVO> selectUniversalMaterialRecordByType(@Param("orderId") Long orderId, @Param("uploadType") Byte uploadType);
+
     //=======================================================================
 
     public List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
@@ -43,16 +53,6 @@ public interface LoanQueryDOMapper {
     public List<InsuranceRelevanceVO> selectInsuranceRelevance(Long insuranceInfoId);
 
     public FinancialSchemeVO selectFinancialScheme(Long orderId);
-
-    public List<UniversalCustomerVO> selectUniversalCustomer(Long orderId);
-
-    UniversalCustomerDetailVO selectUniversalCustomerDetail(Long customerId);
-
-    public List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId);
-
-    public List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
-
-    public List<UniversalMaterialRecordVO> selectUniversalMaterialRecordByType(@Param("orderId") Long orderId, @Param("uploadType") Byte uploadType);
 
     CostCalculateInfoVO selectCostCalculateInfo(Long orderId);
 
