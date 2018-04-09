@@ -1,5 +1,6 @@
 package com.yunche.loan;
 
+import com.yunche.loan.config.cache.ActivitiCache;
 import org.activiti.engine.*;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -17,7 +18,7 @@ import java.util.Map;
  * Created by zhouguoliang on 2018/1/18.
  * 工作流demo测试
  */
-public class LoanProcessTest extends BaseTest{
+public class LoanProcessTest extends BaseTest {
     @Autowired
     private RuntimeService runtimeService;
 
@@ -27,10 +28,19 @@ public class LoanProcessTest extends BaseTest{
     @Autowired
     private HistoryService historyService;
 
+    @Autowired
+    private ActivitiCache activitiCache;
+
 //    @Autowired
 //    private ApplicantRepository applicantRepository;
 
 //    private Wiser wiser;
+
+    @Test
+    public void test1() {
+        activitiCache.refresh();
+
+    }
 
     @Before
     public void setup() {

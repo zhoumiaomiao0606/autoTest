@@ -190,7 +190,6 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                 orderIdList.remove(String.valueOf(orderId));
             }
 
-            loanRepeatVO.setRepeat(true);
             loanRepeatVO.setOrderIdList(orderIdList);
         }
 

@@ -2,6 +2,10 @@ package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
+import org.activiti.engine.*;
+import org.activiti.engine.identity.Group;
+import org.activiti.engine.task.IdentityLink;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundValueOperations;
@@ -29,8 +33,24 @@ public class ActivitiCache {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-//    @Autowired
-//    private
+    @Autowired
+    private RepositoryService repositoryService;
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private RuntimeService runtimeService;
+
+    @Autowired
+    private HistoryService historyService;
+
+
+    @Autowired
+    private FormService formService;
+
+    @Autowired
+    private IdentityService identityService;
 
 
     public Map<String, List<String>> get() {
@@ -56,7 +76,23 @@ public class ActivitiCache {
     /**
      * 刷新缓存
      */
-    private void refresh() {
+    public void refresh() {
+
+
+        List<IdentityLink> identityLinksForTask = taskService.getIdentityLinksForTask("");
+
+
+//        identityLinksForTask.parallelStream()
+//                .forEach();
+
+
+
+        List<Group> list = identityService.createGroupQuery()
+                .list();
+
+
+        System.out.println(JSON.toJSONString(list));
+        System.out.println();
 
 
     }
