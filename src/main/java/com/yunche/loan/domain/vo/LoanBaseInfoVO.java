@@ -48,4 +48,9 @@ public class LoanBaseInfoVO {
      * 贷款申请日期
      */
     private Date applyDate;
+
+    /**
+     * 业务组织
+     */
+    private  String departmentName;
 }

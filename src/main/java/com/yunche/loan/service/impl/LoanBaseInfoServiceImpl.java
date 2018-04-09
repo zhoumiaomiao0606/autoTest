@@ -40,8 +40,8 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
 
     @Autowired
     private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
-
-
+    @Autowired
+    private DepartmentDOMapper departmentDOMapper;
     @Override
     public ResultBean<Long> create(LoanBaseInfoDO loanBaseInfoDO) {
 //        Preconditions.checkNotNull(loanBaseInfoDO.getPartnerId(), "合伙人不能为空");
@@ -111,8 +111,9 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
             BaseVO partner = new BaseVO();
             BeanUtils.copyProperties(partnerDO, partner);
             loanBaseInfoVO.setPartner(partner);
+            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(partnerDO.getDepartmentId(), null);
+            loanBaseInfoVO.setDepartmentName(departmentDO.getName());
         }
-
         // 业务员
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(loanBaseInfoDO.getSalesmanId(), null);
         if (null != employeeDO) {
