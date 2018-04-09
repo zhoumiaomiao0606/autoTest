@@ -141,6 +141,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private FinancialProductDOMapper financialProductDOMapper;
 
 
+
+
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
         Preconditions.checkNotNull(supplementOrderId, "增补单不能为空");
@@ -511,7 +513,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Override
     public ResultBean<AppBusinessInfoVO> businessInfo(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
-
         AppBusinessInfoVO businessInfoVO = new AppBusinessInfoVO();
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
@@ -521,7 +522,14 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         if (null != loanOrderDO.getLoanBaseInfoId()) {
             ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
             Preconditions.checkArgument(loanBaseInfoVOResultBean.getSuccess(), loanBaseInfoVOResultBean.getMsg());
-
+            //产品信息 (产品大类+产品费率+银行分期比率)
+            Map  map  = financialProductDOMapper.selectProductInfoByOrderId(orderId);
+            if(map !=null){
+                //产品大类
+                businessInfoVO.setCategorySuperior((String) map.get("categorySuperior"));
+                //银行分期比率
+                businessInfoVO.setStagingRatio((BigDecimal)map.get("stagingRatio"));
+            }
             // 业务员 & 合伙人
             LoanBaseInfoVO loanBaseInfoVO = loanBaseInfoVOResultBean.getData();
             if (null != loanBaseInfoVO) {
@@ -531,6 +539,16 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 if (null != loanBaseInfoVO.getPartner()) {
                     businessInfoVO.setPartnerName(loanBaseInfoVO.getPartner().getName());
                 }
+                if(null !=loanBaseInfoVO.getBank()){
+                    businessInfoVO.setBank(loanBaseInfoVO.getBank());
+                }
+                if(null !=loanBaseInfoVO.getCarType()){
+                    businessInfoVO.setCarType(loanBaseInfoVO.getCarType());
+                }
+                if(null!=loanBaseInfoVO.getDepartmentName()){
+                    businessInfoVO.setDepartmentName(loanBaseInfoVO.getDepartmentName());
+                }
+
             }
 
             // 车型
@@ -539,13 +557,25 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 // 车名
                 ResultBean<String> carFullNameResultBean = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
                 Preconditions.checkArgument(carFullNameResultBean.getSuccess(), carFullNameResultBean.getMsg());
+                //车型名称
                 businessInfoVO.setCarName(carFullNameResultBean.getData());
 
-                // 车辆属性
+                // 车辆类型
                 businessInfoVO.setCarType(loanCarInfoDO.getCarType());
+                //车辆类型描述
                 businessInfoVO.setCarTypeText(CAR_TYPE_MAP.get(loanCarInfoDO.getCarType()));
                 // GPS数量
                 businessInfoVO.setGpsNum(loanCarInfoDO.getGpsNum());
+                //车辆属性
+                businessInfoVO.setVehicleProperty(loanCarInfoDO.getVehicleProperty());
+                //留备用钥匙
+                businessInfoVO.setCarKey(loanCarInfoDO.getCarKey());
+                //业务来源
+                businessInfoVO.setBusinessSource(loanCarInfoDO.getBusinessSource());
+                //二手车初登日期
+                businessInfoVO.setFirstRegisterDate(loanCarInfoDO.getFirstRegisterDate());
+                //备注
+                businessInfoVO.setInfo(loanCarInfoDO.getInfo());
             }
 
             if (null != loanOrderDO.getLoanFinancialPlanId()) {
@@ -560,8 +590,26 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setFirstMonthRepay(loanFinancialPlanDO.getFirstMonthRepay());
                 // 每月还款
                 businessInfoVO.setEachMonthRepay(loanFinancialPlanDO.getEachMonthRepay());
-                // 按揭期限
+                // 按揭期限（贷款期限）
                 businessInfoVO.setLoanTime(loanFinancialPlanDO.getLoanTime());
+                //准评估价
+                businessInfoVO.setAppraisal(loanFinancialPlanDO.getAppraisal());
+                //执行利率
+                businessInfoVO.setSignRate(loanFinancialPlanDO.getSignRate());
+                //首付额
+                businessInfoVO.setDownPaymentMoney(loanFinancialPlanDO.getDownPaymentMoney());
+                //首付比例
+                businessInfoVO.setDownPaymentRatio(loanFinancialPlanDO.getDownPaymentRatio());
+                //银行分期本金
+                businessInfoVO.setBankPeriodPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
+                //首月还款
+                businessInfoVO.setFirstMonthRepay(loanFinancialPlanDO.getFirstMonthRepay());
+                //月还款
+                businessInfoVO.setEachMonthRepay(loanFinancialPlanDO.getEachMonthRepay());
+                //还款总额
+                businessInfoVO.setTotalRepayment(loanFinancialPlanDO.getPrincipalInterestSum());
+                //贷款利息
+                businessInfoVO.setLoanInterest(loanFinancialPlanDO.getBankFee());
             }
 
             ApplyLicensePlateDepositInfoDO applyLicensePlateDepositInfoDO = applyLicensePlateDepositInfoDOMapper.selectByPrimaryKey(loanOrderDO.getApplyLicensePlateDepositInfoId());
@@ -602,6 +650,22 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     businessInfoVO.setSocialCreditResult(socialLoanCreditInfoVO.getResult());
                     businessInfoVO.setSocialCreditInfo(socialLoanCreditInfoVO.getInfo());
                 }
+            }
+
+            Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
+            VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
+            if (vehicleInformationDO != null) {
+                //行驶证车主
+                businessInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
+                //上牌方式
+                businessInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type());
+                //上牌地点
+                businessInfoVO.setApplyLicensePlateArea(vehicleInformationDO.getApply_license_plate_area());
+                //车辆颜色
+                businessInfoVO.setColor(vehicleInformationDO.getColor());
+                //上牌日期
+                businessInfoVO.setApplyLicensePlateDate(vehicleInformationDO.getApply_license_plate_date());
+
             }
         }
 
