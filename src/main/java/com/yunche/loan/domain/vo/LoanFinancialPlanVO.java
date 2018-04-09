@@ -56,6 +56,16 @@ public class LoanFinancialPlanVO {
     private BigDecimal extraFee;
 
     private BigDecimal appraisal;
-
+    /**
+     * 银行分期比例
+     */
     private BigDecimal stagingRatio;
+
+    /**
+     * 产品大类
+     */
+    private String categorySuperior;
+
+    private  BigDecimal bankRate;
+
 }

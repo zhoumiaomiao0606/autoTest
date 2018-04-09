@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
@@ -145,13 +146,15 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
         Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(orderId);
+        Map map = financialProductDOMapper.selectProductInfoByOrderId(orderId);
 
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
         LoanFinancialPlanVO loanFinancialPlanVO = new LoanFinancialPlanVO();
         if (null != loanFinancialPlanDO) {
             BeanUtils.copyProperties(loanFinancialPlanDO, loanFinancialPlanVO);
         }
-
+        loanFinancialPlanVO.setCategorySuperior((String)map.get("categorySuperior"));
+        loanFinancialPlanVO.setBankRate((BigDecimal) map.get("bankRate"));
         return ResultBean.ofSuccess(loanFinancialPlanVO);
     }
 

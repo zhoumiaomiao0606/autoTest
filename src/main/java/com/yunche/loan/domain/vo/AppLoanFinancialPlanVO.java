@@ -56,4 +56,16 @@ public class AppLoanFinancialPlanVO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    /**
+     * 银行分期比例
+     */
+    private BigDecimal stagingRatio;
+
+    /**
+     * 产品大类
+     */
+    private String categorySuperior;
+
+    private  BigDecimal bankRate;
 }

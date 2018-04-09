@@ -5,6 +5,7 @@ import com.yunche.loan.domain.entity.FinancialProductDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface FinancialProductDOMapper {
@@ -21,4 +22,6 @@ public interface FinancialProductDOMapper {
     int updateByPrimaryKeySelective(FinancialProductDO record);
 
     int updateByPrimaryKey(FinancialProductDO record);
+
+    Map selectProductInfoByOrderId(Long orderId);
 }

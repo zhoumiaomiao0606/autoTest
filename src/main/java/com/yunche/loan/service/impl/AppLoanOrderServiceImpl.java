@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -136,6 +137,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private HistoryService historyService;
 
+    @Autowired
+    private FinancialProductDOMapper financialProductDOMapper;
+
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
@@ -238,7 +242,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         if (null != loanFinancialPlanDO && null != loanFinancialPlanDO.getLoanAmount()) {
             creditApplyOrderVO.getLoanBaseInfo().setActualLoanAmount(String.valueOf(loanFinancialPlanDO.getLoanAmount()));
         }
-
         return ResultBean.ofSuccess(creditApplyOrderVO, "查询征信申请单详情成功");
     }
 
@@ -340,13 +343,14 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
         Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(orderId);
-
+        Map map = financialProductDOMapper.selectProductInfoByOrderId(orderId);
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
         AppLoanFinancialPlanVO loanFinancialPlanVO = new AppLoanFinancialPlanVO();
         if (null != loanFinancialPlanDO) {
             BeanUtils.copyProperties(loanFinancialPlanDO, loanFinancialPlanVO);
         }
-
+        loanFinancialPlanVO.setCategorySuperior((String)map.get("categorySuperior"));
+        loanFinancialPlanVO.setBankRate((BigDecimal) map.get("bankRate"));
         return ResultBean.ofSuccess(loanFinancialPlanVO);
     }
 

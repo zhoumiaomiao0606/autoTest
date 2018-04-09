@@ -323,4 +323,13 @@
         formula_id = #{formulaId,jdbcType=INTEGER}
         where prod_id = #{prodId,jdbcType=BIGINT}
     </update>
+
+
+    <select id="selectProductInfoByOrderId" parameterType="java.lang.Long" resultType="java.util.HashMap">
+        select c.category_superior AS categorySuperior,d.bank_rate  AS bankRate from loan_order a
+        LEFT JOIN loan_financial_plan b on a.loan_financial_plan_id=b.id
+        LEFT JOIN financial_product c on b.financial_product_id=c.prod_id
+        LEFT JOIN product_rate d on c.prod_id=d.prod_id and b.loan_time=d.loan_time
+        where a.id=#{orderId};
+    </select>
 </mapper>
