@@ -199,9 +199,6 @@
                 <when test="taskDefinitionKey == 'usertask_credit_apply'">
                     deputy.credit_apply                     AS taskStatus
                 </when>
-                <when test="taskDefinitionKey == 'usertask_credit_apply_verify'">
-                    deputy.credit_apply_verify              AS taskStatus
-                </when>
                 <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
                     deputy.bank_credit_record               AS taskStatus
                 </when>
@@ -213,6 +210,15 @@
                 </when>
                 <when test="taskDefinitionKey == 'usertask_visit_verify'">
                     deputy.visit_verify                     AS taskStatus
+                </when>
+                <when test="taskDefinitionKey == 'usertask_telephone_verify'">
+                    useLevelGetTaskStatus(${level},deputy.telephone_verify)   AS taskStatus
+                </when>
+                <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
+                    deputy.financial_scheme                   AS taskStatus
+                </when>
+                <when test="taskDefinitionKey == 'usertask_bank_card_record'">
+                    deputy.bank_card_record                   AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'usertask_car_insurance'">
                     deputy.car_insurance                    AS taskStatus
@@ -244,8 +250,8 @@
                 <when test="taskDefinitionKey == 'usertask_remit_review'">
                     deputy.remit_review                     AS taskStatus
                 </when>
-                <when test="taskDefinitionKey == 'usertask_telephone_verify'">
-                    useLevelGetTaskStatus(${level},deputy.telephone_verify)   AS taskStatus
+                <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
+                    deputy.bank_lend_record                   AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'usertask_info_supplement'">
                     join_s.type                               AS supplementType,
@@ -253,15 +259,6 @@
                     DATE_FORMAT(join_s.start_time,'%Y-%m-%d %H:%i:%S')     AS supplementStartTime,
                     join_s.id                                 AS supplementOrderId,
                     join_s.status                             AS taskStatus
-                </when>
-                <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
-                    deputy.financial_scheme                   AS taskStatus
-                </when>
-                <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
-                    deputy.bank_lend_record                   AS taskStatus
-                </when>
-                <when test="taskDefinitionKey == 'usertask_bank_card_record'">
-                    deputy.bank_card_record                   AS taskStatus
                 </when>
                 <otherwise>
                   0                                           AS taskStatus
@@ -287,9 +284,6 @@
                 <when test="taskDefinitionKey == 'usertask_credit_apply'">
                     AND case when #{taskStatus} = 0 then deputy.credit_apply != 0                     else deputy.credit_apply                     = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey == 'usertask_credit_apply_verify'">
-                    AND case when #{taskStatus} = 0 then deputy.credit_apply_verify != 0              else deputy.credit_apply_verify              = #{taskStatus} end
-                </when>
                 <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
                     AND case when #{taskStatus} = 0 then deputy.bank_credit_record != 0               else deputy.bank_credit_record               = #{taskStatus} end
                 </when>
@@ -301,6 +295,16 @@
                 </when>
                 <when test="taskDefinitionKey == 'usertask_visit_verify'">
                     AND case when #{taskStatus} = 0 then deputy.visit_verify != 0                     else deputy.visit_verify                     = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'usertask_telephone_verify'">
+                    AND useLevelGetTaskStatus(${level},deputy.telephone_verify) !=-1
+                    AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(${level},deputy.telephone_verify) != 0 else useLevelGetTaskStatus(${level},deputy.telephone_verify) = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
+                    AND case when #{taskStatus} = 0 then deputy.financial_scheme  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'usertask_bank_card_record'">
+                    AND case when #{taskStatus} = 0 then deputy.bank_card_record  != 0                          else deputy.bank_card_record                           = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_car_insurance'">
                     AND case when #{taskStatus} = 0 then deputy.car_insurance != 0                    else deputy.car_insurance                    = #{taskStatus} end
@@ -332,21 +336,11 @@
                 <when test="taskDefinitionKey == 'usertask_remit_review'">
                     AND case when #{taskStatus} = 0 then deputy.remit_review  != 0                        else deputy.remit_review                     = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey == 'usertask_telephone_verify'">
-                    AND useLevelGetTaskStatus(${level},deputy.telephone_verify) !=-1
-                    AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(${level},deputy.telephone_verify) != 0 else useLevelGetTaskStatus(${level},deputy.telephone_verify) = #{taskStatus} end
-                </when>
-                <when test="taskDefinitionKey == 'usertask_info_supplement'">
-                    AND case when #{taskStatus} = 0 then join_s.status  != 0                          else join_s.status                           = #{taskStatus} end
-                </when>
-                <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
-                    AND case when #{taskStatus} = 0 then deputy.financial_scheme  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
-                </when>
                 <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
                     AND case when #{taskStatus} = 0 then deputy.bank_lend_record  != 0                          else deputy.bank_lend_record                           = #{taskStatus} end
                 </when>
-                <when test="taskDefinitionKey == 'usertask_bank_card_record'">
-                    AND case when #{taskStatus} = 0 then deputy.bank_card_record  != 0                          else deputy.bank_card_record                           = #{taskStatus} end
+                <when test="taskDefinitionKey == 'usertask_info_supplement'">
+                    AND case when #{taskStatus} = 0 then join_s.status  != 0                          else join_s.status                           = #{taskStatus} end
                 </when>
                 <otherwise>
                     AND 1=2
@@ -565,7 +559,7 @@
         LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
         LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
         LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
-        INNER JOIN loan_process lp       ON jorder.id              = lp.order_id
+        INNER JOIN loan_process lp       ON jorder.id              = lp.order_id and lp.order_status = 1
         ) tab where tab.filtration = 2
         order by tab.createScheduleDate ASC
         </select>

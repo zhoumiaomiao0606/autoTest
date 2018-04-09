@@ -4,6 +4,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.TelephoneVerifyParam;
 import com.yunche.loan.service.TelephoneVerifyService;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +26,9 @@ public class TelephoneVerifyController {
     }
 
     /**
-     * 待办任务列表
+     * 更新
      */
-    @PostMapping(value = "/update")
+    @PostMapping(value = "/update",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody @Validated TelephoneVerifyParam param) {
         telephoneVerifyService.update(param);
         return ResultBean.ofSuccess(null,"保存成功");
