@@ -95,8 +95,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         checkOnlyProperty(employeeParam);
 
         // 生成随机密码
-        String password = MD5Utils.getRandomString(10);
-
+//        String password = MD5Utils.getRandomString(10);
+        String password ="111111";
         // MD5加密
         String md5Password = MD5Utils.md5(password);
         employeeParam.setPassword(md5Password);
@@ -108,11 +108,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         doBindUserGroup(id, employeeParam.getUserGroupIdList());
 
         // 发送账号密码到邮箱
-        new Thread() {
-            public void run() {
-                sentAccountAndPassword(employeeParam.getEmail(), password);
-            }
-        }.start();
+//        new Thread() {
+//            public void run() {
+//                sentAccountAndPassword(employeeParam.getEmail(), password);
+//            }
+//        }.start();
         // 刷新缓存
         employeeCache.refresh();
 
