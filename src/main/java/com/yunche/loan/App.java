@@ -1,5 +1,6 @@
 package com.yunche.loan;
 
+import com.yunche.loan.config.cache.ActivitiCache;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -23,15 +24,21 @@ public class App {
     @Bean
     public CommandLineRunner init(final RepositoryService repositoryService,
                                   final RuntimeService runtimeService,
-                                  final TaskService taskService) {
+                                  final TaskService taskService,
+                                  final ActivitiCache activitiCache) {
 
         return new CommandLineRunner() {
             @Override
             public void run(String... args) throws Exception {
+                // 部署
 //                repositoryService.createDeployment()
 //                        .name("消费贷流程")
 //                        .addClasspathResource("processes/loan_process.bpmn")
 //                        .deploy();
+
+                // 刷新activiti缓存数据
+//                activitiCache.refresh();
+
 //                System.out.println("Number of process definitions : "
 //                        + repositoryService.createProcessDefinitionQuery().count());
 //                System.out.println("Number of tasks : " + taskService.createTaskQuery().count());

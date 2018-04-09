@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by zhouguoliang on 2018/1/18.
@@ -38,8 +39,8 @@ public class LoanProcessTest extends BaseTest {
 
     @Test
     public void test1() {
-        activitiCache.refresh();
-
+        Map<String, List<String>> map = activitiCache.get();
+        System.out.println(map);
     }
 
     @Before

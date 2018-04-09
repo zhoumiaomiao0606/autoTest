@@ -39,7 +39,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 换行符
      */
-    public static String NEW_LINE = System.getProperty("line.separator");
+    public static final String NEW_LINE = System.getProperty("line.separator");
 
     @Autowired
     private RuntimeService runtimeService;
@@ -104,12 +104,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 执行任务
         execTask(task, variables, approval, loanOrderDO);
-
-        // 征信申请记录拦截
-        execCreditRecordFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables);
-
-        // 业务申请 & 上门调查 拦截
-        execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables);
 
         // 推送
         push(loanOrderDO, approval.getTaskDefinitionKey(), approval.getAction(), approval);
@@ -301,6 +295,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 其他任务：直接提交
             completeTask(task, variables, approval);
         }
+
+        // 征信申请记录拦截
+        execCreditRecordFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables);
+
+        // 业务申请 & 上门调查 拦截
+        execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables);
     }
 
     /**
