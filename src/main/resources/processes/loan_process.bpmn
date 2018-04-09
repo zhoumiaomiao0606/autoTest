@@ -32,9 +32,6 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway7" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="flow28" name="打回修改" sourceRef="exclusivegateway7" targetRef="usertask_credit_apply">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
-    </sequenceFlow>
     <sequenceFlow id="flow30" name="&gt;=13W 手动OR自动打回修改" sourceRef="exclusivegateway11" targetRef="usertask_credit_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0 || action == -1}]]></conditionExpression>
     </sequenceFlow>
@@ -424,15 +421,6 @@
           <omgdc:Bounds height="16.0" width="44.0" x="482.0" y="525.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
-        <omgdi:waypoint x="460.0" y="554.0"></omgdi:waypoint>
-        <omgdi:waypoint x="460.0" y="636.0"></omgdi:waypoint>
-        <omgdi:waypoint x="182.0" y="636.0"></omgdi:waypoint>
-        <omgdi:waypoint x="182.0" y="555.0"></omgdi:waypoint>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="44.0" x="441.0" y="593.0"></omgdc:Bounds>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow30" id="BPMNEdge_flow30">
         <omgdi:waypoint x="1409.0" y="637.0"></omgdi:waypoint>
         <omgdi:waypoint x="1408.0" y="846.0"></omgdi:waypoint>
@@ -636,7 +624,7 @@
         <omgdi:waypoint x="1169.0" y="437.0"></omgdi:waypoint>
         <omgdi:waypoint x="1169.0" y="590.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="48.0" width="100.0" x="1130.0" y="485.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="99.0" x="1130.0" y="485.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow118" id="BPMNEdge_flow118">

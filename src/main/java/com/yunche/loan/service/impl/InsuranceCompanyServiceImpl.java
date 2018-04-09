@@ -44,8 +44,6 @@ public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
         Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getName()), "名称不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getOfficePhone()), "办公室电话不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getFax()), "传真不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getBank()), "开户行不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(insuranceCompanyDO.getBankAccount()), "银行账号不能为空");
         Preconditions.checkNotNull(insuranceCompanyDO.getStatus(), "状态不能为空");
         Preconditions.checkArgument(VALID_STATUS.equals(insuranceCompanyDO.getStatus()) || INVALID_STATUS.equals(insuranceCompanyDO.getStatus()),
                 "状态非法");

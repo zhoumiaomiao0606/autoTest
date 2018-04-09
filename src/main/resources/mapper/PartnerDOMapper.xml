@@ -118,7 +118,7 @@
         <where>
             <include refid="Base_Query_List"/>
         </where>
-        ORDER BY gmt_modify DESC
+        ORDER BY gmt_create DESC
         limit #{startRow}, #{pageSize}
     </select>
 
