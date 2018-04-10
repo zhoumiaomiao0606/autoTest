@@ -22,7 +22,7 @@
       <documentation>【合伙人-业务员】填写【上门调查结果】</documentation>
     </userTask>
     <sequenceFlow id="flow15" name="提交 或 弃单 或 自动打回" sourceRef="exclusivegateway20" targetRef="filter_loan_apply_visit_verify">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 || action == 2 || action == -1}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reject_origin_task != "usertask_material_review" && (action == 1 || action == 2 || action == -1) }]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_telephone_verify" name="电审" activiti:candidateGroups="总经理,培训主管,培训员,电审专员,电审主管,电审经理,总监">
       <documentation>【电审员】审核【贷款业务申请单 + 上门调查结果】</documentation>

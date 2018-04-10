@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -364,7 +365,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), taskProcessStatus);
 
         // 更新新产生的任务状态
-        updateNextTaskProcessStatus(loanProcessDO, task.getProcessInstanceId(), startTaskIdList, approval.getAction());
+        updateNextTaskProcessStatus(loanProcessDO, task.getProcessInstanceId(), startTaskIdList, approval.getAction(), approval.getTaskDefinitionKey());
 
         // 更新本地流程记录
         updateLoanProcess(loanProcessDO);
@@ -377,8 +378,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param processInstanceId
      * @param startTaskIdList
      * @param action
+     * @param taskDefinitionKey
      */
-    private void updateNextTaskProcessStatus(LoanProcessDO loanProcessDO, String processInstanceId, List<String> startTaskIdList, Byte action) {
+    private void updateNextTaskProcessStatus(LoanProcessDO loanProcessDO, String processInstanceId, List<String> startTaskIdList, Byte action, String taskDefinitionKey) {
 
         // 获取提交之后的待执行任务列表
         List<Task> endTaskList = taskService.createTaskQuery()
@@ -389,7 +391,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return;
         }
 
-        // 筛选出新产生和就有的任务
+        // 筛选出新产生和旧有的任务
         List<Task> newTaskList = Lists.newArrayList();
         List<Task> oldTaskList = Lists.newArrayList();
         endTaskList.parallelStream()
@@ -410,7 +412,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         } else if (ACTION_REJECT_MANUAL.equals(action)) {
             // new  -> REJECT   old -> INIT
             updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT);
-            updateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT);
+
+            if (!MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
+                updateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT);
+            } else {
+                // nothing
+            }
         } else if (ACTION_CANCEL.equals(action)) {
             // nothing
         }
@@ -579,9 +586,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void execTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval, Long orderId, Long loanFinancialPlanId) {
 
         // 角色
-        List<String> userGroupNameList = getUserGroupNameList();
+        Set<String> userGroupNameSet = getUserGroupNameSet();
         // 最大电审角色等级
-        Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameList);
+        Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
         Preconditions.checkArgument(null != maxRoleLevel && maxRoleLevel >= LEVEL_TELEPHONE_VERIFY_COMMISSIONER, "您无电审权限");
 
@@ -700,17 +707,17 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 获取改账号在【电审】中最大角色level
      *
-     * @param userGroupNameList
+     * @param userGroupNameSet
      * @return
      */
-    private Byte getTelephoneVerifyMaxRole(List<String> userGroupNameList) {
-        if (CollectionUtils.isEmpty(userGroupNameList)) {
+    private Byte getTelephoneVerifyMaxRole(Set<String> userGroupNameSet) {
+        if (CollectionUtils.isEmpty(userGroupNameSet)) {
             return null;
         }
 
         final Byte[] maxLevel = {0};
 
-        userGroupNameList.parallelStream()
+        userGroupNameSet.parallelStream()
                 .filter(e -> StringUtils.isNotBlank(e))
                 .forEach(e -> {
 
@@ -730,24 +737,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @return
      */
-    public List<String> getUserGroupNameList() {
+    public Set<String> getUserGroupNameSet() {
         // getUser
         EmployeeDO loginUser = SessionUtils.getLoginUser();
 
-        // getUserGroup
-        List<UserGroupDO> baseUserGroup = userGroupDOMapper.getBaseUserGroupByEmployeeId(loginUser.getId());
+        // 员工-直接关联的用户组
+        List<String> userGroupNameList = userGroupDOMapper.listUserGroupNameByEmployeeId(loginUser.getId());
 
-        // getUserGroupName
-        List<String> userGroupNameList = null;
-        if (!CollectionUtils.isEmpty(baseUserGroup)) {
-            userGroupNameList = baseUserGroup.stream()
-                    .filter(Objects::nonNull)
-                    .map(e -> {
-                        return e.getName();
-                    })
-                    .collect(Collectors.toList());
-        }
-        return userGroupNameList;
+        // 员工-所属部门 -间接关联的用户组
+        List<String> userGroupNameList_ = userGroupDOMapper.listUserGroupNameByEmployeeIdRelaDepartment(loginUser.getId());
+
+        Set<String> allUserGroupNameList = Sets.newHashSet();
+        allUserGroupNameList.addAll(userGroupNameList);
+        allUserGroupNameList.addAll(userGroupNameList_);
+
+        return allUserGroupNameList;
     }
 
     /**

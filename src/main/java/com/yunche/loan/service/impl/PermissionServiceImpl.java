@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.ActivitiCache;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.util.SessionUtils;
@@ -13,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +34,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public void checkTaskPermission(String taskDefinitionKey) {
 
-        List<String> userGroupNameList = getUserGroupNameList();
+        Set<String> userGroupNameList = getUserGroupNameSet();
 
         Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.get();
 
@@ -67,23 +66,20 @@ public class PermissionServiceImpl implements PermissionService {
      *
      * @return
      */
-    public List<String> getUserGroupNameList() {
+    public Set<String> getUserGroupNameSet() {
         // getUser
         EmployeeDO loginUser = SessionUtils.getLoginUser();
 
-        // getUserGroup
-        List<UserGroupDO> baseUserGroup = userGroupDOMapper.getBaseUserGroupByEmployeeId(loginUser.getId());
+        // 员工-直接关联的用户组
+        List<String> userGroupNameList = userGroupDOMapper.listUserGroupNameByEmployeeId(loginUser.getId());
 
-        // getUserGroupName
-        List<String> userGroupNameList = null;
-        if (!CollectionUtils.isEmpty(baseUserGroup)) {
-            userGroupNameList = baseUserGroup.stream()
-                    .filter(Objects::nonNull)
-                    .map(e -> {
-                        return e.getName();
-                    })
-                    .collect(Collectors.toList());
-        }
-        return userGroupNameList;
+        // 员工-所属部门 -间接关联的用户组
+        List<String> userGroupNameList_ = userGroupDOMapper.listUserGroupNameByEmployeeIdRelaDepartment(loginUser.getId());
+
+        Set<String> allUserGroupNameList = Sets.newHashSet();
+        allUserGroupNameList.addAll(userGroupNameList);
+        allUserGroupNameList.addAll(userGroupNameList_);
+
+        return allUserGroupNameList;
     }
 }
