@@ -283,7 +283,19 @@
             where 1=1
             <choose>
                 <when test="taskDefinitionKey == 'usertask_credit_apply'">
-                    AND case when #{taskStatus} = 0 then deputy.credit_apply != 0                     else deputy.credit_apply                     = #{taskStatus} end
+                    <choose>
+                        <when test="fuse == true">
+                            AND case
+                                    when
+                                      #{taskStatus} = 0 then deputy.credit_apply != 0
+                                    when
+                                      #{taskStatus} = 2 then deputy.credit_apply = 2 or deputy.credit_apply = 3
+                                    else deputy.credit_apply = #{taskStatus} end
+                        </when>
+                        <otherwise>
+                            AND case when #{taskStatus} = 0 then deputy.credit_apply != 0             else deputy.credit_apply                     = #{taskStatus} end
+                        </otherwise>
+                    </choose>
                 </when>
                 <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
                     AND case when #{taskStatus} = 0 then deputy.bank_credit_record != 0               else deputy.bank_credit_record               = #{taskStatus} end
@@ -292,7 +304,20 @@
                     AND case when #{taskStatus} = 0 then deputy.social_credit_record != 0             else deputy.social_credit_record             = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_loan_apply'">
-                    AND case when #{taskStatus} = 0 then deputy.loan_apply != 0                       else deputy.loan_apply                       = #{taskStatus} end
+                    <choose>
+                        <when test="fuse == true">
+                            AND case
+                                    when
+                                       #{taskStatus} = 0 then deputy.loan_apply != 0
+                                    when
+                                       #{taskStatus} = 2 then deputy.loan_apply = 2 or deputy.loan_apply = 3
+                                    else
+                                        deputy.loan_apply = #{taskStatus} end
+                        </when>
+                        <otherwise>
+                            AND case when #{taskStatus} = 0 then deputy.loan_apply != 0                       else deputy.loan_apply                       = #{taskStatus} end
+                        </otherwise>
+                    </choose>
                 </when>
                 <when test="taskDefinitionKey == 'usertask_visit_verify'">
                     AND case when #{taskStatus} = 0 then deputy.visit_verify != 0                     else deputy.visit_verify                     = #{taskStatus} end

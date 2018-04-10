@@ -27,6 +27,8 @@ public class TaskListQuery {
     @NotNull
     private Integer taskStatus;
 
+    private boolean fuse = false;
+
 
     private Integer level; //级别
 
