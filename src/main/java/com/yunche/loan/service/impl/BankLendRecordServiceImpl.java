@@ -58,12 +58,12 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
         //共贷人信息查询
         List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
-        recombinationVO.setCustomers(customers);
+
         for(UniversalCustomerVO universalCustomerVO:customers){
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
-
+        recombinationVO.setCustomers(customers);
         return ResultBean.ofSuccess(recombinationVO);
     }
 
@@ -142,8 +142,12 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 //            bankLendRecordDOMapper.updateByPrimaryKeySelective(bankLendRecordDO);
             bankLendRecordDOMapper.updateByOrderId(bankLendRecordDO);
         }
-
-
+        Long orderId =Long.valueOf(bankLendRecordVO.getOrderId());
+        bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,null);
+        loanOrderDO.setBankLendRecordId((long)bankLendRecordDO.getId());
+        int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
+        Preconditions.checkArgument(count > 0, "业务单号为:"+orderId+",对应记录更新出错");
         return ResultBean.ofSuccess("录入成功");
     }
 
