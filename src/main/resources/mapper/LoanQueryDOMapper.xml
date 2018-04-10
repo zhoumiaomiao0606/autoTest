@@ -295,6 +295,8 @@
              cost.fair_assess_fee                            AS cost_fair_assess_fee,
              cost.apply_license_plate_out_province_fee       AS cost_apply_license_plate_out_province_fee,
              cost.based_margin_fee                           AS cost_based_margin_fee,
+             cost.extra_fee                                  AS cost_extra_fee,
+             cost.other_fee                                  AS cost_other_fee,
              cost.service_fee_type                           AS cost_service_fee_type,
              cost.apply_license_plate_deposit_fee_type       AS cost_apply_license_plate_deposit_fee_type,
              cost.performance_fee_type                       AS cost_performance_fee_type,
@@ -303,6 +305,8 @@
              cost.fair_assess_fee_type                       AS cost_fair_assess_fee_type,
              cost.apply_license_plate_out_province_fee_type  AS cost_apply_license_plate_out_province_fee_type,
              cost.based_margin_fee_type                      AS cost_based_margin_fee_type,
+             cost.extra_fee_type                             AS cost_extra_fee_type,
+             cost.other_fee_type                             AS cost_other_fee_type,
              remit.remit_amount                              AS remit_amount,
              remit.return_rate_amount                        AS remit_return_rate_amount
 

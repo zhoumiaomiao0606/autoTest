@@ -40,6 +40,14 @@ public class CostDetailsDO {
 
     private Byte based_margin_fee_type;
 
+    private BigDecimal extra_fee;
+
+    private Byte extra_fee_type;
+
+    private BigDecimal other_fee;
+
+    private Byte other_fee_type;
+
     private Byte status;
 
     private String feature;

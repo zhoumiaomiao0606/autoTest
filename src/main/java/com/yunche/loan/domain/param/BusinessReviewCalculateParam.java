@@ -40,6 +40,14 @@ public class BusinessReviewCalculateParam {
     @NotBlank
     private String based_margin_fee_type;//基础保证金 1 打款内扣 2 返利内扣 3 实收
     @NotBlank
+    private String extra_fee;
+    @NotBlank
+    private String extra_fee_type;
+    @NotBlank
+    private String other_fee;
+    @NotBlank
+    private String other_fee_type;
+    @NotBlank
     private String return_rate_amount;//返利金额
     @NotBlank
     private String bank_period_principal;//银行分期本金

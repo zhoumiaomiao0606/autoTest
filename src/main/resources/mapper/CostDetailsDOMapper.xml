@@ -19,6 +19,10 @@
     <result column="fair_assess_fee_type" property="fair_assess_fee_type" jdbcType="TINYINT" />
     <result column="apply_license_plate_out_province_fee_type" property="apply_license_plate_out_province_fee_type" jdbcType="TINYINT" />
     <result column="based_margin_fee_type" property="based_margin_fee_type" jdbcType="TINYINT" />
+    <result column="extra_fee" property="extra_fee" jdbcType="DECIMAL" />
+    <result column="extra_fee_type" property="extra_fee_type" jdbcType="TINYINT" />
+    <result column="other_fee" property="other_fee" jdbcType="DECIMAL" />
+    <result column="other_fee_type" property="other_fee_type" jdbcType="TINYINT" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
   </resultMap>
@@ -27,7 +31,7 @@
     risk_fee, fair_assess_fee, apply_license_plate_out_province_fee, based_margin_fee, 
     service_fee_type, apply_license_plate_deposit_fee_type, performance_fee_type, install_gps_fee_type, 
     risk_fee_type, fair_assess_fee_type, apply_license_plate_out_province_fee_type, based_margin_fee_type, 
-    status, feature
+    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -39,7 +43,7 @@
     delete from cost_details
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.CostDetailsDO" >
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CostDetailsDO" >
     insert into cost_details
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -92,6 +96,18 @@
       </if>
       <if test="based_margin_fee_type != null" >
         based_margin_fee_type,
+      </if>
+      <if test="extra_fee != null" >
+        extra_fee,
+      </if>
+      <if test="extra_fee_type != null" >
+        extra_fee_type,
+      </if>
+      <if test="other_fee != null" >
+        other_fee,
+      </if>
+      <if test="other_fee_type != null" >
+        other_fee_type,
       </if>
       <if test="status != null" >
         status,
@@ -152,6 +168,18 @@
       <if test="based_margin_fee_type != null" >
         #{based_margin_fee_type,jdbcType=TINYINT},
       </if>
+      <if test="extra_fee != null" >
+        #{extra_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="extra_fee_type != null" >
+        #{extra_fee_type,jdbcType=TINYINT},
+      </if>
+      <if test="other_fee != null" >
+        #{other_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="other_fee_type != null" >
+        #{other_fee_type,jdbcType=TINYINT},
+      </if>
       <if test="status != null" >
         #{status,jdbcType=TINYINT},
       </if>
@@ -210,6 +238,18 @@
       </if>
       <if test="based_margin_fee_type != null" >
         based_margin_fee_type = #{based_margin_fee_type,jdbcType=TINYINT},
+      </if>
+      <if test="extra_fee != null" >
+        extra_fee = #{extra_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="extra_fee_type != null" >
+        extra_fee_type = #{extra_fee_type,jdbcType=TINYINT},
+      </if>
+      <if test="other_fee != null" >
+        other_fee = #{other_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="other_fee_type != null" >
+        other_fee_type = #{other_fee_type,jdbcType=TINYINT},
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=TINYINT},
