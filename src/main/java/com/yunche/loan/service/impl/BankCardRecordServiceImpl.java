@@ -46,7 +46,8 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
         List<String[]>  returnList;
         try {
             //客户姓名、身份证号、账单日、首月账单日、还款日、首月还款日、还款卡号、接收日期、接收人
-            returnList = POIUtil.readExcel(0,1,pathFileName);
+//            returnList = POIUtil.readExcel(0,1,pathFileName);
+            returnList = POIUtil.readExcelFromOSS(0,1,pathFileName);
             BankCardRecordDO bankCardRecordDO = new BankCardRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(String[] tmp :returnList){
@@ -70,6 +71,7 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
                     int count  =  bankCardRecordDOMapper.insert(bankCardRecordDO);
                     Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录导入出错");
                 }else{
+                    bankCardRecordDO.setId(tmpBankCardRecordDO.getId());
                     int count  =  bankCardRecordDOMapper.updateByPrimaryKey(bankCardRecordDO);
                     Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录更新出错");
                 }

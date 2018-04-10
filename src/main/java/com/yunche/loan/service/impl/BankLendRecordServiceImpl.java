@@ -74,7 +74,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         List<String[]>  returnList;
         try {
 
-            returnList = POIUtil.readExcel(0,1,pathFileName);
+//            returnList = POIUtil.readExcel(0,1,pathFileName);
+
+            returnList = POIUtil.readExcelFromOSS(0,1,pathFileName);
             BankLendRecordDO bankLendRecordDO =new BankLendRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(String[] tmp :returnList){
@@ -95,6 +97,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                    int count  =  bankLendRecordDOMapper.insert(bankLendRecordDO);
                     Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录导入出错");
                 }else{
+                    bankLendRecordDO.setId(tmpBankLendRecordDO.getId());
                     int count  =  bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
                     Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录更新出错");
                 }
@@ -105,7 +108,6 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 Preconditions.checkArgument(count > 0, "业务单号为:"+orderId+",对应记录更新出错");
 
 
-                // 对应记录更新出错
                 ApprovalParam approvalParam =  new ApprovalParam();
                 approvalParam.setOrderId(orderId);
                 approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
