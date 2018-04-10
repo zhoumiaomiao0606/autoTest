@@ -11,6 +11,8 @@ import java.util.List;
  */
 @Data
 public class InfoSupplementParam {
+
+    private Long supplementOrderId;
     /**
      * 客户ID
      */

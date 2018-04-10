@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -622,10 +623,21 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         }
     }
 
+
     @Override
     public ResultBean<Void> infoSupplementUpload(InfoSupplementParam infoSupplementParam) {
         Preconditions.checkNotNull(infoSupplementParam.getCustomerId(), "客户ID不能为空");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementParam.getFiles()), "资料信息不能为空");
+        Preconditions.checkNotNull(infoSupplementParam.getSupplementOrderId(), "增补单ID不能为空");
+
+        Long suppermentOrderId = infoSupplementParam.getSupplementOrderId();
+        LoanInfoSupplementDO V = loanInfoSupplementDOMapper.selectByPrimaryKey(suppermentOrderId);
+        Preconditions.checkNotNull(V, "增补单不存在");
+        String remark = infoSupplementParam.getRemark();
+        LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
+        loanInfoSupplementDO.setRemark(remark);
+        loanInfoSupplementDO.setId(suppermentOrderId);
+        loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
 
         List<FileVO> files = infoSupplementParam.getFiles();
         files.parallelStream()
