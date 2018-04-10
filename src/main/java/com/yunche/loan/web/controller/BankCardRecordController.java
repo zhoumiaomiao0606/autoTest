@@ -17,8 +17,8 @@ public class BankCardRecordController {
 
        //银行卡文件导入
         @GetMapping(value = "/imp")
-        public ResultBean imp(@RequestParam("filePathName") String filePathName){
-            return bankCardRecordService.importFile(filePathName);
+        public ResultBean imp(@RequestParam("key") String key){
+            return bankCardRecordService.importFile(key);
         }
 
         //银行卡接收单录入

@@ -68,15 +68,15 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
     }
 
     @Override
-    public ResultBean importFile(String pathFileName) {
-        Preconditions.checkNotNull(pathFileName,"文件名不能为空（包含绝对路径）");
+    public ResultBean importFile(String key) {
+        Preconditions.checkNotNull(key,"文件名不能为空（包含绝对路径）");
 
         List<String[]>  returnList;
         try {
 
 //            returnList = POIUtil.readExcel(0,1,pathFileName);
 
-            returnList = POIUtil.readExcelFromOSS(0,1,pathFileName);
+            returnList = POIUtil.readExcelFromOSS(0,1,key);
             BankLendRecordDO bankLendRecordDO =new BankLendRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(String[] tmp :returnList){

@@ -25,9 +25,9 @@ public class BankLendRecordController {
 
 
     @GetMapping(value = "/imp")
-    public ResultBean importFile(@RequestParam("filePathName") String filePathName){
-        Preconditions.checkNotNull(filePathName,"文件名不能为空");
-        return  bankLendRecordService.importFile(filePathName);
+    public ResultBean importFile(@RequestParam("key") String key){
+        Preconditions.checkNotNull(key,"文件名不能为空");
+        return  bankLendRecordService.importFile(key);
 
     }
     @PostMapping(value = "/input")

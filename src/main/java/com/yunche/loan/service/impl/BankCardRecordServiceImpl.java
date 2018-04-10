@@ -40,14 +40,14 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
     @Autowired
     LoanProcessService loanProcessService;
     @Override
-    public ResultBean importFile(String pathFileName) {
-        Preconditions.checkNotNull(pathFileName,"文件名不能为空（包含绝对路径）");
+    public ResultBean importFile(String key) {
+        Preconditions.checkNotNull(key,"文件名不能为空（包含绝对路径）");
 
         List<String[]>  returnList;
         try {
             //客户姓名、身份证号、账单日、首月账单日、还款日、首月还款日、还款卡号、接收日期、接收人
 //            returnList = POIUtil.readExcel(0,1,pathFileName);
-            returnList = POIUtil.readExcelFromOSS(0,1,pathFileName);
+            returnList = POIUtil.readExcelFromOSS(0,1,key);
             BankCardRecordDO bankCardRecordDO = new BankCardRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(String[] tmp :returnList){
