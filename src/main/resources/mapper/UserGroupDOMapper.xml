@@ -67,6 +67,28 @@
         limit #{startRow}, #{pageSize}
     </select>
 
+    <!--listUserGroupNameByEmployeeId-->
+    <select id="listUserGroupNameByEmployeeId" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+                name
+        FROM
+                employee_rela_user_group AS a ,
+                user_group AS b
+        WHERE
+                a.`user_group_id` = b.`id`
+        AND     a.`employee_id` = #{employeeId,jdbcType=BIGINT}
+        GROUP BY a.`user_group_id`
+    </select>
+
+    <!--listUserGroupNameByEmployeeIdRelaDepartment-->
+    <select id="listUserGroupNameByEmployeeIdRelaDepartment" parameterType="java.lang.Long" resultType="java.lang.String">
+
+        SELECT name FROM `user_group` WHERE `department_id`  =
+
+        (SELECT `department_id`  FROM `employee` WHERE id = #{employeeId} )
+
+    </select>
+
     <!--getBaseUserGroupByEmployeeId-->
     <select id="getBaseUserGroupByEmployeeId" parameterType="java.lang.Long" resultMap="BaseResultMap">
         SELECT
@@ -85,51 +107,51 @@
             resultType="java.lang.Integer">
         SELECT COUNT(*) FROM
         (
-            SELECT b.*
-            FROM
-                    employee_rela_user_group AS a ,
-                    user_group AS b ,
-                    user_group_rela_area_auth AS c
-            WHERE
-                    a.`user_group_id` = b.`id` AND a.`user_group_id` = c.`user_group_id`
-                    <if test="id != null">
-                        AND a.employee_id = #{id}
-                    </if>
-                    <if test="status != null">
-                        AND b.status = #{status}
-                    </if>
-                    <if test="areaIdList != null and areaIdList.size() > 0">
-                        AND c.area_id IN
-                        <foreach collection="areaIdList" item="item" open="(" close=")" separator=",">
-                            #{item}
-                        </foreach>
-                    </if>
-            GROUP BY b.`id`
+        SELECT b.*
+        FROM
+        employee_rela_user_group AS a ,
+        user_group AS b ,
+        user_group_rela_area_auth AS c
+        WHERE
+        a.`user_group_id` = b.`id` AND a.`user_group_id` = c.`user_group_id`
+        <if test="id != null">
+            AND a.employee_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+        <if test="areaIdList != null and areaIdList.size() > 0">
+            AND c.area_id IN
+            <foreach collection="areaIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY b.`id`
         ) AS d
     </select>
 
     <!-- listUserGroupByEmployeeIdAndAreaList -->
     <select id="listUserGroupByEmployeeIdAndAreaList" parameterType="com.yunche.loan.domain.query.RelaQuery"
             resultMap="BaseResultMap">
-        SELECT  b.*
+        SELECT b.*
         FROM
-                employee_rela_user_group AS a ,
-                user_group AS b ,
-                user_group_rela_area_auth AS c
+        employee_rela_user_group AS a ,
+        user_group AS b ,
+        user_group_rela_area_auth AS c
         WHERE
-                a.`user_group_id` = b.`id` AND a.`user_group_id` = c.`user_group_id`
-                <if test="id != null">
-                    AND a.employee_id = #{id}
-                </if>
-                <if test="status != null">
-                    AND b.status = #{status}
-                </if>
-                <if test="areaIdList != null and areaIdList.size() > 0">
-                    AND c.area_id IN
-                    <foreach collection="areaIdList" item="item" open="(" close=")" separator=",">
-                        #{item}
-                    </foreach>
-                </if>
+        a.`user_group_id` = b.`id` AND a.`user_group_id` = c.`user_group_id`
+        <if test="id != null">
+            AND a.employee_id = #{id}
+        </if>
+        <if test="status != null">
+            AND b.status = #{status}
+        </if>
+        <if test="areaIdList != null and areaIdList.size() > 0">
+            AND c.area_id IN
+            <foreach collection="areaIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
         GROUP BY b.`id`
         ORDER BY b.`id` ASC
         LIMIT #{startRow}, #{pageSize}

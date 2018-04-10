@@ -72,4 +72,7 @@ public interface UserGroupDOMapper {
      */
     List<UserGroupDO> listUserGroupByDepartmentId(BaseQuery query);
 
+    List<String> listUserGroupNameByEmployeeId(Long employeeId);
+
+    List<String> listUserGroupNameByEmployeeIdRelaDepartment(Long employeeId);
 }
