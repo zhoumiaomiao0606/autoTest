@@ -44,9 +44,13 @@ public class AppBusinessInfoVO {
      */
     private  String  categorySuperior;
     /**
-     * 贷款产品 车辆类型：1-新车; 2-二手车; 3-不限;
+     * 车辆类型：1-新车; 2-二手车; 3-不限;
      */
     private Byte carType;
+    /**
+     * 贷款产品
+     */
+    private  String  prodName;
 
     /**
      * 贷款期限1
@@ -221,5 +225,6 @@ public class AppBusinessInfoVO {
      * 社会征信备注
      */
     private String socialCreditInfo;
+
 
 }

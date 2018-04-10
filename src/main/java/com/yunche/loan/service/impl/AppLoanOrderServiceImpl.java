@@ -621,14 +621,21 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             // 还款总额   -本息合计
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
             if (null != loanFinancialPlanDO) {
+
                 businessInfoVO.setTotalRepay(loanFinancialPlanDO.getPrincipalInterestSum());
+
+                Long productId =  loanFinancialPlanDO.getFinancialProductId();
+                FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(productId);
+                //贷款产品
+                businessInfoVO.setProdName(financialProductDO.getProdName());
+                // 履约保证金
+                CostDetailsDO costDetailsDO = costDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getCostDetailsId());
+                if (null != costDetailsDO) {
+                    businessInfoVO.setPerformanceMoney(costDetailsDO.getPerformance_fee());
+                }
+                //
             }
 
-            // 履约保证金
-            CostDetailsDO costDetailsDO = costDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getCostDetailsId());
-            if (null != costDetailsDO) {
-                businessInfoVO.setPerformanceMoney(costDetailsDO.getPerformance_fee());
-            }
 
             // 征信情况
             if (null != loanOrderDO.getLoanCustomerId()) {
