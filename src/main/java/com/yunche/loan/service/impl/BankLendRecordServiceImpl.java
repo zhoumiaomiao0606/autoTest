@@ -11,6 +11,7 @@ import com.yunche.loan.domain.entity.RepaymentRecordDOKey;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.BankLendRecordVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.mapper.BankLendRecordDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
@@ -58,6 +59,10 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         //共贷人信息查询
         List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
         recombinationVO.setCustomers(customers);
+        for(UniversalCustomerVO universalCustomerVO:customers){
+            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
 
         return ResultBean.ofSuccess(recombinationVO);
     }
