@@ -17,7 +17,6 @@ import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +37,7 @@ import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 import static com.yunche.loan.config.constant.LoanProcessEnum.REMIT_REVIEW;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 
@@ -52,9 +52,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
-
-    @Autowired
-    private UserGroupDOMapper userGroupDOMapper;
 
     @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
@@ -99,9 +96,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private LoanProcessOrderService loanProcessOrderService;
 
     @Autowired
-    private LoanProcessService loanProcessService;
-
-    @Autowired
     private LoanFinancialPlanService loanFinancialPlanService;
 
     @Autowired
@@ -140,7 +134,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private FinancialProductDOMapper financialProductDOMapper;
 
-
+    @Autowired
+    private PermissionService permissionService;
 
 
     @Override
@@ -255,7 +250,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkArgument(StringUtils.isNotBlank(customerParam.getMobile()), "手机号码不能为空");
 
         // 校验权限
-        checkStartProcessPermission();
+        permissionService.checkTaskPermission(CREDIT_APPLY.getCode());
 
         // 客户信息创建
         Long customerId = createLoanCustomer(customerParam);
@@ -351,10 +346,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         if (null != loanFinancialPlanDO) {
             BeanUtils.copyProperties(loanFinancialPlanDO, loanFinancialPlanVO);
         }
-        if(map!=null) {
+        if (map != null) {
             loanFinancialPlanVO.setCategorySuperior((String) map.get("categorySuperior"));
             loanFinancialPlanVO.setBankRate((BigDecimal) map.get("bankRate"));
-            loanFinancialPlanVO.setStagingRatio((BigDecimal)map.get("stagingRatio"));
+            loanFinancialPlanVO.setStagingRatio((BigDecimal) map.get("stagingRatio"));
         }
 
         return ResultBean.ofSuccess(loanFinancialPlanVO);
@@ -523,12 +518,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
             Preconditions.checkArgument(loanBaseInfoVOResultBean.getSuccess(), loanBaseInfoVOResultBean.getMsg());
             //产品信息 (产品大类+产品费率+银行分期比率)
-            Map  map  = financialProductDOMapper.selectProductInfoByOrderId(orderId);
-            if(map !=null){
+            Map map = financialProductDOMapper.selectProductInfoByOrderId(orderId);
+            if (map != null) {
                 //产品大类
                 businessInfoVO.setCategorySuperior((String) map.get("categorySuperior"));
                 //银行分期比率
-                businessInfoVO.setStagingRatio((BigDecimal)map.get("stagingRatio"));
+                businessInfoVO.setStagingRatio((BigDecimal) map.get("stagingRatio"));
             }
             // 业务员 & 合伙人
             LoanBaseInfoVO loanBaseInfoVO = loanBaseInfoVOResultBean.getData();
@@ -539,13 +534,13 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 if (null != loanBaseInfoVO.getPartner()) {
                     businessInfoVO.setPartnerName(loanBaseInfoVO.getPartner().getName());
                 }
-                if(null !=loanBaseInfoVO.getBank()){
+                if (null != loanBaseInfoVO.getBank()) {
                     businessInfoVO.setBank(loanBaseInfoVO.getBank());
                 }
-                if(null !=loanBaseInfoVO.getCarType()){
+                if (null != loanBaseInfoVO.getCarType()) {
                     businessInfoVO.setCarType(loanBaseInfoVO.getCarType());
                 }
-                if(null!=loanBaseInfoVO.getDepartmentName()){
+                if (null != loanBaseInfoVO.getDepartmentName()) {
                     businessInfoVO.setDepartmentName(loanBaseInfoVO.getDepartmentName());
                 }
 
@@ -624,7 +619,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
                 businessInfoVO.setTotalRepay(loanFinancialPlanDO.getPrincipalInterestSum());
 
-                Long productId =  loanFinancialPlanDO.getFinancialProductId();
+                Long productId = loanFinancialPlanDO.getFinancialProductId();
                 FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(productId);
                 //贷款产品
                 businessInfoVO.setProdName(financialProductDO.getProdName());
@@ -1004,31 +999,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     /**
-     * 获取用户组名称
-     *
-     * @return
-     */
-    public List<String> getUserGroupNameList() {
-        // getUser
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-
-        // getUserGroup
-        List<UserGroupDO> baseUserGroup = userGroupDOMapper.getBaseUserGroupByEmployeeId(loginUser.getId());
-
-        // getUserGroupName
-        List<String> userGroupNameList = null;
-        if (!CollectionUtils.isEmpty(baseUserGroup)) {
-            userGroupNameList = baseUserGroup.parallelStream()
-                    .filter(Objects::nonNull)
-                    .map(e -> {
-                        return e.getName();
-                    })
-                    .collect(Collectors.toList());
-        }
-        return userGroupNameList;
-    }
-
-    /**
      * 创建上门家访资料
      *
      * @param loanHomeVisitParam
@@ -1147,21 +1117,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         // 返回客户ID
         return createCustomerResult.getData();
-    }
-
-    /**
-     * 校验权限：只有合伙人、内勤可以 发起征信申请单【创建业务单】
-     */
-    private void checkStartProcessPermission() {
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        EmployeeDO user = new EmployeeDO();
-        BeanUtils.copyProperties(principal, user);
-
-        // TODO 只有合伙人、内勤可以 发起征信申请单【创建业务单】
-        // 获取用户角色名列表
-        List<String> userGroupNameList = getUserGroupNameList();
-        Preconditions.checkArgument(userGroupNameList.contains("合伙人") || userGroupNameList.contains("内勤"),
-                "您无权创建征信申请单");
     }
 
     /**
