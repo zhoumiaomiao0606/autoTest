@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author liuzhe
@@ -46,6 +47,12 @@ public class AuthController {
     @GetMapping("/listMenu")
     public ResultBean<List<CascadeVO>> listMenu() {
         return authService.listMenu();
+    }
+
+
+    @GetMapping("/listMenu_")
+    public ResultBean<Map<String, Boolean>> listMenu_() {
+        return authService.listMenu_();
     }
 
     /**
@@ -122,6 +129,4 @@ public class AuthController {
 //        logger.info(Arrays.asList("listOperation", JSON.toJSONString(query)).stream().collect(Collectors.joining("\u0001")));
 //        return authService.listOperation(query);
 //    }
-
-
 }

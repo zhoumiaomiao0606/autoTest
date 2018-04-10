@@ -87,7 +87,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
 
         // 节点权限校验
-//        permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
+        permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
 
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());

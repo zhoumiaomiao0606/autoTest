@@ -3,6 +3,9 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.yunche.loan.config.cache.ActivitiCache;
+import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.query.AuthQuery;
@@ -12,6 +15,8 @@ import com.yunche.loan.domain.entity.PageDO;
 import com.yunche.loan.domain.vo.CascadeVO;
 import com.yunche.loan.domain.vo.PageVO;
 import com.yunche.loan.service.AuthService;
+import com.yunche.loan.service.PermissionService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +28,8 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AuthConst.OPERATION;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_SOCIAL_CREDIT_RECORD_FILTER;
+import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_APPLY_VISIT_VERIFY_FILTER;
 
 /**
  * @author liuzhe
@@ -42,6 +49,12 @@ public class AuthServiceImpl implements AuthService {
     private OperationDOMapper operationDOMapper;
     @Autowired
     private UserGroupRelaAreaAuthDOMapper userGroupRelaAreaAuthDOMapper;
+
+    @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
+    private ActivitiCache activitiCache;
 
 
     @Override
@@ -147,6 +160,56 @@ public class AuthServiceImpl implements AuthService {
 
         // 分页,并返回结果
         return execPagingListOperation(pageOperationListMap, idPageDOMap, hasBindOperationIdList, query);
+    }
+
+    @Override
+    public ResultBean<Map<String, Boolean>> listMenu_() {
+
+        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+
+        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.get();
+
+        Map<String, Boolean> taskMap = Maps.newHashMap();
+
+        if (!CollectionUtils.isEmpty(taskDefinitionKeyCandidateGroupsMap)) {
+
+            taskDefinitionKeyCandidateGroupsMap.forEach((k, v) -> {
+
+                List<String> candidateGroups = v;
+                if (!CollectionUtils.isEmpty(candidateGroups)) {
+
+                    if (CollectionUtils.isEmpty(userGroupNameSet)) {
+                        taskMap.put(k, false);
+                    }
+
+                    candidateGroups.parallelStream()
+                            .filter(e -> StringUtils.isNotBlank(e))
+                            .forEach(e -> {
+
+                                if (userGroupNameSet.contains(e)) {
+                                    taskMap.put(k, true);
+                                }
+                            });
+
+                    if (null == taskMap.get(k)) {
+                        taskMap.put(k, false);
+                    }
+
+                } else if (!BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(k) && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(k)) {
+                    taskMap.put(k, true);
+                }
+
+            });
+        }
+
+        // configure_center
+        if (userGroupNameSet.contains("管理员")) {
+            taskMap.put("configure_center", true);
+        } else {
+            taskMap.put("configure_center", false);
+        }
+
+        return ResultBean.ofSuccess(taskMap);
     }
 
     /**

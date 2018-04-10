@@ -7,7 +7,6 @@ import com.yunche.loan.config.cache.ActivitiCache;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
-import com.yunche.loan.domain.entity.UserGroupDO;
 import com.yunche.loan.mapper.UserGroupDOMapper;
 import com.yunche.loan.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author liuzhe
@@ -44,7 +42,7 @@ public class PermissionServiceImpl implements PermissionService {
         if (!CollectionUtils.isEmpty(currentTaskCandidateGroups)) {
 
             Preconditions.checkArgument(!CollectionUtils.isEmpty(userGroupNameList),
-                    "您无权审核[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务");
+                    "您无权操作[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务");
 
             List<String> candidateGroups = Lists.newArrayList();
             currentTaskCandidateGroups.parallelStream()
@@ -57,7 +55,7 @@ public class PermissionServiceImpl implements PermissionService {
                     });
 
             Preconditions.checkArgument(!CollectionUtils.isEmpty(candidateGroups),
-                    "您无权审核[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务");
+                    "您无权操作[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务");
         }
     }
 
@@ -66,6 +64,7 @@ public class PermissionServiceImpl implements PermissionService {
      *
      * @return
      */
+    @Override
     public Set<String> getUserGroupNameSet() {
         // getUser
         EmployeeDO loginUser = SessionUtils.getLoginUser();

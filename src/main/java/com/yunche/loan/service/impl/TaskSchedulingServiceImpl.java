@@ -71,7 +71,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         }
 
         // 节点权限校验
-//        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());

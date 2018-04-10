@@ -6,6 +6,7 @@ import com.yunche.loan.domain.vo.CascadeVO;
 import com.yunche.loan.domain.vo.PageVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author liuzhe
@@ -19,4 +20,6 @@ public interface AuthService {
     ResultBean<List<PageVO>> listBindOperation(AuthQuery query);
 
     ResultBean<List<PageVO>> listUnbindOperation(AuthQuery query);
+
+    ResultBean<Map<String, Boolean>> listMenu_();
 }
