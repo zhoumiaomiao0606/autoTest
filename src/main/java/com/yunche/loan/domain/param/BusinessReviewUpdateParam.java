@@ -3,6 +3,8 @@ package com.yunche.loan.domain.param;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
+import java.math.BigDecimal;
+
 @Data
 public class BusinessReviewUpdateParam  {
 
@@ -40,6 +42,14 @@ public class BusinessReviewUpdateParam  {
     private String apply_license_plate_out_province_fee_type;//上省外牌费用 1 打款内扣 2 返利内扣 3 实收
     @NotBlank
     private String based_margin_fee_type;//基础保证金 1 打款内扣 2 返利内扣 3 实收
+    @NotBlank
+    private String extra_fee;
+    @NotBlank
+    private String extra_fee_type;
+    @NotBlank
+    private String other_fee;
+    @NotBlank
+    private String other_fee_type;
     @NotBlank
     private String beneficiary_bank;//收款银行
     @NotBlank

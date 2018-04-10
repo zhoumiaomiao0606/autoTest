@@ -185,7 +185,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         BigDecimal fair_assess_fee = initDecimal(param.getFair_assess_fee());//公正评估费
         BigDecimal apply_license_plate_out_province_fee = initDecimal(param.getApply_license_plate_out_province_fee());//上省外牌费用
         BigDecimal based_margin_fee = initDecimal(param.getBased_margin_fee());//基础保证金
-
+        BigDecimal extra_fee = initDecimal(param.getExtra_fee());
+        BigDecimal other_fee = initDecimal(param.getOther_fee());
         //月结 0 否 1 是
         if("1".equals(pay_month)){
             //月结算
@@ -198,7 +199,10 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
                     .process(param.getFair_assess_fee_type(),fair_assess_fee)
                     .process(param.getApply_license_plate_out_province_fee_type(),apply_license_plate_out_province_fee)
                     .process(param.getBased_margin_fee_type(),based_margin_fee)
-                    .finalResult().setScale(6,BigDecimal.ROUND_HALF_UP);
+                    .process(param.getExtra_fee_type(),extra_fee)
+                    .process(param.getOther_fee_type(),other_fee)
+                    .finalResult()
+                    .setScale(6,BigDecimal.ROUND_HALF_UP);
         }else{
             //日结
             return bank_period_principal
@@ -209,7 +213,10 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
                     .subtract(risk_fee)
                     .subtract(fair_assess_fee)
                     .subtract(apply_license_plate_out_province_fee)
-                    .subtract(based_margin_fee).setScale(6,BigDecimal.ROUND_HALF_UP);
+                    .subtract(based_margin_fee)
+                    .subtract(extra_fee)
+                    .subtract(other_fee)
+                    .setScale(6,BigDecimal.ROUND_HALF_UP);
         }
     }
 

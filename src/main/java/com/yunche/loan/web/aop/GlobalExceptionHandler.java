@@ -30,7 +30,13 @@ public class GlobalExceptionHandler {
         logger.error("GlobalExceptionHandler : ", e);
 
         if (e instanceof BizException) {
-            return ResultBean.ofError(e.getMessage());
+            String code = ((BizException) e).getCode();
+            String msg = ((BizException) e).getMsg();
+            if (null == code) {
+                return ResultBean.ofError(msg);
+            } else {
+                return ResultBean.of(null, false, code, msg);
+            }
         } else if (e instanceof MissingServletRequestParameterException) {
             return ResultBean.ofError("GET 缺少接口规范必要参数");
         } else if (e instanceof MethodArgumentNotValidException) {

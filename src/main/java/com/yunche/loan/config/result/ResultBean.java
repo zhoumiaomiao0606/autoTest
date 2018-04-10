@@ -42,9 +42,9 @@ public class ResultBean<T> implements Serializable {
 
     public static <T> ResultBean of(T data, boolean success, BaseExceptionEnum baseExceptionEnum) {
         if (null != baseExceptionEnum) {
-            return of(data, true, baseExceptionEnum.getCode(), baseExceptionEnum.getMessage());
+            return of(data, success, baseExceptionEnum.getCode(), baseExceptionEnum.getMessage());
         } else {
-            return of(data, true, null, null);
+            return of(data, success, null, null);
         }
     }
 

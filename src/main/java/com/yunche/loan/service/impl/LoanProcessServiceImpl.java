@@ -74,6 +74,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
 
+    @Autowired
+    private PermissionService permissionService;
+
 
     @Override
     @Transactional
@@ -81,6 +84,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
+
+        // 节点权限校验
+//        permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
 
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
@@ -110,6 +116,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
+
 
     /**
      * 流程操作日志记录
@@ -479,6 +486,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanProcessDO.setBankCreditRecord(taskProcessStatus);
         } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setFinancialScheme(taskProcessStatus);
+        } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
+            loanProcessDO.setBankLendRecord(taskProcessStatus);
         }
     }
 
@@ -1003,6 +1012,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             taskStatus = loanProcessDO.getMaterialReview();
         } else if (MATERIAL_PRINT_REVIEW.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getMaterialPrintReview();
+        } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
+            taskStatus = loanProcessDO.getBankLendRecord();
         }
 
         TaskStateVO taskStateVO = new TaskStateVO();

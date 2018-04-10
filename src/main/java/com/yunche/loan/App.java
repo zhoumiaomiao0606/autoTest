@@ -31,13 +31,13 @@ public class App {
             @Override
             public void run(String... args) throws Exception {
                 // 部署
-//                repositoryService.createDeployment()
-//                        .name("消费贷流程")
-//                        .addClasspathResource("processes/loan_process.bpmn")
-//                        .deploy();
+                repositoryService.createDeployment()
+                        .name("消费贷流程")
+                        .addClasspathResource("processes/loan_process.bpmn")
+                        .deploy();
 
                 // 刷新activiti缓存数据
-//                activitiCache.refresh();
+                activitiCache.refresh();
 
 //                System.out.println("Number of process definitions : "
 //                        + repositoryService.createProcessDefinitionQuery().count());
