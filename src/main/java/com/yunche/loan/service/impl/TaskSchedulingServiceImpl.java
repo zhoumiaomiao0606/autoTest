@@ -17,6 +17,7 @@ import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.LoanProcessService;
+import com.yunche.loan.service.PermissionService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +46,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Resource
     private LoanProcessService loanProcessService;
 
+    @Resource
+    private PermissionService permissionService;
+
+
     @Override
     public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
@@ -64,6 +69,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
         }
+
+        // 节点权限校验
+//        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
@@ -79,6 +88,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean queryAppTaskList(AppTaskListQuery appTaskListQuery) {
+
         PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
 
         List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery.getMultipartType(), appTaskListQuery.getCustomer());
