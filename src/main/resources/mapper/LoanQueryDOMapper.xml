@@ -365,9 +365,9 @@
             supplement.info							AS 	supplement_info,
             supplement.type							AS  supplement_type
 
-        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
-        left join loan_info_supplement supplement on main_order.id = supplement.id
-        order by end_time desc LIMIT 1
+        from
+        loan_info_supplement supplement where supplement.order_id = #{orderId,jdbcType=BIGINT}
+        order by supplement.end_time desc LIMIT 1
     </select>
 
     <!--客户信息-->
