@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BankLendRecordDO;
 import com.yunche.loan.domain.vo.BankLendRecordVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
 
@@ -15,6 +16,6 @@ public interface BankLendRecordService {
 
     ResultBean<Void>  manualInput(BankLendRecordVO bankLendRecordVO);
 
-    ResultBean<BankLendRecordVO> querySave(BankLendRecordVO bankLendRecordVO);
+    ResultBean<BankLendRecordDO> querySave(Long orderId);
 
 }

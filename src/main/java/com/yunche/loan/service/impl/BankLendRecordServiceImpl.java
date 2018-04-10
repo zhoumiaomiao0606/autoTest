@@ -152,14 +152,11 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
     }
 
     @Override
-    public ResultBean<BankLendRecordVO> querySave(BankLendRecordVO bankLendRecordVO) {
+    public ResultBean<BankLendRecordDO> querySave(Long  orderId) {
 
-        Preconditions.checkNotNull(bankLendRecordVO,"银行放款记录不能为空");
-        Preconditions.checkNotNull(bankLendRecordVO.getOrderId(),"业务单号不能为空");
-        BankLendRecordDO bankLendRecordDO =  bankLendRecordDOMapper.selectByLoanOrder(Long.valueOf(bankLendRecordVO.getOrderId()));
-        bankLendRecordVO.setLendDate(bankLendRecordDO.getLendDate());
-        bankLendRecordVO.setLendAmount(bankLendRecordDO.getLendAmount());
-        return ResultBean.ofSuccess(bankLendRecordVO);
+        Preconditions.checkNotNull(orderId,"业务单号不能为空");
+        BankLendRecordDO bankLendRecordDO =  bankLendRecordDOMapper.selectByLoanOrder(orderId);
+        return ResultBean.ofSuccess(bankLendRecordDO);
     }
 
 
