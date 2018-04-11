@@ -461,7 +461,7 @@ public class AuthServiceImpl implements AuthService {
         if (null == parentMenuId) {
             return;
         }
-        
+
         List<MenuDO> childMenuDOS = parentIdDOMap.get(parentMenuId);
         if (!CollectionUtils.isEmpty(childMenuDOS)) {
 
@@ -541,7 +541,6 @@ public class AuthServiceImpl implements AuthService {
         if (CollectionUtils.isEmpty(menuDOS)) {
             return null;
         }
-
         Map<Long, List<MenuDO>> parentIdDOMap = Maps.newHashMap();
         menuDOS.stream()
                 .filter(Objects::nonNull)
