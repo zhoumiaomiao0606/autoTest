@@ -448,7 +448,10 @@ public class AuthServiceImpl implements AuthService {
      * @param parentIdDOMap
      */
     private void fillAllChildMenuId(Long parentMenuId, List<Long> childMenuIdList, Map<Long, List<MenuDO>> parentIdDOMap) {
-        List<MenuDO> childMenuDOS = parentIdDOMap.get(parentMenuId);
+        List<MenuDO> childMenuDOS=null;
+        if(!CollectionUtils.isEmpty(parentIdDOMap)){
+            childMenuDOS= parentIdDOMap.get(parentMenuId);
+         }
         if (!CollectionUtils.isEmpty(childMenuDOS)) {
 
             childMenuDOS.parallelStream()
