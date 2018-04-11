@@ -571,7 +571,7 @@
               WHERE
                 RES.ASSIGNEE_ IS NULL
                 AND I.TYPE_ = 'candidate'
-                AND ( I.GROUP_ID_ IN ( '合伙人' ) )) pt
+                AND ( I.GROUP_ID_ IN ( '业务内勤' ) )) pt
 
           ON et.process_inst_id = pt.PROC_INST_ID_
             WHERE (SELECT type FROM employee WHERE id = #{employeeId,jdbcType=BIGINT}) = 2
@@ -589,7 +589,7 @@
                       INNER JOIN
                     (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{employeeId,jdbcType=BIGINT}) e
                       ON e.user_group_id = g.id
-                      WHERE g.name != '合伙人'
+                      WHERE g.name != '业务内勤'
                   )
                 )
           ) result
