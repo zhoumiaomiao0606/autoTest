@@ -7,6 +7,8 @@ import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.ActivitiCache;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.query.AuthQuery;
 import com.yunche.loan.domain.entity.MenuDO;
@@ -165,11 +167,24 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResultBean<Map<String, Boolean>> listMenu_() {
 
+        Map<String, Boolean> taskMap = Maps.newHashMap();
+
+        // 管理员
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        if ("admin".equals(loginUser.getName())) {
+            // configure_center
+            taskMap.put("configure_center", true);
+            // task
+            for (LoanProcessEnum k : LoanProcessEnum.values()) {
+                taskMap.put(k.getCode(), true);
+            }
+
+            return ResultBean.ofSuccess(taskMap);
+        }
+
         Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
 
         Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.get();
-
-        Map<String, Boolean> taskMap = Maps.newHashMap();
 
         if (!CollectionUtils.isEmpty(taskDefinitionKeyCandidateGroupsMap)) {
 
@@ -200,12 +215,7 @@ public class AuthServiceImpl implements AuthService {
                 }
 
             });
-        }
 
-        // configure_center
-        if (userGroupNameSet.contains("管理员")) {
-            taskMap.put("configure_center", true);
-        } else {
             taskMap.put("configure_center", false);
         }
 
@@ -448,6 +458,10 @@ public class AuthServiceImpl implements AuthService {
      * @param parentIdDOMap
      */
     private void fillAllChildMenuId(Long parentMenuId, List<Long> childMenuIdList, Map<Long, List<MenuDO>> parentIdDOMap) {
+        if (null == parentMenuId) {
+            return;
+        }
+        
         List<MenuDO> childMenuDOS = parentIdDOMap.get(parentMenuId);
         if (!CollectionUtils.isEmpty(childMenuDOS)) {
 

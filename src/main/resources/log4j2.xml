@@ -6,17 +6,17 @@
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
-            <PatternLayout pattern="${LOG_PATTERN}" />
+            <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
         <RollingFile name="App-File-Appender" fileName="${LOG_PATH}/biz_log.log"
-                     filePattern="${LOG_PATH}/biz-%d{yyyy-MM-dd}.log" >
+                     filePattern="${LOG_PATH}/biz-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>${LOG_PATTERN}</Pattern>
             </PatternLayout>
 
             <Policies>
-                <TimeBasedTriggeringPolicy modulate="true" interval="1" />
-                <SizeBasedTriggeringPolicy size="100 MB" />
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
         </RollingFile>
     </Appenders>
@@ -30,7 +30,7 @@
             <AppenderRef ref="App-File-Appender"/>
         </logger>
         <Root level="info">
-            <AppenderRef ref="Console" />
+            <AppenderRef ref="Console"/>
         </Root>
     </Loggers>
 </Configuration>
