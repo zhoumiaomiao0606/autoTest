@@ -15,6 +15,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 /**
  * @author liuzhe
  * @date 2018/4/10
@@ -31,6 +33,11 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public void checkTaskPermission(String taskDefinitionKey) {
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        if ("admin".equals(loginUser.getName())) {
+            return;
+        }
 
         Set<String> userGroupNameList = getUserGroupNameSet();
 
@@ -69,16 +76,24 @@ public class PermissionServiceImpl implements PermissionService {
         // getUser
         EmployeeDO loginUser = SessionUtils.getLoginUser();
 
-        // 员工-直接关联的用户组
-        List<String> userGroupNameList = userGroupDOMapper.listUserGroupNameByEmployeeId(loginUser.getId());
+        Set<String> allUserGroupNameSet = Sets.newHashSet();
 
-        // 员工-所属部门 -间接关联的用户组
-        List<String> userGroupNameList_ = userGroupDOMapper.listUserGroupNameByEmployeeIdRelaDepartment(loginUser.getId());
+        if ("admin".equals(loginUser.getName())) {
+            // 超级管理员   赋予所有权限
+            List<String> allUserGroupName = userGroupDOMapper.getAllName(VALID_STATUS);
+            allUserGroupNameSet.addAll(allUserGroupName);
+            allUserGroupNameSet.add("configure_center");
+        } else {
+            // 员工-直接关联的用户组
+            List<String> userGroupNameList = userGroupDOMapper.listUserGroupNameByEmployeeId(loginUser.getId());
 
-        Set<String> allUserGroupNameList = Sets.newHashSet();
-        allUserGroupNameList.addAll(userGroupNameList);
-        allUserGroupNameList.addAll(userGroupNameList_);
+            // 员工-所属部门 -间接关联的用户组
+            List<String> userGroupNameList_ = userGroupDOMapper.listUserGroupNameByEmployeeIdRelaDepartment(loginUser.getId());
 
-        return allUserGroupNameList;
+            allUserGroupNameSet.addAll(userGroupNameList);
+            allUserGroupNameSet.addAll(userGroupNameList_);
+        }
+
+        return allUserGroupNameSet;
     }
 }

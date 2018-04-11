@@ -47,7 +47,6 @@ import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
  * @date 2018/1/23
  */
 @Service
-@Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
@@ -79,8 +78,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private AreaCache areaCache;
 
     @Override
+    @Transactional
     public ResultBean<Long> create(EmployeeParam employeeParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getName()), "姓名不能为空");
+        Preconditions.checkArgument(!"admin".equals(employeeParam.getName()), "账号名不能为admin");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getIdCard()), "身份证号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getMobile()), "手机号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getEmail()), "电子邮箱不能为空");
@@ -96,10 +97,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 生成随机密码
 //        String password = MD5Utils.getRandomString(10);
-        String password ="111111";
+        // 设置初始密码
+        String initPassword = "111111";
+
         // MD5加密
-//        String md5Password = MD5Utils.md5(password);
-        employeeParam.setPassword(password);
+        String md5Password = MD5Utils.md5(initPassword);
+        employeeParam.setPassword(md5Password);
 
         // 创建实体，并返回ID
         Long id = insertAndGetId(employeeParam);
@@ -113,6 +116,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 //                sentAccountAndPassword(employeeParam.getEmail(), password);
 //            }
 //        }.start();
+
         // 刷新缓存
         employeeCache.refresh();
 
@@ -120,6 +124,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> update(EmployeeDO employeeDO) {
         Preconditions.checkNotNull(employeeDO.getId(), "id不能为空");
         Preconditions.checkArgument(!employeeDO.getId().equals(employeeDO.getParentId()), "直接主管不能为自己");
@@ -137,6 +142,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
@@ -302,6 +308,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> resetPassword(Long id) {
         Preconditions.checkNotNull(id, "员工ID不能为空");
 
@@ -395,6 +402,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> logout() {
         // 清空shiro会话
         SecurityUtils.getSubject().logout();
@@ -402,6 +410,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> editPassword(EmployeeParam employeeParam) {
         Preconditions.checkArgument(null != employeeParam && StringUtils.isNotBlank(employeeParam.getOldPassword()), "原密码不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getNewPassword()), "新密码不能为空");
