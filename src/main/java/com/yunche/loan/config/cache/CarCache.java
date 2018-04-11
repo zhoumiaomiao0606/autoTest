@@ -1,7 +1,6 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import com.yunche.loan.domain.entity.CarDetailDO;
 import com.yunche.loan.mapper.CarBrandDOMapper;
