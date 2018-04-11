@@ -110,10 +110,9 @@
         SELECT b.*
         FROM
         employee_rela_user_group AS a ,
-        user_group AS b ,
-        user_group_rela_area_auth AS c
+        user_group AS b
         WHERE
-        a.`user_group_id` = b.`id` AND a.`user_group_id` = c.`user_group_id`
+        a.`user_group_id` = b.`id`
         <if test="id != null">
             AND a.employee_id = #{id}
         </if>
@@ -136,10 +135,9 @@
         SELECT b.*
         FROM
         employee_rela_user_group AS a ,
-        user_group AS b ,
-        user_group_rela_area_auth AS c
+        user_group AS b
         WHERE
-        a.`user_group_id` = b.`id` AND a.`user_group_id` = c.`user_group_id`
+        a.`user_group_id` = b.`id`
         <if test="id != null">
             AND a.employee_id = #{id}
         </if>
