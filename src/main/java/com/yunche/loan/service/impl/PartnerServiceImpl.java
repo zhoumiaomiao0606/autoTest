@@ -326,6 +326,9 @@ public class PartnerServiceImpl implements PartnerService {
                             EmployeeVO employeeVO = new EmployeeVO();
                             BeanUtils.copyProperties(employeeDO, employeeVO);
 
+                            // 填充直接上级信息
+                            fillParent(employeeDO.getParentId(), employeeVO);
+
                             return employeeVO;
                         })
                         .sorted(Comparator.comparing(EmployeeVO::getGmtModify))
@@ -880,5 +883,41 @@ public class PartnerServiceImpl implements PartnerService {
         List<Long> pagingPageIdList = pageIdList.subList(fromIndex, toIndex);
 
         return pagingPageIdList;
+    }
+
+    /**
+     * 填充员工直接主管信息
+     *
+     * @param parentId
+     * @param employeeVO
+     */
+    private void fillParent(Long parentId, EmployeeVO employeeVO) {
+        if (null == parentId) {
+            return;
+        }
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+        if (null != employeeDO) {
+            employeeVO.setParentName(employeeDO.getName());
+            BaseVO parentEmployee = new BaseVO();
+            BeanUtils.copyProperties(employeeDO, parentEmployee);
+            // 递归填充所有上层父级leader
+            fillSupperEmployee(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), employeeVO);
+        }
+    }
+
+    private void fillSupperEmployee(Long parentId, List<BaseVO> supperEmployeeList, EmployeeVO employeeVO) {
+        if (null != parentId) {
+            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
+            if (null != employeeDO) {
+                BaseVO parentEmployee = new BaseVO();
+                BeanUtils.copyProperties(employeeDO, parentEmployee);
+                supperEmployeeList.add(parentEmployee);
+                fillSupperEmployee(employeeDO.getParentId(), supperEmployeeList, employeeVO);
+            }
+        } else {
+            // null时为最顶级
+            Collections.reverse(supperEmployeeList);
+            employeeVO.setParent(supperEmployeeList);
+        }
     }
 }
