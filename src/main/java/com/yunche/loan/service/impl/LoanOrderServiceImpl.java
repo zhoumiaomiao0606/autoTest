@@ -591,18 +591,45 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
-
         LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanOrderDO.getLoanHomeVisitId());
         LoanHomeVisitVO loanHomeVisitVO = new LoanHomeVisitVO();
         if (null != loanHomeVisitDO) {
             BeanUtils.copyProperties(loanHomeVisitDO, loanHomeVisitVO);
         }
 
-
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
+
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
+
+            // 主贷人 文件回填
+            if ("1".equals(universalCustomerVO.getCust_type())) {
+
+                if (!CollectionUtils.isEmpty(files)) {
+
+                    List<FileVO> homeVisitFiles = Lists.newArrayList();
+
+                    // 12-合影照片;13-家访视频; 16-家访照片; 17-车辆照片;18-其他资料;
+                    files.parallelStream()
+                            .filter(e -> "12".equals(e.getType()) || "13".equals(e.getType())
+                                    || "16".equals(e.getType()) || "17".equals(e.getType())
+                                    || "18".equals(e.getType()))
+                            // 非空
+                            .filter(e -> !CollectionUtils.isEmpty(e.getUrls()))
+                            .forEach(e -> {
+
+                                FileVO fileVO = new FileVO();
+                                fileVO.setType(Byte.valueOf(e.getType()));
+                                fileVO.setName(e.getName());
+                                fileVO.setUrls(e.getUrls());
+
+                                homeVisitFiles.add(fileVO);
+                            });
+
+                    loanHomeVisitVO.setFiles(homeVisitFiles);
+                }
+            }
         }
         loanHomeVisitVO.setCustomers(customers);
 
@@ -631,13 +658,12 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkNotNull(infoSupplementParam.getSupplementOrderId(), "增补单ID不能为空");
 
         Long suppermentOrderId = infoSupplementParam.getSupplementOrderId();
-        LoanInfoSupplementDO V = loanInfoSupplementDOMapper.selectByPrimaryKey(suppermentOrderId);
-        Preconditions.checkNotNull(V, "增补单不存在");
         String remark = infoSupplementParam.getRemark();
         LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
         loanInfoSupplementDO.setRemark(remark);
         loanInfoSupplementDO.setId(suppermentOrderId);
-        loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
+        int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
+        Preconditions.checkArgument(count > 0, "增补失败");
 
         List<FileVO> files = infoSupplementParam.getFiles();
         files.parallelStream()
