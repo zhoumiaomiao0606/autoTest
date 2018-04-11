@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.text.Collator;
 import java.util.Collections;
@@ -75,7 +76,7 @@ public class AreaCache {
     /**
      * 刷新CASCADE_AREA缓存
      */
-//    @PostConstruct
+    @PostConstruct
     public void refresh() {
         // 获取所有行政区
         List<BaseAreaDO> allArea = baseAreaDOMapper.getAll(VALID_STATUS);
@@ -129,7 +130,7 @@ public class AreaCache {
     /**
      * 刷新ALL_AREA缓存
      */
-//    @PostConstruct
+    @PostConstruct
     public void refreshAll() {
         // 获取所有行政区
         List<BaseAreaDO> allArea = baseAreaDOMapper.getAll(VALID_STATUS);

@@ -265,7 +265,7 @@ public class CarCache {
         boundValueOps.set(JSON.toJSONString(idCarBrandMap));
     }
 
-//    @PostConstruct
+    @PostConstruct
     public void cacheAllCarModel() {
 
         Map<String, CarModelDO> idCarModelMap = Maps.newConcurrentMap();
@@ -283,7 +283,7 @@ public class CarCache {
         boundValueOps.set(JSON.toJSONString(idCarModelMap));
     }
 
-//    @PostConstruct
+    @PostConstruct
     public void cacheAllCarDetail() {
 
         Map<String, CarDetailDO> idCarDetailMap = Maps.newConcurrentMap();
