@@ -302,7 +302,7 @@ public class PartnerServiceImpl implements PartnerService {
                     bizModelRelaAreaPartnersDO.setGroupId(id);
                     bizModelRelaAreaPartnersDO.setAreaId(partnerDO.getAreaId());
                     bizModelRelaAreaPartnersDO.setBizId(Long.valueOf(bizModelId));
-                    int count = bizModelRelaAreaPartnersDOMapper.delete(bizModelRelaAreaPartnersDO);
+                    int count = bizModelRelaAreaPartnersDOMapper.deleteByPrimaryKey(bizModelRelaAreaPartnersDO);
                     Preconditions.checkArgument(count > 0, "取消关联失败");
                 });
 
