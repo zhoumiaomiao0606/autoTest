@@ -455,7 +455,23 @@
             <if test="endCreditGmtCreate != null">
                 AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
             </if>
-            order by tab.orderGmtCreate DESC ,tab.taskStatus ASC
+            <choose>
+                <when test="taskStatus == 0">
+                    order by tab.orderGmtCreate DESC ,tab.taskStatus ASC
+                </when>
+                <when test="taskStatus == 1">
+                    order by tab.orderGmtCreate DESC
+                </when>
+                <when test="taskStatus == 2">
+                    order by tab.orderGmtCreate ASC
+                </when>
+                <when test="taskStatus == 3">
+                    order by tab.orderGmtCreate ASC
+                </when>
+                <otherwise>
+                    order by tab.orderGmtCreate DESC
+                </otherwise>
+            </choose>
         </select>
 
 
