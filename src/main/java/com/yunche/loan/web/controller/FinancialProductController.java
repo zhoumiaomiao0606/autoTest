@@ -60,14 +60,14 @@ public class FinancialProductController {
     }
 
     /**
-     * 通过合伙人ID 获取合伙人被授权的金融产品列表
+     * 通过orderId 获取合伙人被授权的金融产品列表
      *
-     * @param partnerId
+     * @param orderId
      * @return
      */
-    @GetMapping("/listByPartnerId")
-    public ResultBean<List<CascadeFinancialProductVO>> listByPartnerId(@RequestParam("partnerId") Long partnerId) {
-        return financialProductService.listByPartnerId(partnerId);
+    @GetMapping("/listByOrderId")
+    public ResultBean<CascadeFinancialProductVO> listByOrderId(@RequestParam("orderId") Long orderId) {
+        return financialProductService.listByOrderId(orderId);
     }
 }
 

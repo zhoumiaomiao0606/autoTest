@@ -678,7 +678,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 .taskDefinitionKey(FINANCIAL_SCHEME.getCode())
                 .singleResult();
 
-        Preconditions.checkNotNull(task, "[金融方案展示]任务不存在");
+        Preconditions.checkNotNull(task, "[金融方案]任务不存在");
 
         ApprovalParam approval = new ApprovalParam();
         approval.setOrderId(orderId);

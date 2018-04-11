@@ -176,7 +176,7 @@
     <startEvent id="signal_start_event_info_supplement" name="发起资料增补信号源">
       <signalEventDefinition signalRef="contactChangeSignal"></signalEventDefinition>
     </startEvent>
-    <userTask id="usertask_info_supplement" name="资料增补" activiti:candidateGroups="合伙人"></userTask>
+    <userTask id="usertask_info_supplement" name="资料增补" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
     <sequenceFlow id="flow142" name="发起资料增补" sourceRef="signal_start_event_info_supplement" targetRef="usertask_info_supplement"></sequenceFlow>
     <endEvent id="endevent25" name="End"></endEvent>
     <sequenceFlow id="flow143" name="提交" sourceRef="usertask_info_supplement" targetRef="endevent25">
@@ -196,21 +196,29 @@
     <userTask id="usertask_bank_lend_record" name="银行放款记录" activiti:candidateGroups="总经理,培训经理,财务经理,银行驻点"></userTask>
     <sequenceFlow id="flow157" sourceRef="parallelgateway3" targetRef="usertask_bank_lend_record"></sequenceFlow>
     <endEvent id="endevent26" name="End"></endEvent>
-    <sequenceFlow id="flow158" name="提交" sourceRef="servicetask_financial_scheme" targetRef="endevent26"></sequenceFlow>
+    <sequenceFlow id="flow158" name="提交" sourceRef="servicetask_financial_scheme" targetRef="endevent26">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <sequenceFlow id="flow159" name="&lt;13W 手动OR自动打回修改" sourceRef="exclusivegateway3" targetRef="usertask_credit_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanAmount == 1 && action == -1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_bank_card_record" name="银行卡录入" activiti:candidateGroups="总经理,培训经理,财务经理,银行驻点"></userTask>
     <parallelGateway id="parallelgateway8" name="Parallel Gateway"></parallelGateway>
-    <sequenceFlow id="flow160" name="提交" sourceRef="usertask_bank_lend_record" targetRef="usertask_bank_card_record"></sequenceFlow>
+    <sequenceFlow id="flow160" name="提交" sourceRef="usertask_bank_lend_record" targetRef="usertask_bank_card_record">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <endEvent id="endevent27" name="End"></endEvent>
     <sequenceFlow id="flow161" sourceRef="parallelgateway8" targetRef="endevent27"></sequenceFlow>
     <sequenceFlow id="flow162" sourceRef="parallelgateway3" targetRef="usertask_vehicle_information"></sequenceFlow>
     <userTask id="usertask_vehicle_information" name="提车资料" activiti:candidateGroups="总经理,培训经理,渠道经理,业务内勤,催收主管"></userTask>
-    <sequenceFlow id="flow163" name="提交" sourceRef="usertask_vehicle_information" targetRef="usertask_apply_license_plate_deposit_info"></sequenceFlow>
+    <sequenceFlow id="flow163" name="提交" sourceRef="usertask_vehicle_information" targetRef="usertask_apply_license_plate_deposit_info">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <userTask id="servicetask_financial_scheme" name="金融方案" activiti:candidateGroups="总经理,培训经理,渠道经理,总监,电审经理,电审主管,电审专员,财务经理,催收主管,银行驻点"></userTask>
     <endEvent id="endevent28" name="End"></endEvent>
-    <sequenceFlow id="flow164" name="提交" sourceRef="usertask_bank_card_record" targetRef="endevent28"></sequenceFlow>
+    <sequenceFlow id="flow164" name="提交" sourceRef="usertask_bank_card_record" targetRef="endevent28">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">

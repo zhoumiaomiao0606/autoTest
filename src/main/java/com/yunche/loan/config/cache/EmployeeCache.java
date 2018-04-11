@@ -114,6 +114,7 @@ public class EmployeeCache {
             List<EmployeeDO> parentDOS = parentIdDOMap.get(-1L);
             if (!CollectionUtils.isEmpty(parentDOS)) {
                 List<CascadeVO> topLevelList = parentDOS.stream()
+                        .filter(Objects::nonNull)
                         .map(p -> {
                             CascadeVO parent = new CascadeVO();
                             parent.setValue(p.getId());

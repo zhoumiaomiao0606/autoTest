@@ -133,6 +133,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     @Autowired
     private VehicleInformationService vehicleInformationService;
 
+    @Autowired
+    private PermissionService permissionService;
+
 
     @Override
     public ResultBean<List<LoanOrderVO>> query(LoanOrderQuery query) {
@@ -250,7 +253,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkNotNull(param, "不能为空");
 
         // 权限校验
-        checkStartProcessPermission();
+        permissionService.checkTaskPermission(LoanProcessEnum.CREDIT_APPLY.getCode());
 
         // 创建贷款基本信息
         Long baseInfoId = createLoanBaseInfo(param.getLoanBaseInfo());
@@ -1263,17 +1266,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         ResultBean<Long> resultBean = loanBaseInfoService.create(loanBaseInfoDO);
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
         return resultBean.getData();
-    }
-
-    /**
-     * 校验权限：只有合伙人、内勤可以 发起征信申请单【创建业务单】
-     */
-    private void checkStartProcessPermission() {
-        // TODO 只有合伙人、内勤可以 发起征信申请单【创建业务单】
-        // 获取用户角色名列表
-        List<String> userGroupNameList = getUserGroupNameList();
-        Preconditions.checkArgument(userGroupNameList.contains("合伙人") || userGroupNameList.contains("内勤"),
-                "您无权创建征信申请单");
     }
 
     /**

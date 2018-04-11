@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.FinancialProductDO;
+import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.entity.ProductRateDO;
 import com.yunche.loan.domain.param.FinancialProductParam;
 import com.yunche.loan.domain.query.FinancialQuery;
@@ -13,10 +14,10 @@ import com.yunche.loan.domain.vo.CascadeFinancialProductVO;
 import com.yunche.loan.domain.vo.FinancialProductVO;
 import com.yunche.loan.mapper.CascadeFinancialProductMapper;
 import com.yunche.loan.mapper.FinancialProductDOMapper;
+import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
 import com.yunche.loan.mapper.ProductRateDOMapper;
 import com.yunche.loan.service.BaseAreaService;
 import com.yunche.loan.service.FinancialProductService;
-import com.yunche.loan.service.PartnerService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +42,12 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     @Autowired
     private ProductRateDOMapper productRateDOMapper;
 
-
     @Autowired
-    private PartnerService partnerService;
-
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
 
     @Autowired
     CascadeFinancialProductMapper cascadeFinancialProductMapper;
+
 
     @Override
     @Transactional
@@ -229,59 +229,55 @@ public class FinancialProductServiceImpl implements FinancialProductService {
 
     //add by zhengdu 2018-03-17  增加接口，按照合伙人ID查询相应->绑定银行->金融产品->金融产品利率
     @Override
-    public ResultBean<List<CascadeFinancialProductVO>> listByPartnerId(Long partnerId) {
-        Preconditions.checkNotNull(partnerId, "合伙人ID不能为空");
+    public ResultBean<CascadeFinancialProductVO> listByOrderId(Long orderId) {
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getByOrderId(orderId);
+        Preconditions.checkNotNull(loanBaseInfoDO, "贷款基本信息为空");
 
-        List<String> bankNameList = cascadeFinancialProductMapper.findBankListByPartnerId(partnerId);
+        String bank = loanBaseInfoDO.getBank();
+        Long partnerId = loanBaseInfoDO.getPartnerId();
+
+        CascadeFinancialProductVO cascadeFinancialProductVO = new CascadeFinancialProductVO();
+        //Bank
+        cascadeFinancialProductVO.setBank(bank);
 
         // 根据银行获取金融产品列表
-        List tmpBankList = new ArrayList();
+        List<FinancialProductDO> subProductBybank = cascadeFinancialProductMapper.findParamByBank(partnerId, bank);
 
-        List<CascadeFinancialProductVO> cascadeFinancialProductVOList = Lists.newArrayList();
-
-        for (String bankName : bankNameList) {
-            //Bank
-            CascadeFinancialProductVO cascadeFinancialProductVO = new CascadeFinancialProductVO();
-            cascadeFinancialProductVO.setBank(bankName);
-
-            List<FinancialProductDO> subProductBybank = cascadeFinancialProductMapper.findParamByBank(partnerId, bankName);
-
-            //设置该银行下的产品
-            CascadeFinancialProductVO.FinancialProduct financialProduct;
-            List tmpFinancialProductList = new ArrayList();
-            String oldPrdName = "";
-            for (int i = 0; i < subProductBybank.size(); i++) {
-                if (oldPrdName.equals(subProductBybank.get(i).getProdName())) {
-                    continue;
-                }
-                oldPrdName = subProductBybank.get(i).getProdName();
-
-                financialProduct = new CascadeFinancialProductVO.FinancialProduct();
-                financialProduct.setId(subProductBybank.get(i).getProdId());
-                financialProduct.setName(subProductBybank.get(i).getProdName());
-                financialProduct.setCategorySuperior(subProductBybank.get(i).getCategorySuperior());
-
-                //赋值产品利率     BEG
-                List<ProductRateDO> productRateDOS = productRateDOMapper.selectByProdId(subProductBybank.get(i).getProdId());
-
-                List tmpBankRateList = new ArrayList();
-                for (int j = 0; j < productRateDOS.size(); j++) {
-                    CascadeFinancialProductVO.BankRate bankRate = new CascadeFinancialProductVO.BankRate();
-                    bankRate.setBankRate(productRateDOS.get(j).getBankRate());
-                    bankRate.setLoanTime(productRateDOS.get(j).getLoanTime());
-                    tmpBankRateList.add(bankRate);
-
-                }
-                financialProduct.setBankRateList(tmpBankRateList);
-                //赋值产品利率     END
-                tmpFinancialProductList.add(financialProduct);
+        //设置该银行下的产品
+        CascadeFinancialProductVO.FinancialProduct financialProduct;
+        List tmpFinancialProductList = new ArrayList();
+        String oldPrdName = "";
+        for (int i = 0; i < subProductBybank.size(); i++) {
+            if (oldPrdName.equals(subProductBybank.get(i).getProdName())) {
+                continue;
             }
+            oldPrdName = subProductBybank.get(i).getProdName();
 
-            cascadeFinancialProductVO.setFinancialProductList(tmpFinancialProductList);
-            cascadeFinancialProductVOList.add(cascadeFinancialProductVO);
+            financialProduct = new CascadeFinancialProductVO.FinancialProduct();
+            financialProduct.setId(subProductBybank.get(i).getProdId());
+            financialProduct.setName(subProductBybank.get(i).getProdName());
+            financialProduct.setCategorySuperior(subProductBybank.get(i).getCategorySuperior());
+
+            //赋值产品利率     BEG
+            List<ProductRateDO> productRateDOS = productRateDOMapper.selectByProdId(subProductBybank.get(i).getProdId());
+
+            List tmpBankRateList = new ArrayList();
+            for (int j = 0; j < productRateDOS.size(); j++) {
+                CascadeFinancialProductVO.BankRate bankRate = new CascadeFinancialProductVO.BankRate();
+                bankRate.setBankRate(productRateDOS.get(j).getBankRate());
+                bankRate.setLoanTime(productRateDOS.get(j).getLoanTime());
+                tmpBankRateList.add(bankRate);
+
+            }
+            financialProduct.setBankRateList(tmpBankRateList);
+            //赋值产品利率     END
+            tmpFinancialProductList.add(financialProduct);
         }
 
-        return ResultBean.ofSuccess(cascadeFinancialProductVOList);
+        cascadeFinancialProductVO.setFinancialProductList(tmpFinancialProductList);
+
+        return ResultBean.ofSuccess(cascadeFinancialProductVO);
     }
 }

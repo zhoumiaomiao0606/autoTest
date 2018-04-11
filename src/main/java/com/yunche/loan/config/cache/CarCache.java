@@ -20,7 +20,6 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -75,7 +74,7 @@ public class CarCache {
         return null;
     }
 
-    //    @PostConstruct
+    @PostConstruct
     private void refresh() {
         CarCascadeVO carCascadeVO = new CarCascadeVO();
 
@@ -246,7 +245,7 @@ public class CarCache {
         return null;
     }
 
-//    @PostConstruct
+    @PostConstruct
     public void cacheAllCarBrand() {
 
         Map<String, CarBrandDO> idCarBrandMap = Maps.newConcurrentMap();
@@ -271,7 +270,7 @@ public class CarCache {
 
         List<CarModelDO> allCarModel = carModelDOMapper.getAll(VALID_STATUS);
         if (!CollectionUtils.isEmpty(allCarModel)) {
-            allCarModel.parallelStream()
+            allCarModel.stream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
                         idCarModelMap.put(String.valueOf(e.getId()), e);
