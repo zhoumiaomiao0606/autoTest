@@ -33,7 +33,6 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  * @date 2018/1/23
  */
 @Service
-@Transactional
 public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
@@ -51,6 +50,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 
     @Override
+    @Transactional
     public ResultBean<Long> create(DepartmentParam departmentParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(departmentParam.getName()), "部门名称不能为空");
         Preconditions.checkNotNull(departmentParam.getStatus(), "状态不能为空");
@@ -70,6 +70,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
@@ -85,6 +86,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> update(DepartmentDO departmentDO) {
         Preconditions.checkNotNull(departmentDO.getId(), "id不能为空");
         Preconditions.checkArgument(!departmentDO.getId().equals(departmentDO.getParentId()), "上级部门不能为自身");
@@ -190,6 +192,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> bindUserGroup(Long id, String userGroupIds) {
         Preconditions.checkNotNull(id, "部门ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(userGroupIds), "用户组ID不能为空");
@@ -208,6 +211,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> unbindUserGroup(Long id, String userGroupIds) {
         Preconditions.checkNotNull(id, "部门ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(userGroupIds), "用户组ID不能为空");

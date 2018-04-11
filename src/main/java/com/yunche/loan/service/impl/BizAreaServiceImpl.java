@@ -260,7 +260,7 @@ public class BizAreaServiceImpl implements BizAreaService {
     public ResultBean<List<CascadeVO>> listAll() {
 
         List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getAll(VALID_STATUS);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "无有效业务区域数据");
+//        Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "无有效业务区域数据");
 
         // parentId - DOS
         Map<Long, List<BizAreaDO>> parentIdDOMap = getParentIdDOSMapping(bizAreaDOS);
