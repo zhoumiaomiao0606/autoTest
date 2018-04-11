@@ -74,8 +74,6 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         List<String[]>  returnList;
         try {
 
-//            returnList = POIUtil.readExcel(0,1,pathFileName);
-
             returnList = POIUtil.readExcelFromOSS(0,1,key);
             BankLendRecordDO bankLendRecordDO =new BankLendRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -152,7 +150,6 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         Preconditions.checkArgument(count > 0, "业务单号为:"+orderId+",对应记录更新出错");
         return ResultBean.ofSuccess("录入成功");
     }
-
     @Override
     public ResultBean<BankLendRecordDO> querySave(Long  orderId) {
 

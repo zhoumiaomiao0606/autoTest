@@ -3,6 +3,7 @@ package com.yunche.loan.config.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
@@ -30,12 +31,13 @@ public class OSSUnit {
     private  static String BUCKET_NAME="yunche-2018";
 
 //    //init static datas
-//    static{
-//        ResourceBundle bundle = PropertyResourceBundle.getBundle("properties.oss");
-//        ENDPOINT = bundle.containsKey("endpoint") == false ? "" : bundle.getString("endpoint");
-//        ACCESS_KEY_ID = bundle.containsKey("accessKeyId") == false? "" : bundle.getString("accessKeyId");
-//        ACCESS_KEY_SECRET = bundle.containsKey("accessKeySecret") == false ? "" : bundle.getString("accessKeySecret");
-//    }
+    static{
+        ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
+        ENDPOINT = bundle.containsKey("endpoint") == false ? "" : bundle.getString("endpoint");
+        ACCESS_KEY_ID = bundle.containsKey("accessKeyId") == false? "" : bundle.getString("accessKeyId");
+        ACCESS_KEY_SECRET = bundle.containsKey("accessKeySecret") == false ? "" : bundle.getString("accessKeySecret");
+        BUCKET_NAME = bundle.containsKey("bucketName") == false ? "" : bundle.getString("bucketName");
+    }
 
     /**
      * 获取阿里云OSS客户端对象
