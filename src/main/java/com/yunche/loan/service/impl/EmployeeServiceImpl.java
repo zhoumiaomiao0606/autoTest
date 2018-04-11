@@ -459,9 +459,9 @@ public class EmployeeServiceImpl implements EmployeeService {
                     });
 
             Preconditions.checkArgument(!idCardList.contains(employeeParam.getIdCard()), "该身份证号已被注册");
-            Preconditions.checkArgument(!idCardList.contains(employeeParam.getMobile()), "该手机号已被注册");
-            Preconditions.checkArgument(!idCardList.contains(employeeParam.getEmail()), "该邮箱已被注册");
-            Preconditions.checkArgument(!idCardList.contains(employeeParam.getDingDing()), "该钉钉号已被注册");
+            Preconditions.checkArgument(!mobileList.contains(employeeParam.getMobile()), "该手机号已被注册");
+            Preconditions.checkArgument(!emailList.contains(employeeParam.getEmail()), "该邮箱已被注册");
+            Preconditions.checkArgument(!dingDingList.contains(employeeParam.getDingDing()), "该钉钉号已被注册");
         }
     }
 
