@@ -23,7 +23,7 @@ public class CustomerParam {
 
     private Date birth;
 
-    private Date identityValidity;
+    private String identityValidity;
 
     private String lendCard;
 

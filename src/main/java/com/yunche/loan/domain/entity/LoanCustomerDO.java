@@ -15,7 +15,7 @@ public class LoanCustomerDO {
 
     private Date birth;
 
-    private Date identityValidity;
+    private String identityValidity;
 
     private String lendCard;
 

@@ -6,7 +6,7 @@
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="nation" property="nation" jdbcType="VARCHAR"/>
         <result column="birth" property="birth" jdbcType="DATE"/>
-        <result column="identity_validity" property="identityValidity" jdbcType="DATE"/>
+        <result column="identity_validity" property="identityValidity" jdbcType="VARCHAR"/>
         <result column="lend_card" property="lendCard" jdbcType="VARCHAR"/>
         <result column="id_card" property="idCard" jdbcType="CHAR"/>
         <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
@@ -152,7 +152,7 @@
         company_postcode, elementary_school, professional,
         family_person_num, debt_ratio)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
-        #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=DATE}, #{lendCard,jdbcType=VARCHAR},
+        #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR},
         #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT},
         #{applyDate,jdbcType=DATE}, #{address,jdbcType=VARCHAR}, #{marry,jdbcType=TINYINT},
         #{identityAddress,jdbcType=VARCHAR}, #{mobileArea,jdbcType=VARCHAR}, #{education,jdbcType=TINYINT},
@@ -367,7 +367,7 @@
                 #{birth,jdbcType=DATE},
             </if>
             <if test="identityValidity != null">
-                #{identityValidity,jdbcType=DATE},
+                #{identityValidity,jdbcType=VARCHAR},
             </if>
             <if test="lendCard != null">
                 #{lendCard,jdbcType=VARCHAR},
@@ -541,7 +541,7 @@
                 birth = #{birth,jdbcType=DATE},
             </if>
             <if test="identityValidity != null">
-                identity_validity = #{identityValidity,jdbcType=DATE},
+                identity_validity = #{identityValidity,jdbcType=VARCHAR},
             </if>
             <if test="lendCard != null">
                 lend_card = #{lendCard,jdbcType=VARCHAR},
@@ -708,7 +708,7 @@
     set name = #{name,jdbcType=VARCHAR},
       nation = #{nation,jdbcType=VARCHAR},
       birth = #{birth,jdbcType=DATE},
-      identity_validity = #{identityValidity,jdbcType=DATE},
+      identity_validity = #{identityValidity,jdbcType=VARCHAR},
       lend_card = #{lendCard,jdbcType=VARCHAR},
       id_card = #{idCard,jdbcType=CHAR},
       mobile = #{mobile,jdbcType=VARCHAR},

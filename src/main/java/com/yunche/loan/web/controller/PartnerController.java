@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author liuzhe
@@ -170,7 +171,7 @@ public class PartnerController {
      * @return
      */
     @GetMapping(value = "/listBank")
-    public ResultBean<List<String>> listBank(@RequestParam("employeeId") Long employeeId) {
+    public ResultBean<Set<String>> listBank(@RequestParam("employeeId") Long employeeId) {
         return partnerService.listBank(employeeId);
     }
 }
