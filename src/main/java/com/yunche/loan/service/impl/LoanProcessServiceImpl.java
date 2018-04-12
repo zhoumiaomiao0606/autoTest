@@ -513,7 +513,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         } else if (MATERIAL_PRINT_REVIEW.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setMaterialPrintReview(taskProcessStatus);
         } else if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setBankCreditRecord(taskProcessStatus);
+            loanProcessDO.setBankCardRecord(taskProcessStatus);
         } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setFinancialScheme(taskProcessStatus);
         } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
