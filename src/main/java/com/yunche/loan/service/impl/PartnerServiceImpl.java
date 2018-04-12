@@ -406,6 +406,17 @@ public class PartnerServiceImpl implements PartnerService {
         return ResultBean.ofSuccess(partnerAccountVO);
     }
 
+    @Override
+    public ResultBean<List<String>> listBank(Long employeeId) {
+        Preconditions.checkNotNull(employeeId, "员工ID不能为空");
+
+        Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
+        Preconditions.checkNotNull(partnerId, "合伙人不存在");
+
+
+        return ResultBean.ofSuccess(null);
+    }
+
 
     /**
      * 创建实体，并返回主键ID

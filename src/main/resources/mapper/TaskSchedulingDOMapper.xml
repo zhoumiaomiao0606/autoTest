@@ -482,38 +482,7 @@
         <select id="selectScheduleTaskList" resultType="com.yunche.loan.domain.vo.ScheduleTaskVO" >
 
 
-        /*备注:? 指 传入的用户id  （集合说明）为集合 ∩ 交集符号  u 并集符号
-
-        （
-          (
-            (查询loan_order表中 loan_base_info_id 集合)
-            ∩
-            （
-              查询 loan_base_info中id 条件为 salesman_id  in //备注:意指销售员id可能为多个,用是否为合伙人leader为条件判断,leader要看到所有手下包括自己的单子
-
-             （
-              先判断 （?）  in （合伙人团队的领导者集合）
-              如果存在
-                   （则取出 employee 表中 所有上级主管为 ？的id 也就是下属 并且type=2为外包员工） u  (?)
-              如果不存在
-                    则先判断 ? 是否属于业务员
-                       如果属于
-                            (?)
-                       不属于
-                             null
-              ）
-            ）
-          ）
-
-          ∩
-
-        (合伙人角色的待办列表)
-        ）
-          u
-        （此用户排除掉合伙人这个角色的其他角色的待办列表）*/
-        select tab.* from
-        (
-        SELECT
+			SELECT
                result.PROC_INST_ID_                AS processId,
                result.TASK_DEF_KEY_                AS taskKey,
                DATE_FORMAT(result.CREATE_TIME_,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
@@ -533,77 +502,83 @@
                CONCAT('待办',result.NAME_)          AS taskStatusExplanation,
                jb.partner_id                       AS  partnerId,
                jb.salesman_id                      AS  salesmanId,
-               case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
+							 case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
                   case when lp.telephone_verify  &lt; ${level} and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
                else 2 end                          AS filtration,
                case when result.TASK_DEF_KEY_ = 'usertask_info_supplement' then
                 (select id from loan_info_supplement where order_id = jorder.id order by start_time desc limit 1)
                else null end                       AS supplementOrderId
+							from
+					(
+						SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
+								inner join
+										ACT_RU_IDENTITYLINK I
+										ON I.TASK_ID_ = RES.ID_
+										WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' AND
+										( I.GROUP_ID_ IN
+											(
+												SELECT name FROM user_group g
+													INNER JOIN
+												(SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{employeeId,jdbcType=BIGINT}) e
+													ON e.user_group_id = g.id and g.level != 1
+											)
+										)
+							union
+							select tab_u.* from
+								(
+									SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
+										inner join
+									ACT_RU_IDENTITYLINK I
+									ON I.TASK_ID_ = RES.ID_
+									WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' AND
+									( I.GROUP_ID_ IN
+										(
+											SELECT name FROM user_group g
+												INNER JOIN
+											(SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{employeeId,jdbcType=BIGINT}) e
+												ON e.user_group_id = g.id and g.level = 1
+										)
+									)
+								) tab_u
+							inner join
+							(
+							SELECT process_inst_id FROM loan_order o
+									INNER JOIN
+							(
+									SELECT id FROM loan_base_info WHERE salesman_id IN
+										(
+										case
+											when
+													#{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
+											then
+												case
+													when
+														#{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+													then
+														(select employee_id from partner_rela_employee where partner_id in (select partner_id from partner_rela_employee where employee_id = #{employeeId,jdbcType=BIGINT}))
+													else
+														#{employeeId,jdbcType=BIGINT}
+													end
+											else
+													null
+										end
+										)
+									) b on o.loan_base_info_id = b.id
+								) tab_s
+								on tab_u.PROC_INST_ID_  =  tab_s.process_inst_id
+							) result
 
-        FROM
-          (
-          SELECT pt.* FROM
-            (SELECT process_inst_id FROM loan_order o
-              INNER JOIN
-            (SELECT id FROM loan_base_info WHERE salesman_id IN(
-              CASE WHEN
-                #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
-              THEN
-                  (SELECT id FROM employee  WHERE parent_id = #{employeeId,jdbcType=BIGINT} AND type = 2 UNION SELECT #{employeeId,jdbcType=BIGINT})
-              ELSE
-                  CASE WHEN
-                    (SELECT type FROM employee WHERE id = #{employeeId,jdbcType=BIGINT}) = 2
-                  THEN
-                    #{employeeId,jdbcType=BIGINT}
-                  ELSE
-                    NULL
-                  END
-              END
-                )) b
-            ON o.loan_base_info_id = b.id) et
 
-            INNER JOIN
-
-            (SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
-                INNER JOIN
-                ACT_RU_IDENTITYLINK I
-                ON I.TASK_ID_ = RES.ID_
-              WHERE
-                RES.ASSIGNEE_ IS NULL
-                AND I.TYPE_ = 'candidate'
-                AND ( I.GROUP_ID_ IN ( '业务内勤' ) )) pt
-
-          ON et.process_inst_id = pt.PROC_INST_ID_
-            WHERE (SELECT type FROM employee WHERE id = #{employeeId,jdbcType=BIGINT}) = 2
-
-          UNION
-
-          SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
-                INNER JOIN
-                ACT_RU_IDENTITYLINK I
-                ON I.TASK_ID_ = RES.ID_
-                WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' AND
-                ( I.GROUP_ID_ IN
-                  (
-                    SELECT name FROM user_group g
-                      INNER JOIN
-                    (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{employeeId,jdbcType=BIGINT}) e
-                      ON e.user_group_id = g.id
-                      WHERE g.name != '业务内勤'
-                  )
-                )
-          ) result
-
-        INNER JOIN loan_order jorder     ON jorder.process_inst_id = result.PROC_INST_ID_
-        LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
-        LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
-        LEFT JOIN employee       je      ON je.id                  = jb.salesman_id
-        LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
-        LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
-        LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
-        INNER JOIN loan_process lp       ON jorder.id              = lp.order_id and lp.order_status = 1
-        ) tab where tab.filtration = 2
-        order by tab.createScheduleDate ASC
+							INNER JOIN loan_order jorder     ON jorder.process_inst_id = result.PROC_INST_ID_
+							LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
+							LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
+							LEFT JOIN employee       je      ON je.id                  = jb.salesman_id
+							LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
+							LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
+							LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
+							INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
+						having filtration = 2
+                        order by createScheduleDate ASC
         </select>
 
 </mapper>

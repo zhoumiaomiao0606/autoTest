@@ -1378,6 +1378,8 @@ CREATE TABLE `user_group_rela_area_auth` (
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+
+
 /* FUNCTIONS */;
 DROP FUNCTION IF EXISTS `bankFee_1`;
 DELIMITER $$
