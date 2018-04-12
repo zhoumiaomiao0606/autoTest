@@ -5,10 +5,7 @@ import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.TelephoneVerifyParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.LoanCarInfoDOMapper;
-import com.yunche.loan.mapper.LoanFinancialPlanDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.TelephoneVerifyService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -33,6 +30,9 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
 
+    @Resource
+    private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
+
     @Override
     public RecombinationVO detail(Long orderId) {
 
@@ -51,6 +51,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
         recombinationVO.setCredits(credits);
         recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify",orderId));
