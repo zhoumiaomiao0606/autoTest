@@ -402,10 +402,7 @@
 </select>
 
     <!--客户信息-->
-    <select id="selectUniversalCustomerDetail" resultType="com.yunche.loan.domain.vo.UniversalCustomerDetailVO" parameterType="java.lang.Long" >
-
-
-        set @order_id = (select id from loan_order where loan_customer_id  = (select principal_cust_id from loan_customer where id = #{customerId,jdbcType=BIGINT}));
+    <select id="selectUniversalCustomerDetail" resultType="com.yunche.loan.domain.vo.UniversalCustomerDetailVO">
 
         select
           customer.id                                    AS customer_id,
@@ -478,8 +475,8 @@
         (select * from loan_customer where id = #{customerId,jdbcType=BIGINT}) customer
         left join loan_credit_info bank on customer.id = bank.customer_id and bank.type = 1
         left join loan_credit_info society on customer.id = society.customer_id and society.type = 2
-        left join (select * from loan_process_log  where order_id  = @order_id and task_definition_key = 'usertask_bank_credit_record' order by create_time LIMIT 1) process_bank on process_bank.order_id = @order_id
-        left join (select * from loan_process_log  where order_id  = @order_id and task_definition_key = 'usertask_social_credit_record' order by create_time LIMIT 1) process_society on process_society.order_id = @order_id
+        left join (select * from loan_process_log  where order_id  = @order_id and task_definition_key = 'usertask_bank_credit_record' order by create_time LIMIT 1) process_bank on process_bank.order_id = #{orderId,jdbcType=BIGINT}
+        left join (select * from loan_process_log  where order_id  = @order_id and task_definition_key = 'usertask_social_credit_record' order by create_time LIMIT 1) process_society on process_society.order_id = #{orderId,jdbcType=BIGINT}
     </select>
 
     <!--客户附件信息-->
@@ -548,6 +545,13 @@
            credit_info,
            add_condition
        from loan_process_log where task_definition_key =  #{taskDefinitionKey,jdbcType=VARCHAR} and order_id = #{orderId,jdbcType=BIGINT} order by create_time desc limit 1
+    </select>
+
+    <!--获取主贷人id-->
+    <select id="selectOrderIdbyPrincipalCustId" resultType="java.lang.Long" parameterType="java.lang.Long">
+
+    select id from loan_order where loan_customer_id  = (select principal_cust_id from loan_customer where id =  #{customerId,jdbcType=BIGINT});
+
     </select>
 
     <!--=============================================end===================================================-->
