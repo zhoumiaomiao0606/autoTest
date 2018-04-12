@@ -200,7 +200,7 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow159" name="&lt;13W 手动OR自动打回修改" sourceRef="exclusivegateway3" targetRef="usertask_credit_apply">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanAmount == 1 && action == -1}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanAmount == 1 && (action == -1 || action == 0) }]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_bank_card_record" name="银行卡录入" activiti:candidateGroups="总经理,培训经理,财务经理,银行驻点"></userTask>
     <parallelGateway id="parallelgateway8" name="Parallel Gateway"></parallelGateway>
