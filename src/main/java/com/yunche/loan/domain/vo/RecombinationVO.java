@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ public class RecombinationVO<T> {
         private UniversalApprovalInfo channel_msg;
 
         private UniversalApprovalInfo telephone_msg;
+
+        private LoanTelephoneVerifyDO telephone_des;
 
         private UniversalLoanInfoVO loan;
 
