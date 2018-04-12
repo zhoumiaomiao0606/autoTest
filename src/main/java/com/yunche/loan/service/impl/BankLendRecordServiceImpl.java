@@ -30,6 +30,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -61,7 +63,13 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
         for(UniversalCustomerVO universalCustomerVO:customers){
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
-            universalCustomerVO.setFiles(files);
+            List<UniversalCustomerFileVO> tmpfiles = files.parallelStream().map( file ->{
+                if(file.getUrls()==null){
+                    file.setUrls("[]");
+                }
+                return file;
+            }).collect(Collectors.toList());
+            universalCustomerVO.setFiles(tmpfiles);
         }
         recombinationVO.setCustomers(customers);
         return ResultBean.ofSuccess(recombinationVO);

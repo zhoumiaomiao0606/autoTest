@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,6 +66,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     public ResultBean<Long> insert(FinancialProductParam financialProductParam) {
 
         Preconditions.checkArgument(financialProductParam != null, "financialProductDOs不能为空");
+        financialProductParam.setGmtCreate(new Date());
         int count = financialProductDOMapper.insert(financialProductParam);
         Preconditions.checkArgument(count > 0, "创建金融产品失败");
 
