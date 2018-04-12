@@ -261,9 +261,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // 业务单创建
         Long orderId = createLoanOrder(baseInfoId, customerId);
 
-        // 创建流程记录
-        createLoanProcess(orderId);
-
         // 返回信息：业务单ID & 客户ID
         AppCreditApplyVO appCreditApplyVO = new AppCreditApplyVO();
         appCreditApplyVO.setOrderId(orderId);
@@ -927,21 +924,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         }
 
         return ResultBean.ofSuccess(loanCarInfoVO);
-    }
-
-    /**
-     * 创建流程记录
-     *
-     * @param orderId
-     */
-    private void createLoanProcess(Long orderId) {
-        LoanProcessDO loanProcessDO = new LoanProcessDO();
-        loanProcessDO.setOrderId(orderId);
-        loanProcessDO.setCreditApply(TASK_PROCESS_TODO);
-        loanProcessDO.setGmtCreate(new Date());
-        loanProcessDO.setGmtModify(new Date());
-        int count = loanProcessDOMapper.insertSelective(loanProcessDO);
-        Preconditions.checkArgument(count > 0, "创建流程记录失败");
     }
 
     /**
