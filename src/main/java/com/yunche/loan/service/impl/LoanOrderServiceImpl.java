@@ -32,8 +32,6 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
@@ -263,26 +261,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // 创建订单
         Long orderId = createLoanOrder(baseInfoId, customerId);
 
-        // 创建流程记录
-        createLoanProcess(orderId);
-
         return ResultBean.ofSuccess(String.valueOf(orderId));
-    }
-
-    /**
-     * 创建流程记录
-     *
-     * @param orderId
-     */
-    private void createLoanProcess(Long orderId) {
-        LoanProcessDO loanProcessDO = new LoanProcessDO();
-        loanProcessDO.setOrderId(orderId);
-        loanProcessDO.setCreditApply(TASK_PROCESS_TODO);
-        loanProcessDO.setOrderStatus(ORDER_STATUS_DOING);
-        loanProcessDO.setGmtCreate(new Date());
-        loanProcessDO.setGmtModify(new Date());
-        int count = loanProcessDOMapper.insertSelective(loanProcessDO);
-        Preconditions.checkArgument(count > 0, "创建流程记录失败");
     }
 
     @Override

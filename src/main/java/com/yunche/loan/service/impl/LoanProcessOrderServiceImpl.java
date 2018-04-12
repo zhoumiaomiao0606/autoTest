@@ -3,7 +3,9 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.service.LoanProcessOrderService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -16,6 +18,8 @@ import java.util.Date;
 import java.util.Random;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 
 /**
  * @author liuzhe
@@ -26,6 +30,9 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
+    private LoanProcessDOMapper loanProcessDOMapper;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -46,11 +53,13 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
     @Override
     @Transactional
     public ResultBean<Long> createLoanOrder(Long baseInfoId, Long customerId) {
+
         // 开启activiti流程
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("loan_process");
         Preconditions.checkNotNull(processInstance, "开启流程实例异常");
         Preconditions.checkNotNull(processInstance.getProcessInstanceId(), "开启流程实例异常");
 
+        // 插入
         LoanOrderDO loanOrderDO = new LoanOrderDO();
         loanOrderDO.setProcessInstId(processInstance.getProcessInstanceId());
         loanOrderDO.setLoanCustomerId(customerId);
@@ -58,6 +67,9 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
         loanOrderDO.setStatus(VALID_STATUS);
         ResultBean<Long> createResultBean = create(loanOrderDO);
         Preconditions.checkArgument(createResultBean.getSuccess(), createResultBean.getMsg());
+
+        // 创建流程记录
+        createLoanProcess(createResultBean.getData());
 
         return createResultBean;
     }
@@ -104,5 +116,21 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
         String fixLenthString = String.valueOf(pross);
         // 返回固定的长度的随机数
         return fixLenthString.substring(2, strLength + 2);
+    }
+
+    /**
+     * 创建流程记录
+     *
+     * @param orderId
+     */
+    private void createLoanProcess(Long orderId) {
+        LoanProcessDO loanProcessDO = new LoanProcessDO();
+        loanProcessDO.setOrderId(orderId);
+        loanProcessDO.setCreditApply(TASK_PROCESS_TODO);
+        loanProcessDO.setOrderStatus(ORDER_STATUS_DOING);
+        loanProcessDO.setGmtCreate(new Date());
+        loanProcessDO.setGmtModify(new Date());
+        int count = loanProcessDOMapper.insertSelective(loanProcessDO);
+        Preconditions.checkArgument(count > 0, "创建流程记录失败");
     }
 }
