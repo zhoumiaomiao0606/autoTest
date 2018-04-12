@@ -79,11 +79,13 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 loanCarInfoDOMapper.updateByPrimaryKeySelective(loanCarInfoDO);
             }
             if(loanFinancialPlanId!=null){
-                LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
-                loanFinancialPlanDO.setId(loanFinancialPlanId);
-                loanFinancialPlanDO.setCashDeposit(StringUtils.isBlank(param.getFinancial_cash_deposit())?null:new BigDecimal(param.getFinancial_cash_deposit()));
-                loanFinancialPlanDO.setExtraFee(StringUtils.isBlank(param.getFinancial_extra_fee())?null:new BigDecimal(param.getFinancial_extra_fee()));
-                loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
+                if(StringUtils.isNotBlank(param.getFinancial_cash_deposit()) || StringUtils.isNotBlank(param.getFinancial_extra_fee())) {
+                    LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
+                    loanFinancialPlanDO.setId(loanFinancialPlanId);
+                    loanFinancialPlanDO.setCashDeposit(StringUtils.isBlank(param.getFinancial_cash_deposit()) ? null : new BigDecimal(param.getFinancial_cash_deposit()));
+                    loanFinancialPlanDO.setExtraFee(StringUtils.isBlank(param.getFinancial_extra_fee()) ? null : new BigDecimal(param.getFinancial_extra_fee()));
+                    loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
+                }
             }
         }
 
