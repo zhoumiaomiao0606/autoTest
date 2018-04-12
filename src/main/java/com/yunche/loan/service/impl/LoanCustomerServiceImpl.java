@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.LoanOrderProcessConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
@@ -10,6 +11,7 @@ import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanFileService;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +46,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     @Autowired
     private LoanFileService loanFileService;
+
+    @Autowired
+    LoanProcessDOMapper loanProcessDOMapper;
 
 
     @Override
@@ -177,7 +182,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByCustomerId(customerId);
                         if (null != loanOrderDO) {
-                            return String.valueOf(loanOrderDO.getId());
+                            //过滤状态为弃单的订单
+                            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(loanOrderDO.getId());
+                            if(null!=loanProcessDO && !LoanOrderProcessConst.ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus())){
+                                return String.valueOf(loanOrderDO.getId());
+                            }
                         }
                         return null;
                     })
@@ -189,7 +198,6 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
             if (null != orderId && !CollectionUtils.isEmpty(orderIdList)) {
                 orderIdList.remove(String.valueOf(orderId));
             }
-
             loanRepeatVO.setOrderIdList(orderIdList);
         }
 
