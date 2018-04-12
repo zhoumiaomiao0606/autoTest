@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanprocess")
+@RequestMapping("/api/v1/loanorder/telephoneVerify")
 public class LoanTelephoneVerifyController {
 
     @Autowired

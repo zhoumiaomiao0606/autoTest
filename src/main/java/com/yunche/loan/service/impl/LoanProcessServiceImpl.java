@@ -89,7 +89,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 节点权限校验
         permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
 
-        checkXXX(approval.getTaskDefinitionKey());
+        // 校验审核前提条件
+        checkPreCondition(approval.getTaskDefinitionKey(), approval.getOrderId());
 
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
@@ -120,9 +121,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
 
-    private void checkXXX(String taskDefinitionKey) {
+    /**
+     * 校验审核前提条件
+     *
+     * @param taskDefinitionKey
+     * @param orderId
+     */
+    private void checkPreCondition(String taskDefinitionKey, Long orderId) {
+        if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
+            // 提车资料必须已经提交了
+            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+            Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
+        }
     }
-
 
     /**
      * 流程操作日志记录
@@ -148,6 +160,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkArgument(count > 0, "操作日志记录失败");
     }
 
+    /**
+     * 征信增补
+     *
+     * @param approval
+     * @param processInstanceId
+     */
     private void execCreditSupplementTask(ApprovalParam approval, String processInstanceId) {
         // 是否【征信增补】
         boolean isCreditSupplementTask = CREDIT_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction());
