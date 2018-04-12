@@ -12,6 +12,7 @@ import com.yunche.loan.domain.vo.PartnerAccountVO;
 import com.yunche.loan.domain.vo.PartnerVO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author liuzhe
@@ -44,5 +45,5 @@ public interface PartnerService {
 
     ResultBean<PartnerAccountVO> listAccount(Long employeeId);
 
-    ResultBean<List<String>> listBank(Long employeeId);
+    ResultBean<Set<String>> listBank(Long employeeId);
 }

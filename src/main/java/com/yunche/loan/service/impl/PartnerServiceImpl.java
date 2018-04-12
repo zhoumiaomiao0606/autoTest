@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.vo.*;
@@ -56,6 +57,10 @@ public class PartnerServiceImpl implements PartnerService {
     private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
     @Autowired
     private BizModelRelaAreaPartnersDOMapper bizModelRelaAreaPartnersDOMapper;
+    @Autowired
+    private BizModelRelaFinancialProdDOMapper bizModelRelaFinancialProdDOMapper;
+    @Autowired
+    private FinancialProductDOMapper financialProductDOMapper;
     @Autowired
     private JavaMailSender mailSender;
 
@@ -407,14 +412,53 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public ResultBean<List<String>> listBank(Long employeeId) {
+    public ResultBean<Set<String>> listBank(Long employeeId) {
         Preconditions.checkNotNull(employeeId, "员工ID不能为空");
 
         Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
-        Preconditions.checkNotNull(partnerId, "合伙人不存在");
+        if (null == partnerId) {
+            return ResultBean.ofSuccess(Collections.EMPTY_SET);
+        }
 
+        BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
+        bizModelRelaAreaPartnersDO.setGroupId(partnerId);
+        List<BizModelRelaAreaPartnersDO> bizModelRelaAreaPartnersDOList = bizModelRelaAreaPartnersDOMapper.listQuery(bizModelRelaAreaPartnersDO);
 
-        return ResultBean.ofSuccess(null);
+        Set<String> bankSet = Sets.newHashSet();
+
+        if (!CollectionUtils.isEmpty(bizModelRelaAreaPartnersDOList)) {
+
+            bizModelRelaAreaPartnersDOList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        Long bizId = e.getBizId();
+                        if (null != bizId) {
+
+                            List<BizModelRelaFinancialProdDO> bizModelRelaFinancialProdDOList = bizModelRelaFinancialProdDOMapper.queryById(bizId);
+
+                            if (!CollectionUtils.isEmpty(bizModelRelaFinancialProdDOList)) {
+
+                                bizModelRelaFinancialProdDOList.stream()
+                                        .filter(Objects::nonNull)
+                                        .forEach(f -> {
+
+                                            Long prodId = f.getProdId();
+                                            if (null != prodId) {
+                                                FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(prodId);
+                                                if (null != financialProductDO) {
+                                                    bankSet.add(financialProductDO.getBankName());
+                                                }
+                                            }
+                                        });
+                            }
+                        }
+                    });
+        }
+
+        bankSet.removeAll(Collections.singleton(null));
+
+        return ResultBean.ofSuccess(bankSet);
     }
 
 

@@ -89,6 +89,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 节点权限校验
         permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
 
+        checkXXX(approval.getTaskDefinitionKey());
+
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
 
@@ -116,6 +118,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         push(loanOrderDO, approval.getTaskDefinitionKey(), approval.getAction(), approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+    }
+
+    private void checkXXX(String taskDefinitionKey) {
     }
 
 
