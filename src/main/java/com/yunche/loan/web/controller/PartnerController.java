@@ -162,4 +162,15 @@ public class PartnerController {
     public ResultBean<PartnerAccountVO> listAccount(@RequestParam("employeeId") Long employeeId) {
         return partnerService.listAccount(employeeId);
     }
+
+    /**
+     * 员工所属合伙人被授权的银行列表
+     *
+     * @param employeeId
+     * @return
+     */
+    @GetMapping(value = "/listBank")
+    public ResultBean<List<String>> listBank(@RequestParam("employeeId") Long employeeId) {
+        return partnerService.listBank(employeeId);
+    }
 }

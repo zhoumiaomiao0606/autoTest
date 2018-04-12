@@ -43,4 +43,6 @@ public interface PartnerService {
     ResultBean<Void> unbindEmployee(Long id, String employeeIds);
 
     ResultBean<PartnerAccountVO> listAccount(Long employeeId);
+
+    ResultBean<List<String>> listBank(Long employeeId);
 }
