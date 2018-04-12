@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.LoanFileDO;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 @Service
 @Transactional
@@ -43,9 +46,9 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
     public RecombinationVO detail(Long orderId) {
         VehicleInformationVO vehicleInformationVO = loanQueryDOMapper.selectVehicleInformation(orderId);
 
-        List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
 
-        for(UniversalCustomerVO universalCustomerVO:customers){
+        for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
@@ -53,39 +56,37 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         RecombinationVO<VehicleInformationVO> recombinationVO = new RecombinationVO<VehicleInformationVO>();
         recombinationVO.setInfo(vehicleInformationVO);
         recombinationVO.setCustomers(customers);
-        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecordByType(orderId,new Byte("19")));
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecordByType(orderId, new Byte("19")));
         return recombinationVO;
     }
 
     @Override
     public void update(VehicleInformationUpdateParam param) {
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()),new Byte("0"));
-        if(loanOrderDO == null){
-            throw new BizException("此业务单不存在");
-        }
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()), VALID_STATUS);
+        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
-        Long foundationId  = loanOrderDO.getVehicleInformationId();//关联ID
-        if(foundationId == null){
+        Long foundationId = loanOrderDO.getVehicleInformationId();//关联ID
+        if (foundationId == null) {
             //新增提交
-            VehicleInformationDO V =  BeanPlasticityUtills.copy(VehicleInformationDO.class,param);
+            VehicleInformationDO V = BeanPlasticityUtills.copy(VehicleInformationDO.class, param);
             vehicleInformationDOMapper.insertSelective(V);
             //进行绑定
             Long id = V.getId();
             loanOrderDO.setVehicleInformationId(id);
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        }else{
-            if(vehicleInformationDOMapper.selectByPrimaryKey(foundationId) == null){
+        } else {
+            if (vehicleInformationDOMapper.selectByPrimaryKey(foundationId) == null) {
                 //那order表中是脏数据
                 //进行新增 但是id得用order_id表中存在的id
-                VehicleInformationDO V= BeanPlasticityUtills.copy(VehicleInformationDO.class,param);
+                VehicleInformationDO V = BeanPlasticityUtills.copy(VehicleInformationDO.class, param);
                 V.setId(foundationId);
                 vehicleInformationDOMapper.insertSelective(V);
                 //但是不用更新loanOrder 因为已经存在
-            }else {
+            } else {
                 //代表存在
                 //进行更新
-                VehicleInformationDO V= BeanPlasticityUtills.copy(VehicleInformationDO.class,param);
+                VehicleInformationDO V = BeanPlasticityUtills.copy(VehicleInformationDO.class, param);
                 V.setId(foundationId);
                 vehicleInformationDOMapper.updateByPrimaryKeySelective(V);
             }
@@ -94,12 +95,12 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
 
         Long customerId = loanOrderDO.getLoanCustomerId();
 
-        if(customerId!=null){
-            if(param.getFiles()!=null){
-                if(!param.getFiles().isEmpty()){
-                    for(UniversalFileParam universalFileParam:param.getFiles()){
-                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId,new Byte("19"),null);
-                        for(LoanFileDO loanFileDO:uploadList){
+        if (customerId != null) {
+            if (param.getFiles() != null) {
+                if (!param.getFiles().isEmpty()) {
+                    for (UniversalFileParam universalFileParam : param.getFiles()) {
+                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("19"), null);
+                        for (LoanFileDO loanFileDO : uploadList) {
                             loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
                         }
                         LoanFileDO loanFileDO = new LoanFileDO();

@@ -66,8 +66,8 @@ public class FinancialProductController {
      * @return
      */
     @GetMapping("/listByOrderId")
-    public ResultBean<List<CascadeFinancialProductVO>> listByPartnerId(@RequestParam("orderId") Long orderId) {
-        return financialProductService.listByPartnerId(orderId);
+    public ResultBean<List<CascadeFinancialProductVO>> listByOrderId(@RequestParam("orderId") Long orderId) {
+        return financialProductService.listByOrderId(orderId);
     }
 }
 

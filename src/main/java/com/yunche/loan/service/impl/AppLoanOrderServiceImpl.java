@@ -874,6 +874,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Transactional
     public ResultBean<Void> updateLoanCarInfo(AppLoanCarInfoParam loanCarInfoParam) {
         Preconditions.checkArgument(null != loanCarInfoParam && null != loanCarInfoParam.getId(), "车辆信息ID不能为空");
+        Preconditions.checkNotNull(loanCarInfoParam.getOrderId(), "订单号不能为空");
 
         // convert
         LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
