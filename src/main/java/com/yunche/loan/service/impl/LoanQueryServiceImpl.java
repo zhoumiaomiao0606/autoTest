@@ -29,6 +29,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
     @Override
     public UniversalCustomerDetailVO universalCustomerDetail(Long customerId) {
-        return loanQueryDOMapper.selectUniversalCustomerDetail(customerId);
+
+        return loanQueryDOMapper.selectUniversalCustomerDetail(loanQueryDOMapper.selectOrderIdbyPrincipalCustId(customerId),customerId);
     }
 }
