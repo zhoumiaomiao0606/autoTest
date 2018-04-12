@@ -136,6 +136,8 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
     public ResultBean manualInput(BankLendRecordVO bankLendRecordVO) {
 
         Preconditions.checkNotNull(bankLendRecordVO,"银行放款记录不能为空");
+        Preconditions.checkNotNull(bankLendRecordVO.getLendAmount(),"银行放款金额不能为空");
+        Preconditions.checkNotNull(bankLendRecordVO.getLendDate(),"银行放款日期不能为空");
         BankLendRecordDO bankLendRecordDO =  new BankLendRecordDO();
         bankLendRecordDO.setLoanOrder(Long.valueOf(bankLendRecordVO.getOrderId()));
         bankLendRecordDO.setLendAmount(bankLendRecordVO.getLendAmount());

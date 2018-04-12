@@ -25,8 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by zhouguoliang on 2018/1/18.
@@ -89,6 +91,7 @@ public class FinancialProductServiceImpl implements FinancialProductService {
     @Transactional
     public ResultBean<Void> update(FinancialProductParam financialProductParam) {
         Preconditions.checkArgument(financialProductParam != null && financialProductParam.getProdId() != null, "financialProductDOs不能为空");
+        financialProductParam.setGmtModify(new Date());
         int count = financialProductDOMapper.updateByPrimaryKeySelective(financialProductParam);
         List<FinancialProductParam.ProductRate> productRates = financialProductParam.getProductRateList();
         Preconditions.checkNotNull(productRates, "费率未设置");
@@ -224,8 +227,8 @@ public class FinancialProductServiceImpl implements FinancialProductService {
         for (FinancialProductDO financialProductDO : financialProductDOList) {
             financialProductVOList.add(getFinancialProductVO(financialProductDO));
         }
-
-        return ResultBean.ofSuccess(financialProductVOList);
+        //按创建时间反序排列
+        return ResultBean.ofSuccess(financialProductVOList.parallelStream().sorted(Comparator.comparing(FinancialProductVO::getGmtCreate).reversed()) .collect(Collectors.toList()));
     }
 
     //add by zhengdu 2018-03-17  增加接口，按照合伙人ID查询相应->绑定银行->金融产品->金融产品利率

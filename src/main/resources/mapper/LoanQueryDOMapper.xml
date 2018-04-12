@@ -733,7 +733,7 @@
         end
         from act_hi_taskinst
         where PROC_INST_ID_ = a.process_inst_id
-        and TASK_DEF_KEY_ = 'usertask_bank_lend_record'
+        and TASK_DEF_KEY_ = 'usertask_loan_review'
         order by START_TIME_
         desc limit 1) AS remitGmtCreate,
         f.lend_date AS lendDate,
