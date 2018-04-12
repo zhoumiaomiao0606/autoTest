@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.OSSFileParam;
 import com.yunche.loan.domain.vo.BankCardRecordVO;
 import com.yunche.loan.service.BankCardRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,9 @@ public class BankCardRecordController {
         BankCardRecordService bankCardRecordService;
 
        //银行卡文件导入
-        @GetMapping(value = "/imp")
-        public ResultBean imp(@RequestParam("key") String key){
-            return bankCardRecordService.importFile(key);
+        @PostMapping(value = "/imp")
+        public ResultBean imp(@RequestBody OSSFileParam ossFileParam){
+            return bankCardRecordService.importFile(ossFileParam.getKey());
         }
 
         //银行卡接收单录入

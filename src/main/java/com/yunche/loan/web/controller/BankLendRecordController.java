@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.OSSFileParam;
 import com.yunche.loan.domain.vo.BankLendRecordVO;
 import com.yunche.loan.service.BankLendRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,10 @@ public class BankLendRecordController {
 //    }
 
 
-    @GetMapping(value = "/imp")
-    public ResultBean importFile(@RequestParam("key") String key){
-        Preconditions.checkNotNull(key,"文件名不能为空");
-        return  bankLendRecordService.importFile(key);
+    @PostMapping(value = "/imp")
+    public ResultBean importFile(@RequestBody OSSFileParam ossFileParam){
+        Preconditions.checkNotNull(ossFileParam.getKey(),"文件名不能为空");
+        return  bankLendRecordService.importFile(ossFileParam.getKey());
 
     }
     @PostMapping(value = "/input")
