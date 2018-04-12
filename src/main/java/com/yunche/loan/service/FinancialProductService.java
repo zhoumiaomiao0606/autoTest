@@ -30,5 +30,5 @@ public interface FinancialProductService {
 
     ResultBean<List<FinancialProductVO>> getByCondition(FinancialQuery financialQuery);
 
-    ResultBean<CascadeFinancialProductVO> listByOrderId(Long partnerId);
+    ResultBean<List<CascadeFinancialProductVO>> listByPartnerId(Long partnerId);
 }
