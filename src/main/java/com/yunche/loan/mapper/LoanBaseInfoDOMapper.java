@@ -18,6 +18,6 @@ public interface LoanBaseInfoDOMapper {
 
     int updateByPrimaryKey(LoanBaseInfoDO record);
 
-    @Select("SELECT * FROM `loan_base_info` WHERE `id` = (SELECT `loan_base_info_id`  FROM `loan_order` WHERE id = #{orderId})")
+    @Select("SELECT bank as bank, partner_id AS partnerId  FROM `loan_base_info` WHERE `id` = (SELECT `loan_base_info_id`  FROM `loan_order` WHERE id = #{orderId})")
     LoanBaseInfoDO getByOrderId(Long orderId);
 }
