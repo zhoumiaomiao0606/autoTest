@@ -87,7 +87,7 @@
         left join employee join_e on join_e.id = join_b.salesman_id
         left join department join_d on join_d.id = join_p.department_id
         left join vehicle_information join_h on join_h.id = main.vehicle_information_id
-        where 1=1
+        where 1=1 and deputy.order_status = 1
         <choose>
             <when test="multipartType == 1">
                 AND case
@@ -280,7 +280,7 @@
             <if test="taskDefinitionKey == 'usertask_info_supplement'">
             left join loan_info_supplement join_s        on main.id               = join_s.order_id
             </if>
-            where 1=1
+            where 1=1 and deputy.order_status = 1
             <choose>
                 <when test="taskDefinitionKey == 'usertask_credit_apply'">
                     <choose>
