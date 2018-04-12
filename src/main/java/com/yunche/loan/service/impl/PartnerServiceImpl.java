@@ -410,6 +410,9 @@ public class PartnerServiceImpl implements PartnerService {
     public ResultBean<List<String>> listBank(Long employeeId) {
         Preconditions.checkNotNull(employeeId, "员工ID不能为空");
 
+        Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
+        Preconditions.checkNotNull(partnerId, "合伙人不存在");
+
 
         return ResultBean.ofSuccess(null);
     }

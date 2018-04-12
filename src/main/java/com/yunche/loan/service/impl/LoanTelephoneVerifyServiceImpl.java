@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 /**
  * @author liuzhe
  * @date 2018/4/12
@@ -29,9 +31,12 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = new LoanTelephoneVerifyDO();
         BeanUtils.copyProperties(loanTelephoneVerifyParam, loanTelephoneVerifyDO);
 
+        loanTelephoneVerifyDO.setGmtModify(new Date());
+
         LoanTelephoneVerifyDO existLoanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(loanTelephoneVerifyParam.getOrderId());
         if (null == existLoanTelephoneVerifyDO) {
             // create
+            loanTelephoneVerifyDO.setGmtCreate(new Date());
             int count = loanTelephoneVerifyDOMapper.insertSelective(loanTelephoneVerifyDO);
             Preconditions.checkArgument(count > 0, "保存失败");
         } else {
