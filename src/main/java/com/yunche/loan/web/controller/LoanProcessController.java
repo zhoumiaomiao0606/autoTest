@@ -1,7 +1,6 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanProcessLogDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanProcessService;
