@@ -25,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
@@ -133,6 +134,17 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
             Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
             Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
+        }
+
+
+        if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
+            // 客户资料、车辆信息、金融方案  必须均已录入
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
+            Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+
+            Preconditions.checkNotNull(loanOrderDO.getLoanCustomerId(), "请先录入客户信息");
+            Preconditions.checkNotNull(loanOrderDO.getLoanCarInfoId(), "请先录入车辆信息");
+            Preconditions.checkNotNull(loanOrderDO.getLoanFinancialPlanId(), "请先录入金融方案");
         }
     }
 
@@ -740,7 +752,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         final Byte[] maxLevel = {0};
 
-        userGroupNameSet.parallelStream()
+        userGroupNameSet.stream()
                 .filter(e -> StringUtils.isNotBlank(e))
                 .forEach(e -> {
 
