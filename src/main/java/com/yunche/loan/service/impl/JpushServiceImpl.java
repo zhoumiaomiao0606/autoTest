@@ -38,11 +38,11 @@ public class JpushServiceImpl implements JpushService {
         FlowOperationMsgDO DO = new FlowOperationMsgDO();
         DO.setEmployeeId(employeeId);
         DO.setOrderId(orderId);
-        DO.setTitle(title);
-        DO.setPrompt(prompt);
-        DO.setMsg(msg);
-        DO.setSender(SessionUtils.getLoginUser().getName());
-        DO.setProcessKey(processKey);
+        DO.setTitle(nullToEmp(title));
+        DO.setPrompt(nullToEmp(prompt));
+        DO.setMsg(nullToEmp(msg));
+        DO.setSender(nullToEmp(SessionUtils.getLoginUser().getName()));
+        DO.setProcessKey(nullToEmp(processKey));
         DO.setSendDate(new Timestamp(new Date().getTime()));
         DO.setReadStatus(new Byte("0"));
         DO.setType(type);
@@ -52,6 +52,15 @@ public class JpushServiceImpl implements JpushService {
             if(!StringUtils.isBlank(employeeDO.getMachineId())){
                 Jpush.sendToRegistrationId(employeeDO.getMachineId(),title,processKey);
             }
+        }
+    }
+
+    private String nullToEmp(String str){
+
+        if(StringUtils.isBlank(str)){
+            return "";
+        }else{
+            return str;
         }
     }
 
