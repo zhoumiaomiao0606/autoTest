@@ -91,6 +91,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 //                tmp[2].trim();//放款日期
 //                tmp[3].trim();//放款金额
                 Long orderId =  loanQueryDOMapper.selectOrderIdByIDCard(tmp[1].trim());
+                if(orderId==null){
+                    continue;
+                }
                 bankLendRecordDO.setLoanOrder(orderId);
                 bankLendRecordDO.setLendDate(df.parse(tmp[2].trim()));
                 bankLendRecordDO.setLendAmount(new BigDecimal(tmp[3].trim()));

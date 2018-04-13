@@ -53,6 +53,9 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
             for(String[] tmp :returnList){
 
                 Long orderId =  loanQueryDOMapper.selectOrderIdByIDCard(tmp[1].trim());
+                if(null == orderId){
+                    continue;
+                }
                 bankCardRecordDO.setOrderId(orderId);
                 bankCardRecordDO.setUserName(tmp[0].trim());//客户姓名
                 bankCardRecordDO.setIdCard(tmp[1].trim());//身份证号
