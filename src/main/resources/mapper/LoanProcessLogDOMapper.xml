@@ -27,6 +27,8 @@
         WHERE
         order_id = #{orderId}
         AND task_definition_key = #{taskDefinitionKey}
+        ORDER BY create_time DESC
+        LIMIT 1
     </select>
 
     <select id="listByOrderId" resultMap="BaseResultMap">
