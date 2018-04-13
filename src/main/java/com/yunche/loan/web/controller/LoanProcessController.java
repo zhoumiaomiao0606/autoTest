@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.LoanProcessLogDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanProcessService;
@@ -68,6 +69,19 @@ public class LoanProcessController {
     public ResultBean<List<String>> orderHistory(@RequestParam("orderId") Long orderId,
                                                  @RequestParam(value = "limit", required = false) Integer limit) {
         return loanProcessService.orderHistory(orderId, limit);
+    }
+
+    /**
+     * 单个节点 审核日志详情（action、info等）
+     *
+     * @param orderId
+     * @param taskDefinitionKey
+     * @return
+     */
+    @GetMapping(value = "/log")
+    public ResultBean<LoanProcessLogVO> log(@RequestParam("orderId") Long orderId,
+                                            @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
+        return loanProcessService.log(orderId, taskDefinitionKey);
     }
 }
 

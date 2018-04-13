@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import sun.misc.ObjectInputFilter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1127,6 +1128,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         return ResultBean.ofSuccess(historyList, "订单日志查询成功");
+    }
+
+    @Override
+    public ResultBean<LoanProcessLogVO> log(Long orderId, String taskDefinitionKey) {
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "任务节点不能为空");
+
+        LoanProcessLogDO loanProcessLogDO = loanProcessLogDOMapper.lastLogByOrderIdAndTaskDefinitionKey(orderId, taskDefinitionKey);
+
+        LoanProcessLogVO loanProcessLogVO = new LoanProcessLogVO();
+        if (null != loanProcessLogDO) {
+            BeanUtils.copyProperties(loanProcessLogDO, loanProcessLogVO);
+        }
+
+        return ResultBean.ofSuccess(loanProcessLogVO);
     }
 
     /**
