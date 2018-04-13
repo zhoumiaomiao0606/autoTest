@@ -59,9 +59,9 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
                 bankCardRecordDO.setOrderId(orderId);
                 bankCardRecordDO.setUserName(tmp[0].trim());//客户姓名
                 bankCardRecordDO.setIdCard(tmp[1].trim());//身份证号
-                bankCardRecordDO.setBillingDate(df.parse(tmp[2].trim()));//账单日
+                bankCardRecordDO.setBillingDate(tmp[2].trim());//账单日
                 bankCardRecordDO.setFirstBillingDate(df.parse(tmp[3].trim()));//首月账单日
-                bankCardRecordDO.setRepayDate(df.parse(tmp[4].trim()));//还款日
+                bankCardRecordDO.setRepayDate(tmp[4].trim());//还款日
                 bankCardRecordDO.setFirstRepaymentDate(df.parse(tmp[5].trim()));//首月还款日
                 bankCardRecordDO.setRepayCardId( tmp[6].trim());//还款卡号
                 bankCardRecordDO.setReceiveDate(df.parse(tmp[7].trim()));//接收日期
