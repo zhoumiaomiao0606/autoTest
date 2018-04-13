@@ -101,6 +101,13 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         return ResultBean.ofSuccess(appTaskVOList, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
+    @Override
+    public ResultBean queryLoginUserLevel() {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+
+        return ResultBean.ofSuccess(taskSchedulingDOMapper.selectLevel(loginUser.getId()));
+    }
+
     private List<AppTaskVO> convert(List<TaskListVO> list) {
 
         List<AppTaskVO> appTaskListVO = list.parallelStream()

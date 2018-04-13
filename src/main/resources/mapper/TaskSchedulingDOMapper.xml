@@ -280,7 +280,10 @@
             <if test="taskDefinitionKey == 'usertask_info_supplement'">
             left join loan_info_supplement join_s        on main.id               = join_s.order_id
             </if>
-            where 1=1 and deputy.order_status = 1
+            where 1=1
+            <if test="taskStatus != 0">
+                  and deputy.order_status = 1
+            </if>
             <choose>
                 <when test="taskDefinitionKey == 'usertask_credit_apply'">
                     <choose>
