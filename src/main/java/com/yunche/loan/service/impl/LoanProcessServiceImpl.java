@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.LoanOrderProcessConst;
+import com.yunche.loan.config.constant.LoanProcessConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -93,7 +94,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
 
         // 校验审核前提条件
-        checkPreCondition(approval.getTaskDefinitionKey(), approval.getOrderId());
+        checkPreCondition(approval.getTaskDefinitionKey(), approval.getOrderId(),approval.getAction());
 
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
@@ -130,7 +131,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param taskDefinitionKey
      * @param orderId
      */
-    private void checkPreCondition(String taskDefinitionKey, Long orderId) {
+    private void checkPreCondition(String taskDefinitionKey, Long orderId ,Byte action) {
         if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
             // 提车资料必须已经提交了
             LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
@@ -138,8 +139,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
         }
 
-
-        if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
+        //弃单时不校验
+        if (!LoanProcessConst.ACTION_CANCEL.equals(action) && LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
             // 客户资料、车辆信息、金融方案  必须均已录入
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
             Preconditions.checkNotNull(loanOrderDO, "订单不存在");
