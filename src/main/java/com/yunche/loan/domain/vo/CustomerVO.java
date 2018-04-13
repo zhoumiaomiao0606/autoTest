@@ -22,7 +22,7 @@ public class CustomerVO {
 
     private Date birth;
 
-    private Date identityValidity;
+    private String identityValidity;
 
     private String idCard;
 
