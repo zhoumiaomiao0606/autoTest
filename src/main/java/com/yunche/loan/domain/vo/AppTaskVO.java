@@ -36,4 +36,9 @@ public class AppTaskVO {
      * 任务类型文本：1-未提交;  2-打回;
      */
     private String taskTypeText;
+
+    /**
+     * 是否可以发起【征信增补】
+     */
+    private Boolean canCreditSupplement;
 }

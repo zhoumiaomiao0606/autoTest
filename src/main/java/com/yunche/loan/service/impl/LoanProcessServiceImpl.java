@@ -1053,6 +1053,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             taskStatus = loanProcessDO.getMaterialPrintReview();
         } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getBankLendRecord();
+        } else if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey)) {
+            taskStatus = loanProcessDO.getBankCardRecord();
+        } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
+            taskStatus = loanProcessDO.getFinancialScheme();
         }
 
         TaskStateVO taskStateVO = new TaskStateVO();

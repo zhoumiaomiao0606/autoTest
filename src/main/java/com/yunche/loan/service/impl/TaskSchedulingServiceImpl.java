@@ -8,6 +8,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
+import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.AppTaskVO;
@@ -29,8 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_CANCEL;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_CLOSED;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.MappingConst.SUPPLEMENT_TYPE_TEXT_MAP;
 
 
@@ -87,7 +87,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     @Override
-    public ResultBean queryAppTaskList(AppTaskListQuery appTaskListQuery) {
+    public ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery) {
 
         PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
 
@@ -111,11 +111,30 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
                     fillTaskStatus(appTaskVO);
 
+                    canCreditSupplement(Long.valueOf(e.getId()), appTaskVO);
+
                     return appTaskVO;
                 })
                 .collect(Collectors.toList());
 
         return appTaskListVO;
+    }
+
+    /**
+     * 是否可以发起【征信增补】
+     *
+     * @param orderId
+     * @param appTaskVO
+     */
+    private void canCreditSupplement(Long orderId, AppTaskVO appTaskVO) {
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+
+        if (TASK_PROCESS_INIT.equals(loanProcessDO.getTelephoneVerify()) && ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
+            appTaskVO.setCanCreditSupplement(true);
+        } else {
+            appTaskVO.setCanCreditSupplement(false);
+        }
     }
 
     private void fillTaskStatus(AppTaskVO appTaskVO) {
