@@ -232,7 +232,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     private boolean isStartOrEndInfoSupplement(ApprovalParam approval) {
+        // 发起资料增补
         boolean isStartInfoSupplement = ACTION_INFO_SUPPLEMENT.equals(approval.getAction());
+        // 处理资料增补单（暂时-只有PASS操作 -即：END）
         boolean isEndInfoSupplement = INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey());
         boolean isStartOrEndInfoSupplement = isStartInfoSupplement || isEndInfoSupplement;
         return isStartOrEndInfoSupplement;
@@ -380,10 +382,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
         }
 
-        // 结单 ending
-        if (BANK_LEND_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
-        }
+        // 结单 ending  -暂无【结单节点】
+//        if (XXX.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+//            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
+//        }
 
         //【资料审核】打回到【业务申请】 标记
         if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
