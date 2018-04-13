@@ -38,20 +38,6 @@ public class TelephoneVerifyController {
         return ResultBean.ofSuccess(null,"保存成功");
     }
 
-    /**
-     * 更新
-     */
-    @GetMapping(value = "/test")
-    @PreventRepeatSubmit(value = "test")
-    public ResultBean test() throws InterruptedException {
-        throw  new BizException("");
-
-
-
-
-    }
-
-
 
 }
 
