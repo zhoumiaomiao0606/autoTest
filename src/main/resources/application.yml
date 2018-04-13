@@ -16,8 +16,8 @@ spring:
       port: 6380
       password: yunche@1234
       pool:
-        max-active: 8
-        max-idle: 8
+        max-active: 50
+        max-idle: 30
         min-idle: 0
         max-wait: 10000
 
@@ -53,8 +53,8 @@ spring:
     port: 6381
     password: yunche@1234
     pool:
-      max-active: 8
-      max-idle: 8
+      max-active: 50
+      max-idle: 30
       min-idle: 0
       max-wait: 10000
 
@@ -90,8 +90,8 @@ spring:
     port: 6379
     password: Yunche2018
     pool:
-      max-active: 8
-      max-idle: 8
+      max-active: 50
+      max-idle: 30
       min-idle: 0
       max-wait: 10000
 

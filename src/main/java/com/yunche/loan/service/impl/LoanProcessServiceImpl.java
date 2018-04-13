@@ -25,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
@@ -134,6 +135,17 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
             Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
         }
+
+
+        if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
+            // 客户资料、车辆信息、金融方案  必须均已录入
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
+            Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+
+            Preconditions.checkNotNull(loanOrderDO.getLoanCustomerId(), "请先录入客户信息");
+            Preconditions.checkNotNull(loanOrderDO.getLoanCarInfoId(), "请先录入车辆信息");
+            Preconditions.checkNotNull(loanOrderDO.getLoanFinancialPlanId(), "请先录入金融方案");
+        }
     }
 
     /**
@@ -220,7 +232,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     private boolean isStartOrEndInfoSupplement(ApprovalParam approval) {
+        // 发起资料增补
         boolean isStartInfoSupplement = ACTION_INFO_SUPPLEMENT.equals(approval.getAction());
+        // 处理资料增补单（暂时-只有PASS操作 -即：END）
         boolean isEndInfoSupplement = INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey());
         boolean isStartOrEndInfoSupplement = isStartInfoSupplement || isEndInfoSupplement;
         return isStartOrEndInfoSupplement;
@@ -368,10 +382,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
         }
 
-        // 结单 ending
-        if (BANK_LEND_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
-        }
+        // 结单 ending  -暂无【结单节点】
+//        if (XXX.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+//            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
+//        }
 
         //【资料审核】打回到【业务申请】 标记
         if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
@@ -740,7 +754,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         final Byte[] maxLevel = {0};
 
-        userGroupNameSet.parallelStream()
+        userGroupNameSet.stream()
                 .filter(e -> StringUtils.isNotBlank(e))
                 .forEach(e -> {
 
@@ -1041,6 +1055,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             taskStatus = loanProcessDO.getMaterialPrintReview();
         } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getBankLendRecord();
+        } else if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey)) {
+            taskStatus = loanProcessDO.getBankCardRecord();
+        } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
+            taskStatus = loanProcessDO.getFinancialScheme();
         }
 
         TaskStateVO taskStateVO = new TaskStateVO();

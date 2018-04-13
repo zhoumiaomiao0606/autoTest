@@ -105,7 +105,7 @@
                 end
             </when>
             <when test="multipartType == 3">
-                AND deputy.telephone_verify != 0
+                AND deputy.loan_apply = 1 AND ( deputy.telephone_verify = 2 OR  deputy.visit_verify = 2 )
             </when>
             <when test="multipartType == 4">
                 AND deputy.telephone_verify = 1
