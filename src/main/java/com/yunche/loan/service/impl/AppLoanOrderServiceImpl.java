@@ -2,6 +2,8 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.LoanOrderProcessConst;
+import com.yunche.loan.config.constant.LoanProcessConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -35,10 +37,12 @@ import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
-import static com.yunche.loan.config.constant.LoanProcessEnum.REMIT_REVIEW;
+import static com.yunche.loan.config.constant.LoanProcessEnum.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_LEND_RECORD;
+import static com.yunche.loan.config.constant.LoanProcessEnum.FINANCIAL_SCHEME;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 
 
@@ -124,6 +128,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanInfoSupplementDOMapper loanInfoSupplementDOMapper;
+
+    @Autowired
+    private LoanProcessLogDOMapper loanProcessLogDOMapper;
 
     @Autowired
     private CarService carService;
@@ -1263,6 +1270,141 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         appOrderProcessVO.setTaskList(taskList);
     }
+
+    /**
+     * 流程信息
+     *
+     * @param appOrderProcessVO
+     * @param loanOrderDO
+     */
+    private void fillProcessMsg_(AppOrderProcessVO appOrderProcessVO, LoanOrderDO loanOrderDO) {
+
+        // 是否可以弃单
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(loanOrderDO.getId());
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+        if (ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
+            appOrderProcessVO.setCanCancelTask(true);
+        } else {
+            appOrderProcessVO.setCanCancelTask(false);
+        }
+
+        List<LoanProcessLogDO> loanProcessLogDOList = loanProcessLogDOMapper.listByOrderId(loanOrderDO.getId(), null);
+
+        if (!CollectionUtils.isEmpty(loanProcessLogDOList)) {
+
+            List<AppOrderProcessVO.Task> taskList = Lists.newArrayList();
+
+            loanProcessLogDOList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        AppOrderProcessVO.Task task = new AppOrderProcessVO.Task();
+                        // 任务节点名
+                        task.setTask(LoanProcessEnum.getNameByCode(e.getTaskDefinitionKey()));
+                        //办理时间
+                        task.setApprovalTime(e.getCreateTime());
+
+                        // TODO 任务状态
+//                        xxx(task);
+
+
+
+//                        fillTaskStatus(task, e);
+                        // 审核员
+                        task.setAuditor(e.getUserName());
+                        // 审核备注
+                        task.setApprovalInfo(e.getInfo());
+                        // TODO 审核员角色 OR 合伙人团队名称
+                        task.setUserGroup(getUserGroup(e.getTaskDefinitionKey(), loanOrderDO.getLoanBaseInfoId()));
+
+                        taskList.add(task);
+                    });
+
+            appOrderProcessVO.setTaskList(taskList);
+        } else {
+            appOrderProcessVO.setTaskList(Collections.EMPTY_LIST);
+        }
+
+
+//        if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
+//
+//            taskList = historicTaskInstanceList.stream()
+//                    .filter(Objects::nonNull)
+//                    .map(e -> {
+//
+//                        AppOrderProcessVO.Task task = new AppOrderProcessVO.Task();
+//                        // 任务节点名
+//                        task.setTask(LoanProcessEnum.getNameByCode(e.getTaskDefinitionKey()));
+//                        //办理时间
+//                        task.setApprovalTime(e.getEndTime());
+//                        // 任务状态
+//                        fillTaskStatus(task, e);
+//                        // 审核员
+//                        task.setAuditor(getAuditor(e.getTaskDefinitionKey(), loanOrderDO.getProcessInstId(), e.getExecutionId()));
+//                        // 审核备注
+//                        task.setApprovalInfo(getApprovalInfo(e.getTaskDefinitionKey(), loanOrderDO.getProcessInstId(), e.getExecutionId()));
+//                        // 审核员角色 OR 合伙人团队名称
+//                        task.setUserGroup(getUserGroup(e.getTaskDefinitionKey(), loanOrderDO.getLoanBaseInfoId()));
+//
+//                        return task;
+//                    })
+//                    .filter(Objects::nonNull)
+//                    .collect(Collectors.toList());
+//        }
+//
+//
+//        appOrderProcessVO.setTaskList(taskList);
+    }
+
+//    private void xxx(AppOrderProcessVO.Task task) {
+//
+//
+//        if (CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
+//            task.setTaskStatus(taskProcessStatus);
+//        } else if (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setBankCreditRecord(taskProcessStatus);
+//        } else if (SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setSocialCreditRecord(taskProcessStatus);
+//        } else if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setLoanApply(taskProcessStatus);
+//        } else if (VISIT_VERIFY.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setVisitVerify(taskProcessStatus);
+//        } else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setTelephoneVerify(taskProcessStatus);
+//        } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setBusinessReview(taskProcessStatus);
+//        } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setLoanReview(taskProcessStatus);
+//        } else if (REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setRemitReview(taskProcessStatus);
+//        } else if (CAR_INSURANCE.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setCarInsurance(taskProcessStatus);
+//        } else if (APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setApplyLicensePlateDepositInfo(taskProcessStatus);
+//        } else if (INSTALL_GPS.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setInstallGps(taskProcessStatus);
+//        } else if (COMMIT_KEY.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setCommitKey(taskProcessStatus);
+//        } else if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setVehicleInformation(taskProcessStatus);
+//        } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setBusinessReview(taskProcessStatus);
+//        } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setLoanReview(taskProcessStatus);
+//        } else if (REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setRemitReview(taskProcessStatus);
+//        } else if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setMaterialReview(taskProcessStatus);
+//        } else if (MATERIAL_PRINT_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setMaterialPrintReview(taskProcessStatus);
+//        } else if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setBankCardRecord(taskProcessStatus);
+//        } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setFinancialScheme(taskProcessStatus);
+//        } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
+//            loanProcessDO.setBankLendRecord(taskProcessStatus);
+//        }
+//    }
 
     /**
      * 任务状态

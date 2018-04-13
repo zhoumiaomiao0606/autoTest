@@ -197,9 +197,9 @@
 
         <!--热部署-->
         <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-devtools</artifactId>-->
-            <!--<optional>true</optional> &lt;!&ndash; 这个需要为 true 才有效 &ndash;&gt;-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-devtools</artifactId>-->
+        <!--<optional>true</optional> &lt;!&ndash; 这个需要为 true 才有效 &ndash;&gt;-->
         <!--</dependency>-->
         <!--热部署-->
 
@@ -231,6 +231,12 @@
             <version>${shiro-redis.version}</version>
         </dependency>
         <!-- shiro -->
+
+        <dependency>
+            <groupId>com.genxiaogu</groupId>
+            <artifactId>rate-limiter-spring-boot-starter</artifactId>
+            <version>2.0.1</version>
+        </dependency>
 
         <!-- activiti -->
         <dependency>
