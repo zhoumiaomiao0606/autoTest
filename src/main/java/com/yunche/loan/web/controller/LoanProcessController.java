@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.yunche.loan.config.anno.PreventRepeatSubmit;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.*;
@@ -30,6 +31,7 @@ public class LoanProcessController {
      * @return
      */
     @PostMapping(value = "/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PreventRepeatSubmit(value = "approval")
     public ResultBean<Void> approval(@RequestBody ApprovalParam Approval) {
         return loanProcessService.approval(Approval);
     }
