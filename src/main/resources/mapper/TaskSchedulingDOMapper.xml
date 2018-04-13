@@ -547,21 +547,26 @@
 							(
 									SELECT id FROM loan_base_info WHERE salesman_id IN
 										(
-										case
-											when
-													#{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
-											then
+										select
+										        DISTINCT
 												case
 													when
-														#{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+														#{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
 													then
-														(select employee_id from partner_rela_employee where partner_id in (select partner_id from partner_rela_employee where employee_id = #{employeeId,jdbcType=BIGINT}))
+														case
+															when
+																#{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+															then
+																employee_id
+															else
+															#{employeeId,jdbcType=BIGINT}
+														end
 													else
-														#{employeeId,jdbcType=BIGINT}
-													end
-											else
-													null
-										end
+															null
+												end AS employee_id
+												from partner_rela_employee where partner_id in
+												(select partner_id from partner_rela_employee where employee_id = #{employeeId,jdbcType=BIGINT})
+												having employee_id is not null
 										)
 									) b on o.loan_base_info_id = b.id
 								) tab_s

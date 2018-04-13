@@ -49,7 +49,6 @@ public class VehicleInformationUpdateParam {
     private String invoice_down_payment;
     @NotBlank
     private String purchase_car_invoice_date;
-    @NotBlank
     private String retrieve_key;
 
     private List<UniversalFileParam> files;
