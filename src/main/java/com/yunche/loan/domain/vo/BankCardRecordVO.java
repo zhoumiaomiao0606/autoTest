@@ -42,7 +42,7 @@ public class BankCardRecordVO {
     /**
      * 账单日
      */
-    private Date billingDate;
+    private String  billingDate;
     /**
      * 首月账单日
      */
@@ -51,7 +51,7 @@ public class BankCardRecordVO {
     /**
      * 还款日
      */
-    private Date  repayDate;
+    private String   repayDate;
 
     /**
      * 首月还款日
