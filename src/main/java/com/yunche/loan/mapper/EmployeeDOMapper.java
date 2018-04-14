@@ -11,6 +11,8 @@ import java.util.List;
 
 @Mapper
 public interface EmployeeDOMapper {
+    void setMachineIdForNull(Long id);
+
     int deleteByPrimaryKey(Long id);
 
     int insert(EmployeeDO record);

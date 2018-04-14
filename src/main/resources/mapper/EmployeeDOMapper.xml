@@ -459,4 +459,11 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
+    <update id="setMachineIdForNull" parameterType="java.lang.Long">
+    update employee
+    set machine_id = null
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
 </mapper>
