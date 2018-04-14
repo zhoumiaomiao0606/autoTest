@@ -90,6 +90,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 //                tmp[1].trim();//身份证号
 //                tmp[2].trim();//放款日期
 //                tmp[3].trim();//放款金额
+                if(tmp.length!=4){
+                    continue;
+                }
                 Long orderId =  loanQueryDOMapper.selectOrderIdByIDCard(tmp[1].trim());
                 if(orderId==null){
                     continue;
