@@ -32,6 +32,10 @@ public class TaskListQuery {
 
     private Integer level; //级别
 
+    private Long loginUserId;
+
+    private Integer maxGroupLevel;
+
     private String orderId;//业务编号
 
     private String customer;//客户姓名

@@ -16,7 +16,9 @@ public interface TaskSchedulingDOMapper {
 
     Integer selectLevel(Long loginUserId);
 
-    List<TaskListVO> selectAppTaskList(@Param("multipartType") Integer multipartType, @Param("customer") String customer);
+    Integer selectMaxGroupLevel(Long loginUserId);
+
+    List<TaskListVO> selectAppTaskList(@Param("multipartType") Integer multipartType, @Param("customer") String customer,@Param("loginUserId") Long loginUserId,@Param("maxGroupLevel") Integer maxGroupLevel);
 
     List<TaskListVO> selectTaskList(TaskListQuery taskListQuery);
 
