@@ -2,6 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.TaskSchedulingDOMapper" >
 
+    <select id="selectMaxGroupLevel" resultType="java.lang.Integer">
+      SELECT case when Max( LEVEL )  is null then 0 else Max(level) end as level FROM user_group WHERE id IN ( SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{loginUserId} )
+    </select>
 
     <select id="selectLevel" resultType="java.lang.Integer">
 
@@ -88,13 +91,22 @@
         left join department join_d on join_d.id = join_p.department_id
         left join vehicle_information join_h on join_h.id = main.vehicle_information_id
         where 1=1 and deputy.order_status = 1
+        /**
+        *   多节点查询类型：
+        *   1-征信申请列表【未查询：   [提交征信申请单后  ,   贷款业务申请单)        】;
+        *   2-征信申请列表【已查询：   [贷款业务申请单    ,   end]                 】;
+        *   3-贷款申请列表【待审核：   [提交贷款申请单后  ,   电审通过)             】;
+        *   4-贷款申请列表【已审核：   [电审通过后       ,    end]                】;
+        *   5-客户查询列表【在贷客户： [提交征信申请单后  ,    未放款)              】;
+        *   6-客户查询列表【已贷客户： [已放款           ,    end]                】;
+        */
         <choose>
             <when test="multipartType == 1">
                 AND case
                         when join_b.loan_amount >  1 then
-                            deputy.bank_credit_record != 1 OR deputy.social_credit_record != 1
+                      deputy.bank_credit_record = 2 OR deputy.social_credit_record = 2
                     else
-                            deputy.bank_credit_record != 1
+                      deputy.bank_credit_record = 2
                     end
             </when>
             <when test="multipartType == 2">
@@ -105,7 +117,7 @@
                 end
             </when>
             <when test="multipartType == 3">
-                AND deputy.loan_apply = 1 AND ( deputy.telephone_verify = 2 OR  deputy.visit_verify = 2 )
+                AND deputy.loan_apply = 1 AND ((deputy.telephone_verify != 0 and deputy.telephone_verify != 1) OR  deputy.visit_verify = 2 )
             </when>
             <when test="multipartType == 4">
                 AND deputy.telephone_verify = 1
@@ -122,6 +134,27 @@
         </choose>
         ) tab
         where 1=1
+        AND CASE WHEN #{maxGroupLevel} = 0 THEN false else
+        case when #{maxGroupLevel} = 1 then
+        tab.salesmanId in
+        (
+        select
+        DISTINCT
+        case
+        when #{loginUserId} in (select employee_id from partner_rela_employee) then
+        case when #{loginUserId} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2) then
+        employee_id
+        else
+        #{loginUserId}
+        end
+        else
+        null
+        end AS employee_id
+        from partner_rela_employee where partner_id in
+        (select partner_id from partner_rela_employee where employee_id = #{loginUserId})
+        having employee_id is not null
+        )
+        else true end end
         <if test="customer != null">
             AND tab.customer = #{customer}
         </if>
@@ -135,7 +168,7 @@
             tab.*,
             tab.taskStatus                               AS taskType,
             useGetTaskTypeText(tab.taskStatus)           AS taskTypeText,
-            useGetCurrentTask('${taskDefinitionKey}')      AS currentTask
+            useGetCurrentTask(#{taskDefinitionKey})      AS currentTask
             from
             (
             select
@@ -213,7 +246,7 @@
                     deputy.visit_verify                     AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'usertask_telephone_verify'">
-                    useLevelGetTaskStatus(${level},deputy.telephone_verify)   AS taskStatus
+                    useLevelGetTaskStatus(#{level},deputy.telephone_verify)   AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
                     deputy.financial_scheme                   AS taskStatus
@@ -326,8 +359,8 @@
                     AND case when #{taskStatus} = 0 then deputy.visit_verify != 0                     else deputy.visit_verify                     = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_telephone_verify'">
-                    AND useLevelGetTaskStatus(${level},deputy.telephone_verify) !=-1
-                    AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(${level},deputy.telephone_verify) != 0 else useLevelGetTaskStatus(${level},deputy.telephone_verify) = #{taskStatus} end
+                    AND useLevelGetTaskStatus(#{level},deputy.telephone_verify) !=-1
+                    AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(#{level},deputy.telephone_verify) != 0 else useLevelGetTaskStatus(#{level},deputy.telephone_verify) = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
                     AND case when #{taskStatus} = 0 then deputy.financial_scheme  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
@@ -377,6 +410,27 @@
             </choose>
             ) tab
             where 1=1
+            AND CASE WHEN #{maxGroupLevel} = 0 THEN false else
+                case when #{maxGroupLevel} = 1 then
+            tab.salesmanId in
+            (
+            select
+              DISTINCT
+            case
+              when #{loginUserId} in (select employee_id from partner_rela_employee) then
+                case when #{loginUserId} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2) then
+                  employee_id
+                else
+                  #{loginUserId}
+                end
+              else
+                null
+            end AS employee_id
+            from partner_rela_employee where partner_id in
+            (select partner_id from partner_rela_employee where employee_id = #{loginUserId})
+            having employee_id is not null
+            )
+            else true end end
             <if test="orderId != null">
                 AND tab.id = #{orderId}
             </if>
@@ -506,7 +560,7 @@
                jb.partner_id                       AS  partnerId,
                jb.salesman_id                      AS  salesmanId,
 							 case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
-                  case when lp.telephone_verify  &lt; ${level} and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
+                  case when lp.telephone_verify  &lt; #{level} and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
                else 2 end                          AS filtration,
                case when result.TASK_DEF_KEY_ = 'usertask_info_supplement' then
                 (select id from loan_info_supplement where order_id = jorder.id order by start_time desc limit 1)

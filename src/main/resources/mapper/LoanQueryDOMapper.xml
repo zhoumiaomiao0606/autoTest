@@ -703,19 +703,30 @@
 
     <select id="selectOrderIdByIDCard" resultType="java.lang.Long" >
         SELECT
-         id
+        e.orderId
         FROM
-        loan_order
-        WHERE
-        loan_customer_id = (
+        (
         SELECT
-        id
+        count(t.id_card) AS id_card_num,
+        t.orderId
         FROM
-        loan_customer
+        (
+        SELECT
+        a.id AS orderId,
+        c.id_card
+        FROM
+        loan_order a
+        LEFT JOIN loan_process b ON a.id = b.order_id
+        LEFT JOIN loan_customer c ON a.loan_customer_id = c.id
         WHERE
-        id_card =#{idCard}
-        AND cust_type = '1'
-        )
+        c.id_card = #{idCard}
+        AND b.bank_lend_record = 2
+        ) t
+        GROUP BY
+        t.id_card
+        HAVING
+        id_card_num = 1
+        ) e
     </select>
 
     <select id="selectBankLendRecordDetail" resultType="com.yunche.loan.domain.vo.BankLendRecordVO" parameterType="java.lang.Long">

@@ -51,7 +51,9 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
             BankCardRecordDO bankCardRecordDO = new BankCardRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(String[] tmp :returnList){
-
+                if(tmp.length!=9){
+                    continue;
+                }
                 Long orderId =  loanQueryDOMapper.selectOrderIdByIDCard(tmp[1].trim());
                 if(null == orderId){
                     continue;
