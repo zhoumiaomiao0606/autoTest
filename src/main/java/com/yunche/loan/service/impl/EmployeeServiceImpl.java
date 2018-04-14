@@ -405,6 +405,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public ResultBean<Void> logout() {
         // 清空shiro会话
+        employeeDOMapper.setMachineIdForNull(SessionUtils.getLoginUser().getId());
         SecurityUtils.getSubject().logout();
         return ResultBean.ofSuccess(null, "登出成功");
     }
