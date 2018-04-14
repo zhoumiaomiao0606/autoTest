@@ -43,6 +43,11 @@ public class TaskListVO {
      * 任务类型文本：1-已提交;  2-未提交;  3-打回;
      */
     private String taskTypeText;
+
+    /**
+     * 打回原因
+     */
+    private String rejectReason;
 }
 
 

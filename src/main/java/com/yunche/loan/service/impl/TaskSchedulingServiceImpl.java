@@ -28,9 +28,12 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
+import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_APPLY;
 import static com.yunche.loan.config.constant.MappingConst.SUPPLEMENT_TYPE_TEXT_MAP;
 
 
@@ -82,6 +85,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         // 取分页信息
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+
+        // TODO 打回原因
+        rejectReason(taskListQuery.getTaskDefinitionKey(), list);
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
@@ -141,6 +147,28 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             appTaskVO.setCanCreditSupplement(true);
         } else {
             appTaskVO.setCanCreditSupplement(false);
+        }
+    }
+
+
+    private void rejectReason(String taskDefinitionKey, List<TaskListVO> list) {
+
+        if (CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
+
+            //
+
+            list.parallelStream()
+                    .filter(Objects::nonNull)
+                    .filter(e -> TASK_PROCESS_REJECT.equals(e.getTaskStatus()))
+                    .forEach(e -> {
+
+                        //
+
+//                        e.setRejectReason();
+                    });
+        } else if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
+
+
         }
     }
 

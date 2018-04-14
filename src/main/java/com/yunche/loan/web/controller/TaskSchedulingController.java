@@ -3,11 +3,13 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
+import com.yunche.loan.domain.vo.AppTaskVO;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 任务调度中心
@@ -41,7 +43,7 @@ public class TaskSchedulingController {
      * 查询接口
      */
     @PostMapping(value = "/queryAppTaskList")
-    public ResultBean queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
+    public ResultBean<List<AppTaskVO>> queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
         return taskSchedulingService.queryAppTaskList(appTaskListQuery);
     }
 

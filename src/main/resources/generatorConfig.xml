@@ -281,7 +281,7 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
 
-        <table tableName="loan_telephone_verify" domainObjectName="LoanTelephoneVerifyDO"
+        <table tableName="loan_reject_log" domainObjectName="LoanRejectLogDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

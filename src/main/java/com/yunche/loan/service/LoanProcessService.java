@@ -20,4 +20,6 @@ public interface LoanProcessService {
     ResultBean<List<String>> orderHistory(Long orderId, Integer limit);
 
     ResultBean<LoanProcessLogVO> log(Long orderId, String taskDefinitionKey);
+
+    ResultBean<LoanRejectLogVO> rejectLog(Long orderId, String taskDefinitionKey);
 }
