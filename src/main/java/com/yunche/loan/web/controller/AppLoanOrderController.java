@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
 import com.yunche.loan.domain.vo.AppCustomerInfoVO;
@@ -33,6 +34,7 @@ public class AppLoanOrderController {
      * @param appCustomerParam
      * @return
      */
+    @Limiter(route = "/api/v1/app/loanorder/creditapply/create")
     @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<AppCreditApplyVO> createCreditApplyOrder(@RequestBody AppCustomerParam appCustomerParam) {
         return appLoanOrderService.createCreditApplyOrder(appCustomerParam);
@@ -55,6 +57,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
+    @Limiter(route = "/api/v1/app/loanorder/baseinfo/create")
     @PostMapping(value = "/baseinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createBaseInfo(@RequestBody AppLoanBaseInfoParam param) {
         return appLoanOrderService.createBaseInfo(param);
@@ -99,6 +102,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
+    @Limiter(route = "/api/v1/app/loanorder/customer/addrela")
     @PostMapping(value = "/customer/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> addRelaCustomer(@RequestBody AppCustomerParam param) {
         return appLoanOrderService.addRelaCustomer(param);
@@ -136,6 +140,7 @@ public class AppLoanOrderController {
      * @param appLoanCarInfoParam
      * @return
      */
+    @Limiter(route = "/api/v1/app/loanorder/carinfo/create")
     @PostMapping(value = "/carinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createLoanCarInfo(@RequestBody AppLoanCarInfoParam appLoanCarInfoParam) {
         return appLoanOrderService.createLoanCarInfo(appLoanCarInfoParam);
@@ -180,6 +185,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
+    @Limiter(route = "/api/v1/app/loanorder/financialplan/create")
     @PostMapping(value = "/financialplan/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createLoanFinancialPlan(@RequestBody AppLoanFinancialPlanParam param) {
         return appLoanOrderService.createLoanFinancialPlan(param);

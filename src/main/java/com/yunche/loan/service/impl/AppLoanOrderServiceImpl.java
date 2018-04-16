@@ -1303,7 +1303,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 //                        xxx(task);
 
 
-
 //                        fillTaskStatus(task, e);
                         // 审核员
                         task.setAuditor(e.getUserName());

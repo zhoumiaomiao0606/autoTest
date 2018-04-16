@@ -1,12 +1,9 @@
 package com.yunche.loan.web.controller;
 
 
-import com.yunche.loan.config.anno.PreventRepeatSubmit;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.TelephoneVerifyParam;
 import com.yunche.loan.service.TelephoneVerifyService;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
