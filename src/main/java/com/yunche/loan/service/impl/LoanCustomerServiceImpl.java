@@ -28,6 +28,7 @@ import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
 
 /**
  * Created by zhouguoliang on 2018/1/29.
@@ -184,7 +185,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         if (null != loanOrderDO) {
                             //过滤状态为弃单的订单
                             LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(loanOrderDO.getId());
-                            if(null!=loanProcessDO && !LoanOrderProcessConst.ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus())){
+                            if (null != loanProcessDO && !ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus())) {
                                 return String.valueOf(loanOrderDO.getId());
                             }
                         }

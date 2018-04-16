@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-
 
 @Aspect
 @Component
@@ -45,8 +43,7 @@ public class LimiterAop {
         route = limiter.route();
 
         // 唯一：登录用户 + 参数
-        Parameter[] parameters = method.getParameters();
-        String obj = SessionUtils.getLoginUser().getId().toString() + ":" + JSON.toJSONString(parameters);
+        String obj = SessionUtils.getLoginUser().getId().toString() + ":" + JSON.toJSONString(point.getArgs());
 
         if (!distributedLimiter.execute(route, limit, obj)) {
             throw new BizException("访问太过频繁，请稍后再试！");

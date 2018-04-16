@@ -230,6 +230,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
+    @Limiter(route = "/api/v1/app/loanorder/homevisit/save")
     @PostMapping(value = "/homevisit/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> saveLoanHomeVisit(@RequestBody AppLoanHomeVisitParam param) {
         return appLoanOrderService.createOrUpdateLoanHomeVisit(param);

@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.param.CustomerParam;
@@ -51,6 +52,7 @@ public class LoanCustomerController {
      * @param param
      * @return
      */
+    @Limiter(route = "/api/v1/loanorder/customer/addrela")
     @PostMapping(value = "/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> addRelaCustomer(@RequestBody CustomerParam param) {
         return loanCustomerService.addRelaCustomer(param);
