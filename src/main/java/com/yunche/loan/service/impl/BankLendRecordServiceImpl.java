@@ -1,13 +1,12 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.constant.LoanProcessConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.BankLendRecordDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.RepaymentRecordDO;
-import com.yunche.loan.domain.entity.RepaymentRecordDOKey;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.BankLendRecordVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -16,21 +15,16 @@ import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.mapper.BankLendRecordDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.RepaymentRecordDOMapper;
 import com.yunche.loan.service.BankLendRecordService;
 import com.yunche.loan.service.LoanProcessService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -123,7 +117,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 ApprovalParam approvalParam =  new ApprovalParam();
                 approvalParam.setOrderId(orderId);
                 approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
-                approvalParam.setAction(Byte.valueOf("1"));
+                approvalParam.setAction(LoanProcessConst.ACTION_PASS);
                 ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                 Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             }
