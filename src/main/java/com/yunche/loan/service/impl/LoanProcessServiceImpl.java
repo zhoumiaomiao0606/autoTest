@@ -285,7 +285,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, new Byte("0"));
 
-        if (loanBaseInfoDO != null) {
+        if (loanBaseInfoDO != null && !LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
             String title = "你有一个新的消息";
             String prompt = "你提交的订单被管理员审核啦";
             String msg = "详细信息请联系管理员";
