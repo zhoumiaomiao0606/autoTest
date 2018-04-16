@@ -112,9 +112,11 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         LoanFinancialPlanVO loanFinancialPlanVO = new LoanFinancialPlanVO();
 
         CalcParamVO calcParamVO = resultBean.getData();
+        //约定出参中首付比率和银行分期比例应答以 N% 的形式返回
+        BigDecimal base = new BigDecimal(100);
         if (null != calcParamVO) {
             //首付比例
-            loanFinancialPlanVO.setDownPaymentRatio(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice(), 4, BigDecimal.ROUND_HALF_EVEN));
+            loanFinancialPlanVO.setDownPaymentRatio(base.multiply(loanFinancialPlanParam.getDownPaymentMoney().divide(loanFinancialPlanParam.getCarPrice(), 4, BigDecimal.ROUND_HALF_EVEN)));
             // 首付额 =首付比率*车价
             loanFinancialPlanVO.setDownPaymentMoney(loanFinancialPlanParam.getDownPaymentMoney());
             // 本息合计(还款总额)
@@ -129,7 +131,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
             // 每月还款
             loanFinancialPlanVO.setEachMonthRepay(calcParamVO.getEachMonthRepay());
             //银行分期比例
-            loanFinancialPlanVO.setStagingRatio(calcParamVO.getStagingRatio());
+            loanFinancialPlanVO.setStagingRatio(base.multiply(calcParamVO.getStagingRatio()));
         }
 
         return ResultBean.ofSuccess(loanFinancialPlanVO, "计算成功");
