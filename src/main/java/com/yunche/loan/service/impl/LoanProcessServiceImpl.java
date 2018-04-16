@@ -31,6 +31,7 @@ import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
+import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
 
 /**
  * Created by zhouguoliang on 2018/1/30.
@@ -81,6 +82,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private PermissionService permissionService;
+
+    @Autowired
+    private LoanRejectLogService loanRejectLogService;
 
 
     @Override
@@ -484,10 +488,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
+                        String rejectToTask = getRejectToTask(e.getTaskDefinitionKey());
+
                         LoanRejectLogDO loanRejectLogDO = new LoanRejectLogDO();
                         loanRejectLogDO.setOrderId(loanProcessDO.getOrderId());
                         loanRejectLogDO.setRejectOriginTask(rejectOriginTask);
-                        loanRejectLogDO.setRejectToTask(e.getTaskDefinitionKey());
+                        loanRejectLogDO.setRejectToTask(rejectToTask);
                         loanRejectLogDO.setReason(reason);
                         loanRejectLogDO.setGmtCreate(new Date());
 
@@ -495,7 +501,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                         Preconditions.checkArgument(count > 0, "打回记录失败");
                     });
         }
+    }
 
+    private String getRejectToTask(String taskDefinitionKey) {
+        if (BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(taskDefinitionKey)) {
+            return CREDIT_APPLY.getCode();
+        }
+        return taskDefinitionKey;
     }
 
     /**
@@ -956,7 +968,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
             // REJECT
             else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
-                dealRejectTask(currentTask, tasks);
+                dealRejectTask(currentTask, tasks, approval);
             }
             // CANCEL
             else if (ACTION_CANCEL.equals(approval.getAction())) {
@@ -993,7 +1005,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     private void dealCreditRecordAutoRejectTask(Task currentTask, List<Task> tasks, ApprovalParam approvalParam) {
         // 打回
-        dealRejectTask(currentTask, tasks);
+        dealRejectTask(currentTask, tasks, approvalParam);
 
         // update process
         LoanProcessDO loanProcessDO = new LoanProcessDO();
@@ -1174,85 +1186,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "任务节点不能为空");
 
-        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
-
         LoanRejectLogVO loanRejectLogVO = new LoanRejectLogVO();
 
-        // 进行中
-        if (ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
-
-            Byte taskStatus = getTaskStatus(loanProcessDO, taskDefinitionKey);
-
-            // 被打回
-            if (TASK_PROCESS_REJECT.equals(taskStatus)) {
-
-                LoanRejectLogDO loanRejectLogDO = loanRejectLogDOMapper.lastByOrderIdAndTaskDefinitionKey(orderId, taskDefinitionKey);
-                if (null == loanRejectLogDO) {
-                    BeanUtils.copyProperties(loanRejectLogDO, loanRejectLogVO);
-                }
-            }
+        LoanRejectLogDO loanRejectLogDO = loanRejectLogService.rejectLog(orderId, taskDefinitionKey);
+        if (null != loanRejectLogDO) {
+            BeanUtils.copyProperties(loanRejectLogDO, loanRejectLogVO);
         }
 
         return ResultBean.ofSuccess(loanRejectLogVO);
-    }
-
-    /**
-     * 获取任务状态
-     *
-     * @param loanProcessDO
-     * @param taskDefinitionKey
-     * @return
-     */
-    private Byte getTaskStatus(LoanProcessDO loanProcessDO, String taskDefinitionKey) {
-        Byte taskStatus = null;
-        if (CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getCreditApply();
-        } else if (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getBankCreditRecord();
-        } else if (SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getSocialCreditRecord();
-        } else if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getLoanApply();
-        } else if (VISIT_VERIFY.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getVisitVerify();
-        } else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getTelephoneVerify();
-        } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getBusinessReview();
-        } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getLoanReview();
-        } else if (REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getRemitReview();
-        } else if (CAR_INSURANCE.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getCarInsurance();
-        } else if (APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getApplyLicensePlateDepositInfo();
-        } else if (INSTALL_GPS.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getInstallGps();
-        } else if (COMMIT_KEY.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getCommitKey();
-        } else if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getVehicleInformation();
-        } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getBusinessReview();
-        } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getLoanReview();
-        } else if (REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getRemitReview();
-        } else if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getMaterialReview();
-        } else if (MATERIAL_PRINT_REVIEW.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getMaterialPrintReview();
-        } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getBankLendRecord();
-        } else if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getBankCardRecord();
-        } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getFinancialScheme();
-        }
-
-        return taskStatus;
     }
 
     /**
@@ -1546,8 +1487,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param currentTask
      * @param tasks
+     * @param approval
      */
-    private void dealRejectTask(Task currentTask, List<Task> tasks) {
+    private void dealRejectTask(Task currentTask, List<Task> tasks, ApprovalParam approval) {
 
         // 打回 -> 结束掉其他子任务，然后打回
         if (!CollectionUtils.isEmpty(tasks)) {
@@ -1582,7 +1524,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Task currentFilterTask = onlyAsMainTask[0];
             Map<String, Object> rejectVariables = Maps.newHashMap();
             rejectVariables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT_MANUAL);
-            taskService.complete(currentFilterTask.getId(), rejectVariables);
+            completeTask(currentFilterTask, rejectVariables, approval);
         }
     }
 

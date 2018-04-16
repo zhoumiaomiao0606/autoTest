@@ -94,7 +94,7 @@ public class LoanProcessController {
      */
     @GetMapping(value = "/rejectLog")
     public ResultBean<LoanRejectLogVO> rejectLog(@RequestParam("orderId") Long orderId,
-                                                  @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
+                                                 @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
         return loanProcessService.rejectLog(orderId, taskDefinitionKey);
     }
 }
