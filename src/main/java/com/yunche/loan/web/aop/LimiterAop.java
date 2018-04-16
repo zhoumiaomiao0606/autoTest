@@ -1,5 +1,6 @@
 package com.yunche.loan.web.aop;
 
+import com.alibaba.fastjson.JSON;
 import com.genxiaogu.ratelimiter.service.impl.DistributedLimiter;
 
 import com.yunche.loan.config.anno.Limiter;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 
 @Aspect
@@ -42,8 +44,9 @@ public class LimiterAop {
         limit = limiter.limit();
         route = limiter.route();
 
-        // 登录用户
-        String obj = SessionUtils.getLoginUser().getId().toString();
+        // 唯一：登录用户 + 参数
+        Parameter[] parameters = method.getParameters();
+        String obj = SessionUtils.getLoginUser().getId().toString() + ":" + JSON.toJSONString(parameters);
 
         if (!distributedLimiter.execute(route, limit, obj)) {
             throw new BizException("访问太过频繁，请稍后再试！");
