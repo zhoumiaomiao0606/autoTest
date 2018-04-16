@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.constant.LoanProcessConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
@@ -91,7 +92,7 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
                 ApprovalParam approvalParam =  new ApprovalParam();
                 approvalParam.setOrderId(orderId);
                 approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_CARD_RECORD.getCode());
-                approvalParam.setAction(Byte.valueOf("1"));
+                approvalParam.setAction(LoanProcessConst.ACTION_PASS);
                 ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                 Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             }
