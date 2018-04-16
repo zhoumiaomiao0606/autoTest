@@ -9,6 +9,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.entity.LoanRejectLogDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.AppTaskVO;
@@ -18,10 +19,12 @@ import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.LoanProcessService;
+import com.yunche.loan.service.LoanRejectLogService;
 import com.yunche.loan.service.PermissionService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -51,6 +54,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Resource
     private PermissionService permissionService;
+
+    @Autowired
+    private LoanRejectLogService loanRejectLogService;
 
 
     @Override
@@ -88,7 +94,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 取分页信息
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
-        // TODO 打回原因
+        // 打回原因
         rejectReason(taskListQuery.getTaskDefinitionKey(), list);
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
@@ -99,9 +105,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Integer maxGroupLevel  = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        Integer maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
 
-        List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery.getMultipartType(), appTaskListQuery.getCustomer(),loginUser.getId(),maxGroupLevel);
+        List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery.getMultipartType(), appTaskListQuery.getCustomer(), loginUser.getId(), maxGroupLevel);
 
         List<AppTaskVO> appTaskVOList = convert(list);
 
@@ -154,25 +160,26 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         }
     }
 
-
+    /**
+     * 打回原因
+     *
+     * @param taskDefinitionKey
+     * @param list
+     */
     private void rejectReason(String taskDefinitionKey, List<TaskListVO> list) {
 
-        if (CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
-
-            //
+        if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) || LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
 
             list.parallelStream()
                     .filter(Objects::nonNull)
-                    .filter(e -> TASK_PROCESS_REJECT.equals(e.getTaskStatus()))
+                    .filter(e -> TASK_PROCESS_REJECT.equals(Byte.valueOf(e.getTaskStatus())))
                     .forEach(e -> {
 
-                        //
-
-//                        e.setRejectReason();
+                        LoanRejectLogDO loanRejectLogDO = loanRejectLogService.rejectLog(Long.valueOf(e.getId()), taskDefinitionKey);
+                        if (null != loanRejectLogDO) {
+                            e.setRejectReason(loanRejectLogDO.getReason());
+                        }
                     });
-        } else if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
-
-
         }
     }
 
