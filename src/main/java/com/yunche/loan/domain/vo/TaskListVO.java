@@ -48,6 +48,8 @@ public class TaskListVO {
      * 打回原因
      */
     private String rejectReason;
+
+    private String orderStatus;
 }
 
 

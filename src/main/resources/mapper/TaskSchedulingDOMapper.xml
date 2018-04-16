@@ -167,7 +167,7 @@
             select
             tab.*,
             tab.taskStatus                               AS taskType,
-            useGetTaskTypeText(tab.taskStatus)           AS taskTypeText,
+            useGetTaskTypeText(tab.taskStatus,tab.orderStatus)   AS taskTypeText,
             useGetCurrentTask(#{taskDefinitionKey})      AS currentTask
             from
             (
@@ -229,6 +229,7 @@
             join_f.down_payment_money                    AS downPaymentMoney,
             0                                            AS overdueNum,
             DATE_FORMAT(join_r.lend_date,'%Y-%m-%d %H:%i:%S') AS lendDate,
+            deputy.order_status                          AS orderStatus,
             <choose>
                 <when test="taskDefinitionKey == 'usertask_credit_apply'">
                     deputy.credit_apply                     AS taskStatus
