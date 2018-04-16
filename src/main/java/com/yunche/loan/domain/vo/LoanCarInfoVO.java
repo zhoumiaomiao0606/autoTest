@@ -54,6 +54,11 @@ public class LoanCarInfoVO {
 
     private Byte businessSource;
 
+    /**
+     * 业务员
+     */
+    private String salesManName;
+
     @Data
     public static class PartnerAccountInfo {
         private Long partnerId;

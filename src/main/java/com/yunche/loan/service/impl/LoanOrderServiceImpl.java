@@ -560,7 +560,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());
         }
-
+        //增加业务员
+        loanCarInfoVO.setSalesManName(loanQueryDOMapper.selectUniversalInfo(orderId).getSalesman_name());
 
         return ResultBean.ofSuccess(loanCarInfoVO);
     }
