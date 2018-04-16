@@ -34,7 +34,7 @@ public class JpushServiceImpl implements JpushService {
     private EmployeeDOMapper employeeDOMapper;
 
     @Override
-    public void push(@Validated FlowOperationMsgDO DO) {
+    public void push(FlowOperationMsgDO DO) {
         flowOperationMsgDOMapper.insertSelective(DO);
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(DO.getEmployeeId(),new Byte("0"));
         if(employeeDO!=null){

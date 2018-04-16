@@ -9,39 +9,27 @@ import java.util.Date;
 public class FlowOperationMsgDO {
     private Long id;
 
-    @NotNull
     private Long employeeId;
 
-    @NotNull
     private Long orderId;
 
-    @NotNull
     private String title;
 
-    @NotNull
     private String prompt;
 
-    @NotNull
     private String msg;
 
-    @NotNull
     private String sender;
 
-    @NotNull
     private String processKey;
 
-    @NotNull
     private Date sendDate;
 
-    @NotNull
     private Byte readStatus;
 
-    @NotNull
     private Byte type;
 
     private String feature;
 
-    @NotNull
     private Byte status;
-
 }

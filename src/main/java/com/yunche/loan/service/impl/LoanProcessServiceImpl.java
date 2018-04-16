@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.validation.annotation.Validated;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -126,7 +125,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         execTask(task, variables, approval, loanOrderDO);
 
         // 推送
-        push(loanOrderDO.getId(),loanOrderDO.getLoanBaseInfoId(),approval.getTaskDefinitionKey(),approval);
+        push(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
@@ -139,15 +138,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param action
      */
     private void checkPreCondition(Long orderId, String taskDefinitionKey, Byte action) {
+        if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
+            // 提车资料必须已经提交了
+            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+            Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
+        }
 
-//        if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
-//            // 提车资料必须已经提交了
-//            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-//            Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
-//            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
-//        }
-
-        if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && !ACTION_INFO_SUPPLEMENT.equals(action) && !ACTION_CANCEL.equals(action)) {
+        if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && !ACTION_INFO_SUPPLEMENT.equals(action)) {
             // 客户资料、车辆信息、金融方案  必须均已录入
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
             Preconditions.checkNotNull(loanOrderDO, "订单不存在");
@@ -278,16 +276,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 推送
      */
-    private void push(Long orderId, Long loanBaseInfoId,String taskDefinitionKey,ApprovalParam approval) {
+    private void push(Long orderId, Long loanBaseInfoId, String taskDefinitionKey, ApprovalParam approval) {
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
         Long loanCustomerId = null;
-        if(loanOrderDO == null){
+        if (loanOrderDO == null) {
             loanCustomerId = loanOrderDO.getLoanCustomerId();
         }
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, new Byte("0"));
 
-        if (loanBaseInfoDO != null) {
+        if (loanBaseInfoDO != null && !LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
             String title = "你有一个新的消息";
             String prompt = "你提交的订单被管理员审核啦";
             String msg = "详细信息请联系管理员";
@@ -295,17 +293,25 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             String taskName = LoanProcessEnum.getNameByCode(taskDefinitionKey);
             //审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
             String result = "[异常]";
-            switch (approval.getAction().intValue())
-            {
-                case 0:result = "[已打回]";break;
-                case 1:result = "[已通过]";break;
-                case 2:result = "[已弃单]";break;
-                case 3:result = "[发起资料增补]";break;
-                default:result = "[异常]";
+            switch (approval.getAction().intValue()) {
+                case 0:
+                    result = "[已打回]";
+                    break;
+                case 1:
+                    result = "[已通过]";
+                    break;
+                case 2:
+                    result = "[已弃单]";
+                    break;
+                case 3:
+                    result = "[发起资料增补]";
+                    break;
+                default:
+                    result = "[异常]";
             }
             title = taskName + result;
-            if(loanCustomerDO!=null){
-                prompt = "客户:"+loanCustomerDO.getName()+"-"+title;
+            if (loanCustomerDO != null) {
+                prompt = "客户:" + loanCustomerDO.getName() + "-" + title;
             }
             msg = approval.getInfo();
             FlowOperationMsgDO DO = new FlowOperationMsgDO();
@@ -322,6 +328,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             jpushService.push(DO);
         }
     }
+
 
     /**
      * 执行任务
