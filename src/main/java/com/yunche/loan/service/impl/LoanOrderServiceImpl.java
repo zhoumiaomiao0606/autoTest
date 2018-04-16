@@ -561,7 +561,11 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());
         }
         //增加业务员
-        loanCarInfoVO.setSalesManName(loanQueryDOMapper.selectUniversalInfo(orderId).getSalesman_name());
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+        if(universalInfoVO!=null){
+            loanCarInfoVO.setSalesManName(universalInfoVO.getSalesman_name());
+        }
+
 
         return ResultBean.ofSuccess(loanCarInfoVO);
     }
