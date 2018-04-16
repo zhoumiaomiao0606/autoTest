@@ -12,14 +12,14 @@ spring:
       test-on-borrow: true
 
   redis:
-      host: 47.97.122.31
-      port: 6380
-      password: yunche@1234
-      pool:
-        max-active: 50
-        max-idle: 30
-        min-idle: 0
-        max-wait: 10000
+    host: r-bp1b3d268c17de84.redis.rds.aliyuncs.com
+    port: 6379
+    password: Yunche2018
+    pool:
+      max-active: 50
+      max-idle: 30
+      min-idle: 0
+      max-wait: 10000
 
   mail:
     host: smtp.exmail.qq.com
