@@ -36,9 +36,12 @@ import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
+import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
+import static com.yunche.loan.service.impl.TaskSchedulingServiceImpl.getTaskStatusText;
 
 
 /**
@@ -1213,71 +1216,15 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
      * @param loanOrderDO
      */
     private void fillProcessMsg(AppOrderProcessVO appOrderProcessVO, LoanOrderDO loanOrderDO) {
-        // 历史task列表
-        List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(loanOrderDO.getProcessInstId())
-                .orderByTaskCreateTime()
-                .desc()
-                .list();
-
-        List<AppOrderProcessVO.Task> taskList = Lists.newArrayList();
-
-        if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
-
-            taskList = historicTaskInstanceList.stream()
-                    .filter(Objects::nonNull)
-                    .map(e -> {
-
-                        AppOrderProcessVO.Task task = new AppOrderProcessVO.Task();
-                        // 任务节点名
-                        task.setTask(LoanProcessEnum.getNameByCode(e.getTaskDefinitionKey()));
-                        //办理时间
-                        task.setApprovalTime(e.getEndTime());
-                        // 任务状态
-                        fillTaskStatus(task, e);
-                        // 审核员
-                        task.setAuditor(getAuditor(e.getTaskDefinitionKey(), loanOrderDO.getProcessInstId(), e.getExecutionId()));
-                        // 审核备注
-                        task.setApprovalInfo(getApprovalInfo(e.getTaskDefinitionKey(), loanOrderDO.getProcessInstId(), e.getExecutionId()));
-                        // 审核员角色 OR 合伙人团队名称
-                        task.setUserGroup(getUserGroup(e.getTaskDefinitionKey(), loanOrderDO.getLoanBaseInfoId()));
-
-                        return task;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        }
-
-        // TODO 当前任务KEY
-//        ResultBean<TaskStateVO> taskStateVOResultBean = loanProcessService.currentTask(loanOrderDO.getId());
-//        Preconditions.checkArgument(taskStateVOResultBean.getSuccess(), taskStateVOResultBean.getMsg());
-//        TaskStateVO taskStateVO = taskStateVOResultBean.getData();
-//        if (null != taskStateVO) {
-//            appOrderProcessVO.setTaskDefinitionKey(taskStateVO.getTaskDefinitionKey());
-//        }
-
-        // 是否可以弃单 -> 【打款确认】为界限
-        if (REMIT_REVIEW.getCode().equals(appOrderProcessVO.getTaskDefinitionKey())) {
-            appOrderProcessVO.setCanCancelTask(false);
-        } else {
-            appOrderProcessVO.setCanCancelTask(true);
-        }
-
-        appOrderProcessVO.setTaskList(taskList);
-    }
-
-    /**
-     * 流程信息
-     *
-     * @param appOrderProcessVO
-     * @param loanOrderDO
-     */
-    private void fillProcessMsg_(AppOrderProcessVO appOrderProcessVO, LoanOrderDO loanOrderDO) {
 
         // 是否可以弃单
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(loanOrderDO.getId());
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
-        if (ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
+
+        if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview())) {
+            // 已经打款确认
+            appOrderProcessVO.setCanCancelTask(false);
+        } else if (ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
             appOrderProcessVO.setCanCancelTask(true);
         } else {
             appOrderProcessVO.setCanCancelTask(false);
@@ -1299,16 +1246,16 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         //办理时间
                         task.setApprovalTime(e.getCreateTime());
 
-                        // TODO 任务状态
-//                        xxx(task);
+                        // 任务状态
+                        Byte taskStatus = getTaskStatus(loanProcessDO, e.getTaskDefinitionKey());
+                        task.setTaskStatus(taskStatus);
+                        task.setTaskStatusText(getTaskStatusText(String.valueOf(taskStatus)));
 
-
-//                        fillTaskStatus(task, e);
                         // 审核员
                         task.setAuditor(e.getUserName());
                         // 审核备注
                         task.setApprovalInfo(e.getInfo());
-                        // TODO 审核员角色 OR 合伙人团队名称
+                        // 审核员角色 OR 合伙人团队名称
                         task.setUserGroup(getUserGroup(e.getTaskDefinitionKey(), loanOrderDO.getLoanBaseInfoId()));
 
                         taskList.add(task);
@@ -1318,87 +1265,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         } else {
             appOrderProcessVO.setTaskList(Collections.EMPTY_LIST);
         }
-
-
-//        if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
-//
-//            taskList = historicTaskInstanceList.stream()
-//                    .filter(Objects::nonNull)
-//                    .map(e -> {
-//
-//                        AppOrderProcessVO.Task task = new AppOrderProcessVO.Task();
-//                        // 任务节点名
-//                        task.setTask(LoanProcessEnum.getNameByCode(e.getTaskDefinitionKey()));
-//                        //办理时间
-//                        task.setApprovalTime(e.getEndTime());
-//                        // 任务状态
-//                        fillTaskStatus(task, e);
-//                        // 审核员
-//                        task.setAuditor(getAuditor(e.getTaskDefinitionKey(), loanOrderDO.getProcessInstId(), e.getExecutionId()));
-//                        // 审核备注
-//                        task.setApprovalInfo(getApprovalInfo(e.getTaskDefinitionKey(), loanOrderDO.getProcessInstId(), e.getExecutionId()));
-//                        // 审核员角色 OR 合伙人团队名称
-//                        task.setUserGroup(getUserGroup(e.getTaskDefinitionKey(), loanOrderDO.getLoanBaseInfoId()));
-//
-//                        return task;
-//                    })
-//                    .filter(Objects::nonNull)
-//                    .collect(Collectors.toList());
-//        }
-//
-//
-//        appOrderProcessVO.setTaskList(taskList);
     }
 
-//    private void xxx(AppOrderProcessVO.Task task) {
-//
-//
-//        if (CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
-//            task.setTaskStatus(taskProcessStatus);
-//        } else if (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setBankCreditRecord(taskProcessStatus);
-//        } else if (SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setSocialCreditRecord(taskProcessStatus);
-//        } else if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setLoanApply(taskProcessStatus);
-//        } else if (VISIT_VERIFY.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setVisitVerify(taskProcessStatus);
-//        } else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setTelephoneVerify(taskProcessStatus);
-//        } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setBusinessReview(taskProcessStatus);
-//        } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setLoanReview(taskProcessStatus);
-//        } else if (REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setRemitReview(taskProcessStatus);
-//        } else if (CAR_INSURANCE.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setCarInsurance(taskProcessStatus);
-//        } else if (APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setApplyLicensePlateDepositInfo(taskProcessStatus);
-//        } else if (INSTALL_GPS.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setInstallGps(taskProcessStatus);
-//        } else if (COMMIT_KEY.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setCommitKey(taskProcessStatus);
-//        } else if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setVehicleInformation(taskProcessStatus);
-//        } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setBusinessReview(taskProcessStatus);
-//        } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setLoanReview(taskProcessStatus);
-//        } else if (REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setRemitReview(taskProcessStatus);
-//        } else if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setMaterialReview(taskProcessStatus);
-//        } else if (MATERIAL_PRINT_REVIEW.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setMaterialPrintReview(taskProcessStatus);
-//        } else if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setBankCardRecord(taskProcessStatus);
-//        } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setFinancialScheme(taskProcessStatus);
-//        } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
-//            loanProcessDO.setBankLendRecord(taskProcessStatus);
-//        }
-//    }
 
     /**
      * 任务状态

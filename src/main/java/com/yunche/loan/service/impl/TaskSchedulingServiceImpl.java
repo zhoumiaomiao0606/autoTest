@@ -9,7 +9,6 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
-import com.yunche.loan.domain.entity.LoanRejectLogDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.AppTaskVO;
@@ -31,12 +30,9 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
-import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_APPLY;
 import static com.yunche.loan.config.constant.MappingConst.SUPPLEMENT_TYPE_TEXT_MAP;
 
 
@@ -187,7 +183,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
                 appTaskVO.setTaskType(taskStatus);
                 // 文本值
-                String taskTypeText = getTaskTypeText(taskStatus);
+                String taskTypeText = getTaskStatusText(taskStatus);
                 appTaskVO.setTaskTypeText(taskTypeText);
             }
         }
@@ -213,13 +209,13 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 1-已提交;  2-未提交;  3-打回;
         taskListVO.setTaskType(taskStatus);
         // 文本值
-        String taskTypeText = getTaskTypeText(taskStatus);
+        String taskTypeText = getTaskStatusText(taskStatus);
         taskListVO.setTaskTypeText(taskTypeText);
 
         taskListVO.setCurrentTask(LoanProcessEnum.getNameByCode(taskDefinitionKey));
     }
 
-    private String getTaskTypeText(String taskStatus) {
+    public static String getTaskStatusText(String taskStatus) {
 
         String taskTypeText = null;
 
