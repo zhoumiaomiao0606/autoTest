@@ -1,3 +1,4 @@
+/*
 package com.yunche.loan.web.aop;
 
 import org.apache.ibatis.type.*;
@@ -36,3 +37,4 @@ public class AmountTypeHandler extends StringTypeHandler {
 
 
 }
+*/

@@ -39,7 +39,7 @@ public class JpushServiceImpl implements JpushService {
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(DO.getEmployeeId(),new Byte("0"));
         if(employeeDO!=null){
             if(!StringUtils.isBlank(employeeDO.getMachineId())){
-                Jpush.sendToRegistrationId(employeeDO.getMachineId(),DO.getTitle(),DO.getProcessKey());
+                Jpush.sendToRegistrationId(employeeDO.getMachineId(),DO.getPrompt(),DO.getProcessKey());
             }
         }
     }

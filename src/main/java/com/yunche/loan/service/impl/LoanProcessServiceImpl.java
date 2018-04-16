@@ -311,9 +311,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
             title = taskName + result;
             if (loanCustomerDO != null) {
-                prompt = "客户:" + loanCustomerDO.getName() + "-" + title;
+                prompt = "主贷人:[" + loanCustomerDO.getName() + "]-"+ title;
             }
-            msg = approval.getInfo();
+            msg = "-内容为:"+"["+approval.getInfo()+"]";
             FlowOperationMsgDO DO = new FlowOperationMsgDO();
             DO.setEmployeeId(loanBaseInfoDO.getSalesmanId());
             DO.setOrderId(orderId);

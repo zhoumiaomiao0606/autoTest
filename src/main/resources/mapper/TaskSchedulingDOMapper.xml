@@ -565,7 +565,7 @@
                jb.partner_id                       AS  partnerId,
                jb.salesman_id                      AS  salesmanId,
 							 case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
-                  case when lp.telephone_verify  &gt; 7 and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
+                  case when lp.telephone_verify  &lt; 7 and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
                else 2 end                          AS filtration,
                null                        		   AS supplementOrderId
 							from
