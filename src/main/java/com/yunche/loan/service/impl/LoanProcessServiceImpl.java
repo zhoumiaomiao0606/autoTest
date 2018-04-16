@@ -1546,6 +1546,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 Map<String, Object> passVariables = Maps.newHashMap();
                 Map<String, Object> cancelVariables = Maps.newHashMap();
                 passVariables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
+                passVariables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, null);
                 cancelVariables.put(PROCESS_VARIABLE_ACTION, ACTION_CANCEL);
 
                 tasks.stream()
