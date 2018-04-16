@@ -21,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -120,7 +122,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         execTask(task, variables, approval, loanOrderDO);
 
         // 推送
-        push(loanOrderDO, approval.getTaskDefinitionKey(), approval.getAction(), approval);
+        push(loanOrderDO.getId(),loanOrderDO.getLoanBaseInfoId(),approval.getTaskDefinitionKey(),approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
@@ -270,59 +272,49 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     /**
      * 推送
-     *
-     * @param loanOrderDO
-     * @param taskDefinitionKey
-     * @param action
-     * @param approval
      */
-    private void push(LoanOrderDO loanOrderDO, String taskDefinitionKey, Byte action, ApprovalParam approval) {
-        Long baseInfoId = loanOrderDO.getLoanBaseInfoId();
-        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseInfoId);
+    private void push(Long orderId, Long loanBaseInfoId,String taskDefinitionKey,ApprovalParam approval) {
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        Long loanCustomerId = null;
+        if(loanOrderDO == null){
+            loanCustomerId = loanOrderDO.getLoanCustomerId();
+        }
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, new Byte("0"));
+
         if (loanBaseInfoDO != null) {
-            StringBuffer cstr = new StringBuffer("客户:");
-            StringBuffer bstr = new StringBuffer("您所提交的");
-            StringBuffer msg = new StringBuffer("");
-            LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), new Byte("0"));
-            String customerName = null;
-            if (loanCustomerDO != null) {
-                customerName = loanCustomerDO.getName();
-            }
-            cstr.append("<" + customerName + ">").append(LoanProcessEnum.getNameByCode(taskDefinitionKey));
-            bstr.append(LoanProcessEnum.getNameByCode(taskDefinitionKey));
-            //0 未知 1 正常 2 提示  3 错误 4 警告
-            //* 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
-            Byte type = new Byte("0");
-            //贷款信息不为空时候才会进行push 不然不知道推给谁
-            if (action.intValue() == 0) {
-                cstr.append("被打回");
-                bstr.append("被打回");
-                msg.append(approval.getInfo());
-                type = new Byte("3");
-            }
+            String title = "你有一个新的消息";
+            String prompt = "你提交的订单被管理员审核啦";
+            String msg = "详细信息请联系管理员";
 
-            if (action.intValue() == 1) {
-                cstr.append("审核通过");
-                bstr.append("审核通过");
-                msg.append(approval.getInfo());
-                type = new Byte("1");
+            String taskName = LoanProcessEnum.getNameByCode(taskDefinitionKey);
+            //审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
+            String result = "[异常]";
+            switch (approval.getAction().intValue())
+            {
+                case 0:result = "[已打回]";break;
+                case 1:result = "[已通过]";break;
+                case 2:result = "[已弃单]";break;
+                case 3:result = "[发起资料增补]";break;
+                default:result = "[异常]";
             }
-
-            if (action.intValue() == 2) {
-                cstr.append("弃单");
-                bstr.append("弃单");
-                msg.append(approval.getInfo());
-                type = new Byte("4");
+            title = taskName + result;
+            if(loanCustomerDO!=null){
+                prompt = "客户:"+loanCustomerDO.getName()+"-"+title;
             }
-
-            if (action.intValue() == 3) {
-                cstr.append("需要资料增补");
-                bstr.append("需要资料增补");
-                msg.append("增补说明" + approval.getSupplementInfo() + NEW_LINE + "内容:" + approval.getSupplementContent());
-                type = new Byte("2");
-            }
-
-            jpushService.push(loanBaseInfoDO.getSalesmanId(), loanOrderDO.getId(), cstr.toString(), bstr.toString(), msg.toString(), taskDefinitionKey, type);
+            msg = approval.getInfo();
+            FlowOperationMsgDO DO = new FlowOperationMsgDO();
+            DO.setEmployeeId(loanBaseInfoDO.getSalesmanId());
+            DO.setOrderId(orderId);
+            DO.setTitle(title);
+            DO.setPrompt(prompt);
+            DO.setMsg(msg);
+            DO.setSender(SessionUtils.getLoginUser().getName());
+            DO.setProcessKey(taskDefinitionKey);
+            DO.setSendDate(new Timestamp(new Date().getTime()));
+            DO.setReadStatus(new Byte("0"));
+            DO.setType(approval.getAction());
+            jpushService.push(DO);
         }
     }
 
