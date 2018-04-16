@@ -34,23 +34,12 @@ public class JpushServiceImpl implements JpushService {
     private EmployeeDOMapper employeeDOMapper;
 
     @Override
-    public void push(Long employeeId,Long orderId,String title,String prompt,String msg,String processKey,Byte type) {
-        FlowOperationMsgDO DO = new FlowOperationMsgDO();
-        DO.setEmployeeId(employeeId);
-        DO.setOrderId(orderId);
-        DO.setTitle(nullToEmp(title));
-        DO.setPrompt(nullToEmp(prompt));
-        DO.setMsg(nullToEmp(msg));
-        DO.setSender(nullToEmp(SessionUtils.getLoginUser().getName()));
-        DO.setProcessKey(nullToEmp(processKey));
-        DO.setSendDate(new Timestamp(new Date().getTime()));
-        DO.setReadStatus(new Byte("0"));
-        DO.setType(type);
+    public void push(@Validated FlowOperationMsgDO DO) {
         flowOperationMsgDOMapper.insertSelective(DO);
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeId,new Byte("0"));
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(DO.getEmployeeId(),new Byte("0"));
         if(employeeDO!=null){
             if(!StringUtils.isBlank(employeeDO.getMachineId())){
-                Jpush.sendToRegistrationId(employeeDO.getMachineId(),title,processKey);
+                Jpush.sendToRegistrationId(employeeDO.getMachineId(),DO.getTitle(),DO.getProcessKey());
             }
         }
     }

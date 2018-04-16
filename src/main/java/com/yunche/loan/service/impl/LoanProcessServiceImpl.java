@@ -144,7 +144,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
         }
 
-        if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+        if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && !ACTION_INFO_SUPPLEMENT.equals(action)) {
             // 客户资料、车辆信息、金融方案  必须均已录入
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
             Preconditions.checkNotNull(loanOrderDO, "订单不存在");
