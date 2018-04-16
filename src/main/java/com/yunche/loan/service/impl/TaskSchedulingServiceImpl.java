@@ -94,9 +94,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 取分页信息
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
-        // 打回原因
-        rejectReason(taskListQuery.getTaskDefinitionKey(), list);
-
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
@@ -160,28 +157,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         }
     }
 
-    /**
-     * 打回原因
-     *
-     * @param taskDefinitionKey
-     * @param list
-     */
-    private void rejectReason(String taskDefinitionKey, List<TaskListVO> list) {
-
-        if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) || LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
-
-            list.parallelStream()
-                    .filter(Objects::nonNull)
-                    .filter(e -> TASK_PROCESS_REJECT.equals(Byte.valueOf(e.getTaskStatus())))
-                    .forEach(e -> {
-
-                        LoanRejectLogDO loanRejectLogDO = loanRejectLogService.rejectLog(Long.valueOf(e.getId()), taskDefinitionKey);
-                        if (null != loanRejectLogDO) {
-                            e.setRejectReason(loanRejectLogDO.getReason());
-                        }
-                    });
-        }
-    }
 
     private void fillTaskStatus(AppTaskVO appTaskVO) {
 
