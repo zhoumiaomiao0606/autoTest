@@ -139,14 +139,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param action
      */
     private void checkPreCondition(Long orderId, String taskDefinitionKey, Byte action) {
-        if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
-            // 提车资料必须已经提交了
-            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-            Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
-            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
-        }
 
-        if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && !ACTION_INFO_SUPPLEMENT.equals(action)) {
+//        if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            // 提车资料必须已经提交了
+//            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+//            Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+//            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
+//        }
+
+        if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && !ACTION_INFO_SUPPLEMENT.equals(action) && !ACTION_CANCEL.equals(action)) {
             // 客户资料、车辆信息、金融方案  必须均已录入
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
             Preconditions.checkNotNull(loanOrderDO, "订单不存在");
