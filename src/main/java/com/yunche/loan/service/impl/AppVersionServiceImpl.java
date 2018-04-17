@@ -120,7 +120,8 @@ public class AppVersionServiceImpl implements AppVersionService {
         Preconditions.checkNotNull(latestVersionDO, "获取最新版本失败");
 
         // 最新版本
-        if (appVersionDO.getVersionCode().equals(latestVersionDO.getVersionCode())) {
+        if (appVersionDO.getVersionCode().equals(latestVersionDO.getVersionCode())
+                || (Integer.parseInt(appVersionDO.getVersionCode().trim())>Integer.parseInt(latestVersionDO.getVersionCode().trim()))) {
             AppVersionVO.Update updateVO = new AppVersionVO.Update();
             updateVO.setNeedUpdate(false);
             updateVO.setLatestVersion(null);

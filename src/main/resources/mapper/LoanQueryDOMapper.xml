@@ -117,6 +117,8 @@
             customer.company_address                                                                AS customer_company_address,
             customer.mobile                                                                         AS customer_mobile,
             customer.company_phone                                                                  AS customer_company_phone,
+            DATE_FORMAT(customer.birth,'%Y年%m月%d日')                                               AS customer_birth,
+            customer.sex                                                                            AS customer_sex,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
