@@ -564,9 +564,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
         if(universalInfoVO!=null){
             loanCarInfoVO.setSalesManName(universalInfoVO.getSalesman_name());
+            loanCarInfoVO.setPartnerName(universalInfoVO.getPartner_name());
         }
-
-
         return ResultBean.ofSuccess(loanCarInfoVO);
     }
 

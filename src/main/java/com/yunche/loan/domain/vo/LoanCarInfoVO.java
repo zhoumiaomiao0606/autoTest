@@ -59,6 +59,10 @@ public class LoanCarInfoVO {
      */
     private String salesManName;
 
+    /**
+     * 合伙人团队
+     */
+    private String partnerName;
     @Data
     public static class PartnerAccountInfo {
         private Long partnerId;
