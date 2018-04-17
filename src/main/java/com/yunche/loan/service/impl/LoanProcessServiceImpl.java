@@ -98,6 +98,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
 
+        // APP通过OrderId弃单
+        if (isAppCancelByOrderId(approval)) {
+            return execAppCancelByOrderId(approval);
+        } else {
+            // Web端
+            Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
+        }
+
         // 节点权限校验
         permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
 
@@ -109,9 +117,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 日志
         log(approval);
-
-        // APP通过OrderId弃单
-        appCancelByOrderId(approval, loanOrderDO);
 
         // 征信增补
         execCreditSupplementTask(approval, loanOrderDO.getProcessInstId());
@@ -137,31 +142,45 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * APP通过OrderId弃单
+     * 是否为：APP通过OrderId弃单
      *
      * @param approval
-     * @param loanOrderDO
+     * @return
      */
-    private void appCancelByOrderId(ApprovalParam approval, LoanOrderDO loanOrderDO) {
-        // 移动端-【弃单】
-        if (approval.getCancelByOrderId()) {
-            if (ACTION_CANCEL.equals(approval.getAction())) {
-
-                // activiti 弃单[结束流程]
-                dealCancelTask(loanOrderDO.getProcessInstId());
-
-                // 更新状态
-                LoanProcessDO loanProcessDO = new LoanProcessDO();
-                loanProcessDO.setOrderId(approval.getOrderId());
-                loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
-                loanProcessDO.setCancelTaskDefKey("APP-CANCEL");
-
-                updateLoanProcess(loanProcessDO);
-            }
-        } else {
-            // Web端
-            Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
+    private boolean isAppCancelByOrderId(ApprovalParam approval) {
+        boolean isAppCancelByOrderId = approval.getCancelByOrderId() && ACTION_CANCEL.equals(approval.getAction());
+        // 节点标记
+        if (isAppCancelByOrderId) {
+            approval.setTaskDefinitionKey("APP-CANCEL");
         }
+        return isAppCancelByOrderId;
+    }
+
+    /**
+     * 执行：APP通过OrderId弃单
+     *
+     * @param approval
+     */
+    private ResultBean<Void> execAppCancelByOrderId(ApprovalParam approval) {
+
+        // 业务单
+        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
+
+        // 日志
+        log(approval);
+
+        // activiti 弃单[结束流程]
+        dealCancelTask(loanOrderDO.getProcessInstId());
+
+        // 更新状态
+        LoanProcessDO loanProcessDO = new LoanProcessDO();
+        loanProcessDO.setOrderId(approval.getOrderId());
+        loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
+        loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
+
+        updateLoanProcess(loanProcessDO);
+
+        return ResultBean.ofSuccess(null, "弃单成功");
     }
 
     /**
