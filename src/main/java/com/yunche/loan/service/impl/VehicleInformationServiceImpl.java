@@ -111,7 +111,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
                         loanFileDO.setGmtCreate(new Date());
                         loanFileDO.setGmtModify(new Date());
                         loanFileDO.setStatus(new Byte("0"));
-                        loanFileDOMapper.updateByPrimaryKeySelective(loanFileDO);
+                        loanFileDOMapper.insertSelective(loanFileDO);
                     }
                 }
             }
