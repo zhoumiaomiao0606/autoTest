@@ -26,11 +26,25 @@
     from flow_operation_msg
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectByEmployeeId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <select id="selectByEmployeeId" resultType="com.yunche.loan.domain.vo.FlowOperationMsgVO" parameterType="java.lang.Long" >
     select
-    <include refid="Base_Column_List" />
-    from flow_operation_msg
-    where employee_id = #{employeeId,jdbcType=BIGINT} ORDER By send_date,read_status DESC
+        msg.id 								            AS id,
+		msg.order_id 					                AS order_id,
+		msg.title							            AS title,
+		msg.prompt						                AS prompt,
+		msg.msg								            AS msg,
+		msg.sender						                AS sender,
+		msg.process_key				                    AS process_key,
+		DATE_FORMAT(msg.send_date,'%Y-%m-%d %H:%i:%S') 	AS send_date,
+		msg.read_status				                    AS read_status,
+		msg.type					                    AS type,
+		customer.name 				                    AS customer_name,
+		customer.id_card 			                    AS customer_id_card
+
+    from flow_operation_msg msg
+		left join loan_order o on o.id = msg.order_id
+		left join loan_customer customer on customer.id = o.loan_customer_id
+    where msg.employee_id = 1 ORDER By msg.send_date,msg.read_status DESC
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from flow_operation_msg
