@@ -14,6 +14,8 @@ public class UniversalCustomerVO {
     private String name;//名字
     private String id_card;//身份证号
     private String mobile;//手机号
+    private String income_certificate_company_name;
+    private String income_certificate_company_address;
     private String cust_relation;//与主贷人关系 客户类型;// 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
     private String bank_result;// -1 待查询 0-不通过;1-通过;2-关注;
     private String society_result;// -1 待查询 0-不通过;1-通过;2-关注;
