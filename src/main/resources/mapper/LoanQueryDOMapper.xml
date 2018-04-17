@@ -120,7 +120,7 @@
             customer.company_address                                                                AS customer_company_address,
             customer.mobile                                                                         AS customer_mobile,
             customer.company_phone                                                                  AS customer_company_phone,
-            DATE_FORMAT(customer.birth,'%Y年%m月%d日')                                               AS customer_birth,
+            DATE_FORMAT(customer.birth,'%Y-%m-%d')                                               AS customer_birth,
             customer.sex                                                                            AS customer_sex,
             customer.age                                                                            AS customer_age,
             customer.month_income                                                                   AS customer_month_income,
