@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
+import static com.yunche.loan.config.constant.CarConst.CAR_KEY_TRUE;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
@@ -86,6 +88,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private LoanRejectLogService loanRejectLogService;
+
+    @Autowired
+    private LoanCarInfoDOMapper loanCarInfoDOMapper;
 
 
     @Override
@@ -747,31 +752,49 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 完成任务：全部角色直接过单
         completeTask(task, variables, approval);
         // 自动执行【金融方案】任务
-        completeFinancialSchemeTask(task.getProcessInstanceId(), approval.getOrderId());
+        autoCompleteTask(task.getProcessInstanceId(), approval.getOrderId(), FINANCIAL_SCHEME.getCode());
+        // 自动执行【待收钥匙】任务
+        completeCommitKeyTask(task.getProcessInstanceId(), approval.getOrderId());
     }
 
     /**
-     * 自动执行【金融方案】任务
+     * 自动执行【待收钥匙】任务
      *
      * @param processInstanceId
      * @param orderId
      */
-    private void completeFinancialSchemeTask(String processInstanceId, Long orderId) {
+    private void completeCommitKeyTask(String processInstanceId, Long orderId) {
+
+        Byte carKey = loanCarInfoDOMapper.getCarKeyByOrderId(orderId);
+        // 不留备用钥匙
+        if (CAR_KEY_FALSE.equals(carKey)) {
+            autoCompleteTask(processInstanceId, orderId, COMMIT_KEY.getCode());
+        }
+    }
+
+    /**
+     * 自动完成指定任务
+     *
+     * @param processInstanceId
+     * @param orderId
+     * @param taskDefinitionKey
+     */
+    private void autoCompleteTask(String processInstanceId, Long orderId, String taskDefinitionKey) {
 
         Map<String, Object> variables = Maps.newHashMap();
         variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
 
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
-                .taskDefinitionKey(FINANCIAL_SCHEME.getCode())
+                .taskDefinitionKey(taskDefinitionKey)
                 .singleResult();
 
-        Preconditions.checkNotNull(task, "[金融方案]任务不存在");
+        Preconditions.checkNotNull(task, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务不存在");
 
         ApprovalParam approval = new ApprovalParam();
         approval.setOrderId(orderId);
         approval.setAction(ACTION_PASS);
-        approval.setTaskDefinitionKey(FINANCIAL_SCHEME.getCode());
+        approval.setTaskDefinitionKey(taskDefinitionKey);
 
         completeTask(task, variables, approval);
     }

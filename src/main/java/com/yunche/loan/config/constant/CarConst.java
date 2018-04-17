@@ -23,6 +23,15 @@ public class CarConst {
     public static final Byte CAR_DETAIL = 3;
 
     /**
+     * 留备用钥匙
+     */
+    public static final Byte CAR_KEY_TRUE = 1;
+    /**
+     * 不留备用钥匙
+     */
+    public static final Byte CAR_KEY_FALSE = 0;
+
+    /**
      * 生产类型（1:国产;2:进口）
      */
     public static Map<String, Byte> productionTypeMap = Maps.newHashMap();

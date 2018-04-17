@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface LoanCarInfoDOMapper {
@@ -16,4 +17,8 @@ public interface LoanCarInfoDOMapper {
     int updateByPrimaryKeySelective(LoanCarInfoDO record);
 
     int updateByPrimaryKey(LoanCarInfoDO record);
+
+    @Select("SELECT `car_key`  FROM `loan_car_info` WHERE `id` = " +
+            "(SELECT  `loan_car_info_id` from `loan_order` WHERE `id`  = #{orderId})")
+    Byte getCarKeyByOrderId(Long orderId);
 }
