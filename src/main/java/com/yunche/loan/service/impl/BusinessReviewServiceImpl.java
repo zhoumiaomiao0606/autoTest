@@ -202,7 +202,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
                     .process(param.getExtra_fee_type(),extra_fee)
                     .process(param.getOther_fee_type(),other_fee)
                     .finalResult()
-                    .setScale(6,BigDecimal.ROUND_HALF_UP);
+                    .setScale(2,BigDecimal.ROUND_HALF_UP);
         }else{
             //日结
             return bank_period_principal
@@ -216,7 +216,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
                     .subtract(based_margin_fee)
                     .subtract(extra_fee)
                     .subtract(other_fee)
-                    .setScale(6,BigDecimal.ROUND_HALF_UP);
+                    .setScale(2,BigDecimal.ROUND_HALF_UP);
         }
     }
 
