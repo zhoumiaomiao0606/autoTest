@@ -386,6 +386,7 @@
                 </when>
                 <when test="taskDefinitionKey == 'usertask_commit_key'">
                     AND case when #{taskStatus} = 0 then deputy.commit_key != 0                       else deputy.commit_key                       = #{taskStatus} end
+                    AND join_i.car_key = 1
                 </when>
                 <when test="taskDefinitionKey == 'usertask_material_review'">
                     AND case when #{taskStatus} = 0 then deputy.material_review != 0                  else deputy.material_review                  = #{taskStatus} end
