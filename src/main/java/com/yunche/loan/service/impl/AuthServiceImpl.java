@@ -278,7 +278,7 @@ public class AuthServiceImpl implements AuthService {
             BeanUtils.copyProperties(menuDO, menu);
 
             // 递归填充父级菜单
-            fillParentMenu(menu, pageVO);
+            fillParentMenu(menu, pageVO, 10);
         }
 
     }
@@ -506,7 +506,7 @@ public class AuthServiceImpl implements AuthService {
             BeanUtils.copyProperties(menuDO, menu);
 
             // 递归填充父级菜单
-            fillParentMenu(menu, pageVO);
+            fillParentMenu(menu, pageVO, 10);
         }
     }
 
@@ -516,14 +516,18 @@ public class AuthServiceImpl implements AuthService {
      * @param childMenu
      * @param pageVO
      */
-    private void fillParentMenu(PageVO.Menu childMenu, PageVO pageVO) {
+    private void fillParentMenu(PageVO.Menu childMenu, PageVO pageVO, Integer limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
         if (null != childMenu.getParentId()) {
             MenuDO parentMenuDO = menuDOMapper.selectByPrimaryKey(childMenu.getParentId(), VALID_STATUS);
             if (null != parentMenuDO) {
                 PageVO.Menu parentMenu = new PageVO.Menu();
                 BeanUtils.copyProperties(parentMenuDO, parentMenu);
                 parentMenu.setChildMenu(childMenu);
-                fillParentMenu(parentMenu, pageVO);
+                fillParentMenu(parentMenu, pageVO, limit);
             }
         } else {
             // null时为最顶级

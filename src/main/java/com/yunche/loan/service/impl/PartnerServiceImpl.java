@@ -956,18 +956,22 @@ public class PartnerServiceImpl implements PartnerService {
             BaseVO parentEmployee = new BaseVO();
             BeanUtils.copyProperties(employeeDO, parentEmployee);
             // 递归填充所有上层父级leader
-            fillSupperEmployee(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), employeeVO);
+            fillSupperEmployee(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), employeeVO, 10);
         }
     }
 
-    private void fillSupperEmployee(Long parentId, List<BaseVO> supperEmployeeList, EmployeeVO employeeVO) {
+    private void fillSupperEmployee(Long parentId, List<BaseVO> supperEmployeeList, EmployeeVO employeeVO, Integer limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
         if (null != parentId) {
             EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != employeeDO) {
                 BaseVO parentEmployee = new BaseVO();
                 BeanUtils.copyProperties(employeeDO, parentEmployee);
                 supperEmployeeList.add(parentEmployee);
-                fillSupperEmployee(employeeDO.getParentId(), supperEmployeeList, employeeVO);
+                fillSupperEmployee(employeeDO.getParentId(), supperEmployeeList, employeeVO, limit);
             }
         } else {
             // null时为最顶级

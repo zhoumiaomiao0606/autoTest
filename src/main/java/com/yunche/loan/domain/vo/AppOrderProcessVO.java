@@ -87,5 +87,10 @@ public class AppOrderProcessVO {
          * 任务状态文本
          */
         private String taskStatusText;
+
+        /**
+         * 操作文本
+         */
+        private String actionText;
     }
 }

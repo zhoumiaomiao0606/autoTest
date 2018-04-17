@@ -70,4 +70,8 @@ public class PartnerVO {
      * 团队员工人数
      */
     private Integer employeeNum;
+    /**
+     * 风险承担比例
+     */
+    private BigDecimal riskBearRate;
 }

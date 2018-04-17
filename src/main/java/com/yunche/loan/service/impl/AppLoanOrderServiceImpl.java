@@ -40,8 +40,7 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
-import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
-import static com.yunche.loan.service.impl.TaskSchedulingServiceImpl.getTaskStatusText;
+import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionText;
 
 
 /**
@@ -1246,17 +1245,17 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         //办理时间
                         task.setApprovalTime(e.getCreateTime());
 
-                        // 任务状态
-                        Byte taskStatus = getTaskStatus(loanProcessDO, e.getTaskDefinitionKey());
-                        task.setTaskStatus(taskStatus);
-                        task.setTaskStatusText(getTaskStatusText(String.valueOf(taskStatus)));
+                        // 操作
+                        String actionText = convertActionText(e.getAction());
+                        task.setTaskStatusText(actionText);
+                        task.setActionText(actionText);
 
                         // 审核员
                         task.setAuditor(e.getUserName());
                         // 审核备注
                         task.setApprovalInfo(e.getInfo());
                         // 审核员角色 OR 合伙人团队名称
-                        task.setUserGroup(getUserGroup(e.getTaskDefinitionKey(), loanOrderDO.getLoanBaseInfoId()));
+                        task.setUserGroup(getUserGroup(e.getTaskDefinitionKey(), loanProcessDO.getTelephoneVerify(), loanOrderDO.getLoanBaseInfoId()));
 
                         taskList.add(task);
                     });
@@ -1296,12 +1295,31 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
      * 审核员角色 OR 合伙人团队名称
      *
      * @param taskDefinitionKey
+     * @param telephoneVerify
      * @param loanBaseInfoId
      * @return
      */
-    private String getUserGroup(String taskDefinitionKey, Long loanBaseInfoId) {
+    private String getUserGroup(String taskDefinitionKey, Byte telephoneVerify, Long loanBaseInfoId) {
         // 审单员角色
         String userGroup = TASK_USER_GROUP_MAP.get(taskDefinitionKey);
+
+        // 电审角色
+        if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+            switch (telephoneVerify) {
+                case 4:
+                    userGroup = "电审专员";
+                    break;
+                case 5:
+                    userGroup = "电审主管";
+                    break;
+                case 6:
+                    userGroup = "电审经理";
+                    break;
+                case 7:
+                    userGroup = "电审总监";
+                    break;
+            }
+        }
 
         if (StringUtils.isBlank(userGroup)) {
 

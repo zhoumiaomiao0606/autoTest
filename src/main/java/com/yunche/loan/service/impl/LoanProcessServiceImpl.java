@@ -312,9 +312,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             title = taskName + result;
 
             if (loanCustomerDO != null) {
-                prompt = "主贷人:[" + loanCustomerDO.getName() + "]"+"-"+ title;
+                prompt = "主贷人:[" + loanCustomerDO.getName() + "]" + "-" + title;
             }
-            msg = "-"+"内容为:"+"["+approval.getInfo()+"]";
+            msg = "-" + "内容为:" + "[" + approval.getInfo() + "]";
             FlowOperationMsgDO DO = new FlowOperationMsgDO();
             DO.setEmployeeId(loanBaseInfoDO.getSalesmanId());
             DO.setOrderId(orderId);
@@ -1203,7 +1203,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param action 0-打回; 1-通过(提交); 2-弃单; 3-资料增补;
      * @return
      */
-    private String convertActionText(Byte action) {
+    public static String convertActionText(Byte action) {
         String actionText = null;
 
         switch (action) {
