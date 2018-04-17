@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
-import static com.yunche.loan.config.constant.CarConst.CAR_KEY_TRUE;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
@@ -97,7 +96,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Transactional
     public ResultBean<Void> approval(ApprovalParam approval) {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
 
         // 节点权限校验
@@ -111,6 +109,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 日志
         log(approval);
+
+        // APP通过OrderId弃单
+        appCancelByOrderId(approval, loanOrderDO);
 
         // 征信增补
         execCreditSupplementTask(approval, loanOrderDO.getProcessInstId());
@@ -133,6 +134,34 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         push(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+    }
+
+    /**
+     * APP通过OrderId弃单
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void appCancelByOrderId(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+        // 移动端-【弃单】
+        if (approval.getCancelByOrderId()) {
+            if (ACTION_CANCEL.equals(approval.getAction())) {
+
+                // activiti 弃单[结束流程]
+                dealCancelTask(loanOrderDO.getProcessInstId());
+
+                // 更新状态
+                LoanProcessDO loanProcessDO = new LoanProcessDO();
+                loanProcessDO.setOrderId(approval.getOrderId());
+                loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
+                loanProcessDO.setCancelTaskDefKey("APP-CANCEL");
+
+                updateLoanProcess(loanProcessDO);
+            }
+        } else {
+            // Web端
+            Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
+        }
     }
 
     /**
@@ -319,7 +348,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (loanCustomerDO != null) {
                 prompt = "主贷人:[" + loanCustomerDO.getName() + "]" + "-" + title;
             }
-            msg = StringUtils.isBlank(approval.getInfo())?"无":"null".equals(approval.getInfo())?"无":approval.getInfo();
+            msg = StringUtils.isBlank(approval.getInfo()) ? "无" : "null".equals(approval.getInfo()) ? "无" : approval.getInfo();
 
             FlowOperationMsgDO DO = new FlowOperationMsgDO();
             DO.setEmployeeId(loanBaseInfoDO.getSalesmanId());

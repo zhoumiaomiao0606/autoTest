@@ -37,6 +37,7 @@ import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_INIT;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
@@ -1223,7 +1224,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview())) {
             // 已经打款确认
             appOrderProcessVO.setCanCancelTask(false);
-        } else if (ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
+        } else if (ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()) && !TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview())) {
+            // 进行中 + 未打款确认
             appOrderProcessVO.setCanCancelTask(true);
         } else {
             appOrderProcessVO.setCanCancelTask(false);

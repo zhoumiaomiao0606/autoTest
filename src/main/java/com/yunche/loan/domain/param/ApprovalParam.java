@@ -67,6 +67,11 @@ public class ApprovalParam {
 
     private String taskDefinitionKey_;
 
+    /**
+     * 移动端通过订单号弃单
+     */
+    private Boolean cancelByOrderId = false;
+
     public String getTaskDefinitionKey_() {
         if (null != taskDefinitionKey_) {
             return taskDefinitionKey_;

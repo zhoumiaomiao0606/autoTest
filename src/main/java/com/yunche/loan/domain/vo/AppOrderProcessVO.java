@@ -45,7 +45,7 @@ public class AppOrderProcessVO {
      */
     private String bank;
     /**
-     * 当前任务KEY
+     * 当前任务KEY -暂时无用
      */
     private String taskDefinitionKey;
     /**
