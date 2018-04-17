@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
@@ -13,11 +14,11 @@ import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanFileService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -56,6 +57,11 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         Preconditions.checkNotNull(loanCreditInfoDO.getType(), "征信类型不能为空");
         Preconditions.checkNotNull(loanCreditInfoDO.getResult(), "征信结果不能为空");
 
+        List<LoanCreditInfoDO> list = loanCreditInfoDOMapper.getByCustomerIdAndType(loanCreditInfoDO.getCustomerId(), loanCreditInfoDO.getType());
+        if (CollectionUtils.isNotEmpty(list)) {
+            throw new BizException("当前客户的征信录入已存在");
+        }
+        
         loanCreditInfoDO.setStatus(VALID_STATUS);
         loanCreditInfoDO.setGmtCreate(new Date());
         loanCreditInfoDO.setGmtModify(new Date());
@@ -138,7 +144,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         // 征信结果
                         fillCreditMsg(principalLender, creditType);
                         List<Long> relevanceOrderlist = loanOrderDOMapper.selectRelevanceLoanOrderIdByCustomerId(principalLender.getCustomerId());
-                        if(principalLender!=null){
+                        if (principalLender != null) {
                             principalLender.setRelevanceOrderlist(relevanceOrderlist);
                         }
                         creditRecordVO.setPrincipalLender(principalLender);
@@ -155,7 +161,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         // 征信结果
                         fillCreditMsg(commonLender, creditType);
                         List<Long> relevanceOrderlist = loanOrderDOMapper.selectRelevanceLoanOrderIdByCustomerId(commonLender.getCustomerId());
-                        if(commonLender!=null){
+                        if (commonLender != null) {
                             commonLender.setRelevanceOrderlist(relevanceOrderlist);
                         }
                         commonLenderList.add(commonLender);
@@ -171,7 +177,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         // 征信结果
                         fillCreditMsg(guarantor, creditType);
                         List<Long> relevanceOrderlist = loanOrderDOMapper.selectRelevanceLoanOrderIdByCustomerId(guarantor.getCustomerId());
-                        if(guarantor!=null){
+                        if (guarantor != null) {
                             guarantor.setRelevanceOrderlist(relevanceOrderlist);
                         }
                         guarantorList.add(guarantor);
