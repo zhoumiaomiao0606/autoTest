@@ -19,6 +19,8 @@ public class UniversalInfoVO {
     private String customer_company_address;
     private String customer_mobile;
     private String customer_company_phone;
+    private String customer_birth;
+    private String customer_sex;
     private String partner_id;
     private String partner_name;
     private String partner_biz_area;
