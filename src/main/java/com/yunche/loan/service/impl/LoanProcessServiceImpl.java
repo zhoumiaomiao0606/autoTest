@@ -285,7 +285,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
         Long loanCustomerId = null;
-        if (loanOrderDO == null) {
+        if (loanOrderDO != null) {
             loanCustomerId = loanOrderDO.getLoanCustomerId();
         }
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, new Byte("0"));
@@ -319,7 +319,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (loanCustomerDO != null) {
                 prompt = "主贷人:[" + loanCustomerDO.getName() + "]" + "-" + title;
             }
-            msg = "-" + "内容为:" + "[" + approval.getInfo() + "]";
+            msg = StringUtils.isBlank(approval.getInfo())?"无":"null".equals(approval.getInfo())?"无":approval.getInfo();
+
             FlowOperationMsgDO DO = new FlowOperationMsgDO();
             DO.setEmployeeId(loanBaseInfoDO.getSalesmanId());
             DO.setOrderId(orderId);
