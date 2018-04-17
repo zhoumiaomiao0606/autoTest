@@ -2,7 +2,6 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
@@ -14,11 +13,11 @@ import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanFileService;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -57,11 +56,14 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         Preconditions.checkNotNull(loanCreditInfoDO.getType(), "征信类型不能为空");
         Preconditions.checkNotNull(loanCreditInfoDO.getResult(), "征信结果不能为空");
 
-        List<LoanCreditInfoDO> list = loanCreditInfoDOMapper.getByCustomerIdAndType(loanCreditInfoDO.getCustomerId(), loanCreditInfoDO.getType());
-        if (CollectionUtils.isNotEmpty(list)) {
-            throw new BizException("当前客户的征信录入已存在");
+        List<LoanCreditInfoDO> loanCreditInfoDOS = loanCreditInfoDOMapper.getByCustomerIdAndType(loanCreditInfoDO.getCustomerId(), loanCreditInfoDO.getType());
+        if (!CollectionUtils.isEmpty(loanCreditInfoDOS)) {
+            // update
+            LoanCreditInfoDO existLoanCreditInfoDO = loanCreditInfoDOS.get(0);
+            BeanUtils.copyProperties(loanCreditInfoDO, existLoanCreditInfoDO);
+            update(existLoanCreditInfoDO);
         }
-        
+
         loanCreditInfoDO.setStatus(VALID_STATUS);
         loanCreditInfoDO.setGmtCreate(new Date());
         loanCreditInfoDO.setGmtModify(new Date());
