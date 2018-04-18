@@ -44,6 +44,8 @@ public interface LoanQueryDOMapper {
 
     public List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
+    public List<UniversalMaterialRecordVO> selectUniversalAllMaterialRecord(Long orderId);
+
     public List<UniversalMaterialRecordVO> selectUniversalMaterialRecordByType(@Param("orderId") Long orderId, @Param("uploadType") Byte uploadType);
 
     public Long selectOrderIdbyPrincipalCustId(Long customerId);

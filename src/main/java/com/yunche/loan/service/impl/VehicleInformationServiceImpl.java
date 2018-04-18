@@ -56,7 +56,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         RecombinationVO<VehicleInformationVO> recombinationVO = new RecombinationVO<VehicleInformationVO>();
         recombinationVO.setInfo(vehicleInformationVO);
         recombinationVO.setCustomers(customers);
-        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecordByType(orderId, new Byte("19")));
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalAllMaterialRecord(orderId));
         return recombinationVO;
     }
 
@@ -99,7 +99,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
             if (param.getFiles() != null) {
                 if (!param.getFiles().isEmpty()) {
                     for (UniversalFileParam universalFileParam : param.getFiles()) {
-                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("19"), null);
+                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("19"), new Byte(universalFileParam.getType()));
                         for (LoanFileDO loanFileDO : uploadList) {
                             loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
                         }

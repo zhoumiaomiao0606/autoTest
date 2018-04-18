@@ -522,6 +522,15 @@
     from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = #{uploadType,jdbcType=TINYINT}
   </select>
 
+    <!--资料增补根据type-->
+    <select id="selectUniversalAllMaterialRecord" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
+    select
+            path                      AS urls,
+            type                      AS type,
+            useFileTypeCastName(type) AS name
+    from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT})
+    </select>
+
     <!--关联订单-->
     <select id="selectUniversalRelevanceOrderId" parameterType="java.lang.Long" resultType="java.lang.Long">
             select distinct o.id from loan_order o
