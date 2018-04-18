@@ -112,7 +112,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
             if (param.getFiles() != null) {
                 if (!param.getFiles().isEmpty()) {
                     for (UniversalFileParam universalFileParam : param.getFiles()) {
-                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("19"), new Byte(universalFileParam.getType()));
+                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId,new Byte(universalFileParam.getType()), null);
                         for (LoanFileDO loanFileDO : uploadList) {
                             loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
                         }
