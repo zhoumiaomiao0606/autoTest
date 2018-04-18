@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.entity.EmployeeDO;
@@ -132,6 +133,7 @@ public class EmployeeController {
      *
      * @return
      */
+    @Limiter(route = "/api/v1/employee/logout")
     @GetMapping("/logout")
     public ResultBean<Void> logout() {
         return employeeService.logout();
