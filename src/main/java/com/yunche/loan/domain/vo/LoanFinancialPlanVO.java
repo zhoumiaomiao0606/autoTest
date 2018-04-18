@@ -67,5 +67,8 @@ public class LoanFinancialPlanVO {
     private String categorySuperior;
 
     private  BigDecimal bankRate;
-
+    /**
+     * 金融手续费：贷款利息
+     */
+    private BigDecimal loanInterest;
 }
