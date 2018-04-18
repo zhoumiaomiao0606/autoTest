@@ -74,4 +74,10 @@ public class ScheduleTaskVO {
 
     private String supplementOrderId;
 
+    private String supplementType;
+
+    private String supplementTypeText;
+
+    private Boolean canUpdateLoanApply = true;
+
 }
