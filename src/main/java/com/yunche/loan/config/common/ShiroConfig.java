@@ -37,16 +37,14 @@ public class ShiroConfig {
     private String anno;
 
     /**
-     * TODO 缓存过期时间：30min
+     * session过期时间：24h（单位：秒）
      */
-//    private static final Integer CACHE_EXPIRE = 1800;
-    private static final Integer CACHE_EXPIRE = 86400;
+    private static final Integer SESSION_EXPIRE = 86400;
 
     /**
-     * TODO Redis键值对过期时间：30min
+     * 连接到Redis的超时时间：2s（单位：毫秒）
      */
-//    private static final Integer REDIS_TIMEOUT = 1800;
-    private static final Integer REDIS_TIMEOUT = 86400;
+    private static final Integer CONNECT_TO_REDIS_TIMEOUT = 2000;
 
 
     @Bean
@@ -111,23 +109,6 @@ public class ShiroConfig {
     }
 
     /**
-     * 配置shiro redisManager
-     * <p>
-     * 使用的是shiro-redis开源插件
-     *
-     * @return
-     */
-    public RedisManager redisManager() {
-        RedisManager redisManager = new RedisManager();
-        redisManager.setHost(host);
-        redisManager.setPort(port);
-        redisManager.setPassword(password);
-        redisManager.setExpire(CACHE_EXPIRE);
-        redisManager.setTimeout(REDIS_TIMEOUT);
-        return redisManager;
-    }
-
-    /**
      * cacheManager 缓存 redis实现
      * <p>
      * 使用的是shiro-redis开源插件
@@ -165,5 +146,22 @@ public class ShiroConfig {
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
+    }
+
+    /**
+     * 配置shiro redisManager
+     * <p>
+     * 使用的是shiro-redis开源插件
+     *
+     * @return
+     */
+    public RedisManager redisManager() {
+        RedisManager redisManager = new RedisManager();
+        redisManager.setHost(host);
+        redisManager.setPort(port);
+        redisManager.setPassword(password);
+        redisManager.setExpire(SESSION_EXPIRE);
+        redisManager.setTimeout(CONNECT_TO_REDIS_TIMEOUT);
+        return redisManager;
     }
 }
