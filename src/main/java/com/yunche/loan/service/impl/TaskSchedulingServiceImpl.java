@@ -75,12 +75,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
-        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
-
         List<TaskListVO> list = new ArrayList<>();
         taskListQuery.setLevel(level);
         taskListQuery.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId()));
         taskListQuery.setLoginUserId(loginUser.getId());
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         // 取分页信息
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
@@ -91,10 +90,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery) {
 
-        PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
-
+        PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery.getMultipartType(), appTaskListQuery.getCustomer(), loginUser.getId(), maxGroupLevel);
 
         List<AppTaskVO> appTaskVOList = convert(list);
