@@ -163,8 +163,21 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
             loanFinancialPlanVO.setStagingRatio((BigDecimal)map.get("stagingRatio"));
         }
 
+        formatData(loanFinancialPlanVO);
         return ResultBean.ofSuccess(loanFinancialPlanVO);
     }
+
+    /**
+     * 格式化数据
+     * @param loanFinancialPlanVO
+     */
+    private void formatData(LoanFinancialPlanVO loanFinancialPlanVO) {
+        if(loanFinancialPlanVO!=null){
+            loanFinancialPlanVO.setFirstMonthRepay(loanFinancialPlanVO.getFirstMonthRepay().setScale(2));
+            loanFinancialPlanVO.setBankPeriodPrincipal(loanFinancialPlanVO.getBankPeriodPrincipal().setScale(2));
+        }
+    }
+
 
     @Override
     @Transactional
