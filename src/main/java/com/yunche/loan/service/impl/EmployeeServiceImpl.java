@@ -18,6 +18,7 @@ import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,31 +52,43 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
     /**
-     * APP端session过期时间：90天
+     * APP端session过期时间：90天 (单位：毫秒)
      */
-    private static final long TERMINAL_SESSION_TIMEOUT = 7776000L;
+    private static final long TERMINAL_SESSION_TIMEOUT = 3600 * 24 * 90 * 1000;
 
     @Value("${spring.mail.username}")
     private String from;
 
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
+
     @Autowired
     private UserGroupDOMapper userGroupDOMapper;
+
     @Autowired
     private DepartmentDOMapper departmentDOMapper;
+
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+
     @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
+
     @Autowired
     private UserGroupRelaAreaAuthDOMapper userGroupRelaAreaAuthDOMapper;
+
+    @Autowired
+    private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
+
     @Autowired
     private JavaMailSender mailSender;
+
     @Autowired
     private EmployeeCache employeeCache;
+
     @Autowired
     private AreaCache areaCache;
+
 
     @Override
     @Transactional
@@ -169,8 +182,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         fillParent(employeeDO.getParentId(), employeeVO);
         // 填充所属部门信息
         fillDepartment(employeeDO.getDepartmentId(), employeeVO);
+        // 填充所属合伙人信息
+        fillPartner(employeeVO);
 
         return ResultBean.ofSuccess(employeeVO);
+    }
+
+    /**
+     * 返回业务员所属合伙人团队
+     *
+     * @param employeeVO
+     */
+    private void fillPartner(EmployeeVO employeeVO) {
+        if (TYPE_WB.equals(employeeVO.getType())) {
+            Long employeeId = employeeVO.getId();
+            Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
+            employeeVO.setPartnerId(partnerId);
+        }
     }
 
     @Override
@@ -380,6 +408,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 如果是移动端登录，更新会话有效期为1年
         Boolean isTerminal = employeeParam.getIsTerminal();
         if (isTerminal) {
+            Session session = SecurityUtils.getSubject().getSession();
+            Collection<Object> attributeKeys = session.getAttributeKeys();
+
             SecurityUtils.getSubject().getSession().setTimeout(TERMINAL_SESSION_TIMEOUT);
         }
 
@@ -404,8 +435,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public ResultBean<Void> logout() {
+
+        try {
+            // APP清空machineId
+            Long userId = SessionUtils.getLoginUser().getId();
+            employeeDOMapper.setMachineIdForNull(userId);
+        } catch (Exception ex) {
+            logger.error("getLoginUser error", ex);
+        }
+
         // 清空shiro会话
-        employeeDOMapper.setMachineIdForNull(SessionUtils.getLoginUser().getId());
         SecurityUtils.getSubject().logout();
         return ResultBean.ofSuccess(null, "登出成功");
     }

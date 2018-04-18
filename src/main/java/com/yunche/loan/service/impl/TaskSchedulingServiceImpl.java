@@ -18,12 +18,10 @@ import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.LoanProcessService;
-import com.yunche.loan.service.LoanRejectLogService;
 import com.yunche.loan.service.PermissionService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -51,9 +49,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Resource
     private PermissionService permissionService;
 
-    @Autowired
-    private LoanRejectLogService loanRejectLogService;
-
 
     @Override
     public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
@@ -69,7 +64,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     @Override
-    public ResultBean queryTaskList(TaskListQuery taskListQuery) {
+    public ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery) {
 
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");

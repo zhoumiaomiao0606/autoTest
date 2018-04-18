@@ -32,7 +32,7 @@ public class EmployeeController {
 
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> create(@RequestBody EmployeeParam employeeParam){
+    public ResultBean<Long> create(@RequestBody EmployeeParam employeeParam) {
         return employeeService.create(employeeParam);
     }
 

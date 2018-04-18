@@ -48,8 +48,15 @@ public class TaskListVO {
      * 打回原因
      */
     private String rejectReason;
-
+    /**
+     * 订单总状态：1-进行中;2-结单;3-已弃单;
+     */
     private String orderStatus;
+
+    /**
+     * 是否可以编辑金融方案   -> 当 rejectOriginTask = "usertask_material_review"时，为false(不能编辑)
+     */
+    private Boolean canUpdateLoanApply = true;
 }
 
 

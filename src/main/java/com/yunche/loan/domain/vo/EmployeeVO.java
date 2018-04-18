@@ -49,4 +49,8 @@ public class EmployeeVO {
      * 直接上级name
      */
     private String parentName;
+    /**
+     * 合伙人ID
+     */
+    private Long partnerId;
 }

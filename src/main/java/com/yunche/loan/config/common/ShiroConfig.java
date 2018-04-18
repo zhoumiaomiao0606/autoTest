@@ -39,7 +39,7 @@ public class ShiroConfig {
     /**
      * session过期时间：24h（单位：秒）
      */
-    private static final Integer SESSION_EXPIRE = 86400;
+    private static final Integer SESSION_EXPIRE = 3600 * 24;
 
     /**
      * 连接到Redis的超时时间：2s（单位：毫秒）
@@ -97,13 +97,14 @@ public class ShiroConfig {
     }
 
     /**
-     * 自定义sessionManager
+     * TODO 自定义sessionManager
      *
      * @return
      */
     @Bean
     public SessionManager sessionManager() {
         BizSessionManager bizSessionManager = new BizSessionManager();
+        bizSessionManager.setGlobalSessionTimeout(SESSION_EXPIRE * 1000);
         bizSessionManager.setSessionDAO(redisSessionDAO());
         return bizSessionManager;
     }
