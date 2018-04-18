@@ -163,6 +163,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private ResultBean<Void> execAppCancelByOrderId(ApprovalParam approval) {
 
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(approval.getOrderId());
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+
+        // 进行中 + 未打款确认
+        boolean notRemitReview = ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()) && !TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview());
+        Preconditions.checkArgument(notRemitReview, "订单已放款，无法弃单！");
+
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
 
@@ -173,8 +180,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         dealCancelTask(loanOrderDO.getProcessInstId());
 
         // 更新状态
-        LoanProcessDO loanProcessDO = new LoanProcessDO();
-        loanProcessDO.setOrderId(approval.getOrderId());
         loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
         loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
 
