@@ -496,7 +496,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         .filter(Objects::nonNull)
                         .forEach(e -> {
                             AppCustomerInfoVO.EmergencyContact emergencyContact = new AppCustomerInfoVO.EmergencyContact();
-                            fillCustomerInfo(e, (AppCustomerInfoVO.CustomerInfo) emergencyContact);
+                            //fillCustomerInfo(e, (AppCustomerInfoVO.CustomerInfo) emergencyContact);
+                            if(e !=null ){
+                                BeanUtils.copyProperties(e, emergencyContact);
+                            }
                             emergencyContactList.add(emergencyContact);
                         });
 
