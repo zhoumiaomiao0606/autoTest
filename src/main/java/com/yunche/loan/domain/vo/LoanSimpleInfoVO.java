@@ -36,4 +36,9 @@ public class LoanSimpleInfoVO {
      * （征信）申请单创建时间
      */
     private Date createTime;
+
+    /**
+     * 业务员
+     */
+    private String salesMan;
 }

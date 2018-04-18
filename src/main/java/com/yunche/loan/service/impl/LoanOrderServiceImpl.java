@@ -413,6 +413,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         // TODO 创建时间
         loanSimpleInfoVO.setCreateTime(new Date());
+        loanSimpleInfoVO.setSalesMan(loanBaseInfoVO.getSalesman().getName());
 
         return ResultBean.ofSuccess(loanSimpleInfoVO);
     }
