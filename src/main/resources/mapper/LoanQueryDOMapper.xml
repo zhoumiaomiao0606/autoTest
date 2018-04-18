@@ -153,7 +153,7 @@
             financial.down_payment_ratio                                                            AS financial_down_payment_ratio,
             useGetBankRate(financial.financial_product_id,financial.loan_time)
                                                                                                     AS financial_bank_rate,
-            (100-financial.down_payment_ratio)                                                    AS financial_loan_ratio,
+            (100-financial.down_payment_ratio)                                                      AS financial_loan_ratio,
             useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
                                                                                                     AS financial_bank_fee,
             financial.financial_product_name                                                        AS financial_product_name,
@@ -222,7 +222,9 @@
                 useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
                                                                                                     AS financial_bank_fee,
                 useCalculateStagingRatio(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
-                                                                                                    AS financial_bank_staging_ratio
+                                                                                                    AS financial_bank_staging_ratio,
+                useGetBankRate(financial.financial_product_id,financial.loan_time)
+                                                                                                    AS financial_bank_rate
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
         left join loan_process process on main_order.id = process.order_id

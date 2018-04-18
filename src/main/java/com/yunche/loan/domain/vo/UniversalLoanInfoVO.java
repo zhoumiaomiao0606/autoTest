@@ -27,6 +27,6 @@ public class UniversalLoanInfoVO {
     private String financial_each_month_repay;
     private String financial_bank_fee;
     private String financial_bank_staging_ratio;
-
+    private String financial_bank_rate;
 
 }
