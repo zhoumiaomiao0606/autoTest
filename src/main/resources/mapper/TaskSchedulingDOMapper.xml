@@ -171,7 +171,10 @@
             useGetCurrentTask(#{taskDefinitionKey})               AS currentTask,
             case when tab.taskStatus = 3 then
             (select reason from loan_reject_log where order_id = tab.id and reject_to_task = #{taskDefinitionKey} order by gmt_create DESC limit 1 )
-            else null end                                         AS  rejectReason
+            else null end                                         AS  rejectReason,
+            case when tab.orderStatus = 1 and  tab.taskStatus = 3  and
+            (select reject_origin_task from loan_reject_log where order_id = tab.id and reject_to_task = #{taskDefinitionKey} order by gmt_create DESC limit 1) = 'usertask_material_review'
+            then false else true end                              AS canUpdateLoanApply
             from
             (
             select
@@ -294,6 +297,7 @@
                 <when test="taskDefinitionKey == 'usertask_info_supplement'">
                     join_s.type                               AS supplementType,
                     join_s.content                            AS supplementContent,
+                    useSupplementTypeTxt(join_s.type)         AS supplementTypeText,
                     DATE_FORMAT(join_s.start_time,'%Y-%m-%d %H:%i:%S')     AS supplementStartTime,
                     join_s.id                                 AS supplementOrderId,
                     join_s.status                             AS taskStatus
