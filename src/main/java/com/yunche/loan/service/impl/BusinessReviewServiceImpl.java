@@ -190,18 +190,18 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         //月结 0 否 1 是
         if("1".equals(pay_month)){
             //月结算
-            return new CostCalculate(bank_period_principal,return_rate_amount)
-                    .process(param.getService_fee_type(),service_fee)
-                    .process(param.getApply_license_plate_deposit_fee(),apply_license_plate_deposit_fee)
-                    .process(param.getPerformance_fee_type(),performance_fee)
-                    .process(param.getInstall_gps_fee_type(),install_gps_fee)
-                    .process(param.getRisk_fee_type(),risk_fee)
-                    .process(param.getFair_assess_fee_type(),fair_assess_fee)
-                    .process(param.getApply_license_plate_out_province_fee_type(),apply_license_plate_out_province_fee)
-                    .process(param.getBased_margin_fee_type(),based_margin_fee)
-                    .process(param.getExtra_fee_type(),extra_fee)
-                    .process(param.getOther_fee_type(),other_fee)
-                    .finalResult()
+            return bank_period_principal
+                    .subtract(service_fee)
+                    .subtract(apply_license_plate_deposit_fee)
+                    .subtract(performance_fee)
+                    .subtract(install_gps_fee)
+                    .subtract(risk_fee)
+                    .subtract(fair_assess_fee)
+                    .subtract(apply_license_plate_out_province_fee)
+                    .subtract(based_margin_fee)
+                    .subtract(extra_fee)
+                    .subtract(other_fee)
+                    .subtract(return_rate_amount)
                     .setScale(2,BigDecimal.ROUND_HALF_UP);
         }else{
             //日结

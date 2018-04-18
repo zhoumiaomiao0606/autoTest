@@ -37,7 +37,8 @@
             v.purchase_car_invoice_price      AS purchase_car_invoice_price,
             v.invoice_down_payment            AS invoice_down_payment,
             v.purchase_car_invoice_date       AS purchase_car_invoice_date,
-            v.retrieve_key                    AS retrieve_key
+            v.retrieve_key                    AS retrieve_key,
+            f.down_payment_money              AS down_payment_money
 
 
             from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o

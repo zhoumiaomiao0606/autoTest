@@ -36,4 +36,5 @@ public class VehicleInformationVO {
     private String invoice_down_payment;
     private String purchase_car_invoice_date;
     private String retrieve_key;
+    private String down_payment_money;
 }
