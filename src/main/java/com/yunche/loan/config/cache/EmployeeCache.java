@@ -122,7 +122,7 @@ public class EmployeeCache {
                             parent.setLevel(p.getLevel());
 
                             // 递归填充子列表
-                            fillChilds(parent, parentIdDOMap);
+                            fillChilds(parent, parentIdDOMap, 20);
                             return parent;
                         })
                         .collect(Collectors.toList());
@@ -139,12 +139,18 @@ public class EmployeeCache {
      * @param parent
      * @param parentIdDOMap
      */
-    private void fillChilds(CascadeVO parent, Map<Long, List<EmployeeDO>> parentIdDOMap) {
+    private void fillChilds(CascadeVO parent, Map<Long, List<EmployeeDO>> parentIdDOMap, int limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
+
         List<EmployeeDO> childs = parentIdDOMap.get(parent.getValue());
         if (CollectionUtils.isEmpty(childs)) {
             return;
         }
 
+        int finalLimit = limit;
         childs.stream()
                 .forEach(c -> {
                     CascadeVO child = new CascadeVO();
@@ -160,7 +166,7 @@ public class EmployeeCache {
                     }
 
                     // 递归填充子列表
-                    fillChilds(child, parentIdDOMap);
+                    fillChilds(child, parentIdDOMap, finalLimit);
                 });
     }
 }
