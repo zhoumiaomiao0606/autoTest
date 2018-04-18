@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface LoanQueryDOMapper {
@@ -44,7 +45,7 @@ public interface LoanQueryDOMapper {
 
     public List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
-    public List<UniversalMaterialRecordVO> selectUniversalAllMaterialRecord(Long orderId);
+    public List<UniversalMaterialRecordVO> selectUniversalMaterialRecordByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
 
     public List<UniversalMaterialRecordVO> selectUniversalMaterialRecordByType(@Param("orderId") Long orderId, @Param("uploadType") Byte uploadType);
 

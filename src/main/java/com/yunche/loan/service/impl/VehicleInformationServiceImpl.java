@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
@@ -56,7 +58,18 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         RecombinationVO<VehicleInformationVO> recombinationVO = new RecombinationVO<VehicleInformationVO>();
         recombinationVO.setInfo(vehicleInformationVO);
         recombinationVO.setCustomers(customers);
-        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalAllMaterialRecord(orderId));
+        Set<Byte> types = new HashSet<Byte>();
+        types.add(new Byte("6"));
+        types.add(new Byte("17"));
+        types.add(new Byte("19"));
+        types.add(new Byte("20"));
+        types.add(new Byte("21"));
+        types.add(new Byte("21"));
+        types.add(new Byte("22"));
+        types.add(new Byte("23"));
+        types.add(new Byte("24"));
+        types.add(new Byte("24"));
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecordByTypes(orderId,types));
         return recombinationVO;
     }
 
