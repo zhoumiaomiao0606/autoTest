@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.Jpush;
@@ -55,6 +56,7 @@ public class JpushServiceImpl implements JpushService {
 
     @Override
     public ResultBean list(Integer pageIndex, Integer pageSize) {
+        PageHelper.startPage(pageIndex,pageSize, true);
         List<FlowOperationMsgDO> list =  flowOperationMsgDOMapper.selectByEmployeeId(SessionUtils.getLoginUser().getId());
         // 取分页信息
         PageInfo<FlowOperationMsgDO> pageInfo = new PageInfo<FlowOperationMsgDO>(list);
