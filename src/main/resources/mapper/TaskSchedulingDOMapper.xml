@@ -569,10 +569,15 @@
                CONCAT('待办',result.NAME_)          AS taskStatusExplanation,
                jb.partner_id                       AS  partnerId,
                jb.salesman_id                      AS  salesmanId,
-							 case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
-                  case when lp.telephone_verify  &lt; 7 and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
+			   case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
+               case when lp.telephone_verify  &lt; 7 and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
                else 2 end                          AS filtration,
-               null                        		   AS supplementOrderId
+               null                        		   AS supplementOrderId,
+               null                                AS supplementType,
+               null                                AS supplementTypeText,
+               case when lp.order_status = 1 and  lp.loan_apply = 3  and
+               (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
+               then false else true end            AS canUpdateLoanApply
 							from
 					(
 						SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
@@ -670,9 +675,12 @@
                ("待办资料增补")          						 							AS taskStatusExplanation,
                jb.partner_id                       										AS  partnerId,
                jb.salesman_id                      										AS  salesmanId,
-							 (2)														AS filtration,
-               supplement.id                        	 								AS supplementOrderId
-							from (select * from loan_info_supplement where status = 2 ) supplement
+			   (2)														                AS filtration,
+               supplement.id                        	 								AS supplementOrderId,
+               supplement.type                                                          AS supplementType,
+               useSupplementTypeTxt(supplement.type)                                    AS supplementTypeText,
+               true                                                                     AS canUpdateLoanApply
+			from (select * from loan_info_supplement where status = 2 ) supplement
 							INNER JOIN loan_order jorder     ON jorder.id 						 = supplement.order_id
 							LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
 							LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
