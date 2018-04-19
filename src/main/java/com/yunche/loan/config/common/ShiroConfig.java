@@ -21,6 +21,8 @@ import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.apache.shiro.web.mgt.CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME;
+import static org.apache.shiro.web.servlet.Cookie.ONE_YEAR;
 import static org.apache.shiro.web.servlet.Cookie.ROOT_PATH;
 
 
@@ -43,7 +45,7 @@ public class ShiroConfig {
     private String anno;
 
     /**
-     * session过期时间：24h（单位：秒）
+     * session过期时间：30天（单位：秒）
      */
     public static final Integer SESSION_EXPIRE = 3600 * 24 * 30;
 
@@ -99,7 +101,7 @@ public class ShiroConfig {
         securityManager.setCacheManager(cacheManager());
 
         // RememberMe
-//        securityManager.setRememberMeManager(rememberMeManager());
+        securityManager.setRememberMeManager(rememberMeManager());
 
         return securityManager;
     }
@@ -206,9 +208,9 @@ public class ShiroConfig {
      */
     public CookieRememberMeManager rememberMeManager() {
 
-        Cookie cookie = new SimpleCookie(CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME);
+        Cookie cookie = new SimpleCookie(DEFAULT_REMEMBER_ME_COOKIE_NAME);
         cookie.setHttpOnly(true);
-        cookie.setMaxAge(Cookie.ONE_YEAR);
+        cookie.setMaxAge(ONE_YEAR);
 
         CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
         cookieRememberMeManager.setCookie(cookie);
