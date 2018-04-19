@@ -39,7 +39,13 @@ public class LoadQrServiceImpl implements LoadQrService {
         Preconditions.checkNotNull(latestVersion,"APP版本维护中，请稍后重试");
         Preconditions.checkNotNull(endPoint,"APP版本维护中，请稍后重试");
         Preconditions.checkNotNull(bucketNameAndroid,"APP版本维护中，请稍后重试");
-        String downUrl="https://"+bucketNameAndroid+"."+endPoint+ File.separator+latestVersion.getDownloadUrl();
+        String downUrl;
+        if(latestVersion == null || endPoint.isEmpty()|| bucketNameAndroid.isEmpty()){
+            downUrl="APP版本维护中，请稍后重试";
+        }else{
+            downUrl ="https://"+bucketNameAndroid+"."+endPoint+ File.separator+latestVersion.getDownloadUrl();
+        }
+
         String dataHandle = new String(downUrl.getBytes(QrConst.UTF_8), QrConst.UTF_8);
         BitMatrix bitMatrix = new MultiFormatWriter().encode(dataHandle, BarcodeFormat.QR_CODE, QrConst.QR_WIDTH, QrConst.QR_HEIGHT);
         httpServletResponse.reset();//清空输出流
