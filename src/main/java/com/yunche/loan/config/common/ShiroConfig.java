@@ -78,6 +78,7 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/employee/logout", "anon");
             filterChainDefinitionMap.put("/api/v1/employee/login", "anon");
             filterChainDefinitionMap.put("/api/v1/app/version/check", "anon");
+            filterChainDefinitionMap.put("/api/v1/loadqr/query", "anon");
             //        filterChainDefinitionMap.put("/**", "authc,perms");
             filterChainDefinitionMap.put("/**", "authc");
         }
