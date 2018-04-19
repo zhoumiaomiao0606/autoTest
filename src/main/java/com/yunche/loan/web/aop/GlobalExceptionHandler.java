@@ -38,9 +38,9 @@ public class GlobalExceptionHandler {
                 return ResultBean.of(null, false, code, msg);
             }
         } else if (e instanceof MissingServletRequestParameterException) {
-            return ResultBean.ofError("GET 缺少接口规范必要参数");
+            return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof MethodArgumentNotValidException) {
-            return ResultBean.ofError("POST 缺少接口规范必要参数");
+            return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof IllegalArgumentException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof NullPointerException) {
