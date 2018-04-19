@@ -36,9 +36,9 @@ public class LoadQrServiceImpl implements LoadQrService {
         String endPoint =  bundle.containsKey("endpoint") == false ? "" : bundle.getString("endpoint");
         String bucketNameAndroid =  bundle.containsKey("bucketName_android") == false ? "" : bundle.getString("bucketName_android");
 
-        Preconditions.checkNotNull(latestVersion,"APP版本维护中，请稍后重试");
-        Preconditions.checkNotNull(endPoint,"APP版本维护中，请稍后重试");
-        Preconditions.checkNotNull(bucketNameAndroid,"APP版本维护中，请稍后重试");
+//        Preconditions.checkNotNull(latestVersion,"APP版本维护中，请稍后重试");
+//        Preconditions.checkNotNull(endPoint,"APP版本维护中，请稍后重试");
+//        Preconditions.checkNotNull(bucketNameAndroid,"APP版本维护中，请稍后重试");
         String downUrl;
         if(latestVersion == null || endPoint.isEmpty()|| bucketNameAndroid.isEmpty()){
             downUrl="APP版本维护中，请稍后重试";
