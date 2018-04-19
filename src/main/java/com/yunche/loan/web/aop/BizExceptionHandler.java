@@ -2,6 +2,12 @@ package com.yunche.loan.web.aop;
 
 import com.alibaba.fastjson.JSON;
 
+import com.yunche.loan.config.common.BizSessionManager;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.SessionKey;
+import org.apache.shiro.web.servlet.Cookie;
+import org.apache.shiro.web.session.mgt.WebSessionKey;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -9,6 +15,7 @@ import org.aspectj.lang.annotation.Pointcut;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -17,9 +24,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.yunche.loan.config.common.ShiroConfig.SESSION_EXPIRE;
 
 /**
  * @author liuzhe
@@ -30,6 +40,10 @@ import java.util.stream.Collectors;
 public class BizExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(BizExceptionHandler.class);
+
+    @Autowired
+    private BizSessionManager bizSessionManager;
+
 
     /**
      * 捕获所有controller层的方法
@@ -48,6 +62,9 @@ public class BizExceptionHandler {
 
         // exec
         Object result = pjp.proceed();
+
+        // 更新cookie
+//        refreshCookie();
 
         // 统计时间
         long totalTime = System.currentTimeMillis() - startTime;
@@ -118,5 +135,22 @@ public class BizExceptionHandler {
             }
         }
         return ip;
+    }
+
+    /**
+     * 刷新cookie
+     */
+    private void refreshCookie() {
+
+        Session session = SecurityUtils.getSubject().getSession();
+        Serializable sessionId = session.getId();
+
+        Cookie sessionIdCookie = bizSessionManager.getSessionIdCookie();
+        sessionIdCookie.setMaxAge(SESSION_EXPIRE);
+
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+
+        SessionKey key = new WebSessionKey(session.getId(), request, response);
     }
 }

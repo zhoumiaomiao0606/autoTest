@@ -563,7 +563,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         }
         //增加业务员
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
-        if(universalInfoVO!=null){
+        if (universalInfoVO != null) {
             loanCarInfoVO.setSalesManName(universalInfoVO.getSalesman_name());
             loanCarInfoVO.setPartnerName(universalInfoVO.getPartner_name());
         }
@@ -598,7 +598,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                     List<FileVO> homeVisitFiles = Lists.newArrayList();
 
                     // 12-合影照片;13-家访视频; 16-家访照片; 17-车辆照片;18-其他资料;
-                    files.parallelStream()
+                    files.stream()
                             .filter(e -> "12".equals(e.getType()) || "13".equals(e.getType())
                                     || "16".equals(e.getType()) || "17".equals(e.getType())
                                     || "18".equals(e.getType()))

@@ -18,7 +18,6 @@ import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -42,6 +42,8 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
 import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
+import static org.apache.shiro.web.mgt.CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME;
+import static org.springframework.web.util.WebUtils.getCookie;
 
 /**
  * @author liuzhe
@@ -52,9 +54,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
     /**
-     * APP端session过期时间：90天 (单位：毫秒)
+     * APP端session过期时间：180天 (单位：毫秒)
      */
-    private static final long TERMINAL_SESSION_TIMEOUT = 3600 * 24 * 90 * 1000;
+    private static final long TERMINAL_SESSION_TIMEOUT = 3600 * 24 * 180 * 1000;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -389,11 +391,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         String password = employeeParam.getPassword();
         String machineId = employeeParam.getMachineId();
 
-        AuthenticationToken token = new UsernamePasswordToken(username, password);
+        UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 
         try {
+            // 更新rememberMeCookie
+            rememberMeCookie(token, request, employeeParam.getRememberMe(), employeeParam.getIsTerminal());
+
             // 调用安全管理器，安全管理器调用Realm
             subject.login(token);
+
         } catch (UnknownAccountException e) {
             //用户名不存在
             return ResultBean.ofError("用户名或密码错误");
@@ -408,13 +414,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 如果是移动端登录，更新会话有效期为1年
         Boolean isTerminal = employeeParam.getIsTerminal();
         if (isTerminal) {
-            Session session = SecurityUtils.getSubject().getSession();
-            Collection<Object> attributeKeys = session.getAttributeKeys();
-
+            // APP端Session过期时间
             SecurityUtils.getSubject().getSession().setTimeout(TERMINAL_SESSION_TIMEOUT);
-        }
 
-        if (isTerminal) {
+            // APP端更新MachineId
             EmployeeDO emp = (EmployeeDO) subject.getPrincipal();
             EmployeeDO emp_ = new EmployeeDO();
             emp_.setId(emp.getId());
@@ -430,6 +433,41 @@ public class EmployeeServiceImpl implements EmployeeService {
         data.setUsername(user.getName());
 
         return ResultBean.ofSuccess(data, "登录成功");
+    }
+
+    /**
+     * 更新rememberMeCookie
+     *
+     * @param token
+     * @param request
+     * @param rememberMe
+     * @param isTerminal
+     */
+    private void rememberMeCookie(UsernamePasswordToken token, HttpServletRequest request, Integer rememberMe, Boolean isTerminal) {
+
+        // APP
+        if (isTerminal) {
+            // RememberMe
+            token.setRememberMe(true);
+
+            Cookie rememberCookie = getCookie(request, DEFAULT_REMEMBER_ME_COOKIE_NAME);
+            if (null != rememberCookie) {
+                rememberCookie.setHttpOnly(true);
+                rememberCookie.setMaxAge((int) (TERMINAL_SESSION_TIMEOUT / 1000));
+            }
+        } else {
+            // WEB
+            if (null != rememberMe && rememberMe > 0) {
+                // RememberMe
+                token.setRememberMe(true);
+
+                Cookie rememberCookie = getCookie(request, DEFAULT_REMEMBER_ME_COOKIE_NAME);
+                if (null != rememberCookie) {
+                    rememberCookie.setHttpOnly(true);
+                    rememberCookie.setMaxAge(3600 * 24 * rememberMe);
+                }
+            }
+        }
     }
 
     @Override
@@ -481,6 +519,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      *
      * @param employeeParam
      */
+
     private void checkOnlyProperty(EmployeeParam employeeParam) {
         // getAll
         List<EmployeeDO> allOnlyProperty = employeeDOMapper.getAllOnlyProperty();

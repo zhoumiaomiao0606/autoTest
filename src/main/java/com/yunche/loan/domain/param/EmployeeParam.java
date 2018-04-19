@@ -32,7 +32,13 @@ public class EmployeeParam extends EmployeeDO {
      */
     private Boolean isTerminal = false;
 
-
-    //机器id
+    /**
+     * 机器id
+     */
     private String machineId;
+
+    /**
+     * 记住我  -单位：天
+     */
+    private Integer rememberMe;
 }

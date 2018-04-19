@@ -5,7 +5,7 @@ import com.genxiaogu.ratelimiter.service.impl.DistributedLimiter;
 
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.config.util.SessionUtils;
+import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import org.aspectj.lang.annotation.Around;
@@ -42,8 +42,8 @@ public class LimiterAop {
         limit = limiter.limit();
         route = limiter.route();
 
-        // 唯一：登录用户 + 参数
-        String obj = SessionUtils.getLoginUser().getId().toString() + ":" + JSON.toJSONString(point.getArgs());
+        // 唯一：登录用户SessionId + 参数
+        String obj = SecurityUtils.getSubject().getSession().getId().toString() + ":" + JSON.toJSONString(point.getArgs());
 
         if (!distributedLimiter.execute(route, limit, obj)) {
             throw new BizException("访问太过频繁，请稍后再试！");

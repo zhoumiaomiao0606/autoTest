@@ -6,7 +6,10 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.Cookie;
+import org.apache.shiro.web.servlet.SimpleCookie;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
@@ -17,6 +20,9 @@ import org.springframework.context.annotation.Configuration;
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static org.apache.shiro.web.servlet.Cookie.ROOT_PATH;
+
 
 /**
  * shiro配置文件
@@ -39,7 +45,7 @@ public class ShiroConfig {
     /**
      * session过期时间：24h（单位：秒）
      */
-    private static final Integer SESSION_EXPIRE = 3600 * 24;
+    public static final Integer SESSION_EXPIRE = 3600 * 24 * 30;
 
     /**
      * 连接到Redis的超时时间：2s（单位：毫秒）
@@ -82,11 +88,19 @@ public class ShiroConfig {
     @Bean
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+
+        // 自定义Realm
         securityManager.setRealm(bizShiroRealm());
+
         // 自定义session管理 使用redis
         securityManager.setSessionManager(sessionManager());
+
         // 自定义缓存实现 使用redis
         securityManager.setCacheManager(cacheManager());
+
+        // RememberMe
+//        securityManager.setRememberMeManager(rememberMeManager());
+
         return securityManager;
     }
 
@@ -97,15 +111,33 @@ public class ShiroConfig {
     }
 
     /**
-     * TODO 自定义sessionManager
+     * 自定义sessionManager
      *
      * @return
      */
     @Bean
     public SessionManager sessionManager() {
         BizSessionManager bizSessionManager = new BizSessionManager();
-        bizSessionManager.setGlobalSessionTimeout(SESSION_EXPIRE * 1000);
+
+        // sessionDAO
         bizSessionManager.setSessionDAO(redisSessionDAO());
+
+        // 删除过期的session
+        bizSessionManager.setDeleteInvalidSessions(true);
+
+        // 是否定时检查session
+        bizSessionManager.setSessionValidationSchedulerEnabled(true);
+
+        // 设置全局session超时时间
+        bizSessionManager.setGlobalSessionTimeout(SESSION_EXPIRE * 1000);
+
+        // cookie
+        SimpleCookie sessionIdCookie = new SimpleCookie("sid");
+        sessionIdCookie.setHttpOnly(true);
+        sessionIdCookie.setMaxAge(SESSION_EXPIRE);
+        sessionIdCookie.setPath(ROOT_PATH);
+        bizSessionManager.setSessionIdCookie(sessionIdCookie);
+
         return bizSessionManager;
     }
 
@@ -164,5 +196,23 @@ public class ShiroConfig {
         redisManager.setExpire(SESSION_EXPIRE);
         redisManager.setTimeout(CONNECT_TO_REDIS_TIMEOUT);
         return redisManager;
+    }
+
+
+    /**
+     * RememberMe
+     *
+     * @return
+     */
+    public CookieRememberMeManager rememberMeManager() {
+
+        Cookie cookie = new SimpleCookie(CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(Cookie.ONE_YEAR);
+
+        CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
+        cookieRememberMeManager.setCookie(cookie);
+
+        return cookieRememberMeManager;
     }
 }
