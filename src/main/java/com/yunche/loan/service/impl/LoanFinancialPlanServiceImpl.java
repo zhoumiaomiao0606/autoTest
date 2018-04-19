@@ -173,10 +173,10 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
      */
     private void formatData(LoanFinancialPlanVO loanFinancialPlanVO) {
             if(loanFinancialPlanVO.getFirstMonthRepay()!=null){
-                loanFinancialPlanVO.setFirstMonthRepay(loanFinancialPlanVO.getFirstMonthRepay().setScale(2));
+                loanFinancialPlanVO.setFirstMonthRepay(loanFinancialPlanVO.getFirstMonthRepay().setScale(2,BigDecimal.ROUND_HALF_UP));
             }
             if(loanFinancialPlanVO.getBankPeriodPrincipal()!=null){
-                loanFinancialPlanVO.setBankPeriodPrincipal(loanFinancialPlanVO.getBankPeriodPrincipal().setScale(2));
+                loanFinancialPlanVO.setBankPeriodPrincipal(loanFinancialPlanVO.getBankPeriodPrincipal().setScale(2,BigDecimal.ROUND_HALF_UP));
              }
     }
 

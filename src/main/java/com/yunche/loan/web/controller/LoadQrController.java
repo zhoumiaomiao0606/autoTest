@@ -1,7 +1,6 @@
 package com.yunche.loan.web.controller;
 
 import com.google.zxing.WriterException;
-import com.yunche.loan.config.cache.AppVersionCache;
 import com.yunche.loan.service.LoadQrService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;

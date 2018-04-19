@@ -44,10 +44,6 @@ public class LoadQrServiceImpl implements LoadQrService {
         httpServletResponse.setContentType(MediaType.IMAGE_PNG_VALUE);
         OutputStream os = httpServletResponse.getOutputStream();//取得输出流
         MatrixToImageWriter.writeToStream(bitMatrix, QrConst.QR_FILE_TYPE, os);//写入文件刷新
-
-
-
-
         os.flush();
         os.close();//关闭输出流
     }
