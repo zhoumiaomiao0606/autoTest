@@ -15,12 +15,10 @@ import java.io.IOException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanqr")
+@RequestMapping("/api/v1/loadqr")
 public class LoadQrController {
     @Autowired
     LoadQrService loadQrService;
-    @Autowired
-    AppVersionCache appVersionCache;
 
     @GetMapping(value = "/query")
     public void downloadQr(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, WriterException {
