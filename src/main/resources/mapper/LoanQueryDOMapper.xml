@@ -38,7 +38,8 @@
             v.invoice_down_payment            AS invoice_down_payment,
             v.purchase_car_invoice_date       AS purchase_car_invoice_date,
             v.retrieve_key                    AS retrieve_key,
-            f.down_payment_money              AS down_payment_money
+            f.down_payment_money              AS down_payment_money,
+            DATE_FORMAT(i.first_register_date,'%Y-%m-%d')        AS first_register_date
 
 
             from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
