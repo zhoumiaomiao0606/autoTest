@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
+import static com.yunche.loan.config.constant.CustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
@@ -211,6 +212,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Preconditions.checkNotNull(loanOrderDO.getLoanCustomerId(), "请先录入客户信息");
             Preconditions.checkNotNull(loanOrderDO.getLoanCarInfoId(), "请先录入车辆信息");
             Preconditions.checkNotNull(loanOrderDO.getLoanFinancialPlanId(), "请先录入金融方案");
+
+            // 紧急联系人不能少于2个
+            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanOrderDO.getLoanCustomerId(), CUST_TYPE_EMERGENCY_CONTACT, VALID_STATUS);
+            Preconditions.checkArgument(loanCustomerDOS.size() >= 2, "紧急联系人不能少于2个");
         }
     }
 
