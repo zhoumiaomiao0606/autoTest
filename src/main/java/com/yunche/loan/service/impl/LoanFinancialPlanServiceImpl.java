@@ -178,6 +178,9 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
             if(loanFinancialPlanVO.getBankPeriodPrincipal()!=null){
                 loanFinancialPlanVO.setBankPeriodPrincipal(loanFinancialPlanVO.getBankPeriodPrincipal().setScale(2,BigDecimal.ROUND_HALF_UP));
              }
+            if(loanFinancialPlanVO.getEachMonthRepay()!=null){
+                loanFinancialPlanVO.setEachMonthRepay(loanFinancialPlanVO.getEachMonthRepay().setScale(2,BigDecimal.ROUND_HALF_UP));
+            }
     }
 
 
