@@ -86,7 +86,7 @@ public class PartnerServiceImpl implements PartnerService {
         Preconditions.checkNotNull(partnerParam.getStatus(), "状态不能为空");
         Preconditions.checkArgument(VALID_STATUS.equals(partnerParam.getStatus()) || INVALID_STATUS.equals(partnerParam.getStatus()),
                 "状态非法");
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(partnerParam.getPartnerBankAccountList()), "财务合作信息不能为空");
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(partnerParam.getBankAccountList()), "财务合作信息不能为空");
 
         // 给合伙人创建一个账号
 //        createAccountIfNotExist(partnerParam.getLeaderMobile(), partnerParam.getName());
@@ -95,7 +95,7 @@ public class PartnerServiceImpl implements PartnerService {
         Long id = insertAndGetId(partnerParam);
 
         // 绑定财务合作信息
-        bindPartnerBankAccount(partnerParam.getPartnerBankAccountList(), id);
+        bindPartnerBankAccount(partnerParam.getBankAccountList(), id);
 
         // 绑定业务产品列表
         bindBizModel(id, partnerParam.getAreaId(), partnerParam.getBizModelIdList());

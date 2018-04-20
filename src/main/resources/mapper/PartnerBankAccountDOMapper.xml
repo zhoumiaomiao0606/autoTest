@@ -20,9 +20,9 @@
         account_name, bank_account)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{id,jdbcType=BIGINT}, #{partnerId,jdbcType=BIGINT}, #{openBank,jdbcType=VARCHAR},
-            #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
-            #{gmtModify,jdbcType=TIMESTAMP})
+            (#{partnerId,jdbcType=BIGINT}, #{openBank,jdbcType=VARCHAR},
+            #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR},
+            #{gmtCreate,jdbcType=TIMESTAMP},#{gmtModify,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 

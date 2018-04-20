@@ -27,5 +27,5 @@ public class PartnerParam extends PartnerDO {
     /**
      * 关联银行卡账号列表
      */
-    private List<PartnerBankAccountDO> partnerBankAccountList;
+    private List<PartnerBankAccountDO> bankAccountList;
 }
