@@ -118,6 +118,8 @@ public class PartnerServiceImpl implements PartnerService {
                     PartnerBankAccountDO partnerBankAccountDO = new PartnerBankAccountDO();
                     BeanUtils.copyProperties(e, partnerBankAccountDO);
                     partnerBankAccountDO.setPartnerId(partnerId);
+                    partnerBankAccountDO.setGmtCreate(new Date());
+                    partnerBankAccountDO.setGmtModify(new Date());
 
                     return partnerBankAccountDO;
                 })
