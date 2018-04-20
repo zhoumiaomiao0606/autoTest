@@ -283,7 +283,11 @@
 
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
+=======
+        <table tableName="partner_bank_account" domainObjectName="PartnerBankAccountDO"
+>>>>>>> Stashed changes
 =======
         <table tableName="partner_bank_account" domainObjectName="PartnerBankAccountDO"
 >>>>>>> Stashed changes
