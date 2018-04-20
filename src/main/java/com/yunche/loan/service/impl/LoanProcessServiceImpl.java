@@ -883,6 +883,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         approval.setTaskDefinitionKey(taskDefinitionKey);
 
         completeTask(task.getId(), variables);
+
+        // 更新流程记录
+        LoanProcessDO loanProcessDO = new LoanProcessDO();
+        loanProcessDO.setOrderId(orderId);
+        updateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, TASK_PROCESS_DONE);
+        updateLoanProcess(loanProcessDO);
     }
 
     /**
