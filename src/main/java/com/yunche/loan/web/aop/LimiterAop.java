@@ -39,8 +39,8 @@ public class LimiterAop {
          * 如果方法具有Limiter注解，则需要把method，limit拿出来
          */
         Limiter limiter = method.getAnnotation(Limiter.class);
-        limit = limiter.limit();
         route = limiter.route();
+        limit = limiter.limit();
 
         // 唯一：登录用户SessionId + 参数
         String obj = SecurityUtils.getSubject().getSession().getId().toString() + ":" + JSON.toJSONString(point.getArgs());
