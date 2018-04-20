@@ -364,19 +364,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ResultBean.ofSuccess(null, "重置密码成功");
     }
 
-    /**
-     * TODO 发送验证URL
-     *
-     * @param to 收件地址
-     */
-    private void sentVerifyUrl(String to) {
-
-        // URL
-        String url = "";
-
-
-    }
-
     @Override
     public ResultBean<LoginVO> login(HttpServletRequest request, HttpServletResponse response, EmployeeParam employeeParam) {
         Preconditions.checkArgument(null != employeeParam && StringUtils.isNotBlank(employeeParam.getUsername()), "登陆账号不能为空");
@@ -658,16 +645,23 @@ public class EmployeeServiceImpl implements EmployeeService {
             parentArea.setId(baseAreaDO.getAreaId());
             parentArea.setName(baseAreaDO.getAreaName());
             // 递归填充所有上层父级部门
-            fillSuperArea(baseAreaDO.getParentAreaId(), Lists.newArrayList(parentArea), userGroupVO);
+            fillSuperArea(baseAreaDO.getParentAreaId(), Lists.newArrayList(parentArea), userGroupVO, 10);
         }
     }
 
     /**
+     * 递归填充所有上层父级部门
+     *
      * @param parentId
      * @param superAreaList
      * @param userGroupVO
+     * @param limit
      */
-    private void fillSuperArea(Long parentId, List<BaseVO> superAreaList, UserGroupVO userGroupVO) {
+    private void fillSuperArea(Long parentId, List<BaseVO> superAreaList, UserGroupVO userGroupVO, Integer limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
         if (null != parentId) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != baseAreaDO) {
@@ -675,7 +669,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 parentArea.setId(baseAreaDO.getAreaId());
                 parentArea.setName(baseAreaDO.getAreaName());
                 superAreaList.add(parentArea);
-                fillSuperArea(baseAreaDO.getParentAreaId(), superAreaList, userGroupVO);
+                fillSuperArea(baseAreaDO.getParentAreaId(), superAreaList, userGroupVO, limit);
             }
         } else {
             // null时为最顶级
@@ -699,7 +693,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             BaseVO parentDepartment = new BaseVO();
             BeanUtils.copyProperties(departmentDO, parentDepartment);
             // 递归填充所有上层父级部门
-            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), userGroupVO);
+            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), userGroupVO, 10);
         }
     }
 
@@ -711,15 +705,20 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param parentId
      * @param superDepartmentList
      * @param userGroupVO
+     * @param limit
      */
-    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, UserGroupVO userGroupVO) {
+    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, UserGroupVO userGroupVO, Integer limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
         if (null != parentId) {
             DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != departmentDO) {
                 BaseVO parentDepartment = new BaseVO();
                 BeanUtils.copyProperties(departmentDO, parentDepartment);
                 superDepartmentList.add(parentDepartment);
-                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, userGroupVO);
+                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, userGroupVO, limit);
             }
         } else {
             // null时为最顶级
@@ -748,6 +747,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
+    /**
+     * 递归填充所有上层父级leader
+     *
+     * @param parentId
+     * @param supperEmployeeList
+     * @param employeeVO
+     * @param limit
+     */
     private void fillSupperEmployee(Long parentId, List<BaseVO> supperEmployeeList, EmployeeVO employeeVO, Integer limit) {
         limit--;
         if (limit < 0) {
