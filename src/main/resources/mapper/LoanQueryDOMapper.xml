@@ -578,7 +578,10 @@
            info,
            credit_result,
            credit_info,
-           add_condition
+           add_condition,
+           DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%S') AS create_time,
+           user_name
+
        from loan_process_log where task_definition_key =  #{taskDefinitionKey,jdbcType=VARCHAR} and order_id = #{orderId,jdbcType=BIGINT} order by create_time desc limit 1
     </select>
 

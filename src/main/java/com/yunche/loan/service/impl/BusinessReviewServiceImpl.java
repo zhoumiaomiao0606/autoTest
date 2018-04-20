@@ -9,10 +9,7 @@ import com.yunche.loan.domain.entity.RemitDetailsDO;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
 import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.CostDetailsDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.RemitDetailsDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BusinessReviewService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -38,6 +35,9 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
 
+    @Resource
+    private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
+
     @Override
     public RecombinationVO detail(Long orderId) {
 
@@ -46,6 +46,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_business_review",orderId));
+        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify",orderId));
+        recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
         return recombinationVO;
     }
 
