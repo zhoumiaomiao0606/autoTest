@@ -33,7 +33,7 @@ public class RecombinationVO<T> {
 
         private UniversalSupplementInfoVO supplement;
 
-        private List<Long> relevances = new ArrayList<Long>();
+        private List<String> relevances = new ArrayList<String>();
 
         private List<UniversalCreditInfoVO> credits = new ArrayList<UniversalCreditInfoVO>();
 

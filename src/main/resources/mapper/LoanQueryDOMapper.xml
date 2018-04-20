@@ -540,21 +540,23 @@
     </select>
 
     <!--关联订单-->
-    <select id="selectUniversalRelevanceOrderId" parameterType="java.lang.Long" resultType="java.lang.Long">
-            select distinct o.id from loan_order o
-              inner join
-            (
-							select distinct principal_cust_id AS id from loan_customer where id_card in
-							(select distinct id_card from loan_customer where principal_cust_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}))
-								union
-							select  distinct principal_cust_id AS id from loan_customer where id_card =
-							(select id_card from loan_customer where id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}))
-						) t
-            on t.id = o.loan_customer_id
+    <select id="selectUniversalRelevanceOrderId" parameterType="java.lang.String" resultType="java.lang.Long">
+						select id from (
+							select distinct o.id from loan_order o
+								inner join
+							(
+								select distinct principal_cust_id AS id from loan_customer where id_card in
+								(select distinct id_card from loan_customer where principal_cust_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}))
+									union
+								select  distinct principal_cust_id AS id from loan_customer where id_card =
+								(select id_card from loan_customer where id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}))
+							) t
+							on t.id = o.loan_customer_id
+						) t HAVING t.id != #{orderId,jdbcType=BIGINT}
     </select>
 
     <!--关联订单-->
-    <select id="selectUniversalRelevanceOrderIdByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Long">
+    <select id="selectUniversalRelevanceOrderIdByCustomerId" parameterType="java.lang.String" resultType="java.lang.Long">
             select distinct o.id from loan_order o
               inner join
             (

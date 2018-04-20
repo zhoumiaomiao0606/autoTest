@@ -19,13 +19,13 @@ public interface LoanQueryDOMapper {
 
     public UniversalLoanInfoVO selectUniversalLoanInfo(Long orderId);
 
-    public List<Long> selectUniversalRelevanceOrderId(Long orderId);
+    public List<String> selectUniversalRelevanceOrderId(Long orderId);
 
     public UniversalCarInfoVO selectUniversalCarInfo(Long orderId);
 
     public List<UniversalRelationCustomerVO> selectUniversalRelationCustomer(Long orderId);
 
-    public List<Long> selectUniversalRelevanceOrderIdByCustomerId(Long customerId);
+    public List<String> selectUniversalRelevanceOrderIdByCustomerId(Long customerId);
 
     public UniversalRemitDetails selectUniversalRemitDetails(Long orderId);
 

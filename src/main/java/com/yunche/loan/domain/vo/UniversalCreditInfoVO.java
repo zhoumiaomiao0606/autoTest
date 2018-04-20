@@ -21,5 +21,5 @@ public class UniversalCreditInfoVO {
     private String process_society_credit_result;
     private String process_society_credit_info;
     private String process_society_add_condition;
-    private List<Long> relevances = new ArrayList<Long>();
+    private List<String> relevances = new ArrayList<String>();
 }
