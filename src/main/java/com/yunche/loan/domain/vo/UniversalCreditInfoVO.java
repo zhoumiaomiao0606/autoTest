@@ -11,6 +11,7 @@ public class UniversalCreditInfoVO {
     private String customer_id;
     private String customer_cust_type;
     private String customer_name;
+    private String customer_guarantee_type;
     private String bank_info;
     private String bank_result;
     private String process_bank_credit_result;

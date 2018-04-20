@@ -44,4 +44,6 @@ public class AppLoanCustomerVO {
      * 任务节点
      */
     private String taskProgress;
+
+    private Byte guaranteeType;
 }

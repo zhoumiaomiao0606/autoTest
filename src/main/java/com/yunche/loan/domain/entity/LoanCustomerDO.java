@@ -120,4 +120,6 @@ public class LoanCustomerDO {
     private Long familyPersonNum;
 
     private BigDecimal debtRatio;
+
+    private Byte guaranteeType;
 }

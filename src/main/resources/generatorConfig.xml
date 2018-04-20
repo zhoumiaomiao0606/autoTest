@@ -282,7 +282,7 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
 
 
-        <table tableName="loan_telephone_verify" domainObjectName="LoanTelephoneVerifyDO"
+        <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

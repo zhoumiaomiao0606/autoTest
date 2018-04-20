@@ -254,7 +254,8 @@
             vehicle.engine_number                                                   AS vehicle_engine_number,
             vehicle.apply_license_plate_area                                        AS vehicle_apply_license_plate_area,
             vehicle.registration_certificate_number                                 AS vehicle_registration_certificate_number,
-            vehicle.color                                                           AS vehicle_color
+            vehicle.color                                                           AS vehicle_color,
+            financial.appraisal                                                     AS financial_appraisal
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
         left join loan_car_info car on main_order.loan_car_info_id = car.id
@@ -278,7 +279,8 @@
             customer.address                                                        AS customer_address,
             customer.company_address                                                AS customer_company_address,
             customer.postcode                                                       AS customer_postcode,
-            customer.company_phone                                                  AS customer_company_phone
+            customer.company_phone                                                  AS customer_company_phone,
+            customer.guarantee_type                                                 AS customer_guarantee_type
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join loan_customer customer on main_order.loan_customer_id = customer.principal_cust_id and cust_type !=0
@@ -336,6 +338,7 @@
         customer.id                         AS customer_id,
         customer.cust_type                	AS customer_cust_type,
         customer.name					  	AS customer_name,
+        customer.guarantee_type             AS customer_guarantee_type,
 		bank.info			      	        AS bank_info,
         bank.result		          			AS bank_result,
         process_bank.credit_result         	AS process_bank_credit_result,
@@ -391,6 +394,7 @@
         c.id                      AS customer_id,
         c.cust_type               AS cust_type,
         c.name                    AS name,
+        c.guarantee_type          AS guarantee_type,
         c.id_card                 AS id_card,
         c.mobile                  AS mobile,
         c.cust_relation           AS cust_relation,

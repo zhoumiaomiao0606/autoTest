@@ -15,4 +15,5 @@ public class UniversalRelationCustomerVO {
     private String customer_company_address;
     private String customer_postcode;
     private String customer_company_phone;
+    private String customer_guarantee_type;
 }
