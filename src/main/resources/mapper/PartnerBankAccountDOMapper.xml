@@ -35,6 +35,12 @@
         where partner_id = #{id,jdbcType=BIGINT}
     </select>
 
+    <!--deleteByPartnerId-->
+    <delete id="deleteByPartnerId" parameterType="java.lang.Long">
+        delete from partner_bank_account
+        where partner_id = #{partnerId,jdbcType=BIGINT}
+    </delete>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
@@ -46,6 +52,7 @@
         delete from partner_bank_account
         where id = #{id,jdbcType=BIGINT}
     </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
@@ -58,6 +65,7 @@
         #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
         #{gmtModify,jdbcType=TIMESTAMP})
     </insert>
+
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
@@ -111,6 +119,7 @@
             </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
         update partner_bank_account
         <set>
@@ -135,6 +144,7 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
     update partner_bank_account
     set partner_id = #{partnerId,jdbcType=BIGINT},
@@ -145,4 +155,5 @@
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
 </mapper>

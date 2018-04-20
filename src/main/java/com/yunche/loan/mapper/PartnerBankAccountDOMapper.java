@@ -30,8 +30,14 @@ public interface PartnerBankAccountDOMapper {
     /**
      * 获取合伙人账户列表
      *
-     * @param id
+     * @param partnerId
      * @return
      */
-    List<PartnerBankAccountDO> listByPartnerId(Long id);
+    List<PartnerBankAccountDO> listByPartnerId(Long partnerId);
+
+    /**
+     * @param partnerId
+     * @return
+     */
+    int deleteByPartnerId(Long partnerId);
 }

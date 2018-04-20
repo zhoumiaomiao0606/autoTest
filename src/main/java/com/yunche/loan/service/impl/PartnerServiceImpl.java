@@ -37,7 +37,6 @@ import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
  * @date 2018/1/24
  */
 @Service
-@Transactional
 public class PartnerServiceImpl implements PartnerService {
 
     @Value("${spring.mail.username}")
@@ -78,6 +77,7 @@ public class PartnerServiceImpl implements PartnerService {
 
 
     @Override
+    @Transactional
     public ResultBean<Long> create(PartnerParam partnerParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getName()), "团队名称不能为空");
         Preconditions.checkNotNull(partnerParam.getDepartmentId(), "对应负责部门不能为空");
@@ -118,8 +118,6 @@ public class PartnerServiceImpl implements PartnerService {
                     PartnerBankAccountDO partnerBankAccountDO = new PartnerBankAccountDO();
                     BeanUtils.copyProperties(e, partnerBankAccountDO);
                     partnerBankAccountDO.setPartnerId(partnerId);
-                    partnerBankAccountDO.setGmtCreate(new Date());
-                    partnerBankAccountDO.setGmtModify(new Date());
 
                     return partnerBankAccountDO;
                 })
@@ -188,25 +186,38 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public ResultBean<Void> update(PartnerDO partnerDO) {
-        Preconditions.checkNotNull(partnerDO.getId(), "id不能为空");
+    @Transactional
+    public ResultBean<Void> update(PartnerParam partnerParam) {
+        Preconditions.checkNotNull(partnerParam.getId(), "id不能为空");
 
-        partnerDO.setGmtModify(new Date());
+        PartnerDO partnerDO = new PartnerDO();
+        BeanUtils.copyProperties(partnerParam, partnerDO);
+        partnerParam.setGmtModify(new Date());
         int count = partnerDOMapper.updateByPrimaryKeySelective(partnerDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 
+        // 先清空
+        int delCount = partnerBankAccountDOMapper.deleteByPartnerId(partnerParam.getId());
+        // 再绑定
+        bindPartnerBankAccount(partnerParam.getBankAccountList(), partnerParam.getId());
+
         // 编辑绑定业务产品的限制区域
-        updateRelaBizModelArea(partnerDO.getId(), partnerDO.getAreaId());
+        updateRelaBizModelArea(partnerParam.getId(), partnerParam.getAreaId());
 
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
         int count = partnerDOMapper.deleteByPrimaryKey(id);
         Preconditions.checkArgument(count > 0, "删除失败");
+
+        // 清空账户信息
+        partnerBankAccountDOMapper.deleteByPartnerId(id);
+
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
@@ -313,6 +324,7 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> bindBizModel(Long id, String bizModelIds) {
         Preconditions.checkNotNull(id, "合伙人ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(bizModelIds), "业务产品ID不能为空");
@@ -334,6 +346,7 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> unbindBizModel(Long id, String bizModelIds) {
         Preconditions.checkNotNull(id, "合伙人ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(bizModelIds), "业务产品ID不能为空");
@@ -389,6 +402,7 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> bindEmployee(Long id, String employeeIds) {
         Preconditions.checkNotNull(id, "合伙人ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeIds), "员工ID不能为空");
@@ -408,6 +422,7 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> unbindEmployee(Long id, String employeeIds) {
         Preconditions.checkNotNull(id, "合伙人ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeIds), "员工ID不能为空");

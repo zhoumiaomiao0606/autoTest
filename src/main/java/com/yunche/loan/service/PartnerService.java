@@ -21,7 +21,7 @@ import java.util.Set;
 public interface PartnerService {
     ResultBean<Long> create(PartnerParam partnerParam);
 
-    ResultBean<Void> update(PartnerDO partnerDO);
+    ResultBean<Void> update(PartnerParam partnerParam);
 
     ResultBean<Void> delete(Long id);
 
