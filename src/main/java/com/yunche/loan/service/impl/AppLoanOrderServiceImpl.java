@@ -414,8 +414,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Transactional
     public ResultBean<Void> infoSupplementUpload(AppInfoSupplementParam infoSupplementParam) {
         Preconditions.checkNotNull(infoSupplementParam.getCustomerId(), "客户ID不能为空");
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementParam.getFiles()), "资料信息不能为空");
         Preconditions.checkNotNull(infoSupplementParam.getSupplementOrderId(), "增补单ID不能为空");
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementParam.getFiles()) ||
+                StringUtils.isNotBlank(infoSupplementParam.getRemark()), "资料信息或备注为空");
 
         Long suppermentOrderId = infoSupplementParam.getSupplementOrderId();
         String remark = infoSupplementParam.getRemark();
