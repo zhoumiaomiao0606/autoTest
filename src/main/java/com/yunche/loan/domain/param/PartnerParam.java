@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.param;
 
+import com.yunche.loan.domain.entity.PartnerBankAccountDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import lombok.Data;
 
@@ -22,4 +23,9 @@ public class PartnerParam extends PartnerDO {
      * 业务产品ID列表
      */
     private List<Long> bizModelIdList;
+
+    /**
+     * 关联银行卡账号列表
+     */
+    private List<PartnerBankAccountDO> partnerBankAccountList;
 }

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.PartnerBankAccountDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.PartnerBankAccountDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="partner_id" property="partnerId" jdbcType="BIGINT"/>
+        <result column="open_bank" property="openBank" jdbcType="VARCHAR"/>
+        <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
+        <result column="bank_account" property="bankAccount" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, partner_id, open_bank, account_name, bank_account, gmt_create, gmt_modify
+    </sql>
+
+    <!-- batchInsert -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into partner_bank_account (id, partner_id, open_bank,
+        account_name, bank_account)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{id,jdbcType=BIGINT}, #{partnerId,jdbcType=BIGINT}, #{openBank,jdbcType=VARCHAR},
+            #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
+            #{gmtModify,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--listByPartnerId-->
+    <select id="listByPartnerId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from partner_bank_account
+        where partner_id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from partner_bank_account
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from partner_bank_account
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
+        insert into partner_bank_account (id, partner_id, open_bank,
+        account_name, bank_account, gmt_create,
+        gmt_modify)
+        values (#{id,jdbcType=BIGINT}, #{partnerId,jdbcType=BIGINT}, #{openBank,jdbcType=VARCHAR},
+        #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
+        insert into partner_bank_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="partnerId != null">
+                partner_id,
+            </if>
+            <if test="openBank != null">
+                open_bank,
+            </if>
+            <if test="accountName != null">
+                account_name,
+            </if>
+            <if test="bankAccount != null">
+                bank_account,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="partnerId != null">
+                #{partnerId,jdbcType=BIGINT},
+            </if>
+            <if test="openBank != null">
+                #{openBank,jdbcType=VARCHAR},
+            </if>
+            <if test="accountName != null">
+                #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
+        update partner_bank_account
+        <set>
+            <if test="partnerId != null">
+                partner_id = #{partnerId,jdbcType=BIGINT},
+            </if>
+            <if test="openBank != null">
+                open_bank = #{openBank,jdbcType=VARCHAR},
+            </if>
+            <if test="accountName != null">
+                account_name = #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankAccount != null">
+                bank_account = #{bankAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
+    update partner_bank_account
+    set partner_id = #{partnerId,jdbcType=BIGINT},
+      open_bank = #{openBank,jdbcType=VARCHAR},
+      account_name = #{accountName,jdbcType=VARCHAR},
+      bank_account = #{bankAccount,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

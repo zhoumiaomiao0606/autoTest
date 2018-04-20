@@ -45,22 +45,34 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
+
     @Autowired
     private DepartmentDOMapper departmentDOMapper;
+
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
+
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+
     @Autowired
     private BizModelDOMapper bizModelDOMapper;
+
     @Autowired
     private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
+
     @Autowired
     private BizModelRelaAreaPartnersDOMapper bizModelRelaAreaPartnersDOMapper;
+
     @Autowired
     private BizModelRelaFinancialProdDOMapper bizModelRelaFinancialProdDOMapper;
+
     @Autowired
     private FinancialProductDOMapper financialProductDOMapper;
+
+    @Autowired
+    private PartnerBankAccountDOMapper partnerBankAccountDOMapper;
+
     @Autowired
     private JavaMailSender mailSender;
 
@@ -71,23 +83,50 @@ public class PartnerServiceImpl implements PartnerService {
         Preconditions.checkNotNull(partnerParam.getDepartmentId(), "对应负责部门不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getLeaderName()), "团队负责人不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getLeaderMobile()), "负责人手机不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getOpenBank()), "开户行不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getAccountName()), "开户名不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getBankAccount()), "银行账号不能为空");
         Preconditions.checkNotNull(partnerParam.getStatus(), "状态不能为空");
         Preconditions.checkArgument(VALID_STATUS.equals(partnerParam.getStatus()) || INVALID_STATUS.equals(partnerParam.getStatus()),
                 "状态非法");
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(partnerParam.getPartnerBankAccountList()), "财务合作信息不能为空");
 
         // 给合伙人创建一个账号
-        createAccountIfNotExist(partnerParam.getLeaderMobile(), partnerParam.getName());
+//        createAccountIfNotExist(partnerParam.getLeaderMobile(), partnerParam.getName());
 
         // 创建实体，并返回ID
         Long id = insertAndGetId(partnerParam);
+
+        // 绑定财务合作信息
+        bindPartnerBankAccount(partnerParam.getPartnerBankAccountList(), id);
 
         // 绑定业务产品列表
         bindBizModel(id, partnerParam.getAreaId(), partnerParam.getBizModelIdList());
 
         return ResultBean.ofSuccess(id, "创建成功");
+    }
+
+    /**
+     * 绑定财务合作信息
+     *
+     * @param partnerBankAccountDOList
+     * @param partnerId
+     */
+    private void bindPartnerBankAccount(List<PartnerBankAccountDO> partnerBankAccountDOList, Long partnerId) {
+
+        List<PartnerBankAccountDO> partnerBankAccountDOS = partnerBankAccountDOList.parallelStream()
+                .filter(Objects::nonNull)
+                .map(e -> {
+
+                    PartnerBankAccountDO partnerBankAccountDO = new PartnerBankAccountDO();
+                    BeanUtils.copyProperties(e, partnerBankAccountDO);
+                    partnerBankAccountDO.setPartnerId(partnerId);
+
+                    return partnerBankAccountDO;
+                })
+                .collect(Collectors.toList());
+
+        if (!CollectionUtils.isEmpty(partnerBankAccountDOS)) {
+            int count = partnerBankAccountDOMapper.batchInsert(partnerBankAccountDOS);
+            Preconditions.checkArgument(count > 0, "保存财务合作信息失败");
+        }
     }
 
     /**
@@ -194,10 +233,12 @@ public class PartnerServiceImpl implements PartnerService {
 
         List<PartnerVO> partnerVOList = Lists.newArrayList();
         for (PartnerDO partnerDO : partnerDOList) {
+
             PartnerVO partnerVO = new PartnerVO();
             BeanUtils.copyProperties(partnerDO, partnerVO);
 
             fillMsg(partnerDO, partnerVO);
+
             partnerVOList.add(partnerVO);
         }
 
@@ -397,16 +438,22 @@ public class PartnerServiceImpl implements PartnerService {
         partnerAccountVO.setPartnerName(partnerDO.getName());
         partnerAccountVO.setPayMonth(partnerDO.getPayMonth());
 
-        PartnerAccountVO.AccountInfo accountInfo = new PartnerAccountVO.AccountInfo();
-        BeanUtils.copyProperties(partnerDO, accountInfo);
+        // 账户信息
+        List<PartnerBankAccountDO> partnerBankAccountDOList = partnerBankAccountDOMapper.listByPartnerId(partnerId);
+        if (!CollectionUtils.isEmpty(partnerBankAccountDOList)) {
+            List<PartnerAccountVO.AccountInfo> accountInfoList = partnerBankAccountDOList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
 
-        PartnerAccountVO.AccountInfo accountInfoTwo = new PartnerAccountVO.AccountInfo();
-        accountInfoTwo.setOpenBank(partnerDO.getOpenBankTwo());
-        accountInfoTwo.setAccountName(partnerDO.getAccountNameTwo());
-        accountInfoTwo.setBankAccount(partnerDO.getBankAccountTwo());
+                        PartnerAccountVO.AccountInfo accountInfo = new PartnerAccountVO.AccountInfo();
+                        BeanUtils.copyProperties(e, accountInfo);
 
-        List<PartnerAccountVO.AccountInfo> accountInfoList = Lists.newArrayList(accountInfo, accountInfoTwo);
-        partnerAccountVO.setAccountInfoList(accountInfoList);
+                        return accountInfo;
+                    })
+                    .collect(Collectors.toList());
+
+            partnerAccountVO.setAccountInfoList(accountInfoList);
+        }
 
         return ResultBean.ofSuccess(partnerAccountVO);
     }
@@ -536,6 +583,21 @@ public class PartnerServiceImpl implements PartnerService {
         fillDepartment(partnerDO.getDepartmentId(), partnerVO);
         fillArea(partnerDO.getAreaId(), partnerVO);
         fillEmployeeNum(partnerVO);
+        // 财务合作信息
+        fillBankAccount(partnerDO.getId(), partnerVO);
+    }
+
+    /**
+     * 财务合作信息
+     *
+     * @param partnerId
+     * @param partnerVO
+     */
+    private void fillBankAccount(Long partnerId, PartnerVO partnerVO) {
+        List<PartnerBankAccountDO> partnerBankAccountDOList = partnerBankAccountDOMapper.listByPartnerId(partnerId);
+        if (!CollectionUtils.isEmpty(partnerBankAccountDOList)) {
+            partnerVO.setPartnerBankAccountDOList(partnerBankAccountDOList);
+        }
     }
 
     /**

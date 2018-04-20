@@ -1,8 +1,11 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.entity.PartnerBankAccountDO;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -74,4 +77,9 @@ public class PartnerVO {
      * 风险承担比例
      */
     private BigDecimal riskBearRate;
+
+    /**
+     * 财务合作信息列表
+     */
+    private List<PartnerBankAccountDO> partnerBankAccountDOList = Collections.EMPTY_LIST;
 }

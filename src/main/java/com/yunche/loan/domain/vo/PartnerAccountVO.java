@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ public class PartnerAccountVO {
 
     private Byte payMonth;
 
-    private List<AccountInfo> accountInfoList;
+    private List<AccountInfo> accountInfoList = Collections.EMPTY_LIST;
 
     @Data
     public static class AccountInfo {

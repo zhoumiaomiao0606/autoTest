@@ -1240,7 +1240,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                                 + " "
                                 + convertActionText(e.getAction())
                                 + " "
-                                + convertTaskDefKeyText(e.getTaskDefinitionKey());
+                                + convertTaskDefKeyText(e.getTaskDefinitionKey())
+                                + getRejectInfo(e.getAction(), e.getInfo());
 
                         historyList.add(history);
                     });
@@ -1277,6 +1278,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         return ResultBean.ofSuccess(loanRejectLogVO);
+    }
+
+    /**
+     * 打回理由
+     *
+     * @param action
+     * @param info
+     * @return
+     */
+    private String getRejectInfo(Byte action, String info) {
+
+        if (ACTION_REJECT_MANUAL.equals(action)) {
+            return "  " + "理由：" + info;
+        }
+
+        return "";
     }
 
     /**

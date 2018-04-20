@@ -277,16 +277,19 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 -->
 
-<!--        <table tableName="loan_credit_info" domainObjectName="LoanCreditInfoDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
+        <!--        <table tableName="loan_credit_info" domainObjectName="LoanCreditInfoDO"
+                       enableCountByExample="false" enableUpdateByExample="false"
+                       enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
 
 
+<<<<<<< Updated upstream
         <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
+=======
+        <table tableName="partner_bank_account" domainObjectName="PartnerBankAccountDO"
+>>>>>>> Stashed changes
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
-
 
 
         <!-- 忽略列，不生成bean 字段
