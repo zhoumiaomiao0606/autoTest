@@ -66,6 +66,8 @@ public class CreditRecordVO {
 
         private Byte custRelation;
 
+        private Byte guaranteeType;
+
         private List<FileVO> files;
 
         private List<Long> relevanceOrderlist;

@@ -49,4 +49,9 @@ public class BankLendRecordVO {
      */
     private BigDecimal lendAmount;
 
+    /**
+     * 银行分期本金
+     */
+    private BigDecimal bankPeriodPrincipal;
+
 }

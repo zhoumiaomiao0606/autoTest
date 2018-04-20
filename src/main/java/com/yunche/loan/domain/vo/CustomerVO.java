@@ -132,7 +132,7 @@ public class CustomerVO {
 
     private BigDecimal debtRatio;
 
-
+    private Byte guaranteeType;
 
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

@@ -11,6 +11,8 @@ public class UniversalCreditInfoVO {
     private String customer_id;
     private String customer_cust_type;
     private String customer_name;
+    private String customer_guarantee_type;
+    private String customer_cust_relation;
     private String bank_info;
     private String bank_result;
     private String process_bank_credit_result;
@@ -21,5 +23,5 @@ public class UniversalCreditInfoVO {
     private String process_society_credit_result;
     private String process_society_credit_info;
     private String process_society_add_condition;
-    private List<Long> relevances = new ArrayList<Long>();
+    private List<String> relevances = new ArrayList<String>();
 }

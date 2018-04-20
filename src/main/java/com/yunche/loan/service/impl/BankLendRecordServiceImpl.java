@@ -6,6 +6,7 @@ import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.BankLendRecordDO;
+import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.BankLendRecordVO;
@@ -13,6 +14,7 @@ import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.mapper.BankLendRecordDOMapper;
+import com.yunche.loan.mapper.LoanFinancialPlanDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.BankLendRecordService;
@@ -44,13 +46,27 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
     @Autowired
     LoanProcessService loanProcessService;
 
+    @Autowired
+    LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
     @Override
     public ResultBean<RecombinationVO> detail(Long orderId) {
 
         Preconditions.checkNotNull(orderId,"业务单号不能为空");
         RecombinationVO recombinationVO=  new RecombinationVO();
         BankLendRecordVO bankLendRecordVO = loanQueryDOMapper.selectBankLendRecordDetail(orderId);
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO,"订单不存在");
+        Long loanFinancialPlanId = loanOrderDO.getLoanFinancialPlanId();
+        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
+
+        if(loanFinancialPlanDO!=null){
+            bankLendRecordVO.setBankPeriodPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
+        }
+
         recombinationVO.setInfo(bankLendRecordVO);
+
 
         //共贷人信息查询
         List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);

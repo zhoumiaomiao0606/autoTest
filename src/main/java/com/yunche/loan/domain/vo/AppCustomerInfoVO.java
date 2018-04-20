@@ -197,6 +197,10 @@ public class AppCustomerInfoVO {
         /**
          * 附件列表
          */
+
+        private Byte guaranteeType;
+
+
         private List<FileVO> files = Collections.EMPTY_LIST;
 
 //        private String nation;

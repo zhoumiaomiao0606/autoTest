@@ -34,9 +34,18 @@ public class LoadQrServiceImpl implements LoadQrService {
         AppVersionDO latestVersion = appVersionCache.getLatestVersion(TERMINAL_TYPE_ANDROID);
         ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
         String endPoint =  bundle.containsKey("endpoint") == false ? "" : bundle.getString("endpoint");
-        Preconditions.checkNotNull(latestVersion,"APP版本维护中，请稍后重试");
-        Preconditions.checkNotNull(endPoint,"APP版本维护中，请稍后重试");
-        String downUrl="https://"+endPoint+ File.separator+latestVersion.getDownloadUrl();
+        String bucketNameAndroid =  bundle.containsKey("bucketName_android") == false ? "" : bundle.getString("bucketName_android");
+
+//        Preconditions.checkNotNull(latestVersion,"APP版本维护中，请稍后重试");
+//        Preconditions.checkNotNull(endPoint,"APP版本维护中，请稍后重试");
+//        Preconditions.checkNotNull(bucketNameAndroid,"APP版本维护中，请稍后重试");
+        String downUrl;
+        if(latestVersion == null || endPoint.isEmpty()|| bucketNameAndroid.isEmpty()){
+            downUrl="APP版本维护中，请稍后重试";
+        }else{
+            downUrl ="https://"+bucketNameAndroid+"."+endPoint+ File.separator+latestVersion.getDownloadUrl();
+        }
+
         String dataHandle = new String(downUrl.getBytes(QrConst.UTF_8), QrConst.UTF_8);
         BitMatrix bitMatrix = new MultiFormatWriter().encode(dataHandle, BarcodeFormat.QR_CODE, QrConst.QR_WIDTH, QrConst.QR_HEIGHT);
         httpServletResponse.reset();//清空输出流
@@ -44,10 +53,6 @@ public class LoadQrServiceImpl implements LoadQrService {
         httpServletResponse.setContentType(MediaType.IMAGE_PNG_VALUE);
         OutputStream os = httpServletResponse.getOutputStream();//取得输出流
         MatrixToImageWriter.writeToStream(bitMatrix, QrConst.QR_FILE_TYPE, os);//写入文件刷新
-
-
-
-
         os.flush();
         os.close();//关闭输出流
     }

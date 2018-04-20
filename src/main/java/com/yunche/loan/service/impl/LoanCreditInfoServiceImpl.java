@@ -234,6 +234,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
             BeanUtils.copyProperties(loanCustomerDO, customerCreditRecord);
             customerCreditRecord.setCustomerId(loanCustomerDO.getId());
             customerCreditRecord.setCustomerName(loanCustomerDO.getName());
+            customerCreditRecord.setGuaranteeType(loanCustomerDO.getGuaranteeType());
         }
     }
 

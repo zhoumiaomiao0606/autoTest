@@ -28,6 +28,7 @@ public class UniversalCustomerVO {
     private String postcode;
     private String working_years;
     private String duty;
+    private String guarantee_type;
 
     private List<UniversalCustomerFileVO> files = new ArrayList<UniversalCustomerFileVO>();
 

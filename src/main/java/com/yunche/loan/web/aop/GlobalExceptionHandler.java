@@ -38,11 +38,9 @@ public class GlobalExceptionHandler {
                 return ResultBean.of(null, false, code, msg);
             }
         } else if (e instanceof MissingServletRequestParameterException) {
-            // GET 缺少接口规范必要参数
-            return ResultBean.ofError("必填信息填写不完整");
+            return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof MethodArgumentNotValidException) {
-            // POST 缺少接口规范必要参数
-            return ResultBean.ofError("必填信息填写不完整");
+            return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof IllegalArgumentException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof NullPointerException) {
