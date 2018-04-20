@@ -14,4 +14,8 @@ public class LoanTelephoneVerifyDO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String userName;
+
+    private Long userId;
 }
