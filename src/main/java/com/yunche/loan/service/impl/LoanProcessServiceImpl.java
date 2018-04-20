@@ -877,7 +877,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         approval.setAction(ACTION_PASS);
         approval.setTaskDefinitionKey(taskDefinitionKey);
 
-        completeTask(task, variables);
+        completeTask(task.getId(), variables);
     }
 
     /**
