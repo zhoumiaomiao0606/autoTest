@@ -540,7 +540,7 @@
     </select>
 
     <!--关联订单-->
-    <select id="selectUniversalRelevanceOrderId" parameterType="java.lang.String" resultType="java.lang.Long">
+    <select id="selectUniversalRelevanceOrderId" parameterType="java.lang.Long" resultType="java.lang.String">
 						select id from (
 							select distinct o.id from loan_order o
 								inner join
@@ -556,7 +556,7 @@
     </select>
 
     <!--关联订单-->
-    <select id="selectUniversalRelevanceOrderIdByCustomerId" parameterType="java.lang.String" resultType="java.lang.Long">
+    <select id="selectUniversalRelevanceOrderIdByCustomerId" parameterType="java.lang.Long" resultType="java.lang.String">
             select distinct o.id from loan_order o
               inner join
             (
