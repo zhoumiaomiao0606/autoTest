@@ -12,9 +12,17 @@ import java.util.List;
 @Data
 public class AppInfoSupplementParam {
     /**
+     * 增补单ID
+     */
+    private Long supplementOrderId;
+    /**
      * 客户ID
      */
     private Long customerId;
+    /**
+     * 资料增补备注
+     */
+    private String remark;
     /**
      * 文件列表
      */

@@ -162,6 +162,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         appInfoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
         appInfoSupplementVO.setSupplementEndDate(loanInfoSupplementDO.getEndTime());
         appInfoSupplementVO.setInitiator(loanInfoSupplementDO.getInitiatorName());
+        appInfoSupplementVO.setRemark(loanInfoSupplementDO.getRemark());
 
         Long orderId = loanInfoSupplementDO.getOrderId();
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
@@ -414,6 +415,15 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     public ResultBean<Void> infoSupplementUpload(AppInfoSupplementParam infoSupplementParam) {
         Preconditions.checkNotNull(infoSupplementParam.getCustomerId(), "客户ID不能为空");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementParam.getFiles()), "资料信息不能为空");
+        Preconditions.checkNotNull(infoSupplementParam.getSupplementOrderId(), "增补单ID不能为空");
+
+        Long suppermentOrderId = infoSupplementParam.getSupplementOrderId();
+        String remark = infoSupplementParam.getRemark();
+        LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
+        loanInfoSupplementDO.setRemark(remark);
+        loanInfoSupplementDO.setId(suppermentOrderId);
+        int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
+        Preconditions.checkArgument(count > 0, "增补失败");
 
         List<FileVO> files = infoSupplementParam.getFiles();
         files.parallelStream()

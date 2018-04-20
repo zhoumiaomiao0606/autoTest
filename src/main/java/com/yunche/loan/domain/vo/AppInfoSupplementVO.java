@@ -83,4 +83,9 @@ public class AppInfoSupplementVO {
      * 文件分类 URL列表
      */
     private List<FileVO> files;
+
+    /**
+     * 
+     */
+    private String remark;
 }
