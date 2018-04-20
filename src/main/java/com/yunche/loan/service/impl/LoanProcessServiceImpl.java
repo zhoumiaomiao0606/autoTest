@@ -1068,12 +1068,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // AUTO_REJECT
             if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
 
-                // 获取所有正在执行的并行任务
-                List<Task> tasks = taskService.createTaskQuery()
-                        .processInstanceId(processInstId)
-                        .list();
-
-                dealCreditRecordAutoRejectTask(currentTask, tasks, approval);
+                // 提交【征信申请】
+                passCreditApply(approval);
             }
         }
     }
@@ -1087,21 +1083,31 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
 
     private void dealCreditRecordAutoRejectTask(Task currentTask, List<Task> tasks, ApprovalParam approvalParam) {
-        // 打回
+        // 打回到原点【征信申请】
         dealRejectTask(currentTask, tasks, approvalParam);
 
+        // 提交【征信申请】
+        passCreditApply(approvalParam);
+    }
+
+    /**
+     * 提交【征信申请】
+     *
+     * @param approval
+     */
+    private void passCreditApply(ApprovalParam approval) {
         // update process
         LoanProcessDO loanProcessDO = new LoanProcessDO();
-        loanProcessDO.setOrderId(approvalParam.getOrderId());
+        loanProcessDO.setOrderId(approval.getOrderId());
         loanProcessDO.setBankCreditRecord(TASK_PROCESS_INIT);
         loanProcessDO.setSocialCreditRecord(TASK_PROCESS_INIT);
         updateLoanProcess(loanProcessDO);
 
         // 自动提交打回的【征信申请】
-        approvalParam.setTaskDefinitionKey(CREDIT_APPLY.getCode());
-        approvalParam.setAction(ACTION_PASS);
-        approvalParam.setNeedLog(false);
-        approval(approvalParam);
+        approval.setTaskDefinitionKey(CREDIT_APPLY.getCode());
+        approval.setAction(ACTION_PASS);
+        approval.setNeedLog(false);
+        approval(approval);
     }
 
     @Override
@@ -1504,7 +1510,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     public boolean isOnlyOneBankCreditRecordTask(Map<String, Object> variables, String taskDefinitionKey) {
         Byte loanAmount = (Byte) variables.get("loanAmount");
-        boolean isOnlyOneBankCreditRecordTask = (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey))
+        boolean isOnlyOneBankCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)
                 && null != loanAmount && loanAmount == 1;
         return isOnlyOneBankCreditRecordTask;
     }
