@@ -33,22 +33,8 @@ public class PartnerDO {
 
     private String cooperationInsuranceCompany;
 
-    private String openBank;
-
-    private String accountName;
-
-    private String bankAccount;
-
-    private String openBankTwo;
-
-    private String accountNameTwo;
-
-    private String bankAccountTwo;
-
     private Byte payMonth;
-    /**
-     * 风险承担比例
-     */
+
     private BigDecimal riskBearRate;
 
     private Date gmtCreate;

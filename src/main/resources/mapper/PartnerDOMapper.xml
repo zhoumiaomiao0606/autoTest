@@ -15,12 +15,6 @@
         <result column="cooperation_scale" property="cooperationScale" jdbcType="VARCHAR"/>
         <result column="exec_rate" property="execRate" jdbcType="DECIMAL"/>
         <result column="cooperation_insurance_company" property="cooperationInsuranceCompany" jdbcType="VARCHAR"/>
-        <result column="open_bank" property="openBank" jdbcType="VARCHAR"/>
-        <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
-        <result column="bank_account" property="bankAccount" jdbcType="VARCHAR"/>
-        <result column="open_bank_two" property="openBankTwo" jdbcType="VARCHAR"/>
-        <result column="account_name_two" property="accountNameTwo" jdbcType="VARCHAR"/>
-        <result column="bank_account_two" property="bankAccountTwo" jdbcType="VARCHAR"/>
         <result column="pay_month" property="payMonth" jdbcType="TINYINT"/>
         <result column="risk_bear_rate" property="riskBearRate" jdbcType="DECIMAL"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
@@ -31,8 +25,7 @@
 
     <sql id="Base_Column_List">
         id, name, department_id, leader_name, leader_mobile, tel, fax, area_id, biz_type,
-        sign, cooperation_scale, exec_rate, cooperation_insurance_company, open_bank, account_name,
-        bank_account, open_bank_two, account_name_two, bank_account_two, pay_month, risk_bear_rate,
+        sign, cooperation_scale, exec_rate, cooperation_insurance_company, pay_month, risk_bear_rate,
         gmt_create, gmt_modify, status, feature
     </sql>
 
@@ -69,27 +62,6 @@
         </if>
         <if test="cooperationInsuranceCompany != null and cooperationInsuranceCompany != '' ">
             AND cooperation_insurance_company LIKE CONCAT('%',#{cooperationInsuranceCompany},'%')
-        </if>
-        <if test="openBank != null and openBank != '' ">
-            AND open_bank LIKE CONCAT('%',#{openBank},'%')
-        </if>
-        <if test="accountName != null and accountName != '' ">
-            AND account_name LIKE CONCAT('%',#{accountName},'%')
-        </if>
-        <if test="bankAccount != null and bankAccount != '' ">
-            AND bank_account = #{bankAccount}
-        </if>
-        <if test="bankAccount != null and bankAccount != '' ">
-            AND bank_account = #{bankAccount}
-        </if>
-        <if test="accountNameTwo != null and accountNameTwo != '' ">
-            AND account_name_two LIKE CONCAT('%',#{accountNameTwo},'%')
-        </if>
-        <if test="bankAccountTwo != null and bankAccountTwo != '' ">
-            AND bank_account_two = #{bankAccountTwo}
-        </if>
-        <if test="bankAccountTwo != null and bankAccountTwo != '' ">
-            AND bank_account_two = #{bankAccountTwo}
         </if>
         <if test="payMonth != null">
             AND pay_month = #{payMonth}
@@ -155,7 +127,6 @@
         </if>
     </select>
 
-
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from partner
         where id = #{id,jdbcType=BIGINT}
@@ -170,18 +141,14 @@
         leader_name, leader_mobile, tel,
         fax, area_id, biz_type,
         sign, cooperation_scale, exec_rate,
-        cooperation_insurance_company, open_bank,
-        account_name, bank_account, open_bank_two,
-        account_name_two, bank_account_two, pay_month,
+        cooperation_insurance_company, pay_month,
         risk_bear_rate, gmt_create, gmt_modify,
         status, feature)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT},
         #{leaderName,jdbcType=VARCHAR}, #{leaderMobile,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR},
         #{fax,jdbcType=VARCHAR}, #{areaId,jdbcType=BIGINT}, #{bizType,jdbcType=TINYINT},
         #{sign,jdbcType=TINYINT}, #{cooperationScale,jdbcType=VARCHAR}, #{execRate,jdbcType=DECIMAL},
-        #{cooperationInsuranceCompany,jdbcType=VARCHAR}, #{openBank,jdbcType=VARCHAR},
-        #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{openBankTwo,jdbcType=VARCHAR},
-        #{accountNameTwo,jdbcType=VARCHAR}, #{bankAccountTwo,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
+        #{cooperationInsuranceCompany,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
         #{riskBearRate,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
         #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR})
     </insert>
@@ -231,24 +198,6 @@
             </if>
             <if test="cooperationInsuranceCompany != null">
                 cooperation_insurance_company,
-            </if>
-            <if test="openBank != null">
-                open_bank,
-            </if>
-            <if test="accountName != null">
-                account_name,
-            </if>
-            <if test="bankAccount != null">
-                bank_account,
-            </if>
-            <if test="openBankTwo != null">
-                open_bank_two,
-            </if>
-            <if test="accountNameTwo != null">
-                account_name_two,
-            </if>
-            <if test="bankAccountTwo != null">
-                bank_account_two,
             </if>
             <if test="payMonth != null">
                 pay_month,
@@ -308,24 +257,6 @@
             </if>
             <if test="cooperationInsuranceCompany != null">
                 #{cooperationInsuranceCompany,jdbcType=VARCHAR},
-            </if>
-            <if test="openBank != null">
-                #{openBank,jdbcType=VARCHAR},
-            </if>
-            <if test="accountName != null">
-                #{accountName,jdbcType=VARCHAR},
-            </if>
-            <if test="bankAccount != null">
-                #{bankAccount,jdbcType=VARCHAR},
-            </if>
-            <if test="openBankTwo != null">
-                #{openBankTwo,jdbcType=VARCHAR},
-            </if>
-            <if test="accountNameTwo != null">
-                #{accountNameTwo,jdbcType=VARCHAR},
-            </if>
-            <if test="bankAccountTwo != null">
-                #{bankAccountTwo,jdbcType=VARCHAR},
             </if>
             <if test="payMonth != null">
                 #{payMonth,jdbcType=TINYINT},
@@ -387,24 +318,6 @@
             <if test="cooperationInsuranceCompany != null">
                 cooperation_insurance_company = #{cooperationInsuranceCompany,jdbcType=VARCHAR},
             </if>
-            <if test="openBank != null">
-                open_bank = #{openBank,jdbcType=VARCHAR},
-            </if>
-            <if test="accountName != null">
-                account_name = #{accountName,jdbcType=VARCHAR},
-            </if>
-            <if test="bankAccount != null">
-                bank_account = #{bankAccount,jdbcType=VARCHAR},
-            </if>
-            <if test="openBankTwo != null">
-                open_bank_two = #{openBankTwo,jdbcType=VARCHAR},
-            </if>
-            <if test="accountNameTwo != null">
-                account_name_two = #{accountNameTwo,jdbcType=VARCHAR},
-            </if>
-            <if test="bankAccountTwo != null">
-                bank_account_two = #{bankAccountTwo,jdbcType=VARCHAR},
-            </if>
             <if test="payMonth != null">
                 pay_month = #{payMonth,jdbcType=TINYINT},
             </if>
@@ -428,32 +341,26 @@
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerDO">
-        update partner
-        set name = #{name,jdbcType=VARCHAR},
-        department_id = #{departmentId,jdbcType=BIGINT},
-        leader_name = #{leaderName,jdbcType=VARCHAR},
-        leader_mobile = #{leaderMobile,jdbcType=VARCHAR},
-        tel = #{tel,jdbcType=VARCHAR},
-        fax = #{fax,jdbcType=VARCHAR},
-        area_id = #{areaId,jdbcType=BIGINT},
-        biz_type = #{bizType,jdbcType=TINYINT},
-        sign = #{sign,jdbcType=TINYINT},
-        cooperation_scale = #{cooperationScale,jdbcType=VARCHAR},
-        exec_rate = #{execRate,jdbcType=DECIMAL},
-        cooperation_insurance_company = #{cooperationInsuranceCompany,jdbcType=VARCHAR},
-        open_bank = #{openBank,jdbcType=VARCHAR},
-        account_name = #{accountName,jdbcType=VARCHAR},
-        bank_account = #{bankAccount,jdbcType=VARCHAR},
-        open_bank_two = #{openBankTwo,jdbcType=VARCHAR},
-        account_name_two = #{accountNameTwo,jdbcType=VARCHAR},
-        bank_account_two = #{bankAccountTwo,jdbcType=VARCHAR},
-        pay_month = #{payMonth,jdbcType=TINYINT},
-        risk_bear_rate = #{riskBearRate,jdbcType=DECIMAL},
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        status = #{status,jdbcType=TINYINT},
-        feature = #{feature,jdbcType=VARCHAR}
-        where id = #{id,jdbcType=BIGINT}
-    </update>
+    update partner
+    set name = #{name,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=BIGINT},
+      leader_name = #{leaderName,jdbcType=VARCHAR},
+      leader_mobile = #{leaderMobile,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      fax = #{fax,jdbcType=VARCHAR},
+      area_id = #{areaId,jdbcType=BIGINT},
+      biz_type = #{bizType,jdbcType=TINYINT},
+      sign = #{sign,jdbcType=TINYINT},
+      cooperation_scale = #{cooperationScale,jdbcType=VARCHAR},
+      exec_rate = #{execRate,jdbcType=DECIMAL},
+      cooperation_insurance_company = #{cooperationInsuranceCompany,jdbcType=VARCHAR},
+      pay_month = #{payMonth,jdbcType=TINYINT},
+      risk_bear_rate = #{riskBearRate,jdbcType=DECIMAL},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      feature = #{feature,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 
 </mapper>

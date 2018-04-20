@@ -281,16 +281,7 @@
                        enableCountByExample="false" enableUpdateByExample="false"
                        enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
 
-
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
-=======
-        <table tableName="partner_bank_account" domainObjectName="PartnerBankAccountDO"
->>>>>>> Stashed changes
-=======
-        <table tableName="partner_bank_account" domainObjectName="PartnerBankAccountDO"
->>>>>>> Stashed changes
+        <table tableName="partner" domainObjectName="PartnerDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
