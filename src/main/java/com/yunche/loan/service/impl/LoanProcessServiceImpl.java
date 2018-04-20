@@ -545,10 +545,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // new  -> REJECT   old -> INIT
             updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT);
 
-            if (!MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
+            LoanProcessDO currentLoanProcessDO = loanProcessDOMapper.selectByPrimaryKey(loanProcessDO.getOrderId());
+            Preconditions.checkNotNull(currentLoanProcessDO, "流程记录丢失");
+
+            // 是否已过电审
+            if (!TASK_PROCESS_DONE.equals(currentLoanProcessDO.getTelephoneVerify())) {
+                // 没过电审
                 updateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT);
             } else {
-                // nothing
+                // 过了电审，则不是真正的全部打回      nothing
             }
 
             // 打回记录
