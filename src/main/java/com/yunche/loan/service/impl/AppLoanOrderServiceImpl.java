@@ -41,6 +41,7 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
+import static com.yunche.loan.service.impl.LoanOrderServiceImpl.getSupplementTypeText;
 import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionText;
 
 
@@ -155,6 +156,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // 增补信息
         appInfoSupplementVO.setSupplementOrderId(supplementOrderId);
         appInfoSupplementVO.setSupplementType(loanInfoSupplementDO.getType());
+        appInfoSupplementVO.setSupplementTypeText(getSupplementTypeText(loanInfoSupplementDO.getType()));
         appInfoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());
         appInfoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());
         appInfoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
@@ -497,7 +499,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         .forEach(e -> {
                             AppCustomerInfoVO.EmergencyContact emergencyContact = new AppCustomerInfoVO.EmergencyContact();
                             //fillCustomerInfo(e, (AppCustomerInfoVO.CustomerInfo) emergencyContact);
-                            if(e !=null ){
+                            if (e != null) {
                                 BeanUtils.copyProperties(e, emergencyContact);
                             }
                             emergencyContactList.add(emergencyContact);

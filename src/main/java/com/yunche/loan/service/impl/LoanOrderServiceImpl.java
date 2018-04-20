@@ -487,6 +487,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // 增补信息
         infoSupplementVO.setSupplementOrderId(supplementOrderId);
         infoSupplementVO.setSupplementType(loanInfoSupplementDO.getType());
+        infoSupplementVO.setSupplementTypeText(getSupplementTypeText(loanInfoSupplementDO.getType()));
         infoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());
         infoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());
         infoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
@@ -1374,5 +1375,36 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         customerFile.setCustomerId(customerVO.getId());
         customerFile.setCustomerName(customerVO.getName());
         customerFile.setFiles(customerVO.getFiles());
+    }
+
+    /**
+     * 1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;
+     *
+     * @param supplementType
+     * @return
+     */
+    public static String getSupplementTypeText(Byte supplementType) {
+
+        String supplementTypeText = null;
+
+        switch (supplementType) {
+            case 1:
+                supplementTypeText = "电审增补";
+                break;
+            case 2:
+                supplementTypeText = "送银行资料缺少";
+                break;
+            case 3:
+                supplementTypeText = "银行退件";
+                break;
+            case 4:
+                supplementTypeText = "上门家访资料增补";
+                break;
+            case 5:
+                supplementTypeText = "费用调整";
+                break;
+        }
+
+        return supplementTypeText;
     }
 }

@@ -1,8 +1,13 @@
 package com.yunche.loan.domain.vo;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author liuzhe
@@ -27,4 +32,24 @@ public class FileVO {
      * 文件存储路径
      */
     private List<String> urls;
+
+    /**
+     * 过滤掉空串
+     *
+     * @return
+     */
+    public List<String> getUrls() {
+
+        if (!CollectionUtils.isEmpty(urls)) {
+
+            List<String> urlList = urls.parallelStream()
+                    .filter(Objects::nonNull)
+                    .filter(e -> StringUtils.isNotBlank(e))
+                    .collect(Collectors.toList());
+
+            return urlList;
+        }
+
+        return Collections.EMPTY_LIST;
+    }
 }

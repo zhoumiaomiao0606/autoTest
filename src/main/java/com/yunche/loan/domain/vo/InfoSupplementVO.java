@@ -48,9 +48,13 @@ public class InfoSupplementVO {
      */
     private String idCard;
     /**
-     * 增补类型：  1-电审资料增补;  2-资料审核增补;
+     * 资料增补类型  (1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;)
      */
     private Byte supplementType;
+    /**
+     * 增补类型文本值  (1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;)
+     */
+    private String supplementTypeText;
     /**
      * 要求增补内容
      */
