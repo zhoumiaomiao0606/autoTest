@@ -25,7 +25,7 @@ public interface LoanQueryDOMapper {
 
     public List<UniversalRelationCustomerVO> selectUniversalRelationCustomer(Long orderId);
 
-    public List<String> selectUniversalRelevanceOrderIdByCustomerId(Long customerId);
+    public List<String> selectUniversalRelevanceOrderIdByCustomerId(@Param("orderId") Long orderId,@Param("customerId") Long customerId);
 
     public UniversalRemitDetails selectUniversalRemitDetails(Long orderId);
 

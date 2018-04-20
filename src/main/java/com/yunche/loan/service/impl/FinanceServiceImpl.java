@@ -32,7 +32,7 @@ public class FinanceServiceImpl implements FinanceService {
         List<UniversalCreditInfoVO> credits = loanQueryDOMapper.selectUniversalCreditInfo(orderId);
         for(UniversalCreditInfoVO universalCreditInfoVO:credits){
             if(!StringUtils.isBlank(universalCreditInfoVO.getCustomer_id())){
-                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(Long.valueOf(universalCreditInfoVO.getCustomer_id())));
+                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(orderId,Long.valueOf(universalCreditInfoVO.getCustomer_id())));
             }
         }
 
