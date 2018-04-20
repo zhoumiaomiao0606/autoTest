@@ -339,6 +339,7 @@
         customer.cust_type                	AS customer_cust_type,
         customer.name					  	AS customer_name,
         customer.guarantee_type             AS customer_guarantee_type,
+        customer.cust_relation              AS customer_cust_relation,
 		bank.info			      	        AS bank_info,
         bank.result		          			AS bank_result,
         process_bank.credit_result         	AS process_bank_credit_result,
