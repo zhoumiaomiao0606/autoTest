@@ -50,18 +50,6 @@ public class PartnerVO {
 
     private String cooperationInsuranceCompany;
 
-    private String openBank;
-
-    private String accountName;
-
-    private String bankAccount;
-
-    private String openBankTwo;
-
-    private String accountNameTwo;
-
-    private String bankAccountTwo;
-
     private Byte payMonth;
 
     private Date gmtCreate;
@@ -81,5 +69,5 @@ public class PartnerVO {
     /**
      * 财务合作信息列表
      */
-    private List<PartnerBankAccountDO> partnerBankAccountDOList = Collections.EMPTY_LIST;
+    private List<PartnerBankAccountDO> bankAccountList = Collections.EMPTY_LIST;
 }

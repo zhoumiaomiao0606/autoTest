@@ -596,7 +596,7 @@ public class PartnerServiceImpl implements PartnerService {
     private void fillBankAccount(Long partnerId, PartnerVO partnerVO) {
         List<PartnerBankAccountDO> partnerBankAccountDOList = partnerBankAccountDOMapper.listByPartnerId(partnerId);
         if (!CollectionUtils.isEmpty(partnerBankAccountDOList)) {
-            partnerVO.setPartnerBankAccountDOList(partnerBankAccountDOList);
+            partnerVO.setBankAccountList(partnerBankAccountDOList);
         }
     }
 
