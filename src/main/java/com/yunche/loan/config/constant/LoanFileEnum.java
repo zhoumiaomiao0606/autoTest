@@ -49,4 +49,15 @@ public enum LoanFileEnum {
         this.type = type;
         this.name = name;
     }
+
+    public static String getNameByCode(byte type) {
+
+        for (LoanFileEnum e : LoanFileEnum.values()) {
+            if (e.type.equals(type)) {
+
+                return e.name;
+            }
+        }
+        return null;
+    }
 }
