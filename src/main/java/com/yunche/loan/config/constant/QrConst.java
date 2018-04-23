@@ -1,5 +1,9 @@
 package com.yunche.loan.config.constant;
 
+/**
+ * 二维码参数
+ */
+
 public class QrConst {
 
     public static  final  String UTF_8="UTF-8";
