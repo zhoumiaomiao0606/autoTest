@@ -46,6 +46,12 @@ public class OSSUnit {
         return new OSSClient(ENDPOINT,ACCESS_KEY_ID, ACCESS_KEY_SECRET);
     }
 
+    public static final OSSObject getObject(OSSClient ossClient,String key){
+
+        return ossClient.getObject(BUCKET_NAME, key);
+
+    }
+
     /**
      * 新建Bucket  --Bucket权限:私有
      * @param bucketName bucket名称

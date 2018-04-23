@@ -66,4 +66,21 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="selectDownloadMaterial" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.param.MaterialDownloadParam">
+    SELECT
+    b.customer_id,
+    b.type,
+    b.path,
+    c.id_card AS idCard,
+    c.`name`
+    FROM
+    loan_order a,
+    loan_file b,
+    loan_customer c
+    WHERE
+    a.loan_customer_id = b.customer_id
+    AND a.loan_customer_id = c.id
+    AND a.id = #{orderId}
+  </select>
 </mapper>

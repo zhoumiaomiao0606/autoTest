@@ -8,6 +8,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @CrossOrigin
 @RestController
@@ -34,6 +36,19 @@ public class MaterialController {
     public ResultBean update(@RequestBody @Validated MaterialUpdateParam param) {
         materialService.update(param);
         return ResultBean.ofSuccess(null,"保存成功");
+    }
+
+
+    /**
+     * 资料下载
+     * @param httpServletRequest
+     * @param httpServletResponse
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/download")
+    public ResultBean downLoad(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,@RequestParam Long orderId){
+        return materialService.zipFilesDown(httpServletRequest,httpServletResponse,orderId);
     }
 
 }

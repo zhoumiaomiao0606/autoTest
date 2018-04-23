@@ -1,7 +1,10 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.MaterialAuditDO;
+import com.yunche.loan.domain.param.MaterialDownloadParam;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 @Mapper
 public interface MaterialAuditDOMapper {
@@ -12,4 +15,6 @@ public interface MaterialAuditDOMapper {
     MaterialAuditDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(MaterialAuditDO record);
+
+    List<MaterialDownloadParam> selectDownloadMaterial(Long orderId);
 }
