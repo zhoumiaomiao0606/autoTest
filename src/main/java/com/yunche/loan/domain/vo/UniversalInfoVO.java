@@ -56,6 +56,7 @@ public class UniversalInfoVO {
     private String financial_bank_rate;
     private String financial_loan_ratio;
     private String financial_bank_fee;
+    private String financial_product_id;
     private String financial_product_name;
     private String financial_sign_rate;
     private String financial_loan_amount;

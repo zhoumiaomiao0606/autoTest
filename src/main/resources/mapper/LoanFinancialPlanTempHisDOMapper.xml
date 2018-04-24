@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LoanFinancialPlanTempHisDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanFinancialPlanTempHisDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_id" property="order_id" jdbcType="BIGINT" />
+    <result column="financial_product_id" property="financial_product_id" jdbcType="BIGINT" />
+    <result column="financial_appraisal" property="financial_appraisal" jdbcType="DECIMAL" />
+    <result column="financial_category_superior" property="financial_category_superior" jdbcType="VARCHAR" />
+    <result column="financial_bank" property="financial_bank" jdbcType="VARCHAR" />
+    <result column="financial_loan_time" property="financial_loan_time" jdbcType="INTEGER" />
+    <result column="financial_down_payment_ratio" property="financial_down_payment_ratio" jdbcType="DECIMAL" />
+    <result column="financial_bank_fee" property="financial_bank_fee" jdbcType="DECIMAL" />
+    <result column="financial_product_name" property="financial_product_name" jdbcType="VARCHAR" />
+    <result column="financial_sign_rate" property="financial_sign_rate" jdbcType="DECIMAL" />
+    <result column="financial_loan_amount" property="financial_loan_amount" jdbcType="DECIMAL" />
+    <result column="financial_first_month_repay" property="financial_first_month_repay" jdbcType="DECIMAL" />
+    <result column="financial_car_price" property="financial_car_price" jdbcType="DECIMAL" />
+    <result column="financial_down_payment_money" property="financial_down_payment_money" jdbcType="DECIMAL" />
+    <result column="financial_bank_period_principal" property="financial_bank_period_principal" jdbcType="DECIMAL" />
+    <result column="financial_each_month_repay" property="financial_each_month_repay" jdbcType="DECIMAL" />
+    <result column="financial_total_repayment_amount" property="financial_total_repayment_amount" jdbcType="DECIMAL" />
+    <result column="gmt_create" property="gmt_create" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_id, financial_product_id, financial_appraisal, financial_category_superior, 
+    financial_bank, financial_loan_time, financial_down_payment_ratio, financial_bank_fee, 
+    financial_product_name, financial_sign_rate, financial_loan_amount, financial_first_month_repay, 
+    financial_car_price, financial_down_payment_money, financial_bank_period_principal, 
+    financial_each_month_repay, financial_total_repayment_amount, gmt_create
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from loan_financial_plan_temp_his
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from loan_financial_plan_temp_his
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanTempHisDO" >
+    insert into loan_financial_plan_temp_his
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="order_id != null" >
+        order_id,
+      </if>
+      <if test="financial_product_id != null" >
+        financial_product_id,
+      </if>
+      <if test="financial_appraisal != null" >
+        financial_appraisal,
+      </if>
+      <if test="financial_category_superior != null" >
+        financial_category_superior,
+      </if>
+      <if test="financial_bank != null" >
+        financial_bank,
+      </if>
+      <if test="financial_loan_time != null" >
+        financial_loan_time,
+      </if>
+      <if test="financial_down_payment_ratio != null" >
+        financial_down_payment_ratio,
+      </if>
+      <if test="financial_bank_fee != null" >
+        financial_bank_fee,
+      </if>
+      <if test="financial_product_name != null" >
+        financial_product_name,
+      </if>
+      <if test="financial_sign_rate != null" >
+        financial_sign_rate,
+      </if>
+      <if test="financial_loan_amount != null" >
+        financial_loan_amount,
+      </if>
+      <if test="financial_first_month_repay != null" >
+        financial_first_month_repay,
+      </if>
+      <if test="financial_car_price != null" >
+        financial_car_price,
+      </if>
+      <if test="financial_down_payment_money != null" >
+        financial_down_payment_money,
+      </if>
+      <if test="financial_bank_period_principal != null" >
+        financial_bank_period_principal,
+      </if>
+      <if test="financial_each_month_repay != null" >
+        financial_each_month_repay,
+      </if>
+      <if test="financial_total_repayment_amount != null" >
+        financial_total_repayment_amount,
+      </if>
+      <if test="gmt_create != null" >
+        gmt_create,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="order_id != null" >
+        #{order_id,jdbcType=BIGINT},
+      </if>
+      <if test="financial_product_id != null" >
+        #{financial_product_id,jdbcType=BIGINT},
+      </if>
+      <if test="financial_appraisal != null" >
+        #{financial_appraisal,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_category_superior != null" >
+        #{financial_category_superior,jdbcType=VARCHAR},
+      </if>
+      <if test="financial_bank != null" >
+        #{financial_bank,jdbcType=VARCHAR},
+      </if>
+      <if test="financial_loan_time != null" >
+        #{financial_loan_time,jdbcType=INTEGER},
+      </if>
+      <if test="financial_down_payment_ratio != null" >
+        #{financial_down_payment_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_bank_fee != null" >
+        #{financial_bank_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_product_name != null" >
+        #{financial_product_name,jdbcType=VARCHAR},
+      </if>
+      <if test="financial_sign_rate != null" >
+        #{financial_sign_rate,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_loan_amount != null" >
+        #{financial_loan_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_first_month_repay != null" >
+        #{financial_first_month_repay,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_car_price != null" >
+        #{financial_car_price,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_down_payment_money != null" >
+        #{financial_down_payment_money,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_bank_period_principal != null" >
+        #{financial_bank_period_principal,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_each_month_repay != null" >
+        #{financial_each_month_repay,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_total_repayment_amount != null" >
+        #{financial_total_repayment_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="gmt_create != null" >
+        #{gmt_create,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanTempHisDO" >
+    update loan_financial_plan_temp_his
+    <set >
+      <if test="order_id != null" >
+        order_id = #{order_id,jdbcType=BIGINT},
+      </if>
+      <if test="financial_product_id != null" >
+        financial_product_id = #{financial_product_id,jdbcType=BIGINT},
+      </if>
+      <if test="financial_appraisal != null" >
+        financial_appraisal = #{financial_appraisal,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_category_superior != null" >
+        financial_category_superior = #{financial_category_superior,jdbcType=VARCHAR},
+      </if>
+      <if test="financial_bank != null" >
+        financial_bank = #{financial_bank,jdbcType=VARCHAR},
+      </if>
+      <if test="financial_loan_time != null" >
+        financial_loan_time = #{financial_loan_time,jdbcType=INTEGER},
+      </if>
+      <if test="financial_down_payment_ratio != null" >
+        financial_down_payment_ratio = #{financial_down_payment_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_bank_fee != null" >
+        financial_bank_fee = #{financial_bank_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_product_name != null" >
+        financial_product_name = #{financial_product_name,jdbcType=VARCHAR},
+      </if>
+      <if test="financial_sign_rate != null" >
+        financial_sign_rate = #{financial_sign_rate,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_loan_amount != null" >
+        financial_loan_amount = #{financial_loan_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_first_month_repay != null" >
+        financial_first_month_repay = #{financial_first_month_repay,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_car_price != null" >
+        financial_car_price = #{financial_car_price,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_down_payment_money != null" >
+        financial_down_payment_money = #{financial_down_payment_money,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_bank_period_principal != null" >
+        financial_bank_period_principal = #{financial_bank_period_principal,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_each_month_repay != null" >
+        financial_each_month_repay = #{financial_each_month_repay,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_total_repayment_amount != null" >
+        financial_total_repayment_amount = #{financial_total_repayment_amount,jdbcType=DECIMAL},
+      </if>
+      <if test="gmt_create != null" >
+        gmt_create = #{gmt_create,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

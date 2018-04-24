@@ -102,6 +102,30 @@
   </select>
 
     <!--======================================通用=========================================================-->
+    <select id="selectUniversalCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO" parameterType="java.lang.String" >
+            select
+              o.id AS order_id,
+              c.name AS customer_name,
+              c.id_card AS customer_id_card
+            from loan_order o left join loan_customer c on c.id = o.loan_customer_id
+            <if test="value!=null">
+                where c.name like concat(concat('%',#{name}),'%')
+            </if>
+    </select>
+
+
+
+    <select id="selectUniversalLoanFinancialPlanTemp" resultType="com.yunche.loan.domain.vo.UniversalLoanFinancialPlanTempVO" parameterType="java.lang.Long" >
+            select
+                    order_id, financial_product_id, financial_appraisal, financial_category_superior,
+                    financial_bank, financial_loan_time, financial_down_payment_ratio, financial_bank_fee,
+                    financial_product_name, financial_sign_rate, financial_loan_amount, financial_first_month_repay,
+                    financial_car_price, financial_down_payment_money, financial_bank_period_principal,
+                    financial_each_month_repay, financial_total_repayment_amount,DATE_FORMAT(gmt_create,'%Y-%m-%d %H:%i:%S') AS gmt_create
+            from loan_financial_plan_temp
+            where order_id = #{order_id,jdbcType=BIGINT}
+    </select>
+
     <!--通用info-->
   <select id="selectUniversalInfo" resultType="com.yunche.loan.domain.vo.UniversalInfoVO" parameterType="java.lang.Long" >
     select
@@ -158,6 +182,7 @@
             (100-financial.down_payment_ratio)                                                      AS financial_loan_ratio,
             useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
                                                                                                     AS financial_bank_fee,
+            financial.financial_product_id                                                          AS financial_product_id,
             financial.financial_product_name                                                        AS financial_product_name,
             financial.sign_rate                                                                     AS financial_sign_rate,
             financial.loan_amount                                                                   AS financial_loan_amount,

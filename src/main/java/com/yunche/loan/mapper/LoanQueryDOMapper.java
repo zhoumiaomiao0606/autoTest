@@ -9,9 +9,14 @@ import java.util.Set;
 
 @Mapper
 public interface LoanQueryDOMapper {
+
+    List<UniversalCustomerOrderVO> selectUniversalCustomerOrder(String name);
+
     VehicleInformationVO selectVehicleInformation(Long orderId);
 
     public ApplyLicensePlateDepositInfoVO selectApplyLicensePlateDepositInfo(Long orderId);
+
+    UniversalLoanFinancialPlanTempVO selectUniversalLoanFinancialPlanTemp(Long orderId);
 
     public UniversalInfoVO selectUniversalInfo(Long orderId);
 

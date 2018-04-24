@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.entity.LoanFinancialPlanTempDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
 
@@ -10,6 +11,8 @@ import java.util.List;
 public class RecombinationVO<T> {
 
         private T info;
+
+        private UniversalLoanFinancialPlanTempVO temp;
 
         private List<UniversalRelationCustomerVO> relations = new ArrayList<UniversalRelationCustomerVO>();
 
