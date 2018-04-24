@@ -293,7 +293,8 @@
             remit.beneficiary_account                                                               AS remit_beneficiary_account,
             remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
             remit.remit_amount                                                                      AS remit_amount,
-            remit.return_rate_amount                                                                AS remit_return_rate_amount
+            remit.return_rate_amount                                                                AS remit_return_rate_amount,
+            remit.insurance_situation                                                               AS remit_insurance_situation
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join remit_details remit on main_order.remit_details_id = remit.id

@@ -21,4 +21,8 @@ public class RemitDetailsDO {
     private Byte status;
 
     private String feature;
+    /**
+     * 保险情况
+     */
+    private String insurance_situation;
 }

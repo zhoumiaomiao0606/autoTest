@@ -60,4 +60,6 @@ public class BusinessReviewUpdateParam  {
     private String return_rate_amount;//返利金额
     @NotBlank
     private String remit_amount;//打款金额
+    @NotBlank
+    private String insurance_situation;//保险情况
 }

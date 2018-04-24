@@ -10,10 +10,11 @@
     <result column="return_rate_amount" property="return_rate_amount" jdbcType="DECIMAL" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
+    <result column="insurance_situation" property="insurance_situation" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, beneficiary_bank, beneficiary_account, beneficiary_account_number, remit_amount, 
-    return_rate_amount, status, feature
+    return_rate_amount, status, feature, insurance_situation
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -52,6 +53,9 @@
       <if test="feature != null" >
         feature,
       </if>
+      <if test="insurance_situation != null">
+        insurance_situation,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -78,6 +82,9 @@
       <if test="feature != null" >
         #{feature,jdbcType=VARCHAR},
       </if>
+      <if test="insurance_situation != null">
+        #{insurance_situation,jdbcType=VARCHAR}
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO" >
@@ -103,6 +110,9 @@
       </if>
       <if test="feature != null" >
         feature = #{feature,jdbcType=VARCHAR},
+      </if>
+      <if test="insurance_situation != null">
+        insurance_situation = #{insurance_situation,jdbcType=VARCHAR}
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
