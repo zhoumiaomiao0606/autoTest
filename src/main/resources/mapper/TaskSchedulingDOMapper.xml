@@ -14,9 +14,11 @@
     (
     SELECT
     CASE
-
-    WHEN
-    g.NAME IN ( '总监' ) THEN
+    WHEN g.NAME IN ( '总经理' ) THEN
+    7
+    WHEN g.NAME IN ( '培训经理' ) THEN
+    7
+    WHEN g.NAME IN ( '总监' ) THEN
     7
     WHEN g.NAME IN ( '电审经理' ) THEN
     6
