@@ -17,11 +17,9 @@ public interface MaterialService {
 
     /**
      * 资料审核文件下载
-     * @param httpServletRequest
-     * @param httpServletResponse
      * @param orderId
      */
-    public String downloadFiles(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,Long orderId);
+    public ResultBean downloadFilesToOSS(Long orderId);
 
     /**
      *

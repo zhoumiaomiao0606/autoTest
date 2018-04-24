@@ -153,6 +153,7 @@ public class OSSUnit {
         if("ppt".equalsIgnoreCase(fileExtension) || "pptx".equalsIgnoreCase(fileExtension)) return "application/vnd.ms-powerpoint";
         if("doc".equalsIgnoreCase(fileExtension) || "docx".equalsIgnoreCase(fileExtension)) return "application/msword";
         if("xml".equalsIgnoreCase(fileExtension)) return "text/xml";
+        if("zip".equalsIgnoreCase(fileExtension)) return "application/zip";
         return "text/html";
     }
 

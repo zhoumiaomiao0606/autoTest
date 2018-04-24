@@ -11,4 +11,6 @@ public class UniversalRemitDetails {
     private String remit_amount;
     private String remit_return_rate_amount;
 
+    private String remit_insurance_situation;//保险情况
+
 }
