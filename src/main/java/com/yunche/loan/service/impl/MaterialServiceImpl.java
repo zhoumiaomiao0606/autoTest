@@ -3,6 +3,8 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.OSSObject;
+import com.google.common.base.Preconditions;
+import com.google.common.io.Files;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.yunche.loan.config.constant.LoanFileEnum;
@@ -24,16 +26,18 @@ import com.yunche.loan.service.MaterialService;
 import org.activiti.engine.RuntimeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.JsonUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileSystemUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URL;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
@@ -56,6 +60,11 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Resource
     private LoanProcessLogService loanProcessLogService;
+
+
+
+    @Value("/root/yunche-biz/pub/tmp")
+    private  String  downLoadBasepath;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -121,69 +130,126 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     /**
-     * 资料审核客户批量文件下载（图片）
+     * 资料审核客户批量文件下载上传至OSS（图片）
      *
      * @param orderId
      */
     @Override
-    public String downloadFiles(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Long orderId) {
+    public ResultBean downloadFilesToOSS(Long orderId) {
+        Preconditions.checkNotNull(orderId,"订单编号不能为空");
+        String returnKey =null;
+        FileInputStream fis=null;
+        OSSClient ossClient=null;
+        File zipFile=null;
+        ZipOutputStream zos=null;
+        try {
 
-
-        /**
-         * 1、查询出客户的资料信息 loan_file
-         * 2、从oss获取文件,建文件夹
-         * 3、压缩
-         * 4、上传至oss
-         * 5、返回key
-         */
-        try{
             List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId);
-//            downloadParams.parallelStream().filter(Objects::nonNull).map(param->{
-//                String nameByCode = LoanFileEnum.getNameByCode(param.getType());
-//                param.setTypeName(nameByCode);
-//                return param;
-//            }).collect(Collectors.toList());
-
+            if(downloadParams==null){
+                return null;
+            }
             downloadParams.parallelStream().filter(Objects::nonNull)
                     .filter(e -> StringUtils.isNotBlank(e.getPath()))
                     .forEach(param ->{
                         String nameByCode = LoanFileEnum.getNameByCode(param.getType());
                         param.setTypeName(nameByCode);
-            });
+                        List<String> list = JSONArray.parseArray(param.getPath(), String.class);
+                        param.setPathList(list);
+                    });
 
-            httpServletResponse.setContentType("application/zip");
-            httpServletResponse.setHeader("Content-disposition",
-                    "attachment; filename=" + new String(orderId.toString().getBytes(),
-                            "utf-8") + ".zip");
-            OutputStream outputStream = httpServletResponse.getOutputStream();
-            ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-
-
-            ZipEntry entry = new ZipEntry("/Users/zhengdu/Documents/yunche/downloadtest/down.txt");
-            zipOutputStream.putNextEntry(entry);
-
-            BufferedInputStream bis = new BufferedInputStream(
-                    new FileInputStream(new File("/Users/zhengdu/Documents/yunche/downloadtest/down.txt")));
-            int count,bufferLen=1024;
-            byte data[] = new byte[bufferLen];
-            while ((count = bis.read(data, 0, bufferLen)) != -1) {
-                zipOutputStream.write(data, 0, count);
+            // 初始化
+            ossClient =  OSSUnit.getOSSClient();
+            String fileName=null;
+            if(downloadParams!=null){
+                fileName = downloadParams.get(0).getName()+"_"+downloadParams.get(0).getIdCard()+".zip";
             }
-            bis.close();
+            // 创建临时文件
+            zipFile = new File(downLoadBasepath+File.separator+fileName);
+            zipFile.createNewFile();
+
+            FileOutputStream f = new FileOutputStream(zipFile);
+            /**
+             * 作用是为任何OutputStream产生校验和
+             * 第一个参数是制定产生校验和的输出流，第二个参数是指定Checksum的类型 （Adler32（较快）和CRC32两种）
+             */
+            CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
+            // 用于将数据压缩成Zip文件格式
+            zos = new ZipOutputStream(csum);
+
+            for (MaterialDownloadParam typeFile : downloadParams) {
+                // 获取Object，返回结果为OSSObject对象
+                for(String url : typeFile.getPathList()){
+                    OSSObject ossObject = OSSUnit.getObject(ossClient,url);
+                    // 读去Object内容  返回
+                    InputStream inputStream = ossObject.getObjectContent();
+                    // 对于每一个要被存放到压缩包的文件，都必须调用ZipOutputStream对象的putNextEntry()方法，确保压缩包里面文件不同名
+                    byte t=  typeFile.getType();
+                    String documentType=null;
+                    switch (t){
+                        case 19:
+                        case 20:
+                        case 21:
+                        case 22:documentType="提车资料";break;
+                        case 12:
+                        case 13:
+                        case 16:
+                        case 17:
+                        case 18:documentType="上门家纺";break;
+
+                        default:documentType="基本资料";
+
+                    }
+                    zos.putNextEntry(new ZipEntry(documentType+"/"+typeFile.getTypeName()+"/"+url.split("/")[url.split("/").length-1]));
+
+                    int bytesRead = 0;
+                    // 向压缩文件中输出数据
+                    while((bytesRead=inputStream.read())!=-1){
+                        zos.write(bytesRead);
+                    }
+                    inputStream.close();
+                    zos.closeEntry(); // 当前文件写完，定位为写入下一条项目
+                }
+            }
+
+            fis = new FileInputStream(zipFile);
+            ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
+            if(!bundle.containsKey("bucketName_ZIP")){
+               Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
+            }
+            String bucketName = bundle.getString("bucketName_ZIP");
+            String diskName = bundle.getString("diskName_ZIP");
 
 
-            zipOutputStream.flush();
+            OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName);
 
+//            // 设置URL过期时间为1小时
+//            Date expiration = new Date(new Date().getTime() + 3600 * 1000);
+//            URL url = ossClient.generatePresignedUrl(bucketName, zipFile.getName(), expiration);
+            returnKey =diskName+zipFile.getName();
 
-            zipOutputStream.close();
+        } catch (Exception e) {
+            Preconditions.checkArgument(false,e.getMessage());
+        }finally {
+            try {
+                if(fis!=null){
+                    fis.close();
+                }
+                if(ossClient!=null){
+                    ossClient.shutdown();
+                }
+               if(zipFile!=null){
+                   // 删除临时文件
+                   zipFile.delete();
 
-            outputStream.flush();
-            outputStream.close();
-        }catch (IOException e){
-            e.printStackTrace();
+               }
+               if(zos!=null){
+                   zos.close();
+               }
+            } catch (IOException e) {
+               Preconditions.checkArgument(false,e.getMessage());
+            }
         }
-
-        return "";
+        return ResultBean.ofSuccess(returnKey,"下载完成");
     }
 
     /**
@@ -198,6 +264,9 @@ public class MaterialServiceImpl implements MaterialService {
         try {
 
             List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId);
+            if(downloadParams==null){
+                return null;
+            }
             downloadParams.parallelStream().filter(Objects::nonNull)
                     .filter(e -> StringUtils.isNotBlank(e.getPath()))
                     .forEach(param ->{

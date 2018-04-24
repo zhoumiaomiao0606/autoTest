@@ -40,7 +40,7 @@ public class MaterialController {
 
 
     /**
-     * 资料下载
+     * 资料下载（浏览器直接下载）
      * @param httpServletRequest
      * @param httpServletResponse
      * @param orderId
@@ -49,6 +49,16 @@ public class MaterialController {
     @GetMapping(value = "/download")
     public ResultBean downLoad(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,@RequestParam Long orderId){
         return materialService.zipFilesDown(httpServletRequest,httpServletResponse,orderId);
+    }
+
+    /**
+     * 下载文件完成后上传至OSS
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/down2oss")
+    public ResultBean down2OSS(@RequestParam Long orderId){
+        return materialService.downloadFilesToOSS(orderId);
     }
 
 }
