@@ -3,10 +3,12 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.OSSObject;
+import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
+import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
@@ -26,6 +28,7 @@ import com.yunche.loan.service.MaterialService;
 import org.activiti.engine.RuntimeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.JsonUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,10 +64,8 @@ public class MaterialServiceImpl implements MaterialService {
     @Resource
     private LoanProcessLogService loanProcessLogService;
 
-
-
-    @Value("/root/yunche-biz/pub/tmp")
-    private  String  downLoadBasepath;
+    @Autowired
+    private OSSConfig ossConfig;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -164,7 +165,7 @@ public class MaterialServiceImpl implements MaterialService {
                 fileName = downloadParams.get(0).getName()+"_"+downloadParams.get(0).getIdCard()+".zip";
             }
             // 创建临时文件
-            zipFile = new File(downLoadBasepath+File.separator+fileName);
+            zipFile = new File(ossConfig.getDownLoadBasepath()+File.separator+fileName);
             zipFile.createNewFile();
 
             FileOutputStream f = new FileOutputStream(zipFile);
@@ -212,20 +213,17 @@ public class MaterialServiceImpl implements MaterialService {
             }
 
             fis = new FileInputStream(zipFile);
-            ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
-            if(!bundle.containsKey("bucketName_ZIP")){
-               Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
+            String bucketName = ossConfig.getZipBucketName();
+            if(StringUtil.isEmpty(bucketName)){
+                Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
             }
-            String bucketName = bundle.getString("bucketName_ZIP");
-            String diskName = bundle.getString("diskName_ZIP");
-
-
-            OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName);
+            String diskName = ossConfig.getZipDiskName();
+            OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName+File.separator);
 
 //            // 设置URL过期时间为1小时
 //            Date expiration = new Date(new Date().getTime() + 3600 * 1000);
 //            URL url = ossClient.generatePresignedUrl(bucketName, zipFile.getName(), expiration);
-            returnKey =diskName+zipFile.getName();
+            returnKey =diskName+File.separator+zipFile.getName();
 
         } catch (Exception e) {
             Preconditions.checkArgument(false,e.getMessage());
