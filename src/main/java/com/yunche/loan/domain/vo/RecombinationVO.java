@@ -1,6 +1,5 @@
 package com.yunche.loan.domain.vo;
 
-import com.yunche.loan.domain.entity.LoanFinancialPlanTempDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
 
@@ -12,7 +11,7 @@ public class RecombinationVO<T> {
 
         private T info;
 
-        private UniversalLoanFinancialPlanTempVO temp;
+        private UniversalLoanFinancialPlanTempHisVO diff;
 
         private List<UniversalRelationCustomerVO> relations = new ArrayList<UniversalRelationCustomerVO>();
 

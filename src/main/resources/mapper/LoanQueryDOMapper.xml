@@ -115,15 +115,16 @@
 
 
 
-    <select id="selectUniversalLoanFinancialPlanTemp" resultType="com.yunche.loan.domain.vo.UniversalLoanFinancialPlanTempVO" parameterType="java.lang.Long" >
+    <select id="selectUniversalLoanFinancialPlanTempHis" resultType="com.yunche.loan.domain.vo.UniversalLoanFinancialPlanTempHisVO" parameterType="java.lang.Long" >
             select
-                    order_id, financial_product_id, financial_appraisal, financial_category_superior,
+                    id, order_id, financial_product_id, financial_appraisal, financial_category_superior,
                     financial_bank, financial_loan_time, financial_down_payment_ratio, financial_bank_fee,
                     financial_product_name, financial_sign_rate, financial_loan_amount, financial_first_month_repay,
                     financial_car_price, financial_down_payment_money, financial_bank_period_principal,
-                    financial_each_month_repay, financial_total_repayment_amount,DATE_FORMAT(gmt_create,'%Y-%m-%d %H:%i:%S') AS gmt_create
-            from loan_financial_plan_temp
-            where order_id = #{order_id,jdbcType=BIGINT}
+                    financial_each_month_repay, financial_total_repayment_amount, initiator_id, initiator_name,
+                    DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%S') AS start_time, DATE_FORMAT(end_time,'%Y-%m-%d %H:%i:%S') AS end_time, status
+            from loan_financial_plan_temp_his
+            where id = #{id,jdbcType=BIGINT}
     </select>
 
     <!--通用info-->
