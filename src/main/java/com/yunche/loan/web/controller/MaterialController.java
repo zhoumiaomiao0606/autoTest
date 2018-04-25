@@ -48,8 +48,8 @@ public class MaterialController {
      */
     @GetMapping(value = "/download")
     public String  downLoad(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,@RequestParam Long orderId){
-        materialService.zipFilesDown(httpServletRequest,httpServletResponse,orderId);
-        return "redirect:"+httpServletRequest.getRequestURL()+"?orderId="+orderId;
+
+        return materialService.zipFilesDown(httpServletRequest,httpServletResponse,orderId);
     }
 
     /**
