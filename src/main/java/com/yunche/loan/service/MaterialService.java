@@ -27,5 +27,5 @@ public interface MaterialService {
      * @param response
      * @return
      */
-    public ResultBean zipFilesDown(HttpServletRequest request, HttpServletResponse response, Long orderId);
+    public String zipFilesDown(HttpServletRequest request, HttpServletResponse response, Long orderId);
 }

@@ -47,8 +47,9 @@ public class MaterialController {
      * @return
      */
     @GetMapping(value = "/download")
-    public ResultBean downLoad(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,@RequestParam Long orderId){
-        return materialService.zipFilesDown(httpServletRequest,httpServletResponse,orderId);
+    public String  downLoad(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,@RequestParam Long orderId){
+        materialService.zipFilesDown(httpServletRequest,httpServletResponse,orderId);
+        return "redirect:"+httpServletRequest.getRequestURL()+"?orderId="+orderId;
     }
 
     /**

@@ -257,7 +257,7 @@ public class MaterialServiceImpl implements MaterialService {
      * @param orderId
      * @return
      */
-    public  ResultBean<String> zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId){
+    public  String zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId){
 
         try {
 
@@ -357,7 +357,8 @@ public class MaterialServiceImpl implements MaterialService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return ResultBean.ofSuccess("下载完成");
+
+        return null;
     }
 
 }
