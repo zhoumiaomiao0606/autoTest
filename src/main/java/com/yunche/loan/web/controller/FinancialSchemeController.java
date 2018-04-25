@@ -54,8 +54,16 @@ public class FinancialSchemeController {
     /**
      *查询客户名称 模糊查询
      */
-    @GetMapping(value = "/queryCustomerOrder")
-    public ResultBean queryCustomerOrder(@RequestParam(required = false) String name) {
-        return ResultBean.ofSuccess(financialSchemeService.queryCustomerOrder(name));
+    @GetMapping(value = "/queryModifyCustomerOrder")
+    public ResultBean queryModifyCustomerOrder(@RequestParam(required = false) String name) {
+        return ResultBean.ofSuccess(financialSchemeService.queryModifyCustomerOrder(name));
+    }
+
+    /**
+     *查询客户名称 模糊查询
+     */
+    @GetMapping(value = "/queryRefundCustomerOrder")
+    public ResultBean queryRefundCustomerOrder(@RequestParam(required = false) String name) {
+        return ResultBean.ofSuccess(financialSchemeService.queryRefundCustomerOrder(name));
     }
 }

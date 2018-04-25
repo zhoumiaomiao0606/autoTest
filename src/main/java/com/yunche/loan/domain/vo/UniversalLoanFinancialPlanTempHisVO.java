@@ -2,6 +2,9 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 @Data
 public class UniversalLoanFinancialPlanTempHisVO {
 
@@ -44,6 +47,10 @@ public class UniversalLoanFinancialPlanTempHisVO {
     private String initiator_id;
 
     private String initiator_name;
+
+    private String auditor_id;
+
+    private String auditor_name;
 
     private String start_time;
 

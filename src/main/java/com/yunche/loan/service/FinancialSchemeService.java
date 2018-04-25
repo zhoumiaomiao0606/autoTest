@@ -18,5 +18,7 @@ public interface FinancialSchemeService {
 
     public void migration(Long orderId,Long hisId,String action);
 
-    public List<UniversalCustomerOrderVO> queryCustomerOrder(String name);
+    public List<UniversalCustomerOrderVO> queryModifyCustomerOrder(String name);
+
+    public List<UniversalCustomerOrderVO> queryRefundCustomerOrder(String name);
 }
