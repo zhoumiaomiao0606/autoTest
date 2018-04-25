@@ -259,6 +259,12 @@ public class MaterialServiceImpl implements MaterialService {
      */
     public  String zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId){
 
+
+        OSSClient ossClient=null;
+        File zipFile=null;
+        ZipOutputStream zos=null;
+        BufferedInputStream buff=null;
+
         try {
 
             List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId);
@@ -275,13 +281,13 @@ public class MaterialServiceImpl implements MaterialService {
                     });
 
             // 初始化
-            OSSClient ossClient =  OSSUnit.getOSSClient();
+             ossClient =  OSSUnit.getOSSClient();
             String fileName=null;
             if(downloadParams!=null){
                  fileName = downloadParams.get(0).getName()+"_"+downloadParams.get(0).getIdCard()+".zip";
             }
             // 创建临时文件
-            File zipFile = File.createTempFile(fileName, ".zip");
+             zipFile = File.createTempFile(fileName, ".zip");
             FileOutputStream f = new FileOutputStream(zipFile);
             /**
              * 作用是为任何OutputStream产生校验和
@@ -289,7 +295,7 @@ public class MaterialServiceImpl implements MaterialService {
              */
             CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
             // 用于将数据压缩成Zip文件格式
-            ZipOutputStream zos = new ZipOutputStream(csum);
+             zos = new ZipOutputStream(csum);
 
             for (MaterialDownloadParam typeFile : downloadParams) {
                 // 获取Object，返回结果为OSSObject对象
@@ -325,7 +331,6 @@ public class MaterialServiceImpl implements MaterialService {
                     zos.closeEntry(); // 当前文件写完，定位为写入下一条项目
                 }
             }
-            zos.close();
 
             fileName = new String(fileName.getBytes(), "utf-8");
 
@@ -335,27 +340,37 @@ public class MaterialServiceImpl implements MaterialService {
             response.setHeader("Location", fileName);
             response.setHeader("Cache-Control", "max-age=0");
             response.setHeader("Content-Disposition", "attachment; filename=" +java.net.URLEncoder.encode(fileName, "UTF-8"));
-
-            FileInputStream fis = new FileInputStream(zipFile);
-            BufferedInputStream buff = new BufferedInputStream(fis);
+            buff = new BufferedInputStream(new FileInputStream(zipFile));
             BufferedOutputStream out=new BufferedOutputStream(response.getOutputStream());
-            byte[] car=new byte[1024];
+            byte[] cache=new byte[1024];
             int l=0;
             while (l < zipFile.length()) {
-                int j = buff.read(car, 0, 1024);
+                int j = buff.read(cache, 0, 1024);
                 l += j;
-                out.write(car, 0, j);
+                out.write(cache, 0, j);
             }
-            // 关闭流
-            fis.close();
-            buff.close();
-            out.close();
 
-            ossClient.shutdown();
-            // 删除临时文件
-            zipFile.delete();
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            try {
+                if(buff!=null){
+                    buff.close();
+                }
+                if(ossClient!=null){
+                    ossClient.shutdown();
+                }
+                if(zipFile!=null){
+                    // 删除临时文件
+                    zipFile.delete();
+
+                }
+                if(zos!=null){
+                    zos.close();
+                }
+            } catch (IOException e) {
+                Preconditions.checkArgument(false,e.getMessage());
+            }
         }
 
         return null;
