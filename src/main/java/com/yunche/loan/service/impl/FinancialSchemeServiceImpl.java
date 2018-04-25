@@ -125,9 +125,11 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
                 if(!StringUtils.isBlank(action)){
                     updateV.setStatus(new Byte(action));
                 }
+                EmployeeDO employeeDO  = SessionUtils.getLoginUser();
+                updateV.setAuditor_id(employeeDO.getId());
+                updateV.setAuditor_name(employeeDO.getName());
                 updateV.setEnd_time(new Timestamp(new Date().getTime()));
                 loanFinancialPlanTempHisDOMapper.updateByPrimaryKeySelective(updateV);
-
                 LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
                 loanFinancialPlanDO.setId(loanFinancialPlanId);
                 loanFinancialPlanDO.setFinancialProductId(Long.valueOf(param.getFinancial_product_id()));
@@ -148,9 +150,13 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     }
 
     @Override
-    public List<UniversalCustomerOrderVO> queryCustomerOrder(String name) {
-        return loanQueryDOMapper.selectUniversalCustomerOrder(name);
+    public List<UniversalCustomerOrderVO> queryModifyCustomerOrder(String name) {
+        return loanQueryDOMapper.selectUniversalModifyCustomerOrder(SessionUtils.getLoginUser().getId(),name);
     }
 
+    @Override
+    public List<UniversalCustomerOrderVO> queryRefundCustomerOrder(String name) {
+        return loanQueryDOMapper.selectUniversalRefundCustomerOrder(SessionUtils.getLoginUser().getId(),name);
+    }
 
 }

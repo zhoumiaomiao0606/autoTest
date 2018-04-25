@@ -22,6 +22,8 @@
     <result column="financial_total_repayment_amount" property="financial_total_repayment_amount" jdbcType="DECIMAL" />
     <result column="initiator_id" property="initiator_id" jdbcType="BIGINT" />
     <result column="initiator_name" property="initiator_name" jdbcType="VARCHAR" />
+    <result column="auditor_id" property="auditor_id" jdbcType="BIGINT" />
+    <result column="auditor_name" property="auditor_name" jdbcType="VARCHAR" />
     <result column="start_time" property="start_time" jdbcType="TIMESTAMP" />
     <result column="end_time" property="end_time" jdbcType="TIMESTAMP" />
     <result column="status" property="status" jdbcType="TINYINT" />
@@ -32,7 +34,7 @@
     financial_product_name, financial_sign_rate, financial_loan_amount, financial_first_month_repay, 
     financial_car_price, financial_down_payment_money, financial_bank_period_principal, 
     financial_each_month_repay, financial_total_repayment_amount, initiator_id, initiator_name,
-    start_time, end_time, status
+    auditor_id, auditor_name, start_time, end_time, status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -107,6 +109,12 @@
       <if test="initiator_name != null" >
         initiator_name,
       </if>
+      <if test="auditor_id != null" >
+        auditor_id,
+      </if>
+      <if test="auditor_name != null" >
+        auditor_name,
+      </if>
       <if test="start_time != null" >
         start_time,
       </if>
@@ -178,6 +186,12 @@
       <if test="initiator_name != null" >
         #{initiator_name,jdbcType=VARCHAR},
       </if>
+      <if test="auditor_id != null" >
+        #{auditor_id,jdbcType=BIGINT},
+      </if>
+      <if test="auditor_name != null" >
+        #{auditor_name,jdbcType=VARCHAR},
+      </if>
       <if test="start_time != null" >
         #{start_time,jdbcType=TIMESTAMP},
       </if>
@@ -248,6 +262,12 @@
       </if>
       <if test="initiator_name != null" >
         initiator_name = #{initiator_name,jdbcType=VARCHAR},
+      </if>
+      <if test="auditor_id != null" >
+        auditor_id = #{auditor_id,jdbcType=BIGINT},
+      </if>
+      <if test="auditor_name != null" >
+        auditor_name = #{auditor_name,jdbcType=VARCHAR},
       </if>
       <if test="start_time != null" >
         start_time = #{start_time,jdbcType=TIMESTAMP},

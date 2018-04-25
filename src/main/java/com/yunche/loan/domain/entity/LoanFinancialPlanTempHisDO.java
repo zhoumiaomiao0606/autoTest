@@ -3,7 +3,6 @@ package com.yunche.loan.domain.entity;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
@@ -48,9 +47,13 @@ public class LoanFinancialPlanTempHisDO {
 
     private String initiator_name;
 
-    private Timestamp start_time;
+    private Long auditor_id;
 
-    private Timestamp end_time;
+    private String auditor_name;
+
+    private Date start_time;
+
+    private Date end_time;
 
     private Byte status;
 }
