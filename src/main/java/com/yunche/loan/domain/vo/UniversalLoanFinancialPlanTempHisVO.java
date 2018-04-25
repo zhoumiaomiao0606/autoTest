@@ -2,10 +2,10 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
-public class UniversalLoanFinancialPlanTempVO {
+public class UniversalLoanFinancialPlanTempHisVO {
+
+    private String id;
 
     private String order_id;
 
@@ -41,5 +41,13 @@ public class UniversalLoanFinancialPlanTempVO {
 
     private String financial_total_repayment_amount;
 
-    private String gmt_create;
+    private String initiator_id;
+
+    private String initiator_name;
+
+    private String start_time;
+
+    private String end_time;
+
+    private String status;
 }

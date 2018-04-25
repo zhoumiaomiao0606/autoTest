@@ -5,6 +5,9 @@ import org.hibernate.validator.constraints.NotBlank;
 
 @Data
 public class FinancialSchemeModifyUpdateParam {
+
+    private String his_id;
+
     @NotBlank
     private String order_id;
 

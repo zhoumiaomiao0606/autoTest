@@ -20,14 +20,19 @@
     <result column="financial_bank_period_principal" property="financial_bank_period_principal" jdbcType="DECIMAL" />
     <result column="financial_each_month_repay" property="financial_each_month_repay" jdbcType="DECIMAL" />
     <result column="financial_total_repayment_amount" property="financial_total_repayment_amount" jdbcType="DECIMAL" />
-    <result column="gmt_create" property="gmt_create" jdbcType="TIMESTAMP" />
+    <result column="initiator_id" property="initiator_id" jdbcType="BIGINT" />
+    <result column="initiator_name" property="initiator_name" jdbcType="VARCHAR" />
+    <result column="start_time" property="start_time" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="end_time" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, order_id, financial_product_id, financial_appraisal, financial_category_superior, 
     financial_bank, financial_loan_time, financial_down_payment_ratio, financial_bank_fee, 
     financial_product_name, financial_sign_rate, financial_loan_amount, financial_first_month_repay, 
     financial_car_price, financial_down_payment_money, financial_bank_period_principal, 
-    financial_each_month_repay, financial_total_repayment_amount, gmt_create
+    financial_each_month_repay, financial_total_repayment_amount, initiator_id, initiator_name,
+    start_time, end_time, status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -96,8 +101,20 @@
       <if test="financial_total_repayment_amount != null" >
         financial_total_repayment_amount,
       </if>
-      <if test="gmt_create != null" >
-        gmt_create,
+      <if test="initiator_id != null" >
+        initiator_id,
+      </if>
+      <if test="initiator_name != null" >
+        initiator_name,
+      </if>
+      <if test="start_time != null" >
+        start_time,
+      </if>
+      <if test="end_time != null" >
+        end_time,
+      </if>
+      <if test="status != null" >
+        status,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -155,8 +172,20 @@
       <if test="financial_total_repayment_amount != null" >
         #{financial_total_repayment_amount,jdbcType=DECIMAL},
       </if>
-      <if test="gmt_create != null" >
-        #{gmt_create,jdbcType=TIMESTAMP},
+      <if test="initiator_id != null" >
+        #{initiator_id,jdbcType=BIGINT},
+      </if>
+      <if test="initiator_name != null" >
+        #{initiator_name,jdbcType=VARCHAR},
+      </if>
+      <if test="start_time != null" >
+        #{start_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="end_time != null" >
+        #{end_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -214,8 +243,20 @@
       <if test="financial_total_repayment_amount != null" >
         financial_total_repayment_amount = #{financial_total_repayment_amount,jdbcType=DECIMAL},
       </if>
-      <if test="gmt_create != null" >
-        gmt_create = #{gmt_create,jdbcType=TIMESTAMP},
+      <if test="initiator_id != null" >
+        initiator_id = #{initiator_id,jdbcType=BIGINT},
+      </if>
+      <if test="initiator_name != null" >
+        initiator_name = #{initiator_name,jdbcType=VARCHAR},
+      </if>
+      <if test="start_time != null" >
+        start_time = #{start_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="end_time != null" >
+        end_time = #{end_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

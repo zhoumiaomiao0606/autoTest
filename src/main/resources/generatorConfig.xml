@@ -281,11 +281,11 @@
                        enableCountByExample="false" enableUpdateByExample="false"
                        enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
 
-        <table tableName="loan_financial_plan_temp" domainObjectName="LoanFinancialPlanTempDO"
+<!--        <table tableName="loan_financial_plan_temp" domainObjectName="LoanFinancialPlanTempDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
             <property name="useActualColumnNames" value="true" />
-        </table>
+        </table>-->
 
 
         <table tableName="loan_financial_plan_temp_his" domainObjectName="LoanFinancialPlanTempHisDO"

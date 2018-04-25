@@ -29,16 +29,16 @@ public class FinancialSchemeController {
      * 金融方案电审详情
      */
     @GetMapping(value = "/verifyDetail")
-    public ResultBean verifyDetail(@RequestParam String order_id) {
-        return ResultBean.ofSuccess(financialSchemeService.verifyDetail(Long.valueOf(order_id)));
+    public ResultBean verifyDetail(@RequestParam String order_id,@RequestParam String his_id) {
+        return ResultBean.ofSuccess(financialSchemeService.verifyDetail(Long.valueOf(order_id),Long.valueOf(his_id)));
     }
 
     /**
      * 金融方案修改详情
      */
     @GetMapping(value = "/modifyDetail")
-    public ResultBean modifyDetail(@RequestParam String order_id) {
-        return ResultBean.ofSuccess(financialSchemeService.modifyDetail(Long.valueOf(order_id)));
+    public ResultBean modifyDetail(@RequestParam String order_id,@RequestParam String his_id) {
+        return ResultBean.ofSuccess(financialSchemeService.modifyDetail(Long.valueOf(order_id),Long.valueOf(his_id)));
     }
 
 
