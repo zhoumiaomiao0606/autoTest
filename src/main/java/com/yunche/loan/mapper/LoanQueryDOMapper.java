@@ -19,7 +19,7 @@ public interface LoanQueryDOMapper {
 
     public ApplyLicensePlateDepositInfoVO selectApplyLicensePlateDepositInfo(Long orderId);
 
-    UniversalLoanFinancialPlanTempHisVO selectUniversalLoanFinancialPlanTempHis(Long id);
+    UniversalLoanFinancialPlanTempHisVO selectUniversalLoanFinancialPlanTempHis(@Param("orderId") Long orderId,@Param("hisId") Long hisId);
 
     public UniversalInfoVO selectUniversalInfo(Long orderId);
 

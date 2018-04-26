@@ -62,7 +62,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
-        recombinationVO.setDiff(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(hisId));
+        recombinationVO.setDiff(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(orderId,hisId));
         recombinationVO.setCustomers(customers);
         return recombinationVO;
     }
@@ -71,8 +71,14 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     @Override
     public RecombinationVO modifyDetail(Long orderId,Long hisId) {
         RecombinationVO recombinationVO = new RecombinationVO();
-        recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
-        recombinationVO.setDiff(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(hisId));
+        /*recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        recombinationVO.setDiff(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(hisId));*/
+        if(hisId == null){
+            recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        }
+        else{
+            recombinationVO.setInfo(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(orderId,hisId));
+        }
         return recombinationVO;
     }
 

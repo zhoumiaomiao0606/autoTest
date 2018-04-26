@@ -237,17 +237,49 @@
 
 
 
-    <select id="selectUniversalLoanFinancialPlanTempHis" resultType="com.yunche.loan.domain.vo.UniversalLoanFinancialPlanTempHisVO" parameterType="java.lang.Long" >
-            select
-                    id, order_id, financial_product_id, financial_appraisal, financial_category_superior,
-                    financial_bank, financial_loan_time, financial_down_payment_ratio, financial_bank_fee,
-                    financial_product_name, financial_sign_rate, financial_loan_amount, financial_first_month_repay,
-                    financial_car_price, financial_down_payment_money, financial_bank_period_principal,
-                    financial_each_month_repay, financial_total_repayment_amount, initiator_id, initiator_name,
-                    auditor_id, auditor_name,
-                    DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%S') AS start_time, DATE_FORMAT(end_time,'%Y-%m-%d %H:%i:%S') AS end_time, status
-            from loan_financial_plan_temp_his
-            where id = #{id,jdbcType=BIGINT}
+    <select id="selectUniversalLoanFinancialPlanTempHis" resultType="com.yunche.loan.domain.vo.UniversalLoanFinancialPlanTempHisVO">
+          select
+					customer.id                                     AS customer_id,
+					customer.name                                   AS customer_name,
+					customer.id_card								AS customer_id_card,
+					department.name                                 AS department_name,
+					partner.id              						AS partner_id,
+                    partner.name                                    AS partner_name,
+                    salesman.name                                   AS salesman_name,
+                    salesman.id                                     AS salesman_id,
+                    his.id 			 								AS his_id,
+					his.order_id 									AS order_id,
+					his.financial_product_id 				 		AS financial_product_id,
+					his.financial_appraisal 				 		AS financial_appraisal,
+					his.financial_category_superior  		 	    AS product_category_superior,
+                    his.financial_bank 							 	AS financial_bank,
+					his.financial_loan_time 	                    AS financial_loan_time,
+					his.financial_down_payment_ratio 		 		AS financial_down_payment_ratio,
+					his.financial_bank_fee 					 		AS financial_bank_fee,
+                    his.financial_product_name 			 		 	AS financial_product_name,
+					his.financial_sign_rate					 		AS financial_sign_rate,
+					his.financial_loan_amount				 		AS financial_loan_amount,
+					his.financial_first_month_repay  		 	    AS financial_first_month_repay,
+                    his.financial_car_price 				 		AS financial_car_price,
+					his.financial_down_payment_money 		 	    AS financial_down_payment_money,
+					his.financial_bank_period_principal  		    AS financial_bank_period_principal,
+                    his.financial_each_month_repay 			 		AS financial_each_month_repay,
+					his.financial_total_repayment_amount 			AS financial_total_repayment_amount,
+					his.initiator_id 								AS initiator_id,
+					his.initiator_name                              AS initiator_name,
+                    his.auditor_id 									AS auditor_id,
+					his.auditor_name 								AS auditor_name,
+                    DATE_FORMAT(his.start_time,'%Y-%m-%d %H:%i:%S') AS start_time,
+					DATE_FORMAT(his.end_time,'%Y-%m-%d %H:%i:%S')   AS end_time,
+					his.status 										AS status
+            from loan_financial_plan_temp_his his
+			left join loan_order main_order on his.order_id = main_order.id
+			left join loan_base_info loan on main_order.loan_base_info_id = loan.id
+			left join loan_customer customer on main_order.loan_customer_id = customer.id
+			left join employee salesman on loan.salesman_id = salesman.id
+			left join partner partner on loan.partner_id = partner.id
+			left join department department on partner.department_id = department.id
+            where his.id = #{hisId,jdbcType=BIGINT} and his.order_id = #{orderId,jdbcType=BIGINT}
     </select>
 
     <!--通用info-->
