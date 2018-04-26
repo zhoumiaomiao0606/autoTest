@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
 import static com.yunche.loan.config.constant.CustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
@@ -93,6 +94,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private LoanCarInfoDOMapper loanCarInfoDOMapper;
+
+    @Autowired
+    private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
+
+    @Autowired
+    private FinancialSchemeService financialSchemeService;
 
 
     @Override
@@ -164,7 +171,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 【金融方案修改申请】任务
+     * 【金融方案修改申请 || 审核】任务
      *
      * @param taskDefinitionKey
      * @return
@@ -209,23 +216,51 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private ResultBean<Void> execFinancialSchemeModifyApplyTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
 
         // 【金融方案修改申请】-发起（提交）
-        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
             // 新建并提交【金融方案修改申请】单
-            startFinancialSchemeModifyApply(approval);
-            return ResultBean.ofSuccess(null, "[金融方案修改申请]发起成功");
+            execFinancialSchemeModifyApply(approval);
+            return ResultBean.ofSuccess(null, "[金融方案修改申请]任务执行成功");
         }
 
         // 【金融方案修改申请审核】-通过/打回
-        else if (INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+        else if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
             // 通过/打回
-            endInfoSupplement(approval);
-            return ResultBean.ofSuccess(null, "资料增补提交成功");
+            execFinancialSchemeModifyApplyReview(approval);
+            return ResultBean.ofSuccess(null, "[金融方案修改申请审核]任务执行成功");
         }
 
-        return ResultBean.ofError("action参数有误");
+        return ResultBean.ofError("参数有误");
     }
 
-    private void startFinancialSchemeModifyApply(ApprovalParam approval) {
+    private void execFinancialSchemeModifyApply(ApprovalParam approval) {
+        Preconditions.checkNotNull(approval.getSupplementOrderId(), "[申请单ID]不能为空");
+
+        Byte applyOrderStatus = null;
+        switch (approval.getAction()) {
+            case 0:
+                applyOrderStatus = APPLY_ORDER_CANCEL;
+                break;
+            case 1:
+                applyOrderStatus = APPLY_ORDER_PASS;
+                break;
+            case 2:
+                applyOrderStatus = APPLY_ORDER_TODO;
+                break;
+            case 3:
+                applyOrderStatus = APPLY_ORDER_REJECT;
+                break;
+        }
+
+        // insert
+        LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = new LoanFinancialPlanTempHisDO();
+        loanFinancialPlanTempHisDO.setId(approval.getSupplementOrderId());
+        loanFinancialPlanTempHisDO.setStatus(applyOrderStatus);
+
+        int count = loanFinancialPlanTempHisDOMapper.insertSelective(loanFinancialPlanTempHisDO);
+        Preconditions.checkArgument(count > 0, "插入失败");
+    }
+
+    private void execFinancialSchemeModifyApplyReview(ApprovalParam approval) {
 
 
     }

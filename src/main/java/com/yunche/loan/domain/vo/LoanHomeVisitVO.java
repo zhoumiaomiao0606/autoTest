@@ -17,10 +17,6 @@ public class LoanHomeVisitVO {
      */
     private Long id;
     /**
-     * 客户ID
-     */
-    private Long customerId;
-    /**
      * 上门调查员ID
      */
     private Long visitSalesmanId;

@@ -40,7 +40,4 @@ public class LoanSimpleCustomerInfoVO {
      * 文件列表
      */
     private List<FileVO> files = Collections.EMPTY_LIST;
-
-
-
 }
