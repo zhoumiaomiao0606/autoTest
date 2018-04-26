@@ -34,6 +34,10 @@ public class LoanProcessConst {
      * 资料增补
      */
     public static final Byte ACTION_INFO_SUPPLEMENT = 3;
+    /**
+     * 发起任务申请
+     */
+    public static final Byte ACTION_LAUNCH_TASK_APPLY = 4;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -22,6 +22,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
+import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
 
 /**
  * @author liuzhe
@@ -30,24 +32,38 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Component
 public class EmployeeCache {
 
-    private static final String EMPLOYEE_CASCADE_CACHE_KEY = "cascade:cache:employee";
+    private static final String EMPLOYEE_ZS_CASCADE_CACHE_KEY = "cascade:cache:employee:zs";
+
+    private static final String EMPLOYEE_WB_CASCADE_CACHE_KEY = "cascade:cache:employee:wb";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
 
 
-    public List<CascadeVO> get() {
+    /**
+     * @param type 员工类型
+     * @return
+     */
+    public List<CascadeVO> get(Byte type) {
+        String cacheKey = null;
+        if (TYPE_ZS.equals(type)) {
+            cacheKey = EMPLOYEE_ZS_CASCADE_CACHE_KEY;
+        } else if (TYPE_WB.equals(type)) {
+            cacheKey = EMPLOYEE_WB_CASCADE_CACHE_KEY;
+        }
+
         // get
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_CASCADE_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(cacheKey);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
             return JSON.parseArray(result, CascadeVO.class);
         }
 
         // 刷新缓存
-        refresh();
+        refresh(type, cacheKey);
 
         // get
         result = boundValueOps.get();
@@ -57,10 +73,9 @@ public class EmployeeCache {
         return Collections.EMPTY_LIST;
     }
 
-    @PostConstruct
-    public void refresh() {
+    public void refresh(Byte type, String cacheKey) {
         // getAll
-        List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(VALID_STATUS);
+        List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(type, VALID_STATUS);
 
         // parentId - DOS
         Map<Long, List<EmployeeDO>> parentIdDOMap = getParentIdDOSMapping(employeeDOS);
@@ -69,7 +84,7 @@ public class EmployeeCache {
         List<CascadeVO> topLevelList = parseLevelByLevel(parentIdDOMap);
 
         // 刷新缓存
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_CASCADE_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(cacheKey);
         boundValueOps.set(JSON.toJSONString(topLevelList));
     }
 
@@ -168,5 +183,11 @@ public class EmployeeCache {
                     // 递归填充子列表
                     fillChilds(child, parentIdDOMap, finalLimit);
                 });
+    }
+
+    @PostConstruct
+    public void refresh() {
+        refresh(TYPE_ZS, EMPLOYEE_ZS_CASCADE_CACHE_KEY);
+        refresh(TYPE_WB, EMPLOYEE_WB_CASCADE_CACHE_KEY);
     }
 }

@@ -236,7 +236,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ResultBean<List<CascadeVO>> listAll() {
         // 走缓存
-        List<CascadeVO> cascadeVOS = employeeCache.get();
+        List<CascadeVO> cascadeVOS = employeeCache.get(TYPE_ZS);
         return ResultBean.ofSuccess(cascadeVOS);
     }
 

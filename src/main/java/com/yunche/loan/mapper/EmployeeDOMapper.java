@@ -29,7 +29,7 @@ public interface EmployeeDOMapper {
 
     List<EmployeeDO> query(EmployeeQuery query);
 
-    List<EmployeeDO> getAll(@Param("status") Byte status);
+    List<EmployeeDO> getAll(@Param("type") Byte type, @Param("status") Byte status);
 
     List<String> listTitle();
 

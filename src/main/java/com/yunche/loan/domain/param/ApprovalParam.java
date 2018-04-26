@@ -23,6 +23,10 @@ public class ApprovalParam {
      */
     private Byte action;
     /**
+     * 目标节点
+     */
+    private String target;
+    /**
      * 审核备注信息
      */
     private String info;

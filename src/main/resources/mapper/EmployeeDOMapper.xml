@@ -176,9 +176,14 @@
         select
         <include refid="Base_Column_List"/>
         from employee
-        <if test="status != null">
-            WHERE status = #{status}
-        </if>
+        <where>
+            <if test="type != null">
+                AND type = #{type}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
     </select>
 
     <!--getByIdList-->

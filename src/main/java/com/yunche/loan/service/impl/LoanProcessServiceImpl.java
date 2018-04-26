@@ -112,28 +112,41 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 节点权限校验
         permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
 
-        // 校验审核前提条件
-        checkPreCondition(approval.getOrderId(), approval.getTaskDefinitionKey(), approval.getAction());
-
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
+
+        // 节点实时状态
+        LoanProcessDO loanProcessDO = getLoanProcess(approval.getOrderId());
+
+        // 校验审核前提条件
+        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         log(approval);
 
-        // 征信增补
-        execCreditSupplementTask(approval, loanOrderDO.getProcessInstId());
+        // 【征信增补】
+        execCreditSupplementTask(approval, loanOrderDO.getProcessInstId(), loanProcessDO);
 
-        // 【发起/提交】资料增补单
-        if (isStartOrEndInfoSupplement(approval)) {
+        // 发起/提交【资料增补单】
+        if (isInfoSupplementTask(approval)) {
             return execInfoSupplementTask(approval);
         }
 
-        // 获取任务
+        // 发起/审核（通过/打回/弃单）【金融方案修改申请】
+//        if (isFinancialSchemeModifyApplyTask(approval.getTaskDefinitionKey())) {
+//            return execFinancialSchemeModifyApplyTask(approval, loanProcessDO);
+//        }
+
+        // 发起/审核（通过/打回/弃单）【退款申请】
+//        if (isRefundApplyTask(approval.getTaskDefinitionKey())) {
+//            return execRefundApplyTask(approval, loanProcessDO);
+//        }
+
+        // 获取当前执行任务（activiti中）
         Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
 
         // 流程变量
-        Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO.getLoanBaseInfoId());
+        Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO.getLoanBaseInfoId(), loanProcessDO);
 
         // 先获取提交之前的待执行任务列表
         List<Task> startTaskList = getCurrentTaskList(task.getProcessInstanceId());
@@ -148,6 +161,86 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+    }
+
+    /**
+     * 【金融方案修改申请】任务
+     *
+     * @param taskDefinitionKey
+     * @return
+     */
+    private boolean isFinancialSchemeModifyApplyTask(String taskDefinitionKey) {
+        boolean isFinancialSchemeModifyApplyTask = FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey)
+                || FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(taskDefinitionKey);
+        return isFinancialSchemeModifyApplyTask;
+    }
+
+    /**
+     * 【退款申请】任务
+     *
+     * @param taskDefinitionKey
+     * @return
+     */
+    private boolean isRefundApplyTask(String taskDefinitionKey) {
+        boolean isRefundApplyTask = REFUND_APPLY.getCode().equals(taskDefinitionKey)
+                || REFUND_APPLY_REVIEW.getCode().equals(taskDefinitionKey);
+        return isRefundApplyTask;
+    }
+
+    /**
+     * 订单流程节点 实时状态记录
+     *
+     * @param orderId
+     * @return
+     */
+    private LoanProcessDO getLoanProcess(Long orderId) {
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+        return loanProcessDO;
+    }
+
+    /**
+     * TODO 执行 -发起/审核（通过/打回/弃单）【金融方案修改申请】
+     *
+     * @param approval
+     * @param loanProcessDO
+     * @return
+     */
+    private ResultBean<Void> execFinancialSchemeModifyApplyTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+
+        // 【金融方案修改申请】-发起（提交）
+        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            // 新建并提交【金融方案修改申请】单
+            startFinancialSchemeModifyApply(approval);
+            return ResultBean.ofSuccess(null, "[金融方案修改申请]发起成功");
+        }
+
+        // 【金融方案修改申请审核】-通过/打回
+        else if (INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            // 通过/打回
+            endInfoSupplement(approval);
+            return ResultBean.ofSuccess(null, "资料增补提交成功");
+        }
+
+        return ResultBean.ofError("action参数有误");
+    }
+
+    private void startFinancialSchemeModifyApply(ApprovalParam approval) {
+
+
+    }
+
+    /**
+     * TODO 执行 -发起/审核（通过/打回/弃单）【退款申请】
+     *
+     * @param approval
+     * @param loanProcessDO
+     * @return
+     */
+    private ResultBean<Void> execRefundApplyTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+
+
+        return ResultBean.ofSuccess(null);
     }
 
     /**
@@ -252,23 +345,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 校验审核前提条件
      *
-     * @param orderId
      * @param taskDefinitionKey
      * @param action
+     * @param loanOrderDO
+     * @param loanProcessDO
      */
-    private void checkPreCondition(Long orderId, String taskDefinitionKey, Byte action) {
+    private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()), "订单" + getOrderStatusText(loanProcessDO));
+
+        // 【资料审核】
         if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
             // 提车资料必须已经提交了
-            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-            Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
             Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
         }
 
+        // 【业务申请】
         if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
             // 客户资料、车辆信息、金融方案  必须均已录入
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
-            Preconditions.checkNotNull(loanOrderDO, "订单不存在");
-
             Preconditions.checkNotNull(loanOrderDO.getLoanCustomerId(), "请先录入客户信息");
             Preconditions.checkNotNull(loanOrderDO.getLoanCarInfoId(), "请先录入车辆信息");
             Preconditions.checkNotNull(loanOrderDO.getLoanFinancialPlanId(), "请先录入金融方案");
@@ -277,6 +370,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanOrderDO.getLoanCustomerId(), CUST_TYPE_EMERGENCY_CONTACT, VALID_STATUS);
             Preconditions.checkArgument(loanCustomerDOS.size() >= 2, "紧急联系人不能少于2个");
         }
+
+        // 【金融方案修改申请】
+        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+            //
+            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "还未过[电审]，无法发起金融方案修改申请");
+            Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起金融方案修改申请");
+        }
+    }
+
+    /**
+     * 订单状态Text
+     *
+     * @param loanProcessDO
+     * @return
+     */
+    private String getOrderStatusText(LoanProcessDO loanProcessDO) {
+        String orderStatusText = ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) ? "已弃单" : (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus()) ? "已结单" : "状态异常");
+        return orderStatusText;
     }
 
     /**
@@ -308,8 +419,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param approval
      * @param processInstanceId
+     * @param loanProcessDO
      */
-    private void execCreditSupplementTask(ApprovalParam approval, String processInstanceId) {
+    private void execCreditSupplementTask(ApprovalParam approval, String processInstanceId, LoanProcessDO loanProcessDO) {
         // 是否【征信增补】
         boolean isCreditSupplementTask = CREDIT_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction());
         if (!isCreditSupplementTask) {
@@ -317,9 +429,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         approval.setTaskDefinitionKey_(approval.getTaskDefinitionKey());
-
-        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(approval.getOrderId());
-        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
         // 判断当前任务流程   是否在电审前
         Preconditions.checkArgument(TASK_PROCESS_INIT.equals(loanProcessDO.getTelephoneVerify()), "流程已过电审环节，无法发起征信增补");
@@ -330,9 +439,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 .list();
 
         Preconditions.checkArgument(!CollectionUtils.isEmpty(tasks), "无可执行任务");
-
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approval.getOrderId(), null);
-        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
 
         approval.setAction(ACTION_REJECT_AUTO);
 
@@ -362,13 +468,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @return
      */
-    private boolean isStartOrEndInfoSupplement(ApprovalParam approval) {
+    private boolean isInfoSupplementTask(ApprovalParam approval) {
         // 发起资料增补
-        boolean isStartInfoSupplement = ACTION_INFO_SUPPLEMENT.equals(approval.getAction());
+        boolean isStartInfoSupplementTask = ACTION_INFO_SUPPLEMENT.equals(approval.getAction());
         // 处理资料增补单（暂时-只有PASS操作 -即：END）
-        boolean isEndInfoSupplement = INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey());
-        boolean isStartOrEndInfoSupplement = isStartInfoSupplement || isEndInfoSupplement;
-        return isStartOrEndInfoSupplement;
+        boolean isEndInfoSupplementTask = INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey());
+        boolean isInfoSupplementTask = isStartInfoSupplementTask || isEndInfoSupplementTask;
+        return isInfoSupplementTask;
     }
 
     /**
@@ -393,7 +499,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return ResultBean.ofSuccess(null, "资料增补提交成功");
         }
 
-        return ResultBean.ofSuccess(null, "action参数有误");
+        return ResultBean.ofError("action参数有误");
     }
 
     /**
@@ -466,7 +572,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         });
     }
-
 
     /**
      * 执行任务
@@ -1444,18 +1549,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param currentExecTask
      * @param approval
      * @param loanBaseInfoId
+     * @param loanProcessDO
      */
-    private Map<String, Object> setAndGetVariables(Task currentExecTask, ApprovalParam approval, Long loanBaseInfoId) {
+    private Map<String, Object> setAndGetVariables(Task currentExecTask, ApprovalParam approval, Long loanBaseInfoId, LoanProcessDO loanProcessDO) {
         Map<String, Object> variables = Maps.newHashMap();
 
         // 流程变量：action
         variables.put(PROCESS_VARIABLE_ACTION, approval.getAction());
+        variables.put(PROCESS_VARIABLE_TARGET, approval.getTarget());
 
         // 添加流程变量-贷款金额
         fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanBaseInfoId);
 
         // 填充其他的流程变量
-        fillOtherVariables(variables, approval);
+        fillOtherVariables(variables, approval, loanProcessDO);
 
         return variables;
     }
@@ -1465,24 +1572,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param variables
      * @param approval
+     * @param loanProcessDO
      */
-    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval) {
-        // 业务申请
+    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO) {
+        // 【业务申请】
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
 
             // 是否 [打回] - 自于【资料审核】
 
-            // 1.是否为打回
-            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(approval.getOrderId());
-            Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
-
-            Byte loanApply = loanProcessDO.getLoanApply();
-            if (TASK_PROCESS_REJECT.equals(loanApply)) {
+            // 如果为【打回】
+            if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
 
                 // 2.是否打回自【资料审核】
-                String loanApplyRejectOrginTask = loanProcessDO.getLoanApplyRejectOrginTask();
+                LoanRejectLogDO loanRejectLogDO = loanRejectLogDOMapper.lastByOrderIdAndTaskDefinitionKey(approval.getOrderId(), approval.getTaskDefinitionKey());
+
                 // 是
-                if (MATERIAL_REVIEW.getCode().equals(loanApplyRejectOrginTask)) {
+                if (MATERIAL_REVIEW.getCode().equals(loanRejectLogDO.getRejectOriginTask())) {
                     // 添加流程变量 -打回来源 -> reject_origin_task
                     variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, MATERIAL_REVIEW.getCode());
 
@@ -1495,6 +1600,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             } else {
                 // 否
                 variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, null);
+            }
+        }
+
+        // 【电审】
+        if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
+            if (ACTION_PASS.equals(approval.getAction())) {
+                // 如果为打回
+                if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
+                    LoanRejectLogDO loanRejectLogDO = loanRejectLogDOMapper.lastByOrderIdAndTaskDefinitionKey(approval.getOrderId(), TELEPHONE_VERIFY.getCode());
+                    if (null != loanRejectLogDO) {
+                        // 【金融方案申请】(自动)打回
+                        if (BUSINESS_REVIEW.getCode().equals(loanRejectLogDO.getRejectOriginTask()) || LOAN_REVIEW.getCode().equals(loanRejectLogDO.getRejectOriginTask())) {
+                            variables.put(PROCESS_VARIABLE_TARGET, BUSINESS_REVIEW.getCode());
+                        }
+                    }
+                }
             }
         }
     }

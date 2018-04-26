@@ -1,7 +1,5 @@
 package com.yunche.loan.config.constant;
 
-import org.apache.commons.lang3.EnumUtils;
-
 /**
  * Created by zhouguoliang on 2018/1/31.
  */
@@ -24,8 +22,12 @@ public enum LoanProcessEnum {
 
     INFO_SUPPLEMENT("usertask_info_supplement", "资料增补"),
     CREDIT_SUPPLEMENT("usertask_credit_supplement", "征信增补"),
+    FINANCIAL_SCHEME_MODIFY_APPLY("usertask_financial_scheme_modify_apply", "金融方案修改申请"),
+    REFUND_APPLY("usertask_refund_apply", "退款申请"),
+    FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW("usertask_financial_scheme_modify_apply_review", "金融方案修改申请审核"),
+    REFUND_APPLY_REVIEW("usertask_refund_apply_review", "退款申请审核"),
 
-    FINANCIAL_SCHEME("servicetask_financial_scheme", "金融方案展示"),
+    FINANCIAL_SCHEME("servicetask_financial_scheme", "金融方案"),
 
     VEHICLE_INFORMATION("usertask_vehicle_information", "提车资料"),
     APPLY_LICENSE_PLATE_DEPOSIT_INFO("usertask_apply_license_plate_deposit_info", "车辆抵押"),

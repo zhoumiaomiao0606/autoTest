@@ -143,6 +143,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private LoanOrderService loanOrderService;
+
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
@@ -362,31 +365,15 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Override
     public ResultBean<AppLoanHomeVisitVO> homeVisitDetail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单号不能为空");
-
-        Long loanHomeVisitId = loanOrderDOMapper.getLoanHomeVisitId(orderId);
-
-        LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanHomeVisitId);
-        AppLoanHomeVisitVO loanHomeVisitVO = new AppLoanHomeVisitVO();
-        BeanUtils.copyProperties(loanHomeVisitDO, loanHomeVisitVO);
-
-        return ResultBean.ofSuccess(loanHomeVisitVO);
+        ResultBean<LoanHomeVisitVO> resultBean = loanOrderService.homeVisitDetail(orderId);
+        return ResultBean.of(resultBean.getData(), resultBean.getSuccess(), resultBean.getCode(), resultBean.getMsg());
     }
 
     @Override
     @Transactional
     public ResultBean<Void> createOrUpdateLoanHomeVisit(AppLoanHomeVisitParam loanHomeVisitParam) {
-        Preconditions.checkNotNull(loanHomeVisitParam, "上门家访资料不能为空");
-
-        if (null == loanHomeVisitParam.getId()) {
-            // 创建
-            createLoanHomeVisit(loanHomeVisitParam);
-        } else {
-            // 编辑
-            updateLoanHomeVisit(loanHomeVisitParam);
-        }
-
-        return ResultBean.ofSuccess(null, "保存上门家访资料成功");
+        ResultBean<Long> resultBean = loanOrderService.createOrUpdateLoanHomeVisit(loanHomeVisitParam);
+        return ResultBean.of(resultBean.getData(), resultBean.getSuccess(), resultBean.getCode(), resultBean.getMsg());
     }
 
     @Override
@@ -1000,48 +987,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         if (null != customerVO) {
             BeanUtils.copyProperties(customerVO, customerInfo);
         }
-    }
-
-    /**
-     * 创建上门家访资料
-     *
-     * @param loanHomeVisitParam
-     */
-    private void createLoanHomeVisit(AppLoanHomeVisitParam loanHomeVisitParam) {
-        Preconditions.checkNotNull(loanHomeVisitParam.getOrderId(), "业务单号不能为空");
-
-        // insert
-        LoanHomeVisitDO loanHomeVisitDO = new LoanHomeVisitDO();
-        BeanUtils.copyProperties(loanHomeVisitParam, loanHomeVisitDO);
-        loanHomeVisitDO.setGmtCreate(new Date());
-        loanHomeVisitDO.setGmtModify(new Date());
-        loanHomeVisitDO.setStatus(VALID_STATUS);
-
-        int count = loanHomeVisitDOMapper.insertSelective(loanHomeVisitDO);
-        Preconditions.checkArgument(count > 0, "创建上门家访资料失败");
-
-        // 关联
-        LoanOrderDO loanOrderDO = new LoanOrderDO();
-        loanOrderDO.setId(loanHomeVisitParam.getOrderId());
-        loanOrderDO.setLoanHomeVisitId(loanHomeVisitParam.getId());
-        loanOrderDO.setGmtModify(new Date());
-
-        int relaCount = loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        Preconditions.checkArgument(relaCount > 0, "关联上门家访资料失败");
-    }
-
-    /**
-     * 编辑上门家访资料
-     *
-     * @param loanHomeVisitParam
-     */
-    private void updateLoanHomeVisit(AppLoanHomeVisitParam loanHomeVisitParam) {
-        LoanHomeVisitDO loanHomeVisitDO = new LoanHomeVisitDO();
-        BeanUtils.copyProperties(loanHomeVisitParam, loanHomeVisitDO);
-        loanHomeVisitDO.setGmtModify(new Date());
-
-        int count = loanHomeVisitDOMapper.updateByPrimaryKeySelective(loanHomeVisitDO);
-        Preconditions.checkArgument(count > 0, "编辑上门家访资料失败");
     }
 
     private void convertLoanCarInfo(AppLoanCarInfoParam loanCarInfoParam, LoanCarInfoDO loanCarInfoDO) {

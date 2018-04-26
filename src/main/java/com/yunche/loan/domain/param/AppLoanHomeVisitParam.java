@@ -13,23 +13,5 @@ import java.util.List;
  * @date 2018/3/5
  */
 @Data
-public class AppLoanHomeVisitParam {
-    /**
-     * 业务单ID
-     */
-    private Long orderId;
-
-    private Long id;
-
-    private Long visitSalesmanId;
-
-    private Date visitDate;
-
-    private String surveyReport;
-
-    private String visitAddress;
-
-    private List<FileVO> files = Collections.EMPTY_LIST;
-
-    private Byte status;
+public class AppLoanHomeVisitParam extends LoanHomeVisitParam {
 }
