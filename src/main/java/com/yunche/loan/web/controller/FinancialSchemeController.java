@@ -4,6 +4,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.FinancialSchemeModifyUpdateParam;
 import com.yunche.loan.service.FinancialSchemeService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -37,8 +38,8 @@ public class FinancialSchemeController {
      * 金融方案修改详情
      */
     @GetMapping(value = "/modifyDetail")
-    public ResultBean modifyDetail(@RequestParam String order_id,@RequestParam String his_id) {
-        return ResultBean.ofSuccess(financialSchemeService.modifyDetail(Long.valueOf(order_id),Long.valueOf(his_id)));
+    public ResultBean modifyDetail(@RequestParam String order_id,@RequestParam(required = false) String his_id) {
+        return ResultBean.ofSuccess(financialSchemeService.modifyDetail(Long.valueOf(order_id),StringUtils.isBlank(his_id)?null:Long.valueOf(his_id)));
     }
 
 
