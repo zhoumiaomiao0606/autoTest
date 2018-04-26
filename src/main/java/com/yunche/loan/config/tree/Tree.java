@@ -1,8 +1,7 @@
-package com.yunche.loan.web;
+package com.yunche.loan.config.tree;
 
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -12,10 +11,4 @@ public class Tree {
     private TreeNode node;
     /** 子树集合*/
     private List<Tree> childNodes;
-
-    public Tree(TreeNode node)
-    {
-        this.node = node;
-        this.childNodes = new ArrayList<Tree>();
-    }
 }

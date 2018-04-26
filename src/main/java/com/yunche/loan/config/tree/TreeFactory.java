@@ -1,8 +1,10 @@
 
-package com.yunche.loan.web;
+package com.yunche.loan.config.tree;
 
 
 import lombok.Data;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -12,7 +14,12 @@ public class TreeFactory{
 
     public TreeFactory()
     {
-        root = new Tree(new TreeNode("root"));
+        TreeNode node = new TreeNode();
+        node.setNodeId("root");
+
+        root = new Tree();
+        root.setNode(node);
+        root.setChildNodes(new ArrayList<Tree>());
     }
 
     public TreeFactory createTree(List<TreeNode> treeNodes){
@@ -25,7 +32,10 @@ public class TreeFactory{
         for(TreeNode treeNode : treeNodes) {
             if(treeNode.getParentId().equals("root")) {
                 //向根添加一个节点
-                factory.getRoot().getChildNodes().add(new Tree(treeNode));
+                Tree tree = new Tree();
+                tree.setNode(treeNode);
+                tree.setChildNodes(new ArrayList<Tree>());
+                factory.getRoot().getChildNodes().add(tree);
             }
             else {
                 addChild(factory.getRoot(), treeNode);
@@ -42,7 +52,10 @@ public class TreeFactory{
         for(Tree item : tree.getChildNodes()) {
             if(item.getNode().getNodeId().equals(child.getParentId())) {
                 //找到对应的父亲
-                item.getChildNodes().add(new Tree(child));
+                Tree childTree = new Tree();
+                childTree.setNode(child);
+                childTree.setChildNodes(new ArrayList<Tree>());
+                item.getChildNodes().add(childTree);
                 break;
             }
             else {
