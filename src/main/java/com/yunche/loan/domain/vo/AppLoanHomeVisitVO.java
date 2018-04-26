@@ -21,6 +21,10 @@ public class AppLoanHomeVisitVO extends LoanSimpleInfoVO {
      * 上门调查员ID
      */
     private Long visitSalesmanId;
+    /**
+     * 上门调查员姓名
+     */
+    private String visitSalesmanName;
 
     private Date visitDate;
 

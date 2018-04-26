@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -146,6 +147,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanOrderService loanOrderService;
+
+    @Autowired
+    private EmployeeCache employeeCache;
 
 
     @Override
@@ -385,6 +389,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanOrderDO.getLoanHomeVisitId());
         if (null != loanHomeVisitDO) {
             BeanUtils.copyProperties(loanHomeVisitDO, appLoanHomeVisitVO);
+
+            // name
+            BaseVO baseVO = employeeCache.getById(loanOrderDO.getLoanHomeVisitId());
+            if (null != baseVO) {
+                appLoanHomeVisitVO.setVisitSalesmanName(baseVO.getName());
+            }
         }
 
         // file
