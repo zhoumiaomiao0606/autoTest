@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -28,7 +29,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
 import static com.yunche.loan.config.constant.CustomerConst.*;
@@ -37,7 +37,6 @@ import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_INIT;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
@@ -67,9 +66,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private CostDetailsDOMapper costDetailsDOMapper;
-
-    @Autowired
-    private LoanHomeVisitDOMapper loanHomeVisitDOMapper;
 
     @Autowired
     private DepartmentDOMapper departmentDOMapper;
@@ -141,10 +137,19 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private FinancialProductDOMapper financialProductDOMapper;
 
     @Autowired
+    private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Autowired
+    private LoanHomeVisitDOMapper loanHomeVisitDOMapper;
+
+    @Autowired
     private PermissionService permissionService;
 
     @Autowired
     private LoanOrderService loanOrderService;
+
+    @Autowired
+    private EmployeeCache employeeCache;
 
 
     @Override
@@ -365,8 +370,60 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Override
     public ResultBean<AppLoanHomeVisitVO> homeVisitDetail(Long orderId) {
-        ResultBean<LoanHomeVisitVO> resultBean = loanOrderService.homeVisitDetail(orderId);
-        return ResultBean.of(resultBean.getData(), resultBean.getSuccess(), resultBean.getCode(), resultBean.getMsg());
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
+
+        AppLoanHomeVisitVO appLoanHomeVisitVO = new AppLoanHomeVisitVO();
+
+        // 主贷客户信息
+        ResultBean<LoanSimpleInfoVO> simpleInfoVOResultBean = loanOrderService.simpleInfo(orderId);
+        Preconditions.checkArgument(simpleInfoVOResultBean.getSuccess(), simpleInfoVOResultBean.getMsg());
+        LoanSimpleInfoVO loanSimpleInfoVO = simpleInfoVOResultBean.getData();
+        if (null != loanSimpleInfoVO) {
+            BeanUtils.copyProperties(loanSimpleInfoVO, appLoanHomeVisitVO);
+        }
+
+        // 家访信息
+        LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanOrderDO.getLoanHomeVisitId());
+        if (null != loanHomeVisitDO) {
+            BeanUtils.copyProperties(loanHomeVisitDO, appLoanHomeVisitVO);
+
+            // name
+            BaseVO baseVO = employeeCache.getById(loanOrderDO.getLoanHomeVisitId());
+            if (null != baseVO) {
+                appLoanHomeVisitVO.setVisitSalesmanName(baseVO.getName());
+            }
+        }
+
+        // file
+        List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(loanSimpleInfoVO.getCustomerId()));
+        if (!CollectionUtils.isEmpty(files)) {
+
+            List<FileVO> homeVisitFiles = Lists.newArrayList();
+
+            // 12-合影照片;13-家访视频; 16-家访照片; 17-车辆照片;18-其他资料;
+            files.stream()
+                    .filter(e -> "12".equals(e.getType()) || "13".equals(e.getType())
+                            || "16".equals(e.getType()) || "17".equals(e.getType())
+                            || "18".equals(e.getType()))
+                    // 非空
+                    .filter(e -> !CollectionUtils.isEmpty(e.getUrls()))
+                    .forEach(e -> {
+
+                        FileVO fileVO = new FileVO();
+                        fileVO.setType(Byte.valueOf(e.getType()));
+                        fileVO.setName(e.getName());
+                        fileVO.setUrls(e.getUrls());
+
+                        homeVisitFiles.add(fileVO);
+                    });
+
+            appLoanHomeVisitVO.setFiles(homeVisitFiles);
+        }
+
+        return ResultBean.ofSuccess(appLoanHomeVisitVO);
     }
 
     @Override

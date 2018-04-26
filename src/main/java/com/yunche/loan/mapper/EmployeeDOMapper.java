@@ -91,4 +91,12 @@ public interface EmployeeDOMapper {
      * @return
      */
     EmployeeDO getByUsername(@Param("email") String email, @Param("status") Byte status);
+
+    /**
+     * 通过ID获取名称
+     *
+     * @param visitSalesmanId
+     * @return
+     */
+    String getNameById(Long visitSalesmanId);
 }

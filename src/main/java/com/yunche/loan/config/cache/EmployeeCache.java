@@ -3,10 +3,12 @@ package com.yunche.loan.config.cache;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.mapper.EmployeeDOMapper;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.vo.CascadeVO;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -15,10 +17,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -32,9 +31,18 @@ import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
 @Component
 public class EmployeeCache {
 
+    /**
+     * 正式员工缓存
+     */
     private static final String EMPLOYEE_ZS_CASCADE_CACHE_KEY = "cascade:cache:employee:zs";
-
+    /**
+     * 外包员工缓存
+     */
     private static final String EMPLOYEE_WB_CASCADE_CACHE_KEY = "cascade:cache:employee:wb";
+    /**
+     * ID-BaseDO缓存
+     */
+    private static final String EMPLOYEE_ALL_CACHE_KEY = "all:cache:employee";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -44,6 +52,8 @@ public class EmployeeCache {
 
 
     /**
+     * 通过员工类型获取
+     *
      * @param type 员工类型
      * @return
      */
@@ -73,6 +83,48 @@ public class EmployeeCache {
         return Collections.EMPTY_LIST;
     }
 
+    /**
+     * 通过ID获取
+     *
+     * @param userId
+     * @return
+     */
+    public BaseVO getById(Long userId) {
+        // get
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
+        String result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            Map<Long, BaseVO> map = JSON.parseObject(result, Map.class);
+            BaseVO baseVO = map.get(userId);
+            return baseVO;
+        }
+
+        // 刷新缓存
+        refreshAll();
+
+        // get
+        result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            Map<Long, BaseVO> map = JSON.parseObject(result, Map.class);
+            BaseVO baseVO = map.get(userId);
+            return baseVO;
+        }
+        return null;
+    }
+
+    @PostConstruct
+    public void refresh() {
+        refresh(TYPE_ZS, EMPLOYEE_ZS_CASCADE_CACHE_KEY);
+        refresh(TYPE_WB, EMPLOYEE_WB_CASCADE_CACHE_KEY);
+        refreshAll();
+    }
+
+    /**
+     * 刷新
+     *
+     * @param type
+     * @param cacheKey
+     */
     public void refresh(Byte type, String cacheKey) {
         // getAll
         List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(type, VALID_STATUS);
@@ -100,6 +152,7 @@ public class EmployeeCache {
         }
 
         Map<Long, List<EmployeeDO>> parentIdDOMap = Maps.newConcurrentMap();
+
         employeeDOS.parallelStream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
@@ -185,9 +238,28 @@ public class EmployeeCache {
                 });
     }
 
-    @PostConstruct
-    public void refresh() {
-        refresh(TYPE_ZS, EMPLOYEE_ZS_CASCADE_CACHE_KEY);
-        refresh(TYPE_WB, EMPLOYEE_WB_CASCADE_CACHE_KEY);
+    /**
+     * ID-DO缓存
+     */
+    private void refreshAll() {
+        Map<Long, BaseVO> idDOMap = Maps.newConcurrentMap();
+
+        // getAll
+        List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(null, VALID_STATUS);
+        if (!CollectionUtils.isEmpty(employeeDOS)) {
+            employeeDOS.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        BaseVO baseVO = new BaseVO();
+                        BeanUtils.copyProperties(e, baseVO);
+
+                        idDOMap.put(e.getId(), baseVO);
+                    });
+        }
+
+        // 刷新缓存
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
+        boundValueOps.set(JSON.toJSONString(idDOMap));
     }
 }
