@@ -391,7 +391,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             BeanUtils.copyProperties(loanHomeVisitDO, appLoanHomeVisitVO);
 
             // name
-            BaseVO baseVO = employeeCache.getById(loanOrderDO.getLoanHomeVisitId());
+            BaseVO baseVO = employeeCache.getById((loanHomeVisitDO.getVisitSalesmanId()));
             if (null != baseVO) {
                 appLoanHomeVisitVO.setVisitSalesmanName(baseVO.getName());
             }

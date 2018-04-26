@@ -1,12 +1,14 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.mapper.EmployeeDOMapper;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.vo.CascadeVO;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,9 +96,14 @@ public class EmployeeCache {
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
-            Map<Long, BaseVO> map = JSON.parseObject(result, Map.class);
-            BaseVO baseVO = map.get(userId);
-            return baseVO;
+            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
+            if (!CollectionUtils.isEmpty(idBaseDOMap)) {
+                JSONObject baseDOMap = idBaseDOMap.get(String.valueOf(userId));
+                if (!CollectionUtils.isEmpty(baseDOMap)) {
+                    BaseVO baseVO = JSON.toJavaObject(baseDOMap, BaseVO.class);
+                    return baseVO;
+                }
+            }
         }
 
         // 刷新缓存
@@ -105,9 +112,14 @@ public class EmployeeCache {
         // get
         result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
-            Map<Long, BaseVO> map = JSON.parseObject(result, Map.class);
-            BaseVO baseVO = map.get(userId);
-            return baseVO;
+            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
+            if (!CollectionUtils.isEmpty(idBaseDOMap)) {
+                JSONObject baseDOMap = idBaseDOMap.get(String.valueOf(userId));
+                if (!CollectionUtils.isEmpty(baseDOMap)) {
+                    BaseVO baseVO = JSON.toJavaObject(baseDOMap, BaseVO.class);
+                    return baseVO;
+                }
+            }
         }
         return null;
     }
@@ -242,7 +254,7 @@ public class EmployeeCache {
      * ID-DO缓存
      */
     private void refreshAll() {
-        Map<Long, BaseVO> idDOMap = Maps.newConcurrentMap();
+        Map<String, BaseVO> idDOMap = Maps.newConcurrentMap();
 
         // getAll
         List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(null, VALID_STATUS);
@@ -254,7 +266,7 @@ public class EmployeeCache {
                         BaseVO baseVO = new BaseVO();
                         BeanUtils.copyProperties(e, baseVO);
 
-                        idDOMap.put(e.getId(), baseVO);
+                        idDOMap.put(String.valueOf(e.getId()), baseVO);
                     });
         }
 
