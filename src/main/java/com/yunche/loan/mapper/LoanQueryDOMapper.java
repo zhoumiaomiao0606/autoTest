@@ -21,6 +21,8 @@ public interface LoanQueryDOMapper {
 
     UniversalLoanFinancialPlanTempHisVO selectUniversalLoanFinancialPlanTempHis(@Param("orderId") Long orderId,@Param("hisId") Long hisId);
 
+    UniversalLoanRefundApplyVO selectUniversalLoanRefundApply(@Param("orderId") Long orderId,@Param("refundId") Long refundId);
+
     public UniversalInfoVO selectUniversalInfo(Long orderId);
 
     public UniversalApprovalInfo selectUniversalApprovalInfo(@Param("taskDefinitionKey") String taskDefinitionKey,@Param("orderId") Long orderId);

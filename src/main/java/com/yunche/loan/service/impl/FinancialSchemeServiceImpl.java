@@ -153,9 +153,4 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         return loanQueryDOMapper.selectUniversalModifyCustomerOrder(SessionUtils.getLoginUser().getId(), name);
     }
 
-    @Override
-    public List<UniversalCustomerOrderVO> queryRefundCustomerOrder(String name) {
-        return loanQueryDOMapper.selectUniversalRefundCustomerOrder(SessionUtils.getLoginUser().getId(), name);
-    }
-
 }

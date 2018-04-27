@@ -15,6 +15,8 @@ public class RecombinationVO<T> {
 
         private List<UniversalRelationCustomerVO> relations = new ArrayList<UniversalRelationCustomerVO>();
 
+        private UniversalLoanRefundApplyVO refund;
+
         private UniversalApprovalInfo current_msg;
 
         private UniversalApprovalInfo channel_msg;

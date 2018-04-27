@@ -770,6 +770,23 @@
 
     </select>
 
+
+    <select id="selectUniversalLoanRefundApply" resultType="com.yunche.loan.domain.vo.UniversalLoanRefundApplyVO">
+
+        select
+                    id 											AS refund_id,
+                    order_id 								    AS order_id,
+                    refund_amount 					            AS refund_amount,
+                    DATE_FORMAT(refund_date,'%Y-%m-%d %H:%i:%S') AS refund_date,
+                    refund_reason 					            AS refund_reason,
+                    refund_pay_open_bank  	                    AS refund_pay_open_bank,
+                    refund_pay_account_name                     AS refund_pay_account_name,
+                    refund_pay_account 			                AS refund_pay_account,
+                    path 										AS path
+        from loan_refund_apply where  order_id= #{orderId} and id = #{refundId}
+
+    </select>
+
     <!--=============================================end===================================================-->
 
 
