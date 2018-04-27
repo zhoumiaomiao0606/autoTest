@@ -18,14 +18,22 @@
     <result column="end_time" property="end_time" jdbcType="TIMESTAMP" />
     <result column="status" property="status" jdbcType="TINYINT" />
   </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.LoanRefundApplyDO" extends="BaseResultMap" >
+    <result column="path" property="path" jdbcType="LONGVARCHAR" />
+  </resultMap>
   <sql id="Base_Column_List" >
     id, order_id, initiator_id, initiator_name, auditor_id, auditor_name, refund_amount, 
     refund_date, refund_reason, refund_pay_open_bank, refund_pay_account_name, refund_pay_account, 
     start_time, end_time, status
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <sql id="Blob_Column_List" >
+    path
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from loan_refund_apply
     where id = #{id,jdbcType=BIGINT}
   </select>
@@ -81,6 +89,9 @@
       <if test="status != null" >
         status,
       </if>
+      <if test="path != null" >
+        path,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -128,6 +139,9 @@
       <if test="status != null" >
         #{status,jdbcType=TINYINT},
       </if>
+      <if test="path != null" >
+        #{path,jdbcType=LONGVARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanRefundApplyDO" >
@@ -174,6 +188,9 @@
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="path != null" >
+        path = #{path,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

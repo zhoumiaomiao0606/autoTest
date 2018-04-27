@@ -36,4 +36,6 @@ public class LoanRefundApplyDO {
     private Date end_time;
 
     private Byte status;
+
+    private String path;
 }
