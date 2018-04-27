@@ -27,7 +27,7 @@ public class TaskSchedulingController {
      */
     @GetMapping(value = "/scheduletasklist")
     public ResultBean scheduletasklist() {
-        return ResultBean.ofSuccess(taskSchedulingService.scheduleTaskList());
+        return taskSchedulingService.scheduleTaskList();
     }
 
     /**
@@ -35,7 +35,7 @@ public class TaskSchedulingController {
      */
     @GetMapping(value = "/scheduletasklistBykey")
     public ResultBean scheduletasklistBykey(@RequestParam String key,@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
-        return ResultBean.ofSuccess(taskSchedulingService.scheduleTaskListBykey(key,pageIndex, pageSize));
+        return taskSchedulingService.scheduleTaskListBykey(key,pageIndex, pageSize);
     }
 
     /**
