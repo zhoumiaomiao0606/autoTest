@@ -53,9 +53,7 @@ public interface LoanQueryDOMapper {
 
     public List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
-    public List<UniversalMaterialRecordVO> selectUniversalMaterialRecordByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
-
-    public List<UniversalMaterialRecordVO> selectUniversalMaterialRecordByType(@Param("orderId") Long orderId, @Param("uploadType") Byte uploadType);
+    public List<UniversalMaterialRecordVO> selectUniversalCustomerFileByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
 
     public Long selectOrderIdbyPrincipalCustId(Long customerId);
     //=======================================================================

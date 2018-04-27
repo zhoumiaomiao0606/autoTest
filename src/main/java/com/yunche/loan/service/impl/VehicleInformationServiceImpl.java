@@ -64,7 +64,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         types.add(new Byte("21"));
         types.add(new Byte("21"));
         types.add(new Byte("22"));
-        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecordByTypes(orderId,types));
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId,types));
         return recombinationVO;
     }
 

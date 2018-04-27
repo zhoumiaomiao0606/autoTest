@@ -703,16 +703,7 @@
   </select>
 
     <!--资料增补根据type-->
-    <select id="selectUniversalMaterialRecordByType" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
-    select
-            path                      AS urls,
-            type                      AS type,
-            useFileTypeCastName(type) AS name
-    from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = #{uploadType,jdbcType=TINYINT}
-  </select>
-
-    <!--资料增补根据type-->
-    <select id="selectUniversalMaterialRecordByTypes" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
+    <select id="selectUniversalCustomerFileByTypes" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
     select
             path                      AS urls,
             type                      AS type,

@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.constant.ProcessKeyOrderByEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -20,19 +21,24 @@ import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.PermissionService;
 import com.yunche.loan.service.TaskSchedulingService;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.MappingConst.SUPPLEMENT_TYPE_TEXT_MAP;
-
+@Data
+class ScheduleTaskResult{
+    private String key;
+    private String keyName;
+    private List<ScheduleTaskVO> taskLists = new ArrayList<>();
+}
 
 @Service
 public class TaskSchedulingServiceImpl implements TaskSchedulingService {
@@ -60,7 +66,36 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 取分页信息
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
 
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        //算法开始
+        Set<String> sets = new TreeSet<String>(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                Integer x = ProcessKeyOrderByEnum.getOrderByCode(o1);
+                Integer y = ProcessKeyOrderByEnum.getOrderByCode(o2);
+                return x-y;
+            }
+        });
+        for(ScheduleTaskVO scheduleTaskVO:list){
+            sets.add(scheduleTaskVO.getTaskKey());
+        }
+        
+        List<ScheduleTaskResult> results = new LinkedList<ScheduleTaskResult>();
+        for (String str : sets) {
+            ScheduleTaskResult scheduleTaskResult = new ScheduleTaskResult();
+            scheduleTaskResult.setKey(str);
+            scheduleTaskResult.setKeyName(LoanProcessEnum.getNameByCode(str));
+            results.add(scheduleTaskResult);
+        }
+        for(ScheduleTaskVO scheduleTaskVO:list){
+            for(ScheduleTaskResult scheduleTaskResult:results){
+                if(scheduleTaskVO.getTaskKey().equals(scheduleTaskResult.getKey())){
+                    scheduleTaskResult.getTaskLists().add(scheduleTaskVO);
+                    break;
+                }
+            }
+        }
+
+        return ResultBean.ofSuccess(results, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     @Override
