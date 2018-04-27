@@ -22,13 +22,20 @@ public class TaskSchedulingController {
     @Resource
     private TaskSchedulingService taskSchedulingService;
 
+    /**
+     * 待办任务列表-all
+     */
+    @GetMapping(value = "/scheduletasklist")
+    public ResultBean scheduletasklist() {
+        return ResultBean.ofSuccess(taskSchedulingService.scheduleTaskList());
+    }
 
     /**
      * 待办任务列表
      */
-    @GetMapping(value = "/scheduletasklist")
-    public ResultBean scheduleTaskList(@RequestParam String key,@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
-        return taskSchedulingService.scheduleTaskList(key,pageIndex, pageSize);
+    @GetMapping(value = "/scheduletasklistBykey")
+    public ResultBean scheduletasklistBykey(@RequestParam String key,@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
+        return ResultBean.ofSuccess(taskSchedulingService.scheduleTaskListBykey(key,pageIndex, pageSize));
     }
 
     /**

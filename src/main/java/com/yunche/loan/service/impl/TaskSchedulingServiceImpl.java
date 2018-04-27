@@ -20,7 +20,6 @@ import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.PermissionService;
 import com.yunche.loan.service.TaskSchedulingService;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -32,12 +31,6 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.MappingConst.SUPPLEMENT_TYPE_TEXT_MAP;
-@Data
-class ScheduleTaskResult{
-    private String key;
-    private String keyName;
-    private List<ScheduleTaskVO> taskLists = new ArrayList<>();
-}
 
 @Service
 public class TaskSchedulingServiceImpl implements TaskSchedulingService {
@@ -56,19 +49,23 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
 
     @Override
+    public ResultBean scheduleTaskList() {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId(), level);
+        return ResultBean.ofSuccess(list);
+    }
 
-
-
-
-    public ResultBean scheduleTaskList(String key,Integer pageIndex, Integer pageSize) { EmployeeDO loginUser = SessionUtils.getLoginUser();
+    @Override
+    public ResultBean scheduleTaskListBykey(String key,Integer pageIndex, Integer pageSize) {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(key,loginUser.getId(), level);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskListBykey(key,loginUser.getId(), level);
         // 取分页信息
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
-
     @Override
     public ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery) {
 
