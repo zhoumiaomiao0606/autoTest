@@ -83,7 +83,7 @@
     <userTask id="usertask_commit_key" name="待收钥匙" activiti:candidateGroups="总经理,培训经理,催收主管,收钥匙专员"></userTask>
     <sequenceFlow id="flow66" sourceRef="parallelgateway3" targetRef="usertask_commit_key"></sequenceFlow>
     <userTask id="usertask_loan_review" name="放款审批" activiti:candidateGroups="总经理,培训经理,财务经理,财务审核"></userTask>
-    <sequenceFlow id="flow68" name="审核通过" sourceRef="exclusivegateway23" targetRef="usertask_loan_review">
+    <sequenceFlow id="flow68" name="审核通过" sourceRef="usertask_business_review" targetRef="usertask_loan_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_remit_review" name="打款确认" activiti:candidateGroups="总经理,培训经理,财务经理,财务助理,出纳"></userTask>
@@ -216,8 +216,6 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow170" sourceRef="parallelgateway8" targetRef="endevent27"></sequenceFlow>
-    <exclusiveGateway id="exclusivegateway23" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="flow175" sourceRef="usertask_business_review" targetRef="exclusivegateway23"></sequenceFlow>
     <userTask id="usertask_financial_scheme_modify_apply" name="金融方案修改申请" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
     <userTask id="usertask_refund_apply" name="退款申请" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
     <userTask id="usertask_financial_scheme_modify_apply_review" name="金融方案修改申请审核" activiti:candidateGroups="总经理,培训经理,总监,电审经理,电审主管,电审专员"></userTask>
@@ -396,9 +394,6 @@
       <bpmndi:BPMNShape bpmnElement="endevent28" id="BPMNShape_endevent28">
         <omgdc:Bounds height="35.0" width="35.0" x="3805.0" y="966.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="exclusivegateway23" id="BPMNShape_exclusivegateway23">
-        <omgdc:Bounds height="40.0" width="40.0" x="3580.0" y="270.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="usertask_financial_scheme_modify_apply" id="BPMNShape_usertask_financial_scheme_modify_apply">
         <omgdc:Bounds height="55.0" width="105.0" x="2166.0" y="118.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
@@ -555,10 +550,10 @@
         <omgdi:waypoint x="3340.0" y="1574.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow68" id="BPMNEdge_flow68">
-        <omgdi:waypoint x="3620.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3465.0" y="290.0"></omgdi:waypoint>
         <omgdi:waypoint x="3770.0" y="290.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="44.0" x="3679.0" y="274.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="44.0" x="3579.0" y="273.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow69" id="BPMNEdge_flow69">
@@ -599,7 +594,7 @@
         <omgdi:waypoint x="3411.0" y="186.0"></omgdi:waypoint>
         <omgdi:waypoint x="3412.0" y="263.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="22.0" x="3978.0" y="173.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="100.0" x="3978.0" y="173.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow93" id="BPMNEdge_flow93">
@@ -831,10 +826,6 @@
       <bpmndi:BPMNEdge bpmnElement="flow170" id="BPMNEdge_flow170">
         <omgdi:waypoint x="5013.0" y="290.0"></omgdi:waypoint>
         <omgdi:waypoint x="5240.0" y="290.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow175" id="BPMNEdge_flow175">
-        <omgdi:waypoint x="3465.0" y="290.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3580.0" y="290.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
