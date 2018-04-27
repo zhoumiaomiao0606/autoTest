@@ -12,4 +12,6 @@ public interface LoanFinancialPlanTempHisDOMapper {
     LoanFinancialPlanTempHisDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(LoanFinancialPlanTempHisDO record);
+
+    LoanFinancialPlanTempHisDO lastByOrderId(Long id);
 }

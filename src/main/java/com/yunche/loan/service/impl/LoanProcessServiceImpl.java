@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.mapper.*;
@@ -99,7 +100,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
 
     @Autowired
-    private FinancialSchemeService financialSchemeService;
+    private LoanRefundApplyDOMapper loanRefundApplyDOMapper;
 
 
     @Override
@@ -117,7 +118,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 节点权限校验
-        permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
+        if (approval.isCheckPermission()) {
+            permissionService.checkTaskPermission(approval.getTaskDefinitionKey_());
+        }
 
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
@@ -134,20 +137,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 【征信增补】
         execCreditSupplementTask(approval, loanOrderDO.getProcessInstId(), loanProcessDO);
 
-        // 发起/提交【资料增补单】
+        // 【资料增补单】
         if (isInfoSupplementTask(approval)) {
             return execInfoSupplementTask(approval);
         }
 
-        // 发起/审核（通过/打回/弃单）【金融方案修改申请】
-//        if (isFinancialSchemeModifyApplyTask(approval.getTaskDefinitionKey())) {
-//            return execFinancialSchemeModifyApplyTask(approval, loanProcessDO);
-//        }
+        // 【金融方案修改申请】
+        if (isFinancialSchemeModifyApplyTask(approval.getTaskDefinitionKey())) {
+            return execFinancialSchemeModifyApplyTask(approval, loanOrderDO, loanProcessDO);
+        }
 
-        // 发起/审核（通过/打回/弃单）【退款申请】
-//        if (isRefundApplyTask(approval.getTaskDefinitionKey())) {
-//            return execRefundApplyTask(approval, loanProcessDO);
-//        }
+        // 【退款申请】
+        if (isRefundApplyTask(approval.getTaskDefinitionKey())) {
+            return execRefundApplyTask(approval);
+        }
 
         // 获取当前执行任务（activiti中）
         Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
@@ -207,75 +210,246 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * TODO 执行 -发起/审核（通过/打回/弃单）【金融方案修改申请】
+     * 执行 -【金融方案修改申请】
      *
      * @param approval
+     * @param loanOrderDO
      * @param loanProcessDO
      * @return
      */
-    private ResultBean<Void> execFinancialSchemeModifyApplyTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+    private ResultBean<Void> execFinancialSchemeModifyApplyTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
-        // 【金融方案修改申请】-发起（提交）
+        // 【金融方案修改申请】
         if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
-            // 新建并提交【金融方案修改申请】单
-            execFinancialSchemeModifyApply(approval);
-            return ResultBean.ofSuccess(null, "[金融方案修改申请]任务执行成功");
+            // 提交
+            Preconditions.checkArgument(ACTION_PASS.equals(approval.getAction()), "流程审核参数有误");
+
+            // 更新申请单状态
+            updateFinancialSchemeModifyApply(approval, APPLY_ORDER_TODO);
+
+            // 自动打回    - 放款审批 -> 业务审批
+            autoRejectLoanReviewTask(loanProcessDO);
+
+            return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
         }
 
-        // 【金融方案修改申请审核】-通过/打回
+        // 【金融方案修改申请审核】
         else if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
-            // 通过/打回
-            execFinancialSchemeModifyApplyReview(approval);
-            return ResultBean.ofSuccess(null, "[金融方案修改申请审核]任务执行成功");
+
+            // 通过/打回/弃单(整个流程)
+            if (ACTION_PASS.equals(approval.getAction())) {
+
+                execFinancialSchemeModifyApplyReviewTask(approval, loanOrderDO.getLoanFinancialPlanId());
+
+            } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+
+                // 更新申请单状态
+                updateFinancialSchemeModifyApply(approval, APPLY_ORDER_REJECT);
+
+            } else if (ACTION_CANCEL.equals(approval.getAction())) {
+
+                // 更新申请单状态
+                updateFinancialSchemeModifyApply(approval, APPLY_ORDER_CANCEL);
+
+                // 结束流程
+                dealCancelTask(loanOrderDO.getProcessInstId());
+
+                // 更新流程状态
+                loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
+                updateLoanProcess(loanProcessDO);
+
+            } else {
+                throw new BizException("流程审核参数有误");
+            }
+
+            return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
         }
 
         return ResultBean.ofError("参数有误");
     }
 
-    private void execFinancialSchemeModifyApply(ApprovalParam approval) {
+    /**
+     * 自动打回    - 放款审批 -> 业务审批
+     *
+     * @param loanProcessDO
+     */
+    private void autoRejectLoanReviewTask(LoanProcessDO loanProcessDO) {
+        // 打回
+        if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
+
+            ApprovalParam approvalParam = new ApprovalParam();
+            approvalParam.setOrderId(loanProcessDO.getOrderId());
+            approvalParam.setTaskDefinitionKey(LOAN_REVIEW.getCode());
+            approvalParam.setAction(ACTION_REJECT_MANUAL);
+            approvalParam.setNeedLog(false);
+            approvalParam.setCheckPermission(false);
+
+            approval(approvalParam);
+        }
+    }
+
+    /**
+     * 金融方案修改审核 -审核通过
+     *
+     * @param approval
+     * @param loanFinancialPlanId
+     */
+    private void execFinancialSchemeModifyApplyReviewTask(ApprovalParam approval, Long loanFinancialPlanId) {
+
+        // 角色
+        Set<String> userGroupNameSet = getUserGroupNameSet();
+        // 最大电审角色等级
+        Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
+        // 电审专员及以上有权电审
+        Preconditions.checkArgument(null != maxRoleLevel && maxRoleLevel >= LEVEL_TELEPHONE_VERIFY_COMMISSIONER, "您无电审权限");
+
+        // 获取贷款额度
+        LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.selectByPrimaryKey(approval.getSupplementOrderId());
+        Preconditions.checkArgument(null != loanFinancialPlanTempHisDO && null != loanFinancialPlanTempHisDO.getFinancial_loan_amount(), "贷款额不能为空");
+        double loanAmount = loanFinancialPlanTempHisDO.getFinancial_loan_amount().doubleValue();
+
+        // 直接通过
+        if (loanAmount >= 0 && loanAmount <= 100000) {
+            // 完成任务：全部角色直接过单
+            passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId);
+        } else if (loanAmount > 100000 && loanAmount <= 300000) {
+            // 电审主管以上可过单
+            if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_LEADER) {
+                // 记录
+                updateFinancialSchemeModifyApply(approval, maxRoleLevel);
+            } else {
+                // 完成任务
+                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId);
+            }
+        } else if (loanAmount > 300000 && loanAmount <= 500000) {
+            // 电审经理以上可过单
+            if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_MANAGER) {
+                // 记录
+                updateFinancialSchemeModifyApply(approval, maxRoleLevel);
+            } else {
+                // 完成任务
+                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId);
+            }
+        } else if (loanAmount > 500000) {
+            // 总监以上可过单
+            if (maxRoleLevel < LEVEL_DIRECTOR) {
+                // 记录
+                updateFinancialSchemeModifyApply(approval, maxRoleLevel);
+            } else {
+                // 完成任务
+                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId);
+            }
+        }
+    }
+
+    private void passFinancialSchemeModifyApplyReviewTask(ApprovalParam approval, Byte applyOrderStatus, Long LoanFinancialPlanId) {
+
+        updateFinancialSchemeModifyApply(approval, applyOrderStatus);
+
+        // 更新金融方案原表数据
+        LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.selectByPrimaryKey(approval.getSupplementOrderId());
+
+        LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
+        loanFinancialPlanDO.setId(LoanFinancialPlanId);
+        loanFinancialPlanDO.setFinancialProductId(loanFinancialPlanTempHisDO.getFinancial_product_id());
+        loanFinancialPlanDO.setAppraisal(loanFinancialPlanTempHisDO.getFinancial_appraisal());
+        loanFinancialPlanDO.setBank(loanFinancialPlanTempHisDO.getFinancial_bank());
+        loanFinancialPlanDO.setLoanTime(loanFinancialPlanTempHisDO.getFinancial_loan_time());
+        loanFinancialPlanDO.setDownPaymentRatio(loanFinancialPlanTempHisDO.getFinancial_down_payment_ratio());
+        loanFinancialPlanDO.setFinancialProductName(loanFinancialPlanTempHisDO.getFinancial_product_name());
+        loanFinancialPlanDO.setSignRate(loanFinancialPlanTempHisDO.getFinancial_sign_rate());
+        loanFinancialPlanDO.setLoanAmount(loanFinancialPlanTempHisDO.getFinancial_loan_amount());
+        loanFinancialPlanDO.setFirstMonthRepay(loanFinancialPlanTempHisDO.getFinancial_first_month_repay());
+        loanFinancialPlanDO.setCarPrice(loanFinancialPlanTempHisDO.getFinancial_car_price());
+        loanFinancialPlanDO.setDownPaymentMoney(loanFinancialPlanTempHisDO.getFinancial_down_payment_money());
+        loanFinancialPlanDO.setBankPeriodPrincipal(loanFinancialPlanTempHisDO.getFinancial_bank_period_principal());
+        loanFinancialPlanDO.setEachMonthRepay(loanFinancialPlanTempHisDO.getFinancial_each_month_repay());
+        loanFinancialPlanDO.setPrincipalInterestSum(loanFinancialPlanTempHisDO.getFinancial_bank_period_principal());
+
+        loanFinancialPlanDO.setGmtModify(new Date());
+
+        int count = loanFinancialPlanDOMapper.updateByPrimaryKeyWithBLOBs(loanFinancialPlanDO);
+        Preconditions.checkArgument(count > 0, "审核失败");
+    }
+
+    /**
+     * 更新申请单状态
+     *
+     * @param approval
+     * @param applyOrderStatus
+     */
+    private void updateFinancialSchemeModifyApply(ApprovalParam approval, Byte applyOrderStatus) {
         Preconditions.checkNotNull(approval.getSupplementOrderId(), "[申请单ID]不能为空");
 
-        Byte applyOrderStatus = null;
-        switch (approval.getAction()) {
-            case 0:
-                applyOrderStatus = APPLY_ORDER_CANCEL;
-                break;
-            case 1:
-                applyOrderStatus = APPLY_ORDER_PASS;
-                break;
-            case 2:
-                applyOrderStatus = APPLY_ORDER_TODO;
-                break;
-            case 3:
-                applyOrderStatus = APPLY_ORDER_REJECT;
-                break;
-        }
-
-        // insert
+        // update
         LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = new LoanFinancialPlanTempHisDO();
         loanFinancialPlanTempHisDO.setId(approval.getSupplementOrderId());
         loanFinancialPlanTempHisDO.setStatus(applyOrderStatus);
 
-        int count = loanFinancialPlanTempHisDOMapper.insertSelective(loanFinancialPlanTempHisDO);
-        Preconditions.checkArgument(count > 0, "插入失败");
-    }
+        if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            loanFinancialPlanTempHisDO.setEnd_time(new Date());
+        }
 
-    private void execFinancialSchemeModifyApplyReview(ApprovalParam approval) {
-
-
+        int count = loanFinancialPlanTempHisDOMapper.updateByPrimaryKeySelective(loanFinancialPlanTempHisDO);
+        Preconditions.checkArgument(count > 0, "失败");
     }
 
     /**
-     * TODO 执行 -发起/审核（通过/打回/弃单）【退款申请】
+     * 执行 -【退款申请】
      *
      * @param approval
-     * @param loanProcessDO
      * @return
      */
-    private ResultBean<Void> execRefundApplyTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+    private ResultBean<Void> execRefundApplyTask(ApprovalParam approval) {
 
+        // 【退款申请】
+        if (REFUND_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+            // 提交
+            Preconditions.checkArgument(ACTION_PASS.equals(approval.getAction()), "流程审核参数有误");
 
-        return ResultBean.ofSuccess(null);
+            updateRefundApplyTask(approval, APPLY_ORDER_TODO);
+            return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+        }
+
+        // 【退款申请审核】
+        else if (REFUND_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+            // 通过/打回
+            Byte applyOrderStatus = null;
+            if (ACTION_PASS.equals(approval.getAction())) {
+                applyOrderStatus = APPLY_ORDER_PASS;
+            } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+                applyOrderStatus = APPLY_ORDER_REJECT;
+            } else {
+                throw new BizException("流程审核参数有误");
+            }
+
+            updateRefundApplyTask(approval, applyOrderStatus);
+            return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+        }
+
+        return ResultBean.ofError("参数有误");
+    }
+
+    /**
+     * 更新退款申请单状态
+     *
+     * @param approval
+     * @param applyOrderStatus
+     */
+    private void updateRefundApplyTask(ApprovalParam approval, Byte applyOrderStatus) {
+        Preconditions.checkNotNull(approval.getSupplementOrderId(), "[申请单ID]不能为空");
+
+        // update
+        LoanRefundApplyDO loanRefundApplyDO = new LoanRefundApplyDO();
+        loanRefundApplyDO.setId(approval.getSupplementOrderId());
+        loanRefundApplyDO.setStatus(applyOrderStatus);
+
+        if (REFUND_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            loanRefundApplyDO.setEnd_time(new Date());
+        }
+
+        int count = loanRefundApplyDOMapper.updateByPrimaryKeySelective(loanRefundApplyDO);
+        Preconditions.checkArgument(count > 0, "失败");
     }
 
     /**
@@ -395,7 +569,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 【业务申请】
-        if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+        else if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
             // 客户资料、车辆信息、金融方案  必须均已录入
             Preconditions.checkNotNull(loanOrderDO.getLoanCustomerId(), "请先录入客户信息");
             Preconditions.checkNotNull(loanOrderDO.getLoanCarInfoId(), "请先录入车辆信息");
@@ -407,10 +581,39 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 【金融方案修改申请】
-        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+        else if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
             //
             Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "还未过[电审]，无法发起金融方案修改申请");
+
+//            if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview())) {
+//                loanRefundApplyDOMapper.last
+//            }
             Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起金融方案修改申请");
+
+            // 历史进行中的申请单
+            LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(loanOrderDO.getId());
+            if (null != loanFinancialPlanTempHisDO) {
+                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的申请单");
+            }
+        }
+
+        // 【退款申请】
+        else if (REFUND_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+
+            // 历史进行中的申请单
+            LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(loanOrderDO.getId());
+            if (null != loanRefundApplyDO) {
+                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanRefundApplyDO.getStatus()), "当前已存在审核中的申请单");
+            }
+        }
+
+        // 【业务审批】|| 【放款审批】
+        else if ((BUSINESS_REVIEW.getCode().equals(taskDefinitionKey) || LOAN_REVIEW.getCode().equals(taskDefinitionKey))
+                && ACTION_PASS.equals(action)) {
+
+            // 进行中的【金融方案修改申请】
+
+
         }
     }
 
@@ -929,7 +1132,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // 电审主管以上可过单
                 if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_LEADER) {
                     // 记录
-                    updateTelephoneVerify(orderId, maxRoleLevel, taskId, variables);
+                    updateTelephoneVerify(orderId, maxRoleLevel);
                 } else {
                     // 完成任务
                     passTelephoneVerifyTask(task, variables, approval);
@@ -938,7 +1141,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // 电审经理以上可过单
                 if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_MANAGER) {
                     // 记录
-                    updateTelephoneVerify(orderId, maxRoleLevel, taskId, variables);
+                    updateTelephoneVerify(orderId, maxRoleLevel);
                 } else {
                     // 完成任务
                     passTelephoneVerifyTask(task, variables, approval);
@@ -947,7 +1150,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // 总监以上可过单
                 if (maxRoleLevel < LEVEL_DIRECTOR) {
                     // 记录
-                    updateTelephoneVerify(orderId, maxRoleLevel, taskId, variables);
+                    updateTelephoneVerify(orderId, maxRoleLevel);
                 } else {
                     // 完成任务
                     passTelephoneVerifyTask(task, variables, approval);
@@ -1036,10 +1239,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param orderId
      * @param telephoneVerifyProcess
-     * @param taskId
-     * @param variables
      */
-    private void updateTelephoneVerify(Long orderId, Byte telephoneVerifyProcess, String taskId, Map<String, Object> variables) {
+    private void updateTelephoneVerify(Long orderId, Byte telephoneVerifyProcess) {
         LoanProcessDO loanProcessDO = new LoanProcessDO();
         loanProcessDO.setOrderId(orderId);
         loanProcessDO.setTelephoneVerify(telephoneVerifyProcess);
@@ -1152,6 +1353,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         approvalParam.setTaskDefinitionKey(CREDIT_APPLY.getCode());
         approvalParam.setAction(ACTION_PASS);
         approvalParam.setNeedLog(false);
+        approvalParam.setCheckPermission(false);
         approval(approvalParam);
     }
 
@@ -1280,6 +1482,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         approval.setTaskDefinitionKey(CREDIT_APPLY.getCode());
         approval.setAction(ACTION_PASS);
         approval.setNeedLog(false);
+        approval.setCheckPermission(false);
         approval(approval);
     }
 

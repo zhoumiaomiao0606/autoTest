@@ -52,6 +52,10 @@ public class ApprovalParam {
      */
     private boolean needLog = true;
     /**
+     * 是否需要鉴权
+     */
+    private boolean checkPermission = true;
+    /**
      * 增补源头任务节点
      */
 //    private String supplementOriginTask;

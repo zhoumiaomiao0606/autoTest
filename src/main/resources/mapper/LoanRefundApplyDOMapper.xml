@@ -1,198 +1,210 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.LoanRefundApplyDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanRefundApplyDO" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="order_id" property="order_id" jdbcType="BIGINT" />
-    <result column="initiator_id" property="initiator_id" jdbcType="BIGINT" />
-    <result column="initiator_name" property="initiator_name" jdbcType="VARCHAR" />
-    <result column="auditor_id" property="auditor_id" jdbcType="BIGINT" />
-    <result column="auditor_name" property="auditor_name" jdbcType="VARCHAR" />
-    <result column="refund_amount" property="refund_amount" jdbcType="DECIMAL" />
-    <result column="refund_date" property="refund_date" jdbcType="DATE" />
-    <result column="refund_reason" property="refund_reason" jdbcType="TINYINT" />
-    <result column="refund_pay_open_bank" property="refund_pay_open_bank" jdbcType="VARCHAR" />
-    <result column="refund_pay_account_name" property="refund_pay_account_name" jdbcType="VARCHAR" />
-    <result column="refund_pay_account" property="refund_pay_account" jdbcType="VARCHAR" />
-    <result column="start_time" property="start_time" jdbcType="TIMESTAMP" />
-    <result column="end_time" property="end_time" jdbcType="TIMESTAMP" />
-    <result column="status" property="status" jdbcType="TINYINT" />
-  </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.LoanRefundApplyDO" extends="BaseResultMap" >
-    <result column="path" property="path" jdbcType="LONGVARCHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.yunche.loan.mapper.LoanRefundApplyDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanRefundApplyDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="order_id" property="order_id" jdbcType="BIGINT"/>
+        <result column="initiator_id" property="initiator_id" jdbcType="BIGINT"/>
+        <result column="initiator_name" property="initiator_name" jdbcType="VARCHAR"/>
+        <result column="auditor_id" property="auditor_id" jdbcType="BIGINT"/>
+        <result column="auditor_name" property="auditor_name" jdbcType="VARCHAR"/>
+        <result column="refund_amount" property="refund_amount" jdbcType="DECIMAL"/>
+        <result column="refund_date" property="refund_date" jdbcType="DATE"/>
+        <result column="refund_reason" property="refund_reason" jdbcType="TINYINT"/>
+        <result column="refund_pay_open_bank" property="refund_pay_open_bank" jdbcType="VARCHAR"/>
+        <result column="refund_pay_account_name" property="refund_pay_account_name" jdbcType="VARCHAR"/>
+        <result column="refund_pay_account" property="refund_pay_account" jdbcType="VARCHAR"/>
+        <result column="start_time" property="start_time" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="end_time" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.LoanRefundApplyDO" extends="BaseResultMap">
+        <result column="path" property="path" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, order_id, initiator_id, initiator_name, auditor_id, auditor_name, refund_amount, 
     refund_date, refund_reason, refund_pay_open_bank, refund_pay_account_name, refund_pay_account, 
     start_time, end_time, status
   </sql>
-  <sql id="Blob_Column_List" >
+    <sql id="Blob_Column_List">
     path
   </sql>
-  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from loan_refund_apply
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+
+    <!--lastByOrderId-->
+    <select id="lastByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_refund_apply
+        where order_id = #{orderId,jdbcType=BIGINT}
+        ORDER BY start_time DESC
+        limit 1
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from loan_refund_apply
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from loan_refund_apply
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.LoanRefundApplyDO" >
-    insert into loan_refund_apply
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="order_id != null" >
-        order_id,
-      </if>
-      <if test="initiator_id != null" >
-        initiator_id,
-      </if>
-      <if test="initiator_name != null" >
-        initiator_name,
-      </if>
-      <if test="auditor_id != null" >
-        auditor_id,
-      </if>
-      <if test="auditor_name != null" >
-        auditor_name,
-      </if>
-      <if test="refund_amount != null" >
-        refund_amount,
-      </if>
-      <if test="refund_date != null" >
-        refund_date,
-      </if>
-      <if test="refund_reason != null" >
-        refund_reason,
-      </if>
-      <if test="refund_pay_open_bank != null" >
-        refund_pay_open_bank,
-      </if>
-      <if test="refund_pay_account_name != null" >
-        refund_pay_account_name,
-      </if>
-      <if test="refund_pay_account != null" >
-        refund_pay_account,
-      </if>
-      <if test="start_time != null" >
-        start_time,
-      </if>
-      <if test="end_time != null" >
-        end_time,
-      </if>
-      <if test="status != null" >
-        status,
-      </if>
-      <if test="path != null" >
-        path,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="order_id != null" >
-        #{order_id,jdbcType=BIGINT},
-      </if>
-      <if test="initiator_id != null" >
-        #{initiator_id,jdbcType=BIGINT},
-      </if>
-      <if test="initiator_name != null" >
-        #{initiator_name,jdbcType=VARCHAR},
-      </if>
-      <if test="auditor_id != null" >
-        #{auditor_id,jdbcType=BIGINT},
-      </if>
-      <if test="auditor_name != null" >
-        #{auditor_name,jdbcType=VARCHAR},
-      </if>
-      <if test="refund_amount != null" >
-        #{refund_amount,jdbcType=DECIMAL},
-      </if>
-      <if test="refund_date != null" >
-        #{refund_date,jdbcType=DATE},
-      </if>
-      <if test="refund_reason != null" >
-        #{refund_reason,jdbcType=TINYINT},
-      </if>
-      <if test="refund_pay_open_bank != null" >
-        #{refund_pay_open_bank,jdbcType=VARCHAR},
-      </if>
-      <if test="refund_pay_account_name != null" >
-        #{refund_pay_account_name,jdbcType=VARCHAR},
-      </if>
-      <if test="refund_pay_account != null" >
-        #{refund_pay_account,jdbcType=VARCHAR},
-      </if>
-      <if test="start_time != null" >
-        #{start_time,jdbcType=TIMESTAMP},
-      </if>
-      <if test="end_time != null" >
-        #{end_time,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null" >
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="path != null" >
-        #{path,jdbcType=LONGVARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanRefundApplyDO" >
-    update loan_refund_apply
-    <set >
-      <if test="order_id != null" >
-        order_id = #{order_id,jdbcType=BIGINT},
-      </if>
-      <if test="initiator_id != null" >
-        initiator_id = #{initiator_id,jdbcType=BIGINT},
-      </if>
-      <if test="initiator_name != null" >
-        initiator_name = #{initiator_name,jdbcType=VARCHAR},
-      </if>
-      <if test="auditor_id != null" >
-        auditor_id = #{auditor_id,jdbcType=BIGINT},
-      </if>
-      <if test="auditor_name != null" >
-        auditor_name = #{auditor_name,jdbcType=VARCHAR},
-      </if>
-      <if test="refund_amount != null" >
-        refund_amount = #{refund_amount,jdbcType=DECIMAL},
-      </if>
-      <if test="refund_date != null" >
-        refund_date = #{refund_date,jdbcType=DATE},
-      </if>
-      <if test="refund_reason != null" >
-        refund_reason = #{refund_reason,jdbcType=TINYINT},
-      </if>
-      <if test="refund_pay_open_bank != null" >
-        refund_pay_open_bank = #{refund_pay_open_bank,jdbcType=VARCHAR},
-      </if>
-      <if test="refund_pay_account_name != null" >
-        refund_pay_account_name = #{refund_pay_account_name,jdbcType=VARCHAR},
-      </if>
-      <if test="refund_pay_account != null" >
-        refund_pay_account = #{refund_pay_account,jdbcType=VARCHAR},
-      </if>
-      <if test="start_time != null" >
-        start_time = #{start_time,jdbcType=TIMESTAMP},
-      </if>
-      <if test="end_time != null" >
-        end_time = #{end_time,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null" >
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="path != null" >
-        path = #{path,jdbcType=LONGVARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.yunche.loan.domain.entity.LoanRefundApplyDO">
+        insert into loan_refund_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="order_id != null">
+                order_id,
+            </if>
+            <if test="initiator_id != null">
+                initiator_id,
+            </if>
+            <if test="initiator_name != null">
+                initiator_name,
+            </if>
+            <if test="auditor_id != null">
+                auditor_id,
+            </if>
+            <if test="auditor_name != null">
+                auditor_name,
+            </if>
+            <if test="refund_amount != null">
+                refund_amount,
+            </if>
+            <if test="refund_date != null">
+                refund_date,
+            </if>
+            <if test="refund_reason != null">
+                refund_reason,
+            </if>
+            <if test="refund_pay_open_bank != null">
+                refund_pay_open_bank,
+            </if>
+            <if test="refund_pay_account_name != null">
+                refund_pay_account_name,
+            </if>
+            <if test="refund_pay_account != null">
+                refund_pay_account,
+            </if>
+            <if test="start_time != null">
+                start_time,
+            </if>
+            <if test="end_time != null">
+                end_time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="path != null">
+                path,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="order_id != null">
+                #{order_id,jdbcType=BIGINT},
+            </if>
+            <if test="initiator_id != null">
+                #{initiator_id,jdbcType=BIGINT},
+            </if>
+            <if test="initiator_name != null">
+                #{initiator_name,jdbcType=VARCHAR},
+            </if>
+            <if test="auditor_id != null">
+                #{auditor_id,jdbcType=BIGINT},
+            </if>
+            <if test="auditor_name != null">
+                #{auditor_name,jdbcType=VARCHAR},
+            </if>
+            <if test="refund_amount != null">
+                #{refund_amount,jdbcType=DECIMAL},
+            </if>
+            <if test="refund_date != null">
+                #{refund_date,jdbcType=DATE},
+            </if>
+            <if test="refund_reason != null">
+                #{refund_reason,jdbcType=TINYINT},
+            </if>
+            <if test="refund_pay_open_bank != null">
+                #{refund_pay_open_bank,jdbcType=VARCHAR},
+            </if>
+            <if test="refund_pay_account_name != null">
+                #{refund_pay_account_name,jdbcType=VARCHAR},
+            </if>
+            <if test="refund_pay_account != null">
+                #{refund_pay_account,jdbcType=VARCHAR},
+            </if>
+            <if test="start_time != null">
+                #{start_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="end_time != null">
+                #{end_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="path != null">
+                #{path,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanRefundApplyDO">
+        update loan_refund_apply
+        <set>
+            <if test="order_id != null">
+                order_id = #{order_id,jdbcType=BIGINT},
+            </if>
+            <if test="initiator_id != null">
+                initiator_id = #{initiator_id,jdbcType=BIGINT},
+            </if>
+            <if test="initiator_name != null">
+                initiator_name = #{initiator_name,jdbcType=VARCHAR},
+            </if>
+            <if test="auditor_id != null">
+                auditor_id = #{auditor_id,jdbcType=BIGINT},
+            </if>
+            <if test="auditor_name != null">
+                auditor_name = #{auditor_name,jdbcType=VARCHAR},
+            </if>
+            <if test="refund_amount != null">
+                refund_amount = #{refund_amount,jdbcType=DECIMAL},
+            </if>
+            <if test="refund_date != null">
+                refund_date = #{refund_date,jdbcType=DATE},
+            </if>
+            <if test="refund_reason != null">
+                refund_reason = #{refund_reason,jdbcType=TINYINT},
+            </if>
+            <if test="refund_pay_open_bank != null">
+                refund_pay_open_bank = #{refund_pay_open_bank,jdbcType=VARCHAR},
+            </if>
+            <if test="refund_pay_account_name != null">
+                refund_pay_account_name = #{refund_pay_account_name,jdbcType=VARCHAR},
+            </if>
+            <if test="refund_pay_account != null">
+                refund_pay_account = #{refund_pay_account,jdbcType=VARCHAR},
+            </if>
+            <if test="start_time != null">
+                start_time = #{start_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="end_time != null">
+                end_time = #{end_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="path != null">
+                path = #{path,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>

@@ -26,9 +26,9 @@ public class LoanFileConst {
      * 6-驾驶证;7- 户口本;8- 银行流水;9-结婚证;10-房产证;
      * 11-定位照;12-合影照片;13-家访视频; 14-收入证明; 15-面签照;
      * 16-家访照片; 17-车辆照片; 18-其他资料;19-发票;20-合格证/登记证书;
-     * 21-保单;22-提车合影;23-行驶证;24-评估资料;
+     * 21-保单;22-提车合影;23-行驶证;24-评估资料;25-打款凭证;
      */
-    public static final Map<Byte, String> TYPE_NAME_MAP = Maps.newConcurrentMap();
+    public static final Map<Byte, String> TYPE_NAME_MAP = Maps.newHashMap();
 
     static {
         TYPE_NAME_MAP.put((byte) 1, "身份证");
@@ -55,5 +55,6 @@ public class LoanFileConst {
         TYPE_NAME_MAP.put((byte) 22, "提车合影");
         TYPE_NAME_MAP.put((byte) 23, "行驶证");
         TYPE_NAME_MAP.put((byte) 24, "评估资料");
+        TYPE_NAME_MAP.put((byte) 25, "打款凭证");
     }
 }
