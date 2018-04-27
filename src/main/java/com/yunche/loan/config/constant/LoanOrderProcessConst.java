@@ -27,6 +27,11 @@ public class LoanOrderProcessConst {
     public static final Byte TASK_PROCESS_REJECT = 3;
 
     /**
+     * 已退款
+     */
+    public static final Byte TASK_PROCESS_REFUND = 21;
+
+    /**
      * 任务状态:  2-已结清;
      */
     public static final Byte TASK_PROCESS_CLOSED = 11;

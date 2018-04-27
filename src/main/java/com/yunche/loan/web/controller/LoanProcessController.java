@@ -32,8 +32,9 @@ public class LoanProcessController {
      */
     @Limiter(route = "/api/v1/loanprocess/approval")
     @PostMapping(value = "/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> approval(@RequestBody ApprovalParam Approval) {
-        return loanProcessService.approval(Approval);
+    public ResultBean<Void> approval(@RequestBody ApprovalParam approval) {
+        approval.setCheckPermission(true);
+        return loanProcessService.approval(approval);
     }
 
     /**

@@ -149,7 +149,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 【退款申请】
         if (isRefundApplyTask(approval.getTaskDefinitionKey())) {
-            return execRefundApplyTask(approval);
+            return execRefundApplyTask(approval, loanProcessDO);
         }
 
         // 获取当前执行任务（activiti中）
@@ -230,7 +230,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 自动打回    - 放款审批 -> 业务审批
             autoRejectLoanReviewTask(loanProcessDO);
 
-            return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+            return ResultBean.ofSuccess(null, "[ 金融方案修改申请]任务执行成功");
         }
 
         // 【金融方案修改申请审核】
@@ -262,7 +262,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 throw new BizException("流程审核参数有误");
             }
 
-            return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+            return ResultBean.ofSuccess(null, "[金融方案修改申请审核]任务执行成功");
         }
 
         return ResultBean.ofError("参数有误");
@@ -398,33 +398,41 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 执行 -【退款申请】
      *
      * @param approval
+     * @param loanProcessDO
      * @return
      */
-    private ResultBean<Void> execRefundApplyTask(ApprovalParam approval) {
+    private ResultBean<Void> execRefundApplyTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
 
         // 【退款申请】
         if (REFUND_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
             // 提交
             Preconditions.checkArgument(ACTION_PASS.equals(approval.getAction()), "流程审核参数有误");
 
-            updateRefundApplyTask(approval, APPLY_ORDER_TODO);
-            return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+            updateRefundApply(approval, APPLY_ORDER_TODO);
+            return ResultBean.ofSuccess(null, "[退款申请]任务执行成功");
         }
 
         // 【退款申请审核】
         else if (REFUND_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
             // 通过/打回
-            Byte applyOrderStatus = null;
             if (ACTION_PASS.equals(approval.getAction())) {
-                applyOrderStatus = APPLY_ORDER_PASS;
+
+                // 更新状态
+                updateRefundApply(approval, APPLY_ORDER_PASS);
+
+                // 更新流程（已退款）
+                loanProcessDO.setRemitReview(TASK_PROCESS_REFUND);
+                updateLoanProcess(loanProcessDO);
+
             } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
-                applyOrderStatus = APPLY_ORDER_REJECT;
+
+                updateRefundApply(approval, APPLY_ORDER_REJECT);
+
             } else {
                 throw new BizException("流程审核参数有误");
             }
 
-            updateRefundApplyTask(approval, applyOrderStatus);
-            return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+            return ResultBean.ofSuccess(null, "[退款申请审核]任务执行成功");
         }
 
         return ResultBean.ofError("参数有误");
@@ -436,7 +444,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param applyOrderStatus
      */
-    private void updateRefundApplyTask(ApprovalParam approval, Byte applyOrderStatus) {
+    private void updateRefundApply(ApprovalParam approval, Byte applyOrderStatus) {
         Preconditions.checkNotNull(approval.getSupplementOrderId(), "[申请单ID]不能为空");
 
         // update
@@ -582,28 +590,27 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 【金融方案修改申请】
         else if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
-            //
-            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "还未过[电审]，无法发起金融方案修改申请");
-
-//            if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview())) {
-//                loanRefundApplyDOMapper.last
-//            }
-            Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起金融方案修改申请");
+            // 1
+            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "[电审]未通过，无法发起[金融方案修改申请]");
+            // 0/2
+            Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
 
             // 历史进行中的申请单
             LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(loanOrderDO.getId());
             if (null != loanFinancialPlanTempHisDO) {
-                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的申请单");
+                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
             }
         }
 
         // 【退款申请】
         else if (REFUND_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+            // 1
+            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview()), "[打款确认]未通过，无法发起[退款申请]");
 
             // 历史进行中的申请单
             LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(loanOrderDO.getId());
             if (null != loanRefundApplyDO) {
-                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanRefundApplyDO.getStatus()), "当前已存在审核中的申请单");
+                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanRefundApplyDO.getStatus()), "当前已存在审核中的[退款申请]");
             }
         }
 
@@ -612,8 +619,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 && ACTION_PASS.equals(action)) {
 
             // 进行中的【金融方案修改申请】
-
-
+            LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(loanOrderDO.getId());
+            if (null != loanFinancialPlanTempHisDO) {
+                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "该订单已发起[金融方案修改申请]，请待审核通过后再操作！");
+            }
         }
     }
 
