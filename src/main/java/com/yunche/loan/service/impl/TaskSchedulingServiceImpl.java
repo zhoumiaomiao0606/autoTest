@@ -4,7 +4,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.LoanProcessEnum;
-import com.yunche.loan.config.constant.ProcessKeyOrderByEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -57,45 +56,14 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
 
     @Override
-    public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
+    public ResultBean scheduleTaskList(String key,Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId(), level);
-
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId(), level,key);
         // 取分页信息
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
-
-        //算法开始
-        Set<String> sets = new TreeSet<String>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                Integer x = ProcessKeyOrderByEnum.getOrderByCode(o1);
-                Integer y = ProcessKeyOrderByEnum.getOrderByCode(o2);
-                return x-y;
-            }
-        });
-        for(ScheduleTaskVO scheduleTaskVO:list){
-            sets.add(scheduleTaskVO.getTaskKey());
-        }
-        
-        List<ScheduleTaskResult> results = new LinkedList<ScheduleTaskResult>();
-        for (String str : sets) {
-            ScheduleTaskResult scheduleTaskResult = new ScheduleTaskResult();
-            scheduleTaskResult.setKey(str);
-            scheduleTaskResult.setKeyName(LoanProcessEnum.getNameByCode(str));
-            results.add(scheduleTaskResult);
-        }
-        for(ScheduleTaskVO scheduleTaskVO:list){
-            for(ScheduleTaskResult scheduleTaskResult:results){
-                if(scheduleTaskVO.getTaskKey().equals(scheduleTaskResult.getKey())){
-                    scheduleTaskResult.getTaskLists().add(scheduleTaskVO);
-                    break;
-                }
-            }
-        }
-
-        return ResultBean.ofSuccess(results, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     @Override

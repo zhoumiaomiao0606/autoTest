@@ -548,7 +548,6 @@
 
 
         <select id="selectScheduleTaskList" resultType="com.yunche.loan.domain.vo.ScheduleTaskVO" >
-
       select task.* from
 		(
 		SELECT
@@ -739,7 +738,7 @@
 										)
 									) b on o.loan_base_info_id = b.id)
 							else 1=2 end
-				) task order by task.createScheduleDate asc
+				) task having task.taskKey = #{key,jdbcType=VARCHAR} order by task.createScheduleDate asc
         </select>
 
 </mapper>
