@@ -25,7 +25,7 @@ public class RecombinationVO<T> {
 
         private UniversalApprovalInfo loanreview_msg;
 
-        private UniversalApprovalInfo business_review_mag;
+        private UniversalApprovalInfo business_review_msg;
 
         private LoanTelephoneVerifyDO telephone_des;
 
