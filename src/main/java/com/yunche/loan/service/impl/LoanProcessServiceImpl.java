@@ -246,6 +246,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // 更新申请单状态
                 updateFinancialSchemeModifyApply(approval, APPLY_ORDER_REJECT);
 
+                // 打回记录
+                createRejectLog_(loanProcessDO.getOrderId(), approval.getTaskDefinitionKey(), FINANCIAL_SCHEME_MODIFY_APPLY.getCode(), approval.getInfo());
+
             } else if (ACTION_CANCEL.equals(approval.getAction())) {
 
                 // 更新申请单状态
@@ -266,6 +269,27 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         return ResultBean.ofError("参数有误");
+    }
+
+    /**
+     * 打回记录
+     *
+     * @param orderId
+     * @param rejectOriginTask
+     * @param rejectToTask
+     * @param reason
+     */
+    private void createRejectLog_(Long orderId, String rejectOriginTask, String rejectToTask, String reason) {
+
+        LoanRejectLogDO loanRejectLogDO = new LoanRejectLogDO();
+        loanRejectLogDO.setOrderId(orderId);
+        loanRejectLogDO.setRejectOriginTask(rejectOriginTask);
+        loanRejectLogDO.setRejectToTask(rejectToTask);
+        loanRejectLogDO.setReason(reason);
+        loanRejectLogDO.setGmtCreate(new Date());
+
+        int count = loanRejectLogDOMapper.insertSelective(loanRejectLogDO);
+        Preconditions.checkArgument(count > 0, "打回记录失败");
     }
 
     /**
@@ -434,7 +458,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
 
+                // 更新状态
                 updateRefundApply(approval, APPLY_ORDER_REJECT);
+
+                // 打回记录
+                createRejectLog_(loanProcessDO.getOrderId(), approval.getTaskDefinitionKey(), REFUND_APPLY.getCode(), approval.getInfo());
 
             } else {
                 throw new BizException("流程审核参数有误");
@@ -1849,13 +1877,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // 2.是否打回自【资料审核】
                 LoanRejectLogDO loanRejectLogDO = loanRejectLogDOMapper.lastByOrderIdAndTaskDefinitionKey(approval.getOrderId(), approval.getTaskDefinitionKey());
 
-                // 是
-                if (MATERIAL_REVIEW.getCode().equals(loanRejectLogDO.getRejectOriginTask())) {
-                    // 添加流程变量 -打回来源 -> reject_origin_task
-                    variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, MATERIAL_REVIEW.getCode());
+                if (null != loanRejectLogDO) {
+                    // 是
+                    if (MATERIAL_REVIEW.getCode().equals(loanRejectLogDO.getRejectOriginTask())) {
+                        // 添加流程变量 -打回来源 -> reject_origin_task
+                        variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, MATERIAL_REVIEW.getCode());
 
-                    // 将reject_origin_task置空
-                    updateLoanApplyRejectOrginTaskIsNull(loanProcessDO);
+                        // 将reject_origin_task置空
+                        updateLoanApplyRejectOrginTaskIsNull(loanProcessDO);
+                    } else {
+                        // 否
+                        variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, null);
+                    }
                 } else {
                     // 否
                     variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, null);
