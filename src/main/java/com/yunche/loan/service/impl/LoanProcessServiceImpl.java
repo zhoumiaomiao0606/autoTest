@@ -386,8 +386,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanFinancialPlanTempHisDO.setId(approval.getSupplementOrderId());
         loanFinancialPlanTempHisDO.setStatus(applyOrderStatus);
 
-        if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-            loanFinancialPlanTempHisDO.setEnd_time(new Date());
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+            loanFinancialPlanTempHisDO.setInitiator_id(loginUser.getId());
+            loanFinancialPlanTempHisDO.setInitiator_name(loginUser.getName());
+        } else if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+            loanFinancialPlanTempHisDO.setAuditor_id(loginUser.getId());
+            loanFinancialPlanTempHisDO.setAuditor_name(loginUser.getName());
+            if (ACTION_PASS.equals(approval.getAction())) {
+                loanFinancialPlanTempHisDO.setEnd_time(new Date());
+            }
         }
 
         int count = loanFinancialPlanTempHisDOMapper.updateByPrimaryKeySelective(loanFinancialPlanTempHisDO);
@@ -452,8 +460,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanRefundApplyDO.setId(approval.getSupplementOrderId());
         loanRefundApplyDO.setStatus(applyOrderStatus);
 
-        if (REFUND_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-            loanRefundApplyDO.setEnd_time(new Date());
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        if (REFUND_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+            loanRefundApplyDO.setInitiator_id(loginUser.getId());
+            loanRefundApplyDO.setInitiator_name(loginUser.getName());
+        } else if (REFUND_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+            loanRefundApplyDO.setAuditor_id(loginUser.getId());
+            loanRefundApplyDO.setAuditor_name(loginUser.getName());
+            if (ACTION_PASS.equals(approval.getAction())) {
+                loanRefundApplyDO.setEnd_time(new Date());
+            }
         }
 
         int count = loanRefundApplyDOMapper.updateByPrimaryKeySelective(loanRefundApplyDO);
