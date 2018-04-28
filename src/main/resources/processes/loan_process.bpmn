@@ -10,21 +10,15 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanAmount >= 2}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
-    <userTask id="usertask_loan_apply" name="业务申请" activiti:candidateGroups="总经理,培训经理,业务内勤">
-      <documentation>【合伙人-业务员】填写【贷款业务申请单】—— 客户(主/共/担/联)信息补充 + 车辆信息 + 金融方案</documentation>
-    </userTask>
+    <userTask id="usertask_loan_apply" name="业务申请" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
     <sequenceFlow id="flow13" name="&lt;13W 银行征信审核   征信通过" sourceRef="exclusivegateway3" targetRef="exclusivegateway21">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanAmount == 1 && action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="总经理,培训经理,业务内勤">
-      <documentation>【合伙人-业务员】填写【上门调查结果】</documentation>
-    </userTask>
+    <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
     <sequenceFlow id="flow15" name="提交 或 弃单 或 自动打回" sourceRef="exclusivegateway20" targetRef="filter_loan_apply_visit_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reject_origin_task != "usertask_material_review" && (action == 1 || action == 2 || action == -1) }]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_telephone_verify" name="电审" activiti:candidateGroups="总经理,培训经理,总监,电审经理,电审主管,电审专员">
-      <documentation>【电审员】审核【贷款业务申请单 + 上门调查结果】</documentation>
-    </userTask>
+    <userTask id="usertask_telephone_verify" name="电审" activiti:candidateGroups="总经理,培训经理,总监,电审经理,电审主管,电审专员"></userTask>
     <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow25" name="审核通过" sourceRef="exclusivegateway7" targetRef="exclusivegateway2">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
@@ -594,7 +588,7 @@
         <omgdi:waypoint x="3411.0" y="186.0"></omgdi:waypoint>
         <omgdi:waypoint x="3412.0" y="263.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="3978.0" y="173.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="3978.0" y="173.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow93" id="BPMNEdge_flow93">
