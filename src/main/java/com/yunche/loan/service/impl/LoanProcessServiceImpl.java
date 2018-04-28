@@ -411,7 +411,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanFinancialPlanTempHisDO.setStatus(applyOrderStatus);
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
             loanFinancialPlanTempHisDO.setInitiator_id(loginUser.getId());
             loanFinancialPlanTempHisDO.setInitiator_name(loginUser.getName());
         } else if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
@@ -489,7 +489,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanRefundApplyDO.setStatus(applyOrderStatus);
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        if (REFUND_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+        if (REFUND_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
             loanRefundApplyDO.setInitiator_id(loginUser.getId());
             loanRefundApplyDO.setInitiator_name(loginUser.getName());
         } else if (REFUND_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
