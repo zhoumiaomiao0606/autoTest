@@ -122,4 +122,6 @@ public class LoanCustomerDO {
     private BigDecimal debtRatio;
 
     private Byte guaranteeType;
+
+    private String residenceAddress;//户籍地址
 }

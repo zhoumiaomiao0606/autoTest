@@ -60,6 +60,7 @@
         <result column="family_person_num" property="familyPersonNum" jdbcType="BIGINT" />
         <result column="debt_ratio" property="debtRatio" jdbcType="DECIMAL" />
         <result column="guarantee_type" property="guaranteeType" jdbcType="TINYINT" />
+        <result column="residence_address" property="residenceAddress" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -72,7 +73,7 @@
     income_certificate_company_address, family_address, family_mobile, family_monthly_income,
     feeding_num, floor_space, house_owner_relation, bank_card_transmit_address, bank_card_transmit_postcode,
     house_certificate_type, bank_card_transmit_address_type, company_postcode, elementary_school,
-    professional, family_person_num, debt_ratio, guarantee_type
+    professional, family_person_num, debt_ratio, guarantee_type, residence_address
   </sql>
 
     <!--listPrincipalCustIdByIdCard-->
@@ -150,7 +151,7 @@
       bank_card_transmit_address, bank_card_transmit_postcode,
       house_certificate_type, bank_card_transmit_address_type,
       company_postcode, elementary_school, professional,
-      family_person_num, debt_ratio, guarantee_type
+      family_person_num, debt_ratio, guarantee_type, residence_address
       )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
       #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR},
@@ -171,7 +172,7 @@
       #{bankCardTransmitAddress,jdbcType=VARCHAR}, #{bankCardTransmitPostcode,jdbcType=VARCHAR},
       #{houseCertificateType,jdbcType=TINYINT}, #{bankCardTransmitAddressType,jdbcType=TINYINT},
       #{companyPostcode,jdbcType=VARCHAR}, #{elementarySchool,jdbcType=VARCHAR}, #{professional,jdbcType=VARCHAR},
-      #{familyPersonNum,jdbcType=BIGINT}, #{debtRatio,jdbcType=DECIMAL}, #{guaranteeType,jdbcType=TINYINT}
+      #{familyPersonNum,jdbcType=BIGINT}, #{debtRatio,jdbcType=DECIMAL}, #{guaranteeType,jdbcType=TINYINT},#{residenceAddress,jdbcType=VARCHAR}
       )
   </insert>
 
@@ -356,6 +357,9 @@
             <if test="guaranteeType != null" >
                 guarantee_type,
             </if>
+            <if test="residenceAddress != null">
+                residence_address,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -531,6 +535,9 @@
             </if>
             <if test="guaranteeType != null" >
                 #{guaranteeType,jdbcType=TINYINT},
+            </if>
+            <if test="residenceAddress != null">
+                #{residenceAddress,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -709,6 +716,9 @@
             <if test="guaranteeType != null" >
                 guarantee_type = #{guaranteeType,jdbcType=TINYINT},
             </if>
+            <if test="residenceAddress != null">
+                residence_address = #{residenceAddress,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -771,7 +781,8 @@
       professional = #{professional,jdbcType=VARCHAR},
       family_person_num = #{familyPersonNum,jdbcType=BIGINT},
       debt_ratio = #{debtRatio,jdbcType=DECIMAL},
-      guarantee_type = #{guaranteeType,jdbcType=TINYINT}
+      guarantee_type = #{guaranteeType,jdbcType=TINYINT},
+        residence_address = #{residenceAddress,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 

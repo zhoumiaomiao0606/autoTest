@@ -134,5 +134,7 @@ public class CustomerVO {
 
     private Byte guaranteeType;
 
+    private String residenceAddress;//户籍地址
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

@@ -623,6 +623,7 @@
           customer.address                               AS customer_address,
           customer.marry                                 AS customer_marry,
           customer.identity_address                      AS customer_identity_address,
+          customer.residence_address                     AS customer_residence_address,
           customer.mobile_area                           AS customer_mobile_area,
           customer.education                             AS customer_education,
           customer.company_name                          AS customer_company_name,
