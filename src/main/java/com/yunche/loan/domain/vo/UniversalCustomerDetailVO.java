@@ -70,4 +70,6 @@ public class UniversalCustomerDetailVO {
     private String process_society_credit_result;
     private String process_society_credit_info;
     private String process_society_add_condition;
+
+    private String customer_residence_address;//户籍地址
 }
