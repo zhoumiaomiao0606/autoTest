@@ -89,6 +89,8 @@ public class MaterialServiceImpl implements MaterialService {
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         recombinationVO.setCredits(credits);
         recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify", orderId));
+        recombinationVO.setLoanreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_loan_review", orderId));
+        recombinationVO.setBusiness_review_mag(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_business_review", orderId));
         recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
         recombinationVO.setCustomers(customers);

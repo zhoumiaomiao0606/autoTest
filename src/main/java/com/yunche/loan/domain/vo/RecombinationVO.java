@@ -23,6 +23,10 @@ public class RecombinationVO<T> {
 
         private UniversalApprovalInfo telephone_msg;
 
+        private UniversalApprovalInfo loanreview_msg;
+
+        private UniversalApprovalInfo business_review_mag;
+
         private LoanTelephoneVerifyDO telephone_des;
 
         private UniversalLoanInfoVO loan;
