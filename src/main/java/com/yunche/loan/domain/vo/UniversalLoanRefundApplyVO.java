@@ -12,7 +12,7 @@ public class UniversalLoanRefundApplyVO {
 
     private String refund_id;
     private String order_id;
-    private String refund_amountl;
+    private String refund_amount;
     private String refund_date;
     private String refund_reason;
     private String refund_pay_open_bank;
@@ -22,7 +22,7 @@ public class UniversalLoanRefundApplyVO {
 
     public List<String> getPath() {
         if (StringUtils.isBlank(path)) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         return JSON.parseArray(path, String.class);
     }
