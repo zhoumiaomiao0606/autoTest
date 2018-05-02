@@ -309,6 +309,7 @@
             customer.education                                                                      AS customer_education,
             customer.duty                                                                           AS customer_duty,
             customer.identity_address                                                               AS customer_identity_address,
+            customer.residence_address                                                              AS customer_residence_address,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
