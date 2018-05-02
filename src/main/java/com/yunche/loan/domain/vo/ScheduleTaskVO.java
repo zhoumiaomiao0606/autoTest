@@ -80,4 +80,8 @@ public class ScheduleTaskVO {
 
     private Boolean canUpdateLoanApply = true;
 
+    private String his_id;
+
+    private String refund_id;
+
 }

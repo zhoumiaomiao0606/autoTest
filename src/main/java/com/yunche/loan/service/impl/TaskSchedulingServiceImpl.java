@@ -52,7 +52,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     public ResultBean scheduleTaskList() {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(loginUser.getId(), level);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(null,loginUser.getId(), level);
         return ResultBean.ofSuccess(list);
     }
 
@@ -61,7 +61,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskListBykey(key,loginUser.getId(), level);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(key,loginUser.getId(), level);
         // 取分页信息
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
