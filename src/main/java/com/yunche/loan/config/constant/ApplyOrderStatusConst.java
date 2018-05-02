@@ -7,9 +7,9 @@ package com.yunche.loan.config.constant;
 public class ApplyOrderStatusConst {
 
     /**
-     * 弃单
+     * 初始状态
      */
-    public static final Byte APPLY_ORDER_CANCEL = 0;
+    public static final Byte APPLY_ORDER_INIT = 0;
     /**
      * 已通过
      */
@@ -22,4 +22,9 @@ public class ApplyOrderStatusConst {
      * 已打回
      */
     public static final Byte APPLY_ORDER_REJECT = 3;
+
+    /**
+     * 弃单
+     */
+    public static final Byte APPLY_ORDER_CANCEL = 12;
 }

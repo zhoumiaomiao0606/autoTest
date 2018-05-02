@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_INIT;
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
+import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_TODO;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 
 @Service
@@ -65,6 +67,7 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
             EmployeeDO employeeDO = SessionUtils.getLoginUser();
             DO.setInitiator_id(employeeDO.getId());
             DO.setInitiator_name(employeeDO.getName());
+            DO.setStatus(APPLY_ORDER_INIT);
             int count = loanRefundApplyDOMapper.insertSelective(DO);
             Preconditions.checkArgument(count > 0, "插入失败");
 

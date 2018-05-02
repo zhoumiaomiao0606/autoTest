@@ -52,20 +52,21 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     public ResultBean scheduleTaskList() {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(null,loginUser.getId(), level);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(null, loginUser.getId(), level);
         return ResultBean.ofSuccess(list);
     }
 
     @Override
-    public ResultBean scheduleTaskListBykey(String key,Integer pageIndex, Integer pageSize) {
+    public ResultBean scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(key,loginUser.getId(), level);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(key, loginUser.getId(), level);
         // 取分页信息
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
+
     @Override
     public ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery) {
 
@@ -92,7 +93,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery) {
-
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
@@ -159,16 +159,34 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         List<TaskStateVO> taskStateVOS = taskStateVOResult.getData();
 
         if (CollectionUtils.isEmpty(taskStateVOS)) {
-            // 无节点信息
-            String cancelTaskDefKey = loanProcessDOMapper.getCancelTaskDefKey(Long.valueOf(appTaskVO.getId()));
-            // 弃单
-            if (StringUtils.isNotBlank(cancelTaskDefKey)) {
+            // TODO 待删除
+//            // 无节点信息
+//            String cancelTaskDefKey = loanProcessDOMapper.getCancelTaskDefKey(Long.valueOf(appTaskVO.getId()));
+//            // 弃单
+//            if (StringUtils.isNotBlank(cancelTaskDefKey)) {
+//                appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CANCEL));
+//                appTaskVO.setCurrentTask("已弃单");
+//            } else {
+//                appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CLOSED));
+//                appTaskVO.setCurrentTask("已结单");
+//            }
+
+            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(Long.valueOf(appTaskVO.getId()));
+            Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+
+            if (ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus())) {
+                // 弃单
                 appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CANCEL));
                 appTaskVO.setCurrentTask("已弃单");
-            } else {
+            } else if (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus())) {
+                // 结单
                 appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CLOSED));
                 appTaskVO.setCurrentTask("已结单");
+            } else {
+                appTaskVO.setTaskStatus(null);
+                appTaskVO.setCurrentTask("状态异常");
             }
+
         } else {
             TaskStateVO taskStateVO = taskStateVOS.get(0);
 
@@ -241,6 +259,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     break;
                 case "7":
                     taskTypeText = "已提交";
+                    break;
+                case "12":
+                    taskTypeText = "已弃单";
                     break;
                 default:
                     taskTypeText = "未知状态";

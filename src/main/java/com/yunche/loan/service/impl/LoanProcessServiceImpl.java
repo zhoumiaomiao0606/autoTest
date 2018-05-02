@@ -528,6 +528,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (ACTION_CANCEL.equals(approval.getAction())) {
             loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
             loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
+            updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL);
         }
 
         // 结单 ending  -暂无【结单节点】
@@ -1615,6 +1616,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 if (null != loanFinancialPlanTempHisDO) {
 
                     switch (loanFinancialPlanTempHisDO.getStatus()) {
+                        case 0:
+                            taskStatus = 2;
+                            break;
                         case 1:
                             taskStatus = 1;
                             break;
@@ -1623,6 +1627,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             break;
                         case 3:
                             taskStatus = 3;
+                            break;
+                        case 12:
+                            taskStatus = 12;
                             break;
                     }
                 }
@@ -1643,6 +1650,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                         case 3:
                             taskStatus = 3;
                             break;
+                        case 12:
+                            taskStatus = 12;
+                            break;
                     }
                 }
 
@@ -1653,6 +1663,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 if (null != loanRefundApplyDO) {
 
                     switch (loanRefundApplyDO.getStatus()) {
+                        case 0:
+                            taskStatus = 2;
+                            break;
                         case 1:
                             taskStatus = 1;
                             break;
@@ -1661,6 +1674,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             break;
                         case 3:
                             taskStatus = 3;
+                            break;
+                        case 12:
+                            taskStatus = 12;
                             break;
                     }
                 }
@@ -1680,6 +1696,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             break;
                         case 3:
                             taskStatus = 3;
+                            break;
+                        case 12:
+                            taskStatus = 12;
                             break;
                     }
                 }
@@ -1727,6 +1746,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 break;
             case 7:
                 taskStatusText = "未提交";
+                break;
+            case 12:
+                taskStatusText = "已弃单";
                 break;
             // null
             default:
