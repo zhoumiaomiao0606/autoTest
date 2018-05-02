@@ -8,6 +8,7 @@ import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.entity.LoanRefundApplyDO;
 import com.yunche.loan.domain.param.LoanRefundApplyParam;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.LoanRefundApplyDOMapper;
 import com.yunche.loan.service.LoanRefundApplyService;
@@ -31,7 +32,7 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
     private LoanQueryDOMapper loanQueryDOMapper;
 
     @Resource
-    private LoanProcessServiceImpl loanProcessServiceImpl;
+    private LoanProcessDOMapper loanProcessDOMapper;
 
 
     @Override
@@ -85,7 +86,8 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
      */
     private void checkPreCondition(Long orderId) {
 
-        LoanProcessDO loanProcessDO = loanProcessServiceImpl.getLoanProcess(orderId);
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
         // 【退款申请】
         // 1

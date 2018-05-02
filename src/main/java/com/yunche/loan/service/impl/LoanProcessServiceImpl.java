@@ -203,7 +203,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param orderId
      * @return
      */
-    public LoanProcessDO getLoanProcess(Long orderId) {
+    private LoanProcessDO getLoanProcess(Long orderId) {
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
         return loanProcessDO;

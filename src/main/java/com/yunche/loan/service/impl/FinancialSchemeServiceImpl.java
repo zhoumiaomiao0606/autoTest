@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
@@ -37,7 +36,8 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
 
     @Resource
-    private LoanProcessServiceImpl loanProcessServiceImpl;
+    private LoanProcessDOMapper loanProcessDOMapper;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -166,7 +166,8 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
      */
     private void checkPreCondition(Long orderId) {
 
-        LoanProcessDO loanProcessDO = loanProcessServiceImpl.getLoanProcess(orderId);
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
         // 1
         Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "[电审]未通过，无法发起[金融方案修改申请]");
