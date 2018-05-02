@@ -50,9 +50,8 @@ public class FinancialSchemeController {
      */
     @Limiter(route = "/api/v1/loanorder/financialscheme/modifyUpdate")
     @PostMapping(value = "/modifyUpdate", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean modifyUpdate(@RequestBody @Validated FinancialSchemeModifyUpdateParam param) {
-        financialSchemeService.modifyUpdate(param);
-        return ResultBean.ofSuccess(null);
+    public ResultBean<Long> modifyUpdate(@RequestBody @Validated FinancialSchemeModifyUpdateParam param) {
+        return financialSchemeService.modifyUpdate(param);
     }
 
     /**

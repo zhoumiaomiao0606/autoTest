@@ -2,9 +2,8 @@ package com.yunche.loan.domain.param;
 
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class LoanRefundApplyParam {
     private List<String> path;
 
     public String getPath() {
-        if(CollectionUtils.isEmpty(path)){
+        if (CollectionUtils.isEmpty(path)) {
             return JSON.toJSONString(new ArrayList<>());
         }
         return JSON.toJSON(path).toString();

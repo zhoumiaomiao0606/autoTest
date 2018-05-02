@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
@@ -85,7 +86,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
     @Override
     @Transactional
-    public void modifyUpdate(FinancialSchemeModifyUpdateParam param) {
+    public ResultBean<Long> modifyUpdate(FinancialSchemeModifyUpdateParam param) {
 
         checkPreCondition(Long.valueOf(param.getOrder_id()));
 
@@ -95,7 +96,10 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
             EmployeeDO employeeDO = SessionUtils.getLoginUser();
             his.setInitiator_id(employeeDO.getId());
             his.setInitiator_name(employeeDO.getName());
-            loanFinancialPlanTempHisDOMapper.insertSelective(his);
+            int count = loanFinancialPlanTempHisDOMapper.insertSelective(his);
+            Preconditions.checkArgument(count > 0, "插入失败");
+
+            return ResultBean.ofSuccess(his.getId());
 
         } else {
             //单号为空,视为新增
@@ -105,6 +109,8 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
             his.setInitiator_id(employeeDO.getId());
             his.setInitiator_name(employeeDO.getName());
             loanFinancialPlanTempHisDOMapper.updateByPrimaryKeySelective(his);
+
+            return ResultBean.ofSuccess(his.getId());
         }
     }
 
