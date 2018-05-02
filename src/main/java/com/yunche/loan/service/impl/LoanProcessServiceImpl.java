@@ -1579,7 +1579,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Override
     public ResultBean<TaskStateVO> taskStatus(Long orderId, String taskDefinitionKey) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "任务ID不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "任务Key不能为空");
 
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
@@ -1607,7 +1607,86 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         } else {
             // 进行中
-            taskStatus = getTaskStatus(loanProcessDO, taskDefinitionKey);
+
+            if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey)) {
+
+                // 历史进行中的申请单
+                LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
+                if (null != loanFinancialPlanTempHisDO) {
+
+                    switch (loanFinancialPlanTempHisDO.getStatus()) {
+                        case 1:
+                            taskStatus = 1;
+                            break;
+                        case 2:
+                            taskStatus = 1;
+                            break;
+                        case 3:
+                            taskStatus = 3;
+                            break;
+                    }
+                }
+
+            } else if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
+
+                // 历史进行中的申请单
+                LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
+                if (null != loanFinancialPlanTempHisDO) {
+
+                    switch (loanFinancialPlanTempHisDO.getStatus()) {
+                        case 1:
+                            taskStatus = 1;
+                            break;
+                        case 2:
+                            taskStatus = 2;
+                            break;
+                        case 3:
+                            taskStatus = 3;
+                            break;
+                    }
+                }
+
+            } else if (REFUND_APPLY.getCode().equals(taskDefinitionKey)) {
+
+                // 历史进行中的申请单
+                LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(orderId);
+                if (null != loanRefundApplyDO) {
+
+                    switch (loanRefundApplyDO.getStatus()) {
+                        case 1:
+                            taskStatus = 1;
+                            break;
+                        case 2:
+                            taskStatus = 1;
+                            break;
+                        case 3:
+                            taskStatus = 3;
+                            break;
+                    }
+                }
+
+            } else if (REFUND_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
+
+                // 历史进行中的申请单
+                LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(orderId);
+                if (null != loanRefundApplyDO) {
+
+                    switch (loanRefundApplyDO.getStatus()) {
+                        case 1:
+                            taskStatus = 1;
+                            break;
+                        case 2:
+                            taskStatus = 2;
+                            break;
+                        case 3:
+                            taskStatus = 3;
+                            break;
+                    }
+                }
+
+            } else {
+                taskStatus = getTaskStatus(loanProcessDO, taskDefinitionKey);
+            }
 
             taskStateVO.setTaskStatus(taskStatus);
             taskStateVO.setTaskStatusText(getTaskStatusText(taskStatus));
