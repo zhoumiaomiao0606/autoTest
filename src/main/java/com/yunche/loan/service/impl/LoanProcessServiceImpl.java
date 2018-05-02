@@ -203,7 +203,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param orderId
      * @return
      */
-    private LoanProcessDO getLoanProcess(Long orderId) {
+    public LoanProcessDO getLoanProcess(Long orderId) {
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
         return loanProcessDO;
@@ -325,7 +325,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 最大电审角色等级
         Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
-        Preconditions.checkArgument(null != maxRoleLevel && maxRoleLevel >= LEVEL_TELEPHONE_VERIFY_COMMISSIONER, "您无电审权限");
+        Preconditions.checkArgument(null != maxRoleLevel && maxRoleLevel >= LEVEL_TELEPHONE_VERIFY_COMMISSIONER, "您无[电审]权限");
 
         // 获取贷款额度
         LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.selectByPrimaryKey(approval.getSupplementOrderId());
@@ -632,32 +632,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Preconditions.checkArgument(loanCustomerDOS.size() >= 2, "紧急联系人不能少于2个");
         }
 
-        // 【金融方案修改申请】
-        else if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
-            // 1
-            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "[电审]未通过，无法发起[金融方案修改申请]");
-            // 0/2
-            Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
-
-            // 历史进行中的申请单
-            LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(loanOrderDO.getId());
-            if (null != loanFinancialPlanTempHisDO) {
-                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
-            }
-        }
-
-        // 【退款申请】
-        else if (REFUND_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
-            // 1
-            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview()), "[打款确认]未通过，无法发起[退款申请]");
-
-            // 历史进行中的申请单
-            LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(loanOrderDO.getId());
-            if (null != loanRefundApplyDO) {
-                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanRefundApplyDO.getStatus()), "当前已存在审核中的[退款申请]");
-            }
-        }
-
         // 【业务审批】|| 【放款审批】
         else if ((BUSINESS_REVIEW.getCode().equals(taskDefinitionKey) || LOAN_REVIEW.getCode().equals(taskDefinitionKey))
                 && ACTION_PASS.equals(action)) {
@@ -668,6 +642,34 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "该订单已发起[金融方案修改申请]，请待审核通过后再操作！");
             }
         }
+
+        // 已经在create中做了校验
+//        // 【金融方案修改申请】
+//        else if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+//            // 1
+//            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "[电审]未通过，无法发起[金融方案修改申请]");
+//            // 0/2
+//            Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
+//
+//            // 历史进行中的申请单
+//            LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(loanOrderDO.getId());
+//            if (null != loanFinancialPlanTempHisDO) {
+//                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
+//            }
+//        }
+//
+//        // 【退款申请】
+//        else if (REFUND_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+//            // 1
+//            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview()), "[打款确认]未通过，无法发起[退款申请]");
+//
+//            // 历史进行中的申请单
+//            LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(loanOrderDO.getId());
+//            if (null != loanRefundApplyDO) {
+//                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanRefundApplyDO.getStatus()), "当前已存在审核中的[退款申请]");
+//            }
+//        }
+
     }
 
     /**
@@ -1142,7 +1144,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param orderId
      * @return
      */
-    private LoanOrderDO getLoanOrder(Long orderId) {
+    public LoanOrderDO getLoanOrder(Long orderId) {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
         Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");

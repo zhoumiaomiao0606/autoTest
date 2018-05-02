@@ -1,12 +1,10 @@
 package com.yunche.loan.service.impl;
 
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.EmployeeDO;
-import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
-import com.yunche.loan.domain.entity.LoanFinancialPlanTempHisDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.FinancialSchemeModifyUpdateParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
@@ -20,8 +18,10 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+
 @Service
-@Transactional
 public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
     @Resource
@@ -35,6 +35,9 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
     @Resource
     private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
+
+    @Resource
+    private LoanProcessServiceImpl loanProcessServiceImpl;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -61,7 +64,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
-        recombinationVO.setDiff(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(orderId,hisId));
+        recombinationVO.setDiff(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(orderId, hisId));
         recombinationVO.setCustomers(customers);
         return recombinationVO;
     }
@@ -72,17 +75,19 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         RecombinationVO recombinationVO = new RecombinationVO();
         /*recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
         recombinationVO.setDiff(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(hisId));*/
-        if(hisId == null){
+        if (hisId == null) {
             recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
-        }
-        else{
-            recombinationVO.setInfo(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(orderId,hisId));
+        } else {
+            recombinationVO.setInfo(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(orderId, hisId));
         }
         return recombinationVO;
     }
 
     @Override
+    @Transactional
     public void modifyUpdate(FinancialSchemeModifyUpdateParam param) {
+
+        checkPreCondition(Long.valueOf(param.getOrder_id()));
 
         if (StringUtils.isBlank(param.getHis_id())) {
             //单号为空,视为新增
@@ -104,6 +109,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     }
 
     @Override
+    @Transactional
     public void migration(Long orderId, Long hisId, String action) {
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
@@ -127,7 +133,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         EmployeeDO employeeDO = SessionUtils.getLoginUser();
         updateV.setAuditor_id(employeeDO.getId());
         updateV.setAuditor_name(employeeDO.getName());
-        updateV.setEnd_time(new Timestamp(new Date().getTime()));
+        updateV.setEnd_time(new Timestamp(System.currentTimeMillis()));
         loanFinancialPlanTempHisDOMapper.updateByPrimaryKeySelective(updateV);
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         loanFinancialPlanDO.setId(loanFinancialPlanId);
@@ -153,4 +159,24 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         return loanQueryDOMapper.selectUniversalModifyCustomerOrder(SessionUtils.getLoginUser().getId(), name);
     }
 
+    /**
+     * 发起【申请单】前置校验
+     *
+     * @param orderId
+     */
+    private void checkPreCondition(Long orderId) {
+
+        LoanProcessDO loanProcessDO = loanProcessServiceImpl.getLoanProcess(orderId);
+
+        // 1
+        Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "[电审]未通过，无法发起[金融方案修改申请]");
+        // 0/2
+        Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
+
+        // 历史进行中的申请单
+        LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
+        if (null != loanFinancialPlanTempHisDO) {
+            Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
+        }
+    }
 }
