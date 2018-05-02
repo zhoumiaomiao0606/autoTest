@@ -252,6 +252,8 @@ public class MaterialServiceImpl implements MaterialService {
         return ResultBean.ofSuccess(returnKey,"下载完成");
     }
 
+
+
     /**
      * 客户资料下载
      * @param request
@@ -260,13 +262,12 @@ public class MaterialServiceImpl implements MaterialService {
      * @return
      */
     public  String zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId){
-
-
         OSSClient ossClient=null;
-        File zipFile=null;
         ZipOutputStream zos=null;
         BufferedInputStream buff=null;
-
+        FileInputStream fis=null;
+        BufferedOutputStream out=null;
+        File zipFile=null;
         try {
 
             List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId);
@@ -283,13 +284,13 @@ public class MaterialServiceImpl implements MaterialService {
                     });
 
             // 初始化
-             ossClient =  OSSUnit.getOSSClient();
+            ossClient =  OSSUnit.getOSSClient();
             String fileName=null;
             if(downloadParams!=null){
-                 fileName = downloadParams.get(0).getName()+"_"+downloadParams.get(0).getIdCard()+".zip";
+                fileName = downloadParams.get(0).getName()+"_"+downloadParams.get(0).getIdCard()+".zip";
             }
             // 创建临时文件
-             zipFile = File.createTempFile(fileName, ".zip");
+            zipFile = File.createTempFile(fileName, ".zip");
             FileOutputStream f = new FileOutputStream(zipFile);
             /**
              * 作用是为任何OutputStream产生校验和
@@ -333,6 +334,7 @@ public class MaterialServiceImpl implements MaterialService {
                     zos.closeEntry(); // 当前文件写完，定位为写入下一条项目
                 }
             }
+            zos.close();
 
             fileName = new String(fileName.getBytes(), "utf-8");
 
@@ -342,40 +344,60 @@ public class MaterialServiceImpl implements MaterialService {
             response.setHeader("Location", fileName);
             response.setHeader("Cache-Control", "max-age=0");
             response.setHeader("Content-Disposition", "attachment; filename=" +java.net.URLEncoder.encode(fileName, "UTF-8"));
-            buff = new BufferedInputStream(new FileInputStream(zipFile));
-            BufferedOutputStream out=new BufferedOutputStream(response.getOutputStream());
-            byte[] cache=new byte[1024];
+
+            fis = new FileInputStream(zipFile);
+            buff = new BufferedInputStream(fis);
+            out=new BufferedOutputStream(response.getOutputStream());
+            byte[] tmpCache=new byte[1024];
             int l=0;
             while (l < zipFile.length()) {
-                int j = buff.read(cache, 0, 1024);
+                int j = buff.read(tmpCache, 0, 1024);
                 l += j;
-                out.write(cache, 0, j);
+                out.write(tmpCache, 0, j);
             }
-
+//            // 关闭流
+//            fis.close();
+//            buff.close();
+//            out.close();
+//
+//            ossClient.shutdown();
+//            // 删除临时文件
+//            zipFile.delete();
         } catch (Exception e) {
-            e.printStackTrace();
+            Preconditions.checkArgument(false,e.getMessage());
         }finally {
             try {
                 if(buff!=null){
                     buff.close();
                 }
+                if(fis!=null){
+                    fis.close();
+                }
+                if(out!=null){
+                    out.close();
+                }
                 if(ossClient!=null){
                     ossClient.shutdown();
                 }
+
                 if(zipFile!=null){
                     // 删除临时文件
                     zipFile.delete();
-
                 }
                 if(zos!=null){
                     zos.close();
                 }
-            } catch (IOException e) {
+
+
+
+            }catch(IOException e){
                 Preconditions.checkArgument(false,e.getMessage());
+
             }
         }
 
         return null;
     }
+
 
 }
