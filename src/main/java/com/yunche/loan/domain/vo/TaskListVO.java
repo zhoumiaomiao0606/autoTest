@@ -57,6 +57,8 @@ public class TaskListVO {
      * 是否可以编辑金融方案   -> 当 rejectOriginTask = "usertask_material_review"时，为false(不能编辑)
      */
     private Boolean canUpdateLoanApply = true;
+    private String his_start_time;
+    private String refund_start_time;
 }
 
 
