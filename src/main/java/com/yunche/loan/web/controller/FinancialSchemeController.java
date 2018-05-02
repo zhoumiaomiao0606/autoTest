@@ -44,7 +44,6 @@ public class FinancialSchemeController {
         return ResultBean.ofSuccess(financialSchemeService.modifyDetail(Long.valueOf(order_id), StringUtils.isBlank(his_id) ? null : Long.valueOf(his_id)));
     }
 
-
     /**
      * 金融方案修改详情
      */

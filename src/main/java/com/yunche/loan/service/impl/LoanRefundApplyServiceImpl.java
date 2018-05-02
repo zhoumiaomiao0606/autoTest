@@ -57,9 +57,10 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
     @Transactional
     public ResultBean<Long> update(LoanRefundApplyParam param) {
 
-        checkPreCondition(Long.valueOf(param.getOrder_id()));
-
         if (StringUtils.isBlank(param.getRefund_id())) {
+
+            checkPreCondition(Long.valueOf(param.getOrder_id()));
+
             LoanRefundApplyDO DO = BeanPlasticityUtills.copy(LoanRefundApplyDO.class, param);
             EmployeeDO employeeDO = SessionUtils.getLoginUser();
             DO.setInitiator_id(employeeDO.getId());
@@ -87,7 +88,7 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
     }
 
     /**
-     * 发起【申请单】前置校验
+     * 新建【申请单】前置校验
      *
      * @param orderId
      */

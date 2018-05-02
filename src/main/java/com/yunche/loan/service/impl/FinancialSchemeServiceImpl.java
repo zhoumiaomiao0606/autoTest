@@ -88,9 +88,10 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     @Transactional
     public ResultBean<Long> modifyUpdate(FinancialSchemeModifyUpdateParam param) {
 
-        checkPreCondition(Long.valueOf(param.getOrder_id()));
-
         if (StringUtils.isBlank(param.getHis_id())) {
+
+            checkPreCondition(Long.valueOf(param.getOrder_id()));
+
             //单号为空,视为新增
             LoanFinancialPlanTempHisDO his = BeanPlasticityUtills.copy(LoanFinancialPlanTempHisDO.class, param);
             EmployeeDO employeeDO = SessionUtils.getLoginUser();
@@ -166,7 +167,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     }
 
     /**
-     * 发起【申请单】前置校验
+     * 新建【申请单】前置校验
      *
      * @param orderId
      */
