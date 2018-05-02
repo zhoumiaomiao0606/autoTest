@@ -304,6 +304,26 @@
                     join_s.id                                 AS supplementOrderId,
                     join_s.status                             AS taskStatus
                 </when>
+                <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply'">
+                    join_his.id                              AS his_id,
+                    DATE_FORMAT(join_his.start_time ,'%Y-%m-%d %H:%i:%S')          AS his_start_time,
+                    join_his.status                          AS taskStatus
+                </when>
+                <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
+                    join_his.id                              AS his_id,
+                    DATE_FORMAT(join_his.start_time ,'%Y-%m-%d %H:%i:%S')          AS his_start_time,
+                    useLevelGetTaskStatus(#{level},deputy.telephone_verify)   AS taskStatus
+                </when>
+                <when test="taskDefinitionKey == 'usertask_refund_apply'">
+                    join_refund.id                           AS refund_id,
+                    DATE_FORMAT(join_refund.start_time,'%Y-%m-%d %H:%i:%S')        AS refund_start_time,
+                    join_refund.status                       AS taskStatus
+                </when>
+                <when test="taskDefinitionKey == 'usertask_refund_apply_review'">
+                    join_refund.id                           AS refund_id,
+                    DATE_FORMAT(join_refund.start_time,'%Y-%m-%d %H:%i:%S')        AS refund_start_time,
+                    join_refund.status                       AS taskStatus
+                </when>
                 <otherwise>
                   0                                           AS taskStatus
 
@@ -322,6 +342,18 @@
             left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
             <if test="taskDefinitionKey == 'usertask_info_supplement'">
             left join loan_info_supplement join_s        on main.id               = join_s.order_id
+            </if>
+            <if test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply'">
+            left join loan_financial_plan_temp_his join_his   on main.id          = join_his.order_id
+            </if>
+            <if test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
+            left join loan_financial_plan_temp_his join_his   on main.id          = join_his.order_id
+            </if>
+            <if test="taskDefinitionKey == 'usertask_refund_apply'">
+            left join loan_refund_apply join_refund           on main.id          = join_refund.order_id
+            </if>
+            <if test="taskDefinitionKey == 'usertask_refund_apply_review'">
+            left join loan_refund_apply join_refund           on main.id          = join_refund.order_id
             </if>
             where 1=1
             <if test="taskStatus != 0">
@@ -414,6 +446,19 @@
                 </when>
                 <when test="taskDefinitionKey == 'usertask_info_supplement'">
                     AND case when #{taskStatus} = 0 then join_s.status  != 0                          else join_s.status                           = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply'">
+                    AND case when #{taskStatus} = 0 then join_his.status  != 0                          else join_his.status                       = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
+                    AND useLevelGetTaskStatus(#{level},join_his.status) !=-1
+                    AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(#{level},join_his.status) != 0 else useLevelGetTaskStatus(#{level},join_his.status) = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'usertask_refund_apply'">
+                    AND case when #{taskStatus} = 0 then join_refund.status  != 0                          else join_refund.status                 = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'usertask_refund_apply_review'">
+                    AND case when #{taskStatus} = 0 then join_refund.status  != 0                          else join_refund.status                 = #{taskStatus} end
                 </when>
                 <otherwise>
                     AND 1=2
