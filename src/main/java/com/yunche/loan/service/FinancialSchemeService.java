@@ -1,5 +1,6 @@
 package com.yunche.loan.service;
 
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.FinancialSchemeModifyUpdateParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCustomerOrderVO;
@@ -13,7 +14,7 @@ public interface FinancialSchemeService {
 
     RecombinationVO modifyDetail(Long orderId, Long hisId);
 
-    void modifyUpdate(FinancialSchemeModifyUpdateParam param);
+    ResultBean<Long> modifyUpdate(FinancialSchemeModifyUpdateParam param);
 
     void migration(Long orderId, Long hisId, String action);
 

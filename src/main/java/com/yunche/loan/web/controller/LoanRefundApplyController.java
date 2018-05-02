@@ -35,9 +35,8 @@ public class LoanRefundApplyController {
      */
     @Limiter(route = "/api/v1/loanrefundapply/update")
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean update(@RequestBody @Validated LoanRefundApplyParam param) {
-        loanRefundApplyService.update(param);
-        return ResultBean.ofSuccess(null);
+    public ResultBean<Long> update(@RequestBody @Validated LoanRefundApplyParam param) {
+        return loanRefundApplyService.update(param);
     }
 
     /**

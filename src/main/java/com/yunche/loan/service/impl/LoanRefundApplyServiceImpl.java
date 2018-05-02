@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
@@ -54,7 +55,7 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
 
     @Override
     @Transactional
-    public void update(LoanRefundApplyParam param) {
+    public ResultBean<Long> update(LoanRefundApplyParam param) {
 
         checkPreCondition(Long.valueOf(param.getOrder_id()));
 
@@ -63,7 +64,11 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
             EmployeeDO employeeDO = SessionUtils.getLoginUser();
             DO.setInitiator_id(employeeDO.getId());
             DO.setInitiator_name(employeeDO.getName());
-            loanRefundApplyDOMapper.insertSelective(DO);
+            int count = loanRefundApplyDOMapper.insertSelective(DO);
+            Preconditions.checkArgument(count > 0, "插入失败");
+
+            return ResultBean.ofSuccess(DO.getId());
+
         } else {
             LoanRefundApplyDO DO = BeanPlasticityUtills.copy(LoanRefundApplyDO.class, param);
             EmployeeDO employeeDO = SessionUtils.getLoginUser();
@@ -71,6 +76,8 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
             DO.setInitiator_id(employeeDO.getId());
             DO.setInitiator_name(employeeDO.getName());
             loanRefundApplyDOMapper.updateByPrimaryKeySelective(DO);
+
+            return ResultBean.ofSuccess(Long.valueOf(param.getRefund_id()));
         }
     }
 
