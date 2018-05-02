@@ -334,7 +334,7 @@
             financial.loan_time                                                                     AS financial_loan_time,
             financial.appraisal                                                                     AS financial_appraisal,
             financial.down_payment_ratio                                                            AS financial_down_payment_ratio,
-            useGetBankRate(financial.financial_product_id,financial.loan_time)
+            format(useGetBankRate(financial.financial_product_id,financial.loan_time),3)
                                                                                                     AS financial_bank_rate,
             (100-financial.down_payment_ratio)                                                      AS financial_loan_ratio,
             useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
@@ -396,7 +396,7 @@
                 financial.loan_time                                                                 AS financial_loan_time,
                 financial.down_payment_ratio                                                        AS financial_down_payment_ratio,
                 financial.financial_product_name                                                    AS financial_product_name,
-                financial.sign_rate                                                                 AS financial_sign_rate,
+                format(financial.sign_rate,3)                                                       AS financial_sign_rate,
                 financial.loan_amount                                                               AS financial_loan_amount,
                 financial.first_month_repay                                                         AS financial_first_month_repay,
                 financial.cash_deposit                                                              AS financial_cash_deposit,
@@ -407,7 +407,7 @@
                                                                                                     AS financial_bank_fee,
                 useCalculateStagingRatio(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
                                                                                                     AS financial_bank_staging_ratio,
-                useGetBankRate(financial.financial_product_id,financial.loan_time)
+                format(useGetBankRate(financial.financial_product_id,financial.loan_time),3)
                                                                                                     AS financial_bank_rate
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
