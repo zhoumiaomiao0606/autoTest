@@ -143,5 +143,7 @@ public class AppCustomerParam {
 
     private Byte guaranteeType;
 
+    private String residenceAddress;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 }
