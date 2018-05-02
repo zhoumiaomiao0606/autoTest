@@ -12,7 +12,4 @@ public interface LoanFinancialPlanDOMapper {
     LoanFinancialPlanDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(LoanFinancialPlanDO record);
-
-    int updateByPrimaryKeyWithBLOBs(LoanFinancialPlanDO record);
-
 }

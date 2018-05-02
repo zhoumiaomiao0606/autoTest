@@ -392,7 +392,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         loanFinancialPlanDO.setGmtModify(new Date());
 
-        int count = loanFinancialPlanDOMapper.updateByPrimaryKeyWithBLOBs(loanFinancialPlanDO);
+        int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
         Preconditions.checkArgument(count > 0, "审核失败");
     }
 
