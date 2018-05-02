@@ -257,7 +257,7 @@
 					his.financial_down_payment_ratio 		 		AS financial_down_payment_ratio,
 					his.financial_bank_fee 					 		AS financial_bank_fee,
                     his.financial_product_name 			 		 	AS financial_product_name,
-					his.financial_sign_rate					 		AS financial_sign_rate,
+					format(his.financial_sign_rate,3)				AS financial_sign_rate,
 					his.financial_loan_amount				 		AS financial_loan_amount,
 					his.financial_first_month_repay  		 	    AS financial_first_month_repay,
                     his.financial_car_price 				 		AS financial_car_price,
