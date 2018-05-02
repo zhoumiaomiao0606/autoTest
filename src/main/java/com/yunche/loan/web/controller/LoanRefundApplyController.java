@@ -29,7 +29,6 @@ public class LoanRefundApplyController {
         return ResultBean.ofSuccess(loanRefundApplyService.detail(Long.valueOf(order_id), StringUtils.isBlank(refund_id) ? null : Long.valueOf(refund_id)));
     }
 
-
     /**
      * 退款单更新
      */
