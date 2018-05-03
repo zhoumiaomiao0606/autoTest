@@ -398,7 +398,20 @@
                     </choose>
                 </when>
                 <when test="taskDefinitionKey == 'usertask_visit_verify'">
-                    AND case when #{taskStatus} = 0 then deputy.visit_verify != 0                     else deputy.visit_verify                     = #{taskStatus} end
+                    <choose>
+                        <when test="fuse == true">
+                            AND case
+                            when
+                            #{taskStatus} = 0 then deputy.visit_verify != 0
+                            when
+                            #{taskStatus} = 2 then deputy.visit_verify = 2 or deputy.visit_verify = 3
+                            else
+                            deputy.visit_verify = #{taskStatus} end
+                        </when>
+                        <otherwise>
+                            AND case when #{taskStatus} = 0 then deputy.visit_verify != 0                     else deputy.visit_verify                     = #{taskStatus} end
+                        </otherwise>
+                    </choose>
                 </when>
                 <when test="taskDefinitionKey == 'usertask_telephone_verify'">
                     AND useLevelGetTaskStatus(#{level},deputy.telephone_verify) !=-1
