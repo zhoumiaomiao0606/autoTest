@@ -25,6 +25,7 @@ import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_TODO;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REFUND;
 
 @Service
 public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
@@ -102,6 +103,8 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
 
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+
+        Preconditions.checkArgument(!TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview()), "[退款申请]已通过，无法再次发起[退款申请]");
 
         // 【退款申请】
         // 1

@@ -184,16 +184,16 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         // 1
         Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "[电审]未通过，无法发起[金融方案修改申请]");
 
-        // [放款审批]未通过
-        if (!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview())) {
+        // [放款审批]已通过
+        if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview())) {
+            // 是否已退款
+            Preconditions.checkArgument(TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
+        } else {
             // 是否有进行中的[申请单]
             LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
             if (null != loanFinancialPlanTempHisDO) {
                 Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
             }
-        } else {
-            // 是否已退款
-            Preconditions.checkArgument(TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
         }
     }
 }
