@@ -169,7 +169,7 @@
             select
             tab.*,
             tab.taskStatus                                        AS taskType,
-            useGetTaskTypeText(tab.taskStatus,tab.orderStatus)    AS taskTypeText,
+            useGetTaskTypeText(#{taskDefinitionKey},tab.taskStatus,tab.orderStatus)    AS taskTypeText,
             useGetCurrentTask(#{taskDefinitionKey})               AS currentTask,
             case when tab.taskStatus = 3 then
             (select reason from loan_reject_log where order_id = tab.id and reject_to_task = #{taskDefinitionKey} order by gmt_create DESC limit 1 )
