@@ -16,8 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_INIT;
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 
@@ -97,6 +99,9 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
             EmployeeDO employeeDO = SessionUtils.getLoginUser();
             his.setInitiator_id(employeeDO.getId());
             his.setInitiator_name(employeeDO.getName());
+            his.setStatus(APPLY_ORDER_INIT);
+            his.setStart_time(new Date());
+
             int count = loanFinancialPlanTempHisDOMapper.insertSelective(his);
             Preconditions.checkArgument(count > 0, "插入失败");
 

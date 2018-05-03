@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_INIT;
@@ -68,6 +69,8 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
             DO.setInitiator_id(employeeDO.getId());
             DO.setInitiator_name(employeeDO.getName());
             DO.setStatus(APPLY_ORDER_INIT);
+            DO.setStart_time(new Date());
+
             int count = loanRefundApplyDOMapper.insertSelective(DO);
             Preconditions.checkArgument(count > 0, "插入失败");
 
