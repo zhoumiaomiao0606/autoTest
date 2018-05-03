@@ -326,7 +326,12 @@ public class MaterialServiceImpl implements MaterialService {
                     if(taskDefinitionKey!=null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode())||taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))){
 //                        if(typeFile.getCustType().equals(PRINCIPAL_LENDER.getType())){
                             if(t== ID_CARD_FRONT.getType() || t==ID_CARD_BACK.getType()|| t==AUTH_BOOK.getType()||t== AUTH_BOOK_SIGN_PHOTO.getType()){
-                                zos.putNextEntry(new ZipEntry(url.split("/")[url.split("/").length-1]));
+                                if(StringUtil.isNotEmpty(customerId)){
+                                    zos.putNextEntry(new ZipEntry(url.split("/")[url.split("/").length-1]));
+                                }else{
+                                    zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName()+"/"+url.split("/")[url.split("/").length-1]));
+                                }
+
                             }else{
                                 continue;
                             }
