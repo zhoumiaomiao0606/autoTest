@@ -186,10 +186,29 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
         // [放款审批]已通过
         if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview())) {
-            // 是否已退款
-            Preconditions.checkArgument(TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
+
+            if (TASK_PROCESS_TODO.equals(loanProcessDO.getRemitReview()) || TASK_PROCESS_REJECT.equals(loanProcessDO.getRemitReview())) {
+                throw new BizException("[打款确认]审核中，无法发起[金融方案修改申请]");
+            } else if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview())) {
+                throw new BizException("[打款确认]已通过，无法发起[金融方案修改申请]");
+            } else if (TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())) {
+                // 已退款：则是否有进行中的[申请单]
+                LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
+                if (null != loanFinancialPlanTempHisDO) {
+                    Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
+                }
+            }
+
+//            // 必须为已退款
+//            Preconditions.checkArgument(TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
+//
+//            // 已退款：则是否有进行中的[申请单]
+//            LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
+//            if (null != loanFinancialPlanTempHisDO) {
+//                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
+//            }
         } else {
-            // 是否有进行中的[申请单]
+            // [放款审批]未通过：则是否有进行中的[申请单]
             LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
             if (null != loanFinancialPlanTempHisDO) {
                 Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");

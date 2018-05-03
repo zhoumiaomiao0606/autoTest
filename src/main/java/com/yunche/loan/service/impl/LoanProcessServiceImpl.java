@@ -236,7 +236,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 通过/打回/弃单(整个流程)
             if (ACTION_PASS.equals(approval.getAction())) {
 
-                execFinancialSchemeModifyApplyReviewTask(approval, loanOrderDO.getLoanFinancialPlanId(), loanProcessDO.getLoanReview());
+                execFinancialSchemeModifyApplyReviewTask(approval, loanOrderDO.getLoanFinancialPlanId(), loanProcessDO);
 
             } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
 
@@ -314,9 +314,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param approval
      * @param loanFinancialPlanId
-     * @param loanReview
+     * @param loanProcessDO
      */
-    private void execFinancialSchemeModifyApplyReviewTask(ApprovalParam approval, Long loanFinancialPlanId, Byte loanReview) {
+    private void execFinancialSchemeModifyApplyReviewTask(ApprovalParam approval, Long loanFinancialPlanId, LoanProcessDO loanProcessDO) {
 
         // 角色
         Set<String> userGroupNameSet = getUserGroupNameSet();
@@ -333,7 +333,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 直接通过
         if (loanAmount >= 0 && loanAmount <= 100000) {
             // 完成任务：全部角色直接过单
-            passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanReview);
+            passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
         } else if (loanAmount > 100000 && loanAmount <= 300000) {
             // 电审主管以上可过单
             if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_LEADER) {
@@ -341,7 +341,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 updateFinancialSchemeModifyApply(approval, maxRoleLevel);
             } else {
                 // 完成任务
-                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanReview);
+                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
             }
         } else if (loanAmount > 300000 && loanAmount <= 500000) {
             // 电审经理以上可过单
@@ -350,7 +350,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 updateFinancialSchemeModifyApply(approval, maxRoleLevel);
             } else {
                 // 完成任务
-                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanReview);
+                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
             }
         } else if (loanAmount > 500000) {
             // 总监以上可过单
@@ -359,7 +359,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 updateFinancialSchemeModifyApply(approval, maxRoleLevel);
             } else {
                 // 完成任务
-                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanReview);
+                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
             }
         }
     }
@@ -370,9 +370,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param applyOrderStatus
      * @param loanFinancialPlanId
-     * @param loanReview          [放款审批]状态
+     * @param loanProcessDO
      */
-    private void passFinancialSchemeModifyApplyReviewTask(ApprovalParam approval, Byte applyOrderStatus, Long loanFinancialPlanId, Byte loanReview) {
+    private void passFinancialSchemeModifyApplyReviewTask(ApprovalParam approval, Byte applyOrderStatus, Long loanFinancialPlanId, LoanProcessDO loanProcessDO) {
 
         // 修改申请单状态
         updateFinancialSchemeModifyApply(approval, applyOrderStatus);
@@ -381,18 +381,31 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         updateFinancialPlan(loanFinancialPlanId, approval.getSupplementOrderId());
 
         // 自动打回（重走【业务审批】）
-        if (TASK_PROCESS_TODO.equals(loanReview)) {
+        if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
+
             ApprovalParam approvalParam = new ApprovalParam();
             approvalParam.setOrderId(approval.getOrderId());
             approvalParam.setTaskDefinitionKey(LOAN_REVIEW.getCode());
-            approvalParam.setAction(ACTION_REJECT_MANUAL);
+            approvalParam.setAction(ACTION_REJECT_AUTO);
             approvalParam.setCheckPermission(false);
             approvalParam.setNeedLog(false);
             approvalParam.setNeedPush(false);
             approval(approvalParam);
 
-            LoanProcessDO loanProcessDO = new LoanProcessDO();
-            loanProcessDO.setOrderId(approval.getOrderId());
+            loanProcessDO.setBusinessReview(TASK_PROCESS_TODO);
+            updateLoanProcess(loanProcessDO);
+
+        } else if (TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())) {
+
+            ApprovalParam approvalParam = new ApprovalParam();
+            approvalParam.setOrderId(approval.getOrderId());
+            approvalParam.setTaskDefinitionKey(REMIT_REVIEW.getCode());
+            approvalParam.setAction(ACTION_REJECT_AUTO);
+            approvalParam.setCheckPermission(false);
+            approvalParam.setNeedLog(false);
+            approvalParam.setNeedPush(false);
+            approval(approvalParam);
+
             loanProcessDO.setBusinessReview(TASK_PROCESS_TODO);
             updateLoanProcess(loanProcessDO);
         }

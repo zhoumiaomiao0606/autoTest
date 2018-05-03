@@ -34,6 +34,8 @@ public class LoanProcessController {
     @PostMapping(value = "/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> approval(@RequestBody ApprovalParam approval) {
         approval.setCheckPermission(true);
+        approval.setNeedLog(true);
+        approval.setNeedPush(true);
         return loanProcessService.approval(approval);
     }
 
