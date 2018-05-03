@@ -82,6 +82,9 @@
     WHERE
     (a.loan_customer_id = c.id or a.loan_customer_id=c.principal_cust_id)
     and b.customer_id = c.id
+    <if test="customerId != null">
+      AND b.customer_id = #{customerId}
+    </if>
     AND a.id = #{orderId}
   </select>
 </mapper>

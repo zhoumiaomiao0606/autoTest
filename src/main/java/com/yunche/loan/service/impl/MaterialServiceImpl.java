@@ -144,7 +144,7 @@ public class MaterialServiceImpl implements MaterialService {
         ZipOutputStream zos=null;
         try {
 
-            List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId);
+            List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId,null);
             if(downloadParams==null){
                 return null;
             }
@@ -258,7 +258,7 @@ public class MaterialServiceImpl implements MaterialService {
      * @param orderId
      * @return
      */
-    public  String zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId,String taskDefinitionKey){
+    public  String zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId,String taskDefinitionKey,String customerId){
         OSSClient ossClient=null;
         ZipOutputStream zos=null;
         BufferedInputStream buff=null;
@@ -267,7 +267,7 @@ public class MaterialServiceImpl implements MaterialService {
         File zipFile=null;
         try {
 
-            List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId);
+            List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId,customerId);
             if(downloadParams==null){
                 return null;
             }
@@ -323,16 +323,16 @@ public class MaterialServiceImpl implements MaterialService {
                         default:documentType="基本资料";
 
                     }
-                    if(taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode())||taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode())){
-                        if(typeFile.getCustType().equals(PRINCIPAL_LENDER.getType())){
+                    if(taskDefinitionKey!=null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode())||taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))){
+//                        if(typeFile.getCustType().equals(PRINCIPAL_LENDER.getType())){
                             if(t== ID_CARD_FRONT.getType() || t==ID_CARD_BACK.getType()|| t==AUTH_BOOK.getType()||t== AUTH_BOOK_SIGN_PHOTO.getType()){
                                 zos.putNextEntry(new ZipEntry(url.split("/")[url.split("/").length-1]));
                             }else{
                                 continue;
                             }
-                        }else{
-                            continue;
-                        }
+//                        }else{
+//                            continue;
+//                        }
                     }else{
                         zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName()+"/"+documentType+"/"+typeFile.getTypeName()+"/"+url.split("/")[url.split("/").length-1]));
 

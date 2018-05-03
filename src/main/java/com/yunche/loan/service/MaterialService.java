@@ -29,5 +29,5 @@ public interface MaterialService {
      * @param taskDefinitionKey
      * @return
      */
-    public String zipFilesDown(HttpServletRequest request, HttpServletResponse response, Long orderId,String taskDefinitionKey);
+    public String zipFilesDown(HttpServletRequest request, HttpServletResponse response, Long orderId,String taskDefinitionKey,String customerId);
 }

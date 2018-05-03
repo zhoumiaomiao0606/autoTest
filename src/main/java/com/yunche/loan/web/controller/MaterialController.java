@@ -49,9 +49,10 @@ public class MaterialController {
     @GetMapping(value = "/download")
     public String  downLoad(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                             @RequestParam Long orderId,
-                            @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey ){
+                            @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey,
+                            @RequestParam(value = "customerId", required = false) String customerId){
 
-        return materialService.zipFilesDown(httpServletRequest,httpServletResponse,orderId,taskDefinitionKey);
+        return materialService.zipFilesDown(httpServletRequest,httpServletResponse,orderId,taskDefinitionKey,customerId);
     }
 
     /**
