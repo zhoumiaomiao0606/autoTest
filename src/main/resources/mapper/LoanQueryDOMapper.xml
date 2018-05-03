@@ -113,11 +113,7 @@
         (
             (p.telephone_verify = 1 and p.loan_review != 1)
           or
-          (
-            p.remit_review = 1
-              or
             p.remit_review = 21
-          )
         )
         <if test="name!=null">
             and c.name like concat(concat('%',#{name}),'%')
