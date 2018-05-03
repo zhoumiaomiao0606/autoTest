@@ -115,10 +115,8 @@
           or
           (
             p.remit_review = 1
-              and
-            (select count(order_id) from loan_refund_apply where order_id = order_id)  > 0
-              and
-            (select status from loan_refund_apply where order_id = order_id order by refund_date desc limit 1) = 1
+              or
+            p.remit_review = 21
           )
         )
         <if test="name!=null">
@@ -180,9 +178,9 @@
         from loan_order o
         left join loan_customer c on c.id = o.loan_customer_id
         left join loan_process p on o.id = p.order_id
-        where 1=1 and
+        where
 
-        (p.remit_review = 1 or (select status from loan_refund_apply where order_id = o.id order by start_time DESC limit 1) = 1)
+        p.remit_review = 1
 
         <if test="name!=null">
             and c.name like concat(concat('%',#{name}),'%')
