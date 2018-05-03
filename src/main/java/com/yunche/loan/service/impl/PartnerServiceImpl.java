@@ -880,6 +880,8 @@ public class PartnerServiceImpl implements PartnerService {
             int count = partnerRelaEmployeeDOMapper.batchInsert(partnerRelaEmployeeDOS);
             Preconditions.checkArgument(count == partnerRelaEmployeeDOS.size(), "关联失败");
         }
+
+        // TODO 执行绑定授权（合伙人）
     }
 
     /**

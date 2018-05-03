@@ -56,6 +56,10 @@ public class ApprovalParam {
      */
     private boolean checkPermission = true;
     /**
+     * 是否需要推送
+     */
+    private boolean needPush = true;
+    /**
      * 增补源头任务节点
      */
 //    private String supplementOriginTask;

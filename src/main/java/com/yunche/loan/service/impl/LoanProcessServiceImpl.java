@@ -227,9 +227,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 更新申请单状态
             updateFinancialSchemeModifyApply(approval, APPLY_ORDER_TODO);
 
-            // 自动打回    - 放款审批 -> 业务审批
-            autoRejectLoanReviewTask(loanProcessDO);
-
             return ResultBean.ofSuccess(null, "[金融方案修改申请]任务执行成功");
         }
 
@@ -386,11 +383,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 自动打回（重走【业务审批】）
         if (TASK_PROCESS_TODO.equals(loanReview)) {
             ApprovalParam approvalParam = new ApprovalParam();
+            approvalParam.setOrderId(approval.getOrderId());
+            approvalParam.setTaskDefinitionKey(LOAN_REVIEW.getCode());
+            approvalParam.setAction(ACTION_REJECT_MANUAL);
             approvalParam.setCheckPermission(false);
             approvalParam.setNeedLog(false);
-            approvalParam.setAction(ACTION_REJECT_MANUAL);
-            approvalParam.setTaskDefinitionKey(LOAN_REVIEW.getCode());
+            approvalParam.setNeedPush(false);
             approval(approvalParam);
+
+            LoanProcessDO loanProcessDO = new LoanProcessDO();
+            loanProcessDO.setOrderId(approval.getOrderId());
+            loanProcessDO.setBusinessReview(TASK_PROCESS_TODO);
+            updateLoanProcess(loanProcessDO);
         }
     }
 
@@ -837,6 +841,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      */
     private void asyncPush(Long orderId, Long loanBaseInfoId, String taskDefinitionKey, ApprovalParam approval) {
+        if (!approval.isNeedPush()) {
+            return;
+        }
 
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.execute(new Runnable() {
