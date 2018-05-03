@@ -4,7 +4,6 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.query.RelaQuery;
-import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.vo.BizModelVO;
 import com.yunche.loan.domain.vo.EmployeeVO;

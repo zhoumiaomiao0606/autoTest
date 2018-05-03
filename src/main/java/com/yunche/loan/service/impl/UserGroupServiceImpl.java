@@ -365,7 +365,7 @@ public class UserGroupServiceImpl implements UserGroupService {
             parentArea.setId(baseAreaDO.getAreaId());
             parentArea.setName(baseAreaDO.getAreaName());
             // 递归填充所有上层父级区域
-            fillSupperArea(baseAreaDO.getParentAreaId(), Lists.newArrayList(parentArea), userGroupVO);
+            fillSupperArea(baseAreaDO.getParentAreaId(), Lists.newArrayList(parentArea), userGroupVO, 10);
         }
     }
 
@@ -376,7 +376,11 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param supperAreaList
      * @param userGroupVO
      */
-    private void fillSupperArea(Long parentId, List<BaseVO> supperAreaList, UserGroupVO userGroupVO) {
+    private void fillSupperArea(Long parentId, List<BaseVO> supperAreaList, UserGroupVO userGroupVO, int limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
         if (null != parentId) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != baseAreaDO) {
@@ -384,7 +388,7 @@ public class UserGroupServiceImpl implements UserGroupService {
                 parentArea.setId(baseAreaDO.getAreaId());
                 parentArea.setName(baseAreaDO.getAreaName());
                 supperAreaList.add(parentArea);
-                fillSupperArea(baseAreaDO.getParentAreaId(), supperAreaList, userGroupVO);
+                fillSupperArea(baseAreaDO.getParentAreaId(), supperAreaList, userGroupVO, limit);
             }
         } else {
             // null时为最顶级
@@ -408,7 +412,7 @@ public class UserGroupServiceImpl implements UserGroupService {
             BaseVO parentDepartment = new BaseVO();
             BeanUtils.copyProperties(departmentDO, parentDepartment);
             // 递归填充所有上层父级部门
-            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), userGroupVO);
+            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), userGroupVO, 10);
         }
     }
 
@@ -420,15 +424,20 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param parentId
      * @param superDepartmentList
      * @param userGroupVO
+     * @param limit
      */
-    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, UserGroupVO userGroupVO) {
+    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, UserGroupVO userGroupVO, int limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
         if (null != parentId) {
             DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != departmentDO) {
                 BaseVO parentDepartment = new BaseVO();
                 BeanUtils.copyProperties(departmentDO, parentDepartment);
                 superDepartmentList.add(parentDepartment);
-                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, userGroupVO);
+                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, userGroupVO, limit);
             }
         } else {
             // null时为最顶级
@@ -446,18 +455,22 @@ public class UserGroupServiceImpl implements UserGroupService {
             BaseVO parentDepartment = new BaseVO();
             BeanUtils.copyProperties(departmentDO, parentDepartment);
             // 递归填充所有上层父级部门
-            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), employeeVO);
+            fillSuperDepartment(departmentDO.getParentId(), Lists.newArrayList(parentDepartment), employeeVO, 10);
         }
     }
 
-    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, EmployeeVO employeeVO) {
+    private void fillSuperDepartment(Long parentId, List<BaseVO> superDepartmentList, EmployeeVO employeeVO, int limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
         if (null != parentId) {
             DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != departmentDO) {
                 BaseVO parentDepartment = new BaseVO();
                 BeanUtils.copyProperties(departmentDO, parentDepartment);
                 superDepartmentList.add(parentDepartment);
-                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, employeeVO);
+                fillSuperDepartment(departmentDO.getParentId(), superDepartmentList, employeeVO, limit);
             }
         } else {
             // null时为最顶级
@@ -481,7 +494,7 @@ public class UserGroupServiceImpl implements UserGroupService {
             BaseVO parentEmployee = new BaseVO();
             BeanUtils.copyProperties(employeeDO, parentEmployee);
             // 递归填充所有上层父级部门
-            fillSuperLeader(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), employeeVO);
+            fillSuperLeader(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), employeeVO, 10);
         }
     }
 
@@ -491,15 +504,20 @@ public class UserGroupServiceImpl implements UserGroupService {
      * @param parentId
      * @param superLeaderList
      * @param employeeVO
+     * @param limit
      */
-    private void fillSuperLeader(Long parentId, List<BaseVO> superLeaderList, EmployeeVO employeeVO) {
+    private void fillSuperLeader(Long parentId, List<BaseVO> superLeaderList, EmployeeVO employeeVO, int limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
         if (null != parentId) {
             EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != employeeDO) {
                 BaseVO parentEmployee = new BaseVO();
                 BeanUtils.copyProperties(employeeDO, parentEmployee);
                 superLeaderList.add(parentEmployee);
-                fillSuperLeader(employeeDO.getParentId(), superLeaderList, employeeVO);
+                fillSuperLeader(employeeDO.getParentId(), superLeaderList, employeeVO, limit);
             }
         } else {
             // null时为最顶级
