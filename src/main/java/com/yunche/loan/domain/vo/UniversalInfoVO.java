@@ -78,5 +78,6 @@ public class UniversalInfoVO {
     private String remit_return_rate_amount;
     private String process_apply_license_plate_deposit_info;
     private String process_bank_lend_record;
+    private String car_info;
 
 }
