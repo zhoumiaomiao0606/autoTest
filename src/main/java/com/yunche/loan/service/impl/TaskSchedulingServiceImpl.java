@@ -49,11 +49,13 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
 
     @Override
-    public ResultBean scheduleTaskList() {
+    public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
+        PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(null, loginUser.getId(), level);
-        return ResultBean.ofSuccess(list);
+        PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     @Override

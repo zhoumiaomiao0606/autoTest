@@ -8,7 +8,7 @@ import com.yunche.loan.domain.vo.AppTaskVO;
 import java.util.List;
 
 public interface TaskSchedulingService {
-    ResultBean scheduleTaskList();
+    ResultBean scheduleTaskList(Integer pageIndex,  Integer pageSize);
 
     ResultBean scheduleTaskListBykey(String key,Integer pageIndex, Integer pageSize);
 
