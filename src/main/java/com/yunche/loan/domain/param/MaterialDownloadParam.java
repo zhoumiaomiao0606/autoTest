@@ -16,5 +16,9 @@ public class MaterialDownloadParam {
 
     private String typeName;
 
+    private Byte custType;
+
+    private String custTypeName;
+
 
 }

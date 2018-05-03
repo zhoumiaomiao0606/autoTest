@@ -73,14 +73,15 @@
     b.type,
     b.path,
     c.id_card AS idCard,
-    c.`name`
+    c.`name`,
+    c.cust_type AS custType
     FROM
     loan_order a,
     loan_file b,
     loan_customer c
     WHERE
-    a.loan_customer_id = b.customer_id
-    AND a.loan_customer_id = c.id
+    (a.loan_customer_id = c.id or a.loan_customer_id=c.principal_cust_id)
+    and b.customer_id = c.id
     AND a.id = #{orderId}
   </select>
 </mapper>

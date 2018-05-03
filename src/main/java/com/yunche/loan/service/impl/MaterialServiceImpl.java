@@ -5,49 +5,46 @@ import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.OSSObject;
 import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
-import com.google.common.io.Files;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.common.BitMatrix;
 import com.yunche.loan.config.common.OSSConfig;
+import com.yunche.loan.config.constant.LoanCustomerEnum;
 import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.LoanProcessLogDO;
 import com.yunche.loan.domain.entity.MaterialAuditDO;
 import com.yunche.loan.domain.param.MaterialDownloadParam;
 import com.yunche.loan.domain.param.MaterialUpdateParam;
-import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCreditInfoVO;
+import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
+import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.MaterialAuditDOMapper;
 import com.yunche.loan.service.LoanProcessLogService;
 import com.yunche.loan.service.MaterialService;
-import org.activiti.engine.RuntimeService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.core.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.FileSystemUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Objects;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
+import static com.yunche.loan.config.constant.LoanCustomerEnum.PRINCIPAL_LENDER;
+import static com.yunche.loan.config.constant.LoanFileEnum.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_CREDIT_RECORD;
+import static com.yunche.loan.config.constant.LoanProcessEnum.SOCIAL_CREDIT_RECORD;
 
 @Service
 public class MaterialServiceImpl implements MaterialService {
@@ -261,7 +258,7 @@ public class MaterialServiceImpl implements MaterialService {
      * @param orderId
      * @return
      */
-    public  String zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId){
+    public  String zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId,String taskDefinitionKey){
         OSSClient ossClient=null;
         ZipOutputStream zos=null;
         BufferedInputStream buff=null;
@@ -279,6 +276,8 @@ public class MaterialServiceImpl implements MaterialService {
                     .forEach(param ->{
                         String nameByCode = LoanFileEnum.getNameByCode(param.getType());
                         param.setTypeName(nameByCode);
+                        String custTypeName = LoanCustomerEnum.getNameByCode(param.getCustType());
+                        param.setCustTypeName(custTypeName);
                         List<String> list = JSONArray.parseArray(param.getPath(), String.class);
                         param.setPathList(list);
                     });
@@ -309,6 +308,7 @@ public class MaterialServiceImpl implements MaterialService {
                     // 对于每一个要被存放到压缩包的文件，都必须调用ZipOutputStream对象的putNextEntry()方法，确保压缩包里面文件不同名
                     byte t=  typeFile.getType();
                     String documentType=null;
+
                     switch (t){
                         case 19:
                         case 20:
@@ -323,7 +323,20 @@ public class MaterialServiceImpl implements MaterialService {
                         default:documentType="基本资料";
 
                     }
-                    zos.putNextEntry(new ZipEntry(documentType+"/"+typeFile.getTypeName()+"/"+url.split("/")[url.split("/").length-1]));
+                    if(taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode())||taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode())){
+                        if(typeFile.getCustType().equals(PRINCIPAL_LENDER.getType())){
+                            if(t== ID_CARD_FRONT.getType() || t==ID_CARD_BACK.getType()|| t==AUTH_BOOK.getType()||t== AUTH_BOOK_SIGN_PHOTO.getType()){
+                                zos.putNextEntry(new ZipEntry(url.split("/")[url.split("/").length-1]));
+                            }else{
+                                continue;
+                            }
+                        }else{
+                            continue;
+                        }
+                    }else{
+                        zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName()+"/"+documentType+"/"+typeFile.getTypeName()+"/"+url.split("/")[url.split("/").length-1]));
+
+                    }
 
                     int bytesRead = 0;
                     // 向压缩文件中输出数据
@@ -355,14 +368,6 @@ public class MaterialServiceImpl implements MaterialService {
                 l += j;
                 out.write(tmpCache, 0, j);
             }
-//            // 关闭流
-//            fis.close();
-//            buff.close();
-//            out.close();
-//
-//            ossClient.shutdown();
-//            // 删除临时文件
-//            zipFile.delete();
         } catch (Exception e) {
             Preconditions.checkArgument(false,e.getMessage());
         }finally {

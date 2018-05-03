@@ -22,10 +22,12 @@ public interface MaterialService {
     public ResultBean downloadFilesToOSS(Long orderId);
 
     /**
-     *
+     * 浏览器直接下载
      * @param request
      * @param response
+     * @param orderId
+     * @param taskDefinitionKey
      * @return
      */
-    public String zipFilesDown(HttpServletRequest request, HttpServletResponse response, Long orderId);
+    public String zipFilesDown(HttpServletRequest request, HttpServletResponse response, Long orderId,String taskDefinitionKey);
 }
