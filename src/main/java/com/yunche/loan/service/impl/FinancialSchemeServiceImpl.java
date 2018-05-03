@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 
 @Service
 public class FinancialSchemeServiceImpl implements FinancialSchemeService {
@@ -178,13 +178,23 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
         // 1
         Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "[电审]未通过，无法发起[金融方案修改申请]");
-        // 0/2
-        Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
 
-        // 历史进行中的申请单
-        LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
-        if (null != loanFinancialPlanTempHisDO) {
-            Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
+        // 未退款
+        if (!TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())) {
+
+            // 已放款
+            if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview())) {
+                // 历史进行中的申请单
+                LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
+                if (null != loanFinancialPlanTempHisDO) {
+                    Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
+                }
+            } else {
+                // 未放款 || 未到放款审核
+
+                // 0/2
+                Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
+            }
         }
     }
 }
