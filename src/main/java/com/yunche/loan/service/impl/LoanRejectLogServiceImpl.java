@@ -1,9 +1,13 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.domain.entity.LoanFinancialPlanTempHisDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.entity.LoanRefundApplyDO;
 import com.yunche.loan.domain.entity.LoanRejectLogDO;
+import com.yunche.loan.mapper.LoanFinancialPlanTempHisDOMapper;
 import com.yunche.loan.mapper.LoanProcessDOMapper;
+import com.yunche.loan.mapper.LoanRefundApplyDOMapper;
 import com.yunche.loan.mapper.LoanRejectLogDOMapper;
 import com.yunche.loan.service.LoanRejectLogService;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +31,12 @@ public class LoanRejectLogServiceImpl implements LoanRejectLogService {
     @Autowired
     private LoanRejectLogDOMapper loanRejectLogDOMapper;
 
+    @Autowired
+    private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
+
+    @Autowired
+    private LoanRefundApplyDOMapper loanRefundApplyDOMapper;
+
 
     @Override
     public LoanRejectLogDO rejectLog(Long orderId, String taskDefinitionKey) {
@@ -40,6 +50,20 @@ public class LoanRejectLogServiceImpl implements LoanRejectLogService {
         if (ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
 
             Byte taskStatus = getTaskStatus(loanProcessDO, taskDefinitionKey);
+
+            if (null == taskStatus) {
+                if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey)) {
+                    LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
+                    if (null != loanFinancialPlanTempHisDO) {
+                        taskStatus = loanFinancialPlanTempHisDO.getStatus();
+                    }
+                } else if (REFUND_APPLY.getCode().equals(taskDefinitionKey)) {
+                    LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(orderId);
+                    if (null != loanRefundApplyDO) {
+                        taskStatus = loanRefundApplyDO.getStatus();
+                    }
+                }
+            }
 
             // 被打回
             if (TASK_PROCESS_REJECT.equals(taskStatus)) {

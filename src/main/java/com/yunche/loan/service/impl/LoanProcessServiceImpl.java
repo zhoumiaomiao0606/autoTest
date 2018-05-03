@@ -230,7 +230,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 自动打回    - 放款审批 -> 业务审批
             autoRejectLoanReviewTask(loanProcessDO);
 
-            return ResultBean.ofSuccess(null, "[ 金融方案修改申请]任务执行成功");
+            return ResultBean.ofSuccess(null, "[金融方案修改申请]任务执行成功");
         }
 
         // 【金融方案修改申请审核】
