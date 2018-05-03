@@ -325,7 +325,7 @@
             car.business_source                                                                     AS car_business_source,
             car.vehicle_property                                                                    AS car_vehicle_property,
             car.car_key                                                                             AS car_key,
-            cae.info                                                                                AS car_info,
+            car.info                                                                                AS car_info,
             vehicle.color                                                                           AS vehicle_color,
             vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
             vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
