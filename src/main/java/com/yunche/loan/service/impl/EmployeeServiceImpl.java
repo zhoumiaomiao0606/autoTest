@@ -17,7 +17,10 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.EmployeeService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.DisabledAccountException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.cache.EmployeeCache.*;
 import static com.yunche.loan.config.constant.AreaConst.COUNTRY_AREA_ID;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -508,34 +512,22 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
 
     private void checkOnlyProperty(EmployeeParam employeeParam) {
-        // getAll
-        List<EmployeeDO> allOnlyProperty = employeeDOMapper.getAllOnlyProperty();
 
-        if (!CollectionUtils.isEmpty(allOnlyProperty)) {
+        List<String> idCardList = employeeCache.getAllOnlyProperty(ID_CARD);
+        List<String> mobileList = employeeCache.getAllOnlyProperty(MOBILE);
+        List<String> emailList = employeeCache.getAllOnlyProperty(EMAIL);
+        List<String> dingDingList = employeeCache.getAllOnlyProperty(DINGDING);
 
-            List<String> idCardList = Lists.newArrayList();
-            List<String> mobileList = Lists.newArrayList();
-            List<String> emailList = Lists.newArrayList();
-            List<String> dingDingList = Lists.newArrayList();
-
-            allOnlyProperty.parallelStream()
-                    .forEach(e -> {
-
-                        String idCard = e.getIdCard();
-                        String mobile = e.getMobile();
-                        String email = e.getEmail();
-                        String dingDing = e.getDingDing();
-
-                        idCardList.add(idCard);
-                        mobileList.add(mobile);
-                        emailList.add(email);
-                        dingDingList.add(dingDing);
-
-                    });
-
+        if (!CollectionUtils.isEmpty(idCardList)) {
             Preconditions.checkArgument(!idCardList.contains(employeeParam.getIdCard()), "该身份证号已被注册");
+        }
+        if (!CollectionUtils.isEmpty(mobileList)) {
             Preconditions.checkArgument(!mobileList.contains(employeeParam.getMobile()), "该手机号已被注册");
+        }
+        if (!CollectionUtils.isEmpty(emailList)) {
             Preconditions.checkArgument(!emailList.contains(employeeParam.getEmail()), "该邮箱已被注册");
+        }
+        if (!CollectionUtils.isEmpty(dingDingList)) {
             Preconditions.checkArgument(!dingDingList.contains(employeeParam.getDingDing()), "该钉钉号已被注册");
         }
     }

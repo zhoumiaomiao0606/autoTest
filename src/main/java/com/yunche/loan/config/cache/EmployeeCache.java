@@ -8,7 +8,6 @@ import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.mapper.EmployeeDOMapper;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.vo.CascadeVO;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,22 @@ public class EmployeeCache {
      * ID-BaseDO缓存
      */
     private static final String EMPLOYEE_ALL_CACHE_KEY = "all:cache:employee";
+
+    /**
+     * 唯一属性 (身份证号、手机号、邮箱、钉钉)
+     */
+    private static final String EMPLOYEE_ALL_ONLY_PROPERTY_IDCARD_CACHE_KEY = "all:cache:employee:onlyProperty:id_card";
+    private static final String EMPLOYEE_ALL_ONLY_PROPERTY_MOBILE_CACHE_KEY = "all:cache:employee:onlyProperty:mobile";
+    private static final String EMPLOYEE_ALL_ONLY_PROPERTY_EMAIL_CACHE_KEY = "all:cache:employee:onlyProperty:email";
+    private static final String EMPLOYEE_ALL_ONLY_PROPERTY_DINGDING_CACHE_KEY = "all:cache:employee:onlyProperty:ding_ding";
+
+    public static final Byte ID_CARD = 1;
+
+    public static final Byte MOBILE = 2;
+
+    public static final Byte EMAIL = 3;
+
+    public static final Byte DINGDING = 4;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -124,11 +139,51 @@ public class EmployeeCache {
         return null;
     }
 
+    /**
+     * 唯一属性 (身份证号、手机号、邮箱、钉钉)
+     *
+     * @param type
+     * @return
+     */
+    public List<String> getAllOnlyProperty(Byte type) {
+
+        String key = null;
+        if (ID_CARD.equals(type)) {
+            key = EMPLOYEE_ALL_ONLY_PROPERTY_IDCARD_CACHE_KEY;
+        } else if (MOBILE.equals(type)) {
+            key = EMPLOYEE_ALL_ONLY_PROPERTY_MOBILE_CACHE_KEY;
+        } else if (EMAIL.equals(type)) {
+            key = EMPLOYEE_ALL_ONLY_PROPERTY_EMAIL_CACHE_KEY;
+        } else if (DINGDING.equals(type)) {
+            key = EMPLOYEE_ALL_ONLY_PROPERTY_DINGDING_CACHE_KEY;
+        }
+
+        // get
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
+        String result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            List<String> onlyPropertyList = JSON.parseArray(result, String.class);
+            return onlyPropertyList;
+        }
+
+        // 刷新缓存
+        refreshAllOnlyProperty();
+
+        // get
+        result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            List<String> onlyPropertyList = JSON.parseArray(result, String.class);
+            return onlyPropertyList;
+        }
+        return null;
+    }
+
     @PostConstruct
     public void refresh() {
         refresh(TYPE_ZS, EMPLOYEE_ZS_CASCADE_CACHE_KEY);
         refresh(TYPE_WB, EMPLOYEE_WB_CASCADE_CACHE_KEY);
         refreshAll();
+        refreshAllOnlyProperty();
     }
 
     /**
@@ -273,5 +328,59 @@ public class EmployeeCache {
         // 刷新缓存
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
         boundValueOps.set(JSON.toJSONString(idDOMap));
+    }
+
+    /**
+     * 唯一属性 (身份证号、手机号、邮箱、钉钉)
+     */
+    @PostConstruct
+    private void refreshAllOnlyProperty() {
+
+        // getAll
+        List<EmployeeDO> allOnlyProperty = employeeDOMapper.getAllOnlyProperty();
+
+        if (!CollectionUtils.isEmpty(allOnlyProperty)) {
+
+            List<String> idCardList = Lists.newArrayList();
+            List<String> mobileList = Lists.newArrayList();
+            List<String> emailList = Lists.newArrayList();
+            List<String> dingDingList = Lists.newArrayList();
+
+            allOnlyProperty.parallelStream()
+                    .forEach(e -> {
+
+                        String idCard = e.getIdCard();
+                        String mobile = e.getMobile();
+                        String email = e.getEmail();
+                        String dingDing = e.getDingDing();
+
+                        if (StringUtils.isNotBlank(idCard)) {
+                            idCardList.add(idCard);
+                        }
+                        if (StringUtils.isNotBlank(mobile)) {
+                            mobileList.add(mobile);
+                        }
+                        if (StringUtils.isNotBlank(email)) {
+                            emailList.add(email);
+                        }
+                        if (StringUtils.isNotBlank(dingDing)) {
+                            dingDingList.add(dingDing);
+                        }
+
+                    });
+
+            // 刷新缓存
+            BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_ONLY_PROPERTY_IDCARD_CACHE_KEY);
+            boundValueOps.set(JSON.toJSONString(idCardList));
+
+            boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_ONLY_PROPERTY_MOBILE_CACHE_KEY);
+            boundValueOps.set(JSON.toJSONString(mobileList));
+
+            boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_ONLY_PROPERTY_EMAIL_CACHE_KEY);
+            boundValueOps.set(JSON.toJSONString(emailList));
+
+            boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_ONLY_PROPERTY_DINGDING_CACHE_KEY);
+            boundValueOps.set(JSON.toJSONString(dingDingList));
+        }
     }
 }
