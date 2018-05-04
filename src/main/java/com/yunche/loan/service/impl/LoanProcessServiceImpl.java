@@ -618,7 +618,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Byte taskProcessStatus = null;
         if (ACTION_REJECT_MANUAL.equals(approval.getAction()) || ACTION_REJECT_AUTO.equals(approval.getAction())) {
             taskProcessStatus = TASK_PROCESS_INIT;
-        } else {
+        } else if (ACTION_PASS.equals(approval.getAction()) && !TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
+            // Tips：[电审]通过 状态更新不走这里
             taskProcessStatus = TASK_PROCESS_DONE;
         }
         updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), taskProcessStatus);
@@ -1105,6 +1106,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void updateCurrentTaskProcessStatus(LoanProcessDO loanProcessDO, String taskDefinitionKey, Byte taskProcessStatus) {
 
+        if (null == taskProcessStatus) {
+            return;
+        }
+
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setCreditApply(taskProcessStatus);
         } else if (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
@@ -1244,7 +1249,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 最大电审角色等级
         Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
-        Preconditions.checkArgument(null != maxRoleLevel && maxRoleLevel >= LEVEL_TELEPHONE_VERIFY_COMMISSIONER, "您无电审权限");
+        Preconditions.checkArgument(null != maxRoleLevel && maxRoleLevel >= LEVEL_TELEPHONE_VERIFY_COMMISSIONER, "您无[电审]权限");
 
         // 如果是审核通过
         if (ACTION_PASS.equals(approval.getAction())) {
