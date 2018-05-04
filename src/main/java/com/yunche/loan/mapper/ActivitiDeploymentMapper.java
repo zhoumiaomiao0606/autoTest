@@ -14,7 +14,7 @@ public interface ActivitiDeploymentMapper {
      *
      * @return
      */
-    @Select("SELECT `ID_` FROM `act_re_deployment` ORDER BY `DEPLOY_TIME_` DESC LIMIT 1,1")
+    @Select("SELECT `DEPLOYMENT_ID_` FROM `act_re_procdef` ORDER BY `VERSION_` DESC LIMIT 1,1")
     Long getLastVersionDeploymentId();
 
     /**
@@ -22,7 +22,7 @@ public interface ActivitiDeploymentMapper {
      *
      * @return
      */
-    @Select("SELECT `ID_` FROM `act_re_deployment` ORDER BY `DEPLOY_TIME_` DESC LIMIT 1")
+    @Select("SELECT `DEPLOYMENT_ID_` FROM `act_re_procdef` ORDER BY `VERSION_` DESC LIMIT 1")
     Long getNewVersionDeploymentId();
 
     /**

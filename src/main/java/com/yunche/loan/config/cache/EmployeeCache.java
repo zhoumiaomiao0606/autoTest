@@ -218,9 +218,9 @@ public class EmployeeCache {
             return null;
         }
 
-        Map<Long, List<EmployeeDO>> parentIdDOMap = Maps.newConcurrentMap();
+        Map<Long, List<EmployeeDO>> parentIdDOMap = Maps.newHashMap();
 
-        employeeDOS.parallelStream()
+        employeeDOS.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
@@ -309,7 +309,7 @@ public class EmployeeCache {
      * ID-DO缓存
      */
     private void refreshAll() {
-        Map<String, BaseVO> idDOMap = Maps.newConcurrentMap();
+        Map<String, BaseVO> idDOMap = Maps.newHashMap();
 
         // getAll
         List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(null, VALID_STATUS);
