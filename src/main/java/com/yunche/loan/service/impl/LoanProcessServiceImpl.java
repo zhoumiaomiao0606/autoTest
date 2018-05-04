@@ -1725,6 +1725,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                         case 3:
                             taskStatus = 3;
                             break;
+                        case 4:
+                            taskStatus = 2;
+                            break;
+                        case 5:
+                            taskStatus = 2;
+                            break;
+                        case 6:
+                            taskStatus = 2;
+                            break;
                         case 12:
                             taskStatus = 12;
                             break;
@@ -1797,6 +1806,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private String getTaskStatusText(Byte taskStatus) {
         String taskStatusText = null;
+        if (null == taskStatus) {
+            return "-";
+        }
         switch (taskStatus) {
             case 0:
                 taskStatusText = "未执行到此";
@@ -1825,7 +1837,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             case 12:
                 taskStatusText = "已弃单";
                 break;
-            // null
             default:
                 taskStatusText = "-";
                 break;
