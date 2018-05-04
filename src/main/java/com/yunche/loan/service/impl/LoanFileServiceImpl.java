@@ -93,7 +93,14 @@ public class LoanFileServiceImpl implements LoanFileService {
                         } else {
                             FileVO fileVO = typeFilesMap.get(type);
                             List<String> urls = JSON.parseArray(e.getPath(), String.class);
-                            fileVO.getUrls().addAll(urls);
+                            if(!CollectionUtils.isEmpty(fileVO.getUrls())){
+                                List<String> urls1 = fileVO.getUrls();
+                                urls1.addAll(urls);
+                                fileVO.setUrls(urls1);
+                            }else{
+                                fileVO.setUrls(urls);
+                            }
+
                         }
 
                     });
