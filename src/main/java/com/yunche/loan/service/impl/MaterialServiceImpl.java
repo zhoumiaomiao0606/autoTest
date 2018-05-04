@@ -323,6 +323,10 @@ public class MaterialServiceImpl implements MaterialService {
                         default:documentType="基本资料";
 
                     }
+
+                    if(HOME_VISIT_VIDEO.getType()==t){
+                        continue;
+                    }
                     if(taskDefinitionKey!=null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode())||taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))){
 //                        if(typeFile.getCustType().equals(PRINCIPAL_LENDER.getType())){
                             if(t== ID_CARD_FRONT.getType() || t==ID_CARD_BACK.getType()|| t==AUTH_BOOK.getType()||t== AUTH_BOOK_SIGN_PHOTO.getType()){

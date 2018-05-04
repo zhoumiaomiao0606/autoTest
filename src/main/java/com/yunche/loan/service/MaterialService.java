@@ -19,7 +19,7 @@ public interface MaterialService {
      * 资料审核文件下载
      * @param orderId
      */
-    public ResultBean downloadFilesToOSS(Long orderId,String taskDefinitionKey,String customerId);
+    public ResultBean downloadFilesToOSS(Long orderId);
 
     /**
      * 浏览器直接下载
