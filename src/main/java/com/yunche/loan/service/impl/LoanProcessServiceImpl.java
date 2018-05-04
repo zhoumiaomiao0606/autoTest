@@ -1612,7 +1612,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             taskStateVOS = runTaskList.parallelStream()
                     .filter(Objects::nonNull)
                     .filter(task -> !BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                            && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey()))
+                            && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())
+                            && !REMIT_REVIEW_FILTER.getCode().equals(task.getTaskDefinitionKey()))
                     .map(task -> {
 
                         TaskStateVO taskStateVO = new TaskStateVO();
