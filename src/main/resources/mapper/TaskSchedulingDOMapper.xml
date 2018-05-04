@@ -851,8 +851,9 @@
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                      having filtration = 2 and
-                           case when
-                                    (3) in
+                           case       when 'usertask_financial_scheme_modify_apply_review' = 'usertask_financial_scheme_modify_apply_review' then  1=1
+                                      when
+                                      (3) in
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
@@ -948,8 +949,9 @@
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                      having filtration = 2 and
-                           case when
-                                    (3) in
+                           case       when 'usertask_refund_apply_review' = 'usertask_refund_apply_review' then  1=1
+                                      when
+                                      (3) in
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
