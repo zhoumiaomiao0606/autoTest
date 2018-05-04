@@ -324,7 +324,7 @@ public class MaterialServiceImpl implements MaterialService {
 
                     }
 
-                    if(HOME_VISIT_VIDEO.getType()==t){
+                    if(HOME_VISIT_VIDEO.getType()==t ||url.endsWith(".rar")){
                         continue;
                     }
                     if(taskDefinitionKey!=null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode())||taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))){
@@ -396,7 +396,7 @@ public class MaterialServiceImpl implements MaterialService {
 
                 if(zipFile!=null){
                     // 删除临时文件
-                    zipFile.delete();
+//                    zipFile.delete();
                 }
                 if(zos!=null){
                     zos.close();
