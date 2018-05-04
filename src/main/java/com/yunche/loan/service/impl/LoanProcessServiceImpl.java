@@ -1319,6 +1319,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         autoCompleteTask(task.getProcessInstanceId(), approval.getOrderId(), FINANCIAL_SCHEME.getCode());
         // 自动执行【待收钥匙】任务
         completeCommitKeyTask(task.getProcessInstanceId(), approval.getOrderId());
+        // 更新状态
+        updateTelephoneVerify(approval.getOrderId(), TASK_PROCESS_DONE);
     }
 
     /**
