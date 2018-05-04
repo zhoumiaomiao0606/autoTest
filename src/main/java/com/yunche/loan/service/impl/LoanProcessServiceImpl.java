@@ -2325,9 +2325,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     public List<Task> getCurrentTaskList(String processInstanceId) {
-        List<Task> startTaskList = taskService.createTaskQuery()
+        List<Task> currentTaskList = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .list();
-        return startTaskList;
+        return currentTaskList;
     }
 }
