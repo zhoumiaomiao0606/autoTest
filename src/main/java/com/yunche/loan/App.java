@@ -41,6 +41,7 @@ public class App {
                 // 刷新activiti缓存数据
                 activitiCache.refresh();
 
+                // 流程替换
                 activitiVersionService.replaceActivitiVersion();
 
 //                System.out.println("Number of process definitions : "

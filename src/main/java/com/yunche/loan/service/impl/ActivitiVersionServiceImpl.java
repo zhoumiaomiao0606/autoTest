@@ -23,6 +23,9 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
     private ActivitiDeploymentMapper activitiDeploymentMapper;
 
 
+    /**
+     * 流程替换
+     */
     @Override
     @Transactional
     public void replaceActivitiVersion() {
