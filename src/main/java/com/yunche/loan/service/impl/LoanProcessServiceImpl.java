@@ -393,6 +393,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             approval(approvalParam);
 
             loanProcessDO.setBusinessReview(TASK_PROCESS_TODO);
+            loanProcessDO.setLoanReview(TASK_PROCESS_INIT);
+            loanProcessDO.setRemitReview(TASK_PROCESS_INIT);
             updateLoanProcess(loanProcessDO);
 
         } else if (TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())) {
@@ -407,6 +409,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             approval(approvalParam);
 
             loanProcessDO.setBusinessReview(TASK_PROCESS_TODO);
+            loanProcessDO.setLoanReview(TASK_PROCESS_INIT);
+            loanProcessDO.setRemitReview(TASK_PROCESS_INIT);
             updateLoanProcess(loanProcessDO);
         }
     }
@@ -562,7 +566,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void syncProcess(List<Task> startTaskList, ApprovalParam approval) {
 
         // 起始任务ID列表
-        List<String> startTaskIdList = startTaskList.parallelStream()
+        List<String> startTaskIdList = startTaskList.stream()
                 .filter(Objects::nonNull)
                 .map(e -> {
                     return e.getId();
@@ -977,7 +981,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 筛选出新产生和旧有的任务
         List<Task> newTaskList = Lists.newArrayList();
         List<Task> oldTaskList = Lists.newArrayList();
-        endTaskList.parallelStream()
+        endTaskList.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
                     if (!startTaskIdList.contains(e.getId())) {
