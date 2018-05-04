@@ -2,9 +2,13 @@ package com.yunche.loan.service.impl;
 
 import com.yunche.loan.mapper.ActivitiDeploymentMapper;
 import com.yunche.loan.service.ActivitiVersionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.yunche.loan.service.impl.LoanProcessServiceImpl.NEW_LINE;
 
 /**
  * @author liuzhe
@@ -12,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class ActivitiVersionServiceImpl implements ActivitiVersionService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ActivitiVersionServiceImpl.class);
 
     @Autowired
     private ActivitiDeploymentMapper activitiDeploymentMapper;
@@ -32,14 +38,21 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
             // 仅保留新版本           资源文件(bpmn/png)
             int deleteAllBpmnAndPngCount = activitiDeploymentMapper.deleteAllBpmnAndPngExcludeNewVersion(newVersionDeploymentId);
 
-            // 仅保留上个版本         流程定义
-//            int deleteAllProcessDefinitionCount = activitiDeploymentMapper.deleteAllProcessDefinitionExcludeLastVersion(lastVersionDeploymentId);
-
             // 删除最新的            流程定义
             int deleteNewVersionProcessDefinitionCount = activitiDeploymentMapper.deleteNewVersionProcessDefinition(newVersionDeploymentId);
 
-            // 部署ID替换   -将新流程图的ACT_GE_BYTEARRAY表数据里的DEPLOYMENT_ID_修改成旧流程图ACT_RE_PROCDEF表数据的DEPLOYMENT_ID_
+            // 部署ID替换
             int replaceDeploymentIdCount = activitiDeploymentMapper.replaceDeploymentId(lastVersionDeploymentId, newVersionDeploymentId);
+
+            logger.info("替换旧流程成功        >>>>>"
+                            + NEW_LINE
+                            + "lastVersionDeploymentId : {}, newVersionDeploymentId : {}, deleteAllBpmnAndPngCount : {}, deleteNewVersionProcessDefinitionCount : {}, replaceDeploymentIdCount : {}.",
+                    lastVersionDeploymentId, newVersionDeploymentId, deleteAllBpmnAndPngCount, deleteNewVersionProcessDefinitionCount, replaceDeploymentIdCount);
+        } else {
+
+            logger.info("无旧版本流程       >>>>>"
+                    + NEW_LINE
+                    + "lastVersionDeploymentId : {}", lastVersionDeploymentId);
         }
     }
 }
