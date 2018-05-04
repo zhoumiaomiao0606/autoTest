@@ -314,7 +314,7 @@ public class EmployeeCache {
         // getAll
         List<EmployeeDO> employeeDOS = employeeDOMapper.getAll(null, VALID_STATUS);
         if (!CollectionUtils.isEmpty(employeeDOS)) {
-            employeeDOS.parallelStream()
+            employeeDOS.stream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
@@ -346,7 +346,7 @@ public class EmployeeCache {
             List<String> emailList = Lists.newArrayList();
             List<String> dingDingList = Lists.newArrayList();
 
-            allOnlyProperty.parallelStream()
+            allOnlyProperty.stream()
                     .forEach(e -> {
 
                         String idCard = e.getIdCard();

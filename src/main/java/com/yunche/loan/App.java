@@ -1,6 +1,7 @@
 package com.yunche.loan;
 
 import com.yunche.loan.config.cache.ActivitiCache;
+import com.yunche.loan.service.ActivitiVersionService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -25,7 +26,8 @@ public class App {
     public CommandLineRunner init(final RepositoryService repositoryService,
                                   final RuntimeService runtimeService,
                                   final TaskService taskService,
-                                  final ActivitiCache activitiCache) {
+                                  final ActivitiCache activitiCache,
+                                  final ActivitiVersionService activitiVersionService) {
 
         return new CommandLineRunner() {
             @Override
@@ -38,6 +40,8 @@ public class App {
 
                 // 刷新activiti缓存数据
                 activitiCache.refresh();
+
+                activitiVersionService.replaceActivitiVersion();
 
 //                System.out.println("Number of process definitions : "
 //                        + repositoryService.createProcessDefinitionQuery().count());

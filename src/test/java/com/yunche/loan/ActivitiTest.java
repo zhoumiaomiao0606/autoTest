@@ -29,7 +29,6 @@ public class ActivitiTest extends BaseTest {
     @Autowired
     private TaskService taskService;
 
-
     @Autowired
     private RuntimeService runtimeService;
 
