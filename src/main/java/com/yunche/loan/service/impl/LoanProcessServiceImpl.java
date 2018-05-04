@@ -401,7 +401,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             ApprovalParam approvalParam = new ApprovalParam();
             approvalParam.setOrderId(approval.getOrderId());
-            approvalParam.setTaskDefinitionKey(REMIT_REVIEW.getCode());
+            approvalParam.setTaskDefinitionKey(REMIT_REVIEW_FILTER.getCode());
             approvalParam.setAction(ACTION_REJECT_AUTO);
             approvalParam.setCheckPermission(false);
             approvalParam.setNeedLog(false);
@@ -1225,8 +1225,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
         Preconditions.checkArgument(null != maxRoleLevel && maxRoleLevel >= LEVEL_TELEPHONE_VERIFY_COMMISSIONER, "您无电审权限");
-
-        String taskId = task.getId();
 
         // 如果是审核通过
         if (ACTION_PASS.equals(approval.getAction())) {

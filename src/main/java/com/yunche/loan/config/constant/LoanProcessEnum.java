@@ -14,6 +14,7 @@ public enum LoanProcessEnum {
 
     BANK_SOCIAL_CREDIT_RECORD_FILTER("filter_bank_social_credit_record", "征信记录拦截任务"),
     LOAN_APPLY_VISIT_VERIFY_FILTER("filter_loan_apply_visit_verify", "业务申请&上门调查拦截任务"),
+    REMIT_REVIEW_FILTER("filter_remit_review", "打款确认拦截任务"),
 
     LOAN_APPLY("usertask_loan_apply", "业务申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),
