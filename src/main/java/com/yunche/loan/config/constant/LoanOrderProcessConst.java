@@ -30,6 +30,10 @@ public class LoanOrderProcessConst {
      * 已退款
      */
     public static final Byte TASK_PROCESS_REFUND = 21;
+    /**
+     * 操作锁定中(退款申请中/金融方案修改申请中);
+     */
+    public static final Byte TASK_PROCESS_LOCKED = 22;
 
     /**
      * 任务状态:  2-已结清;

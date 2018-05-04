@@ -227,6 +227,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 更新申请单状态
             updateFinancialSchemeModifyApply(approval, APPLY_ORDER_TODO);
 
+            // 锁定操作 -更新流程状态
+            lockProcess(loanProcessDO);
+
             return ResultBean.ofSuccess(null, "[金融方案修改申请]任务执行成功");
         }
 
@@ -266,6 +269,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         return ResultBean.ofError("参数有误");
+    }
+
+    /**
+     * 锁定操作
+     *
+     * @param loanProcessDO
+     */
+    private void lockProcess(LoanProcessDO loanProcessDO) {
+        if (TASK_PROCESS_TODO.equals(loanProcessDO.getBusinessReview())) {
+            loanProcessDO.setRemitReview(TASK_PROCESS_LOCKED);
+        } else if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
+            loanProcessDO.setRemitReview(TASK_PROCESS_LOCKED);
+        }
+        updateLoanProcess(loanProcessDO);
     }
 
     /**
@@ -493,16 +510,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 提交
             Preconditions.checkArgument(ACTION_PASS.equals(approval.getAction()), "流程审核参数有误");
 
+            // 更新申请单状态
             updateRefundApply(approval, APPLY_ORDER_TODO);
+
             return ResultBean.ofSuccess(null, "[退款申请]任务执行成功");
         }
 
         // 【退款申请审核】
         else if (REFUND_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+
             // 通过/打回
             if (ACTION_PASS.equals(approval.getAction())) {
 
-                // 更新状态
+                // 更新申请单状态
                 updateRefundApply(approval, APPLY_ORDER_PASS);
 
                 // 更新流程（已退款）
@@ -511,7 +531,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
 
-                // 更新状态
+                // 更新申请单状态
                 updateRefundApply(approval, APPLY_ORDER_REJECT);
 
                 // 打回记录
