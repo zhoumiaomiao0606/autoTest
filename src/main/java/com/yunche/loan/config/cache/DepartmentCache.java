@@ -123,7 +123,7 @@ public class DepartmentCache {
                             parent.setLevel(p.getLevel());
 
                             // 递归填充子列表
-                            fillChilds(parent, parentIdDOMap);
+                            fillChilds(parent, parentIdDOMap, 10);
                             return parent;
                         })
                         .collect(Collectors.toList());
@@ -140,13 +140,19 @@ public class DepartmentCache {
      *
      * @param parent
      * @param parentIdDOMap
+     * @param limit
      */
-    private void fillChilds(CascadeVO parent, Map<Long, List<DepartmentDO>> parentIdDOMap) {
+    private void fillChilds(CascadeVO parent, Map<Long, List<DepartmentDO>> parentIdDOMap, int limit) {
+        limit--;
+        if (limit < 0) {
+            return;
+        }
         List<DepartmentDO> childs = parentIdDOMap.get(parent.getValue());
         if (CollectionUtils.isEmpty(childs)) {
             return;
         }
 
+        int finalLimit = limit;
         childs.stream()
                 .forEach(c -> {
                     CascadeVO child = new CascadeVO();
@@ -162,7 +168,7 @@ public class DepartmentCache {
                     }
 
                     // 递归填充子列表
-                    fillChilds(child, parentIdDOMap);
+                    fillChilds(child, parentIdDOMap, finalLimit);
                 });
     }
 }
