@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.MaterialDownHisDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.MaterialDownHisDO">
+    <id column="task_definition_key" jdbcType="VARCHAR" property="taskDefinitionKey" />
+    <id column="customer_id" jdbcType="BIGINT" property="customerId" />
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    task_definition_key, customer_id, order_id, url, status, gmt_create
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.MaterialDownHisDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from material_down_his
+    where order_id = #{orderId,jdbcType=BIGINT}
+      <if test="customerId != null">
+        and customer_id = #{customerId,jdbcType=BIGINT}
+      </if>
+      <if test="taskDefinitionKey !=null">
+        and task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR}
+      </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.MaterialDownHisDOKey">
+    delete from material_down_his
+    where task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR}
+      and customer_id = #{customerId,jdbcType=BIGINT}
+      and order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.MaterialDownHisDO">
+    insert into material_down_his (task_definition_key, customer_id, order_id, 
+      url, status, gmt_create
+      )
+    values (#{taskDefinitionKey,jdbcType=VARCHAR}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
+      #{url,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.MaterialDownHisDO">
+    insert into material_down_his
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="taskDefinitionKey != null">
+        task_definition_key,
+      </if>
+      <if test="customerId != null">
+        customer_id,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="taskDefinitionKey != null">
+        #{taskDefinitionKey,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null">
+        #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.MaterialDownHisDO">
+    update material_down_his
+    <set>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR}
+      and customer_id = #{customerId,jdbcType=BIGINT}
+      and order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.MaterialDownHisDO">
+    update material_down_his
+    set url = #{url,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+    where task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR}
+      and customer_id = #{customerId,jdbcType=BIGINT}
+      and order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+
+  <select id="listAll" resultType="com.yunche.loan.domain.entity.MaterialDownHisDO">
+    SELECT
+    task_definition_key AS taskDefinitionKey,
+    customer_id AS customerId,
+    order_id AS orderId,
+    url AS url,
+    `STATUS` AS status,
+    gmt_create AS gmtCreate
+    FROM
+    material_down_his
+    where status ='1'
+  </select>
+</mapper>

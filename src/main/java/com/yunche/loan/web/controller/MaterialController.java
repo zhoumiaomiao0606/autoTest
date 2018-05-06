@@ -50,7 +50,7 @@ public class MaterialController {
     public String  downLoad(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                             @RequestParam Long orderId,
                             @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey,
-                            @RequestParam(value = "customerId", required = false) String customerId){
+                            @RequestParam(value = "customerId", required = false) Long customerId){
 
         return materialService.zipFilesDown(httpServletRequest,httpServletResponse,orderId,taskDefinitionKey,customerId);
     }
@@ -65,4 +65,16 @@ public class MaterialController {
         return materialService.downloadFilesToOSS(orderId);
     }
 
+    /**
+     * 下载文件完成后上传至tomcat
+     * @param orderId
+     * @return
+     */
+    @GetMapping(value = "/down2tomcat")
+    public ResultBean  down2tomcat(@RequestParam Long orderId,
+                            @RequestParam(value = "taskDefinitionKey") String taskDefinitionKey,
+                            @RequestParam(value = "customerId", required = false) Long customerId){
+
+        return materialService.down2tomcat(orderId,taskDefinitionKey,customerId);
+    }
 }

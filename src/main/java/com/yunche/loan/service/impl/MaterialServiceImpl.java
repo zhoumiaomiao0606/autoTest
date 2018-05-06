@@ -6,6 +6,7 @@ import com.aliyun.oss.model.OSSObject;
 import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.common.OSSConfig;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanCustomerEnum;
 import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -14,6 +15,8 @@ import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.MaterialAuditDO;
+import com.yunche.loan.domain.entity.MaterialDownHisDO;
+import com.yunche.loan.domain.entity.MaterialDownHisDOKey;
 import com.yunche.loan.domain.param.MaterialDownloadParam;
 import com.yunche.loan.domain.param.MaterialUpdateParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -23,6 +26,7 @@ import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.MaterialAuditDOMapper;
+import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.LoanProcessLogService;
 import com.yunche.loan.service.MaterialService;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +38,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.zip.Adler32;
@@ -49,6 +54,10 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.SOCIAL_CREDIT_RECO
 @Service
 public class MaterialServiceImpl implements MaterialService {
 
+
+    private final static Long CUSTOMER_DEFAULT_ID=(long)0;
+
+
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
 
@@ -63,6 +72,8 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Autowired
     private OSSConfig ossConfig;
+    @Autowired
+    private MaterialDownHisDOMapper materialDownHisDOMapper;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -258,7 +269,7 @@ public class MaterialServiceImpl implements MaterialService {
      * @param orderId
      * @return
      */
-    public  String zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId,String taskDefinitionKey,String customerId){
+    public  String zipFilesDown(HttpServletRequest request, HttpServletResponse response,Long orderId,String taskDefinitionKey,Long customerId){
         OSSClient ossClient=null;
         ZipOutputStream zos=null;
         BufferedInputStream buff=null;
@@ -330,7 +341,7 @@ public class MaterialServiceImpl implements MaterialService {
                     if(taskDefinitionKey!=null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode())||taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))){
 //                        if(typeFile.getCustType().equals(PRINCIPAL_LENDER.getType())){
                             if(t== ID_CARD_FRONT.getType() || t==ID_CARD_BACK.getType()|| t==AUTH_BOOK.getType()||t== AUTH_BOOK_SIGN_PHOTO.getType()){
-                                if(StringUtil.isNotEmpty(customerId)){
+                                if(customerId!=null){
                                     zos.putNextEntry(new ZipEntry(url.split("/")[url.split("/").length-1]));
                                 }else{
                                     zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName()+"/"+url.split("/")[url.split("/").length-1]));
@@ -413,5 +424,182 @@ public class MaterialServiceImpl implements MaterialService {
         return null;
     }
 
+
+    /**
+     *
+     * @param orderId
+     * @param taskDefinitionKey
+     * @param customerId
+     * @return
+     */
+    public  ResultBean down2tomcat(Long orderId,String taskDefinitionKey,Long customerId){
+        OSSClient ossClient=null;
+        ZipOutputStream zos=null;
+        BufferedInputStream buff=null;
+        FileInputStream fis=null;
+        BufferedOutputStream out=null;
+        File zipFile=null;
+        String fileName=null;
+        try {
+            MaterialDownHisDOKey downHisDOKey = new MaterialDownHisDOKey();
+            downHisDOKey.setOrderId(orderId);
+            downHisDOKey.setTaskDefinitionKey(taskDefinitionKey);
+            if(customerId==null){
+                downHisDOKey.setCustomerId(CUSTOMER_DEFAULT_ID);
+            }else{
+                downHisDOKey.setCustomerId(customerId);
+            }
+
+            MaterialDownHisDO downHisDO = materialDownHisDOMapper.selectByPrimaryKey(downHisDOKey);
+            if(downHisDO!=null){
+                return ResultBean.ofSuccess(downHisDO.getUrl(),"下载完成");
+            }
+            List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId,customerId);
+            if(downloadParams==null){
+                return null;
+            }
+            downloadParams.parallelStream().filter(Objects::nonNull)
+                    .filter(e -> StringUtils.isNotBlank(e.getPath()))
+                    .forEach(param ->{
+                        String nameByCode = LoanFileEnum.getNameByCode(param.getType());
+                        param.setTypeName(nameByCode);
+                        String custTypeName = LoanCustomerEnum.getNameByCode(param.getCustType());
+                        param.setCustTypeName(custTypeName);
+                        List<String> list = JSONArray.parseArray(param.getPath(), String.class);
+                        param.setPathList(list);
+                    });
+
+            // 初始化
+            ossClient =  OSSUnit.getOSSClient();
+
+            if(downloadParams!=null){
+                fileName = downloadParams.get(0).getName()+"_"+downloadParams.get(0).getIdCard()+".zip";
+            }
+//            // 创建临时文件
+//            zipFile = File.createTempFile(fileName, ".zip");
+            // 创建临时文件
+            File dir = new File (ossConfig.getDown2tomcatBasepath()+File.separator+taskDefinitionKey);
+            if(!dir.exists()){
+                dir.mkdirs();
+            }
+
+            zipFile = new File(ossConfig.getDown2tomcatBasepath()+File.separator+taskDefinitionKey+File.separator+fileName);
+            zipFile.createNewFile();
+            FileOutputStream f = new FileOutputStream(zipFile);
+
+            /**
+             *
+             * 作用是为任何OutputStream产生校验和
+             * 第一个参数是制定产生校验和的输出流，第二个参数是指定Checksum的类型 （Adler32（较快）和CRC32两种）
+             */
+            CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
+            // 用于将数据压缩成Zip文件格式
+            zos = new ZipOutputStream(csum);
+
+            for (MaterialDownloadParam typeFile : downloadParams) {
+                // 获取Object，返回结果为OSSObject对象
+                for(String url : typeFile.getPathList()){
+                    OSSObject ossObject = OSSUnit.getObject(ossClient,url);
+                    // 读去Object内容  返回
+                    InputStream inputStream = ossObject.getObjectContent();
+                    // 对于每一个要被存放到压缩包的文件，都必须调用ZipOutputStream对象的putNextEntry()方法，确保压缩包里面文件不同名
+                    byte t=  typeFile.getType();
+                    String documentType=null;
+
+                    switch (t){
+                        case 19:
+                        case 20:
+                        case 21:
+                        case 22:documentType="提车资料";break;
+                        case 12:
+                        case 13:
+                        case 16:
+                        case 17:
+                        case 18:documentType="上门家纺";break;
+
+                        default:documentType="基本资料";
+
+                    }
+
+                    if(url.endsWith(".rar")){
+                        continue;
+                    }
+                    if(taskDefinitionKey!=null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode())||taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))){
+//                        if(typeFile.getCustType().equals(PRINCIPAL_LENDER.getType())){
+                        if(t== ID_CARD_FRONT.getType() || t==ID_CARD_BACK.getType()|| t==AUTH_BOOK.getType()||t== AUTH_BOOK_SIGN_PHOTO.getType()){
+                            if(customerId!=null ){
+                                zos.putNextEntry(new ZipEntry(url.split("/")[url.split("/").length-1]));
+                            }else{
+                                zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName()+"/"+url.split("/")[url.split("/").length-1]));
+                            }
+
+                        }else{
+                            continue;
+                        }
+//                        }else{
+//                            continue;
+//                        }
+                    }else{
+                        zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName()+"/"+documentType+"/"+typeFile.getTypeName()+"/"+url.split("/")[url.split("/").length-1]));
+
+                    }
+
+                    int bytesRead = 0;
+                    // 向压缩文件中输出数据
+                    while((bytesRead=inputStream.read())!=-1){
+                        zos.write(bytesRead);
+                    }
+                    inputStream.close();
+                    zos.closeEntry(); // 当前文件写完，定位为写入下一条项目
+                }
+            }
+            zos.close();
+            MaterialDownHisDO materialDownHisDO=new MaterialDownHisDO();
+            materialDownHisDO.setOrderId(orderId);
+            if(taskDefinitionKey!=null){
+                materialDownHisDO.setTaskDefinitionKey(taskDefinitionKey);
+            }
+            if(customerId!=null){
+                materialDownHisDO.setCustomerId(customerId);
+            }else{
+                materialDownHisDO.setCustomerId(CUSTOMER_DEFAULT_ID);
+            }
+            materialDownHisDO.setGmtCreate(new Date());
+
+            materialDownHisDO.setStatus(BaseConst.VALID_STATUS);
+            materialDownHisDO.setUrl(ossConfig.getDown2tomcatBasepath()+File.separator+fileName);
+            materialDownHisDOMapper.insertSelective(materialDownHisDO);
+
+        } catch (Exception e) {
+            Preconditions.checkArgument(false,e.getMessage());
+        }finally {
+            try {
+                if(buff!=null){
+                    buff.close();
+                }
+                if(fis!=null){
+                    fis.close();
+                }
+                if(out!=null){
+                    out.close();
+                }
+                if(ossClient!=null){
+                    ossClient.shutdown();
+                }
+
+//                if(zipFile!=null){
+//                    // 删除临时文件
+////                    zipFile.delete();
+//                }
+                if(zos!=null){
+                    zos.close();
+                }
+            }catch(IOException e){
+                Preconditions.checkArgument(false,e.getMessage());
+
+            }
+        }
+        return ResultBean.ofSuccess(ossConfig.getDown2tomcatBasepath()+File.separator+taskDefinitionKey+File.separator+fileName,"下载完成");
+    }
 
 }

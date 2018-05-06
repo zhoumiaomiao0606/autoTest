@@ -17,5 +17,5 @@ public interface MaterialAuditDOMapper {
 
     int updateByPrimaryKeySelective(MaterialAuditDO record);
 
-    List<MaterialDownloadParam> selectDownloadMaterial(@Param(value = "orderId")Long orderId,@Param(value = "customerId") String customerId);
+    List<MaterialDownloadParam> selectDownloadMaterial(@Param(value = "orderId")Long orderId,@Param(value = "customerId") Long  customerId);
 }

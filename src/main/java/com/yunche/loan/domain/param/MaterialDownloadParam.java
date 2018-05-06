@@ -21,4 +21,5 @@ public class MaterialDownloadParam {
     private String custTypeName;
 
 
+
 }

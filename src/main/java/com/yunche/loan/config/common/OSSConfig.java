@@ -18,4 +18,5 @@ public class OSSConfig {
     private String zipBucketName;
     private String downLoadBasepath;
     private String zipDiskName;
+    private String down2tomcatBasepath;
 }

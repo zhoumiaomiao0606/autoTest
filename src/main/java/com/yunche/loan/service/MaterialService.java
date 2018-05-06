@@ -29,5 +29,15 @@ public interface MaterialService {
      * @param taskDefinitionKey
      * @return
      */
-    public String zipFilesDown(HttpServletRequest request, HttpServletResponse response, Long orderId,String taskDefinitionKey,String customerId);
+    public String zipFilesDown(HttpServletRequest request, HttpServletResponse response,
+                               Long orderId,String taskDefinitionKey,Long  customerId);
+
+    /**
+     * 中转tomcat下载
+     * @param orderId
+     * @param taskDefinitionKey
+     * @param customerId
+     * @return
+     */
+    public ResultBean down2tomcat( Long orderId,String taskDefinitionKey,Long customerId);
 }
