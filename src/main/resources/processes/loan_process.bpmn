@@ -3,18 +3,18 @@
   <signal id="contactChangeSignal" name="contactChangeSignal"></signal>
   <process id="loan_process" name="消费贷流程" isExecutable="true" isClosed="false" processType="None">
     <startEvent id="startevent_start_process" name="流程启动"></startEvent>
-    <userTask id="usertask_credit_apply" name="征信申请" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_credit_apply" name="征信申请" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow1" sourceRef="startevent_start_process" targetRef="usertask_credit_apply"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow6" name="贷款额 &gt;= 13W" sourceRef="exclusivegateway2" targetRef="parallelgateway1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanAmount >= 2}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
-    <userTask id="usertask_loan_apply" name="业务申请" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_loan_apply" name="业务申请" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow13" name="&lt;13W 银行征信审核   征信通过" sourceRef="exclusivegateway3" targetRef="exclusivegateway21">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanAmount == 1 && action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow15" name="提交 或 弃单 或 自动打回" sourceRef="exclusivegateway20" targetRef="filter_loan_apply_visit_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${reject_origin_task != "usertask_material_review" && (action == 1 || action == 2 || action == -1) }]]></conditionExpression>
     </sequenceFlow>
@@ -70,7 +70,7 @@
     <sequenceFlow id="flow60" sourceRef="parallelgateway3" targetRef="usertask_business_review"></sequenceFlow>
     <userTask id="usertask_material_review" name="资料审核" activiti:candidateGroups="总经理,培训经理,渠道经理,纸审"></userTask>
     <userTask id="usertask_apply_license_plate_deposit_info" name="车辆抵押" activiti:candidateGroups="总经理,培训经理,渠道经理,抵押专员,业务内勤"></userTask>
-    <userTask id="usertask_car_insurance" name="车辆保险" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_car_insurance" name="车辆保险" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow63" sourceRef="parallelgateway3" targetRef="usertask_car_insurance"></sequenceFlow>
     <userTask id="usertask_install_gps" name="GPS安装" activiti:candidateGroups="总经理,培训经理,催收主管,GPS专员"></userTask>
     <sequenceFlow id="flow65" sourceRef="parallelgateway3" targetRef="usertask_install_gps"></sequenceFlow>
@@ -170,7 +170,7 @@
     <startEvent id="signal_start_event_info_supplement" name="发起资料增补信号源">
       <signalEventDefinition signalRef="contactChangeSignal"></signalEventDefinition>
     </startEvent>
-    <userTask id="usertask_info_supplement" name="资料增补" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_info_supplement" name="资料增补" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow142" name="发起资料增补" sourceRef="signal_start_event_info_supplement" targetRef="usertask_info_supplement"></sequenceFlow>
     <endEvent id="endevent25" name="End"></endEvent>
     <sequenceFlow id="flow143" name="提交" sourceRef="usertask_info_supplement" targetRef="endevent25">
@@ -199,7 +199,7 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow162" sourceRef="parallelgateway3" targetRef="usertask_vehicle_information"></sequenceFlow>
-    <userTask id="usertask_vehicle_information" name="提车资料" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_vehicle_information" name="提车资料" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow163" name="提交" sourceRef="usertask_vehicle_information" targetRef="usertask_apply_license_plate_deposit_info">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -208,8 +208,8 @@
     <sequenceFlow id="flow164" name="提交" sourceRef="usertask_bank_card_record" targetRef="endevent28">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_financial_scheme_modify_apply" name="金融方案修改申请" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
-    <userTask id="usertask_refund_apply" name="退款申请" activiti:candidateGroups="总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_financial_scheme_modify_apply" name="金融方案修改申请" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
+    <userTask id="usertask_refund_apply" name="退款申请" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <userTask id="usertask_financial_scheme_modify_apply_review" name="金融方案修改申请审核" activiti:candidateGroups="总经理,培训经理,总监,电审经理,电审主管,电审专员"></userTask>
     <userTask id="usertask_refund_apply_review" name="退款申请审核" activiti:candidateGroups="总经理,培训经理,财务经理,财务助理,出纳"></userTask>
     <exclusiveGateway id="exclusivegateway22" name="Exclusive Gateway"></exclusiveGateway>

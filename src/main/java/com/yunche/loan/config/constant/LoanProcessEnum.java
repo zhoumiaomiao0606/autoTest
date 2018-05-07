@@ -19,7 +19,7 @@ public enum LoanProcessEnum {
     LOAN_APPLY("usertask_loan_apply", "业务申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),
 
-    TELEPHONE_VERIFY("usertask_telephone_verify", "电审信息"),
+    TELEPHONE_VERIFY("usertask_telephone_verify", "电审"),
 
     INFO_SUPPLEMENT("usertask_info_supplement", "资料增补"),
     CREDIT_SUPPLEMENT("usertask_credit_supplement", "征信增补"),
