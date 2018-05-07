@@ -18,4 +18,5 @@ public class UniversalCarInfoVO {
     private String vehicle_registration_certificate_number;
     private String vehicle_color;
     private String financial_appraisal;
+    private String qualified_certificate_number;
 }

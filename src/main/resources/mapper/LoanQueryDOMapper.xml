@@ -433,7 +433,8 @@
             vehicle.apply_license_plate_area                                        AS vehicle_apply_license_plate_area,
             vehicle.registration_certificate_number                                 AS vehicle_registration_certificate_number,
             vehicle.color                                                           AS vehicle_color,
-            financial.appraisal                                                     AS financial_appraisal
+            financial.appraisal                                                     AS financial_appraisal,
+            vehicle.qualified_certificate_number                                    AS qualified_certificate_number
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
         left join loan_car_info car on main_order.loan_car_info_id = car.id
