@@ -82,9 +82,7 @@ public class BizExceptionHandler {
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-        System.out.println(request.getRemoteAddr() + "  :  " + request.getRemotePort() + "   -----------   " + request.getLocalAddr() + "  :  " + request.getLocalPort());
-
-        List<Object> argList = Arrays.stream(args).parallel()
+        List<Object> argList = Arrays.stream(args)
                 .filter(arg -> !(arg instanceof HttpServletRequest) && !(arg instanceof HttpServletResponse))
                 .map(arg -> {
                     return arg;
