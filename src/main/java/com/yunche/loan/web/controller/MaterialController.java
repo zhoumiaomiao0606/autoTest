@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.CarUpdateParam;
 import com.yunche.loan.domain.param.MaterialUpdateParam;
 import com.yunche.loan.service.MaterialService;
 import org.springframework.http.MediaType;
@@ -35,6 +36,15 @@ public class MaterialController {
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody @Validated MaterialUpdateParam param) {
         materialService.update(param);
+        return ResultBean.ofSuccess(null,"保存成功");
+    }
+
+    /**
+     * 车辆信息编辑
+     */
+    @PostMapping(value = "/carUpdate", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean carUpdate(@RequestBody @Validated CarUpdateParam param) {
+        materialService.carUpdate(param);
         return ResultBean.ofSuccess(null,"保存成功");
     }
 
@@ -77,4 +87,7 @@ public class MaterialController {
 
         return materialService.down2tomcat(orderId,taskDefinitionKey,customerId);
     }
+
+
+
 }

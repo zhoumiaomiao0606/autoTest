@@ -13,20 +13,15 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.OSSUnit;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.MaterialAuditDO;
-import com.yunche.loan.domain.entity.MaterialDownHisDO;
-import com.yunche.loan.domain.entity.MaterialDownHisDOKey;
+import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.param.CarUpdateParam;
 import com.yunche.loan.domain.param.MaterialDownloadParam;
 import com.yunche.loan.domain.param.MaterialUpdateParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCreditInfoVO;
 import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.MaterialAuditDOMapper;
-import com.yunche.loan.mapper.MaterialDownHisDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanProcessLogService;
 import com.yunche.loan.service.MaterialService;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +33,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -75,6 +71,14 @@ public class MaterialServiceImpl implements MaterialService {
     @Autowired
     private MaterialDownHisDOMapper materialDownHisDOMapper;
 
+    @Resource
+    private VehicleInformationDOMapper vehicleInformationDOMapper;
+
+    @Resource
+    private LoanCarInfoDOMapper loanCarInfoDOMapper;
+
+    @Resource
+    private LoanFinancialPlanDOMapper financialPlanDOMapper;
     @Override
     public RecombinationVO detail(Long orderId) {
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
@@ -600,6 +604,51 @@ public class MaterialServiceImpl implements MaterialService {
             }
         }
         return ResultBean.ofSuccess(ossConfig.getDown2tomcatBasepath()+File.separator+taskDefinitionKey+File.separator+fileName,"下载完成");
+    }
+
+    @Override
+    public void carUpdate(CarUpdateParam param) {
+
+        LoanOrderDO loanOrderDO  = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()),new Byte("0"));
+        Long vid = loanOrderDO.getVehicleInformationId();
+        Long cid = loanOrderDO.getLoanCarInfoId();
+        Long fid = loanOrderDO.getLoanFinancialPlanId();
+        if(vid!=null){
+            VehicleInformationDO vehicleInformationDO = new VehicleInformationDO();
+            vehicleInformationDO.setId(vid);
+            vehicleInformationDO.setVehicle_identification_number(param.getVehicle_vehicle_identification_number());
+            vehicleInformationDO.setLicense_plate_number(param.getVehicle_license_plate_number());
+            vehicleInformationDO.setEngine_number(param.getVehicle_engine_number());
+            vehicleInformationDO.setApply_license_plate_area(param.getVehicle_apply_license_plate_area());
+            vehicleInformationDO.setRegistration_certificate_number(param.getVehicle_registration_certificate_number());
+            vehicleInformationDO.setColor(param.getVehicle_color());
+            vehicleInformationDOMapper.updateByPrimaryKeySelective(vehicleInformationDO);
+        }
+
+        if(cid!=null){
+            LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
+            loanCarInfoDO.setId(cid);
+            if(!StringUtils.isBlank(param.getCar_vehicle_property())){
+                loanCarInfoDO.setVehicleProperty(new Byte(param.getCar_vehicle_property()));
+            }
+            if(!StringUtils.isBlank(param.getCar_type())){
+                loanCarInfoDO.setCarType(new Byte(param.getCar_type()));
+            }
+            loanCarInfoDOMapper.updateByPrimaryKeySelective(loanCarInfoDO);
+        }
+
+        if(fid!=null){
+            LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
+            loanFinancialPlanDO.setId(fid);
+            if(!StringUtils.isBlank(param.getCar_price())){
+                loanFinancialPlanDO.setCarPrice(new BigDecimal(param.getCar_price()));
+            }
+            if(!StringUtils.isBlank(param.getCar_price())){
+                loanFinancialPlanDO.setAppraisal(new BigDecimal(param.getFinancial_appraisal()));
+            }
+            financialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
+        }
+
     }
 
 }

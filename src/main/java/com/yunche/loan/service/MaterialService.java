@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.CarUpdateParam;
 import com.yunche.loan.domain.param.MaterialUpdateParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
 
@@ -40,4 +41,7 @@ public interface MaterialService {
      * @return
      */
     public ResultBean down2tomcat( Long orderId,String taskDefinitionKey,Long customerId);
+
+
+    public void carUpdate(CarUpdateParam param);
 }
