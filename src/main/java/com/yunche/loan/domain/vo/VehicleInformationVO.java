@@ -38,4 +38,5 @@ public class VehicleInformationVO {
     private String retrieve_key;
     private String down_payment_money;
     private String first_register_date;
+    private String customize_brand;
 }

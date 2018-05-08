@@ -34,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -613,7 +615,16 @@ public class MaterialServiceImpl implements MaterialService {
         Long vid = loanOrderDO.getVehicleInformationId();
         Long cid = loanOrderDO.getLoanCarInfoId();
         Long fid = loanOrderDO.getLoanFinancialPlanId();
-        if(vid!=null){
+
+        if(vid!=null && checkParamsNotNull(
+                param.getVehicle_vehicle_identification_number(),param.getVehicle_license_plate_number(),
+                param.getVehicle_engine_number(), param.getVehicle_apply_license_plate_area(),
+                param.getVehicle_registration_certificate_number(),param.getVehicle_color(),
+                param.getVehicle_customize_brand(),param.getVehicle_purchase_car_invoice_price(),
+                param.getVehicle_invoice_down_payment(),param.getVehicle_purchase_car_invoice_date(),
+                param.getVehicle_invoice_car_dealer(),param.getVehicle_displacement(),
+                param.getVehicle_register_date(),param.getQualified_certificate_number()
+                )){
             VehicleInformationDO vehicleInformationDO = new VehicleInformationDO();
             vehicleInformationDO.setId(vid);
             vehicleInformationDO.setVehicle_identification_number(param.getVehicle_vehicle_identification_number());
@@ -622,10 +633,29 @@ public class MaterialServiceImpl implements MaterialService {
             vehicleInformationDO.setApply_license_plate_area(param.getVehicle_apply_license_plate_area());
             vehicleInformationDO.setRegistration_certificate_number(param.getVehicle_registration_certificate_number());
             vehicleInformationDO.setColor(param.getVehicle_color());
+            vehicleInformationDO.setCustomize_brand(param.getVehicle_customize_brand());
+            vehicleInformationDO.setPurchase_car_invoice_price(StringUtils.isBlank(param.getVehicle_purchase_car_invoice_price())?null:new BigDecimal(param.getVehicle_purchase_car_invoice_price()));
+            vehicleInformationDO.setInvoice_down_payment(StringUtils.isBlank(param.getVehicle_invoice_down_payment())?null:new BigDecimal(param.getVehicle_invoice_down_payment()));
+            SimpleDateFormat myFmt=new SimpleDateFormat("yyyy-MM-dd");
+
+            try {
+                vehicleInformationDO.setPurchase_car_invoice_date(StringUtils.isBlank(param.getVehicle_purchase_car_invoice_date())?null:myFmt.parse(param.getVehicle_purchase_car_invoice_date()));
+            } catch (ParseException e) {
+                throw new BizException("日期转化失败");
+            }
+            vehicleInformationDO.setInvoice_car_dealer(param.getVehicle_invoice_car_dealer());
+            vehicleInformationDO.setDisplacement(param.getVehicle_displacement());
+            try {
+                vehicleInformationDO.setRegister_date(StringUtils.isBlank(param.getVehicle_register_date())?null:myFmt.parse(param.getVehicle_register_date()));
+            } catch (ParseException e) {
+                throw new BizException("日期转化失败");
+            }
+            vehicleInformationDO.setQualified_certificate_number(param.getQualified_certificate_number());
+
             vehicleInformationDOMapper.updateByPrimaryKeySelective(vehicleInformationDO);
         }
 
-        if(cid!=null){
+        if(cid!=null && checkParamsNotNull(param.getCar_vehicle_property(),param.getCar_type())){
             LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
             loanCarInfoDO.setId(cid);
             if(!StringUtils.isBlank(param.getCar_vehicle_property())){
@@ -637,7 +667,7 @@ public class MaterialServiceImpl implements MaterialService {
             loanCarInfoDOMapper.updateByPrimaryKeySelective(loanCarInfoDO);
         }
 
-        if(fid!=null){
+        if(fid!=null && checkParamsNotNull(param.getCar_price(),param.getCar_price())){
             LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
             loanFinancialPlanDO.setId(fid);
             if(!StringUtils.isBlank(param.getCar_price())){
@@ -649,6 +679,16 @@ public class MaterialServiceImpl implements MaterialService {
             financialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
         }
 
+    }
+
+    private boolean checkParamsNotNull(String...args){
+        for(String str:args){
+            if(StringUtils.isNotBlank(str)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

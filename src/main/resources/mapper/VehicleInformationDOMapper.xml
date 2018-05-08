@@ -23,6 +23,7 @@
     <result column="invoice_down_payment" property="invoice_down_payment" jdbcType="DECIMAL" />
     <result column="purchase_car_invoice_date" property="purchase_car_invoice_date" jdbcType="DATE" />
     <result column="retrieve_key" property="retrieve_key" jdbcType="TINYINT" />
+    <result column="customize_brand" property="customize_brand" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
   </resultMap>
@@ -31,7 +32,8 @@
     displacement, license_plate_number, apply_license_plate_date, apply_license_plate_area,
     transfer_ownership_date, now_driving_license_owner, old_driving_license_owner, engine_number,
     registration_certificate_number, invoice_car_dealer, purchase_car_invoice_num, purchase_car_invoice_price,
-    invoice_down_payment, purchase_car_invoice_date, retrieve_key, status, feature
+    invoice_down_payment, purchase_car_invoice_date, retrieve_key, customize_brand, status,
+    feature
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select
@@ -43,7 +45,7 @@
     delete from vehicle_information
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.VehicleInformationDO" >
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.yunche.loan.domain.entity.VehicleInformationDO" >
     insert into vehicle_information
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -108,6 +110,9 @@
       </if>
       <if test="retrieve_key != null" >
         retrieve_key,
+      </if>
+      <if test="customize_brand != null" >
+        customize_brand,
       </if>
       <if test="status != null" >
         status,
@@ -180,6 +185,9 @@
       <if test="retrieve_key != null" >
         #{retrieve_key,jdbcType=TINYINT},
       </if>
+      <if test="customize_brand != null" >
+        #{customize_brand,jdbcType=VARCHAR},
+      </if>
       <if test="status != null" >
         #{status,jdbcType=TINYINT},
       </if>
@@ -250,6 +258,9 @@
       </if>
       <if test="retrieve_key != null" >
         retrieve_key = #{retrieve_key,jdbcType=TINYINT},
+      </if>
+      <if test="customize_brand != null" >
+        customize_brand = #{customize_brand,jdbcType=VARCHAR},
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=TINYINT},

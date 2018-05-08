@@ -49,6 +49,8 @@ public class VehicleInformationDO {
 
     private Byte retrieve_key;
 
+    private String customize_brand;
+
     private Byte status;
 
     private String feature;

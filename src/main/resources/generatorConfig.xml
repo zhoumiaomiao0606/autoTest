@@ -288,7 +288,7 @@
         </table>-->
 
 
-        <table tableName="loan_refund_apply" domainObjectName="LoanRefundApplyDO"
+        <table tableName="vehicle_information" domainObjectName="VehicleInformationDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
             <property name="useActualColumnNames" value="true" />

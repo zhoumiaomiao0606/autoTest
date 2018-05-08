@@ -37,6 +37,7 @@
             v.invoice_down_payment            AS invoice_down_payment,
             v.purchase_car_invoice_date       AS purchase_car_invoice_date,
             v.retrieve_key                    AS retrieve_key,
+            v.customize_brand                 AS customize_brand,
             f.down_payment_money              AS down_payment_money,
             DATE_FORMAT(i.first_register_date,'%Y-%m-%d')        AS first_register_date
 
@@ -433,6 +434,13 @@
             vehicle.apply_license_plate_area                                        AS vehicle_apply_license_plate_area,
             vehicle.registration_certificate_number                                 AS vehicle_registration_certificate_number,
             vehicle.color                                                           AS vehicle_color,
+            vehicle.customize_brand                                                 AS vehicle_customize_brand,
+            vehicle.purchase_car_invoice_price                                      AS vehicle_purchase_car_invoice_price,
+            vehicle.invoice_down_payment                                            AS vehicle_invoice_down_payment,
+            vehicle.purchase_car_invoice_date                                       AS vehicle_purchase_car_invoice_date,
+            vehicle.invoice_car_dealer                                              AS vehicle_invoice_car_dealer,
+            vehicle.displacement                                                    AS vehicle_displacement,
+            vehicle.register_date                                                   AS vehicle_register_date,
             financial.appraisal                                                     AS financial_appraisal,
             vehicle.qualified_certificate_number                                    AS qualified_certificate_number
 

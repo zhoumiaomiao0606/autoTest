@@ -20,6 +20,14 @@ public class CarUpdateParam {
     private String vehicle_apply_license_plate_area;
     private String vehicle_registration_certificate_number;
     private String vehicle_color;
+    private String vehicle_customize_brand;
+    private String vehicle_purchase_car_invoice_price;
+    private String vehicle_invoice_down_payment;
+    private String vehicle_purchase_car_invoice_date;
+    private String vehicle_invoice_car_dealer;
+    private String vehicle_displacement;
+    private String vehicle_register_date;
+    private String qualified_certificate_number;
     private String financial_appraisal;
 
 }

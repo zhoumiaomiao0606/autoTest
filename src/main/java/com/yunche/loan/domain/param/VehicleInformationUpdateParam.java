@@ -50,6 +50,7 @@ public class VehicleInformationUpdateParam {
     @NotBlank
     private String purchase_car_invoice_date;
     private String retrieve_key;
+    private String customize_brand;
 
     private List<UniversalFileParam> files;
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
 
 @CrossOrigin
 @RestController
@@ -43,7 +44,7 @@ public class MaterialController {
      * 车辆信息编辑
      */
     @PostMapping(value = "/carUpdate", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean carUpdate(@RequestBody @Validated CarUpdateParam param) {
+    public ResultBean carUpdate(@RequestBody @Validated CarUpdateParam param){
         materialService.carUpdate(param);
         return ResultBean.ofSuccess(null,"保存成功");
     }
