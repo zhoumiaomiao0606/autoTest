@@ -50,6 +50,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 换行符
      */
     public static final String NEW_LINE = System.getProperty("line.separator");
+    /**
+     * 线程池
+     */
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     @Autowired
     private RuntimeService runtimeService;
@@ -883,7 +887,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return;
         }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.execute(new Runnable() {
             @Override
             public void run() {
