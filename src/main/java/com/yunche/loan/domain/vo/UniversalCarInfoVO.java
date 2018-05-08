@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+
 @Data
 public class UniversalCarInfoVO {
 
@@ -26,4 +27,5 @@ public class UniversalCarInfoVO {
     private String vehicle_invoice_car_dealer;
     private String vehicle_displacement;
     private String vehicle_register_date;
+
 }

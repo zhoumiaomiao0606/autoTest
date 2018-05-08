@@ -36,7 +36,7 @@ public class MaterialTask {
                     }
                     e.setStatus(BaseConst.DEL_STATUS);
                     int count = materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-                    Preconditions.checkArgument(count>0,"删除数据出错");
+                    Preconditions.checkArgument(count>0,"更新数据出错");
                 }
             });
         }

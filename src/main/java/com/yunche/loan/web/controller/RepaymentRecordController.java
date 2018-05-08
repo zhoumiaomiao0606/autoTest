@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/repaymentRecord")
+@RequestMapping("/api/v1/loanorder/repaymentRecord")
 public class RepaymentRecordController {
 
     @Autowired
