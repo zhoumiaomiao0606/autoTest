@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+
 @Data
 public class UniversalCarInfoVO {
 
@@ -19,4 +20,5 @@ public class UniversalCarInfoVO {
     private String vehicle_color;
     private String financial_appraisal;
     private String qualified_certificate_number;
+
 }
