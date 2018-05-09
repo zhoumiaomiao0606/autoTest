@@ -1,90 +1,92 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.MaterialAuditDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.MaterialAuditDO" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="complete_material_date" property="complete_material_date" jdbcType="DATE" />
-    <result column="status" property="status" jdbcType="TINYINT" />
-    <result column="feature" property="feature" jdbcType="VARCHAR" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.yunche.loan.mapper.MaterialAuditDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.MaterialAuditDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="complete_material_date" property="complete_material_date" jdbcType="DATE"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="feature" property="feature" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, complete_material_date,status, feature
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    from material_audit
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from material_audit
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from material_audit
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO" >
-    insert into material_audit
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="complete_material_date != null" >
-        complete_material_date,
-      </if>
-      <if test="status != null" >
-        status,
-      </if>
-      <if test="feature != null" >
-        feature,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="complete_material_date != null" >
-        #{complete_material_date,jdbcType=DATE},
-      </if>
-      <if test="status != null" >
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="feature != null" >
-        #{feature,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO" >
-    update material_audit
-    <set >
-      <if test="complete_material_date != null" >
-        complete_material_date = #{complete_material_date,jdbcType=DATE},
-      </if>
-      <if test="status != null" >
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="feature != null" >
-        feature = #{feature,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
+        insert into material_audit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="complete_material_date != null">
+                complete_material_date,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="complete_material_date != null">
+                #{complete_material_date,jdbcType=DATE},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
+        update material_audit
+        <set>
+            <if test="complete_material_date != null">
+                complete_material_date = #{complete_material_date,jdbcType=DATE},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
-  <select id="selectDownloadMaterial" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.param.MaterialDownloadParam">
-    SELECT
-    b.customer_id,
-    b.type,
-    b.path,
-    c.id_card AS idCard,
-    c.`name`,
-    c.cust_type AS custType
-    FROM
-    loan_order a,
-    loan_file b,
-    loan_customer c
-    WHERE
-    (a.loan_customer_id = c.id or a.loan_customer_id=c.principal_cust_id)
-    and b.customer_id = c.id
-    <if test="customerId != null">
-      AND b.customer_id = #{customerId}
-    </if>
-    AND a.id = #{orderId}
-  </select>
+    <select id="selectDownloadMaterial" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.param.MaterialDownloadParam">
+        SELECT
+        b.customer_id AS customerId,
+        b.type,
+        b.path,
+        c.id_card AS idCard,
+        c.`name`,
+        c.cust_type AS custType
+        FROM
+        loan_order a,
+        loan_file b,
+        loan_customer c
+        WHERE
+        (a.loan_customer_id = c.id or a.loan_customer_id=c.principal_cust_id)
+        and b.customer_id = c.id
+        <if test="customerId != null">
+            AND b.customer_id = #{customerId}
+        </if>
+        AND a.id = #{orderId}
+    </select>
 </mapper>

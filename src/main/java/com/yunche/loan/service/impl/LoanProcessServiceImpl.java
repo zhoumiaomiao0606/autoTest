@@ -17,6 +17,8 @@ import org.activiti.engine.*;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,8 @@ import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatu
 @Service
 public class LoanProcessServiceImpl implements LoanProcessService {
 
+    private static final Logger logger = LoggerFactory.getLogger(LoanProcessServiceImpl.class);
+
     /**
      * 换行符
      */
@@ -53,13 +57,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 线程池
      */
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(20);
 
     @Autowired
     private RuntimeService runtimeService;
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private MaterialService materialService;
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -174,7 +181,53 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 异步推送
         asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
 
+        // 异步打包文件
+//        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
+
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+    }
+
+    /**
+     * 异步打包文件
+     *
+     * @param taskDefinitionKey
+     * @param loanProcessDO
+     * @param retry             重试次数
+     */
+    private void asyncPackZipFile(String taskDefinitionKey, LoanProcessDO loanProcessDO, Integer retry) {
+
+        if (null == retry) {
+            retry = 0;
+        }
+
+        if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(loanProcessDO.getTelephoneVerify())) {
+
+            if (retry < 0) {
+                return;
+            }
+            retry--;
+
+            int finalRetry = retry;
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+
+                    ResultBean<String> resultBean = null;
+                    try {
+                        // 打包，并上传至OSS
+                        resultBean = materialService.downloadFiles2OSS(loanProcessDO.getOrderId(), true);
+
+                    } catch (Exception e) {
+                        logger.error("asyncPackZipFile error", e);
+                    } finally {
+                        // 失败，重试
+                        if (null == resultBean || !resultBean.getSuccess()) {
+                            asyncPackZipFile(taskDefinitionKey, loanProcessDO, finalRetry);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     /**

@@ -131,7 +131,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         List<CreditRecordVO.CustomerCreditRecord> guarantorList = Lists.newArrayList();
         List<CreditRecordVO.CustomerCreditRecord> emergencyContactList = Lists.newArrayList();
 
-        loanCustomerDOList.parallelStream()
+        loanCustomerDOList.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 

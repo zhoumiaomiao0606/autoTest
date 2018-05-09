@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class MaterialDownloadParam {
 
+    private Long customerId;
     private String name;
     private String idCard;
     private Byte type;
@@ -19,7 +20,4 @@ public class MaterialDownloadParam {
     private Byte custType;
 
     private String custTypeName;
-
-
-
 }

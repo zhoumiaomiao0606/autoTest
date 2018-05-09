@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.cache.CarCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.mapper.CarBrandDOMapper;
 import com.yunche.loan.mapper.CarDetailDOMapper;
@@ -32,10 +33,15 @@ public class CarModelServiceImpl implements CarModelService {
 
     @Autowired
     private CarBrandDOMapper carBrandDOMapper;
+
     @Autowired
     private CarModelDOMapper carModelDOMapper;
+
     @Autowired
-    private CarDetailDOMapper carDetailDOMapperl;
+    private CarDetailDOMapper carDetailDOMapper;
+
+    @Autowired
+    private CarCache carCache;
 
 
     @Override
@@ -55,6 +61,8 @@ public class CarModelServiceImpl implements CarModelService {
         int count = carModelDOMapper.insertSelective(carModelDO);
         Preconditions.checkArgument(count > 0, "创建失败");
 
+        carCache.refresh();
+
         return ResultBean.ofSuccess(carModelDO.getId());
     }
 
@@ -68,6 +76,8 @@ public class CarModelServiceImpl implements CarModelService {
         carModelDO.setGmtModify(new Date());
         int count = carModelDOMapper.updateByPrimaryKeySelective(carModelDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
+
+        carCache.refresh();
 
         return ResultBean.ofSuccess(null, "编辑成功");
     }
@@ -83,6 +93,8 @@ public class CarModelServiceImpl implements CarModelService {
         carModelDO.setGmtModify(new Date());
         int count = carModelDOMapper.updateByPrimaryKeySelective(carModelDO);
         Preconditions.checkArgument(count > 0, "删除失败");
+
+        carCache.refresh();
 
         return ResultBean.ofSuccess(null, "删除成功");
     }
@@ -152,7 +164,7 @@ public class CarModelServiceImpl implements CarModelService {
      * @param modelId
      */
     private void checkHasChilds(Long modelId) {
-        List<CarDetailDO> carDetailDOS = carDetailDOMapperl.getDetailListByModelId(modelId, VALID_STATUS);
+        List<CarDetailDO> carDetailDOS = carDetailDOMapper.getDetailListByModelId(modelId, VALID_STATUS);
         Preconditions.checkArgument(CollectionUtils.isEmpty(carDetailDOS), "请先删除所有子车型");
     }
 

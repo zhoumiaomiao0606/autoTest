@@ -142,16 +142,20 @@
         initial, logo, price,
         sale_price, seat_num, door_num,
         year_type, production_state, sale_state,
-        size_type, fuel_type
+        size_type, fuel_type, gmt_create,
+        gmt_modify, status, feature
         )
         values
         <foreach collection="list" item="item" index="index" separator=",">
+            (
             #{item.id,jdbcType=BIGINT}, #{item.modelId,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR},
             #{item.initial,jdbcType=VARCHAR}, #{item.logo,jdbcType=VARCHAR}, #{item.price,jdbcType=VARCHAR},
             #{item.salePrice,jdbcType=VARCHAR}, #{item.seatNum,jdbcType=INTEGER}, #{item.doorNum,jdbcType=INTEGER},
             #{item.yearType,jdbcType=VARCHAR}, #{item.productionState,jdbcType=TINYINT},
-            #{item.saleState,jdbcType=TINYINT},
-            #{item.sizeType,jdbcType=VARCHAR}, #{item.fuelType,jdbcType=TINYINT}
+            #{item.saleState,jdbcType=TINYINT},#{item.sizeType,jdbcType=VARCHAR},
+            #{item.fuelType,jdbcType=TINYINT}, #{item.gmtCreate,jdbcType=TIMESTAMP},
+            #{item.gmtModify,jdbcType=TIMESTAMP}, #{item.status,jdbcType=TINYINT},
+            #{item.feature,jdbcType=VARCHAR}
             )
         </foreach>
     </insert>

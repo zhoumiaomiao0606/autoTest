@@ -47,14 +47,18 @@
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into car_brand (id, name, initial, logo)
+        insert into car_brand (id, name, initial,
+        logo, gmt_create, gmt_modify,
+        status, feature)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             #{item.id,jdbcType=BIGINT},
             #{item.name,jdbcType=VARCHAR},
             #{item.initial,jdbcType=VARCHAR},
-            #{item.logo,jdbcType=VARCHAR}
+            #{item.logo,jdbcType=VARCHAR},
+            #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP},
+            #{item.status,jdbcType=TINYINT}, #{item.feature,jdbcType=VARCHAR}
             )
         </foreach>
     </insert>

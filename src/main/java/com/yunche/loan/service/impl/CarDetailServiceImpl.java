@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.cache.CarCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.mapper.CarDetailDOMapper;
 import com.yunche.loan.domain.query.CarDetailQuery;
@@ -33,6 +34,9 @@ public class CarDetailServiceImpl implements CarDetailService {
     @Autowired
     private CarDetailDOMapper carDetailDOMapper;
 
+    @Autowired
+    private CarCache carCache;
+
 
     @Override
     public ResultBean<CarDetailVO> getById(Long id) {
@@ -58,6 +62,8 @@ public class CarDetailServiceImpl implements CarDetailService {
         int count = carDetailDOMapper.insertSelective(carDetailDO);
         Preconditions.checkArgument(count > 0, "创建失败");
 
+        carCache.refresh();
+
         return ResultBean.ofSuccess(carDetailDO.getId());
     }
 
@@ -69,6 +75,8 @@ public class CarDetailServiceImpl implements CarDetailService {
         int count = carDetailDOMapper.updateByPrimaryKeySelective(carDetailDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 
+        carCache.refresh();
+
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
@@ -78,6 +86,8 @@ public class CarDetailServiceImpl implements CarDetailService {
 
         int count = carDetailDOMapper.deleteByPrimaryKey(id);
         Preconditions.checkArgument(count > 0, "删除失败");
+
+        carCache.refresh();
 
         return ResultBean.ofSuccess(null, "删除成功");
     }

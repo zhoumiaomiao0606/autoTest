@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.cache.CarCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.mapper.CarBrandDOMapper;
 import com.yunche.loan.mapper.CarModelDOMapper;
@@ -33,8 +34,12 @@ public class CarBrandServiceImpl implements CarBrandService {
 
     @Autowired
     private CarBrandDOMapper carBrandDOMapper;
+
     @Autowired
     private CarModelDOMapper carModelDOMapper;
+
+    @Autowired
+    private CarCache carCache;
 
 
     @Override
@@ -53,6 +58,8 @@ public class CarBrandServiceImpl implements CarBrandService {
         int count = carBrandDOMapper.insertSelective(carBrandDO);
         Preconditions.checkArgument(count > 0, "创建失败");
 
+        carCache.refresh();
+
         return ResultBean.ofSuccess(carBrandDO.getId());
     }
 
@@ -69,6 +76,8 @@ public class CarBrandServiceImpl implements CarBrandService {
         int count = carBrandDOMapper.updateByPrimaryKeySelective(carBrandDO);
         Preconditions.checkArgument(count > 0, "删除失败");
 
+        carCache.refresh();
+
         return ResultBean.ofSuccess(null, "删除成功");
     }
 
@@ -82,6 +91,8 @@ public class CarBrandServiceImpl implements CarBrandService {
         carBrandDO.setGmtModify(new Date());
         int count = carBrandDOMapper.updateByPrimaryKeySelective(carBrandDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
+
+        carCache.refresh();
 
         return ResultBean.ofSuccess(null, "编辑成功");
     }

@@ -61,15 +61,18 @@ public class CarServiceImpl implements CarService {
      */
     private static final String appcode = "567ef51853094159a974a2955f312590";
 
-
     @Autowired
     private CarBrandDOMapper carBrandDOMapper;
+
     @Autowired
     private CarModelDOMapper carModelDOMapper;
+
     @Autowired
     private CarDetailDOMapper carDetailDOMapper;
+
     @Autowired
     private CarCache carCache;
+
 
     @Override
     public ResultBean<Void> importCar() {
@@ -99,7 +102,10 @@ public class CarServiceImpl implements CarService {
         logger.info("查询&插入车型完成   >>>>>   ");
 
         long totalTime = System.currentTimeMillis() - startTime;
-        logger.info("/car/import：导入车型库总耗时 : {}h", new BigDecimal(totalTime).doubleValue() / 3600);
+        logger.info("/car/import：导入车型库总耗时 : {}min{}s", (totalTime / 1000) / 60, (totalTime / 1000) % 60);
+
+        // 刷新缓存
+        carCache.refresh();
 
         return ResultBean.ofSuccess(null, "导入成功");
     }
@@ -196,7 +202,6 @@ public class CarServiceImpl implements CarService {
         // 走缓存
         CarCascadeVO carCascadeVO = carCache.get();
         return ResultBean.ofSuccess(carCascadeVO);
-
     }
 
     @Override
@@ -742,7 +747,7 @@ public class CarServiceImpl implements CarService {
 
 
         // exist
-        List<Long> existModelIdList = carModelDOMapper.getAllId(VALID_STATUS);
+        List<Long> existModelIdList = carModelDOMapper.getAllId(null);
 
         List<CarModelDO> carModelDOList = new ArrayList<>();
         carBrandDOS.stream()
@@ -891,6 +896,11 @@ public class CarServiceImpl implements CarService {
         // 人工填写
         carModelDO.setSeriesCode(null);
         carModelDO.setMnemonicCode(null);
+
+        // 时间、状态
+        carModelDO.setGmtCreate(new Date());
+        carModelDO.setGmtModify(new Date());
+        carModelDO.setStatus(VALID_STATUS);
 
         return carModelDO;
     }
@@ -1048,6 +1058,11 @@ public class CarServiceImpl implements CarService {
             String fuelType = resultJObj.getJSONObject("engine").getString("fueltype");
             carDetailDO.setFuelType(fuelTypeMap.get(fuelType));
 
+            // 时间、状态
+            carDetailDO.setGmtCreate(new Date());
+            carDetailDO.setGmtModify(new Date());
+            carDetailDO.setStatus(VALID_STATUS);
+
             return carDetailDO;
 
         } catch (Exception e) {
@@ -1073,7 +1088,7 @@ public class CarServiceImpl implements CarService {
             JSONObject bodyObj = requestAndCheckThenReturnResult(host, path, method, headers, querys);
 
             JSONArray resultJsonArr = bodyObj.getJSONArray("result");
-            List<CarBrandDO> carBrandDOS = resultJsonArr.parallelStream()
+            List<CarBrandDO> carBrandDOS = resultJsonArr.stream()
                     .map(e -> {
 
                         JSONObject eObj = (JSONObject) e;
@@ -1083,6 +1098,11 @@ public class CarServiceImpl implements CarService {
                         carBrandDO.setName(eObj.getString("name"));
                         carBrandDO.setInitial(eObj.getString("initial"));
                         carBrandDO.setLogo(eObj.getString("logo"));
+
+                        // 时间、状态
+                        carBrandDO.setGmtCreate(new Date());
+                        carBrandDO.setGmtModify(new Date());
+                        carBrandDO.setStatus(VALID_STATUS);
 
                         return carBrandDO;
                     })

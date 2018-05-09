@@ -8,6 +8,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -20,6 +22,9 @@ import java.util.Set;
  * 工作流demo测试
  */
 public class LoanProcessTest extends BaseTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoanProcessTest.class);
+
     @Autowired
     private RuntimeService runtimeService;
 
@@ -36,6 +41,12 @@ public class LoanProcessTest extends BaseTest {
 //    private ApplicantRepository applicantRepository;
 
 //    private Wiser wiser;
+
+    @Test
+    public void testx() {
+        long totalTime = 1000000L;
+        logger.info("/car/import：导入车型库总耗时 : {}min{}s", (totalTime / 1000) / 60, (totalTime / 1000) % 60);
+    }
 
     @Test
     public void test1() {

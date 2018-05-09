@@ -7,42 +7,42 @@ import com.yunche.loan.domain.vo.RecombinationVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.text.ParseException;
 
 public interface MaterialService {
 
-    public RecombinationVO detail(Long orderId);
+    RecombinationVO detail(Long orderId);
 
-    public void update(MaterialUpdateParam param);
-
+    void update(MaterialUpdateParam param);
 
     /**
      * 资料审核文件下载
+     *
      * @param orderId
+     * @param reGenerateZip 是否重新生成zip包
      */
-    public ResultBean downloadFilesToOSS(Long orderId);
+    ResultBean<String> downloadFiles2OSS(Long orderId, Boolean reGenerateZip);
 
     /**
      * 浏览器直接下载
+     *
      * @param request
      * @param response
      * @param orderId
      * @param taskDefinitionKey
      * @return
      */
-    public String zipFilesDown(HttpServletRequest request, HttpServletResponse response,
-                               Long orderId,String taskDefinitionKey,Long  customerId);
+    String zipFilesDown(HttpServletRequest request, HttpServletResponse response,
+                        Long orderId, String taskDefinitionKey, Long customerId);
 
     /**
      * 中转tomcat下载
+     *
      * @param orderId
      * @param taskDefinitionKey
      * @param customerId
      * @return
      */
-    public ResultBean down2tomcat( Long orderId,String taskDefinitionKey,Long customerId);
+    ResultBean down2tomcat(Long orderId, String taskDefinitionKey, Long customerId);
 
-
-    public void carUpdate(CarUpdateParam param);
+    void carUpdate(CarUpdateParam param);
 }

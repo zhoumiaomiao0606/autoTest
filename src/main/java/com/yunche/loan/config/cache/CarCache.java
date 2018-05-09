@@ -2,6 +2,7 @@ package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.CarDetailDO;
 import com.yunche.loan.mapper.CarBrandDOMapper;
 import com.yunche.loan.mapper.CarDetailDOMapper;
@@ -9,11 +10,15 @@ import com.yunche.loan.mapper.CarModelDOMapper;
 import com.yunche.loan.domain.entity.CarBrandDO;
 import com.yunche.loan.domain.entity.CarModelDO;
 import com.yunche.loan.domain.vo.CarCascadeVO;
+import com.yunche.loan.service.CarService;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -33,6 +38,8 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Component
 public class CarCache {
 
+    private static final Logger logger = LoggerFactory.getLogger(CarCache.class);
+
     private static final String CAR_CASCADE_CACHE_KEY = "cascade:cache:car";
 
     private static final String CAR_BRAND_ALL_CACHE_KEY = "all:cache:car:brand";
@@ -46,6 +53,9 @@ public class CarCache {
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
+    private CarService carService;
+
+    @Autowired
     private CarBrandDOMapper carBrandDOMapper;
 
     @Autowired
@@ -54,6 +64,17 @@ public class CarCache {
     @Autowired
     private CarDetailDOMapper carDetailDOMapper;
 
+
+    /**
+     * 每周一4:00 更新车型库
+     */
+    @Scheduled(cron = "0 0 4 ? * MON")
+    public void importCar() {
+        logger.info("importCar start   >>>>>");
+        ResultBean<Void> resultBean = carService.importCar();
+        logger.info("importCar result >>>>> {}", JSON.toJSONString(resultBean));
+        logger.info("importCar end   >>>>>");
+    }
 
     public CarCascadeVO get() {
         // get
@@ -75,7 +96,7 @@ public class CarCache {
     }
 
     @PostConstruct
-    private void refresh() {
+    public void refresh() {
         CarCascadeVO carCascadeVO = new CarCascadeVO();
 
         // 获取并填充所有品牌
@@ -281,7 +302,7 @@ public class CarCache {
         boundValueOps.set(JSON.toJSONString(idCarModelMap));
     }
 
-//    @PostConstruct
+    //    @PostConstruct
     public void cacheAllCarDetail() {
 
         Map<String, CarDetailDO> idCarDetailMap = Maps.newConcurrentMap();

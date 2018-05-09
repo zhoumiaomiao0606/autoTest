@@ -135,17 +135,20 @@
         full_name, initial, logo,
         price, seat_num, sale_state,
         series_code, mnemonic_code, production_firm,
-        production_type)
+        production_type, gmt_create, gmt_modify,
+        status,feature)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.id,jdbcType=BIGINT}, #{item.brandId,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR},
+            (
+            #{item.id,jdbcType=BIGINT}, #{item.brandId,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR},
             #{item.fullName,jdbcType=VARCHAR}, #{item.initial,jdbcType=VARCHAR}, #{item.logo,jdbcType=VARCHAR},
             #{item.price,jdbcType=VARCHAR}, #{item.seatNum,jdbcType=VARCHAR}, #{item.saleState,jdbcType=TINYINT},
             #{item.seriesCode,jdbcType=VARCHAR}, #{item.mnemonicCode,jdbcType=VARCHAR},
             #{item.productionFirm,jdbcType=VARCHAR},
-            #{item.productionType,jdbcType=TINYINT},#{item.gmtCreate,jdbcType=TIMESTAMP},
-            #{item.gmtModify,jdbcType=TIMESTAMP},
-            #{item.feature,jdbcType=VARCHAR}, #{item.status,jdbcType=TINYINT})
+            #{item.productionType,jdbcType=TINYINT},
+            #{item.gmtCreate,jdbcType=TIMESTAMP},#{item.gmtModify,jdbcType=TIMESTAMP},
+            #{item.status,jdbcType=TINYINT}, #{item.feature,jdbcType=VARCHAR}
+            )
         </foreach>
     </insert>
 
