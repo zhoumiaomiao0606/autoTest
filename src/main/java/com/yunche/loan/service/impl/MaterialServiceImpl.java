@@ -54,11 +54,9 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.SOCIAL_CREDIT_RECO
 @Service
 public class MaterialServiceImpl implements MaterialService {
 
-
     private final static Long CUSTOMER_DEFAULT_ID = (long) 0;
 
-    private static final Set<String> SUFFIX = Sets.newHashSet("rar", "mp4", "mov", "avi", "m4v", "3gp", "RAR", "MP$", "MOV", "AVI", "M4V", "3GP");
-
+    private static final Set<String> URL_FILTER_SUFFIX = Sets.newHashSet("rar", "mp4", "mov", "avi", "m4v", "3gp");
 
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -407,7 +405,7 @@ public class MaterialServiceImpl implements MaterialService {
                     if (ArrayUtils.isNotEmpty(urlArr) && urlArr.length == 2) {
                         String urlSuffix = urlArr[1].trim().toLowerCase();
 
-                        if (HOME_VISIT_VIDEO.getType() == t || SUFFIX.contains(urlSuffix)) {
+                        if (HOME_VISIT_VIDEO.getType() == t || URL_FILTER_SUFFIX.contains(urlSuffix)) {
                             continue;
                         }
                     }
