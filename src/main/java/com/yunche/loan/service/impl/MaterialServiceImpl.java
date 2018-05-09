@@ -36,9 +36,8 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
@@ -296,7 +295,9 @@ public class MaterialServiceImpl implements MaterialService {
                         String custTypeName = LoanCustomerEnum.getNameByCode(param.getCustType());
                         param.setCustTypeName(custTypeName);
                         List<String> list = JSONArray.parseArray(param.getPath(), String.class);
-                        param.setPathList(list);
+
+                        List<String> unique =list.stream().distinct().collect(Collectors.toList());
+                        param.setPathList(unique);
                     });
 
             // 初始化
