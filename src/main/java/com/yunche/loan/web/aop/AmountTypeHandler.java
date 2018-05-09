@@ -14,7 +14,7 @@ public class AmountTypeHandler extends StringTypeHandler {
     public String getNullableResult(ResultSet rs, String columnName) throws SQLException {
         Object obj = rs.getObject(columnName);
         if(obj instanceof BigDecimal){
-            return ((BigDecimal) obj).setScale(2,BigDecimal.ROUND_DOWN).toString();
+            return ((BigDecimal) obj).setScale(2,BigDecimal.ROUND_UP).toString();
         }
         return rs.getString(columnName);
     }
@@ -22,7 +22,7 @@ public class AmountTypeHandler extends StringTypeHandler {
     public String getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         Object obj = rs.getObject(columnIndex);
         if(obj instanceof BigDecimal){
-            return ((BigDecimal) obj).setScale(2,BigDecimal.ROUND_DOWN).toString();
+            return ((BigDecimal) obj).setScale(2,BigDecimal.ROUND_UP).toString();
         }
         return rs.getString(columnIndex);
     }
@@ -30,7 +30,7 @@ public class AmountTypeHandler extends StringTypeHandler {
     public String getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         Object obj = cs.getObject(columnIndex);
         if(obj instanceof BigDecimal){
-            return ((BigDecimal) obj).setScale(2,BigDecimal.ROUND_DOWN).toString();
+            return ((BigDecimal) obj).setScale(2,BigDecimal.ROUND_UP).toString();
         }
         return cs.getString(columnIndex);
     }
