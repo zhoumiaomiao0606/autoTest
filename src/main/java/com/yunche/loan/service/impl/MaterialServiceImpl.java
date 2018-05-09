@@ -341,7 +341,9 @@ public class MaterialServiceImpl implements MaterialService {
 
                     }
 
-                    if(HOME_VISIT_VIDEO.getType()==t ||url.endsWith(".rar")){
+                    if(HOME_VISIT_VIDEO.getType()==t ||url.endsWith(".rar")||url.endsWith(".mp4")
+                            ||url.endsWith(".mov")||url.endsWith(".mov")
+                            ||url.endsWith(".avi")||url.endsWith(".m4v")||url.endsWith(".3gp")){
                         continue;
                     }
                     if(taskDefinitionKey!=null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode())||taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))){
