@@ -5,6 +5,7 @@ import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.OSSObject;
 import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.LoanCustomerEnum;
 import com.yunche.loan.config.constant.LoanFileEnum;
@@ -23,6 +24,7 @@ import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanFileService;
 import com.yunche.loan.service.MaterialService;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +57,8 @@ public class MaterialServiceImpl implements MaterialService {
 
     private final static Long CUSTOMER_DEFAULT_ID = (long) 0;
 
+    private static final Set<String> SUFFIX = Sets.newHashSet("rar", "mp4", "mov", "avi", "m4v", "3gp", "RAR", "MP$", "MOV", "AVI", "M4V", "3GP");
+
 
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -84,6 +88,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Resource
     private LoanFileService loanFileService;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -398,11 +403,15 @@ public class MaterialServiceImpl implements MaterialService {
 
                     }
 
-                    if (HOME_VISIT_VIDEO.getType() == t || url.endsWith(".rar") || url.endsWith(".mp4")
-                            || url.endsWith(".mov") || url.endsWith(".mov")
-                            || url.endsWith(".avi") || url.endsWith(".m4v") || url.endsWith(".3gp")) {
-                        continue;
+                    String[] urlArr = url.split(".");
+                    if (ArrayUtils.isNotEmpty(urlArr) && urlArr.length == 2) {
+                        String urlSuffix = urlArr[1].trim().toLowerCase();
+
+                        if (HOME_VISIT_VIDEO.getType() == t || SUFFIX.contains(urlSuffix)) {
+                            continue;
+                        }
                     }
+
                     if (taskDefinitionKey != null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode()) || taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))) {
 //                        if(typeFile.getCustType().equals(PRINCIPAL_LENDER.getType())){
                         if (t == ID_CARD_FRONT.getType() || t == ID_CARD_BACK.getType() || t == AUTH_BOOK.getType() || t == AUTH_BOOK_SIGN_PHOTO.getType()) {
