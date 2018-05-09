@@ -401,7 +401,7 @@ public class MaterialServiceImpl implements MaterialService {
 
                     }
 
-                    String[] urlArr = url.split(".");
+                    String[] urlArr = url.split("\\.");
                     if (ArrayUtils.isNotEmpty(urlArr) && urlArr.length == 2) {
                         String urlSuffix = urlArr[1].trim().toLowerCase();
 
