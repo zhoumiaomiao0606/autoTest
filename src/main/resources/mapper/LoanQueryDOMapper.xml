@@ -305,6 +305,8 @@
             customer.duty                                                                           AS customer_duty,
             customer.identity_address                                                               AS customer_identity_address,
             customer.residence_address                                                              AS customer_residence_address,
+            customer.family_person_num                                                              AS customer_family_person_num,
+            customer.reserve_mobile                                                                 AS customer_reserve_mobile,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
