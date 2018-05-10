@@ -49,3 +49,4 @@ nbdist/
 .nb-gradle/
 /.metadata/
 /bin/
+*.log
