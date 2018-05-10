@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO;
 import com.yunche.loan.domain.entity.CollectionRecordDO;
@@ -13,6 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -58,6 +63,7 @@ public class CollectionServiceImpl implements CollectionService {
             collectionRecordDOMapper.insertSelective(V);
         }else{
             CollectionRecordDO V =  BeanPlasticityUtills.copy(CollectionRecordDO.class,param);
+            V.setId(Long.parseLong(param.getId()));
             collectionRecordDOMapper.updateByPrimaryKeySelective(V);
         }
     }

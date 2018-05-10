@@ -805,16 +805,16 @@
     </select>
 
     <!-- 还款计划-->
-    <select id="selectUniversalRepaymentPlan" resultType="com.yunche.loan.domain.vo.UniversalLoanRepaymentPlan">
+    <select id="selectUniversalLoanRepaymentPlan" resultType="com.yunche.loan.domain.vo.UniversalLoanRepaymentPlan">
             select
                 @row:=@row+1                                        AS repay_period,
                 repay.order_id                                      AS repay_order_id,
-                DATE_FORMAT(repay.repay_date,'%Y-%m-%d %H:%i:%S')   AS repay_date,
+                DATE_FORMAT(repay.repay_date,'%Y-%m-%d')            AS repay_date,
                 repay.payable_amount                                AS repay_payable_amount,
                 repay.actual_repay_amount                           AS repay_actual_repay_amount,
                 repay.is_overdue                                    AS repay_is_overdue,
                 repay.overdue_amount                                AS repay_overdue_amount,
-                DATE_FORMAT(repay.check_date,'%Y-%m-%d %H:%i:%S')   AS repay_check_date
+                DATE_FORMAT(repay.check_date,'%Y-%m-%d')            AS repay_check_date
             from loan_repay_plan repay,(select @row:=0) r where repay.order_id = #{orderId,jdbcType=BIGINT} order by repay.repay_date asc
 
     </select>
@@ -825,12 +825,12 @@
 	        @row:=@row+1 					                                    AS collection_row,
 	        collection.id 				                                        AS collection_id,
 	        collection.order_id 	                                            AS collection_order_id,
-	        DATE_FORMAT(collection.collection_date,'%Y-%m-%d %H:%i:%S')         AS collection_date,
+	        DATE_FORMAT(collection.collection_date,'%Y-%m-%d')                  AS collection_date,
 	        collection.collection_man_id			                            AS collection_man_id,
 	        customer.name       	                                            AS collection_man_name,
 	        collection.is_repayment					                            AS collection_is_repayment,
-	        collection.repayment_date				                            AS collection_repayment_date,
-	        DATE_FORMAT(collection.permit_repayment_date,'%Y-%m-%d %H:%i:%S') 	AS collection_permit_repayment_date,
+	        DATE_FORMAT(collection.repayment_date,'%Y-%m-%d') 				    AS collection_repayment_date,
+	        DATE_FORMAT(collection.permit_repayment_date,'%Y-%m-%d') 	        AS collection_permit_repayment_date,
 	        collection.cause							                        AS collection_cause,
 	        collection.remark							                        AS collection_remark
         from collection_record collection
@@ -846,18 +846,18 @@
           select
 	        collection.id 				                                        AS collection_id,
 	        collection.order_id 	                                            AS collection_order_id,
-	        DATE_FORMAT(collection.collection_date,'%Y-%m-%d %H:%i:%S')         AS collection_date,
+	        DATE_FORMAT(collection.collection_date,'%Y-%m-%d')                  AS collection_date,
 	        collection.collection_man_id			                            AS collection_man_id,
 	        customer.name       	                                            AS collection_man_name,
 	        collection.is_repayment					                            AS collection_is_repayment,
-	        collection.repayment_date				                            AS collection_repayment_date,
-	        DATE_FORMAT(collection.permit_repayment_date,'%Y-%m-%d %H:%i:%S') 	AS collection_permit_repayment_date,
+	        DATE_FORMAT(collection.repayment_date,'%Y-%m-%d') 				    AS collection_repayment_date,
+	        DATE_FORMAT(collection.permit_repayment_date,'%Y-%m-%d') 	        AS collection_permit_repayment_date,
 	        collection.cause							                        AS collection_cause,
 	        collection.remark							                        AS collection_remark
         from collection_record collection
         left join loan_order orders on orders.id = collection.order_id
         left join loan_customer customer on orders.loan_customer_id = customer.id
-        where collection.order_id = #{collectionId,jdbcType=BIGINT}
+        where collection.id = #{collectionId,jdbcType=BIGINT}
         order by collection_date asc
     </select>
 

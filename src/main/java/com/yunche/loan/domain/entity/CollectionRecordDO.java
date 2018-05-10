@@ -11,15 +11,15 @@ public class CollectionRecordDO {
 
     private Long order_id;
 
-    private Timestamp collection_date;
+    private Date collection_date;
 
     private Long collection_man_id;
 
     private Byte is_repayment;
 
-    private Timestamp repayment_date;
+    private Date repayment_date;
 
-    private Timestamp permit_repayment_date;
+    private Date permit_repayment_date;
 
     private Byte cause;
 

@@ -4,11 +4,11 @@
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CollectionRecordDO" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="order_id" property="order_id" jdbcType="BIGINT" />
-    <result column="collection_date" property="collection_date" jdbcType="TIMESTAMP" />
+    <result column="collection_date" property="collection_date" jdbcType="DATE" />
     <result column="collection_man_id" property="collection_man_id" jdbcType="BIGINT" />
     <result column="is_repayment" property="is_repayment" jdbcType="TINYINT" />
-    <result column="repayment_date" property="repayment_date" jdbcType="TIMESTAMP" />
-    <result column="permit_repayment_date" property="permit_repayment_date" jdbcType="TIMESTAMP" />
+    <result column="repayment_date" property="repayment_date" jdbcType="DATE" />
+    <result column="permit_repayment_date" property="permit_repayment_date" jdbcType="DATE" />
     <result column="cause" property="cause" jdbcType="TINYINT" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="gmt_create" property="gmt_create" jdbcType="TIMESTAMP" />
@@ -27,7 +27,7 @@
     delete from collection_record
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective"  useGeneratedKeys="true" keyProperty="id"  parameterType="com.yunche.loan.domain.entity.CollectionRecordDO" >
+  <insert id="insertSelective"  useGeneratedKeys="true" keyProperty="id"   parameterType="com.yunche.loan.domain.entity.CollectionRecordDO" >
     insert into collection_record
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -69,7 +69,7 @@
         #{order_id,jdbcType=BIGINT},
       </if>
       <if test="collection_date != null" >
-        #{collection_date,jdbcType=TIMESTAMP},
+        #{collection_date,jdbcType=DATE},
       </if>
       <if test="collection_man_id != null" >
         #{collection_man_id,jdbcType=BIGINT},
@@ -78,10 +78,10 @@
         #{is_repayment,jdbcType=TINYINT},
       </if>
       <if test="repayment_date != null" >
-        #{repayment_date,jdbcType=TIMESTAMP},
+        #{repayment_date,jdbcType=DATE},
       </if>
       <if test="permit_repayment_date != null" >
-        #{permit_repayment_date,jdbcType=TIMESTAMP},
+        #{permit_repayment_date,jdbcType=DATE},
       </if>
       <if test="cause != null" >
         #{cause,jdbcType=TINYINT},
@@ -101,7 +101,7 @@
         order_id = #{order_id,jdbcType=BIGINT},
       </if>
       <if test="collection_date != null" >
-        collection_date = #{collection_date,jdbcType=TIMESTAMP},
+        collection_date = #{collection_date,jdbcType=DATE},
       </if>
       <if test="collection_man_id != null" >
         collection_man_id = #{collection_man_id,jdbcType=BIGINT},
@@ -110,10 +110,10 @@
         is_repayment = #{is_repayment,jdbcType=TINYINT},
       </if>
       <if test="repayment_date != null" >
-        repayment_date = #{repayment_date,jdbcType=TIMESTAMP},
+        repayment_date = #{repayment_date,jdbcType=DATE},
       </if>
       <if test="permit_repayment_date != null" >
-        permit_repayment_date = #{permit_repayment_date,jdbcType=TIMESTAMP},
+        permit_repayment_date = #{permit_repayment_date,jdbcType=DATE},
       </if>
       <if test="cause != null" >
         cause = #{cause,jdbcType=TINYINT},
