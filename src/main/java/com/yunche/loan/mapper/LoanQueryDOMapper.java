@@ -58,6 +58,15 @@ public interface LoanQueryDOMapper {
     public List<UniversalMaterialRecordVO> selectUniversalCustomerFileByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
 
     public Long selectOrderIdbyPrincipalCustId(Long customerId);
+
+    public UniversalOverdueInfo selectUniversalOverdueInfo(Long orderId);
+
+    public List<UniversalLoanRepaymentPlan> selectUniversalLoanRepaymentPlan(Long orderId);
+
+    public List<UniversalCollectionRecord> selectUniversalCollectionRecord(Long orderId);
+
+    public UniversalCollectionRecordDetail selectUniversalCollectionRecordDetail(Long collectionId);
+
     //=======================================================================
 
     public List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);

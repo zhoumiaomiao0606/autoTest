@@ -288,7 +288,7 @@
         </table>-->
 
 
-        <table tableName="vehicle_information" domainObjectName="VehicleInformationDO"
+        <table tableName="collection_record" domainObjectName="CollectionRecordDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
             <property name="useActualColumnNames" value="true" />

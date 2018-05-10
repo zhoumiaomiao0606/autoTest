@@ -794,6 +794,73 @@
 
     </select>
 
+
+    <!-- 逾期-->
+    <select id="selectUniversalOverdueInfo" resultType="com.yunche.loan.domain.vo.UniversalOverdueInfo">
+        select overdue_amount    AS repay_overdue_amount,
+			   overdue_times     AS repay_overdue_times,
+			   max_overdue_times AS repay_max_overdue_times,
+			   0 				 AS repay_compensatory
+		from bank_repay_record where order_id = #{orderId,jdbcType=BIGINT} order by bank_repay_imp_record_id desc limit 1
+    </select>
+
+    <!-- 还款计划-->
+    <select id="selectUniversalRepaymentPlan" resultType="com.yunche.loan.domain.vo.UniversalLoanRepaymentPlan">
+            select
+                @row:=@row+1                                        AS repay_period,
+                repay.order_id                                      AS repay_order_id,
+                DATE_FORMAT(repay.repay_date,'%Y-%m-%d %H:%i:%S')   AS repay_date,
+                repay.payable_amount                                AS repay_payable_amount,
+                repay.actual_repay_amount                           AS repay_actual_repay_amount,
+                repay.is_overdue                                    AS repay_is_overdue,
+                repay.overdue_amount                                AS repay_overdue_amount,
+                DATE_FORMAT(repay.check_date,'%Y-%m-%d %H:%i:%S')   AS repay_check_date
+            from loan_repay_plan repay,(select @row:=0) r where repay.order_id = #{orderId,jdbcType=BIGINT} order by repay.repay_date asc
+
+    </select>
+
+    <!-- 催收计划-->
+    <select id="selectUniversalCollectionRecord" resultType="com.yunche.loan.domain.vo.UniversalCollectionRecord">
+          select
+	        @row:=@row+1 					                                    AS collection_row,
+	        collection.id 				                                        AS collection_id,
+	        collection.order_id 	                                            AS collection_order_id,
+	        DATE_FORMAT(collection.collection_date,'%Y-%m-%d %H:%i:%S')         AS collection_date,
+	        collection.collection_man_id			                            AS collection_man_id,
+	        customer.name       	                                            AS collection_man_name,
+	        collection.is_repayment					                            AS collection_is_repayment,
+	        collection.repayment_date				                            AS collection_repayment_date,
+	        DATE_FORMAT(collection.permit_repayment_date,'%Y-%m-%d %H:%i:%S') 	AS collection_permit_repayment_date,
+	        collection.cause							                        AS collection_cause,
+	        collection.remark							                        AS collection_remark
+        from collection_record collection
+        left join (select @row:=0) r  on 1=1
+        left join loan_order orders on orders.id = collection.order_id
+        left join loan_customer customer on orders.loan_customer_id = customer.id
+        where collection.order_id = #{orderId,jdbcType=BIGINT}
+        order by collection_date asc
+    </select>
+
+    <!-- 催收详情-->
+    <select id="selectUniversalCollectionRecordDetail" resultType="com.yunche.loan.domain.vo.UniversalCollectionRecordDetail">
+          select
+	        collection.id 				                                        AS collection_id,
+	        collection.order_id 	                                            AS collection_order_id,
+	        DATE_FORMAT(collection.collection_date,'%Y-%m-%d %H:%i:%S')         AS collection_date,
+	        collection.collection_man_id			                            AS collection_man_id,
+	        customer.name       	                                            AS collection_man_name,
+	        collection.is_repayment					                            AS collection_is_repayment,
+	        collection.repayment_date				                            AS collection_repayment_date,
+	        DATE_FORMAT(collection.permit_repayment_date,'%Y-%m-%d %H:%i:%S') 	AS collection_permit_repayment_date,
+	        collection.cause							                        AS collection_cause,
+	        collection.remark							                        AS collection_remark
+        from collection_record collection
+        left join loan_order orders on orders.id = collection.order_id
+        left join loan_customer customer on orders.loan_customer_id = customer.id
+        where collection.order_id = #{collectionId,jdbcType=BIGINT}
+        order by collection_date asc
+    </select>
+
     <!--=============================================end===================================================-->
 
 

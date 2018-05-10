@@ -41,6 +41,14 @@ public class RecombinationVO<T> {
 
         private UniversalSupplementInfoVO supplement;
 
+        private FinancialSchemeVO financial;
+
+        private UniversalOverdueInfo overdue;
+
+        private List<UniversalLoanRepaymentPlan>repayments = new ArrayList<UniversalLoanRepaymentPlan>();
+
+        private List<UniversalCollectionRecord> collections = new ArrayList<UniversalCollectionRecord>();
+
         private List<String> relevances = new ArrayList<String>();
 
         private List<UniversalCreditInfoVO> credits = new ArrayList<UniversalCreditInfoVO>();
