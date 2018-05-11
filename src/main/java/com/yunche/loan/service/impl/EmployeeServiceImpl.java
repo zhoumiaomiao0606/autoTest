@@ -15,6 +15,7 @@ import com.yunche.loan.domain.query.RelaQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.EmployeeService;
+import com.yunche.loan.service.PermissionService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.DisabledAccountException;
@@ -94,6 +95,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private AreaCache areaCache;
+
+    @Autowired
+    private PermissionService permissionService;
 
 
     @Override
@@ -418,12 +422,32 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         // 返回data
+        LoginVO data = setAndGetLoginVO(subject);
+
+        return ResultBean.ofSuccess(data, "登录成功");
+    }
+
+    /**
+     * LoginVO
+     *
+     * @param subject
+     * @return
+     */
+    private LoginVO setAndGetLoginVO(Subject subject) {
         LoginVO data = new LoginVO();
         EmployeeDO user = (EmployeeDO) subject.getPrincipal();
+        BeanUtils.copyProperties(user, data);
+        data.setPassword(null);
+        data.setMachineId(null);
+
         data.setUserId(user.getId());
         data.setUsername(user.getName());
 
-        return ResultBean.ofSuccess(data, "登录成功");
+        // 角色
+        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+        data.setUserGroupSet(userGroupNameSet);
+
+        return data;
     }
 
     /**

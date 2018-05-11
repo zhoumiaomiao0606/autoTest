@@ -32,6 +32,7 @@ public class AppVersionServiceImpl implements AppVersionService {
 
     @Autowired
     private AppVersionDOMapper appVersionDOMapper;
+
     @Autowired
     private AppVersionCache appVersionCache;
 
@@ -93,7 +94,7 @@ public class AppVersionServiceImpl implements AppVersionService {
             List<AppVersionDO> appVersionDOS = appVersionDOMapper.query(query);
             if (!CollectionUtils.isEmpty(appVersionDOS)) {
 
-                List<AppVersionVO> appVersionVOS = appVersionDOS.parallelStream()
+                List<AppVersionVO> appVersionVOS = appVersionDOS.stream()
                         .filter(Objects::nonNull)
                         .map(e -> {
                             AppVersionVO appVersionVO = new AppVersionVO();
@@ -121,7 +122,7 @@ public class AppVersionServiceImpl implements AppVersionService {
 
         // 最新版本
         if (appVersionDO.getVersionCode().equals(latestVersionDO.getVersionCode())
-                || (Integer.parseInt(appVersionDO.getVersionCode().trim())>Integer.parseInt(latestVersionDO.getVersionCode().trim()))) {
+                || (Integer.parseInt(appVersionDO.getVersionCode().trim()) > Integer.parseInt(latestVersionDO.getVersionCode().trim()))) {
             AppVersionVO.Update updateVO = new AppVersionVO.Update();
             updateVO.setNeedUpdate(false);
             updateVO.setLatestVersion(null);

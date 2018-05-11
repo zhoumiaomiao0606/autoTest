@@ -15,14 +15,21 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-
 /**
  * @author liuzhe
  * @date 2018/4/10
  */
 @Service
 public class PermissionServiceImpl implements PermissionService {
+
+    /**
+     * 管理员角色
+     */
+    public static final String USER_GROUP_ADMIN = "管理员";
+    /**
+     * 菜单：配置中心
+     */
+    public static final String MENU_CONFIGURE_CENTER = "configure_center";
 
     @Autowired
     private UserGroupDOMapper userGroupDOMapper;
@@ -34,12 +41,11 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public void checkTaskPermission(String taskDefinitionKey) {
 
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-        if ("admin".equals(loginUser.getName())) {
+        Set<String> userGroupNameSet = getUserGroupNameSet();
+
+        if (!CollectionUtils.isEmpty(userGroupNameSet) && userGroupNameSet.contains(USER_GROUP_ADMIN)) {
             return;
         }
-
-        Set<String> userGroupNameList = getUserGroupNameSet();
 
         Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.get();
 
@@ -48,7 +54,7 @@ public class PermissionServiceImpl implements PermissionService {
         // 若需要角色权限
         if (!CollectionUtils.isEmpty(currentTaskCandidateGroups)) {
 
-            Preconditions.checkArgument(!CollectionUtils.isEmpty(userGroupNameList),
+            Preconditions.checkArgument(!CollectionUtils.isEmpty(userGroupNameSet),
                     "您无权操作[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务");
 
             List<String> candidateGroups = Lists.newArrayList();
@@ -56,7 +62,7 @@ public class PermissionServiceImpl implements PermissionService {
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
-                        if (userGroupNameList.contains(e)) {
+                        if (userGroupNameSet.contains(e)) {
                             candidateGroups.add(e);
                         }
                     });
@@ -78,20 +84,19 @@ public class PermissionServiceImpl implements PermissionService {
 
         Set<String> allUserGroupNameSet = Sets.newHashSet();
 
-        if ("admin".equals(loginUser.getName())) {
-            // 超级管理员   赋予所有权限
-            List<String> allUserGroupName = userGroupDOMapper.getAllName(VALID_STATUS);
-            allUserGroupNameSet.addAll(allUserGroupName);
-            allUserGroupNameSet.add("configure_center");
-        } else {
-            // 员工-直接关联的用户组
-            List<String> userGroupNameList = userGroupDOMapper.listUserGroupNameByEmployeeId(loginUser.getId());
+        // 员工-直接关联的用户组
+        List<String> userGroupNameList = userGroupDOMapper.listUserGroupNameByEmployeeId(loginUser.getId());
 
-            // 员工-所属部门 -间接关联的用户组
-            List<String> userGroupNameList_ = userGroupDOMapper.listUserGroupNameByEmployeeIdRelaDepartment(loginUser.getId());
+        // 员工-所属部门 -间接关联的用户组
+        List<String> userGroupNameList_ = userGroupDOMapper.listUserGroupNameByEmployeeIdRelaDepartment(loginUser.getId());
 
-            allUserGroupNameSet.addAll(userGroupNameList);
-            allUserGroupNameSet.addAll(userGroupNameList_);
+        allUserGroupNameSet.addAll(userGroupNameList);
+        allUserGroupNameSet.addAll(userGroupNameList_);
+        allUserGroupNameSet.removeAll(Collections.singleton(null));
+
+        // 配置中心
+        if (!CollectionUtils.isEmpty(allUserGroupNameSet) && allUserGroupNameSet.contains(USER_GROUP_ADMIN)) {
+            allUserGroupNameSet.add(MENU_CONFIGURE_CENTER);
         }
 
         return allUserGroupNameSet;

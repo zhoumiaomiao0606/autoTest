@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class AppVersionCache {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
     @Autowired
     private AppVersionDOMapper appVersionDOMapper;
 
@@ -89,19 +91,26 @@ public class AppVersionCache {
         query.setIsLatestVersion(IS_LATEST_VERSION);
         query.setStatus(VALID_STATUS);
         List<AppVersionDO> appVersionDOS = appVersionDOMapper.query(query);
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(appVersionDOS), "获取最新版本失败");
 
-        String key = null;
-        if (TERMINAL_TYPE_IOS.equals(terminalType)) {
-            key = APP_LATEST_VERSION_IOS_KEY;
-        } else if (TERMINAL_TYPE_ANDROID.equals(terminalType)) {
-            key = APP_LATEST_VERSION_ANDROID_KEY;
-        } else {
-            throw new IllegalArgumentException("终端类型非法");
+        if (!CollectionUtils.isEmpty(appVersionDOS)) {
+            String key = null;
+            if (TERMINAL_TYPE_IOS.equals(terminalType)) {
+                key = APP_LATEST_VERSION_IOS_KEY;
+            } else if (TERMINAL_TYPE_ANDROID.equals(terminalType)) {
+                key = APP_LATEST_VERSION_ANDROID_KEY;
+            } else {
+                throw new IllegalArgumentException("终端类型非法");
+            }
+
+            AppVersionDO latestVersionDO = appVersionDOS.get(0);
+            BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
+            boundValueOps.set(JSON.toJSONString(latestVersionDO));
         }
+    }
 
-        AppVersionDO latestVersionDO = appVersionDOS.get(0);
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
-        boundValueOps.set(JSON.toJSONString(latestVersionDO));
+    @PostConstruct
+    public void refresh() {
+        refresh(TERMINAL_TYPE_ANDROID);
+        refresh(TERMINAL_TYPE_IOS);
     }
 }
