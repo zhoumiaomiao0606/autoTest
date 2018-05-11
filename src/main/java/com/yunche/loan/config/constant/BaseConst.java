@@ -17,4 +17,14 @@ public class BaseConst {
      * 已删除
      */
     public static final Byte DEL_STATUS = 2;
+
+
+    /**
+     * 是
+     */
+    public  static final Byte K_YORN_YES=1;
+    /**
+     * 否
+     */
+    public  static final Byte K_YORN_NO=0;
 }
