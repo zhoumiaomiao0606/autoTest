@@ -15,6 +15,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 /**
  * @author liuzhe
  * @date 2018/4/10
@@ -58,7 +60,7 @@ public class PermissionServiceImpl implements PermissionService {
                     "您无权操作[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务");
 
             List<String> candidateGroups = Lists.newArrayList();
-            currentTaskCandidateGroups.parallelStream()
+            currentTaskCandidateGroups.stream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
@@ -92,12 +94,18 @@ public class PermissionServiceImpl implements PermissionService {
 
         allUserGroupNameSet.addAll(userGroupNameList);
         allUserGroupNameSet.addAll(userGroupNameList_);
-        allUserGroupNameSet.removeAll(Collections.singleton(null));
 
-        // 配置中心
+        // 有[管理员]角色，则赋予所有权限
         if (!CollectionUtils.isEmpty(allUserGroupNameSet) && allUserGroupNameSet.contains(USER_GROUP_ADMIN)) {
+            // 所有角色
+            List<String> allUserGroupName = userGroupDOMapper.getAllName(VALID_STATUS);
+            allUserGroupNameSet.addAll(allUserGroupName);
+
+            // 配置中心
             allUserGroupNameSet.add(MENU_CONFIGURE_CENTER);
         }
+
+        allUserGroupNameSet.removeAll(Collections.singleton(null));
 
         return allUserGroupNameSet;
     }

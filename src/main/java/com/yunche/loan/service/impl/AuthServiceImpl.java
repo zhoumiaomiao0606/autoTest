@@ -32,6 +32,7 @@ import static com.yunche.loan.config.constant.AuthConst.OPERATION;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_SOCIAL_CREDIT_RECORD_FILTER;
 import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_APPLY_VISIT_VERIFY_FILTER;
+import static com.yunche.loan.config.constant.LoanProcessEnum.REMIT_REVIEW_FILTER;
 
 /**
  * @author liuzhe
@@ -197,7 +198,7 @@ public class AuthServiceImpl implements AuthService {
                         taskMap.put(k, false);
                     }
 
-                    candidateGroups.parallelStream()
+                    candidateGroups.stream()
                             .filter(e -> StringUtils.isNotBlank(e))
                             .forEach(e -> {
 
@@ -210,7 +211,10 @@ public class AuthServiceImpl implements AuthService {
                         taskMap.put(k, false);
                     }
 
-                } else if (!BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(k) && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(k)) {
+                } else if (!BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(k)
+                        && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(k)
+                        && !REMIT_REVIEW_FILTER.getCode().equals(k)) {
+
                     taskMap.put(k, true);
                 }
 

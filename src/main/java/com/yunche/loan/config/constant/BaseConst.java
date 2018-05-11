@@ -22,9 +22,9 @@ public class BaseConst {
     /**
      * 是
      */
-    public  static final Byte K_YORN_YES=1;
+    public static final Byte K_YORN_YES = 1;
     /**
      * 否
      */
-    public  static final Byte K_YORN_NO=0;
+    public static final Byte K_YORN_NO = 0;
 }

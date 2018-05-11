@@ -42,7 +42,7 @@ public class ShiroConfig {
     @Value("${spring.redis.password}")
     private String password;
     @Value("${spring.shiro.anno}")
-    private String anno;
+    private Boolean anno;
 
     /**
      * session过期时间：30天（单位：秒）
@@ -65,14 +65,14 @@ public class ShiroConfig {
         BizFormAuthenticationFilter authcFilter = new BizFormAuthenticationFilter();
         filters.put("authc", authcFilter);
         // 自定义权限过滤器替换perms
-        BizPermissionsAuthorizationFilter permsFilter = new BizPermissionsAuthorizationFilter();
+//        BizPermissionsAuthorizationFilter permsFilter = new BizPermissionsAuthorizationFilter();
 //        filters.put("perms", permsFilter);
         shiroFilterFactoryBean.setFilters(filters);
 
 
         // 注意过滤器配置顺序 不能颠倒
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap();
-        if ("true".equals(anno)) {
+        if (anno) {
             filterChainDefinitionMap.put("/**", "anon");
         } else {
             filterChainDefinitionMap.put("/api/v1/employee/logout", "anon");
