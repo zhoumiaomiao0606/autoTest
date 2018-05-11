@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.BankRepayRecordDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankRepayRecordDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <id column="bank_repay_imp_record_id" jdbcType="BIGINT" property="bankRepayImpRecordId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
+    <result column="repay_card" jdbcType="VARCHAR" property="repayCard" />
+    <result column="card_balance" jdbcType="DECIMAL" property="cardBalance" />
+    <result column="overdue_amount" jdbcType="DECIMAL" property="overdueAmount" />
+    <result column="overdue_times" jdbcType="INTEGER" property="overdueTimes" />
+    <result column="max_overdue_times" jdbcType="INTEGER" property="maxOverdueTimes" />
+    <result column="is_customer" jdbcType="TINYINT" property="isCustomer" />
+    <result column="batch_date" jdbcType="TIMESTAMP" property="batchDate" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, bank_repay_imp_record_id, user_name, id_card, repay_card, card_balance, 
+    overdue_amount, overdue_times, max_overdue_times, is_customer, batch_date, status, 
+    gmt_create, gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankRepayRecordDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bank_repay_record
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankRepayRecordDOKey">
+    delete from bank_repay_record
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankRepayRecordDO">
+    insert into bank_repay_record (order_id, bank_repay_imp_record_id, user_name, 
+      id_card, repay_card, card_balance, 
+      overdue_amount, overdue_times, max_overdue_times, 
+      is_customer, batch_date, status, 
+      gmt_create, gmt_modify)
+    values (#{orderId,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, 
+      #{idCard,jdbcType=VARCHAR}, #{repayCard,jdbcType=VARCHAR}, #{cardBalance,jdbcType=DECIMAL}, 
+      #{overdueAmount,jdbcType=DECIMAL}, #{overdueTimes,jdbcType=INTEGER}, #{maxOverdueTimes,jdbcType=INTEGER}, 
+      #{isCustomer,jdbcType=TINYINT}, #{batchDate,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, 
+      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankRepayRecordDO">
+    insert into bank_repay_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="bankRepayImpRecordId != null">
+        bank_repay_imp_record_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="idCard != null">
+        id_card,
+      </if>
+      <if test="repayCard != null">
+        repay_card,
+      </if>
+      <if test="cardBalance != null">
+        card_balance,
+      </if>
+      <if test="overdueAmount != null">
+        overdue_amount,
+      </if>
+      <if test="overdueTimes != null">
+        overdue_times,
+      </if>
+      <if test="maxOverdueTimes != null">
+        max_overdue_times,
+      </if>
+      <if test="isCustomer != null">
+        is_customer,
+      </if>
+      <if test="batchDate != null">
+        batch_date,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="bankRepayImpRecordId != null">
+        #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null">
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="repayCard != null">
+        #{repayCard,jdbcType=VARCHAR},
+      </if>
+      <if test="cardBalance != null">
+        #{cardBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="overdueAmount != null">
+        #{overdueAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="overdueTimes != null">
+        #{overdueTimes,jdbcType=INTEGER},
+      </if>
+      <if test="maxOverdueTimes != null">
+        #{maxOverdueTimes,jdbcType=INTEGER},
+      </if>
+      <if test="isCustomer != null">
+        #{isCustomer,jdbcType=TINYINT},
+      </if>
+      <if test="batchDate != null">
+        #{batchDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankRepayRecordDO">
+    update bank_repay_record
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null">
+        id_card = #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="repayCard != null">
+        repay_card = #{repayCard,jdbcType=VARCHAR},
+      </if>
+      <if test="cardBalance != null">
+        card_balance = #{cardBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="overdueAmount != null">
+        overdue_amount = #{overdueAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="overdueTimes != null">
+        overdue_times = #{overdueTimes,jdbcType=INTEGER},
+      </if>
+      <if test="maxOverdueTimes != null">
+        max_overdue_times = #{maxOverdueTimes,jdbcType=INTEGER},
+      </if>
+      <if test="isCustomer != null">
+        is_customer = #{isCustomer,jdbcType=TINYINT},
+      </if>
+      <if test="batchDate != null">
+        batch_date = #{batchDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankRepayRecordDO">
+    update bank_repay_record
+    set user_name = #{userName,jdbcType=VARCHAR},
+      id_card = #{idCard,jdbcType=VARCHAR},
+      repay_card = #{repayCard,jdbcType=VARCHAR},
+      card_balance = #{cardBalance,jdbcType=DECIMAL},
+      overdue_amount = #{overdueAmount,jdbcType=DECIMAL},
+      overdue_times = #{overdueTimes,jdbcType=INTEGER},
+      max_overdue_times = #{maxOverdueTimes,jdbcType=INTEGER},
+      is_customer = #{isCustomer,jdbcType=TINYINT},
+      batch_date = #{batchDate,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+  </update>
+</mapper>
