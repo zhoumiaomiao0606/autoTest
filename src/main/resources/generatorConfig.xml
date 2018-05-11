@@ -288,10 +288,9 @@
         </table>-->
 
 
-        <table tableName="collection_record" domainObjectName="CollectionRecordDO"
+        <table tableName="bank_urge_record" domainObjectName="BankUrgeRecordDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <property name="useActualColumnNames" value="true" />
         </table>
 
 
