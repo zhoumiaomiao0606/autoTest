@@ -1,5 +1,7 @@
 package com.yunche.loan.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -25,6 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.yunche.loan.config.constant.BankUrgeConst.URGE_NO;
+import static com.yunche.loan.config.constant.BankUrgeConst.URGE_YES;
 import static com.yunche.loan.config.constant.BaseConst.*;
 
 
@@ -56,13 +60,25 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 
     @Autowired
     BankUrgeRecordDOMapper bankUrgeRecordDOMapper;
+
+    @Autowired
+    BankRepayRecordService bankRepayRecordService;
     @Override
-    public ResultBean<List<RepaymentRecordVO>> query() {
-        //TODO 界面展示相关字段组装
+    public ResultBean query() {
+//        bankRepayRecordService.batchFileList()
         return null;
     }
 
-//    @Override
+    @Override
+    public ResultBean batchFileList(Integer pageIndex, Integer pageSize) {
+
+        PageHelper.startPage(pageIndex, pageSize, true);
+        List<BankRepayImpRecordDO> list = bankRepayQueryDOMapper.selectBankRepayImpRecord();
+        PageInfo<BankRepayImpRecordDO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    //    @Override
     //TODO  接口增加详情查询
     public ResultBean<RepaymentRecordParam> detail(Long orderId) {
 
@@ -160,16 +176,16 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                     newUrge.setOrderId(e.getOrderId());
                     newUrge.setOperator(SessionUtils.getLoginUser().getName());
                     newUrge.setBankRepayImpRecordId(e.getBankRepayImpRecordId());
-                    newUrge.setUrgeStatus(K_YORN_NO);
+                    newUrge.setUrgeStatus(URGE_NO);
                     bankUrgeRecordDOMapper.insertSelective(newUrge);
                 }
             }else{
                 bankUrgeRecordDO.setBankRepayImpRecordId(e.getBankRepayImpRecordId());
                 bankUrgeRecordDO.setOperator(SessionUtils.getLoginUser().getName());
                 if(e.getOverdueAmount().intValue()>0){
-                    bankUrgeRecordDO.setUrgeStatus(K_YORN_NO);//未催
+                    bankUrgeRecordDO.setUrgeStatus(URGE_NO);//未催
                 }else{
-                    bankUrgeRecordDO.setUrgeStatus(K_YORN_NO);//已催
+                    bankUrgeRecordDO.setUrgeStatus(URGE_YES);//已催
                 }
                 bankUrgeRecordDOMapper.updateByPrimaryKeySelective(bankUrgeRecordDO);
             }

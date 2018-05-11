@@ -11,6 +11,8 @@ public interface BankRepayRecordService {
 
     ResultBean<List<RepaymentRecordVO>> query();
 
+    ResultBean batchFileList(Integer pageIndex,  Integer pageSize);
+
 
     ResultBean<RepaymentRecordParam> detail(Long orderId);
 

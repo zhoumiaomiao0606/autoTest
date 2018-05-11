@@ -62,4 +62,14 @@
 
     </select>
 
+    <select id="selectBankRepayImpRecord" resultType="com.yunche.loan.domain.entity.BankRepayImpRecordDO">
+        select
+            id,
+            bank_file_mark AS bankFileMark,
+            gmt_create AS gmtCreate,
+            operator
+        from
+            bank_repay_imp_record
+    </select>
+
 </mapper>

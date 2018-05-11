@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 
+import com.yunche.loan.domain.entity.BankRepayImpRecordDO;
 import com.yunche.loan.domain.entity.LoanRepayPlanDO;
 import com.yunche.loan.domain.param.BankRepayParam;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,4 +19,6 @@ public interface BankRepayQueryDOMapper {
     List<LoanRepayPlanDO> selectRepayPlanListByOrderId(@Param("orderId") Long orderId);
     List<LoanRepayPlanDO>  selectOverdueRepayPlanList(@Param("orderId") Long orderId,
                                                       @Param("batchDate")Date batchDate, @Param("overdueTimes") Integer overdueTimes);
+
+    List<BankRepayImpRecordDO> selectBankRepayImpRecord();
 }
