@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.LoanRepayPlanDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanRepayPlanDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <id column="repay_date" jdbcType="TIMESTAMP" property="repayDate" />
+    <result column="payable_amount" jdbcType="DECIMAL" property="payableAmount" />
+    <result column="actual_repay_amount" jdbcType="DECIMAL" property="actualRepayAmount" />
+    <result column="is_overdue" jdbcType="TINYINT" property="isOverdue" />
+    <result column="overdue_amount" jdbcType="DECIMAL" property="overdueAmount" />
+    <result column="check_date" jdbcType="TIMESTAMP" property="checkDate" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, repay_date, payable_amount, actual_repay_amount, is_overdue, overdue_amount, 
+    check_date, status
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from loan_repay_plan
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and repay_date = #{repayDate,jdbcType=TIMESTAMP}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDOKey">
+    delete from loan_repay_plan
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and repay_date = #{repayDate,jdbcType=TIMESTAMP}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
+    insert into loan_repay_plan (order_id, repay_date, payable_amount, 
+      actual_repay_amount, is_overdue, overdue_amount, 
+      check_date, status)
+    values (#{orderId,jdbcType=BIGINT}, #{repayDate,jdbcType=TIMESTAMP}, #{payableAmount,jdbcType=DECIMAL}, 
+      #{actualRepayAmount,jdbcType=DECIMAL}, #{isOverdue,jdbcType=TINYINT}, #{overdueAmount,jdbcType=DECIMAL}, 
+      #{checkDate,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
+    insert into loan_repay_plan
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="repayDate != null">
+        repay_date,
+      </if>
+      <if test="payableAmount != null">
+        payable_amount,
+      </if>
+      <if test="actualRepayAmount != null">
+        actual_repay_amount,
+      </if>
+      <if test="isOverdue != null">
+        is_overdue,
+      </if>
+      <if test="overdueAmount != null">
+        overdue_amount,
+      </if>
+      <if test="checkDate != null">
+        check_date,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="repayDate != null">
+        #{repayDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payableAmount != null">
+        #{payableAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="actualRepayAmount != null">
+        #{actualRepayAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="isOverdue != null">
+        #{isOverdue,jdbcType=TINYINT},
+      </if>
+      <if test="overdueAmount != null">
+        #{overdueAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="checkDate != null">
+        #{checkDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
+    update loan_repay_plan
+    <set>
+      <if test="payableAmount != null">
+        payable_amount = #{payableAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="actualRepayAmount != null">
+        actual_repay_amount = #{actualRepayAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="isOverdue != null">
+        is_overdue = #{isOverdue,jdbcType=TINYINT},
+      </if>
+      <if test="overdueAmount != null">
+        overdue_amount = #{overdueAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="checkDate != null">
+        check_date = #{checkDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and repay_date = #{repayDate,jdbcType=TIMESTAMP}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
+    update loan_repay_plan
+    set payable_amount = #{payableAmount,jdbcType=DECIMAL},
+      actual_repay_amount = #{actualRepayAmount,jdbcType=DECIMAL},
+      is_overdue = #{isOverdue,jdbcType=TINYINT},
+      overdue_amount = #{overdueAmount,jdbcType=DECIMAL},
+      check_date = #{checkDate,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT}
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and repay_date = #{repayDate,jdbcType=TIMESTAMP}
+  </update>
+</mapper>
