@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.BankRepayQueryDOMapper" >
+
+    <select id="selectByIdCardOrRepayCard" resultType="com.yunche.loan.domain.param.BankRepayParam">
+        SELECT
+        a.id AS orderId,
+        c.id_card AS idCard,
+        d.repay_card_id AS repayCard
+        FROM
+        loan_order a
+        LEFT JOIN bank_card_record d ON a.id= d.order_id
+        LEFT JOIN loan_process b ON a.id = b.order_id
+        LEFT JOIN loan_customer c ON a.loan_customer_id = c.id
+        WHERE
+            1=1
+        AND b.bank_lend_record = 1
+        <if test="idCard != null ">
+            AND c.id_card =#{idCard}
+        </if>
+        <if test="repayCard != null">
+            AND d.repay_card_id =#{repayCard}
+        </if>
+
+
+    </select>
+
+    <select id="selectRepayPlanListByOrderId" resultType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
+        select
+            order_id        AS orderId,
+            repay_date      AS repayDate,
+            payable_amount  AS payableAmount,
+            is_overdue      AS isOverdue,
+            overdue_amount  AS overdueAmount,
+            check_date      AS checkDate,
+            status          AS status
+        from
+            loan_repay_plan
+        where order_id=#{orderId}
+    </select>
+
+    <select id="selectOverdueRepayPlanList" resultType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
+
+        SELECT
+            order_id        AS orderId,
+            repay_date      AS repayDate,
+            payable_amount  AS payableAmount,
+            is_overdue      AS isOverdue,
+            overdue_amount  AS overdueAmount,
+            check_date      AS checkDate,
+            status          AS status
+        FROM
+            loan_repay_plan
+        WHERE
+            order_id = #{orderId}
+            AND UNIX_TIMESTAMP(repay_date) &lt;= UNIX_TIMESTAMP(#{batchDate})
+            ORDER BY repay_date ASC
+        <if test="overdueTimes !=null">
+            LIMIT #{overdueTimes}
+        </if>
+
+
+    </select>
+
+</mapper>
