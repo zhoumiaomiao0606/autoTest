@@ -51,9 +51,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
+        Integer telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(null, loginUser.getId(), level);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(null, loginUser.getId(), telephoneVerifyLevel);
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
@@ -61,9 +61,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
+        Integer telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(key, loginUser.getId(), level);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(key, loginUser.getId(), telephoneVerifyLevel);
         // 取分页信息
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
@@ -80,9 +80,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Integer level = taskSchedulingDOMapper.selectLevel(loginUser.getId());
+        Integer telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
+        Integer collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         List<TaskListVO> list = new ArrayList<>();
-        taskListQuery.setLevel(level);
+        taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
+        taskListQuery.setCollectionLevel(collectionLevel);
         taskListQuery.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId()));
         taskListQuery.setLoginUserId(loginUser.getId());
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
@@ -113,7 +115,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     public ResultBean queryLoginUserLevel() {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
 
-        return ResultBean.ofSuccess(taskSchedulingDOMapper.selectLevel(loginUser.getId()));
+        return ResultBean.ofSuccess(taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId()));
     }
 
     private List<AppTaskVO> convert(List<TaskListVO> list) {

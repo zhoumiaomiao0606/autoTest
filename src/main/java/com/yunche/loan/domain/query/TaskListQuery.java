@@ -3,6 +3,7 @@ package com.yunche.loan.domain.query;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.web.bind.annotation.InitBinder;
 
 
 import javax.validation.constraints.NotNull;
@@ -29,8 +30,9 @@ public class TaskListQuery {
 
     private boolean fuse = false;
 
+    private Integer telephoneVerifyLevel; //级别
 
-    private Integer level; //级别
+    private Integer collectionLevel; //级别
 
     private Long loginUserId;
 
@@ -75,6 +77,31 @@ public class TaskListQuery {
     private String startLoanGmtCreate;//贷款时间
 
     private String endLoanGmtCreate;//贷款时间
+
+    private String isStraighten;
+    private String sendee;
+    private String isRepayment;
+
+    public String getIsStraighten() {
+        if (StringUtils.isBlank(isStraighten)) {
+            return null;
+        }
+        return isStraighten;
+    }
+
+    public String getSendee() {
+        if (StringUtils.isBlank(sendee)) {
+            return null;
+        }
+        return sendee;
+    }
+
+    public String getIsRepayment() {
+        if (StringUtils.isBlank(isRepayment)) {
+            return null;
+        }
+        return isRepayment;
+    }
 
     public String getCustomer() {
         if (StringUtils.isBlank(customer)) {

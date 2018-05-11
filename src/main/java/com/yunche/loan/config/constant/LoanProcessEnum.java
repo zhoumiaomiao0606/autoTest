@@ -45,7 +45,10 @@ public enum LoanProcessEnum {
     LOAN_REVIEW("usertask_loan_review", "放款审批"),
     REMIT_REVIEW("usertask_remit_review", "打款确认"),
     BANK_LEND_RECORD("usertask_bank_lend_record", "银行放款记录"),
-    CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划");
+    CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划"),
+    CUSTOMER_REPAY_PLAN_RECORD("usertask_customer_repay_plan_record", "银行还款计划记录"),
+    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台");
+
 
     private String code;
 

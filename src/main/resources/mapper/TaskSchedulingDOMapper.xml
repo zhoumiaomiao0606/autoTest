@@ -6,7 +6,7 @@
       SELECT case when Max( LEVEL )  is null then 0 else Max(level) end as level FROM user_group WHERE id IN ( SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{loginUserId} )
     </select>
 
-    <select id="selectLevel" resultType="java.lang.Integer">
+    <select id="selectTelephoneVerifyLevel" resultType="java.lang.Integer">
 
     SELECT
     case when max( t.LEVEL ) is null or max( t.LEVEL ) = '' then 0 else max( t.LEVEL ) end as levels
@@ -26,6 +26,31 @@
     5
     WHEN g.NAME IN ( '电审专员' ) THEN
     4 ELSE 1
+    END AS LEVEL
+    FROM
+    employee_rela_user_group r
+    INNER JOIN user_group g ON r.user_group_id = g.id
+    AND r.employee_id = #{loginUserId}
+    ) t
+    </select>
+
+    <select id="selectCollectionLevel" resultType="java.lang.Integer">
+
+    SELECT
+    case when max( t.LEVEL ) is null or max( t.LEVEL ) = '' then 0 else max( t.LEVEL ) end as levels
+    FROM
+    (
+    SELECT
+    CASE
+    WHEN g.NAME IN ( '总经理' ) THEN
+    7
+    WHEN g.NAME IN ( '培训经理' ) THEN
+    7
+    WHEN g.NAME IN ( '催收经理' ) THEN
+    7
+    WHEN g.NAME IN ( '催收专员' ) THEN
+    6
+    ELSE 1
     END AS LEVEL
     FROM
     employee_rela_user_group r
@@ -238,6 +263,9 @@
             0                                            AS overdueNum,
             DATE_FORMAT(join_r.lend_date,'%Y-%m-%d %H:%i:%S') AS lendDate,
             deputy.order_status                          AS orderStatus,
+            join_f.financial_product_name                AS financial_product_name,
+            join_f.car_price                             AS car_price,
+            join_f.each_month_repay                      AS each_month_repay,
             <choose>
                 <when test="taskDefinitionKey == 'usertask_credit_apply'">
                     deputy.credit_apply                     AS taskStatus
@@ -255,7 +283,7 @@
                     deputy.visit_verify                     AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'usertask_telephone_verify'">
-                    useLevelGetTaskStatus(#{level},deputy.telephone_verify)   AS taskStatus
+                    useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify)   AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
                     deputy.financial_scheme                   AS taskStatus
@@ -312,7 +340,7 @@
                 <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
                     join_his.id                              AS his_id,
                     DATE_FORMAT(join_his.start_time ,'%Y-%m-%d %H:%i:%S')          AS his_start_time,
-                    useLevelGetTaskStatus(#{level},join_his.status)   AS taskStatus
+                    useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status)   AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'usertask_refund_apply'">
                     join_refund.id                           AS refund_id,
@@ -324,9 +352,24 @@
                     DATE_FORMAT(join_refund.start_time,'%Y-%m-%d %H:%i:%S')        AS refund_start_time,
                     join_refund.status                       AS taskStatus
                 </when>
+                <when test="taskDefinitionKey == 'usertask_customer_repay_plan'">
+                    DATE_FORMAT(join_repayplan.repay_date,'%Y-%m-%d')             AS  repayDate,
+                    case when join_repayplan.payable_amount != actual_repay_amount then 1 else 0 end
+                                                            AS isStraighten,
+                    join_repayplan.status                   AS taskStatus
+                </when>
+                <when test="taskDefinitionKey == 'usertask_collection_workbench'">
+                    (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
+                                                                                  AS collectionDate,
+                    (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
+                                                                                  AS isRepayment,
+                    DATE_FORMAT(join_urgerecord.sendee_date,'%Y-%m-%d %H:%i:%S')  AS sendeeDate,
+                    DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
+                    join_urgerecord.sendee                  AS sendee,
+                    join_urgerecord.urge_status             AS taskStatus
+                </when>
                 <otherwise>
-                  0                                           AS taskStatus
-
+                  0                                         AS taskStatus
                 </otherwise>
             </choose>
             from loan_order main
@@ -354,6 +397,12 @@
             </if>
             <if test="taskDefinitionKey == 'usertask_refund_apply_review'">
             left join loan_refund_apply join_refund           on main.id          = join_refund.order_id
+            </if>
+            <if test="taskDefinitionKey == 'usertask_customer_repay_plan'">
+            left join loan_repay_plan join_repayplan          on main.id          = join_repayplan.order_id
+            </if>
+            <if test="taskDefinitionKey == 'usertask_collection_workbench'">
+            left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
             </if>
             where 1=1
             <if test="taskStatus != 0">
@@ -414,8 +463,8 @@
                     </choose>
                 </when>
                 <when test="taskDefinitionKey == 'usertask_telephone_verify'">
-                    AND useLevelGetTaskStatus(#{level},deputy.telephone_verify) !=-1
-                    AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(#{level},deputy.telephone_verify) != 0 else useLevelGetTaskStatus(#{level},deputy.telephone_verify) = #{taskStatus} end
+                    AND useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify) !=-1
+                    AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify) != 0 else useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify) = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
                     AND case when #{taskStatus} = 0 then deputy.financial_scheme  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
@@ -464,8 +513,8 @@
                     AND case when #{taskStatus} = 0 then join_his.status  != 0                          else join_his.status                       = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
-                    AND useLevelGetTaskStatus(#{level},join_his.status) !=-1
-                    AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(#{level},join_his.status) != 0 else useLevelGetTaskStatus(#{level},join_his.status) = #{taskStatus} end
+                    AND useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status) !=-1
+                    AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status) != 0 else useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status) = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_refund_apply'">
                     AND case when #{taskStatus} = 0 then join_refund.status  != 0                          else join_refund.status                 = #{taskStatus} end
@@ -473,12 +522,23 @@
                 <when test="taskDefinitionKey == 'usertask_refund_apply_review'">
                     AND case when #{taskStatus} = 0 then join_refund.status  != 0                          else join_refund.status                 = #{taskStatus} end
                 </when>
+                <when test="taskDefinitionKey == 'usertask_customer_repay_plan'">
+                    AND case when #{taskStatus} = 0 then join_repayplan.status  != 0                       else join_repayplan.status              = #{taskStatus} end
+                </when>
+                <when test="taskDefinitionKey == 'usertask_collection_workbench'">
+                    AND case when #{taskStatus} = 0 then join_urgerecord.urge_status != 0                  else join_urgerecord.urge_status        = #{taskStatus} end
+                </when>
                 <otherwise>
                     AND 1=2
                 </otherwise>
             </choose>
             ) tab
             where 1=1
+            <if test="taskDefinitionKey == 'usertask_collection_workbench'">
+                AND case when ${collectionLevel} = 7 then true
+                         when ${collectionLevel} = 6 then tab.sendee = ${loginUserId}
+                else true end
+            </if>
             AND CASE WHEN #{maxGroupLevel} = 0 THEN false else
                 case when #{maxGroupLevel} = 1 then
             tab.salesmanId in
@@ -581,7 +641,19 @@
             <if test="endCreditGmtCreate != null">
                 AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
             </if>
+            <if test="isStraighten != null">
+                AND tab.isStraighten = #{isStraighten}
+            </if>
+            <if test="sendee != null">
+                AND tab.sendee = #{sendee}
+            </if>
+            <if test="isRepayment != null">
+                AND tab.isRepayment = #{isRepayment}
+            </if>
             <choose>
+                <when test="taskDefinitionKey == 'usertask_collection_workbench'">
+                    order by tab.urgeGmtCreate ASC
+                </when>
                 <when test="taskStatus == 0">
                     order by tab.orderGmtCreate DESC ,tab.taskStatus ASC
                 </when>
@@ -626,7 +698,7 @@
                         jb.partner_id                                                        AS  partnerId,
                         jb.salesman_id                                                       AS  salesmanId,
                         case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
-                        case when lp.telephone_verify  &lt; ${level} and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
+                        case when lp.telephone_verify  &lt; #{telephoneVerifyLevel} and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
                         else 2 end                                                           AS filtration,
                         null                                                                 AS supplementOrderId,
                         null                                                                 AS supplementType,
@@ -832,7 +904,7 @@
                         jb.partner_id                                                                                   AS  partnerId,
                         jb.salesman_id                                                                                  AS  salesmanId,
                         case when his.status = 3 then 2
-                        when his.status !=3 and his.status  &lt; ${level} and his.status !=1 then 2 else 1 end             AS filtration,
+                        when his.status !=3 and his.status  &lt; #{telephoneVerifyLevel} and his.status !=1 then 2 else 1 end             AS filtration,
                         null                                                                                            AS supplementOrderId,
                         null                                                                                            AS supplementType,
                         null                                                                                            AS supplementTypeText,

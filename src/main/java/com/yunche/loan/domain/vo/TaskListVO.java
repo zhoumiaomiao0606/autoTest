@@ -33,7 +33,16 @@ public class TaskListVO {
     private String supplementContent;
     private String supplementStartTime;
     private String lendDate;
-
+    private String financial_product_name;
+    private String car_price;
+    private String each_month_repay;
+    private String repayDate;
+    private String isStraighten;
+    private String collectionDate;
+    private String isRepayment;
+    private String sendeeDate;
+    private String sendee;
+    private String urgeGmtCreate;
     private String currentTask;
     /**
      * 任务类型：1-已提交;  2-未提交;  3-打回;

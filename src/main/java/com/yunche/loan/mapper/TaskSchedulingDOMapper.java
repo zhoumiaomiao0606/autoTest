@@ -12,9 +12,11 @@ import java.util.List;
 
 @Mapper
 public interface TaskSchedulingDOMapper {
-    List<ScheduleTaskVO> selectScheduleTaskList(@Param("key") String key,@Param("employeeId") Long employeeId,@Param("level") Integer level);
+    List<ScheduleTaskVO> selectScheduleTaskList(@Param("key") String key,@Param("employeeId") Long employeeId,@Param("telephoneVerifyLevel") Integer telephoneVerifyLevel);
 
-    Integer selectLevel(Long loginUserId);
+    Integer selectTelephoneVerifyLevel(Long loginUserId);
+
+    Integer selectCollectionLevel(Long loginUserId);
 
     Integer selectMaxGroupLevel(Long loginUserId);
 
