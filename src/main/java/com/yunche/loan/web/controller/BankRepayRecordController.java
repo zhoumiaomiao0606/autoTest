@@ -15,14 +15,13 @@ public class BankRepayRecordController {
     @Autowired
     BankRepayRecordService bankRepayRecordService;
 
-    @GetMapping(value = "/query")
-    public ResultBean query() {
-        return bankRepayRecordService.query();
+    @GetMapping(value = "/list")
+    public ResultBean query(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
+       return bankRepayRecordService.batchFileList(pageIndex,pageSize);
     }
 
     @GetMapping(value = "/imp")
     public ResultBean importFile(@RequestParam("key") String ossKey){
-
       return bankRepayRecordService.importFile(ossKey);
 
     }
@@ -32,6 +31,8 @@ public class BankRepayRecordController {
         Preconditions.checkNotNull(orderId,"业务单号不能为空");
         return bankRepayRecordService.detail(orderId);
     }
+
+
 
 
 }

@@ -65,7 +65,6 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
     BankRepayRecordService bankRepayRecordService;
     @Override
     public ResultBean query() {
-//        bankRepayRecordService.batchFileList()
         return null;
     }
 
@@ -79,7 +78,6 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
     }
 
     //    @Override
-    //TODO  接口增加详情查询
     public ResultBean<RepaymentRecordParam> detail(Long orderId) {
 
         //TODO 界面展示相关字段组装
