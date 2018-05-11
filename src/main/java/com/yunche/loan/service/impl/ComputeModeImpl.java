@@ -48,6 +48,7 @@ public class ComputeModeImpl implements ComputeModeService{
                  break;
             case 2:
                 calcParamVO.setBankPeriodPrincipal(loanAmt);
+                calcParamVO.setLoanInterest(calcParamVO.getBankPeriodPrincipal().subtract(loanAmt));
                 calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_2(paramMap));
                 calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_2(paramMap));
                 calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_2(paramMap));
