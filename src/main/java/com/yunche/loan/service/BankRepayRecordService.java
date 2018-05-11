@@ -6,7 +6,7 @@ import com.yunche.loan.domain.vo.RepaymentRecordVO;
 
 import java.util.List;
 
-public interface RepaymentRecordService {
+public interface BankRepayRecordService {
 
 
     ResultBean<List<RepaymentRecordVO>> query();
@@ -15,7 +15,7 @@ public interface RepaymentRecordService {
     ResultBean<RepaymentRecordParam> detail(Long orderId);
 
 
-    ResultBean<Void> importFile(String pathFileName);
+    ResultBean<Void> importFile(String key);
 
 
 
