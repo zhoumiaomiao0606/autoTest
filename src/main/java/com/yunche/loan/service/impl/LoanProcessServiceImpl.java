@@ -8,12 +8,15 @@ import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
-import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.domain.vo.LoanProcessLogVO;
+import com.yunche.loan.domain.vo.LoanRejectLogVO;
+import com.yunche.loan.domain.vo.TaskStateVO;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
-import org.activiti.engine.*;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -32,13 +36,14 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
 import static com.yunche.loan.config.constant.CustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
-import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
 import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
 
@@ -49,6 +54,7 @@ import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatu
 public class LoanProcessServiceImpl implements LoanProcessService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoanProcessServiceImpl.class);
+
 
     /**
      * 换行符
@@ -112,6 +118,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private LoanRefundApplyDOMapper loanRefundApplyDOMapper;
+
+    @Autowired
+    private BankCardRecordDOMapper bankCardRecordDOMapper;
+
+    @Autowired
+    private LoanRepayPlanDOMapper loanRepayPlanDOMapper;
 
 
     @Override
@@ -184,7 +196,58 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 异步打包文件
 //        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
 
+        // 生成客户还款计划
+        createRepayPlan(approval.getTaskDefinitionKey(),loanProcessDO);
+
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+    }
+
+    /**
+     * 生成客户还款计划
+     * @param taskDefinitionKey
+     */
+    private void createRepayPlan(String taskDefinitionKey, LoanProcessDO loanProcessDO) {
+        if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(loanProcessDO.getTelephoneVerify())) {
+            //贷款期数
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanProcessDO.getOrderId(), null);
+            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+            Long bankCardRecordId = loanOrderDO.getBankCardRecordId();
+            BigDecimal eachMonthRepay = loanFinancialPlanDO.getEachMonthRepay();
+            BankCardRecordDO bankCardRecordDO = bankCardRecordDOMapper.selectByPrimaryKey(bankCardRecordId.intValue());
+            Integer loanTime = loanFinancialPlanDO.getLoanTime();// 贷款期数
+            Date firstRepaymentDate = bankCardRecordDO.getFirstRepaymentDate();//首月还款日
+            //插入客户还款计划
+            insertRepayPlan(loanOrderDO.getId(),firstRepaymentDate,loanTime,eachMonthRepay);
+
+        }
+    }
+
+    /**
+     *  插入客户还款计划
+     * @param orderId
+     * @param firstRepaymentDate
+     * @param loanTime
+     */
+    private void insertRepayPlan(Long orderId, Date firstRepaymentDate, Integer loanTime,BigDecimal eachMonthRepay) {
+
+        for(int i=0;i<loanTime;i++){
+            LoanRepayPlanDO loanRepayPlanDO = new LoanRepayPlanDO();
+            loanRepayPlanDO.setOrderId(orderId);
+            loanRepayPlanDO.setIsOverdue(K_YORN_NO);
+            loanRepayPlanDO.setPayableAmount(eachMonthRepay);
+            loanRepayPlanDO.setStatus(VALID_STATUS);
+            if(0==i){
+                loanRepayPlanDO.setRepayDate(firstRepaymentDate);
+            }else{
+                Calendar rightNow = Calendar.getInstance();
+                rightNow.setTime(new Date());
+                rightNow.add(Calendar.MONTH, i);// 日期加
+                Date repayDate = rightNow.getTime();
+                loanRepayPlanDO.setRepayDate(repayDate);
+            }
+            loanRepayPlanDOMapper.insert(loanRepayPlanDO);
+        }
+
     }
 
     /**
