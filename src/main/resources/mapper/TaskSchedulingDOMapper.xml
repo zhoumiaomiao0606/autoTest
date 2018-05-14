@@ -46,9 +46,9 @@
     7
     WHEN g.NAME IN ( '培训经理' ) THEN
     7
-    WHEN g.NAME IN ( '催收经理' ) THEN
+    WHEN g.NAME IN ( '催收主管' ) THEN
     7
-    WHEN g.NAME IN ( '催收专员' ) THEN
+    WHEN g.NAME IN ( '电话催收组' ) THEN
     6
     ELSE 1
     END AS LEVEL
