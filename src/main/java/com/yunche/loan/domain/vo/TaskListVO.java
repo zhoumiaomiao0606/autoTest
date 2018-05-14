@@ -42,6 +42,7 @@ public class TaskListVO {
     private String isRepayment;
     private String sendeeDate;
     private String sendee;
+    private String sendeeName;
     private String urgeGmtCreate;
     private String currentTask;
     /**

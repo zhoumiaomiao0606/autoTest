@@ -366,6 +366,7 @@
                     DATE_FORMAT(join_urgerecord.sendee_date,'%Y-%m-%d %H:%i:%S')  AS sendeeDate,
                     DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                     join_urgerecord.sendee                  AS sendee,
+                    sendee.name                             AS sendeeName,
                     join_urgerecord.urge_status             AS taskStatus
                 </when>
                 <otherwise>
@@ -403,6 +404,7 @@
             </if>
             <if test="taskDefinitionKey == 'usertask_collection_workbench'">
             left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
+            left join employee sendee                         on join_urgerecord.sendee   = sendee.id
             </if>
             where 1=1
             <if test="taskStatus != 0">
@@ -641,14 +643,18 @@
             <if test="endCreditGmtCreate != null">
                 AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
             </if>
-            <if test="isStraighten != null">
-                AND tab.isStraighten = #{isStraighten}
+            <if test="taskDefinitionKey == 'usertask_customer_repay_plan'">
+                <if test="isStraighten != null">
+                    AND tab.isStraighten = #{isStraighten}
+                </if>
             </if>
-            <if test="sendee != null">
-                AND tab.sendee = #{sendee}
-            </if>
-            <if test="isRepayment != null">
-                AND tab.isRepayment = #{isRepayment}
+            <if test="taskDefinitionKey == 'usertask_collection_workbench'">
+                <if test="sendee != null">
+                    AND tab.sendee = #{sendee}
+                </if>
+                <if test="isRepayment != null">
+                    AND tab.isRepayment = #{isRepayment}
+                </if>
             </if>
             <choose>
                 <when test="taskDefinitionKey == 'usertask_collection_workbench'">

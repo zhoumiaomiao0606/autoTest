@@ -72,7 +72,7 @@
     <userTask id="usertask_apply_license_plate_deposit_info" name="车辆抵押" activiti:candidateGroups="总经理,培训经理,渠道经理,抵押专员,业务内勤"></userTask>
     <userTask id="usertask_car_insurance" name="车辆保险" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow63" sourceRef="parallelgateway3" targetRef="usertask_car_insurance"></sequenceFlow>
-    <userTask id="usertask_install_gps" name="GPS安装" activiti:candidateGroups="总经理,培训经理,催收主管,GPS专员"></userTask>
+    <userTask id="usertask_install_gps" name="GPS安装" activiti:candidateGroups="总经理,培训经理,催收主管,GPS专员,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow65" sourceRef="parallelgateway3" targetRef="usertask_install_gps"></sequenceFlow>
     <userTask id="usertask_commit_key" name="待收钥匙" activiti:candidateGroups="总经理,培训经理,催收主管,收钥匙专员"></userTask>
     <sequenceFlow id="flow66" sourceRef="parallelgateway3" targetRef="usertask_commit_key"></sequenceFlow>
