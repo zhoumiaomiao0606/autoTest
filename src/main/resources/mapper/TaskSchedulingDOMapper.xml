@@ -353,7 +353,7 @@
                     join_refund.status                       AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'usertask_customer_repay_plan'">
-                    DATE_FORMAT(join_repayplan.repay_date,'%Y-%m-%d')             AS  repayDate,
+                    join_repayplan.repay_date               AS repayDate,
                     0                                       AS isStraighten,
                     join_repayplan.status                   AS taskStatus
                 </when>
