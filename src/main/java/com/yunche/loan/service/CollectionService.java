@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
+import com.yunche.loan.domain.param.ManualDistributionParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCollectionRecordDetail;
 import com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee;
@@ -19,5 +20,5 @@ public interface CollectionService {
 
     void autoDistribution();
 
-    void manualDistribution(Long orderId,Long sendee);
+    void manualDistribution(List<ManualDistributionParam> params);
 }

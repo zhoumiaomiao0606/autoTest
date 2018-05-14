@@ -1,9 +1,12 @@
 package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.util.BeanPlasticityUtills;
+import com.yunche.loan.domain.entity.BankUrgeRecordDO;
 import com.yunche.loan.domain.entity.CollectionRecordDO;
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
+import com.yunche.loan.domain.param.ManualDistributionParam;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.BankUrgeRecordDOMapper;
 import com.yunche.loan.mapper.CollectionRecordDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.CollectionService;
@@ -12,10 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 @Transactional
@@ -26,6 +27,9 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Resource
     private CollectionRecordDOMapper collectionRecordDOMapper;
+
+    @Resource
+    private BankUrgeRecordDOMapper bankUrgeRecordDOMapper;
 
 
     @Override
@@ -76,22 +80,45 @@ public class CollectionServiceImpl implements CollectionService {
         List<UniversalTelephoneCollectionEmployee> universalTelephoneCollectionEmployees = loanQueryDOMapper.selectUniversalTelephoneCollectionEmployee();
         //未分配的单子
         List<UniversalUndistributedCollection> UniversalUndistributedCollections = loanQueryDOMapper.selectUniversalUndistributedCollection();
-
-        Set<String> set  = new HashSet<String>();
-        for(UniversalUndistributedCollection V:UniversalUndistributedCollections){
-            set.add(V.getBank());
+        ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
+        int i = 0;
+        while (queue.size() < UniversalUndistributedCollections.size()){
+            if(i==universalTelephoneCollectionEmployees.size()){
+                i=0;
+            }
+            queue.add(universalTelephoneCollectionEmployees.get(i).getId());
+            i++;
         }
 
-
-
-
-
+        for(UniversalUndistributedCollection V:UniversalUndistributedCollections){
+            BankUrgeRecordDO bankUrgeRecordDO = new BankUrgeRecordDO();
+            bankUrgeRecordDO.setOrderId(Long.valueOf(V.getOrder_id()));
+            bankUrgeRecordDO.setSendeeDate(new Date());
+            bankUrgeRecordDO.setSendee(Long.valueOf(queue.poll().toString()));
+            bankUrgeRecordDOMapper.updateByPrimaryKeySelective(bankUrgeRecordDO);
+        }
     }
 
     @Override
-    public void manualDistribution(Long orderId, Long sendee) {
-
+    public void manualDistribution(List<ManualDistributionParam> params) {
+        //分配开始
+        for(ManualDistributionParam param:params){
+            boolean flag = false;
+            //催收人员列表
+            List<UniversalTelephoneCollectionEmployee> universalTelephoneCollectionEmployees = loanQueryDOMapper.selectUniversalTelephoneCollectionEmployee();
+            for(UniversalTelephoneCollectionEmployee V:universalTelephoneCollectionEmployees){
+                if(V.getId().equals(param.getSendee())){
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag){
+                BankUrgeRecordDO bankUrgeRecordDO = new BankUrgeRecordDO();
+                bankUrgeRecordDO.setOrderId(Long.valueOf(param.getOrder_id()));
+                bankUrgeRecordDO.setSendeeDate(new Date());
+                bankUrgeRecordDO.setSendee(Long.valueOf(param.getSendee()));
+                bankUrgeRecordDOMapper.updateByPrimaryKeySelective(bankUrgeRecordDO);
+            }
+        }
     }
-
-
 }

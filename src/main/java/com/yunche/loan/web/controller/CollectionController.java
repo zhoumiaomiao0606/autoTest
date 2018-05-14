@@ -2,6 +2,8 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
+import com.yunche.loan.domain.param.ManualDistributionBaseParam;
+import com.yunche.loan.domain.param.ManualDistributionParam;
 import com.yunche.loan.service.CollectionService;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
@@ -48,4 +50,9 @@ public class CollectionController {
         return ResultBean.ofSuccess(null,"保存成功");
     }
 
+    @PostMapping(value = "/manualDistribution", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> manualDistribution(@RequestBody @Validated ManualDistributionBaseParam param) {
+        collectionService.manualDistribution(param.getManual_distribution_list());
+        return ResultBean.ofSuccess(null,"保存成功");
+    }
 }
