@@ -354,8 +354,7 @@
                 </when>
                 <when test="taskDefinitionKey == 'usertask_customer_repay_plan'">
                     DATE_FORMAT(join_repayplan.repay_date,'%Y-%m-%d')             AS  repayDate,
-                    case when join_repayplan.payable_amount != actual_repay_amount then 1 else 0 end
-                                                            AS isStraighten,
+                    0                                       AS isStraighten,
                     join_repayplan.status                   AS taskStatus
                 </when>
                 <when test="taskDefinitionKey == 'usertask_collection_workbench'">
@@ -400,7 +399,7 @@
             left join loan_refund_apply join_refund           on main.id          = join_refund.order_id
             </if>
             <if test="taskDefinitionKey == 'usertask_customer_repay_plan'">
-            left join loan_repay_plan join_repayplan          on main.id          = join_repayplan.order_id
+            left join bank_card_record join_repayplan          on main.id         = join_repayplan.order_id
             </if>
             <if test="taskDefinitionKey == 'usertask_collection_workbench'">
             left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
