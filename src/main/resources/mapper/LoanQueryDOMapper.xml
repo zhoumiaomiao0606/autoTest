@@ -864,6 +864,31 @@
         order by collection_date asc
     </select>
 
+    <!-- 催收专员列表-->
+    <select id="selectUniversalTelephoneCollectionEmployee" resultType="com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee">
+        select x.* from
+        (
+        select employee.id,employee.name,ug.name AS role
+        from employee  employee
+        inner JOIN
+        employee_rela_user_group eg on eg.employee_id = employee.id
+        inner join user_group ug on ug.id = eg.user_group_id
+        ) x where x.id not in
+        (
+            select DISTINCT t.id from
+            (
+            select employee.id,employee.name,ug.name AS role,ug.level
+            from employee  employee
+            LEFT JOIN
+            employee_rela_user_group eg on eg.employee_id = employee.id
+            left join user_group ug on ug.id = eg.user_group_id
+            ) t where t.level = 3
+        )
+        and x.role = '电话催收组'
+    </select>
+
+
+
     <!--=============================================end===================================================-->
 
 

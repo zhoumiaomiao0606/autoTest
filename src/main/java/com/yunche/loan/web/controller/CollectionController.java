@@ -4,10 +4,13 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
 import com.yunche.loan.service.CollectionService;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -25,6 +28,15 @@ public class CollectionController {
     @GetMapping(value = "/recordDetail")
     public ResultBean recordDetail(@RequestParam String collection_id) {
         return ResultBean.ofSuccess(collectionService.recordDetail(Long.valueOf(collection_id)));
+    }
+
+    @GetMapping(value = "/telephoneCollectionEmployee")
+    public ResultBean recordDetail() {
+        List list = collectionService.selectTelephoneCollectionEmployee();
+        if(CollectionUtils.isEmpty(list)){
+            list = new ArrayList();
+        }
+        return ResultBean.ofSuccess(list);
     }
 
     /**

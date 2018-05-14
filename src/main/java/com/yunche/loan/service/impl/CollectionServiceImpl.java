@@ -67,4 +67,9 @@ public class CollectionServiceImpl implements CollectionService {
             collectionRecordDOMapper.updateByPrimaryKeySelective(V);
         }
     }
+
+    @Override
+    public List<UniversalTelephoneCollectionEmployee> selectTelephoneCollectionEmployee() {
+        return loanQueryDOMapper.selectUniversalTelephoneCollectionEmployee();
+    }
 }
