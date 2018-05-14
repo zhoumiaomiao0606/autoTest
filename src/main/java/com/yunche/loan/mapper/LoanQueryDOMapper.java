@@ -69,6 +69,8 @@ public interface LoanQueryDOMapper {
 
     public List<UniversalTelephoneCollectionEmployee> selectUniversalTelephoneCollectionEmployee();
 
+    public List<UniversalUndistributedCollection> selectUniversalUndistributedCollection();
+
     //=======================================================================
 
     public List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);

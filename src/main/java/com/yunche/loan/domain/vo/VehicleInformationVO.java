@@ -13,6 +13,7 @@ public class VehicleInformationVO {
     private String pname;
     private String car_name;
     private String car_price;
+    private String bank;
     private String assess_price;
     private String production_type;
     private String car_type;

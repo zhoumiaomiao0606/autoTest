@@ -1,8 +1,6 @@
 package com.yunche.loan.service.impl;
 
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
-import com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO;
 import com.yunche.loan.domain.entity.CollectionRecordDO;
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
 import com.yunche.loan.domain.vo.*;
@@ -14,11 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -72,4 +69,29 @@ public class CollectionServiceImpl implements CollectionService {
     public List<UniversalTelephoneCollectionEmployee> selectTelephoneCollectionEmployee() {
         return loanQueryDOMapper.selectUniversalTelephoneCollectionEmployee();
     }
+
+    @Override
+    public void autoDistribution() {
+        //催收人员列表
+        List<UniversalTelephoneCollectionEmployee> universalTelephoneCollectionEmployees = loanQueryDOMapper.selectUniversalTelephoneCollectionEmployee();
+        //未分配的单子
+        List<UniversalUndistributedCollection> UniversalUndistributedCollections = loanQueryDOMapper.selectUniversalUndistributedCollection();
+
+        Set<String> set  = new HashSet<String>();
+        for(UniversalUndistributedCollection V:UniversalUndistributedCollections){
+            set.add(V.getBank());
+        }
+
+
+
+
+
+    }
+
+    @Override
+    public void manualDistribution(Long orderId, Long sendee) {
+
+    }
+
+
 }

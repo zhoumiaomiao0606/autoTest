@@ -16,4 +16,8 @@ public interface CollectionService {
     void recordUpdate(CollectionRecordUpdateParam param);
 
     List<UniversalTelephoneCollectionEmployee> selectTelephoneCollectionEmployee();
+
+    void autoDistribution();
+
+    void manualDistribution(Long orderId,Long sendee);
 }
