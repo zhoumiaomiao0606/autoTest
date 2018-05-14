@@ -10,9 +10,7 @@ import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankRepayParam;
-import com.yunche.loan.domain.param.RepaymentRecordParam;
-import com.yunche.loan.domain.vo.RepaymentRecordVO;
-import com.yunche.loan.domain.vo.UniversalCustomerVO;
+import com.yunche.loan.domain.vo.BankRepayRecordVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankRepayRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,43 +63,41 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
     BankRepayRecordService bankRepayRecordService;
     @Override
     public ResultBean query() {
+//        //查询客户详细信息
+//        PageHelper.startPage(pageIndex, pageSize, true);
+//        List<BankRepayRecordVO> bankRepayRecordVOList = bankRepayQueryDOMapper.selectBankRepayRecordDetail(bankRepayImpRecordId);
+//        PageInfo<BankRepayRecordVO> pageInfo = new PageInfo<>(bankRepayRecordVOList);
+//        return ResultBean.ofSuccess(bankRepayRecordVOList, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
         return null;
     }
 
     @Override
-    public ResultBean batchFileList(Integer pageIndex, Integer pageSize) {
+    public ResultBean batchFileList(Integer pageIndex, Integer pageSize,String fileName,String startDate,String endDate) {
 
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<BankRepayImpRecordDO> list = bankRepayQueryDOMapper.selectBankRepayImpRecord();
+        List<BankRepayImpRecordDO> list = bankRepayQueryDOMapper.selectBankRepayImpRecord(fileName,startDate,endDate);
         PageInfo<BankRepayImpRecordDO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
-    //    @Override
-    public ResultBean<RepaymentRecordParam> detail(Long orderId) {
 
-        //TODO 界面展示相关字段组装
+    public ResultBean detail(Integer pageIndex, Integer pageSize,Long bankRepayImpRecordId,String userName,String idCard, Byte isCustomer) {
         //查询客户详细信息
-        RepaymentRecordParam repaymentRecordparam = null;
-        List<UniversalCustomerVO> universalCustomerVOS =  loanQueryDOMapper.selectUniversalCustomer(orderId);
-        repaymentRecordparam.setUniversalCustomerVOS(universalCustomerVOS);
-        return ResultBean.ofSuccess(repaymentRecordparam);
+        PageHelper.startPage(pageIndex, pageSize, true);
+        List<BankRepayRecordVO> bankRepayRecordVOList = bankRepayQueryDOMapper.selectBankRepayRecordDetail(bankRepayImpRecordId,userName,idCard,isCustomer);
+        PageInfo<BankRepayRecordVO> pageInfo = new PageInfo<>(bankRepayRecordVOList);
+        return ResultBean.ofSuccess(bankRepayRecordVOList, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+
     }
 
     @Override
     public ResultBean importFile(String ossKey) {
         Preconditions.checkNotNull(ossKey,"文件名不能为空");
-
-
-
         List<BankRepayRecordDO> list = importOverdueRecord(ossKey);//导入
         //更新还款计划
         adjustBankRepayPlanRecord(list);
         //更新催收记录
         adjustUrgeRecord(list);
-
-
-
         return ResultBean.ofSuccess("导入成功");
     }
 
@@ -231,7 +227,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
             bankRepayImpRecordDO.setGmtCreate(new Date());
             bankRepayImpRecordDO.setOperator(SessionUtils.getLoginUser().getName());
             bankRepayImpRecordDO.setStatus(VALID_STATUS);
-
+            bankRepayImpRecordDO.setFileKey(ossKey);
             int count = bankRepayImpRecordDOMapper.insert(bankRepayImpRecordDO);
             Preconditions.checkNotNull(count>0,"导入文件出错");
             Long batchId = bankRepayImpRecordDO.getId();

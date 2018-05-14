@@ -16,5 +16,7 @@ public class BankRepayImpRecordDO {
 
     private Byte status;
 
+    private String fileKey;
+
 
 }

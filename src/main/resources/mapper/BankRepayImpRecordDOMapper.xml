@@ -7,9 +7,10 @@
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="operator" jdbcType="VARCHAR" property="operator" />
     <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="file_key" jdbcType="VARCHAR" property="fileKey" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, bank_file_mark, gmt_create, operator, status
+    id, bank_file_mark, gmt_create, operator, status, file_key
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -26,12 +27,18 @@
                order="AFTER">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into bank_repay_imp_record (id, bank_file_mark, gmt_create, 
-      operator, status)
+    insert into bank_repay_imp_record (id, bank_file_mark, gmt_create,
+      operator, status, file_key
+      )
     values (#{id,jdbcType=BIGINT}, #{bankFileMark,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
-      #{operator,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
+      #{operator,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{fileKey,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankRepayImpRecordDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into bank_repay_imp_record
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -48,6 +55,9 @@
       </if>
       <if test="status != null">
         status,
+      </if>
+      <if test="fileKey != null">
+        file_key,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -66,6 +76,9 @@
       <if test="status != null">
         #{status,jdbcType=TINYINT},
       </if>
+      <if test="fileKey != null">
+        #{fileKey,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankRepayImpRecordDO">
@@ -83,6 +96,9 @@
       <if test="status != null">
         status = #{status,jdbcType=TINYINT},
       </if>
+      <if test="fileKey != null">
+        file_key = #{fileKey,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -91,7 +107,8 @@
     set bank_file_mark = #{bankFileMark,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       operator = #{operator,jdbcType=VARCHAR},
-      status = #{status,jdbcType=TINYINT}
+      status = #{status,jdbcType=TINYINT},
+      file_key = #{fileKey,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
