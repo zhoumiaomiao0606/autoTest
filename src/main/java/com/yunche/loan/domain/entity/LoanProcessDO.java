@@ -47,6 +47,8 @@ public class LoanProcessDO {
 
     private Byte bankLendRecord;
 
+    private Byte customerRepayPlan;
+
     private Date gmtCreate;
 
     private Date gmtModify;

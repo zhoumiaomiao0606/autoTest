@@ -22,6 +22,7 @@
         <result column="loan_review" jdbcType="TINYINT" property="loanReview"/>
         <result column="remit_review" jdbcType="TINYINT" property="remitReview"/>
         <result column="bank_lend_record" jdbcType="TINYINT" property="bankLendRecord"/>
+        <result column="customer_repay_plan" jdbcType="TINYINT" property="customerRepayPlan"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="cancel_task_def_key" jdbcType="VARCHAR" property="cancelTaskDefKey"/>
@@ -33,8 +34,8 @@
         order_id, credit_apply, bank_credit_record, social_credit_record, loan_apply, visit_verify,
         telephone_verify, financial_scheme, bank_card_record, car_insurance, vehicle_information,
         apply_license_plate_deposit_info, install_gps, commit_key, material_review, material_print_review,
-        business_review, loan_review, remit_review, bank_lend_record, gmt_create, gmt_modify,
-        cancel_task_def_key, loan_apply_reject_orgin_task, order_status
+        business_review, loan_review, remit_review, bank_lend_record, customer_repay_plan,
+        gmt_create, gmt_modify, cancel_task_def_key, loan_apply_reject_orgin_task, order_status
     </sql>
 
     <!--updateLoanApplyRejectOrginTaskIsNull-->
@@ -71,18 +72,18 @@
         car_insurance, vehicle_information, apply_license_plate_deposit_info,
         install_gps, commit_key, material_review,
         material_print_review, business_review, loan_review,
-        remit_review, bank_lend_record, gmt_create,
-        gmt_modify, cancel_task_def_key, loan_apply_reject_orgin_task,
-        order_status)
+        remit_review, bank_lend_record, customer_repay_plan,
+        gmt_create, gmt_modify, cancel_task_def_key,
+        loan_apply_reject_orgin_task, order_status)
         values (#{orderId,jdbcType=BIGINT}, #{creditApply,jdbcType=TINYINT}, #{bankCreditRecord,jdbcType=TINYINT},
         #{socialCreditRecord,jdbcType=TINYINT}, #{loanApply,jdbcType=TINYINT}, #{visitVerify,jdbcType=TINYINT},
         #{telephoneVerify,jdbcType=TINYINT}, #{financialScheme,jdbcType=TINYINT}, #{bankCardRecord,jdbcType=TINYINT},
         #{carInsurance,jdbcType=TINYINT}, #{vehicleInformation,jdbcType=TINYINT}, #{applyLicensePlateDepositInfo,jdbcType=TINYINT},
         #{installGps,jdbcType=TINYINT}, #{commitKey,jdbcType=TINYINT}, #{materialReview,jdbcType=TINYINT},
         #{materialPrintReview,jdbcType=TINYINT}, #{businessReview,jdbcType=TINYINT}, #{loanReview,jdbcType=TINYINT},
-        #{remitReview,jdbcType=TINYINT}, #{bankLendRecord,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{cancelTaskDefKey,jdbcType=VARCHAR}, #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
-        #{orderStatus,jdbcType=TINYINT})
+        #{remitReview,jdbcType=TINYINT}, #{bankLendRecord,jdbcType=TINYINT}, #{customerRepayPlan,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{cancelTaskDefKey,jdbcType=VARCHAR},
+        #{loanApplyRejectOrginTask,jdbcType=VARCHAR}, #{orderStatus,jdbcType=TINYINT})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
@@ -147,6 +148,9 @@
             </if>
             <if test="bankLendRecord != null">
                 bank_lend_record,
+            </if>
+            <if test="customerRepayPlan != null">
+                customer_repay_plan,
             </if>
             <if test="gmtCreate != null">
                 gmt_create,
@@ -224,6 +228,9 @@
             </if>
             <if test="bankLendRecord != null">
                 #{bankLendRecord,jdbcType=TINYINT},
+            </if>
+            <if test="customerRepayPlan != null">
+                #{customerRepayPlan,jdbcType=TINYINT},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -303,6 +310,9 @@
             <if test="bankLendRecord != null">
                 bank_lend_record = #{bankLendRecord,jdbcType=TINYINT},
             </if>
+            <if test="customerRepayPlan != null">
+                customer_repay_plan = #{customerRepayPlan,jdbcType=TINYINT},
+            </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -343,6 +353,7 @@
         loan_review = #{loanReview,jdbcType=TINYINT},
         remit_review = #{remitReview,jdbcType=TINYINT},
         bank_lend_record = #{bankLendRecord,jdbcType=TINYINT},
+        customer_repay_plan = #{customerRepayPlan,jdbcType=TINYINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         cancel_task_def_key = #{cancelTaskDefKey,jdbcType=VARCHAR},

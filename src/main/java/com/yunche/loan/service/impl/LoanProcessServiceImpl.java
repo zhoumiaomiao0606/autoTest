@@ -197,13 +197,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 //        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
 
         // 生成客户还款计划
-        createRepayPlan(approval.getTaskDefinitionKey(),loanProcessDO);
+        createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
 
     /**
      * 生成客户还款计划
+     *
      * @param taskDefinitionKey
      */
     private void createRepayPlan(String taskDefinitionKey, LoanProcessDO loanProcessDO) {
@@ -216,29 +217,30 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             BankCardRecordDO bankCardRecordDO = bankCardRecordDOMapper.selectByPrimaryKey(bankCardRecordId.intValue());
             Integer loanTime = loanFinancialPlanDO.getLoanTime();// 贷款期数
             Date firstRepaymentDate = bankCardRecordDO.getFirstRepaymentDate();//首月还款日
-            //插入客户还款计划
-            insertRepayPlan(loanOrderDO.getId(),firstRepaymentDate,loanTime,eachMonthRepay);
 
+            //插入客户还款计划
+            insertRepayPlan(loanOrderDO.getId(), firstRepaymentDate, loanTime, eachMonthRepay);
         }
     }
 
     /**
-     *  插入客户还款计划
+     * 插入客户还款计划
+     *
      * @param orderId
      * @param firstRepaymentDate
      * @param loanTime
      */
-    private void insertRepayPlan(Long orderId, Date firstRepaymentDate, Integer loanTime,BigDecimal eachMonthRepay) {
+    private void insertRepayPlan(Long orderId, Date firstRepaymentDate, Integer loanTime, BigDecimal eachMonthRepay) {
 
-        for(int i=0;i<loanTime;i++){
+        for (int i = 0; i < loanTime; i++) {
             LoanRepayPlanDO loanRepayPlanDO = new LoanRepayPlanDO();
             loanRepayPlanDO.setOrderId(orderId);
             loanRepayPlanDO.setIsOverdue(K_YORN_NO);
             loanRepayPlanDO.setPayableAmount(eachMonthRepay);
             loanRepayPlanDO.setStatus(TASK_PROCESS_DONE);
-            if(0==i){
+            if (0 == i) {
                 loanRepayPlanDO.setRepayDate(firstRepaymentDate);
-            }else{
+            } else {
                 Calendar rightNow = Calendar.getInstance();
                 rightNow.setTime(new Date());
                 rightNow.add(Calendar.MONTH, i);// 日期加
@@ -255,22 +257,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param taskDefinitionKey
      * @param loanProcessDO
-     * @param retry             重试次数
+     * @param retryNum          重试次数
      */
-    private void asyncPackZipFile(String taskDefinitionKey, LoanProcessDO loanProcessDO, Integer retry) {
+    private void asyncPackZipFile(String taskDefinitionKey, LoanProcessDO loanProcessDO, Integer retryNum) {
 
-        if (null == retry) {
-            retry = 0;
+        if (null == retryNum) {
+            retryNum = 0;
         }
 
         if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(loanProcessDO.getTelephoneVerify())) {
 
-            if (retry < 0) {
+            if (retryNum < 0) {
                 return;
             }
-            retry--;
+            retryNum--;
 
-            int finalRetry = retry;
+            int finalRetryNum = retryNum;
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -285,7 +287,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     } finally {
                         // 失败，重试
                         if (null == resultBean || !resultBean.getSuccess()) {
-                            asyncPackZipFile(taskDefinitionKey, loanProcessDO, finalRetry);
+                            asyncPackZipFile(taskDefinitionKey, loanProcessDO, finalRetryNum);
                         }
                     }
                 }
@@ -1273,6 +1275,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanProcessDO.setFinancialScheme(taskProcessStatus);
         } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setBankLendRecord(taskProcessStatus);
+        } else if (CUSTOMER_REPAY_PLAN.getCode().equals(taskDefinitionKey)) {
+            loanProcessDO.setCustomerRepayPlan(taskProcessStatus);
         }
     }
 

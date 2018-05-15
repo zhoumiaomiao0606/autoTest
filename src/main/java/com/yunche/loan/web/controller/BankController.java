@@ -1,6 +1,13 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BankDO;
+import com.yunche.loan.domain.param.BankParam;
+import com.yunche.loan.domain.query.BankQuery;
+import com.yunche.loan.domain.vo.BankVO;
+import com.yunche.loan.service.BankService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +23,10 @@ import static com.yunche.loan.config.constant.BankConst.BANK_LIST;
 @RequestMapping("/api/v1/bank")
 public class BankController {
 
+    @Autowired
+    private BankService bankService;
+
+
     /**
      * 获取银行列表
      *
@@ -26,16 +37,33 @@ public class BankController {
         return ResultBean.ofSuccess(BANK_LIST);
     }
 
+    @GetMapping(value = "/list_")
+    public ResultBean<List<String>> listAll_() {
+        return bankService.listAll();
+    }
 
-//    @GetMapping(value = "/list")
-//    public ResultBean<List<BaseVO>> listAll2() {
-//        List<BaseVO> baseVOS = Lists.newArrayList();
-//        BANK_MAP.forEach((k, v) -> {
-//            BaseVO baseVO = new BaseVO();
-//            baseVO.setId(k);
-//            baseVO.setName(v);
-//            baseVOS.add(baseVO);
-//        });
-//        return ResultBean.ofSuccess(baseVOS);
-//    }
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> create(@RequestBody BankParam bankParam) {
+        return bankService.create(bankParam);
+    }
+
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> update(@RequestBody BankParam bankParam) {
+        return bankService.update(bankParam);
+    }
+
+    @GetMapping(value = "/delete")
+    public ResultBean<Void> delete(@RequestParam("id") Long id) {
+        return bankService.delete(id);
+    }
+
+    @GetMapping("/getById")
+    public ResultBean<BankVO> getById(@RequestParam("id") Long id) {
+        return bankService.getById(id);
+    }
+
+    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<BankDO>> query(@RequestBody BankQuery query) {
+        return bankService.query(query);
+    }
 }

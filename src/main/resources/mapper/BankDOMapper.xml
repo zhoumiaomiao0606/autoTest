@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.BankDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode"/>
+        <result column="contact" jdbcType="VARCHAR" property="contact"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
+        <result column="office_phone" jdbcType="VARCHAR" property="officePhone"/>
+        <result column="fax" jdbcType="VARCHAR" property="fax"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="need_video_face" jdbcType="TINYINT" property="needVideoFace"/>
+        <result column="video_face_machine" jdbcType="TINYINT" property="videoFaceMachine"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, name, mnemonic_code, contact, tel, office_phone, fax, address, need_video_face,
+        video_face_machine, status, gmt_create, gmt_modify
+    </sql>
+
+    <sql id="Base_Query_List">
+        <if test="name != null and name != '' ">
+            AND name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="mnemonicCode != null and mnemonicCode != '' ">
+            AND mnemonic_code LIKE CONCAT('%',#{mnemonicCode},'%')
+        </if>
+        <if test="contact != null and contact != '' ">
+            AND contact LIKE CONCAT('%',#{contact},'%')
+        </if>
+        <if test="tel != null and tel != '' ">
+            AND tel = #{tel}
+        </if>
+        <if test="officePhone != null and officePhone != '' ">
+            AND office_phone = #{officePhone}
+        </if>
+        <if test="fax != null and fax != '' ">
+            AND fax = #{fax}
+        </if>
+        <if test="address != null and address != '' ">
+            AND address = #{address}
+        </if>
+        <if test="need_video_face != null">
+            AND need_video_face = #{needVideoFace}
+        </if>
+        <if test="video_face_machine != null">
+            AND video_face_machine = #{videoFaceMachine}
+        </if>
+        <if test="gmtCreateStart != null">
+            <![CDATA[ AND gmt_create >= #{gmtCreateStart} ]]>
+        </if>
+        <if test="gmtCreateEnd != null">
+            <![CDATA[ AND gmt_create <= #{gmtCreateEnd} ]]>
+        </if>
+        <if test="gmtModifyStart != null">
+            <![CDATA[ AND gmt_modify >= #{gmtModifyStart} ]]>
+        </if>
+        <if test="gmtModifyEnd != null">
+            <![CDATA[ AND gmt_modify <= #{gmtModifyEnd} ]]>
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </sql>
+
+    <!--  count -->
+    <select id="count" parameterType="com.yunche.loan.domain.query.BankQuery"
+            resultType="java.lang.Integer">
+        select COUNT(*)
+        from bank
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+    </select>
+
+    <!-- query -->
+    <select id="query" parameterType="com.yunche.loan.domain.query.BankQuery" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bank
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+    </select>
+
+    <!--listAll-->
+    <select id="listAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bank
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bank
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from bank
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into bank (id, name, mnemonic_code,
+        contact, tel, office_phone,
+        fax, address, need_video_face,
+        video_face_machine, status, gmt_create,
+        gmt_modify)
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{mnemonicCode,jdbcType=VARCHAR},
+        #{contact,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{officePhone,jdbcType=VARCHAR},
+        #{fax,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{needVideoFace,jdbcType=TINYINT},
+        #{videoFaceMachine,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into bank
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="mnemonicCode != null">
+                mnemonic_code,
+            </if>
+            <if test="contact != null">
+                contact,
+            </if>
+            <if test="tel != null">
+                tel,
+            </if>
+            <if test="officePhone != null">
+                office_phone,
+            </if>
+            <if test="fax != null">
+                fax,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="needVideoFace != null">
+                need_video_face,
+            </if>
+            <if test="videoFaceMachine != null">
+                video_face_machine,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="mnemonicCode != null">
+                #{mnemonicCode,jdbcType=VARCHAR},
+            </if>
+            <if test="contact != null">
+                #{contact,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null">
+                #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="officePhone != null">
+                #{officePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="fax != null">
+                #{fax,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="needVideoFace != null">
+                #{needVideoFace,jdbcType=TINYINT},
+            </if>
+            <if test="videoFaceMachine != null">
+                #{videoFaceMachine,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankDO">
+        update bank
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="mnemonicCode != null">
+                mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+            </if>
+            <if test="contact != null">
+                contact = #{contact,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null">
+                tel = #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="officePhone != null">
+                office_phone = #{officePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="fax != null">
+                fax = #{fax,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="needVideoFace != null">
+                need_video_face = #{needVideoFace,jdbcType=TINYINT},
+            </if>
+            <if test="videoFaceMachine != null">
+                video_face_machine = #{videoFaceMachine,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankDO">
+        update bank
+        set name = #{name,jdbcType=VARCHAR},
+        mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+        contact = #{contact,jdbcType=VARCHAR},
+        tel = #{tel,jdbcType=VARCHAR},
+        office_phone = #{officePhone,jdbcType=VARCHAR},
+        fax = #{fax,jdbcType=VARCHAR},
+        address = #{address,jdbcType=VARCHAR},
+        need_video_face = #{needVideoFace,jdbcType=TINYINT},
+        video_face_machine = #{videoFaceMachine,jdbcType=TINYINT},
+        status = #{status,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

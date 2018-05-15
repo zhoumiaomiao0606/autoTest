@@ -27,6 +27,8 @@ public enum LoanProcessEnum {
     REFUND_APPLY("usertask_refund_apply", "退款申请"),
     FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW("usertask_financial_scheme_modify_apply_review", "金融方案修改申请审核"),
     REFUND_APPLY_REVIEW("usertask_refund_apply_review", "退款申请审核"),
+    CUSTOMER_REPAY_PLAN_RECORD("usertask_customer_repay_plan_record", "银行还款计划记录"),
+    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
 
     FINANCIAL_SCHEME("servicetask_financial_scheme", "金融方案"),
 
@@ -45,9 +47,7 @@ public enum LoanProcessEnum {
     LOAN_REVIEW("usertask_loan_review", "放款审批"),
     REMIT_REVIEW("usertask_remit_review", "打款确认"),
     BANK_LEND_RECORD("usertask_bank_lend_record", "银行放款记录"),
-    CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划"),
-    CUSTOMER_REPAY_PLAN_RECORD("usertask_customer_repay_plan_record", "银行还款计划记录"),
-    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台");
+    CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划");
 
 
     private String code;

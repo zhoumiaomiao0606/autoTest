@@ -11,6 +11,14 @@ import java.util.Map;
  * @date 2018/3/8
  */
 public class BankConst {
+    /**
+     * 银行问卷
+     */
+    public static final Byte QUESTION_BANK = 1;
+    /**
+     * 机器问卷
+     */
+    public static final Byte QUESTION_MACHINE = 2;
 
     public static final Map<Long, String> BANK_MAP = Maps.newHashMap();
 
