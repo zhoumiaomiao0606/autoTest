@@ -95,8 +95,8 @@
         from bank_repay_record
         where
             bank_repay_imp_record_id=#{bankRepayImpRecordId}
-            <if test="userName !=null">
-                AND user_name=#{userName}
+            <if test="userName != null and userName != '' ">
+                AND user_name LIKE CONCAT('%',#{userName},'%')
             </if>
             <if test="idCard != null">
                 AND id_card=#{idCard}

@@ -13,6 +13,7 @@ import com.yunche.loan.domain.param.BankRepayParam;
 import com.yunche.loan.domain.vo.BankRepayRecordVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankRepayRecordService;
+import com.yunche.loan.service.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +62,9 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 
     @Autowired
     BankRepayRecordService bankRepayRecordService;
+
+    @Autowired
+    CollectionService collectionService;
     @Override
     public ResultBean query() {
 //        //查询客户详细信息
@@ -98,6 +102,8 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
         adjustBankRepayPlanRecord(list);
         //更新催收记录
         adjustUrgeRecord(list);
+        //催收自动分配
+        collectionService.autoDistribution();
         return ResultBean.ofSuccess("导入成功");
     }
 
