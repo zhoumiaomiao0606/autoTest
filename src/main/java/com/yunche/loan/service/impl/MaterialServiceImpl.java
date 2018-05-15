@@ -58,7 +58,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     private static final Set<String> URL_FILTER_SUFFIX = Sets.newHashSet("rar", "mp4", "mov", "avi", "m4v", "3gp");
 
-    private Set<String> NAME_ENTRY =  Sets.newConcurrentHashSet();
+
 
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -337,7 +337,7 @@ public class MaterialServiceImpl implements MaterialService {
         FileInputStream fis = null;
         BufferedOutputStream out = null;
         File zipFile = null;
-
+        Set<String> NAME_ENTRY =  Sets.newHashSet();
 
         try {
 
@@ -417,13 +417,13 @@ public class MaterialServiceImpl implements MaterialService {
                     if (taskDefinitionKey != null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode()) || taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))) {
                         if (t == ID_CARD_FRONT.getType() || t == ID_CARD_BACK.getType() || t == AUTH_BOOK.getType() || t == AUTH_BOOK_SIGN_PHOTO.getType()) {
                             if (customerId != null) {
-                                if(preCheck(url.split("/")[url.split("/").length - 1])){
+                                if(preCheck(NAME_ENTRY,url.split("/")[url.split("/").length - 1])){
                                     zos.putNextEntry(new ZipEntry(url.split("/")[url.split("/").length - 1]));
                                 }else{
                                     continue;
                                 }
                             } else {
-                                if(preCheck(typeFile.getCustTypeName() + "/" + url.split("/")[url.split("/").length - 1])){
+                                if(preCheck(NAME_ENTRY,typeFile.getCustTypeName() + "/" + url.split("/")[url.split("/").length - 1])){
                                     zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
                                 }else{
                                     continue;
@@ -434,7 +434,7 @@ public class MaterialServiceImpl implements MaterialService {
                             continue;
                         }
                     } else {
-                        if(preCheck(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])){
+                        if(preCheck(NAME_ENTRY,typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])){
                             zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
                         }else{
                             continue;
@@ -507,7 +507,7 @@ public class MaterialServiceImpl implements MaterialService {
         return null;
     }
 
-    private  boolean preCheck(String  pathFileName ){
+    private  boolean preCheck(Set NAME_ENTRY ,String  pathFileName ){
         if (! NAME_ENTRY.add(pathFileName)) {
              return false;
         }else{
