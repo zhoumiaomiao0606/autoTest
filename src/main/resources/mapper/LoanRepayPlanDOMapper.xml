@@ -10,10 +10,11 @@
     <result column="overdue_amount" jdbcType="DECIMAL" property="overdueAmount" />
     <result column="check_date" jdbcType="TIMESTAMP" property="checkDate" />
     <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="nper" jdbcType="INTEGER" property="nper" />
   </resultMap>
   <sql id="Base_Column_List">
     order_id, repay_date, payable_amount, actual_repay_amount, is_overdue, overdue_amount, 
-    check_date, status
+    check_date, status, nper
   </sql>
   <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDOKey" resultMap="BaseResultMap">
     select 
@@ -30,10 +31,12 @@
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
     insert into loan_repay_plan (order_id, repay_date, payable_amount, 
       actual_repay_amount, is_overdue, overdue_amount, 
-      check_date, status)
+      check_date, status, nper
+      )
     values (#{orderId,jdbcType=BIGINT}, #{repayDate,jdbcType=TIMESTAMP}, #{payableAmount,jdbcType=DECIMAL}, 
       #{actualRepayAmount,jdbcType=DECIMAL}, #{isOverdue,jdbcType=TINYINT}, #{overdueAmount,jdbcType=DECIMAL}, 
-      #{checkDate,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT})
+      #{checkDate,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{nper,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
     insert into loan_repay_plan
@@ -62,6 +65,9 @@
       <if test="status != null">
         status,
       </if>
+      <if test="nper != null">
+        nper,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="orderId != null">
@@ -88,6 +94,9 @@
       <if test="status != null">
         #{status,jdbcType=TINYINT},
       </if>
+      <if test="nper != null">
+        #{nper,jdbcType=INTEGER},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
@@ -111,6 +120,9 @@
       <if test="status != null">
         status = #{status,jdbcType=TINYINT},
       </if>
+      <if test="nper != null">
+        nper = #{nper,jdbcType=INTEGER},
+      </if>
     </set>
     where order_id = #{orderId,jdbcType=BIGINT}
       and repay_date = #{repayDate,jdbcType=TIMESTAMP}
@@ -122,7 +134,8 @@
       is_overdue = #{isOverdue,jdbcType=TINYINT},
       overdue_amount = #{overdueAmount,jdbcType=DECIMAL},
       check_date = #{checkDate,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=TINYINT}
+      status = #{status,jdbcType=TINYINT},
+      nper = #{nper,jdbcType=INTEGER}
     where order_id = #{orderId,jdbcType=BIGINT}
       and repay_date = #{repayDate,jdbcType=TIMESTAMP}
   </update>

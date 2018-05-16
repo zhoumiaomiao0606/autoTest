@@ -238,6 +238,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanRepayPlanDO.setIsOverdue(K_YORN_NO);
             loanRepayPlanDO.setPayableAmount(eachMonthRepay);
             loanRepayPlanDO.setStatus(TASK_PROCESS_DONE);
+            loanRepayPlanDO.setNper(i+1);
             if (0 == i) {
                 loanRepayPlanDO.setRepayDate(firstRepaymentDate);
             } else {

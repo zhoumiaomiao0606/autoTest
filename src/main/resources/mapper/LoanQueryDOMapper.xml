@@ -824,7 +824,7 @@
     <!-- 还款计划-->
     <select id="selectUniversalLoanRepaymentPlan" resultType="com.yunche.loan.domain.vo.UniversalLoanRepaymentPlan">
             select
-                @row:=@row+1                                        AS repay_period,
+                nper                                                AS repay_period,
                 repay.order_id                                      AS repay_order_id,
                 DATE_FORMAT(repay.repay_date,'%Y-%m-%d')            AS repay_date,
                 repay.payable_amount                                AS repay_payable_amount,
@@ -832,7 +832,7 @@
                 repay.is_overdue                                    AS repay_is_overdue,
                 repay.overdue_amount                                AS repay_overdue_amount,
                 DATE_FORMAT(repay.check_date,'%Y-%m-%d')            AS repay_check_date
-            from loan_repay_plan repay,(select @row:=0) r where repay.order_id = #{orderId,jdbcType=BIGINT} order by repay.repay_date asc
+            from loan_repay_plan repay where repay.order_id = #{orderId,jdbcType=BIGINT} order by repay.repay_date asc
 
     </select>
 
