@@ -10,6 +10,7 @@ import java.util.Set;
 
 @Mapper
 public interface LoanQueryDOMapper {
+    boolean checkCollectionUserRole(Long loginUserId);
 
     List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId,@Param("name")  String name);
 

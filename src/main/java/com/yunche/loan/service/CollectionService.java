@@ -21,4 +21,6 @@ public interface CollectionService {
     void autoDistribution();
 
     void manualDistribution(List<ManualDistributionParam> params);
+
+    boolean checkCollectionUserRole();
 }

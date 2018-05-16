@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.util.BeanPlasticityUtills;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BankUrgeRecordDO;
 import com.yunche.loan.domain.entity.CollectionRecordDO;
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
@@ -120,5 +121,10 @@ public class CollectionServiceImpl implements CollectionService {
                 bankUrgeRecordDOMapper.updateByPrimaryKeySelective(bankUrgeRecordDO);
             }
         }
+    }
+
+    @Override
+    public boolean checkCollectionUserRole() {
+        return loanQueryDOMapper.checkCollectionUserRole(SessionUtils.getLoginUser().getId());
     }
 }

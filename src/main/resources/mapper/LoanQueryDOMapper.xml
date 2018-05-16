@@ -104,6 +104,14 @@
 
   </select>
 
+    <select id="checkCollectionUserRole" resultType="java.lang.Boolean" parameterType="java.lang.Long" >
+        <![CDATA[
+        select max(t.flag) AS flag from
+        (
+        select case when ug.name = '电话催收组' then 1 else 0  end AS flag from employee_rela_user_group eg left join user_group ug  on eg.user_group_id = ug.id where eg.employee_id = 1
+        ) t  ]]>
+    </select>
+
     <!--======================================通用=========================================================-->
     <select id="selectUniversalModifyCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
         select

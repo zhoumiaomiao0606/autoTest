@@ -50,9 +50,8 @@ public class CollectionController {
         return ResultBean.ofSuccess(null,"保存成功");
     }
 
-    @PostMapping(value = "/manualDistribution", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> manualDistribution(@RequestBody @Validated ManualDistributionBaseParam param) {
-        collectionService.manualDistribution(param.getManual_distribution_list());
-        return ResultBean.ofSuccess(null,"保存成功");
+    @GetMapping(value = "/checkCollectionUserRole")
+    public ResultBean checkCollectionUserRole() {
+        return ResultBean.ofSuccess(collectionService.checkCollectionUserRole());
     }
 }
