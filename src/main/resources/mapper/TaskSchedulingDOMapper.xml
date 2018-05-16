@@ -1082,7 +1082,9 @@
              SELECT
                       jorder.process_inst_id                                                                       AS processId,
                       ('usertask_collection_workbench')                                                            AS taskKey,
-                      DATE_FORMAT(,'%Y-%m-%d %H:%i:%S')                                                            AS createScheduleDate,
+                      DATE_FORMAT(
+                      (select collection_date from collection_record where order_id = jorder.id order by collection_date,gmt_create desc limit 1)
+                                  ,'%Y-%m-%d %H:%i:%S')                                                            AS createScheduleDate,
                       NULL                                                                                         AS taskDescription,
                       jorder.id                                                                                    AS orderId,
                       jp.name                                                                                      AS partner,
@@ -1109,7 +1111,7 @@
                       case when lp.order_status = 1 and  lp.loan_apply = 3  and
                       (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
                       then false else true end                                                                     AS canUpdateLoanApply
-                      from (select * from bank_urge_record where status = 2) urge
+                      from (select * from bank_urge_record where urge_status = 2) urge
                       INNER JOIN loan_order jorder     ON jorder.id              = urge.order_id
                       LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
                       LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
@@ -1121,7 +1123,7 @@
                        having filtration = 2
                        AND
                         case when ${collectionLevel} = 7 then true
-                             when ${collectionLevel} = 6 then tab.sendee = ${employeeId}
+                             when ${collectionLevel} = 6 then sendee = ${employeeId}
                         else true end
             ) 
             task
