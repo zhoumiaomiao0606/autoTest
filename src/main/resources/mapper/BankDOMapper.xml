@@ -85,6 +85,8 @@
         <where>
             <include refid="Base_Query_List"/>
         </where>
+        ORDER BY id
+        LIMIT #{startRow}, #{pageSize}
     </select>
 
     <!--listAll-->

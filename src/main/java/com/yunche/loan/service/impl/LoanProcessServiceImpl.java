@@ -197,7 +197,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 //        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
 
         // 生成客户还款计划
-        createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO);
+        createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO.getProcessInstId());
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
@@ -206,9 +206,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 生成客户还款计划
      *
      * @param taskDefinitionKey
+     * @param loanProcessDO
+     * @param processInstId
      */
-    private void createRepayPlan(String taskDefinitionKey, LoanProcessDO loanProcessDO) {
+    private void createRepayPlan(String taskDefinitionKey, LoanProcessDO loanProcessDO, String processInstId) {
+
         if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(loanProcessDO.getTelephoneVerify())) {
+
+            // AUTO_PASS[客户还款计划]
+            autoCompleteTask(processInstId, loanProcessDO.getOrderId(), CUSTOMER_REPAY_PLAN.getCode());
+
             //贷款期数
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanProcessDO.getOrderId(), null);
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
@@ -216,9 +223,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             BigDecimal eachMonthRepay = loanFinancialPlanDO.getEachMonthRepay();
             BankCardRecordDO bankCardRecordDO = bankCardRecordDOMapper.selectByPrimaryKey(bankCardRecordId.intValue());
             Integer loanTime = loanFinancialPlanDO.getLoanTime();// 贷款期数
-            Date firstRepaymentDate = bankCardRecordDO.getFirstRepaymentDate();//首月还款日
+            Date firstRepaymentDate = bankCardRecordDO.getFirstRepaymentDate();// 首月还款日
 
-            //插入客户还款计划
+            // 插入客户还款计划
             insertRepayPlan(loanOrderDO.getId(), firstRepaymentDate, loanTime, eachMonthRepay);
         }
     }

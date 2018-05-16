@@ -1,7 +1,6 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
-import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.mapper.BankDOMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -13,8 +12,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -32,12 +31,6 @@ public class BankCache {
     private static final Logger logger = LoggerFactory.getLogger(BankCache.class);
 
     private static final String BANK_NAME_ALL_CACHE_KEY = "all:bank:name";
-
-    private static final String CAR_BRAND_ALL_CACHE_KEY = "all:cache:car:brand";
-
-    private static final String CAR_MODEL_ALL_CACHE_KEY = "all:cache:car:model";
-
-    private static final String CAR_DETAIL_ALL_CACHE_KEY = "all:cache:car:detail";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -69,6 +62,7 @@ public class BankCache {
         return Collections.EMPTY_LIST;
     }
 
+    @PostConstruct
     public void refresh() {
         refreshBankName();
     }
