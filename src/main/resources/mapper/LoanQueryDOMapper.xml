@@ -108,7 +108,10 @@
         <![CDATA[
         select max(t.flag) AS flag from
         (
-        select case when ug.name = '电话催收组' then 1 else 0  end AS flag from employee_rela_user_group eg left join user_group ug  on eg.user_group_id = ug.id where eg.employee_id = 1
+        select case
+                  when ug.level = 3 then 1
+                  when ug.name = '电话催收组' then 1
+                else 0  end AS flag from employee_rela_user_group eg left join user_group ug  on eg.user_group_id = ug.id where eg.employee_id = 1
         ) t  ]]>
     </select>
 

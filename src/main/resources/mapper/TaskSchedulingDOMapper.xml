@@ -710,7 +710,9 @@
                         null                                                                 AS supplementTypeText,
                         null                                                                 AS his_id,
                         null                                                                 AS refund_id,
-                        case when lp.order_status = 1 and  lp.loan_apply = 3  and
+                        null                                                                 AS sendee,
+
+             case when lp.order_status = 1 and  lp.loan_apply = 3  and
                         (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
                         then false else true end                                             AS canUpdateLoanApply
                               from
@@ -816,6 +818,7 @@
                         useSupplementTypeTxt(supplement.type)                                                        AS supplementTypeText,
                         null                                                                                         AS his_id,
                         null                                                                                         AS refund_id,
+                        null                                                                                         AS sendee,
                         case when lp.order_status = 1 and  lp.loan_apply = 3  and
                         (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
                         then false else true end                                                                     AS canUpdateLoanApply
@@ -915,6 +918,7 @@
                         null                                                                                            AS supplementTypeText,
                         his.id                                                                                          AS his_id,
                         null                                                                                            AS refund_id,
+                        null                                                                                            AS sendee,
                         case when lp.order_status = 1 and  lp.loan_apply = 3  and
                         (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
                         then false else true end                                                                        AS canUpdateLoanApply
@@ -928,7 +932,7 @@
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                      having filtration = 2 and
-                           case       when 'usertask_financial_scheme_modify_apply_review' = 'usertask_financial_scheme_modify_apply_review' then  1=1
+                           case       when taskKey = 'usertask_financial_scheme_modify_apply_review' then  1=1
                                       when
                                       (3) in
                                        (
@@ -1013,6 +1017,7 @@
                         null                                                                                         AS supplementTypeText,
                         null                                                                                         AS his_id,
                         refund.id                                                                                    AS refund_id,
+                        null                                                                                         AS sendee,
                         case when lp.order_status = 1 and  lp.loan_apply = 3  and
                         (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
                         then false else true end                                                                     AS canUpdateLoanApply
@@ -1026,7 +1031,7 @@
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                      having filtration = 2 and
-                           case       when 'usertask_refund_apply_review' = 'usertask_refund_apply_review' then  1=1
+                           case       when taskKey = 'usertask_refund_apply_review' then  1=1
                                       when
                                       (3) in
                                        (
@@ -1072,6 +1077,52 @@
                                        )
                                     ) b on o.loan_base_info_id = b.id)
                               else 1=2 end
+             union all
+
+             SELECT
+                      jorder.process_inst_id                                                                       AS processId,
+                      ('usertask_collection_workbench')                                                            AS taskKey,
+                      DATE_FORMAT(,'%Y-%m-%d %H:%i:%S')                                                            AS createScheduleDate,
+                      NULL                                                                                         AS taskDescription,
+                      jorder.id                                                                                    AS orderId,
+                      jp.name                                                                                      AS partner,
+                      je.name                                                                                      AS salesman,
+                      jb.bank                                                                                      AS bank,
+                      jc.name                                                                                      AS name,
+                      jc.id_card                                                                                   AS idCard,
+                      jc.mobile                                                                                    AS mobile,
+                      ji.car_type                                                                                  AS carType,
+                      useGetCarName(ji.car_detail_id)                                                              AS carName,
+                      jf.down_payment_ratio                                                                        AS downPaymentRatio,
+                      jf.loan_time                                                                                 AS loanTime,
+                      jf.loan_amount                                                                               AS loanAmount,
+                      ('待办催收')                                                                                  AS taskStatusExplanation,
+                      jb.partner_id                                                                                AS partnerId,
+                      jb.salesman_id                                                                               AS salesmanId,
+                      (2)                                                                                          AS filtration,
+                      null                                                                                         AS supplementOrderId,
+                      null                                                                                         AS supplementType,
+                      null                                                                                         AS supplementTypeText,
+                      null                                                                                         AS his_id,
+                      null                                                                                         AS refund_id,
+                      urge.sendee                                                                                  AS sendee,
+                      case when lp.order_status = 1 and  lp.loan_apply = 3  and
+                      (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
+                      then false else true end                                                                     AS canUpdateLoanApply
+                      from (select * from bank_urge_record where status = 2) urge
+                      INNER JOIN loan_order jorder     ON jorder.id              = urge.order_id
+                      LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
+                      LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
+                      LEFT JOIN employee       je      ON je.id                  = jb.salesman_id
+                      LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
+                      LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
+                      LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
+                      INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
+                       having filtration = 2
+                       AND
+                        case when ${collectionLevel} = 7 then true
+                             when ${collectionLevel} = 6 then tab.sendee = ${employeeId}
+                        else true end
             ) 
             task
             <if test="key != null">
