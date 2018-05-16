@@ -343,10 +343,13 @@
             vehicle.apply_license_plate_area                                                        AS vehicle_apply_license_plate_area,
             bank_credit.gmt_create                                                                  AS bank_credit_gmt_create,
             society_credit.gmt_create                                                               AS society_credit_gmt_create,
+            financial.id                                                                            AS financial_id,
             financial.bank                                                                          AS financial_bank,
             financial.loan_time                                                                     AS financial_loan_time,
             financial.appraisal                                                                     AS financial_appraisal,
             financial.down_payment_ratio                                                            AS financial_down_payment_ratio,
+            financial.padding_company                                                               AS financial_padding_company,
+            financial.play_company                                                                  AS financial_play_company,
             format(useGetBankRate(financial.financial_product_id,financial.loan_time),3)
                                                                                                     AS financial_bank_rate,
             (100-financial.down_payment_ratio)                                                      AS financial_loan_ratio,

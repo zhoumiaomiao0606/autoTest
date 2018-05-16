@@ -1,21 +1,19 @@
 package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.google.common.base.Preconditions;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.VehicleInformationDO;
 import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
-import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.LoanFileDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.VehicleInformationDOMapper;
+import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
+import com.yunche.loan.domain.vo.UniversalCustomerVO;
+import com.yunche.loan.domain.vo.VehicleInformationVO;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.VehicleInformationService;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +41,9 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
 
     @Resource
     private LoanFileDOMapper loanFileDOMapper;
+
+    @Autowired
+    private LoanCarInfoDOMapper loanCarInfoDOMapper;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -72,8 +73,6 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
     public void update(VehicleInformationUpdateParam param) {
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()), VALID_STATUS);
-        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
-
         Long foundationId = loanOrderDO.getVehicleInformationId();//关联ID
         if (foundationId == null) {
             //新增提交

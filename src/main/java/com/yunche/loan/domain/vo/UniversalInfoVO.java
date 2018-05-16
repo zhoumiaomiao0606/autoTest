@@ -53,6 +53,7 @@ public class UniversalInfoVO {
     private String vehicle_apply_license_plate_area;
     private String bank_credit_gmt_create;
     private String society_credit_gmt_create;
+    private Long   financial_id;
     private String financial_bank;
     private String financial_loan_time;
     private String financial_appraisal;
@@ -73,6 +74,8 @@ public class UniversalInfoVO {
     private String financial_each_month_repay;
     private String financial_total_repayment_amount;
     private String financial_extra_fee;
+    private String financial_padding_company;
+    private String financial_play_company;
     private String remit_beneficiary_bank;
     private String remit_beneficiary_account;
     private String remit_beneficiary_account_number;

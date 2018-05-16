@@ -374,7 +374,6 @@ public class MaterialServiceImpl implements MaterialService {
             CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
             // 用于将数据压缩成Zip文件格式
             zos = new ZipOutputStream(csum);
-
             for (MaterialDownloadParam typeFile : downloadParams) {
                 // 获取Object，返回结果为OSSObject对象
                 for (String url : typeFile.getPathList()) {

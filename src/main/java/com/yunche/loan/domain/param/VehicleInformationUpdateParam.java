@@ -3,7 +3,6 @@ package com.yunche.loan.domain.param;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Data
@@ -17,7 +16,7 @@ public class VehicleInformationUpdateParam {
     private String color;
     @NotBlank
     private String qualified_certificate_number;
-    @NotBlank
+//    @NotBlank
     private String register_date;
     @NotBlank
     private String vehicle_identification_number;
