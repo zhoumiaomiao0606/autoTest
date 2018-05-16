@@ -10,6 +10,7 @@ public class UniversalCollectionRecord {
     private String collection_date;
     private String collection_man_id;
     private String collection_man_name;
+    private String collection_customer_name;
     private String collection_is_repayment;
     private String collection_repayment_date;
     private String collection_permit_repayment_date;

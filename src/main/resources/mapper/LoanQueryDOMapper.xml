@@ -847,7 +847,8 @@
 	        collection.order_id 	                                            AS collection_order_id,
 	        DATE_FORMAT(collection.collection_date,'%Y-%m-%d')                  AS collection_date,
 	        collection.collection_man_id			                            AS collection_man_id,
-	        customer.name       	                                            AS collection_man_name,
+	        employee.name			                                            AS collection_man_name,
+	        customer.name       	                                            AS collection_customer_name,
 	        collection.is_repayment					                            AS collection_is_repayment,
 	        DATE_FORMAT(collection.repayment_date,'%Y-%m-%d') 				    AS collection_repayment_date,
 	        DATE_FORMAT(collection.permit_repayment_date,'%Y-%m-%d') 	        AS collection_permit_repayment_date,
@@ -857,6 +858,7 @@
         left join (select @row:=0) r  on 1=1
         left join loan_order orders on orders.id = collection.order_id
         left join loan_customer customer on orders.loan_customer_id = customer.id
+        left join employee employee on employee.id = collection.collection_man_id
         where collection.order_id = #{orderId,jdbcType=BIGINT}
         order by collection_date asc
     </select>
