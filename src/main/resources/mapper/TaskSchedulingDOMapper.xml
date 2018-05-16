@@ -524,7 +524,7 @@
                     AND case when #{taskStatus} = 0 then join_refund.status  != 0                          else join_refund.status                 = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_customer_repay_plan'">
-                    AND case when #{taskStatus} = 0 then join_repayplan.status  != 0                       else join_repayplan.status              = #{taskStatus} end
+                    AND case when #{taskStatus} = 0 then deputy.bank_card_record  != 0                       else deputy.bank_card_record          = #{taskStatus} end
                 </when>
                 <when test="taskDefinitionKey == 'usertask_collection_workbench'">
                     AND case when #{taskStatus} = 0 then join_urgerecord.urge_status != 0                  else join_urgerecord.urge_status        = #{taskStatus} end
