@@ -64,4 +64,8 @@ public class AppLoanFinancialPlanParam {
     private BigDecimal extraFee;
 
     private BigDecimal appraisal;
+
+    private String paddingCompany;//垫资平台
+
+    private String playCompany;//打款平台
 }

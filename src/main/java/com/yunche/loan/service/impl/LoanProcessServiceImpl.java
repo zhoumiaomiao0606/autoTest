@@ -242,7 +242,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 loanRepayPlanDO.setRepayDate(firstRepaymentDate);
             } else {
                 Calendar rightNow = Calendar.getInstance();
-                rightNow.setTime(new Date());
+                rightNow.setTime(firstRepaymentDate);
                 rightNow.add(Calendar.MONTH, i);// 日期加
                 Date repayDate = rightNow.getTime();
                 loanRepayPlanDO.setRepayDate(repayDate);

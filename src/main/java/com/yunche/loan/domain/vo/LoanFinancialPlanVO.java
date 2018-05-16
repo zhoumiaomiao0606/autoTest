@@ -71,4 +71,9 @@ public class LoanFinancialPlanVO {
      * 金融手续费：贷款利息
      */
     private BigDecimal loanInterest;
+
+
+    private String paddingCompany;//垫资平台
+
+    private String playCompany;//打款平台
 }

@@ -24,13 +24,15 @@
         <result column="cash_deposit" property="cashDeposit" jdbcType="DECIMAL" />
         <result column="extra_fee" property="extraFee" jdbcType="DECIMAL" />
         <result column="appraisal" property="appraisal" jdbcType="DECIMAL" />
+        <result column="padding_company" property="paddingCompany" jdbcType="VARCHAR" />
+        <result column="play_company" property="playCompany" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
     id, car_price, financial_product_id, financial_product_name, bank, sign_rate, loan_amount,
     loan_time, down_payment_ratio, down_payment_money, bank_period_principal, bank_fee,
     principal_interest_sum, first_month_repay, each_month_repay, status, gmt_create,
-    gmt_modify, feature, cash_deposit, extra_fee, appraisal
+    gmt_modify, feature, cash_deposit, extra_fee, appraisal,padding_company ,play_company
   </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -114,6 +116,12 @@
             <if test="appraisal != null" >
                 appraisal,
             </if>
+            <if test="paddingCompany != null" >
+                padding_company,
+            </if>
+            <if test="playCompany != null" >
+                play_company,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -181,6 +189,12 @@
             </if>
             <if test="appraisal != null" >
                 #{appraisal,jdbcType=DECIMAL},
+            </if>
+            <if test="paddingCompany != null" >
+                #{paddingCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="playCompany != null" >
+                #{playCompany,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -250,6 +264,12 @@
             </if>
             <if test="appraisal != null" >
                 appraisal = #{appraisal,jdbcType=DECIMAL},
+            </if>
+            <if test="paddingCompany != null" >
+                padding_company = #{paddingCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="playCompany != null" >
+                play_company = #{playCompany,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
