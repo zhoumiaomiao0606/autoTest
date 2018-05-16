@@ -484,7 +484,10 @@
             customer.company_address                                                AS customer_company_address,
             customer.postcode                                                       AS customer_postcode,
             customer.company_phone                                                  AS customer_company_phone,
-            customer.guarantee_type                                                 AS customer_guarantee_type
+            customer.guarantee_type                                                 AS customer_guarantee_type,
+            customer.company_name                                                   AS customer_company_name,
+            customer.identity_address                                               AS customer_identity_address,
+            customer.reserve_mobile                                                 AS customer_reserve_mobile
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join loan_customer customer on main_order.loan_customer_id = customer.principal_cust_id and cust_type !=0
@@ -824,7 +827,7 @@
     <!-- 还款计划-->
     <select id="selectUniversalLoanRepaymentPlan" resultType="com.yunche.loan.domain.vo.UniversalLoanRepaymentPlan">
             select
-                nper                                                AS repay_period,
+                @row:=@row+1                                        AS repay_period,
                 repay.order_id                                      AS repay_order_id,
                 DATE_FORMAT(repay.repay_date,'%Y-%m-%d')            AS repay_date,
                 repay.payable_amount                                AS repay_payable_amount,
@@ -832,7 +835,7 @@
                 repay.is_overdue                                    AS repay_is_overdue,
                 repay.overdue_amount                                AS repay_overdue_amount,
                 DATE_FORMAT(repay.check_date,'%Y-%m-%d')            AS repay_check_date
-            from loan_repay_plan repay where repay.order_id = #{orderId,jdbcType=BIGINT} order by repay.repay_date asc
+            from loan_repay_plan repay,(select @row:=0) r where repay.order_id = #{orderId,jdbcType=BIGINT} order by repay.repay_date asc
 
     </select>
 
