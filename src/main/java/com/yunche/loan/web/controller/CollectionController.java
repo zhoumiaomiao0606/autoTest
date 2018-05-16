@@ -55,4 +55,10 @@ public class CollectionController {
         collectionService.manualDistribution(param.getManual_distribution_list());
         return ResultBean.ofSuccess(null,"保存成功");
     }
+
+
+    @GetMapping(value = "/checkCollectionUserRole")
+    public ResultBean checkCollectionUserRole() {
+        return ResultBean.ofSuccess(collectionService.checkCollectionUserRole());
+    }
 }
