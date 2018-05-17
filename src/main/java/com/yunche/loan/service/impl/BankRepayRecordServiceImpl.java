@@ -126,9 +126,20 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 BigDecimal ableRepay = loanFinancialPlanDO.getEachMonthRepay();//每月还款
                 Double  tmpTimes = Math.ceil(e.getOverdueAmount().divide(ableRepay,10,RoundingMode.HALF_UP).doubleValue());
                 int overdueTimes = tmpTimes.intValue();
-                //0-降序  1-升序
+
+
                  List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), overdueTimes);
-                overdueRepayPlanList.stream().forEach(r->{
+                 if(1==overdueTimes){
+                     int preNum = overdueRepayPlanList.get(0).getNper()-1;//上一期
+                     LoanRepayPlanDO loanRepayPlanDO = bankRepayQueryDOMapper.selectRepayPlanByNper(overdueRepayPlanList.get(0).getOrderId(), preNum);
+                     if(loanRepayPlanDO!=null && K_YORN_YES.equals(loanRepayPlanDO.getIsOverdue())){
+                         loanRepayPlanDO.setOverdueAmount(new BigDecimal(0));
+                         loanRepayPlanDO.setActualRepayAmount(loanRepayPlanDO.getPayableAmount());
+                         loanRepayPlanDO.setIsOverdue(K_YORN_NO);
+                         loanRepayPlanDOMapper.updateByPrimaryKeySelective(loanRepayPlanDO);
+                     }
+                 }
+                 overdueRepayPlanList.stream().forEach(r->{
                     r.setOverdueAmount(r.getPayableAmount());
                     r.setCheckDate(e.getBatchDate());
                     r.setIsOverdue(K_YORN_YES);
