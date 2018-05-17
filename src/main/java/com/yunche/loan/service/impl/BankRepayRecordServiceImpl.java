@@ -126,6 +126,14 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 BigDecimal ableRepay = loanFinancialPlanDO.getEachMonthRepay();//每月还款
                 Double  tmpTimes = Math.ceil(e.getOverdueAmount().divide(ableRepay,10,RoundingMode.HALF_UP).doubleValue());
                 int overdueTimes = tmpTimes.intValue();
+                List<LoanRepayPlanDO> lastRepayPlanLists = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), 1);
+
+                if(lastRepayPlanLists!=null){
+                    LoanRepayPlanDO loanRepayPlanDO = bankRepayQueryDOMapper.selectRepayPlanByNper(e.getOrderId(), lastRepayPlanLists.get(0).getNper() - overdueTimes);
+                    if(loanRepayPlanDO.getIsOverdue().equals(K_YORN_YES)){
+                        overdueTimes++;
+                    }
+                }
 
 
                  List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), overdueTimes);
@@ -143,11 +151,12 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                     r.setOverdueAmount(r.getPayableAmount());
                     r.setCheckDate(e.getBatchDate());
                     r.setIsOverdue(K_YORN_YES);
+                    r.setActualRepayAmount(new BigDecimal(0));
                     loanRepayPlanDOMapper.updateByPrimaryKeySelective(r);
                 });
 
 
-                List<LoanRepayPlanDO> lastRepayPlanLists = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), 1);
+
                 if(!CollectionUtils.isEmpty(lastRepayPlanLists)){
                     Integer nper = lastRepayPlanLists.get(0).getNper();
                     Long lastOrderId = lastRepayPlanLists.get(0).getOrderId();
@@ -158,6 +167,9 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 
                     loanRepayPlanDO.setActualRepayAmount(actual);
                     loanRepayPlanDO.setOverdueAmount(loanRepayPlanDO.getPayableAmount().subtract(loanRepayPlanDO.getActualRepayAmount()));
+                    if(loanRepayPlanDO.getOverdueAmount().doubleValue()<=0){
+                        loanRepayPlanDO.setIsOverdue(K_YORN_NO);
+                    }
                     loanRepayPlanDOMapper.updateByPrimaryKeySelective(loanRepayPlanDO);
                 }
 
