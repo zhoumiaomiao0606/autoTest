@@ -48,13 +48,15 @@
             is_overdue      AS isOverdue,
             overdue_amount  AS overdueAmount,
             check_date      AS checkDate,
-            status          AS status
+            status          AS status,
+            nper            AS nper
         FROM
             loan_repay_plan
         WHERE
             order_id = #{orderId}
             AND TO_DAYS(repay_date) &lt;= TO_DAYS(#{batchDate})
-            ORDER BY repay_date ASC
+            ORDER BY
+            repay_date DESC
         <if test="overdueTimes !=null">
             LIMIT #{overdueTimes}
         </if>
@@ -104,6 +106,27 @@
             <if test="isCustomer !=null">
                 AND is_customer=#{isCustomer}
             </if>
+
+    </select>
+
+    <select id="selectRepayPlanByNper" resultType="com.yunche.loan.domain.entity.LoanRepayPlanDO">
+
+        SELECT
+            order_id             AS orderId,
+            repay_date           AS repayDate,
+            payable_amount       AS payableAmount,
+            actual_repay_amount  AS actualRepayAmount,
+            is_overdue           AS isOverdue,
+            overdue_amount       AS overdueAmount,
+            check_date           AS checkDate,
+            `status`,
+            nper
+        FROM
+            loan_repay_plan
+        WHERE
+            order_id = #{orderId}
+            AND nper = #{nper}
+
 
     </select>
 

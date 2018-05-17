@@ -17,6 +17,7 @@ import com.yunche.loan.service.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -24,7 +25,6 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import static com.yunche.loan.config.constant.BankUrgeConst.URGE_NO;
 import static com.yunche.loan.config.constant.BankUrgeConst.URGE_YES;
@@ -126,7 +126,8 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 BigDecimal ableRepay = loanFinancialPlanDO.getEachMonthRepay();//每月还款
                 Double  tmpTimes = Math.ceil(e.getOverdueAmount().divide(ableRepay,10,RoundingMode.HALF_UP).doubleValue());
                 int overdueTimes = tmpTimes.intValue();
-                List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), overdueTimes);
+                //0-降序  1-升序
+                 List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), overdueTimes);
                 overdueRepayPlanList.stream().forEach(r->{
                     r.setOverdueAmount(r.getPayableAmount());
                     r.setCheckDate(e.getBatchDate());
@@ -134,14 +135,21 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                     loanRepayPlanDOMapper.updateByPrimaryKeySelective(r);
                 });
 
+
                 List<LoanRepayPlanDO> lastRepayPlanLists = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), 1);
-                lastRepayPlanLists.stream().filter(Objects::nonNull).forEach(last->{
-                    //逾期次数 * 应还金额（每期一样） -逾期金额 = 最近一次实际还款金额
-                    BigDecimal actual = last.getPayableAmount().multiply(new BigDecimal(overdueTimes)).subtract(e.getOverdueAmount());
-                    last.setActualRepayAmount(actual);
-                    last.setOverdueAmount(last.getPayableAmount().subtract(last.getActualRepayAmount()));
-                    loanRepayPlanDOMapper.updateByPrimaryKeySelective(last);
-                });
+                if(!CollectionUtils.isEmpty(lastRepayPlanLists)){
+                    Integer nper = lastRepayPlanLists.get(0).getNper();
+                    Long lastOrderId = lastRepayPlanLists.get(0).getOrderId();
+                    int num = nper-overdueTimes+1;
+                    LoanRepayPlanDO loanRepayPlanDO = bankRepayQueryDOMapper.selectRepayPlanByNper(lastOrderId, num);
+                    BigDecimal actual = loanRepayPlanDO
+                            .getPayableAmount().multiply(new BigDecimal(overdueTimes)).subtract(e.getOverdueAmount());
+
+                    loanRepayPlanDO.setActualRepayAmount(actual);
+                    loanRepayPlanDO.setOverdueAmount(loanRepayPlanDO.getPayableAmount().subtract(loanRepayPlanDO.getActualRepayAmount()));
+                    loanRepayPlanDOMapper.updateByPrimaryKeySelective(loanRepayPlanDO);
+                }
+
 
             }else{
                 List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(e.getOrderId(), e.getBatchDate(), null);

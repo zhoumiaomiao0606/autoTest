@@ -28,4 +28,7 @@ public interface BankRepayQueryDOMapper {
                                                        @Param("userName")String userName,
                                                        @Param("idCard") String idCard,
                                                        @Param("isCustomer") Byte isCustomer);
+
+
+    LoanRepayPlanDO selectRepayPlanByNper(@Param("orderId") Long orderId,@Param("nper") Integer nper);
 }
