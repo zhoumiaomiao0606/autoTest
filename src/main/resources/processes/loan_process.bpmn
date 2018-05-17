@@ -214,13 +214,13 @@
     </sequenceFlow>
     <endEvent id="endevent29" name="End"></endEvent>
     <sequenceFlow id="flow174" sourceRef="parallelgateway8" targetRef="endevent29"></sequenceFlow>
-    <userTask id="usertask_customer_repay_plan" name="客户还款计划" activiti:candidateGroups="总经理,培训经理,电催主管,电催专员"></userTask>
+    <userTask id="usertask_customer_repay_plan" name="客户还款计划" activiti:candidateGroups="总经理,培训经理,电催主管,电催专员,电话催收组"></userTask>
     <sequenceFlow id="flow175" name="提交" sourceRef="usertask_bank_card_record" targetRef="usertask_customer_repay_plan">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_info_supplement" name="资料增补" activiti:candidateGroups="总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
-    <userTask id="usertask_customer_repay_plan_record" name="银行还款计划记录" activiti:candidateGroups="总经理,培训经理,电催主管,电催专员"></userTask>
-    <userTask id="usertask_collection_workbench" name="催收工作台" activiti:candidateGroups="总经理,培训经理,电催主管,电催专员"></userTask>
+    <userTask id="usertask_customer_repay_plan_record" name="银行还款计划记录" activiti:candidateGroups="总经理,培训经理,电催主管,电催专员,电话催收组"></userTask>
+    <userTask id="usertask_collection_workbench" name="催收工作台" activiti:candidateGroups="总经理,培训经理,电催主管,电催专员,电话催收组"></userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
