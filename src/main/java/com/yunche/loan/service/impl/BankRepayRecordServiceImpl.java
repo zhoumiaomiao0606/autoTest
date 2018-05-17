@@ -164,7 +164,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 
             }else{
                 List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(e.getOrderId(), e.getBatchDate(), null);
-                overdueRepayPlanList.stream().forEach(noOverdue->{
+                overdueRepayPlanList.stream().filter(noOverdue-> noOverdue.getIsOverdue().equals(K_YORN_NO)).forEach(noOverdue->{
                     noOverdue.setIsOverdue(K_YORN_NO);
                     noOverdue.setActualRepayAmount(noOverdue.getPayableAmount());
                     noOverdue.setCheckDate(e.getBatchDate());

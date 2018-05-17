@@ -83,6 +83,8 @@
         <if test="endDate != null">
             AND TO_DAYS(gmt_create) &lt;= TO_DAYS(#{endDate})
         </if>
+        ORDER BY
+            id DESC
     </select>
     <select id="selectBankRepayRecordDetail" resultType="com.yunche.loan.domain.vo.BankRepayRecordVO">
         select
