@@ -53,7 +53,7 @@
             loan_repay_plan
         WHERE
             order_id = #{orderId}
-            AND UNIX_TIMESTAMP(repay_date) &lt;= UNIX_TIMESTAMP(#{batchDate})
+            AND TO_DAYS(repay_date) &lt;= TO_DAYS(#{batchDate})
             ORDER BY repay_date ASC
         <if test="overdueTimes !=null">
             LIMIT #{overdueTimes}
