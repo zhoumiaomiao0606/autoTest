@@ -685,6 +685,35 @@
          <select id="selectScheduleTaskList" resultType="com.yunche.loan.domain.vo.ScheduleTaskVO" >
 
             select complex.* from
+             (SELECT @employeeId:=(#{employeeId})) t1
+             ,
+             (SELECT @telephoneVerifyLevel:=
+                 (
+                    SELECT
+                    max( t.telephone_verify_level )
+                    FROM
+                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
+                 )
+             ) t2
+             ,
+             (SELECT @collectionLevel:=
+                 (
+                    SELECT
+                    max( t.collection_level )
+                    FROM
+                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
+                 )
+             ) t3
+
+             ,
+             (SELECT @financeLevel:=
+                 (
+                    SELECT
+                    max( t.finance_level )
+                    FROM
+                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
+                 )
+             ) t4,
              (
              select task.*,
                     taskdis.status      as taskDisStatus,
@@ -1166,36 +1195,5 @@
             </if>
             order by task.createScheduleDate asc
          ) complex
-             left join
-                (SELECT @employeeId:=(#{employeeId})) t1 on 1=1
-             left join
-                (SELECT @telephoneVerifyLevel:=
-                     (
-                          SELECT
-                          max( t.telephone_verify_level )
-                          FROM
-                          ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
-                     )
-                ) t2  on 1=1
-
-             left join
-                 (SELECT @collectionLevel:=
-                      (
-                          SELECT
-                          max( t.collection_level )
-                          FROM
-                          ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
-                      )
-                  ) t3  on 1=1
-
-             left join
-                 (SELECT @financeLevel:=
-                      (
-                        SELECT
-                        max( t.finance_level )
-                        FROM
-                        ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
-                      )
-                 ) t4 on 1=1
         </select>
 </mapper>
