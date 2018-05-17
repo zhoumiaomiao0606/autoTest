@@ -149,6 +149,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                     noOverdue.setIsOverdue(K_YORN_NO);
                     noOverdue.setActualRepayAmount(noOverdue.getPayableAmount());
                     noOverdue.setCheckDate(e.getBatchDate());
+                    loanRepayPlanDOMapper.updateByPrimaryKeySelective(noOverdue);
                 });
             }
 
