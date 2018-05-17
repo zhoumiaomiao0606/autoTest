@@ -4,6 +4,11 @@ import lombok.Data;
 
 @Data
 public class ScheduleTaskVO {
+    private String taskDisStatus;
+    private String receiveManId;
+    private String receiveManName;
+    //分配的唯一id
+    private String taskId;
 
     //任务id
     private String processId;

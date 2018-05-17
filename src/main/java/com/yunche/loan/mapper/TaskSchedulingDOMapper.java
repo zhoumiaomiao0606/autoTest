@@ -12,7 +12,8 @@ import java.util.List;
 
 @Mapper
 public interface TaskSchedulingDOMapper {
-    List<ScheduleTaskVO> selectScheduleTaskList(@Param("key") String key,@Param("employeeId") Long employeeId,@Param("telephoneVerifyLevel") Integer telephoneVerifyLevel,@Param("collectionLevel") Integer collectionLevel);
+
+    List<ScheduleTaskVO> selectScheduleTaskList(@Param("key") String key,@Param("employeeId") Long employeeId);
 
     Integer selectTelephoneVerifyLevel(Long loginUserId);
 

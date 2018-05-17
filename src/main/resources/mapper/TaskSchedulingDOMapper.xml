@@ -679,10 +679,21 @@
 
 
 
+
+
+
          <select id="selectScheduleTaskList" resultType="com.yunche.loan.domain.vo.ScheduleTaskVO" >
-            select task.* from
+
+            select complex.* from
+             (
+             select task.*,
+                    taskdis.status      as taskDisStatus,
+                    taskdis.sendee      as receiveManId,
+                    taskdis.sendee_name as receiveManName
+            from
             (
                SELECT
+                        jorder.id                                                            AS taskId,
                         result.PROC_INST_ID_                                                 AS processId,
                         result.TASK_DEF_KEY_                                                 AS taskKey,
                         DATE_FORMAT(result.CREATE_TIME_,'%Y-%m-%d %H:%i:%S')                 AS createScheduleDate,
@@ -703,7 +714,7 @@
                         jb.partner_id                                                        AS  partnerId,
                         jb.salesman_id                                                       AS  salesmanId,
                         case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
-                        case when lp.telephone_verify  &lt; #{telephoneVerifyLevel} and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
+                        case when lp.telephone_verify  &lt; @telephoneVerifyLevel and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
                         else 2 end                                                           AS filtration,
                         null                                                                 AS supplementOrderId,
                         null                                                                 AS supplementType,
@@ -726,7 +737,7 @@
                                           (
                                              SELECT name FROM user_group g
                                                 INNER JOIN
-                                             (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+                                             (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
                                                 ON e.user_group_id = g.id and g.level != 1
                                           )
                                        )
@@ -742,7 +753,7 @@
                                        (
                                           SELECT name FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
                                              ON e.user_group_id = g.id and g.level = 1
                                        )
                                     )
@@ -758,21 +769,21 @@
                                                DISTINCT
                                              case
                                                 when
-                                                    #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
+                                                    @employeeId in (select employee_id from partner_rela_employee)
                                                 then
                                                    case
                                                       when
-                                                          #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+                                                          @employeeId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
                                                       then
-                                                         employee_id
+                                                          employee_id
                                                       else
-                                                       #{employeeId,jdbcType=BIGINT}
+                                                          @employeeId
                                                    end
                                                 else
                                                       null
                                              end AS employee_id
                                              from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  #{employeeId,jdbcType=BIGINT})
+                                             (select partner_id from partner_rela_employee where employee_id =  @employeeId)
                                              having employee_id is not null
                                        )
                                     ) b on o.loan_base_info_id = b.id
@@ -793,6 +804,7 @@
                union all
 
                SELECT
+                        supplement.id                                                                                AS taskId,
                         jorder.process_inst_id                                                                       AS processId,
                         ("usertask_info_supplement")                                                                 AS taskKey,
                         DATE_FORMAT(supplement.start_time,'%Y-%m-%d %H:%i:%S')                                       AS createScheduleDate,
@@ -837,7 +849,7 @@
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
                                              ON e.user_group_id = g.id
                                        )  then 1=1
                                        when
@@ -845,7 +857,7 @@
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
                                              ON e.user_group_id = g.id
                                        )  then
                            processId in (
@@ -858,40 +870,41 @@
                                                DISTINCT
                                              case
                                                 when
-                                                    #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
+                                                  @employeeId in (select employee_id from partner_rela_employee)
                                                 then
                                                    case
                                                       when
-                                                          #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+                                                          @employeeId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
                                                       then
                                                          employee_id
                                                       else
-                                                       #{employeeId,jdbcType=BIGINT}
+                                                          @employeeId
                                                    end
                                                 else
                                                       null
                                              end AS employee_id
                                              from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  #{employeeId,jdbcType=BIGINT})
+                                             (select partner_id from partner_rela_employee where employee_id = @employeeId)
                                              having employee_id is not null
                                        )
                                     ) b on o.loan_base_info_id = b.id)
                               else 1=2 end
-                              
-                              
+
+
               union all
 
                SELECT
+                        his.id                                                                                          AS taskId,
                         jorder.process_inst_id                                                                          AS processId,
-                        case when his.status = 3 then 'usertask_financial_scheme_modify_apply'                                                           
+                        case when his.status = 3 then 'usertask_financial_scheme_modify_apply'
                         when his.status !=1 and his.status !=3 then 'usertask_financial_scheme_modify_apply_review'
                         else null end                                                                                   AS taskKey,
                         DATE_FORMAT(
-                        case when his.status = 3 then 
+                        case when his.status = 3 then
                         (select gmt_create from loan_reject_log where reject_to_task = 'usertask_financial_scheme_modify_apply' order by gmt_create desc limit 1 )
-                        when his.status !=1 and his.status !=3 then 
-                        (select create_time from loan_process_log where task_definition_key = 'usertask_financial_scheme_modify_apply' order by create_time desc limit 1)  
-                        else null  end 
+                        when his.status !=1 and his.status !=3 then
+                        (select create_time from loan_process_log where task_definition_key = 'usertask_financial_scheme_modify_apply' order by create_time desc limit 1)
+                        else null  end
                         ,'%Y-%m-%d %H:%i:%S')                                                                           AS createScheduleDate,
                         NULL                                                                                            AS taskDescription,
                         jorder.id                                                                                       AS orderId,
@@ -906,13 +919,13 @@
                         jf.down_payment_ratio                                                                           AS downPaymentRatio,
                         jf.loan_time                                                                                    AS loanTime,
                         jf.loan_amount                                                                                  AS loanAmount,
-                        case when his.status = 3 then '待办金融方案修改申请'                                                                                    
+                        case when his.status = 3 then '待办金融方案修改申请'
                         when his.status !=1 and his.status !=3  then '待办金融方案修改审核'
                         else null end                                                                                   AS taskStatusExplanation,
                         jb.partner_id                                                                                   AS  partnerId,
                         jb.salesman_id                                                                                  AS  salesmanId,
                         case when his.status = 3 then 2
-                        when his.status !=3 and his.status  &lt; #{telephoneVerifyLevel} and his.status !=1 then 2 else 1 end             AS filtration,
+                        when his.status !=3 and his.status  &lt; @telephoneVerifyLevel and his.status !=1 then 2 else 1 end             AS filtration,
                         null                                                                                            AS supplementOrderId,
                         null                                                                                            AS supplementType,
                         null                                                                                            AS supplementTypeText,
@@ -932,21 +945,23 @@
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                      having filtration = 2 and
-                           case       when taskKey = 'usertask_financial_scheme_modify_apply_review' then  1=1
+                           case
                                       when
                                       (3) in
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
                                              ON e.user_group_id = g.id
                                        )  then 1=1
+                                      when taskKey = 'usertask_financial_scheme_modify_apply_review' then
+                                            case when @telephoneVerifyLevel>1 then 1=1 else 1=2 end
                                        when
                                        (1) in
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
                                              ON e.user_group_id = g.id
                                        )  then
                            processId in (
@@ -959,39 +974,40 @@
                                                DISTINCT
                                              case
                                                 when
-                                                    #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
+                                                    @employeeId in (select employee_id from partner_rela_employee)
                                                 then
                                                    case
                                                       when
-                                                          #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+                                                        @employeeId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
                                                       then
                                                          employee_id
                                                       else
-                                                       #{employeeId,jdbcType=BIGINT}
+                                                         @employeeId
                                                    end
                                                 else
                                                       null
                                              end AS employee_id
                                              from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  #{employeeId,jdbcType=BIGINT})
+                                             (select partner_id from partner_rela_employee where employee_id =  @employeeId)
                                              having employee_id is not null
                                        )
                                     ) b on o.loan_base_info_id = b.id)
                               else 1=2 end
-                              
+
                union all
 
                SELECT
+                        refund.id                                                                                    AS taskId,
                         jorder.process_inst_id                                                                       AS processId,
-                        case when refund.status = 3 then 'usertask_refund_apply'                                                             
+                        case when refund.status = 3 then 'usertask_refund_apply'
                         when refund.status = 2 then 'usertask_refund_apply_review'
-                        else null end                                                                                AS taskKey, 
+                        else null end                                                                                AS taskKey,
                         DATE_FORMAT(
-                        case when refund.status = 3 then 
+                        case when refund.status = 3 then
                         (select gmt_create from loan_reject_log where reject_to_task = 'usertask_refund_apply' order by gmt_create desc limit 1 )
-                        when refund.status = 2 then 
-                        (select create_time from loan_process_log where task_definition_key = 'usertask_refund_apply' order by create_time desc limit 1) 
-                        else null  end 
+                        when refund.status = 2 then
+                        (select create_time from loan_process_log where task_definition_key = 'usertask_refund_apply' order by create_time desc limit 1)
+                        else null  end
                         ,'%Y-%m-%d %H:%i:%S')                                                                        AS createScheduleDate,
                         NULL                                                                                         AS taskDescription,
                         jorder.id                                                                                    AS orderId,
@@ -1006,7 +1022,7 @@
                         jf.down_payment_ratio                                                                        AS downPaymentRatio,
                         jf.loan_time                                                                                 AS loanTime,
                         jf.loan_amount                                                                               AS loanAmount,
-                        case when refund.status = 3 then '待办退款申请'                                                                                  
+                        case when refund.status = 3 then '待办退款申请'
                         when refund.status = 2 then '待办退款申请审核'
                         else null end                                                                                AS taskStatusExplanation,
                         jb.partner_id                                                                                AS  partnerId,
@@ -1031,21 +1047,23 @@
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                      having filtration = 2 and
-                           case       when taskKey = 'usertask_refund_apply_review' then  1=1
+                           case
                                       when
                                       (3) in
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
                                              ON e.user_group_id = g.id
                                        )  then 1=1
+                                      when taskKey = 'usertask_refund_apply_review' then
+                                            case when @financeLevel>1 then 1=1 else 1=2 end
                                        when
                                        (1) in
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
                                              ON e.user_group_id = g.id
                                        )  then
                            processId in (
@@ -1058,21 +1076,21 @@
                                                DISTINCT
                                              case
                                                 when
-                                                    #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
+                                                    @employeeId in (select employee_id from partner_rela_employee)
                                                 then
                                                    case
                                                       when
-                                                          #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+                                                        @employeeId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
                                                       then
                                                          employee_id
                                                       else
-                                                       #{employeeId,jdbcType=BIGINT}
+                                                         @employeeId
                                                    end
                                                 else
                                                       null
                                              end AS employee_id
                                              from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  #{employeeId,jdbcType=BIGINT})
+                                             (select partner_id from partner_rela_employee where employee_id =  @employeeId)
                                              having employee_id is not null
                                        )
                                     ) b on o.loan_base_info_id = b.id)
@@ -1080,6 +1098,7 @@
              union all
 
              SELECT
+                      jorder.id                                                                                    AS taskId,
                       jorder.process_inst_id                                                                       AS processId,
                       ('usertask_collection_workbench')                                                            AS taskKey,
                       DATE_FORMAT(
@@ -1122,14 +1141,61 @@
                       INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                        having filtration = 2
                        AND
-                        case when ${collectionLevel} = 7 then true
-                             when ${collectionLevel} = 6 then sendee = ${employeeId}
-                        else true end
-            ) 
+                        case when @collectionLevel = 7 then true
+                             when @collectionLevel = 6 then sendee = @employeeId
+                        else false end
+            )
             task
+            left join
+            (
+             select main.* from
+             (select task_id,max(get_create) AS get_create from task_distribution GROUP BY task_id) t
+             inner join task_distribution main on main.task_id = t.task_id and main.get_create = t.get_create
+             HAVING main.status = 2
+            )
+            taskdis
+            on task.taskId = taskdis.task_id
+
+            having
+             case when receiveManId is not null then
+              case when receiveManId = @employeeId then 1=1 else 1=2 end
+              else 1=1
+             end
             <if test="key != null">
-                having task.taskKey = #{key,jdbcType=VARCHAR}
+                and task.taskKey = #{key,jdbcType=VARCHAR}
             </if>
             order by task.createScheduleDate asc
+         ) complex
+             left join
+                (SELECT @employeeId:=(#{employeeId})) t1 on 1=1
+             left join
+                (SELECT @telephoneVerifyLevel:=
+                     (
+                          SELECT
+                          max( t.telephone_verify_level )
+                          FROM
+                          ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
+                     )
+                ) t2  on 1=1
+
+             left join
+                 (SELECT @collectionLevel:=
+                      (
+                          SELECT
+                          max( t.collection_level )
+                          FROM
+                          ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
+                      )
+                  ) t3  on 1=1
+
+             left join
+                 (SELECT @financeLevel:=
+                      (
+                        SELECT
+                        max( t.finance_level )
+                        FROM
+                        ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
+                      )
+                 ) t4 on 1=1
         </select>
 </mapper>
