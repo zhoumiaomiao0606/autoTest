@@ -4,9 +4,9 @@
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankRepayRecordDO">
     <id column="order_id" jdbcType="BIGINT" property="orderId" />
     <id column="bank_repay_imp_record_id" jdbcType="BIGINT" property="bankRepayImpRecordId" />
+    <id column="id_card" jdbcType="VARCHAR" property="idCard" />
+    <id column="repay_card" jdbcType="VARCHAR" property="repayCard" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
-    <result column="repay_card" jdbcType="VARCHAR" property="repayCard" />
     <result column="card_balance" jdbcType="DECIMAL" property="cardBalance" />
     <result column="overdue_amount" jdbcType="DECIMAL" property="overdueAmount" />
     <result column="overdue_times" jdbcType="INTEGER" property="overdueTimes" />
@@ -18,7 +18,7 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
-    order_id, bank_repay_imp_record_id, user_name, id_card, repay_card, card_balance, 
+    order_id, bank_repay_imp_record_id, id_card, repay_card, user_name, card_balance, 
     overdue_amount, overdue_times, max_overdue_times, is_customer, batch_date, status, 
     gmt_create, gmt_modify
   </sql>
@@ -28,20 +28,24 @@
     from bank_repay_record
     where order_id = #{orderId,jdbcType=BIGINT}
       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+      and id_card = #{idCard,jdbcType=VARCHAR}
+      and repay_card = #{repayCard,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankRepayRecordDOKey">
     delete from bank_repay_record
     where order_id = #{orderId,jdbcType=BIGINT}
       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+      and id_card = #{idCard,jdbcType=VARCHAR}
+      and repay_card = #{repayCard,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankRepayRecordDO">
-    insert into bank_repay_record (order_id, bank_repay_imp_record_id, user_name, 
-      id_card, repay_card, card_balance, 
+    insert into bank_repay_record (order_id, bank_repay_imp_record_id, id_card, 
+      repay_card, user_name, card_balance, 
       overdue_amount, overdue_times, max_overdue_times, 
       is_customer, batch_date, status, 
       gmt_create, gmt_modify)
-    values (#{orderId,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, 
-      #{idCard,jdbcType=VARCHAR}, #{repayCard,jdbcType=VARCHAR}, #{cardBalance,jdbcType=DECIMAL}, 
+    values (#{orderId,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT}, #{idCard,jdbcType=VARCHAR}, 
+      #{repayCard,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{cardBalance,jdbcType=DECIMAL}, 
       #{overdueAmount,jdbcType=DECIMAL}, #{overdueTimes,jdbcType=INTEGER}, #{maxOverdueTimes,jdbcType=INTEGER}, 
       #{isCustomer,jdbcType=TINYINT}, #{batchDate,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, 
       #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
@@ -55,14 +59,14 @@
       <if test="bankRepayImpRecordId != null">
         bank_repay_imp_record_id,
       </if>
-      <if test="userName != null">
-        user_name,
-      </if>
       <if test="idCard != null">
         id_card,
       </if>
       <if test="repayCard != null">
         repay_card,
+      </if>
+      <if test="userName != null">
+        user_name,
       </if>
       <if test="cardBalance != null">
         card_balance,
@@ -99,14 +103,14 @@
       <if test="bankRepayImpRecordId != null">
         #{bankRepayImpRecordId,jdbcType=BIGINT},
       </if>
-      <if test="userName != null">
-        #{userName,jdbcType=VARCHAR},
-      </if>
       <if test="idCard != null">
         #{idCard,jdbcType=VARCHAR},
       </if>
       <if test="repayCard != null">
         #{repayCard,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
       </if>
       <if test="cardBalance != null">
         #{cardBalance,jdbcType=DECIMAL},
@@ -143,12 +147,6 @@
       <if test="userName != null">
         user_name = #{userName,jdbcType=VARCHAR},
       </if>
-      <if test="idCard != null">
-        id_card = #{idCard,jdbcType=VARCHAR},
-      </if>
-      <if test="repayCard != null">
-        repay_card = #{repayCard,jdbcType=VARCHAR},
-      </if>
       <if test="cardBalance != null">
         card_balance = #{cardBalance,jdbcType=DECIMAL},
       </if>
@@ -179,12 +177,12 @@
     </set>
     where order_id = #{orderId,jdbcType=BIGINT}
       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+      and id_card = #{idCard,jdbcType=VARCHAR}
+      and repay_card = #{repayCard,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankRepayRecordDO">
     update bank_repay_record
     set user_name = #{userName,jdbcType=VARCHAR},
-      id_card = #{idCard,jdbcType=VARCHAR},
-      repay_card = #{repayCard,jdbcType=VARCHAR},
       card_balance = #{cardBalance,jdbcType=DECIMAL},
       overdue_amount = #{overdueAmount,jdbcType=DECIMAL},
       overdue_times = #{overdueTimes,jdbcType=INTEGER},
@@ -196,5 +194,7 @@
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where order_id = #{orderId,jdbcType=BIGINT}
       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+      and id_card = #{idCard,jdbcType=VARCHAR}
+      and repay_card = #{repayCard,jdbcType=VARCHAR}
   </update>
 </mapper>

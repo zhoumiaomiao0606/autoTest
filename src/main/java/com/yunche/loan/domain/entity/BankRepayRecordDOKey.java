@@ -8,4 +8,9 @@ public class BankRepayRecordDOKey {
 
     private Long bankRepayImpRecordId;
 
+    private String idCard;
+
+    private String repayCard;
+
+
 }

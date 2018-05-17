@@ -251,6 +251,8 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                     e.setStatus(VALID_STATUS);
                 }else{
                     e.setIsCustomer(K_YORN_NO);
+                    e.setIdCard(e.getIdCard()==null?"-1":e.getIdCard());
+                    e.setRepayCard(e.getRepayCard()==null?"-1":e.getRepayCard());
                     e.setBankRepayImpRecordId(batchId);
                     e.setOrderId((long)-1);//不存在的记录
                     e.setStatus(INVALID_STATUS);

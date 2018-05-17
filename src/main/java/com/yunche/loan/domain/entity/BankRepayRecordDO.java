@@ -4,13 +4,10 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
 @Data
 public class BankRepayRecordDO extends BankRepayRecordDOKey {
     private String userName;
-
-    private String idCard;
-
-    private String repayCard;
 
     private BigDecimal cardBalance;
 
