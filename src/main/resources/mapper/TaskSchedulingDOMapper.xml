@@ -251,7 +251,7 @@
                             join_refund.id                                 AS taskId,
                         </when>
                         <otherwise>
-                            tab.id                                         AS taskId,
+                            main.id                                        AS taskId,
                         </otherwise>
                     </choose>
                   main.id                                      AS id,
