@@ -1176,19 +1176,19 @@
             )
             task
             left join
-            (
+             (
              select main.* from
              (select task_id,max(get_create) AS get_create from task_distribution GROUP BY task_id) t
              inner join task_distribution main on main.task_id = t.task_id and main.get_create = t.get_create
              HAVING main.status = 2
-            )
-            taskdis
-            on task.taskId = taskdis.task_id
+             )
+             taskdis
+             on task.taskId = taskdis.task_id
 
-            having
+             having
              case when receiveManId is not null then
-              case when receiveManId = @employeeId then 1=1 else 1=2 end
-              else 1=1
+             case when receiveManId = @employeeId then 1=1 else 1=2 end
+             else 1=1
              end
             <if test="key != null">
                 and task.taskKey = #{key,jdbcType=VARCHAR}
