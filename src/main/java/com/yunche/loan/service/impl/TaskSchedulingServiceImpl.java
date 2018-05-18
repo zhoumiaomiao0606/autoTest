@@ -51,8 +51,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Integer collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
-        Integer telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(null, loginUser.getId());
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
@@ -62,8 +60,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+        PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(key, loginUser.getId());
-        return ResultBean.ofSuccess(list);
+        PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<ScheduleTaskVO>(list);
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     @Override
@@ -72,23 +72,13 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
         }
-
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
-
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Integer telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
-        Integer collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
-        List<TaskListVO> list = new ArrayList<>();
-        taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
-        taskListQuery.setCollectionLevel(collectionLevel);
-        taskListQuery.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId()));
         taskListQuery.setLoginUserId(loginUser.getId());
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
-        list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
-        // 取分页信息
+        List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
-
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
@@ -96,9 +86,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     public ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery) {
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Integer maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
-        List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery.getMultipartType(), appTaskListQuery.getCustomer(), loginUser.getId(), maxGroupLevel);
+        List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery.getMultipartType(), appTaskListQuery.getCustomer(), loginUser.getId());
 
         List<AppTaskVO> appTaskVOList = convert(list);
 

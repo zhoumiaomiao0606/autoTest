@@ -22,21 +22,16 @@ public class TaskListQuery {
     @NotNull
     private Integer pageSize = 10;
 
+    private Long loginUserId;
+
     @NotBlank
     private String taskDefinitionKey;
 
     @NotNull
     private Integer taskStatus;
 
+    //查询条件
     private boolean fuse = false;
-
-    private Integer telephoneVerifyLevel; //级别
-
-    private Integer collectionLevel; //级别
-
-    private Long loginUserId;
-
-    private Integer maxGroupLevel;
 
     private String orderId;//业务编号
 

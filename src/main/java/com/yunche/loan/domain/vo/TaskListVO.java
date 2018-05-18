@@ -4,6 +4,11 @@ import lombok.Data;
 
 @Data
 public class TaskListVO {
+    private String taskDisStatus;
+    private String receiveManId;
+    private String receiveManName;
+    private String taskId;
+    private String taskKey;
     private String id;
     private String salesmanId;
     private String partnerId;
