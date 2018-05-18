@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessLogDO;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -31,5 +32,10 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     public UniversalCustomerDetailVO universalCustomerDetail(Long customerId) {
 
         return loanQueryDOMapper.selectUniversalCustomerDetail(loanQueryDOMapper.selectOrderIdbyPrincipalCustId(customerId),customerId);
+    }
+
+    @Override
+    public String selectTelephoneVerifyLevel() {
+        return loanQueryDOMapper.selectTelephoneVerifyLevel(SessionUtils.getLoginUser().getId());
     }
 }

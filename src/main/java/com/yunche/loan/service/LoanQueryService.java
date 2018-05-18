@@ -8,4 +8,6 @@ public interface LoanQueryService {
 
     UniversalCustomerDetailVO universalCustomerDetail(Long customerId);
 
+    String selectTelephoneVerifyLevel();
+
 }

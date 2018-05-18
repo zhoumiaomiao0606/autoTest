@@ -10,6 +10,9 @@ import java.util.Set;
 
 @Mapper
 public interface LoanQueryDOMapper {
+
+    String selectTelephoneVerifyLevel(@Param("loginUserId") Long loginUserId );
+
     boolean checkCollectionUserRole(@Param("loginUserId") Long loginUserId);
 
     List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId,@Param("name")  String name);

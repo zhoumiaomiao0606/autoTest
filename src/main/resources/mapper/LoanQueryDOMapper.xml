@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.LoanQueryDOMapper" >
+    <select id="selectTelephoneVerifyLevel" resultType="java.lang.String"  parameterType="java.lang.Long">
+              SELECT
+                max( t.telephone_verify_level )
+                FROM
+              ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
+    </select>
 
     <!--提车资料-->
     <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInformationVO"  parameterType="java.lang.Long">

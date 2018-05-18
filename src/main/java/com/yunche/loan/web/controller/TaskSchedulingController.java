@@ -4,6 +4,8 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.AppTaskVO;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,9 @@ public class TaskSchedulingController {
 
     @Resource
     private TaskSchedulingService taskSchedulingService;
+
+    @Resource
+    private LoanQueryService loanQueryService;
 
     /**
      * 待办任务列表-all
@@ -53,4 +58,12 @@ public class TaskSchedulingController {
     public ResultBean<List<AppTaskVO>> queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
         return taskSchedulingService.queryAppTaskList(appTaskListQuery);
     }
+
+    @GetMapping(value = "/queryLoginUserLevel")
+    public ResultBean queryLoginUserLevel() {
+        return ResultBean.ofSuccess(loanQueryService.selectTelephoneVerifyLevel());
+    }
+
+
+
 }
