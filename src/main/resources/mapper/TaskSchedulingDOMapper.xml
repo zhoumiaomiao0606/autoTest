@@ -222,26 +222,6 @@
               select
                   tab.*,
                   (#{taskDefinitionKey})                               AS taskKey,
-                  <choose>
-                    <when test="taskDefinitionKey == 'usertask_info_supplement'">
-                        join_s.id                                      AS taskId,
-                    </when>
-                    <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply'">
-                        join_his.id                                    AS taskId,
-                    </when>
-                    <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
-                        join_his.id                                    AS taskId,
-                    </when>
-                    <when test="taskDefinitionKey == 'usertask_refund_apply'">
-                        join_refund.id                                 AS taskId,
-                    </when>
-                    <when test="taskDefinitionKey == 'usertask_refund_apply_review'">
-                        join_refund.id                                 AS taskId,
-                    </when>
-                    <otherwise>
-                        tab.id                                         AS taskId,
-                    </otherwise>
-                 </choose>
                   tab.taskStatus                                        AS taskType,
                   useGetTaskTypeText(#{taskDefinitionKey},tab.taskStatus,tab.orderStatus)    AS taskTypeText,
                   useGetCurrentTask(#{taskDefinitionKey})               AS currentTask,
@@ -254,6 +234,26 @@
                   from
                   (
                   select
+                    <choose>
+                        <when test="taskDefinitionKey == 'usertask_info_supplement'">
+                            join_s.id                                      AS taskId,
+                        </when>
+                        <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply'">
+                            join_his.id                                    AS taskId,
+                        </when>
+                        <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
+                            join_his.id                                    AS taskId,
+                        </when>
+                        <when test="taskDefinitionKey == 'usertask_refund_apply'">
+                            join_refund.id                                 AS taskId,
+                        </when>
+                        <when test="taskDefinitionKey == 'usertask_refund_apply_review'">
+                            join_refund.id                                 AS taskId,
+                        </when>
+                        <otherwise>
+                            tab.id                                         AS taskId,
+                        </otherwise>
+                    </choose>
                   main.id                                      AS id,
                   join_e.id                                    AS salesmanId,
                   join_p.id                                    AS partnerId,
