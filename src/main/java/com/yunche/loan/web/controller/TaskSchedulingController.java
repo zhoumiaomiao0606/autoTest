@@ -53,13 +53,4 @@ public class TaskSchedulingController {
     public ResultBean<List<AppTaskVO>> queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
         return taskSchedulingService.queryAppTaskList(appTaskListQuery);
     }
-
-
-    /**
-     * 查询接口
-     */
-    @PostMapping(value = "/queryLoginUserLevel")
-    public ResultBean queryLoginUserLevel() {
-        return taskSchedulingService.queryLoginUserLevel();
-    }
 }

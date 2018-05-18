@@ -15,7 +15,4 @@ public interface TaskSchedulingService {
     ResultBean queryTaskList(TaskListQuery taskListQuery);
 
     ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery);
-
-    ResultBean queryLoginUserLevel();
-
 }

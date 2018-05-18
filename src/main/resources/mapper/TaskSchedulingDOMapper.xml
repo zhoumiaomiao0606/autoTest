@@ -2,83 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.TaskSchedulingDOMapper" >
 
-    <select id="selectMaxGroupLevel" resultType="java.lang.Integer">
-      SELECT case when Max( LEVEL )  is null then 0 else Max(level) end as level FROM user_group WHERE id IN ( SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{loginUserId} )
-    </select>
-
-    <select id="selectTelephoneVerifyLevel" resultType="java.lang.Integer">
-
-    SELECT
-    case when max( t.LEVEL ) is null or max( t.LEVEL ) = '' then 0 else max( t.LEVEL ) end as levels
-    FROM
-    (
-    SELECT
-    CASE
-    WHEN g.NAME IN ( '总经理' ) THEN
-    7
-    WHEN g.NAME IN ( '培训经理' ) THEN
-    7
-    WHEN g.NAME IN ( '总监' ) THEN
-    7
-    WHEN g.NAME IN ( '电审经理' ) THEN
-    6
-    WHEN g.NAME IN ( '电审主管' ) THEN
-    5
-    WHEN g.NAME IN ( '电审专员' ) THEN
-    4 ELSE 1
-    END AS LEVEL
-    FROM
-    employee_rela_user_group r
-    INNER JOIN user_group g ON r.user_group_id = g.id
-    AND r.employee_id = #{loginUserId}
-    ) t
-    </select>
-
-    <select id="selectCollectionLevel" resultType="java.lang.Integer">
-
-    SELECT
-    case when max( t.LEVEL ) is null or max( t.LEVEL ) = '' then 0 else max( t.LEVEL ) end as levels
-    FROM
-    (
-    SELECT
-    CASE
-    WHEN g.NAME IN ( '总经理' ) THEN
-    7
-    WHEN g.NAME IN ( '培训经理' ) THEN
-    7
-    WHEN g.NAME IN ( '催收主管' ) THEN
-    7
-    WHEN g.NAME IN ( '电话催收组' ) THEN
-    6
-    ELSE 1
-    END AS LEVEL
-    FROM
-    employee_rela_user_group r
-    INNER JOIN user_group g ON r.user_group_id = g.id
-    AND r.employee_id = #{loginUserId}
-    ) t
-    </select>
-
     <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO">
         select complex.* from
         (SELECT @loginUserId:=(#{loginUserId})) t1
         ,
         (SELECT @telephoneVerifyLevel:=
-        (
-        SELECT
-        max( t.telephone_verify_level )
-        FROM
-        ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-        )
+            (
+              SELECT
+              max( t.telephone_verify_level )
+              FROM
+              ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
+            )
         ) t2
         ,
         (SELECT @collectionLevel:=
-        (
-        SELECT
-        max( t.collection_level )
-        FROM
-        ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-        )
+            (
+              SELECT
+              max( t.collection_level )
+              FROM
+              ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
+            )
         ) t3
 
         ,

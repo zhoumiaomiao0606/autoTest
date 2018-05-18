@@ -106,13 +106,11 @@
 
     <select id="checkCollectionUserRole" resultType="java.lang.Boolean" parameterType="java.lang.Long" >
         <![CDATA[
-        select max(t.flag) AS flag from
-        (
-        select case
-                  when ug.level = 3 then 1
-                  when ug.name = '催收主管' then 1
-                else 0  end AS flag from employee_rela_user_group eg left join user_group ug  on eg.user_group_id = ug.id where eg.employee_id = ${loginUserId}
-        ) t  ]]>
+        SELECT
+              case when max( t.collection_level ) = 7 then 1 else 0 end AS flag
+              FROM
+              ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
+        ]]>
     </select>
 
     <!--======================================通用=========================================================-->
@@ -890,7 +888,7 @@
     <select id="selectUniversalTelephoneCollectionEmployee" resultType="com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee">
         select x.* from
         (
-        select employee.id,employee.name,ug.name AS role
+        select employee.id,employee.name,ug.name AS role,ug.collection_level
         from employee  employee
         inner JOIN
         employee_rela_user_group eg on eg.employee_id = employee.id
@@ -906,7 +904,7 @@
             left join user_group ug on ug.id = eg.user_group_id
             ) t where t.level = 3
         )
-        and x.role = '电话催收组'
+        and x.collection_level = 6
     </select>
     <select id="selectUniversalUndistributedCollection" resultType="com.yunche.loan.domain.vo.UniversalUndistributedCollection">
             select bu.order_id,plan.bank from bank_urge_record bu

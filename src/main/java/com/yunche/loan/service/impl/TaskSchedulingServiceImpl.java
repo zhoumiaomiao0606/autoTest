@@ -97,12 +97,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         return ResultBean.ofSuccess(appTaskVOList, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
-    @Override
-    public ResultBean queryLoginUserLevel() {
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-
-        return ResultBean.ofSuccess(taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId()));
-    }
 
     private List<AppTaskVO> convert(List<TaskListVO> list) {
 

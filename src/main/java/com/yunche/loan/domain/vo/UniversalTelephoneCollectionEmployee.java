@@ -7,4 +7,5 @@ public class UniversalTelephoneCollectionEmployee {
     private String id;
     private String name;
     private String role;
+    private String collection_level;
 }

@@ -15,12 +15,6 @@ public interface TaskSchedulingDOMapper {
 
     List<ScheduleTaskVO> selectScheduleTaskList(@Param("key") String key,@Param("employeeId") Long employeeId);
 
-    Integer selectTelephoneVerifyLevel(Long loginUserId);
-
-    Integer selectCollectionLevel(Long loginUserId);
-
-    Integer selectMaxGroupLevel(Long loginUserId);
-
     List<TaskListVO> selectAppTaskList(@Param("multipartType") Integer multipartType, @Param("customer") String customer,@Param("loginUserId") Long loginUserId);
 
     List<TaskListVO> selectTaskList(TaskListQuery taskListQuery);
