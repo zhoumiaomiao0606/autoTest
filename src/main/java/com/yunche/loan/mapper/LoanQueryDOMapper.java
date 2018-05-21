@@ -1,5 +1,6 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.domain.entity.TaskDistributionDO;
 import com.yunche.loan.domain.vo.*;
 
 import org.apache.ibatis.annotations.Mapper;

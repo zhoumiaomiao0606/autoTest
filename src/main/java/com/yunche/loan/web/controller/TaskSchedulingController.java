@@ -1,11 +1,14 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.TaskDistributionDO;
+import com.yunche.loan.domain.param.TaskDistributionParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.AppTaskVO;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanQueryService;
+import com.yunche.loan.service.TaskDistributionService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,9 @@ public class TaskSchedulingController {
 
     @Resource
     private TaskSchedulingService taskSchedulingService;
+
+    @Resource
+    private TaskDistributionService taskDistributionService;
 
     @Resource
     private LoanQueryService loanQueryService;
@@ -64,6 +70,24 @@ public class TaskSchedulingController {
         return ResultBean.ofSuccess(loanQueryService.selectTelephoneVerifyLevel());
     }
 
+    /**
+     * 领取
+     */
+    @PostMapping(value = "/get")
+    public ResultBean<Void> get(@RequestBody @Validated TaskDistributionParam param) {
+         taskDistributionService.get(Long.valueOf(param.getTaskId()),param.getTaskKey());
+        return ResultBean.ofSuccess(null,"操作成功");
 
+    }
+
+
+    /**
+     * 释放
+     */
+    @PostMapping(value = "/release")
+    public ResultBean<Void> release(@RequestBody @Validated TaskDistributionParam param) {
+         taskDistributionService.release(Long.valueOf(param.getTaskId()),param.getTaskKey());
+        return ResultBean.ofSuccess(null,"操作成功");
+    }
 
 }

@@ -7,7 +7,6 @@
                 FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
     </select>
-
     <!--提车资料-->
     <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInformationVO"  parameterType="java.lang.Long">
         select

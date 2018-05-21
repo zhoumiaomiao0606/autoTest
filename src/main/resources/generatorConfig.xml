@@ -288,7 +288,7 @@
         </table>-->
 
 
-        <table tableName="bank_urge_record" domainObjectName="BankUrgeRecordDO"
+        <table tableName="task_distribution" domainObjectName="TaskDistributionDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
