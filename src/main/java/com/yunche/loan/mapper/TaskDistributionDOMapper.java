@@ -1,8 +1,10 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.TaskDistributionDO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+@Mapper
 public interface TaskDistributionDOMapper {
 
     TaskDistributionDO selectLastTaskDistributionGroupByTaskKey(@Param("taskId") Long taskId, @Param("taskKey") String taskKey);
