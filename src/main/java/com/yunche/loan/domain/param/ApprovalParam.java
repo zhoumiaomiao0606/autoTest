@@ -12,7 +12,10 @@ public class ApprovalParam {
      * 业务单ID
      */
     private Long orderId;
-
+    /**
+     * taskId
+     */
+    private Long taskId;
     /**
      * 任务key
      */

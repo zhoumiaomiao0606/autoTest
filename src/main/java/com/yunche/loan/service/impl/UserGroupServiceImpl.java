@@ -28,26 +28,32 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  * @date 2018/1/24
  */
 @Service
-@Transactional
 public class UserGroupServiceImpl implements UserGroupService {
 
     @Autowired
     private UserGroupDOMapper userGroupDOMapper;
+
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
+
     @Autowired
     private DepartmentDOMapper departmentDOMapper;
+
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+
     @Autowired
     private AuthDOMapper authDOMapper;
+
     @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
+
     @Autowired
     private UserGroupRelaAreaAuthDOMapper userGroupRelaAreaAuthDOMapper;
 
 
     @Override
+    @Transactional
     public ResultBean<Long> create(UserGroupParam userGroupParam) {
         Preconditions.checkArgument(null != userGroupParam && StringUtils.isNotBlank(userGroupParam.getName()), "用户组名称不能为空");
         Preconditions.checkNotNull(userGroupParam.getDepartmentId(), "对应部门不能为空");
@@ -65,6 +71,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> update(UserGroupParam userGroupParam) {
         Preconditions.checkNotNull(userGroupParam.getId(), "id不能为空");
 
@@ -78,6 +85,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
 
@@ -527,6 +535,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> bindEmployee(Long id, String employeeIds) {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeIds), "员工ID列表不能为空");
@@ -549,6 +558,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> unbindEmployee(Long id, String employeeIds) {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeIds), "员工ID列表不能为空");
@@ -563,10 +573,12 @@ public class UserGroupServiceImpl implements UserGroupService {
                     Preconditions.checkArgument(count > 0, "取消关联失败");
                 });
 
+
         return ResultBean.ofSuccess(null, "取消关联成功");
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> editAuth(Long id, Long areaId, String authIds, Byte type) {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
         Preconditions.checkNotNull(areaId, "限定权限使用的业务区域范围不能为空");
@@ -604,6 +616,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> bindAuth(Long id, Long areaId, String authIds, Byte type) {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
         Preconditions.checkNotNull(areaId, "限定权限使用的业务区域范围不能为空");
@@ -629,6 +642,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> unbindAuth(Long id, String authIds, Byte type) {
         Preconditions.checkNotNull(id, "用户组ID不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(authIds), "权限ID列表不能为空");

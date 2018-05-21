@@ -37,7 +37,7 @@ public class LoanProcessConst {
     /**
      * 发起任务申请
      */
-    public static final Byte ACTION_LAUNCH_TASK_APPLY = 4;
+//    public static final Byte ACTION_LAUNCH_TASK_APPLY = 4;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

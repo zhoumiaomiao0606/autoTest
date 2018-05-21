@@ -125,12 +125,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private LoanRepayPlanDOMapper loanRepayPlanDOMapper;
 
+    @Autowired
+    private TaskDistributionService taskDistributionService;
+
 
     @Override
     @Transactional
     public ResultBean<Void> approval(ApprovalParam approval) {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
+        Preconditions.checkNotNull(approval.getTaskId(), "任务ID不能为空");
 
         // APP通过OrderId弃单
         if (isAppCancelByOrderId(approval)) {
@@ -193,13 +197,27 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 异步推送
         asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
 
-        // 异步打包文件
-//        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
-
         // 生成客户还款计划
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO.getProcessInstId());
 
+        // [领取]完成
+        finishTask(approval);
+
+        // 异步打包文件
+//        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
+
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+    }
+
+    /**
+     * [领取]完成
+     *
+     * @param approval
+     */
+    private void finishTask(ApprovalParam approval) {
+        if (!ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
+            taskDistributionService.finish(approval.getTaskId(), approval.getTaskDefinitionKey());
+        }
     }
 
     /**
@@ -245,7 +263,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanRepayPlanDO.setIsOverdue(K_YORN_NO);
             loanRepayPlanDO.setPayableAmount(eachMonthRepay);
             loanRepayPlanDO.setStatus(TASK_PROCESS_DONE);
-            loanRepayPlanDO.setNper(i+1);
+            loanRepayPlanDO.setNper(i + 1);
             loanRepayPlanDO.setOverdueAmount(new BigDecimal(0));
             loanRepayPlanDO.setActualRepayAmount(new BigDecimal(0));
             if (0 == i) {

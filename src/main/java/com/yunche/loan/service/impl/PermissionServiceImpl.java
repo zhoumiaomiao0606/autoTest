@@ -57,7 +57,7 @@ public class PermissionServiceImpl implements PermissionService {
         if (!CollectionUtils.isEmpty(currentTaskCandidateGroups)) {
 
             Preconditions.checkArgument(!CollectionUtils.isEmpty(userGroupNameSet),
-                    "您无权操作[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务");
+                    "您无权操作[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]");
 
             List<String> candidateGroups = Lists.newArrayList();
             currentTaskCandidateGroups.stream()
@@ -70,7 +70,7 @@ public class PermissionServiceImpl implements PermissionService {
                     });
 
             Preconditions.checkArgument(!CollectionUtils.isEmpty(candidateGroups),
-                    "您无权操作[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务");
+                    "您无权操作[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]");
         }
     }
 
