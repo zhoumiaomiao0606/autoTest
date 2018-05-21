@@ -847,7 +847,6 @@
 
     <!-- 催收计划-->
     <select id="selectUniversalCollectionRecord" resultType="com.yunche.loan.domain.vo.UniversalCollectionRecord">
-        select tab.* from (
               select
                 @row:=@row+1 					                                    AS collection_row,
                 collection.id 				                                        AS collection_id,
@@ -867,8 +866,7 @@
             left join loan_customer customer on orders.loan_customer_id = customer.id
             left join employee employee on employee.id = collection.collection_man_id
             where collection.order_id = #{orderId,jdbcType=BIGINT}
-            order by collection_date asc
-        ) tab order by tab.collection_date desc
+            order by collection_date desc
     </select>
 
     <!-- 催收详情-->
@@ -888,7 +886,6 @@
         left join loan_order orders on orders.id = collection.order_id
         left join loan_customer customer on orders.loan_customer_id = customer.id
         where collection.id = #{collectionId,jdbcType=BIGINT}
-        order by collection_date asc
     </select>
 
     <!-- 催收专员列表-->
