@@ -6,6 +6,7 @@ import com.yunche.loan.domain.param.TaskDistributionParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.AppTaskVO;
+import com.yunche.loan.domain.vo.TaskDisVO;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TaskDistributionService;
@@ -90,4 +91,12 @@ public class TaskSchedulingController {
         return ResultBean.ofSuccess(null,"操作成功");
     }
 
+    /**
+     * query
+     */
+    @PostMapping(value = "/query")
+    public ResultBean query(@RequestBody @Validated TaskDistributionParam param) {
+        TaskDisVO taskDisVO = taskDistributionService.query(Long.valueOf(param.getTaskId()),param.getTaskKey());
+        return ResultBean.ofSuccess(taskDisVO,"操作成功");
+    }
 }
