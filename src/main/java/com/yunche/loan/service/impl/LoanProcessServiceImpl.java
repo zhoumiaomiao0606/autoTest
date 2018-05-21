@@ -134,7 +134,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     public ResultBean<Void> approval(ApprovalParam approval) {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
-        Preconditions.checkNotNull(approval.getTaskId(), "任务ID不能为空");
+//        Preconditions.checkNotNull(approval.getTaskId(), "任务ID不能为空");
 
         // APP通过OrderId弃单
         if (isAppCancelByOrderId(approval)) {
@@ -183,7 +183,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
 
         // 流程变量
-        Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO.getLoanBaseInfoId(), loanProcessDO);
+        Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO, loanProcessDO);
 
         // 先获取提交之前的待执行任务列表
         List<Task> startTaskList = getCurrentTaskList(task.getProcessInstanceId());
@@ -215,7 +215,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      */
     private void finishTask(ApprovalParam approval) {
-        if (!ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
+        if (!ACTION_INFO_SUPPLEMENT.equals(approval.getAction()) && null != approval.getTaskId()) {
             taskDistributionService.finish(approval.getTaskId(), approval.getTaskDefinitionKey());
         }
     }
@@ -949,7 +949,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         approval.setTaskDefinitionKey_(approval.getTaskDefinitionKey());
 
         // 判断当前任务流程   是否在电审前
-        Preconditions.checkArgument(TASK_PROCESS_INIT.equals(loanProcessDO.getTelephoneVerify()), "流程已过电审环节，无法发起征信增补");
+        Preconditions.checkArgument(TASK_PROCESS_INIT.equals(loanProcessDO.getTelephoneVerify()), "流程已过[电审]，无法发起[征信增补]");
 
         // 当前所有task
         List<Task> tasks = taskService.createTaskQuery()
@@ -1656,9 +1656,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 是否都通过了      -> 既非LOAN_APPLY，也非VISIT_VERIFY
         if (!CollectionUtils.isEmpty(tasks)) {
-            long count = tasks.parallelStream()
+            long count = tasks.stream()
                     .filter(Objects::nonNull)
-                    .filter(e -> LOAN_APPLY.getCode().equals(e.getTaskDefinitionKey()) || VISIT_VERIFY.getCode().equals(e.getTaskDefinitionKey()))
+                    .filter(e -> LOAN_APPLY.getCode().equals(e.getTaskDefinitionKey())
+                            || VISIT_VERIFY.getCode().equals(e.getTaskDefinitionKey())
+                            || SOCIAL_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey()))
                     .count();
 
             // 是 -> 放行
@@ -2137,20 +2139,43 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param variables
      * @param action
      * @param taskDefinitionKey
-     * @param loanBaseInfoId
+     * @param loanOrderDO
      */
-    private void fillLoanAmount(Map<String, Object> variables, Byte action, String taskDefinitionKey, Long loanBaseInfoId) {
-        // 征信申请且审核通过时
+    private void fillLoanAmount(Map<String, Object> variables, Byte action, String taskDefinitionKey, LoanOrderDO loanOrderDO) {
+
+        // [征信申请] & [PASS]
         boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
-        // 银行&社会征信录入
+        // [银行&社会征信录入]
         boolean isBankAndSocialCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey);
         if (isApplyVerifyTaskAndActionIsPass || isBankAndSocialCreditRecordTask) {
-            // 贷款金额
-            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+
+            // 预计贷款金额
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
             Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
             Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
+
             // 流程变量
-            variables.put(PROCESS_VARIABLE_LOAN_AMOUNT, loanBaseInfoDO.getLoanAmount());
+            variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT, loanBaseInfoDO.getLoanAmount());
+        }
+
+        // [贷款申请] & [PASS]
+        else if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+
+            // 预计贷款金额
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+            Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
+            Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
+            Byte expectLoanAmount = loanBaseInfoDO.getLoanAmount();
+
+            // 实际贷款额度
+            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+            Preconditions.checkArgument(null != loanFinancialPlanDO && null != loanFinancialPlanDO.getLoanAmount(), "贷款额不能为空");
+            double actualLoanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
+
+            // 预计<13W  实际>=13W
+            if (expectLoanAmount == 1 && actualLoanAmount >= 130000) {
+                variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL, actualLoanAmount);
+            }
         }
     }
 
@@ -2186,10 +2211,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param currentExecTask
      * @param approval
-     * @param loanBaseInfoId
+     * @param loanOrderDO
      * @param loanProcessDO
      */
-    private Map<String, Object> setAndGetVariables(Task currentExecTask, ApprovalParam approval, Long loanBaseInfoId, LoanProcessDO loanProcessDO) {
+    private Map<String, Object> setAndGetVariables(Task currentExecTask, ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
         Map<String, Object> variables = Maps.newHashMap();
 
         // 流程变量：action
@@ -2197,7 +2222,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         variables.put(PROCESS_VARIABLE_TARGET, approval.getTarget());
 
         // 添加流程变量-贷款金额
-        fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanBaseInfoId);
+        fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanOrderDO);
 
         // 填充其他的流程变量
         fillOtherVariables(variables, approval, loanProcessDO);
@@ -2351,9 +2376,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 是否都通过了    -> 既非BANK，也非SOCIAL
         if (!CollectionUtils.isEmpty(tasks)) {
 
-            long count = tasks.parallelStream()
+            long count = tasks.stream()
                     .filter(Objects::nonNull)
-                    .filter(e -> BANK_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey()) || SOCIAL_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey()))
+                    .filter(e -> BANK_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey())
+                            || SOCIAL_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey()))
                     .count();
 
             // 是 -> 放行

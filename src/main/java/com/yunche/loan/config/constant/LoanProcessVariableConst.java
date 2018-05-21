@@ -42,9 +42,13 @@ public class LoanProcessVariableConst {
      */
     public static final String PROCESS_VARIABLE_USER_GROUP = "user_group";
     /**
-     * 贷款额
+     * 预计贷款额
      */
-    public static final String PROCESS_VARIABLE_LOAN_AMOUNT = "loanAmount";
+    public static final String PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT = "expect_loan_amount";
+    /**
+     * 实际贷款额
+     */
+    public static final String PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL = "actual_loan_amount";
     /**
      * 资料增补类型
      */
