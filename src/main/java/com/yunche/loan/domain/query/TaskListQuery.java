@@ -22,7 +22,7 @@ public class TaskListQuery {
     @NotNull
     private Integer pageSize = 10;
 
-    private Long loginUserId;
+    private Long employeeId;
 
     @NotBlank
     private String taskDefinitionKey;
