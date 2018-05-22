@@ -182,14 +182,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 获取当前执行任务（activiti中）
         Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
 
-        // 流程变量
-        Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO, loanProcessDO);
-
         // 先获取提交之前的待执行任务列表
         List<Task> startTaskList = getCurrentTaskList(task.getProcessInstanceId());
 
+        // 流程变量
+        Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO, loanProcessDO, startTaskList);
+
         // 执行任务
-        execTask(task, variables, approval, loanOrderDO);
+        execTask(task, variables, approval, loanOrderDO, startTaskList);
 
         // 流程数据同步
         syncProcess(startTaskList, approval);
@@ -1100,8 +1100,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param variables
      * @param approval
      * @param loanOrderDO
+     * @param currentTaskList
      */
-    private void execTask(Task task, Map<String, Object> variables, ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    private void execTask(Task task, Map<String, Object> variables, ApprovalParam approval, LoanOrderDO loanOrderDO, List<Task> currentTaskList) {
         // 电审任务
         if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
             // 执行电审任务
@@ -1596,8 +1597,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void execLoanApplyVisitVerifyFilterTask(Task currentTask, String processInstId, ApprovalParam approval, Map<String, Object> variables) {
 
+        // [社会征信] & [PASS] & [ target -> 贷款申请-filter     贷款申请 补充 社会征信 ]
+        Object target = variables.get(PROCESS_VARIABLE_TARGET);
+        boolean socialTaskTargetIsloanApplyVisitVerifyFilterTask = SOCIAL_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey())
+                && ACTION_PASS.equals(approval.getAction()) && LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(target);
+
         // 执行拦截任务
-        if (isLoanApplyVisitVerifyFilterTask(approval.getTaskDefinitionKey(), variables)) {
+        if (isLoanApplyVisitVerifyFilterTask(approval.getTaskDefinitionKey(), variables) || socialTaskTargetIsloanApplyVisitVerifyFilterTask) {
             // 获取所有正在执行的并行任务
             List<Task> tasks = taskService.createTaskQuery()
                     .processInstanceId(processInstId)
@@ -1712,7 +1718,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // PASS
             if (ACTION_PASS.equals(approval.getAction())) {
-                dealPassTask(currentTask, tasks, approval);
+                dealPassTask(currentTask, tasks);
             }
             // REJECT
             else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
@@ -2174,6 +2180,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 预计<13W  实际>=13W
             if (expectLoanAmount == 1 && actualLoanAmount >= 130000) {
+                variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT, expectLoanAmount);
                 variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL, actualLoanAmount);
             }
         }
@@ -2213,8 +2220,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param loanOrderDO
      * @param loanProcessDO
+     * @param currentTaskList
      */
-    private Map<String, Object> setAndGetVariables(Task currentExecTask, ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+    private Map<String, Object> setAndGetVariables(Task currentExecTask, ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO, List<Task> currentTaskList) {
         Map<String, Object> variables = Maps.newHashMap();
 
         // 流程变量：action
@@ -2225,7 +2233,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanOrderDO);
 
         // 填充其他的流程变量
-        fillOtherVariables(variables, approval, loanProcessDO);
+        fillOtherVariables(variables, approval, loanProcessDO, currentTaskList);
 
         return variables;
     }
@@ -2236,8 +2244,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param variables
      * @param approval
      * @param loanProcessDO
+     * @param currentTaskList
      */
-    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO) {
+    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO, List<Task> currentTaskList) {
         // 【业务申请】
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
 
@@ -2272,7 +2281,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 【电审】
-        if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
+        else if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
             if (ACTION_PASS.equals(approval.getAction())) {
                 // 如果为打回
                 if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
@@ -2284,6 +2293,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                         }
                     }
                 }
+            }
+        }
+
+        // [社会征信] & [PASS] &   [loan_apply 补充 [社会征信]]
+        else if (SOCIAL_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            if (null != variables.get(PROCESS_VARIABLE_TARGET)) {
+                return;
+            }
+
+            List<Task> loanApplyVisitVerifyTaskList = currentTaskList.stream()
+                    .filter(Objects::nonNull)
+                    .filter(e -> VISIT_VERIFY.getCode().equals(e.getTaskDefinitionKey())
+                            || LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(e.getTaskDefinitionKey()))
+                    .collect(Collectors.toList());
+
+            if (!CollectionUtils.isEmpty(loanApplyVisitVerifyTaskList)) {
+                variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
             }
         }
     }
@@ -2368,10 +2395,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param currentTask
      * @param tasks
-     * @param approval
      */
-
-    private void dealPassTask(Task currentTask, List<Task> tasks, ApprovalParam approval) {
+    private void dealPassTask(Task currentTask, List<Task> tasks) {
 
         // 是否都通过了    -> 既非BANK，也非SOCIAL
         if (!CollectionUtils.isEmpty(tasks)) {
