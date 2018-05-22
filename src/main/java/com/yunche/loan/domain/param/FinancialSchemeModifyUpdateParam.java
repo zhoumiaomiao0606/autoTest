@@ -56,6 +56,6 @@ public class FinancialSchemeModifyUpdateParam {
     @NotBlank
     private String financial_each_month_repay;
 
-    @NotBlank
+//    @NotBlank
     private String financial_total_repayment_amount;
 }
