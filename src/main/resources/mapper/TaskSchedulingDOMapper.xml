@@ -4,44 +4,6 @@
 
     <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO">
         select complex.* from
-        (SELECT @loginUserId:=(#{loginUserId})) t1
-        ,
-        (SELECT @telephoneVerifyLevel:=
-            (
-              SELECT
-              max( t.telephone_verify_level )
-              FROM
-              ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-            )
-        ) t2
-        ,
-        (SELECT @collectionLevel:=
-            (
-              SELECT
-              max( t.collection_level )
-              FROM
-              ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-            )
-        ) t3
-
-        ,
-        (SELECT @financeLevel:=
-            (
-              SELECT
-              max( t.finance_level )
-              FROM
-              ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-            )
-        ) t4,
-
-        (SELECT @maxGroupLevel:=
-            (
-              SELECT
-              max( t.level )
-              FROM
-              ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-            )
-        ) t5,
         (
             select tab.* from
             (
@@ -143,24 +105,24 @@
             </choose>
             ) tab
             where 1=1
-              AND CASE WHEN @maxGroupLevel = 0 THEN false else
-                  case when @maxGroupLevel = 1 then
+              AND CASE WHEN <include refid="temp_maxGroupLevel"/> = 0 THEN false else
+                  case when <include refid="temp_maxGroupLevel"/> = 1 then
                       tab.salesmanId in
                       (
                           select
                             DISTINCT
                             case
-                              when @loginUserId in (select employee_id from partner_rela_employee) then
-                                    case when @loginUserId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2) then
+                              when <include refid="temp_employeeId"/> in (select employee_id from partner_rela_employee) then
+                                    case when <include refid="temp_employeeId"/> IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2) then
                                       employee_id
                                     else
-                                      @loginUserId
+                                      <include refid="temp_employeeId"/>
                                     end
                             else
                               null
                             end AS employee_id
                           from partner_rela_employee where partner_id in
-                          (select partner_id from partner_rela_employee where employee_id = @loginUserId)
+                          (select partner_id from partner_rela_employee where employee_id = <include refid="temp_employeeId"/>)
                           having employee_id is not null
                       )
                       else true end end
@@ -174,44 +136,6 @@
 
         <select id="selectTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
             select complex.* from
-            (SELECT @loginUserId:=(#{loginUserId})) t1
-            ,
-            (SELECT @telephoneVerifyLevel:=
-            (
-            SELECT
-            max( t.telephone_verify_level )
-            FROM
-            ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-            )
-            ) t2
-            ,
-            (SELECT @collectionLevel:=
-            (
-            SELECT
-            max( t.collection_level )
-            FROM
-            ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-            )
-            ) t3
-
-            ,
-            (SELECT @financeLevel:=
-            (
-            SELECT
-            max( t.finance_level )
-            FROM
-            ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-            )
-            ) t4,
-
-            (SELECT @maxGroupLevel:=
-                (
-                    SELECT
-                    max( t.level )
-                    FROM
-                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-                )
-            ) t5,
             (
             select task.*,
               taskdis.status      as taskDisStatus,
@@ -332,7 +256,7 @@
                           deputy.visit_verify                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_telephone_verify'">
-                          useLevelGetTaskStatus(@telephoneVerifyLevel,deputy.telephone_verify)   AS taskStatus
+                          useLevelGetTaskStatus(<include refid="temp_telephoneVerifyLevel"/>,deputy.telephone_verify)   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
                           deputy.financial_scheme                   AS taskStatus
@@ -389,7 +313,7 @@
                       <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
                           join_his.id                              AS his_id,
                           DATE_FORMAT(join_his.start_time ,'%Y-%m-%d %H:%i:%S')          AS his_start_time,
-                          useLevelGetTaskStatus(@telephoneVerifyLevel,join_his.status)   AS taskStatus
+                          useLevelGetTaskStatus(<include refid="temp_telephoneVerifyLevel"/>,join_his.status)   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_refund_apply'">
                           join_refund.id                           AS refund_id,
@@ -513,8 +437,8 @@
                       </choose>
                   </when>
                   <when test="taskDefinitionKey == 'usertask_telephone_verify'">
-                      AND useLevelGetTaskStatus(@telephoneVerifyLevel,deputy.telephone_verify) !=-1
-                      AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(@telephoneVerifyLevel,deputy.telephone_verify) != 0 else useLevelGetTaskStatus(@telephoneVerifyLevel,deputy.telephone_verify) = #{taskStatus} end
+                      AND useLevelGetTaskStatus(<include refid="temp_telephoneVerifyLevel"/>,deputy.telephone_verify) !=-1
+                      AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(<include refid="temp_telephoneVerifyLevel"/>,deputy.telephone_verify) != 0 else useLevelGetTaskStatus(<include refid="temp_telephoneVerifyLevel"/>,deputy.telephone_verify) = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
                       AND case when #{taskStatus} = 0 then deputy.financial_scheme  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
@@ -563,8 +487,8 @@
                       AND case when #{taskStatus} = 0 then join_his.status  != 0                          else join_his.status                       = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
-                      AND useLevelGetTaskStatus(@telephoneVerifyLevel,join_his.status) !=-1
-                      AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(@telephoneVerifyLevel,join_his.status) != 0 else useLevelGetTaskStatus(@telephoneVerifyLevel,join_his.status) = #{taskStatus} end
+                      AND useLevelGetTaskStatus(<include refid="temp_telephoneVerifyLevel"/>,join_his.status) !=-1
+                      AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(<include refid="temp_telephoneVerifyLevel"/>,join_his.status) != 0 else useLevelGetTaskStatus(<include refid="temp_telephoneVerifyLevel"/>,join_his.status) = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_refund_apply'">
                       AND case when #{taskStatus} = 0 then join_refund.status  != 0                          else join_refund.status                 = #{taskStatus} end
@@ -585,28 +509,28 @@
               ) tab
               where 1=1
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
-                  AND case when @collectionLevel = 7 then true
-                           when @collectionLevel = 6 then tab.sendee = @loginUserId
+                  AND case when <include refid="temp_collectionLevel"/> = 7 then true
+                           when <include refid="temp_collectionLevel"/> = 6 then tab.sendee = <include refid="temp_employeeId"/>
                   else true end
               </if>
-              AND CASE WHEN  @maxGroupLevel = 0 THEN false else
-                  case when  @maxGroupLevel = 1 then
+              AND CASE WHEN  <include refid="temp_maxGroupLevel"/> = 0 THEN false else
+                  case when  <include refid="temp_maxGroupLevel"/> = 1 then
               tab.salesmanId in
               (
               select
                 DISTINCT
               case
-                when @loginUserId in (select employee_id from partner_rela_employee) then
-                  case when @loginUserId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2) then
+                when <include refid="temp_employeeId"/> in (select employee_id from partner_rela_employee) then
+                  case when <include refid="temp_employeeId"/> IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2) then
                     employee_id
                   else
-                    @loginUserId
+                    <include refid="temp_employeeId"/>
                   end
                 else
                   null
               end AS employee_id
               from partner_rela_employee where partner_id in
-              (select partner_id from partner_rela_employee where employee_id = @loginUserId)
+              (select partner_id from partner_rela_employee where employee_id = <include refid="temp_employeeId"/>)
               having employee_id is not null
               )
               else true end end
@@ -738,9 +662,9 @@
               on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
             <if test="taskStatus != 0">
                 having
-                  case when @maxGroupLevel = 3 then 1=1
+                  case when <include refid="temp_maxGroupLevel"/> = 3 then 1=1
                        when receiveManId is not null then
-                  case when receiveManId = @loginUserId then 1=1 else 1=2 end
+                  case when receiveManId = <include refid="temp_employeeId"/> then 1=1 else 1=2 end
                   else 1=1
                   end
             </if>
@@ -748,50 +672,50 @@
         </select>
 
 
+    <sql id="temp_employeeId">
+      (SELECT (#{employeeId}))
+    </sql>
 
+    <sql id="temp_telephoneVerifyLevel">
+                 (
+                    SELECT
+                    max( t.telephone_verify_level )
+                    FROM
+                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = <include refid="temp_employeeId"/> ) t
+                 )
+    </sql>
 
+    <sql id="temp_collectionLevel">
+                 (
+                    SELECT
+                    max( t.collection_level )
+                    FROM
+                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = <include refid="temp_employeeId"/> ) t
+                 )
+    </sql>
+
+    <sql id="temp_financeLevel">
+                 (
+                    SELECT
+                    max( t.finance_level )
+                    FROM
+                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = <include refid="temp_employeeId"/> ) t
+                 )
+    </sql>
+
+    <sql id="temp_maxGroupLevel">
+                  (
+                   SELECT
+                   max( t.level )
+                   FROM
+                   ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = <include refid="temp_employeeId"/> ) t
+                  )
+    </sql>
 
 
          <select id="selectScheduleTaskList" resultType="com.yunche.loan.domain.vo.ScheduleTaskVO" >
 
             select complex.* from
-             (SELECT @employeeId:=(#{employeeId})) t1
-             ,
-             (SELECT @telephoneVerifyLevel:=
-                 (
-                    SELECT
-                    max( t.telephone_verify_level )
-                    FROM
-                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
-                 )
-             ) t2
-             ,
-             (SELECT @collectionLevel:=
-                 (
-                    SELECT
-                    max( t.collection_level )
-                    FROM
-                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
-                 )
-             ) t3
-
-             ,
-             (SELECT @financeLevel:=
-                 (
-                    SELECT
-                    max( t.finance_level )
-                    FROM
-                    ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @employeeId ) t
-                 )
-             ) t4,
-             (SELECT @maxGroupLevel:=
-              (
-                   SELECT
-                   max( t.level )
-                   FROM
-                   ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = @loginUserId ) t
-                  )
-              ) t5,
              (
              select task.*,
                     taskdis.status      as taskDisStatus,
@@ -821,7 +745,7 @@
                         jb.partner_id                                                        AS  partnerId,
                         jb.salesman_id                                                       AS  salesmanId,
                         case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
-                        case when lp.telephone_verify  &lt; @telephoneVerifyLevel and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
+                        case when lp.telephone_verify  &lt; <include refid="temp_telephoneVerifyLevel"/> and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
                         else 2 end                                                           AS filtration,
                         null                                                                 AS supplementOrderId,
                         null                                                                 AS supplementType,
@@ -844,7 +768,7 @@
                                           (
                                              SELECT name FROM user_group g
                                                 INNER JOIN
-                                             (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
+                                             (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  <include refid="temp_employeeId"/>) e
                                                 ON e.user_group_id = g.id and g.level != 1
                                           )
                                        )
@@ -860,7 +784,7 @@
                                        (
                                           SELECT name FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  <include refid="temp_employeeId"/>) e
                                              ON e.user_group_id = g.id and g.level = 1
                                        )
                                     )
@@ -876,21 +800,21 @@
                                                DISTINCT
                                              case
                                                 when
-                                                    @employeeId in (select employee_id from partner_rela_employee)
+                                                    <include refid="temp_employeeId"/> in (select employee_id from partner_rela_employee)
                                                 then
                                                    case
                                                       when
-                                                          @employeeId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+                                                          <include refid="temp_employeeId"/> IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
                                                       then
                                                           employee_id
                                                       else
-                                                          @employeeId
+                                                          <include refid="temp_employeeId"/>
                                                    end
                                                 else
                                                       null
                                              end AS employee_id
                                              from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  @employeeId)
+                                             (select partner_id from partner_rela_employee where employee_id =  <include refid="temp_employeeId"/>)
                                              having employee_id is not null
                                        )
                                     ) b on o.loan_base_info_id = b.id
@@ -956,7 +880,7 @@
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  <include refid="temp_employeeId"/>) e
                                              ON e.user_group_id = g.id
                                        )  then 1=1
                                        when
@@ -964,7 +888,7 @@
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  <include refid="temp_employeeId"/>) e
                                              ON e.user_group_id = g.id
                                        )  then
                            processId in (
@@ -977,21 +901,21 @@
                                                DISTINCT
                                              case
                                                 when
-                                                  @employeeId in (select employee_id from partner_rela_employee)
+                                                  <include refid="temp_employeeId"/> in (select employee_id from partner_rela_employee)
                                                 then
                                                    case
                                                       when
-                                                          @employeeId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+                                                          <include refid="temp_employeeId"/> IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
                                                       then
                                                          employee_id
                                                       else
-                                                          @employeeId
+                                                          <include refid="temp_employeeId"/>
                                                    end
                                                 else
                                                       null
                                              end AS employee_id
                                              from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id = @employeeId)
+                                             (select partner_id from partner_rela_employee where employee_id = <include refid="temp_employeeId"/>)
                                              having employee_id is not null
                                        )
                                     ) b on o.loan_base_info_id = b.id)
@@ -1032,7 +956,7 @@
                         jb.partner_id                                                                                   AS  partnerId,
                         jb.salesman_id                                                                                  AS  salesmanId,
                         case when his.status = 3 then 2
-                        when his.status !=3 and his.status  &lt; @telephoneVerifyLevel and his.status !=1 then 2 else 1 end             AS filtration,
+                        when his.status !=3 and his.status  &lt; <include refid="temp_telephoneVerifyLevel"/> and his.status !=1 then 2 else 1 end             AS filtration,
                         null                                                                                            AS supplementOrderId,
                         null                                                                                            AS supplementType,
                         null                                                                                            AS supplementTypeText,
@@ -1058,17 +982,17 @@
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  <include refid="temp_employeeId"/>) e
                                              ON e.user_group_id = g.id
                                        )  then 1=1
                                       when taskKey = 'usertask_financial_scheme_modify_apply_review' then
-                                            case when @telephoneVerifyLevel>1 then 1=1 else 1=2 end
+                                            case when <include refid="temp_telephoneVerifyLevel"/>>1 then 1=1 else 1=2 end
                                        when
                                        (1) in
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  <include refid="temp_employeeId"/>) e
                                              ON e.user_group_id = g.id
                                        )  then
                            processId in (
@@ -1081,21 +1005,21 @@
                                                DISTINCT
                                              case
                                                 when
-                                                    @employeeId in (select employee_id from partner_rela_employee)
+                                                    <include refid="temp_employeeId"/> in (select employee_id from partner_rela_employee)
                                                 then
                                                    case
                                                       when
-                                                        @employeeId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+                                                        <include refid="temp_employeeId"/> IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
                                                       then
                                                          employee_id
                                                       else
-                                                         @employeeId
+                                                         <include refid="temp_employeeId"/>
                                                    end
                                                 else
                                                       null
                                              end AS employee_id
                                              from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  @employeeId)
+                                             (select partner_id from partner_rela_employee where employee_id =  <include refid="temp_employeeId"/>)
                                              having employee_id is not null
                                        )
                                     ) b on o.loan_base_info_id = b.id)
@@ -1160,17 +1084,17 @@
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  <include refid="temp_employeeId"/>) e
                                              ON e.user_group_id = g.id
                                        )  then 1=1
                                       when taskKey = 'usertask_refund_apply_review' then
-                                            case when @financeLevel>1 then 1=1 else 1=2 end
+                                            case when <include refid="temp_financeLevel"/>>1 then 1=1 else 1=2 end
                                        when
                                        (1) in
                                        (
                                           SELECT level FROM user_group g
                                              INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  @employeeId) e
+                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  <include refid="temp_employeeId"/>) e
                                              ON e.user_group_id = g.id
                                        )  then
                            processId in (
@@ -1183,21 +1107,21 @@
                                                DISTINCT
                                              case
                                                 when
-                                                    @employeeId in (select employee_id from partner_rela_employee)
+                                                    <include refid="temp_employeeId"/> in (select employee_id from partner_rela_employee)
                                                 then
                                                    case
                                                       when
-                                                        @employeeId IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+                                                        <include refid="temp_employeeId"/> IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
                                                       then
                                                          employee_id
                                                       else
-                                                         @employeeId
+                                                         <include refid="temp_employeeId"/>
                                                    end
                                                 else
                                                       null
                                              end AS employee_id
                                              from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  @employeeId)
+                                             (select partner_id from partner_rela_employee where employee_id =  <include refid="temp_employeeId"/>)
                                              having employee_id is not null
                                        )
                                     ) b on o.loan_base_info_id = b.id)
@@ -1248,8 +1172,8 @@
                       INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                        having filtration = 2
                        AND
-                        case when @collectionLevel = 7 then true
-                             when @collectionLevel = 6 then sendee = @employeeId
+                        case when <include refid="temp_collectionLevel"/> = 7 then true
+                             when <include refid="temp_collectionLevel"/> = 6 then sendee = <include refid="temp_employeeId"/>
                         else false end
             )
             task
@@ -1266,9 +1190,9 @@
              on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
 
              having
-             case when @maxGroupLevel = 3 then 1=1
+             case when <include refid="temp_maxGroupLevel"/> = 3 then 1=1
                   when receiveManId is not null then
-             case when receiveManId = @employeeId then 1=1 else 1=2 end
+             case when receiveManId = <include refid="temp_employeeId"/> then 1=1 else 1=2 end
              else 1=1
              end
             <if test="key != null">

@@ -15,7 +15,7 @@ public interface TaskSchedulingDOMapper {
 
     List<ScheduleTaskVO> selectScheduleTaskList(@Param("key") String key,@Param("employeeId") Long employeeId);
 
-    List<TaskListVO> selectAppTaskList(@Param("multipartType") Integer multipartType, @Param("customer") String customer,@Param("loginUserId") Long loginUserId);
+    List<TaskListVO> selectAppTaskList(@Param("multipartType") Integer multipartType, @Param("customer") String customer,@Param("employeeId") Long employeeId);
 
     List<TaskListVO> selectTaskList(TaskListQuery taskListQuery);
 

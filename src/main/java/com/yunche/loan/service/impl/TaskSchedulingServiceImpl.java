@@ -75,7 +75,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        taskListQuery.setLoginUserId(loginUser.getId());
+        taskListQuery.setEmployeeId(loginUser.getId());
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
