@@ -634,6 +634,8 @@
     left join loan_credit_info cb on cb.customer_id = c.id and cb.type = 1
 
     left join loan_credit_info cs on cs.customer_id = c.id and cs.type = 2
+
+    where c.`status`=0
 </select>
 
     <!--客户信息-->
