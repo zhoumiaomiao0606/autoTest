@@ -35,7 +35,11 @@ public enum LoanFileEnum {
     INVOICE((byte) 19,"发票"),
     CERTIFICATE((byte) 20,"合格证/登记证书"),
     POLICY((byte) 21,"保单"),
-    PICK_UP_CAR((byte) 22,"提车合影");
+    PICK_UP_CAR((byte) 22,"提车合影"),
+    DRIVING_LICENSE((byte)23,"行驶证"),
+    ASSESSMENT_DATA((byte)24,"评估资料"),
+    PAYMENT_VOUCHER((byte)25,"打款凭证"),
+    ZIP_PACK((byte)26,"zip包");
 
     @Getter
     @Setter
