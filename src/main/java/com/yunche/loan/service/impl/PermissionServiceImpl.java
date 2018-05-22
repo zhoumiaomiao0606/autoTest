@@ -95,11 +95,11 @@ public class PermissionServiceImpl implements PermissionService {
         allUserGroupNameSet.addAll(userGroupNameList);
         allUserGroupNameSet.addAll(userGroupNameList_);
 
-        // 有[管理员]角色，则赋予所有权限
+        // TODO 有[管理员]角色，则赋予所有权限
         if (!CollectionUtils.isEmpty(allUserGroupNameSet) && allUserGroupNameSet.contains(USER_GROUP_ADMIN)) {
             // 所有角色
-            List<String> allUserGroupName = userGroupDOMapper.getAllName(VALID_STATUS);
-            allUserGroupNameSet.addAll(allUserGroupName);
+//            List<String> allUserGroupName = userGroupDOMapper.getAllName(VALID_STATUS);
+//            allUserGroupNameSet.addAll(allUserGroupName);
 
             // 配置中心
             allUserGroupNameSet.add(MENU_CONFIGURE_CENTER);
