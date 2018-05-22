@@ -27,7 +27,7 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
      * 流程替换
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void replaceActivitiVersion() {
 
         // 获取上个版本的部署ID

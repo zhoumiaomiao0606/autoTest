@@ -854,7 +854,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 紧急联系人不能少于2个
             List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanOrderDO.getLoanCustomerId(), CUST_TYPE_EMERGENCY_CONTACT, VALID_STATUS);
-            Preconditions.checkArgument(loanCustomerDOS.size() >= 2, "紧急联系人不能少于2个");
+            Preconditions.checkArgument(null != loanCustomerDOS && loanCustomerDOS.size() >= 2, "紧急联系人不能少于2个");
         }
 
         // 【业务审批】|| 【放款审批】
