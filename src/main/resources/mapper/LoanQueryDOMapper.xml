@@ -624,6 +624,7 @@
         c.postcode                AS postcode,
         c.working_years           AS working_years,
         c.duty                    AS duty,
+        c.age                     AS age,
         cb.result                 AS bank_result,
         cs.result                 AS society_result
 
