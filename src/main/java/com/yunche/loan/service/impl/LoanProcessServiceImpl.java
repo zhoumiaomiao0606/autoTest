@@ -2344,9 +2344,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     public boolean isBankAndSocialCreditRecordTask(Map<String, Object> variables, String taskDefinitionKey) {
-        Byte loanAmount = (Byte) variables.get("loanAmount");
+        Byte expectLoanAmount = (Byte) variables.get(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT);
         boolean isBankAndSocialCreditRecordTask = (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey))
-                && null != loanAmount && loanAmount >= 2;
+                && null != expectLoanAmount && expectLoanAmount >= 2;
         return isBankAndSocialCreditRecordTask;
     }
 
@@ -2358,9 +2358,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     public boolean isOnlyOneBankCreditRecordTask(Map<String, Object> variables, String taskDefinitionKey) {
-        Byte loanAmount = (Byte) variables.get("loanAmount");
+        Byte expectLoanAmount = (Byte) variables.get(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT);
         boolean isOnlyOneBankCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)
-                && null != loanAmount && loanAmount == 1;
+                && null != expectLoanAmount && expectLoanAmount == 1;
         return isOnlyOneBankCreditRecordTask;
     }
 
