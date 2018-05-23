@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.ActivitiCache;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
@@ -116,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 已绑定    operations  ID列表
         List<Long> hasBindOperationIdList = userGroupRelaAreaAuthDOMapper.getHasBindAuthEntityIdListByUserGroupIdAndType(query.getUserGroupId(), OPERATION);
-        List<Long> hasBindOperationIdListByCondition = allOperationIdListByCondition.parallelStream()
+        List<Long> hasBindOperationIdListByCondition = allOperationIdListByCondition.stream()
                 .distinct()
                 .filter(Objects::nonNull)
                 .map(e -> {
@@ -153,7 +152,7 @@ public class AuthServiceImpl implements AuthService {
         List<Long> hasBindOperationIdList = userGroupRelaAreaAuthDOMapper.getHasBindAuthEntityIdListByUserGroupIdAndType(query.getUserGroupId(), OPERATION);
         // 未绑定    operations  ID列表
         allOperationIdListByCondition.removeAll(hasBindOperationIdList);
-        List<Long> unBindOperationIdListByCondition = allOperationIdListByCondition.parallelStream()
+        List<Long> unBindOperationIdListByCondition = allOperationIdListByCondition.stream()
                 .filter(Objects::nonNull)
                 .sorted()
                 .collect(Collectors.toList());
