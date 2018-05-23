@@ -28,4 +28,15 @@ public class AppTaskListQuery extends BaseQuery {
         }
         return customer;
     }
+
+
+    Long employeeId;
+
+    Long telephoneVerifyLevel;
+
+    Long collectionLevel;
+
+    Long financeLevel;
+
+    Long maxGroupLevel;
 }
