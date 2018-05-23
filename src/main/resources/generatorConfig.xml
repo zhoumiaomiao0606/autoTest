@@ -304,12 +304,17 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
--->
+
         <table tableName="video_face_log" domainObjectName="VideoFaceLogDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
+-->
 
+        <table tableName="partner" domainObjectName="PartnerDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

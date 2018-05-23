@@ -13,6 +13,8 @@ public class PartnerDO {
 
     private Long departmentId;
 
+    private Long leaderId;
+
     private String leaderName;
 
     private String leaderMobile;

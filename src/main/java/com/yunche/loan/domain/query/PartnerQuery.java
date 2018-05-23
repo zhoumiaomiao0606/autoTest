@@ -14,6 +14,8 @@ public class PartnerQuery extends BaseQuery {
 
     private String name;
 
+    private Long leaderId;
+
     private String leaderName;
 
     private String leaderMobile;
