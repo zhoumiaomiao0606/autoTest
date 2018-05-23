@@ -11,9 +11,9 @@
         </commentGenerator>
         <!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&amp;characterEncoding=utf-8?useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;tinyInt1isBit=false"
-                        userId="yunche"
-                        password="123456">
+                        connectionURL="jdbc:mysql://rm-bp1uk11f20h4i65u9ao.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&amp;characterEncoding=utf-8?useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;tinyInt1isBit=false"
+                        userId="yuncheadmin"
+                        password="Yunche_2018">
         </jdbcConnection>
 
 
@@ -275,20 +275,37 @@
         <table tableName="loan_info_supplement" domainObjectName="LoanInfoSupplementDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
--->
 
-        <!--        <table tableName="loan_credit_info" domainObjectName="LoanCreditInfoDO"
-                       enableCountByExample="false" enableUpdateByExample="false"
-                       enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>-->
 
-<!--        <table tableName="loan_financial_plan_temp" domainObjectName="LoanFinancialPlanTempDO"
+        <table tableName="loan_credit_info" domainObjectName="LoanCreditInfoDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
+
+        <table tableName="loan_financial_plan_temp" domainObjectName="LoanFinancialPlanTempDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <property name="useActualColumnNames" value="true" />
-        </table>-->
+            <property name="useActualColumnNames" value="true"/>
+        </table>
 
 
         <table tableName="task_distribution" domainObjectName="TaskDistributionDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+
+        <table tableName="bank" domainObjectName="BankDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+        <table tableName="bank_rela_question" domainObjectName="BankRelaQuestionDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+-->
+        <table tableName="video_face_log" domainObjectName="VideoFaceLogDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

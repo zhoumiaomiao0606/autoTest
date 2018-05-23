@@ -50,7 +50,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
 
     @Override
-    public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
+    public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
@@ -69,7 +69,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     @Override
-    public ResultBean scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
+    public ResultBean<List<ScheduleTaskVO>> scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
@@ -228,30 +228,30 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
 
-    private void fillMsg(List<TaskListVO> list, String taskDefinitionKey) {
-        list.parallelStream()
-                .forEach(e -> {
-                    fillMsg(e, taskDefinitionKey);
-                });
-    }
-
-    private void fillMsg(TaskListVO taskListVO, String taskDefinitionKey) {
-
-        String supplementType = taskListVO.getSupplementType();
-        if (StringUtils.isNotBlank(supplementType)) {
-            taskListVO.setSupplementTypeText(SUPPLEMENT_TYPE_TEXT_MAP.get(Byte.valueOf(supplementType)));
-        }
-
-        String taskStatus = taskListVO.getTaskStatus();
-
-        // 1-已提交;  2-未提交;  3-打回;
-        taskListVO.setTaskType(taskStatus);
-        // 文本值
-        String taskTypeText = getTaskStatusText(taskStatus);
-        taskListVO.setTaskTypeText(taskTypeText);
-
-        taskListVO.setCurrentTask(LoanProcessEnum.getNameByCode(taskDefinitionKey));
-    }
+//    private void fillMsg(List<TaskListVO> list, String taskDefinitionKey) {
+//        list.parallelStream()
+//                .forEach(e -> {
+//                    fillMsg(e, taskDefinitionKey);
+//                });
+//    }
+//
+//    private void fillMsg(TaskListVO taskListVO, String taskDefinitionKey) {
+//
+//        String supplementType = taskListVO.getSupplementType();
+//        if (StringUtils.isNotBlank(supplementType)) {
+//            taskListVO.setSupplementTypeText(SUPPLEMENT_TYPE_TEXT_MAP.get(Byte.valueOf(supplementType)));
+//        }
+//
+//        String taskStatus = taskListVO.getTaskStatus();
+//
+//        // 1-已提交;  2-未提交;  3-打回;
+//        taskListVO.setTaskType(taskStatus);
+//        // 文本值
+//        String taskTypeText = getTaskStatusText(taskStatus);
+//        taskListVO.setTaskTypeText(taskTypeText);
+//
+//        taskListVO.setCurrentTask(LoanProcessEnum.getNameByCode(taskDefinitionKey));
+//    }
 
     public static String getTaskStatusText(String taskStatus) {
 

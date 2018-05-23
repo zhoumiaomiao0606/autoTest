@@ -303,6 +303,38 @@
             <artifactId>javase</artifactId>
             <version>3.2.0</version>
         </dependency>
+
+        <!--sdk-sdk-java-->
+        <dependency>
+            <groupId>com.bairuitech.anychat</groupId>
+            <artifactId>anychat-sdk-java</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/anychat-sdk-java.jar</systemPath>
+        </dependency>
+        <!--sdk-sdk-java-->
+
+        <dependency>
+            <groupId>com.bairuitech.anychat</groupId>
+            <artifactId>anychatbusinessserver</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/anychatbusinessserver.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.bairuitech.anychat</groupId>
+            <artifactId>anychatcallcenterserver</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/anychatcallcenterserver.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.bairuitech.anychat</groupId>
+            <artifactId>anychatsampleserver</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/anychatsampleserver.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>
@@ -345,6 +377,7 @@
                 <configuration>
                     <mainClass>com.yunche.loan.App</mainClass>
                     <executable>false</executable>
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
                 <executions>
                     <execution>
