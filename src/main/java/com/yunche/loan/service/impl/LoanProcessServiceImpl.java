@@ -2179,10 +2179,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             double actualLoanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
 
             // 预计<13W  实际>=13W
-            if (expectLoanAmount == 1 && actualLoanAmount >= 130000) {
-                variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT, expectLoanAmount);
-                variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL, actualLoanAmount);
-            }
+            variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT, expectLoanAmount);
+            variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL, actualLoanAmount);
         }
     }
 
