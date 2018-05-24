@@ -27,7 +27,7 @@
     <sequenceFlow id="flow30" name="&gt;=13W 手动OR自动打回修改" sourceRef="exclusivegateway11" targetRef="usertask_credit_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0 || action == -1}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow34" name="打回修改" sourceRef="exclusivegateway5" targetRef="exclusivegateway21">
+    <sequenceFlow id="flow34" name="打回修改" sourceRef="exclusivegateway5" targetRef="usertask_loan_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
     <endEvent id="endevent4" name="End"></endEvent>
@@ -469,7 +469,7 @@
         <omgdi:waypoint x="3036.0" y="1096.0"></omgdi:waypoint>
         <omgdi:waypoint x="3036.0" y="1245.0"></omgdi:waypoint>
         <omgdi:waypoint x="1895.0" y="1245.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1643.0" y="1096.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1895.0" y="847.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="16.0" width="44.0" x="2930.0" y="1223.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>

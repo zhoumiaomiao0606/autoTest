@@ -4,11 +4,15 @@ import lombok.Data;
 
 @Data
 public class TaskListVO {
+
+    // 未加
     private String taskDisStatus;
     private String receiveManId;
     private String receiveManName;
     private String taskId;
     private String taskKey;
+
+    // 已加
     private String id;
     private String salesmanId;
     private String partnerId;
@@ -31,12 +35,16 @@ public class TaskListVO {
     private String loanTime;
     private String downPaymentMoney;
     private String overdueNum;
+
+    // 未加
     private String taskStatus;
     private String supplementOrderId;
     private String supplementType;
     private String supplementTypeText;
     private String supplementContent;
     private String supplementStartTime;
+
+    // 已加
     private String lendDate;
     private String financial_product_name;
     private String car_price;
@@ -50,6 +58,9 @@ public class TaskListVO {
     private String sendeeName;
     private String urgeGmtCreate;
     private String currentTask;
+
+    // 未加
+
     /**
      * 任务类型：1-已提交;  2-未提交;  3-打回;
      */

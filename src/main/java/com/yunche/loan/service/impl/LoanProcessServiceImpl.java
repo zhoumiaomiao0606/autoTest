@@ -215,7 +215,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      */
     private void finishTask(ApprovalParam approval) {
-        if (!ACTION_INFO_SUPPLEMENT.equals(approval.getAction()) && null != approval.getTaskId()) {
+
+        // 非[资料增补]  &&  PASS || CANCEL
+        boolean needFinish = null != approval.getTaskId() && !ACTION_INFO_SUPPLEMENT.equals(approval.getAction())
+                && ACTION_PASS.equals(approval.getAction()) || ACTION_CANCEL.equals(approval.getAction());
+
+        if (needFinish) {
             taskDistributionService.finish(approval.getTaskId(), approval.getTaskDefinitionKey());
         }
     }
