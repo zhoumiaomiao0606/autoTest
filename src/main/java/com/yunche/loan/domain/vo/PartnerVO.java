@@ -4,7 +4,6 @@ import com.yunche.loan.domain.entity.PartnerBankAccountDO;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +18,8 @@ public class PartnerVO {
     private Long id;
 
     private String name;
+
+    private Long leaderId;
 
     private String leaderName;
 

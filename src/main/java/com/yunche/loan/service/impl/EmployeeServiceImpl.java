@@ -115,6 +115,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         Preconditions.checkArgument(TYPE_ZS.equals(employeeParam.getType()) || TYPE_WB.equals(employeeParam.getType()),
                 "员工类型非法");
 
+        // WB，必须绑定直接上级
+        if (TYPE_WB.equals(employeeParam.getType())) {
+            Preconditions.checkNotNull(employeeParam.getParentId(), "业务员直接上级不能为空");
+        }
+
         // 校验唯一属性(身份证号、手机号、邮箱、钉钉)
         checkOnlyProperty(employeeParam);
 

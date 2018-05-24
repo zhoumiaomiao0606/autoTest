@@ -10,6 +10,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
+import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.AppTaskVO;
 import com.yunche.loan.domain.vo.ScheduleTaskVO;
@@ -49,19 +50,40 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
 
     @Override
-    public ResultBean scheduleTaskList(Integer pageIndex, Integer pageSize) {
+    public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
+        Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
+        ScheduleTaskQuery query = new ScheduleTaskQuery();
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(null, loginUser.getId());
+        query.setEmployeeId(loginUser.getId());
+        query.setTelephoneVerifyLevel(telephoneVerifyLevel);
+        query.setFinanceLevel(financeLevel);
+        query.setCollectionLevel(collectionLevel);
+        query.setMaxGroupLevel(maxGroupLevel);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     @Override
-    public ResultBean scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
+    public ResultBean<List<ScheduleTaskVO>> scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
+        Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(key, loginUser.getId());
+        ScheduleTaskQuery query = new ScheduleTaskQuery();
+        query.setKey(key);
+        query.setEmployeeId(loginUser.getId());
+        query.setTelephoneVerifyLevel(telephoneVerifyLevel);
+        query.setFinanceLevel(financeLevel);
+        query.setCollectionLevel(collectionLevel);
+        query.setMaxGroupLevel(maxGroupLevel);
+        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<ScheduleTaskVO>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
@@ -75,8 +97,16 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        taskListQuery.setEmployeeId(loginUser.getId());
+        Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
+        Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
+        taskListQuery.setEmployeeId(loginUser.getId());
+        taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
+        taskListQuery.setFinanceLevel(financeLevel);
+        taskListQuery.setCollectionLevel(collectionLevel);
+        taskListQuery.setMaxGroupLevel(maxGroupLevel);
         List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
@@ -86,8 +116,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     public ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery) {
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
+        Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
-        List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery.getMultipartType(), appTaskListQuery.getCustomer(), loginUser.getId());
+        appTaskListQuery.setEmployeeId(loginUser.getId());
+        appTaskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
+        appTaskListQuery.setFinanceLevel(financeLevel);
+        appTaskListQuery.setCollectionLevel(collectionLevel);
+        appTaskListQuery.setMaxGroupLevel(maxGroupLevel);
+        List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery);
 
         List<AppTaskVO> appTaskVOList = convert(list);
 
@@ -189,30 +228,30 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
 
-    private void fillMsg(List<TaskListVO> list, String taskDefinitionKey) {
-        list.parallelStream()
-                .forEach(e -> {
-                    fillMsg(e, taskDefinitionKey);
-                });
-    }
-
-    private void fillMsg(TaskListVO taskListVO, String taskDefinitionKey) {
-
-        String supplementType = taskListVO.getSupplementType();
-        if (StringUtils.isNotBlank(supplementType)) {
-            taskListVO.setSupplementTypeText(SUPPLEMENT_TYPE_TEXT_MAP.get(Byte.valueOf(supplementType)));
-        }
-
-        String taskStatus = taskListVO.getTaskStatus();
-
-        // 1-已提交;  2-未提交;  3-打回;
-        taskListVO.setTaskType(taskStatus);
-        // 文本值
-        String taskTypeText = getTaskStatusText(taskStatus);
-        taskListVO.setTaskTypeText(taskTypeText);
-
-        taskListVO.setCurrentTask(LoanProcessEnum.getNameByCode(taskDefinitionKey));
-    }
+//    private void fillMsg(List<TaskListVO> list, String taskDefinitionKey) {
+//        list.parallelStream()
+//                .forEach(e -> {
+//                    fillMsg(e, taskDefinitionKey);
+//                });
+//    }
+//
+//    private void fillMsg(TaskListVO taskListVO, String taskDefinitionKey) {
+//
+//        String supplementType = taskListVO.getSupplementType();
+//        if (StringUtils.isNotBlank(supplementType)) {
+//            taskListVO.setSupplementTypeText(SUPPLEMENT_TYPE_TEXT_MAP.get(Byte.valueOf(supplementType)));
+//        }
+//
+//        String taskStatus = taskListVO.getTaskStatus();
+//
+//        // 1-已提交;  2-未提交;  3-打回;
+//        taskListVO.setTaskType(taskStatus);
+//        // 文本值
+//        String taskTypeText = getTaskStatusText(taskStatus);
+//        taskListVO.setTaskTypeText(taskTypeText);
+//
+//        taskListVO.setCurrentTask(LoanProcessEnum.getNameByCode(taskDefinitionKey));
+//    }
 
     public static String getTaskStatusText(String taskStatus) {
 

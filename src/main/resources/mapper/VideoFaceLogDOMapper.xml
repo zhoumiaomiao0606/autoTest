@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.VideoFaceLogDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VideoFaceLogDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="guarantee_company" jdbcType="VARCHAR" property="guaranteeCompany" />
+    <result column="customer_id" jdbcType="BIGINT" property="customerId" />
+    <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
+    <result column="customer_id_card" jdbcType="CHAR" property="customerIdCard" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="auditor_id" jdbcType="BIGINT" property="auditorId" />
+    <result column="auditor_name" jdbcType="VARCHAR" property="auditorName" />
+    <result column="action" jdbcType="TINYINT" property="action" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, order_id, guarantee_company, customer_id, customer_name, customer_id_card, path, 
+    type, auditor_id, auditor_name, action, gmt_create, gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from video_face_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from video_face_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
+    insert into video_face_log (id, order_id, guarantee_company, 
+      customer_id, customer_name, customer_id_card, 
+      path, type, auditor_id, 
+      auditor_name, action, gmt_create, 
+      gmt_modify)
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{guaranteeCompany,jdbcType=VARCHAR}, 
+      #{customerId,jdbcType=BIGINT}, #{customerName,jdbcType=VARCHAR}, #{customerIdCard,jdbcType=CHAR}, 
+      #{path,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{auditorId,jdbcType=BIGINT}, 
+      #{auditorName,jdbcType=VARCHAR}, #{action,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
+    insert into video_face_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="guaranteeCompany != null">
+        guarantee_company,
+      </if>
+      <if test="customerId != null">
+        customer_id,
+      </if>
+      <if test="customerName != null">
+        customer_name,
+      </if>
+      <if test="customerIdCard != null">
+        customer_id_card,
+      </if>
+      <if test="path != null">
+        path,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="auditorId != null">
+        auditor_id,
+      </if>
+      <if test="auditorName != null">
+        auditor_name,
+      </if>
+      <if test="action != null">
+        action,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="guaranteeCompany != null">
+        #{guaranteeCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null">
+        #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="customerName != null">
+        #{customerName,jdbcType=VARCHAR},
+      </if>
+      <if test="customerIdCard != null">
+        #{customerIdCard,jdbcType=CHAR},
+      </if>
+      <if test="path != null">
+        #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="auditorId != null">
+        #{auditorId,jdbcType=BIGINT},
+      </if>
+      <if test="auditorName != null">
+        #{auditorName,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null">
+        #{action,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
+    update video_face_log
+    <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="guaranteeCompany != null">
+        guarantee_company = #{guaranteeCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null">
+        customer_id = #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="customerName != null">
+        customer_name = #{customerName,jdbcType=VARCHAR},
+      </if>
+      <if test="customerIdCard != null">
+        customer_id_card = #{customerIdCard,jdbcType=CHAR},
+      </if>
+      <if test="path != null">
+        path = #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="auditorId != null">
+        auditor_id = #{auditorId,jdbcType=BIGINT},
+      </if>
+      <if test="auditorName != null">
+        auditor_name = #{auditorName,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null">
+        action = #{action,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
+    update video_face_log
+    set order_id = #{orderId,jdbcType=BIGINT},
+      guarantee_company = #{guaranteeCompany,jdbcType=VARCHAR},
+      customer_id = #{customerId,jdbcType=BIGINT},
+      customer_name = #{customerName,jdbcType=VARCHAR},
+      customer_id_card = #{customerIdCard,jdbcType=CHAR},
+      path = #{path,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      auditor_id = #{auditorId,jdbcType=BIGINT},
+      auditor_name = #{auditorName,jdbcType=VARCHAR},
+      action = #{action,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -87,20 +87,41 @@ public class PartnerServiceImpl implements PartnerService {
         Preconditions.checkArgument(VALID_STATUS.equals(partnerParam.getStatus()) || INVALID_STATUS.equals(partnerParam.getStatus()),
                 "状态非法");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(partnerParam.getBankAccountList()), "财务合作信息不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getEmail()), "邮箱不能为空");
 
-        // 给合伙人创建一个账号
+        // 给合伙人创建一个账号，并设置为leader
+        Long leaderAccountId = createPartnerLeaderAccount(partnerParam);
 //        createAccountIfNotExist(partnerParam.getLeaderMobile(), partnerParam.getName());
 
         // 创建实体，并返回ID
-        Long id = insertAndGetId(partnerParam);
+        Long partnerId = insertAndGetId(partnerParam);
+
+        // 绑定leader账号
+        bindEmployee(partnerId, Lists.newArrayList(leaderAccountId));
 
         // 绑定财务合作信息
-        bindPartnerBankAccount(partnerParam.getBankAccountList(), id);
+        bindPartnerBankAccount(partnerParam.getBankAccountList(), partnerId);
 
         // 绑定业务产品列表
-        bindBizModel(id, partnerParam.getAreaId(), partnerParam.getBizModelIdList());
+        bindBizModel(partnerId, partnerParam.getAreaId(), partnerParam.getBizModelIdList());
 
-        return ResultBean.ofSuccess(id, "创建成功");
+        return ResultBean.ofSuccess(partnerId, "创建成功");
+    }
+
+    /**
+     * 给合伙人创建一个账号，并设置为leader
+     *
+     * @param partnerParam
+     * @return 返回账号ID
+     */
+    private Long createPartnerLeaderAccount(PartnerParam partnerParam) {
+        EmployeeDO employeeDO = new EmployeeDO();
+        BeanUtils.copyProperties(partnerParam, employeeDO);
+
+        int count = employeeDOMapper.insertSelective(employeeDO);
+        Preconditions.checkArgument(count > 0, "创建合伙人账号失败");
+
+        return employeeDO.getId();
     }
 
     /**
@@ -111,7 +132,7 @@ public class PartnerServiceImpl implements PartnerService {
      */
     private void bindPartnerBankAccount(List<PartnerBankAccountDO> partnerBankAccountDOList, Long partnerId) {
 
-        List<PartnerBankAccountDO> partnerBankAccountDOS = partnerBankAccountDOList.parallelStream()
+        List<PartnerBankAccountDO> partnerBankAccountDOS = partnerBankAccountDOList.stream()
                 .filter(Objects::nonNull)
                 .map(e -> {
 
@@ -269,7 +290,7 @@ public class PartnerServiceImpl implements PartnerService {
             List<PartnerDO> partnerDOS = partnerDOMapper.query(query);
             if (!CollectionUtils.isEmpty(partnerDOS)) {
 
-                List<PartnerVO> partnerVOS = partnerDOS.parallelStream()
+                List<PartnerVO> partnerVOS = partnerDOS.stream()
                         .filter(Objects::nonNull)
                         .map(e -> {
                             PartnerVO partnerVO = new PartnerVO();
@@ -305,7 +326,7 @@ public class PartnerServiceImpl implements PartnerService {
             List<BizModelDO> bizModelDOS = bizModelDOMapper.getByIdList(pagingBizModelIdList);
             if (!CollectionUtils.isEmpty(bizModelDOS)) {
 
-                List<BizModelVO> bizModelVOList = bizModelDOS.parallelStream()
+                List<BizModelVO> bizModelVOList = bizModelDOS.stream()
                         .filter(Objects::nonNull)
                         .map(bizModelDO -> {
 
@@ -380,7 +401,7 @@ public class PartnerServiceImpl implements PartnerService {
             List<EmployeeDO> employeeDOS = employeeDOMapper.listEmployeeByPartnerId(query);
             if (!CollectionUtils.isEmpty(employeeDOS)) {
 
-                List<EmployeeVO> employeeVOList = employeeDOS.parallelStream()
+                List<EmployeeVO> employeeVOList = employeeDOS.stream()
                         .filter(Objects::nonNull)
                         .map(employeeDO -> {
 
@@ -458,7 +479,7 @@ public class PartnerServiceImpl implements PartnerService {
         // 账户信息
         List<PartnerBankAccountDO> partnerBankAccountDOList = partnerBankAccountDOMapper.listByPartnerId(partnerId);
         if (!CollectionUtils.isEmpty(partnerBankAccountDOList)) {
-            List<PartnerAccountVO.AccountInfo> accountInfoList = partnerBankAccountDOList.parallelStream()
+            List<PartnerAccountVO.AccountInfo> accountInfoList = partnerBankAccountDOList.stream()
                     .filter(Objects::nonNull)
                     .map(e -> {
 
@@ -567,7 +588,7 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         // update
-        bizModelRelaAreaPartnersDOS.parallelStream()
+        bizModelRelaAreaPartnersDOS.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
                     if (areaId.equals(e.getAreaId())) {
@@ -794,7 +815,7 @@ public class PartnerServiceImpl implements PartnerService {
         bizModelRelaAreaPartnersDO.setAreaId(areaId);
         List<BizModelRelaAreaPartnersDO> existBizModelRelaAreaPartnersDOS = bizModelRelaAreaPartnersDOMapper.listQuery(bizModelRelaAreaPartnersDO);
         if (!CollectionUtils.isEmpty(existBizModelRelaAreaPartnersDOS)) {
-            List<Long> existBizModelIdList = existBizModelRelaAreaPartnersDOS.parallelStream()
+            List<Long> existBizModelIdList = existBizModelRelaAreaPartnersDOS.stream()
                     .filter(e -> null != e && null != e.getBizId())
                     .map(e -> {
                         return e.getBizId();
@@ -803,7 +824,7 @@ public class PartnerServiceImpl implements PartnerService {
                     .collect(Collectors.toList());
 
             List<Long> repeatTmp = Lists.newArrayList();
-            bizModelIdList.parallelStream()
+            bizModelIdList.stream()
                     .forEach(e -> {
                         if (existBizModelIdList.contains(e)) {
                             repeatTmp.add(e);
@@ -822,7 +843,7 @@ public class PartnerServiceImpl implements PartnerService {
      * @param bizModelIdList
      */
     private void execBindBizModel(Long partnerId, Long areaId, List<Long> bizModelIdList) {
-        bizModelIdList.parallelStream()
+        bizModelIdList.stream()
                 .filter(Objects::nonNull)
                 .distinct()
                 .forEach(bizModelId -> {
@@ -848,7 +869,7 @@ public class PartnerServiceImpl implements PartnerService {
         // 去重
         List<Long> existEmployeeIdList = partnerRelaEmployeeDOMapper.getEmployeeIdListByPartnerId(partnerId);
         if (!CollectionUtils.isEmpty(existEmployeeIdList)) {
-            employeeIdList = employeeIdList.parallelStream()
+            employeeIdList = employeeIdList.stream()
                     .filter(Objects::nonNull)
                     .map(e -> {
                         if (!existEmployeeIdList.contains(e)) {
@@ -864,7 +885,7 @@ public class PartnerServiceImpl implements PartnerService {
         // 执行绑定
         if (!CollectionUtils.isEmpty(employeeIdList)) {
 
-            List<PartnerRelaEmployeeDO> partnerRelaEmployeeDOS = employeeIdList.parallelStream()
+            List<PartnerRelaEmployeeDO> partnerRelaEmployeeDOS = employeeIdList.stream()
                     .map(employeeId -> {
 
                         PartnerRelaEmployeeDO partnerRelaEmployeeDO = new PartnerRelaEmployeeDO();
@@ -909,7 +930,7 @@ public class PartnerServiceImpl implements PartnerService {
 //        List<BaseAreaDO> childBaseAreaDOList = baseAreaDOMapper.getByParentAreaId(areaId, VALID_STATUS);
 //        if (!CollectionUtils.isEmpty(childBaseAreaDOList)) {
 //
-//            childBaseAreaDOList.parallelStream()
+//            childBaseAreaDOList.stream()
 //                    .filter(Objects::nonNull)
 //                    .map(e -> {
 //
@@ -927,7 +948,7 @@ public class PartnerServiceImpl implements PartnerService {
 //        List<BaseAreaDO> childBaseAreaDOList = baseAreaDOMapper.getByParentAreaId(areaId, VALID_STATUS);
 //        if (!CollectionUtils.isEmpty(childBaseAreaDOList)) {
 //
-//            childBaseAreaDOList.parallelStream()
+//            childBaseAreaDOList.stream()
 //
 //        }
 
@@ -1011,7 +1032,7 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         // ID大小排序
-        List<Long> pageIdList = bizModelIdList.parallelStream()
+        List<Long> pageIdList = bizModelIdList.stream()
                 .sorted()
                 .collect(Collectors.toList());
 
