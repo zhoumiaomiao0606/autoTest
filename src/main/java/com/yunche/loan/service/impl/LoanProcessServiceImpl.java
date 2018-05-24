@@ -978,7 +978,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             || VISIT_VERIFY.getCode().equals(taskDefinitionKey))
                             && !MATERIAL_REVIEW.getCode().equals(loanProcessDO.getLoanApplyRejectOrginTask());
 
-                    if (isBankAndSocialCreditRecordTask || isLoanApplyVisitVerifyFilterTask) {
+                    if (isBankAndSocialCreditRecordTask) {
+                        approval.setTaskDefinitionKey(task.getTaskDefinitionKey());
+                    }
+                    // [贷款申请] && [上门家访]   -- 2个任务时，必须用[贷款申请]的KEY
+                    else if (isLoanApplyVisitVerifyFilterTask && tasks.size() >= 2) {
+                        approval.setTaskDefinitionKey(LOAN_APPLY.getCode());
+                    }
+                    // [贷款申请] && [上门家访]   -- 单个任务时，用当前KEY即可
+                    else if (isLoanApplyVisitVerifyFilterTask) {
                         approval.setTaskDefinitionKey(task.getTaskDefinitionKey());
                     }
 
