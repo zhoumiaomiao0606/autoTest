@@ -39,7 +39,11 @@ import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
+import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_SOCIAL;
 import static com.yunche.loan.config.constant.CustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
+import static com.yunche.loan.config.constant.LoanAmountConst.ACTUAL_LOAN_AMOUNT_13W;
+import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W;
+import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_LT_13W;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
@@ -85,6 +89,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Autowired
+    private LoanCreditInfoDOMapper loanCreditInfoDOMapper;
 
     @Autowired
     private LoanProcessDOMapper loanProcessDOMapper;
@@ -2206,9 +2213,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 actualLoanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
             }
 
-            // 预计<13W  实际>=13W
+            // 预计/实际贷款
             variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT, expectLoanAmount);
             variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL, actualLoanAmount);
+
+            // 预计 < 13W,但实际 >= 13W
+            if (EXPECT_LOAN_AMOUNT_LT_13W.equals(expectLoanAmount) && null != actualLoanAmount && actualLoanAmount >= ACTUAL_LOAN_AMOUNT_13W) {
+
+                List<LoanCreditInfoDO> customerIdAndType = loanCreditInfoDOMapper.getByCustomerIdAndType(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_SOCIAL);
+                // 没录过[社会征信]
+                if (CollectionUtils.isEmpty(customerIdAndType)) {
+                    // target
+                    variables.put(PROCESS_VARIABLE_TARGET, SOCIAL_CREDIT_RECORD.getCode());
+                }
+            }
         }
     }
 
@@ -2329,15 +2347,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 return;
             }
 
-            List<Task> loanApplyVisitVerifyTaskList = currentTaskList.stream()
-                    .filter(Objects::nonNull)
-                    .filter(e -> VISIT_VERIFY.getCode().equals(e.getTaskDefinitionKey())
-                            || LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(e.getTaskDefinitionKey()))
-                    .collect(Collectors.toList());
-
-            if (!CollectionUtils.isEmpty(loanApplyVisitVerifyTaskList)) {
+            if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply())) {
                 variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
             }
+
+//            List<Task> loanApplyVisitVerifyTaskList = currentTaskList.stream()
+//                    .filter(Objects::nonNull)
+//                    .filter(e -> VISIT_VERIFY.getCode().equals(e.getTaskDefinitionKey())
+//                            || LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(e.getTaskDefinitionKey()))
+//                    .collect(Collectors.toList());
+//
+//            if (!CollectionUtils.isEmpty(loanApplyVisitVerifyTaskList)) {
+//                variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
+//            } else {
+//                TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply());
+//            }
         }
     }
 
@@ -2372,7 +2396,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     public boolean isBankAndSocialCreditRecordTask(Map<String, Object> variables, String taskDefinitionKey) {
         Byte expectLoanAmount = (Byte) variables.get(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT);
         boolean isBankAndSocialCreditRecordTask = (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey))
-                && null != expectLoanAmount && expectLoanAmount >= 2;
+                && null != expectLoanAmount && expectLoanAmount >= EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W;
         return isBankAndSocialCreditRecordTask;
     }
 
@@ -2386,7 +2410,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     public boolean isOnlyOneBankCreditRecordTask(Map<String, Object> variables, String taskDefinitionKey) {
         Byte expectLoanAmount = (Byte) variables.get(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT);
         boolean isOnlyOneBankCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)
-                && null != expectLoanAmount && expectLoanAmount == 1;
+                && EXPECT_LOAN_AMOUNT_LT_13W.equals(expectLoanAmount);
         return isOnlyOneBankCreditRecordTask;
     }
 
