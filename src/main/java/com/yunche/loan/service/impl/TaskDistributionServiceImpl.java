@@ -107,7 +107,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         V.setSendeeName(employeeDO.getName());
         V.setStatus(new Byte("1"));
         V.setTaskKey(taskKey);
-        V.setReleaseCreate(new Timestamp(new Date().getTime()));
+        V.setFinishCreate(new Timestamp(new Date().getTime()));
         taskDistributionDOMapper.insertSelective(V);
     }
 
@@ -132,9 +132,9 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                 } else {
                     taskDisVO.setStatus("3");                    //别人领取
                 }
-            } else if ("3".equals(status)) {
+            } else if ("1".equals(status)){
                 taskDisVO.setStatus("1");
-            } else {
+            }else {
                 taskDisVO.setStatus("4");
             }
             taskDisVO.setSendee(taskDistributionDO.getSendee() == null?null:taskDistributionDO.getSendee().toString());

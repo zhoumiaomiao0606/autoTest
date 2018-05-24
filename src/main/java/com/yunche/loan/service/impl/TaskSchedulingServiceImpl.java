@@ -111,7 +111,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
-        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
+
         taskListQuery.setEmployeeId(loginUser.getId());
         taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
         taskListQuery.setFinanceLevel(financeLevel);
@@ -121,6 +121,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankIdList(getUserHaveBank(loginUser.getId()));
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
