@@ -946,7 +946,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void execCreditSupplementTask(ApprovalParam approval, String processInstanceId, LoanProcessDO loanProcessDO) {
         // 是否【征信增补】
-        boolean isCreditSupplementTask = CREDIT_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction());
+        boolean isCreditSupplementTask = isCreditSupplementTask(approval.getTaskDefinitionKey(), approval.getAction());
         if (!isCreditSupplementTask) {
             return;
         }
@@ -983,6 +983,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     }
 
                 });
+    }
+
+    /**
+     * 是否【征信增补】
+     *
+     * @param taskDefinitionKey
+     * @param action
+     * @return
+     */
+    private boolean isCreditSupplementTask(String taskDefinitionKey, Byte action) {
+        boolean isCreditSupplementTask = CREDIT_SUPPLEMENT.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
+        return isCreditSupplementTask;
     }
 
     /**
@@ -2170,7 +2182,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // [贷款申请] & [PASS]
-        else if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+        boolean passLoanApplyTask = LOAN_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
+        // 征信增补
+        boolean isCreditSupplementTask = isCreditSupplementTask(taskDefinitionKey, action);
+        if (passLoanApplyTask || isCreditSupplementTask) {
 
             // 预计贷款金额
             LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
