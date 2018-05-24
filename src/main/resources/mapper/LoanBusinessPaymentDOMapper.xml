@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.LoanBusinessPaymentDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanBusinessPaymentDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="application_date" jdbcType="TIMESTAMP" property="applicationDate" />
+    <result column="receive_open_bank" jdbcType="VARCHAR" property="receiveOpenBank" />
+    <result column="receive_account" jdbcType="VARCHAR" property="receiveAccount" />
+    <result column="account_number" jdbcType="VARCHAR" property="accountNumber" />
+    <result column="payment_organization" jdbcType="VARCHAR" property="paymentOrganization" />
+    <result column="is_sendback" jdbcType="TINYINT" property="isSendback" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="feature" jdbcType="VARCHAR" property="feature" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, application_date, receive_open_bank, receive_account, account_number, payment_organization, 
+    is_sendback, remark, gmt_create, gmt_modify, status, feature
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from loan_business_payment
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from loan_business_payment
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanBusinessPaymentDO">
+    insert into loan_business_payment (order_id, application_date, receive_open_bank, 
+      receive_account, account_number, payment_organization, 
+      is_sendback, remark, gmt_create, 
+      gmt_modify, status, feature
+      )
+    values (#{orderId,jdbcType=BIGINT}, #{applicationDate,jdbcType=TIMESTAMP}, #{receiveOpenBank,jdbcType=VARCHAR}, 
+      #{receiveAccount,jdbcType=VARCHAR}, #{accountNumber,jdbcType=VARCHAR}, #{paymentOrganization,jdbcType=VARCHAR}, 
+      #{isSendback,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanBusinessPaymentDO">
+    insert into loan_business_payment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="applicationDate != null">
+        application_date,
+      </if>
+      <if test="receiveOpenBank != null">
+        receive_open_bank,
+      </if>
+      <if test="receiveAccount != null">
+        receive_account,
+      </if>
+      <if test="accountNumber != null">
+        account_number,
+      </if>
+      <if test="paymentOrganization != null">
+        payment_organization,
+      </if>
+      <if test="isSendback != null">
+        is_sendback,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="feature != null">
+        feature,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="applicationDate != null">
+        #{applicationDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveOpenBank != null">
+        #{receiveOpenBank,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveAccount != null">
+        #{receiveAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="accountNumber != null">
+        #{accountNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentOrganization != null">
+        #{paymentOrganization,jdbcType=VARCHAR},
+      </if>
+      <if test="isSendback != null">
+        #{isSendback,jdbcType=TINYINT},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null">
+        #{feature,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanBusinessPaymentDO">
+    update loan_business_payment
+    <set>
+      <if test="applicationDate != null">
+        application_date = #{applicationDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiveOpenBank != null">
+        receive_open_bank = #{receiveOpenBank,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveAccount != null">
+        receive_account = #{receiveAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="accountNumber != null">
+        account_number = #{accountNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentOrganization != null">
+        payment_organization = #{paymentOrganization,jdbcType=VARCHAR},
+      </if>
+      <if test="isSendback != null">
+        is_sendback = #{isSendback,jdbcType=TINYINT},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="feature != null">
+        feature = #{feature,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanBusinessPaymentDO">
+    update loan_business_payment
+    set application_date = #{applicationDate,jdbcType=TIMESTAMP},
+      receive_open_bank = #{receiveOpenBank,jdbcType=VARCHAR},
+      receive_account = #{receiveAccount,jdbcType=VARCHAR},
+      account_number = #{accountNumber,jdbcType=VARCHAR},
+      payment_organization = #{paymentOrganization,jdbcType=VARCHAR},
+      is_sendback = #{isSendback,jdbcType=TINYINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      feature = #{feature,jdbcType=VARCHAR}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+</mapper>
