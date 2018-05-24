@@ -107,7 +107,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         V.setSendeeName(employeeDO.getName());
         V.setStatus(new Byte("1"));
         V.setTaskKey(taskKey);
-        V.setReleaseCreate(new Timestamp(new Date().getTime()));
+        V.setFinishCreate(new Timestamp(new Date().getTime()));
         taskDistributionDOMapper.insertSelective(V);
     }
 
