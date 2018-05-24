@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.UserGroupRelaBankDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.UserGroupRelaBankDO">
+    <id column="user_group_id" jdbcType="BIGINT" property="userGroupId" />
+    <id column="bank_id" jdbcType="BIGINT" property="bankId" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    user_group_id, bank_id, gmt_create, gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.UserGroupRelaBankDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user_group_rela_bank
+    where user_group_id = #{userGroupId,jdbcType=BIGINT}
+      and bank_id = #{bankId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.UserGroupRelaBankDOKey">
+    delete from user_group_rela_bank
+    where user_group_id = #{userGroupId,jdbcType=BIGINT}
+      and bank_id = #{bankId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.UserGroupRelaBankDO">
+    insert into user_group_rela_bank (user_group_id, bank_id, gmt_create, 
+      gmt_modify)
+    values (#{userGroupId,jdbcType=BIGINT}, #{bankId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.UserGroupRelaBankDO">
+    insert into user_group_rela_bank
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userGroupId != null">
+        user_group_id,
+      </if>
+      <if test="bankId != null">
+        bank_id,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userGroupId != null">
+        #{userGroupId,jdbcType=BIGINT},
+      </if>
+      <if test="bankId != null">
+        #{bankId,jdbcType=BIGINT},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.UserGroupRelaBankDO">
+    update user_group_rela_bank
+    <set>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where user_group_id = #{userGroupId,jdbcType=BIGINT}
+      and bank_id = #{bankId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.UserGroupRelaBankDO">
+    update user_group_rela_bank
+    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where user_group_id = #{userGroupId,jdbcType=BIGINT}
+      and bank_id = #{bankId,jdbcType=BIGINT}
+  </update>
+
+  <select id="getBankIdListByUserGroupId" parameterType="java.lang.Long" resultType="java.lang.Long">
+    select bank_id
+    from user_group_rela_bank
+    where user_group_id = #{userGroupId,jdbcType=BIGINT}
+  </select>
+
+</mapper>
