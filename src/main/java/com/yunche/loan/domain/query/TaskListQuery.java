@@ -1,12 +1,12 @@
 package com.yunche.loan.domain.query;
 
+import com.google.common.collect.Lists;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.web.bind.annotation.InitBinder;
-
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 
 @Data
@@ -84,6 +84,9 @@ public class TaskListQuery {
     private String isStraighten;
     private String sendee;
     private String isRepayment;
+
+    private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
+    private List<Long> bankIdList = Lists.newArrayList();//银行ID列表
 
     public String getIsStraighten() {
         if (StringUtils.isBlank(isStraighten)) {

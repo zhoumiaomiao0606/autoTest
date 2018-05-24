@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
@@ -16,22 +17,22 @@ import com.yunche.loan.domain.vo.AppTaskVO;
 import com.yunche.loan.domain.vo.ScheduleTaskVO;
 import com.yunche.loan.domain.vo.TaskListVO;
 import com.yunche.loan.domain.vo.TaskStateVO;
-import com.yunche.loan.mapper.LoanProcessDOMapper;
-import com.yunche.loan.mapper.TaskSchedulingDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.PermissionService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
-import static com.yunche.loan.config.constant.MappingConst.SUPPLEMENT_TYPE_TEXT_MAP;
 
 @Service
 public class TaskSchedulingServiceImpl implements TaskSchedulingService {
@@ -47,6 +48,15 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Resource
     private PermissionService permissionService;
+
+    @Autowired
+    private UserGroupRelaBankDOMapper userGroupRelaBankDOMapper;
+
+    @Autowired
+    private UserGroupRelaAreaDOMapper userGroupRelaAreaDOMapper;
+
+    @Autowired
+    private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
 
 
     @Override
@@ -107,6 +117,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setFinanceLevel(financeLevel);
         taskListQuery.setCollectionLevel(collectionLevel);
         taskListQuery.setMaxGroupLevel(maxGroupLevel);
+        //获取用户可见的区域
+        taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        //获取用户可见的银行
+        taskListQuery.setBankIdList(getUserHaveBank(loginUser.getId()));
         List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
@@ -293,5 +307,34 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         return taskTypeText;
     }
+    /**
+     * 获取用户可见的银行
+     * @param id
+     */
+    private List<Long> getUserHaveBank(Long id) {
+        List<Long> groupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(id);
+        List<Long> userBankIdList =Lists.newArrayList();
+        groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId->{
+            List<Long> tmpBankidList = userGroupRelaBankDOMapper.getBankIdListByUserGroupId(groupId);
+            userBankIdList.addAll(tmpBankidList);
+        });
+        return userBankIdList.parallelStream().distinct().collect(Collectors.toList());
 
+    }
+
+    /**
+     * 获取用户可见的区域
+     * @param id
+     */
+    private List<Long> getUserHaveArea(Long id) {
+        List<Long> groupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(id);
+        List<Long> userAreaList = Lists.newArrayList();
+        groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId->{
+
+            List<Long> tmpUserAreaList = userGroupRelaAreaDOMapper.getAreaIdListByUserGroupId(groupId);
+            userAreaList.addAll(tmpUserAreaList);
+        });
+        return userAreaList.parallelStream().distinct().collect(Collectors.toList());
+
+    }
 }
