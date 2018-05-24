@@ -2181,11 +2181,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT, loanBaseInfoDO.getLoanAmount());
         }
 
-        // [贷款申请] & [PASS]
-        boolean passLoanApplyTask = LOAN_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
-        // 征信增补
-        boolean isCreditSupplementTask = isCreditSupplementTask(taskDefinitionKey, action);
-        if (passLoanApplyTask || isCreditSupplementTask) {
+        // [贷款申请]
+        if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
 
             // 预计贷款金额
             LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
@@ -2195,8 +2192,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 实际贷款额度
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
-            Preconditions.checkArgument(null != loanFinancialPlanDO && null != loanFinancialPlanDO.getLoanAmount(), "贷款额不能为空");
-            double actualLoanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
+            Double actualLoanAmount = null;
+            if (ACTION_PASS.equals(action)) {
+                Preconditions.checkArgument(null != loanFinancialPlanDO && null != loanFinancialPlanDO.getLoanAmount(), "贷款额不能为空");
+                actualLoanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
+            }
 
             // 预计<13W  实际>=13W
             variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT, expectLoanAmount);

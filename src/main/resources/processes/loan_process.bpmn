@@ -16,7 +16,7 @@
     </sequenceFlow>
     <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow15" name="提交 或 弃单 或 自动打回" sourceRef="exclusivegateway20" targetRef="filter_loan_apply_visit_verify">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ (action == 1 || action == 2 || action == -1) && reject_origin_task != "usertask_material_review" && ( (expect_loan_amount == 1 &&  actual_loan_amount < 130000) || expect_loan_amount >= 2 ) }]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ action == -1 || action == 2  ||   ( action == 1 && reject_origin_task != "usertask_material_review" && ( (expect_loan_amount == 1 &&  actual_loan_amount < 130000) || expect_loan_amount >= 2 )  ) }]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_telephone_verify" name="电审" activiti:candidateGroups="管理员,总经理,培训经理,总监,电审经理,电审主管,电审专员"></userTask>
     <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
