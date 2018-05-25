@@ -3,13 +3,16 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.mapper.*;
+import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.param.UserGroupParam;
 import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.query.UserGroupQuery;
-import com.yunche.loan.domain.entity.*;
-import com.yunche.loan.domain.param.UserGroupParam;
-import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.domain.vo.AuthVO;
+import com.yunche.loan.domain.vo.BaseVO;
+import com.yunche.loan.domain.vo.EmployeeVO;
+import com.yunche.loan.domain.vo.UserGroupVO;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.UserGroupService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -57,6 +60,9 @@ public class UserGroupServiceImpl implements UserGroupService {
     @Autowired
     private UserGroupRelaAreaDOMapper userGroupRelaAreaDOMapper;
 
+    @Autowired
+    private BankDOMapper bankDOMapper;
+
 
     @Override
     @Transactional
@@ -74,10 +80,10 @@ public class UserGroupServiceImpl implements UserGroupService {
         doBindEmployee(id, userGroupParam.getEmployeeIdList());
 
 //        // TODO ：绑定业务区域
-//        doBindArea(id,userGroupParam.getAreaIdList());
+        doBindArea(id,userGroupParam.getAreaIdList());
 //
 //        // TODO ：绑定银行
-        doBindBank(id,userGroupParam.getBankIdList());
+        doBindBank(id,userGroupParam.getBankNameList());
 
         return ResultBean.ofSuccess(id, "创建成功");
     }
@@ -85,14 +91,15 @@ public class UserGroupServiceImpl implements UserGroupService {
     /**
      * 绑定银行列表
      * @param id
-     * @param bankIdList
+     * @param bankNameList
      */
-    private void doBindBank(Long id, List<Long> bankIdList) {
+    private void doBindBank(Long id, List<String> bankNameList) {
 
-        bankIdList.stream().filter(Objects::nonNull).forEach(bankId->{
+        List<BankDO> bankDOS = bankDOMapper.listAll(null);
+        bankNameList.stream().filter(Objects::nonNull).forEach(bankName->{
             UserGroupRelaBankDO userGroupRelaBankDO = new UserGroupRelaBankDO();
             userGroupRelaBankDO.setUserGroupId(id);
-            userGroupRelaBankDO.setBankId(bankId);
+            userGroupRelaBankDO.setBankId(bankDOMapper.selectIdByName(bankName));
             userGroupRelaBankDO.setGmtCreate(new Date());
             int count = userGroupRelaBankDOMapper.insert(userGroupRelaBankDO);
             Preconditions.checkArgument(count>0,"用户组绑定银行失败！");
