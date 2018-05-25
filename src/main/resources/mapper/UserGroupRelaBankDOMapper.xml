@@ -80,10 +80,11 @@
       and bank_id = #{bankId,jdbcType=BIGINT}
   </update>
 
-  <select id="getBankIdListByUserGroupId" parameterType="java.lang.Long" resultType="java.lang.Long">
-    select bank_id
-    from user_group_rela_bank
-    where user_group_id = #{userGroupId,jdbcType=BIGINT}
+  <select id="getBankNameListByUserGroupId" parameterType="java.lang.Long" resultType="java.lang.String">
+    select b.name
+    from user_group_rela_bank ub
+		left join bank b on ub.bank_id = b.id
+    where ub.user_group_id =  #{userGroupId,jdbcType=BIGINT}
   </select>
 
 </mapper>

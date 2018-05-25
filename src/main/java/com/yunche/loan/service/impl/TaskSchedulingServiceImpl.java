@@ -67,12 +67,16 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         ScheduleTaskQuery query = new ScheduleTaskQuery();
-        PageHelper.startPage(pageIndex, pageSize, true);
         query.setEmployeeId(loginUser.getId());
         query.setTelephoneVerifyLevel(telephoneVerifyLevel);
         query.setFinanceLevel(financeLevel);
         query.setCollectionLevel(collectionLevel);
         query.setMaxGroupLevel(maxGroupLevel);
+        //获取用户可见的区域
+        query.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        //获取用户可见的银行
+        query.setBankList(getUserHaveBank(loginUser.getId()));
+        PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
@@ -85,7 +89,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
-        PageHelper.startPage(pageIndex, pageSize, true);
         ScheduleTaskQuery query = new ScheduleTaskQuery();
         query.setKey(key);
         query.setEmployeeId(loginUser.getId());
@@ -93,6 +96,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setFinanceLevel(financeLevel);
         query.setCollectionLevel(collectionLevel);
         query.setMaxGroupLevel(maxGroupLevel);
+        //获取用户可见的区域
+        query.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        //获取用户可见的银行
+        query.setBankList(getUserHaveBank(loginUser.getId()));
+        PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<ScheduleTaskVO>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
@@ -120,7 +128,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         //获取用户可见的区域
         taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
-        taskListQuery.setBankIdList(getUserHaveBank(loginUser.getId()));
+        taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
@@ -135,16 +143,18 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
-        PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
         appTaskListQuery.setEmployeeId(loginUser.getId());
         appTaskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
         appTaskListQuery.setFinanceLevel(financeLevel);
         appTaskListQuery.setCollectionLevel(collectionLevel);
         appTaskListQuery.setMaxGroupLevel(maxGroupLevel);
+        //获取用户可见的区域
+        appTaskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        //获取用户可见的银行
+        appTaskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+        PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery);
-
         List<AppTaskVO> appTaskVOList = convert(list);
-
         // 取分页信息
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
@@ -312,11 +322,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
      * 获取用户可见的银行
      * @param id
      */
-    private List<Long> getUserHaveBank(Long id) {
+    private List<String> getUserHaveBank(Long id) {
         List<Long> groupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(id);
-        List<Long> userBankIdList =Lists.newArrayList();
+        List<String> userBankIdList =Lists.newArrayList();
         groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId->{
-            List<Long> tmpBankidList = userGroupRelaBankDOMapper.getBankIdListByUserGroupId(groupId);
+            List<String> tmpBankidList = userGroupRelaBankDOMapper.getBankNameListByUserGroupId(groupId);
             userBankIdList.addAll(tmpBankidList);
         });
         return userBankIdList.parallelStream().distinct().collect(Collectors.toList());

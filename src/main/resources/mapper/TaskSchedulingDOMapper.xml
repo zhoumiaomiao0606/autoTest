@@ -160,8 +160,27 @@
             <if test="customer != null">
                 AND tab.customer = #{customer}
             </if>
-            order by tab.orderGmtCreate desc
         ) complex
+        where 1=1
+          and
+        case when #{maxGroupLevel}  = 3 then 1=1
+        else 1=1
+        <if test="areaIdList != null and areaIdList.size() > 0">
+            and
+            complex.bizAreaId in
+            <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            complex.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        order by complex.orderGmtCreate desc
     </select>
 
 
@@ -659,26 +678,6 @@
                       AND tab.isRepayment = #{isRepayment}
                   </if>
               </if>
-              <choose>
-                  <when test="taskDefinitionKey == 'usertask_collection_workbench'">
-                      order by tab.urgeGmtCreate ASC
-                  </when>
-                  <when test="taskStatus == 0">
-                      order by tab.orderGmtCreate DESC ,tab.taskStatus ASC
-                  </when>
-                  <when test="taskStatus == 1">
-                      order by tab.orderGmtCreate DESC
-                  </when>
-                  <when test="taskStatus == 2">
-                      order by tab.orderGmtCreate ASC
-                  </when>
-                  <when test="taskStatus == 3">
-                      order by tab.orderGmtCreate ASC
-                  </when>
-                  <otherwise>
-                      order by tab.orderGmtCreate DESC
-                  </otherwise>
-              </choose>
               ) task
               left join
               (
@@ -702,18 +701,46 @@
                   end
             </if>
             ) complex
+                where 1=1
+                  and
                 case when #{maxGroupLevel}  = 3 then 1=1
-                     else
-                complex.bizAreaId in
-                <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-                and
-                complex.bank in
-                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
+                     else 1=1
+                <if test="areaIdList != null and areaIdList.size() > 0">
+                    and
+                    complex.bizAreaId in
+                    <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="bankList != null and bankList.size() > 0">
+                    and
+                    complex.bank in
+                    <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
                 end
+
+            <choose>
+                <when test="taskDefinitionKey == 'usertask_collection_workbench'">
+                    order by complex.urgeGmtCreate ASC
+                </when>
+                <when test="taskStatus == 0">
+                    order by complex.orderGmtCreate DESC ,complex.taskStatus ASC
+                </when>
+                <when test="taskStatus == 1">
+                    order by complex.orderGmtCreate DESC
+                </when>
+                <when test="taskStatus == 2">
+                    order by complex.orderGmtCreate ASC
+                </when>
+                <when test="taskStatus == 3">
+                    order by complex.orderGmtCreate ASC
+                </when>
+                <otherwise>
+                    order by complex.orderGmtCreate DESC
+                </otherwise>
+            </choose>
         </select>
 
 
@@ -751,6 +778,7 @@
                         CONCAT('待办',result.NAME_)                                           AS taskStatusExplanation,
                         jb.partner_id                                                        AS  partnerId,
                         jb.salesman_id                                                       AS  salesmanId,
+                        jb.area_id                                                           AS bizAreaId,
                         case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
                         case when lp.telephone_verify  &lt; #{telephoneVerifyLevel} and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
                         else 2 end                                                           AS filtration,
@@ -862,6 +890,7 @@
                         ("待办资料增补")                                                                               AS taskStatusExplanation,
                         jb.partner_id                                                                                AS  partnerId,
                         jb.salesman_id                                                                               AS  salesmanId,
+                        jb.area_id                                                                                   AS bizAreaId,
                         (2)                                                                                          AS filtration,
                         supplement.id                                                                                AS supplementOrderId,
                         supplement.type                                                                              AS supplementType,
@@ -962,6 +991,7 @@
                         else null end                                                                                   AS taskStatusExplanation,
                         jb.partner_id                                                                                   AS  partnerId,
                         jb.salesman_id                                                                                  AS  salesmanId,
+                        jb.area_id                                                                                      AS bizAreaId,
                         case when his.status = 3 then 2
                         when his.status !=3 and his.status  &lt; #{telephoneVerifyLevel} and his.status !=1 then 2 else 1 end             AS filtration,
                         null                                                                                            AS supplementOrderId,
@@ -1065,6 +1095,7 @@
                         else null end                                                                                AS taskStatusExplanation,
                         jb.partner_id                                                                                AS  partnerId,
                         jb.salesman_id                                                                               AS  salesmanId,
+                        jb.area_id                                                                                   AS bizAreaId,
                         (2)                                                                                          AS filtration,
                         null                                                                                         AS supplementOrderId,
                         null                                                                                         AS supplementType,
@@ -1158,6 +1189,7 @@
                       ('待办催收')                                                                                  AS taskStatusExplanation,
                       jb.partner_id                                                                                AS partnerId,
                       jb.salesman_id                                                                               AS salesmanId,
+                      jb.area_id                                                                                   AS bizAreaId,
                       (2)                                                                                          AS filtration,
                       null                                                                                         AS supplementOrderId,
                       null                                                                                         AS supplementType,
@@ -1205,7 +1237,26 @@
             <if test="key != null">
                 and task.taskKey = #{key,jdbcType=VARCHAR}
             </if>
-            order by task.createScheduleDate asc
          ) complex
+             where 1=1
+             and
+             case when #{maxGroupLevel}  = 3 then 1=1
+             else 1=1
+             <if test="areaIdList != null and areaIdList.size() > 0">
+                 and
+                 complex.bizAreaId in
+                 <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
+                     #{item}
+                 </foreach>
+             </if>
+             <if test="bankList != null and bankList.size() > 0">
+                 and
+                 complex.bank in
+                 <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                     #{item}
+                 </foreach>
+             </if>
+             end
+             order by complex.createScheduleDate asc
         </select>
 </mapper>
