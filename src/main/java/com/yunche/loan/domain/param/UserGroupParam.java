@@ -34,7 +34,7 @@ public class UserGroupParam extends UserGroupDO {
     /**
      * 银行ID列表
      */
-    private List<Long> bankIdList;
+    private List<String> bankNameList;
     /**
      * 区域ID列表
      */

@@ -274,4 +274,13 @@
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}
     </update>
+
+
+    <select id="selectIdByName" parameterType="java.lang.String" resultType="java.lang.Long">
+        select
+            id
+        from bank
+        where
+            name=#{name,jdbcType=VARCHAR}
+    </select>
 </mapper>
