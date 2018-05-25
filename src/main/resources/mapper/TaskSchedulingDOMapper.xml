@@ -702,6 +702,18 @@
                   end
             </if>
             ) complex
+                case when #{maxGroupLevel}  = 3 then 1=1
+                     else
+                complex.bizAreaId in
+                <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                and
+                complex.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                end
         </select>
 
 
