@@ -133,6 +133,8 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                     taskDisVO.setStatus("3");                    //别人领取
                 }
             } else if ("1".equals(status)){
+                taskDisVO.setStatus("4");
+            } else if ("3".equals(status)){
                 taskDisVO.setStatus("1");
             }else {
                 taskDisVO.setStatus("4");

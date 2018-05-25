@@ -37,30 +37,30 @@ public class JpushServiceImpl implements JpushService {
     @Override
     public void push(FlowOperationMsgDO DO) {
         flowOperationMsgDOMapper.insertSelective(DO);
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(DO.getEmployeeId(),new Byte("0"));
-        if(employeeDO!=null){
-            if(!StringUtils.isBlank(employeeDO.getMachineId())){
-                Jpush.sendToRegistrationId(employeeDO.getMachineId(),DO.getPrompt(),DO.getProcessKey());
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(DO.getEmployeeId(), new Byte("0"));
+        if (employeeDO != null) {
+            if (!StringUtils.isBlank(employeeDO.getMachineId())) {
+                Jpush.sendToRegistrationId(employeeDO.getMachineId(), DO.getPrompt(), DO.getProcessKey());
             }
         }
     }
 
-    private String nullToEmp(String str){
+    private String nullToEmp(String str) {
 
-        if(StringUtils.isBlank(str)){
+        if (StringUtils.isBlank(str)) {
             return "";
-        }else{
+        } else {
             return str;
         }
     }
 
     @Override
     public ResultBean list(Integer pageIndex, Integer pageSize) {
-        PageHelper.startPage(pageIndex,pageSize, true);
-        List<FlowOperationMsgDO> list =  flowOperationMsgDOMapper.selectByEmployeeId(SessionUtils.getLoginUser().getId());
+        PageHelper.startPage(pageIndex, pageSize, true);
+        List<FlowOperationMsgDO> list = flowOperationMsgDOMapper.selectByEmployeeId(SessionUtils.getLoginUser().getId());
         // 取分页信息
         PageInfo<FlowOperationMsgDO> pageInfo = new PageInfo<FlowOperationMsgDO>(list);
-        return ResultBean.ofSuccess(list,new Long(pageInfo.getTotal()).intValue(),pageInfo.getPageNum(),pageInfo.getPageSize());
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     @Override
