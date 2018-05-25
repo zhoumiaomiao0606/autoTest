@@ -94,6 +94,7 @@ public class PartnerServiceImpl implements PartnerService {
 //        createAccountIfNotExist(partnerParam.getLeaderMobile(), partnerParam.getName());
 
         // 创建实体，并返回ID
+        partnerParam.setLeaderId(leaderAccountId);
         Long partnerId = insertAndGetId(partnerParam);
 
         // 绑定leader账号
