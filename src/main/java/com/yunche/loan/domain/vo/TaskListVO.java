@@ -58,6 +58,9 @@ public class TaskListVO {
     private String sendeeName;
     private String urgeGmtCreate;
     private String currentTask;
+    private String creditMan;
+    private String creditDate;
+    private String paymentGtCreate;
 
     // 未加
 

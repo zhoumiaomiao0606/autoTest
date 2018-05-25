@@ -199,6 +199,10 @@
                   tab.taskStatus                                        AS taskType,
                   useGetTaskTypeText(#{taskDefinitionKey},tab.taskStatus,tab.orderStatus)    AS taskTypeText,
                   useGetCurrentTask(#{taskDefinitionKey})               AS currentTask,
+                  (select user_name from loan_process_log where order_id = tab.id and task_definition_key = #{taskDefinitionKey} order by create_time desc limit 1)
+                                                                        AS creditMan,
+                  DATE_FORMAT((select create_time from loan_process_log where order_id = tab.id and task_definition_key = #{taskDefinitionKey} order by create_time desc limit 1)
+                  ,'%Y-%m-%d %H:%i:%S')                                 AS creditDate,
                   case when tab.taskStatus = 3 then
                   (select reason from loan_reject_log where order_id = tab.id and reject_to_task = #{taskDefinitionKey} order by gmt_create DESC limit 1 )
                   else null end                                         AS  rejectReason,
@@ -289,6 +293,8 @@
                   join_f.financial_product_name                AS financial_product_name,
                   join_f.car_price                             AS car_price,
                   join_f.each_month_repay                      AS each_month_repay,
+                  DATE_FORMAT(join_bp.gmt_create,'%Y-%m-%d %H:%i:%S')
+                                                               AS paymentGtCreate,
                   <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           deputy.credit_apply                     AS taskStatus
@@ -307,6 +313,9 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_telephone_verify'">
                           useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify)   AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_business_pay'">
+                          deputy.business_pay                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
                           deputy.financial_scheme                   AS taskStatus
@@ -406,6 +415,7 @@
               left  join department join_d                 on join_d.id             = join_p.department_id
               left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
+              left  join loan_business_payment join_bp     on main.id               = join_bp.order_id
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
@@ -489,6 +499,9 @@
                   <when test="taskDefinitionKey == 'usertask_telephone_verify'">
                       AND useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify) !=-1
                       AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify) != 0 else useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify) = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_business_pay'">
+                      AND case when #{taskStatus} = 0 then deputy.business_pay  != 0                              else deputy.business_pay                               = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
                       AND case when #{taskStatus} = 0 then deputy.financial_scheme  != 0                          else deputy.financial_scheme                           = #{taskStatus} end
