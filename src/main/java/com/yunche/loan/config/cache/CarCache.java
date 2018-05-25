@@ -2,14 +2,13 @@ package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
-import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.CarBrandDO;
 import com.yunche.loan.domain.entity.CarDetailDO;
+import com.yunche.loan.domain.entity.CarModelDO;
+import com.yunche.loan.domain.vo.CarCascadeVO;
 import com.yunche.loan.mapper.CarBrandDOMapper;
 import com.yunche.loan.mapper.CarDetailDOMapper;
 import com.yunche.loan.mapper.CarModelDOMapper;
-import com.yunche.loan.domain.entity.CarBrandDO;
-import com.yunche.loan.domain.entity.CarModelDO;
-import com.yunche.loan.domain.vo.CarCascadeVO;
 import com.yunche.loan.service.CarService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -71,8 +70,8 @@ public class CarCache {
     @Scheduled(cron = "0 0 4 ? * MON")
     public void importCar() {
         logger.info("importCar start   >>>>>");
-        ResultBean<Void> resultBean = carService.importCar();
-        logger.info("importCar result >>>>> {}", JSON.toJSONString(resultBean));
+//        ResultBean<Void> resultBean = carService.importCar();
+//        logger.info("importCar result >>>>> {}", JSON.toJSONString(resultBean));
         logger.info("importCar end   >>>>>");
     }
 
