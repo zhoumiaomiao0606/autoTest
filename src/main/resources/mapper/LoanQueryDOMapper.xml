@@ -146,6 +146,14 @@
           ON e.user_group_id = g.id
           )  then 1=1
         when
+        (2) in
+        (
+        SELECT level FROM user_group g
+        INNER JOIN
+        (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        )  then 1=1
+        when
           (1) in
           (
           SELECT level FROM user_group g
@@ -208,6 +216,14 @@
             (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
             ON e.user_group_id = g.id
           )  then 1=1
+            when
+            (2) in
+            (
+            SELECT level FROM user_group g
+            INNER JOIN
+            (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
+            ON e.user_group_id = g.id
+            )  then 1=1
           when
           (1) in
           (
