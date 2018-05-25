@@ -122,6 +122,7 @@ public class PartnerServiceImpl implements PartnerService {
         employeeDO.setEmail(partnerParam.getLeaderEmail());
         employeeDO.setMobile(partnerParam.getLeaderMobile());
         employeeDO.setDingDing(partnerParam.getLeaderDingDing());
+        employeeDO.setStatus(VALID_STATUS);
 
         int count = employeeDOMapper.insertSelective(employeeDO);
         Preconditions.checkArgument(count > 0, "创建合伙人账号失败");
@@ -628,6 +629,20 @@ public class PartnerServiceImpl implements PartnerService {
         fillEmployeeNum(partnerVO);
         // 财务合作信息
         fillBankAccount(partnerDO.getId(), partnerVO);
+        // 团队负责人
+        fillLeader(partnerVO.getLeaderId(), partnerVO);
+    }
+
+    private void fillLeader(Long leaderId, PartnerVO partnerVO) {
+
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(leaderId, null);
+
+        if (null != employeeDO) {
+            partnerVO.setLeaderName(employeeDO.getName());
+            partnerVO.setLeaderEmail(employeeDO.getEmail());
+            partnerVO.setLeaderMobile(employeeDO.getMobile());
+            partnerVO.setLeaderDingDing(employeeDO.getDingDing());
+        }
     }
 
     /**

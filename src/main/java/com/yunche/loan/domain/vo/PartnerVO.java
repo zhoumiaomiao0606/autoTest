@@ -25,6 +25,12 @@ public class PartnerVO {
 
     private String leaderMobile;
 
+    private String leaderIdCard;
+
+    private String leaderEmail;
+
+    private String leaderDingDing;
+
     private String tel;
 
     private String fax;
