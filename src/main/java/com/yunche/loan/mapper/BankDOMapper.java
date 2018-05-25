@@ -32,4 +32,6 @@ public interface BankDOMapper {
     List<BankDO> query(BankQuery query);
 
     int count(BankQuery query);
+
+    Long selectIdByName(String name);
 }
