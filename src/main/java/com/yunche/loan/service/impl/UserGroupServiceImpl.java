@@ -79,10 +79,10 @@ public class UserGroupServiceImpl implements UserGroupService {
         // 绑定员工列表
         doBindEmployee(id, userGroupParam.getEmployeeIdList());
 
-//        // TODO ：绑定业务区域
+        // 绑定业务区域
         doBindArea(id,userGroupParam.getAreaIdList());
-//
-//        // TODO ：绑定银行
+
+        // 绑定银行
         doBindBank(id,userGroupParam.getBankNameList());
 
         return ResultBean.ofSuccess(id, "创建成功");
