@@ -122,7 +122,10 @@ public class PartnerServiceImpl implements PartnerService {
         employeeDO.setEmail(partnerParam.getLeaderEmail());
         employeeDO.setMobile(partnerParam.getLeaderMobile());
         employeeDO.setDingDing(partnerParam.getLeaderDingDing());
+
         employeeDO.setStatus(VALID_STATUS);
+        employeeDO.setGmtCreate(new Date());
+        employeeDO.setGmtModify(new Date());
 
         int count = employeeDOMapper.insertSelective(employeeDO);
         Preconditions.checkArgument(count > 0, "创建合伙人账号失败");
