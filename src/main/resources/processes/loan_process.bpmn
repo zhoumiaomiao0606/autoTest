@@ -67,7 +67,6 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_business_review" name="业务审批" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,放款专员"></userTask>
-    <sequenceFlow id="flow60" sourceRef="parallelgateway3" targetRef="usertask_business_pay"></sequenceFlow>
     <userTask id="usertask_material_review" name="资料审核" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,纸审"></userTask>
     <userTask id="usertask_apply_license_plate_deposit_info" name="车辆抵押" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,抵押专员,业务内勤"></userTask>
     <userTask id="usertask_car_insurance" name="车辆保险" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
@@ -167,9 +166,7 @@
     <exclusiveGateway id="exclusivegateway21" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow138" sourceRef="parallelgateway7" targetRef="exclusivegateway21"></sequenceFlow>
     <sequenceFlow id="flow139" sourceRef="exclusivegateway21" targetRef="parallelgateway5"></sequenceFlow>
-    <sequenceFlow id="flow146" sourceRef="parallelgateway3" targetRef="usertask_material_review">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
-    </sequenceFlow>
+    <sequenceFlow id="flow146" sourceRef="parallelgateway3" targetRef="usertask_material_review"></sequenceFlow>
     <sequenceFlow id="flow148" sourceRef="usertask_credit_apply" targetRef="exclusivegateway7"></sequenceFlow>
     <sequenceFlow id="flow149" sourceRef="parallelgateway3" targetRef="servicetask_financial_scheme"></sequenceFlow>
     <sequenceFlow id="flow155" name="自动打回" sourceRef="exclusivegateway9" targetRef="usertask_credit_apply">
@@ -227,8 +224,7 @@
     <sequenceFlow id="flow177" sourceRef="exclusivegateway13" targetRef="filter_loan_apply_visit_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 && target == "filter_loan_apply_visit_verify"}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_business_pay" name="业务付款" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤"></userTask>
-    <sequenceFlow id="flow178" sourceRef="usertask_business_pay" targetRef="usertask_business_review"></sequenceFlow>
+    <sequenceFlow id="flow178" sourceRef="parallelgateway3" targetRef="usertask_business_review"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -424,9 +420,6 @@
       <bpmndi:BPMNShape bpmnElement="usertask_collection_workbench" id="BPMNShape_usertask_collection_workbench">
         <omgdc:Bounds height="55.0" width="105.0" x="2555.0" y="361.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_business_pay" id="BPMNShape_usertask_business_pay">
-        <omgdc:Bounds height="55.0" width="105.0" x="3432.0" y="574.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="36.0" y="1100.0"></omgdi:waypoint>
         <omgdi:waypoint x="202.0" y="1100.0"></omgdi:waypoint>
@@ -549,11 +542,6 @@
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="16.0" width="44.0" x="3131.0" y="1059.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow60" id="BPMNEdge_flow60">
-        <omgdi:waypoint x="3322.0" y="1056.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3322.0" y="600.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3432.0" y="601.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow63" id="BPMNEdge_flow63">
         <omgdi:waypoint x="3322.0" y="1096.0"></omgdi:waypoint>
@@ -872,7 +860,8 @@
         <omgdi:waypoint x="2054.0" y="1103.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow178" id="BPMNEdge_flow178">
-        <omgdi:waypoint x="3537.0" y="601.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3322.0" y="1056.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3322.0" y="601.0"></omgdi:waypoint>
         <omgdi:waypoint x="3820.0" y="601.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
