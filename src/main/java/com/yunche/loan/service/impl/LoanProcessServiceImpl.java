@@ -198,6 +198,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 执行任务
         execTask(task, variables, approval, loanOrderDO, startTaskList);
 
+        // 获取提交之后的待执行任务列表
+        List<Task> endTaskList = getCurrentTaskList(loanOrderDO.getProcessInstId());
+
         // 流程数据同步
         syncProcess(startTaskList, approval);
 
