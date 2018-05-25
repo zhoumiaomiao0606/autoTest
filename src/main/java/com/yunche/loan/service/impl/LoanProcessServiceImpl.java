@@ -1338,6 +1338,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanProcessDO.setBankLendRecord(taskProcessStatus);
         } else if (CUSTOMER_REPAY_PLAN.getCode().equals(taskDefinitionKey)) {
             loanProcessDO.setCustomerRepayPlan(taskProcessStatus);
+        } else if (BUSINESS_PAY.getCode().equals(taskDefinitionKey)) {
+            loanProcessDO.setBusinessPay(taskProcessStatus);
         }
     }
 
