@@ -1234,7 +1234,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (!CollectionUtils.isEmpty(newTaskList)) {
 
-            newTaskList.parallelStream()
+            newTaskList.stream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
@@ -1270,7 +1270,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void updateNextTaskProcessStatus(List<Task> nextTaskList, LoanProcessDO loanProcessDO, Byte taskProcessStatus) {
 
         if (!CollectionUtils.isEmpty(nextTaskList)) {
-            nextTaskList.parallelStream()
+            nextTaskList.stream()
                     .filter(Objects::nonNull)
                     .forEach(task -> {
                         // 未提交
@@ -1829,7 +1829,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         List<TaskStateVO> taskStateVOS = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(runTaskList)) {
-            taskStateVOS = runTaskList.parallelStream()
+            taskStateVOS = runTaskList.stream()
                     .filter(Objects::nonNull)
                     .filter(task -> !BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(task.getTaskDefinitionKey())
                             && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())
