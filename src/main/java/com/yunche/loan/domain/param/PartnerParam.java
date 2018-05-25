@@ -13,11 +13,11 @@ import java.util.List;
 @Data
 public class PartnerParam extends PartnerDO {
 
-    private String idCard;
+    private String leaderIdCard;
 
-    private String email;
+    private String leaderEmail;
 
-    private String dingDing;
+    private String leaderDingDing;
 
     /**
      * 业务产品ID列表

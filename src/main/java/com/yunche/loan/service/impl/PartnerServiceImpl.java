@@ -87,7 +87,7 @@ public class PartnerServiceImpl implements PartnerService {
         Preconditions.checkArgument(VALID_STATUS.equals(partnerParam.getStatus()) || INVALID_STATUS.equals(partnerParam.getStatus()),
                 "状态非法");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(partnerParam.getBankAccountList()), "财务合作信息不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getEmail()), "邮箱不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getLeaderEmail()), "邮箱不能为空");
 
         // 给合伙人创建一个账号，并设置为leader
         Long leaderAccountId = createPartnerLeaderAccount(partnerParam);
@@ -116,7 +116,12 @@ public class PartnerServiceImpl implements PartnerService {
      */
     private Long createPartnerLeaderAccount(PartnerParam partnerParam) {
         EmployeeDO employeeDO = new EmployeeDO();
-        BeanUtils.copyProperties(partnerParam, employeeDO);
+
+        employeeDO.setName(partnerParam.getLeaderName());
+        employeeDO.setIdCard(partnerParam.getLeaderIdCard());
+        employeeDO.setEmail(partnerParam.getLeaderEmail());
+        employeeDO.setMobile(partnerParam.getLeaderMobile());
+        employeeDO.setDingDing(partnerParam.getLeaderDingDing());
 
         int count = employeeDOMapper.insertSelective(employeeDO);
         Preconditions.checkArgument(count > 0, "创建合伙人账号失败");
