@@ -643,8 +643,9 @@ public class PartnerServiceImpl implements PartnerService {
 
         if (null != employeeDO) {
             partnerVO.setLeaderName(employeeDO.getName());
-            partnerVO.setLeaderEmail(employeeDO.getEmail());
             partnerVO.setLeaderMobile(employeeDO.getMobile());
+            partnerVO.setLeaderIdCard(employeeDO.getIdCard());
+            partnerVO.setLeaderEmail(employeeDO.getEmail());
             partnerVO.setLeaderDingDing(employeeDO.getDingDing());
         }
     }
