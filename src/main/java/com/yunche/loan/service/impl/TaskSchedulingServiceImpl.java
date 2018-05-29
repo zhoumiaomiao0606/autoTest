@@ -18,6 +18,7 @@ import com.yunche.loan.domain.vo.ScheduleTaskVO;
 import com.yunche.loan.domain.vo.TaskListVO;
 import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.PermissionService;
 import com.yunche.loan.service.TaskSchedulingService;
@@ -58,15 +59,20 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
 
+    @Autowired
+    private EmployeeService employeeService;
+
 
     @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+        List<Long> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         ScheduleTaskQuery query = new ScheduleTaskQuery();
+        query.setJuniorIds(juniorIds);
         query.setEmployeeId(loginUser.getId());
         query.setTelephoneVerifyLevel(telephoneVerifyLevel);
         query.setFinanceLevel(financeLevel);
@@ -85,11 +91,13 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+        List<Long> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         ScheduleTaskQuery query = new ScheduleTaskQuery();
+        query.setJuniorIds(juniorIds);
         query.setKey(key);
         query.setEmployeeId(loginUser.getId());
         query.setTelephoneVerifyLevel(telephoneVerifyLevel);
@@ -115,11 +123,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+        List<Long> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
-
+        taskListQuery.setJuniorIds(juniorIds);
         taskListQuery.setEmployeeId(loginUser.getId());
         taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
         taskListQuery.setFinanceLevel(financeLevel);
@@ -139,10 +148,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     public ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery) {
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+        List<Long> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
+        appTaskListQuery.setJuniorIds(juniorIds);
         appTaskListQuery.setEmployeeId(loginUser.getId());
         appTaskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
         appTaskListQuery.setFinanceLevel(financeLevel);

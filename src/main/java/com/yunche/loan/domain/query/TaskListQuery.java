@@ -32,11 +32,15 @@ public class TaskListQuery {
 
     Long maxGroupLevel;
 
+    List<Long> juniorIds = Lists.newArrayList();
+
     @NotBlank
     private String taskDefinitionKey;
 
     @NotNull
     private Integer taskStatus;
+
+
 
     //查询条件
     private boolean fuse = false;

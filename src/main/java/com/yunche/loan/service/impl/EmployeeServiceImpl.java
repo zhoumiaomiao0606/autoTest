@@ -538,7 +538,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<Long> getSelfAndCascadeChildIdList(Long parentId) {
 
         List<Long> cascadeChildIdList = employeeDOMapper.getCascadeChildIdList(parentId);
-
+        if(cascadeChildIdList == null){
+            cascadeChildIdList = Lists.newArrayList();
+        }
         cascadeChildIdList.add(parentId);
         cascadeChildIdList.removeAll(Collections.singleton(null));
 

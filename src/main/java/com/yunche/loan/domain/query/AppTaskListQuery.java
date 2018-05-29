@@ -42,6 +42,8 @@ public class AppTaskListQuery extends BaseQuery {
 
     Long maxGroupLevel;
 
+    List<Long> juniorIds = Lists.newArrayList();
+
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
     private List<String> bankList = Lists.newArrayList();//银行ID列表
 }

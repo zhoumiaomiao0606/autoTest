@@ -136,27 +136,13 @@
             </choose>
             ) tab
             where 1=1
-              AND CASE WHEN #{maxGroupLevel}  = 0 THEN false else
-                  case when #{maxGroupLevel}  = 1 then
+              AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+                       when #{maxGroupLevel}  = 1 then
                       tab.salesmanId in
-                      (
-                          select
-                            DISTINCT
-                            case
-                              when #{employeeId} in (select employee_id from partner_rela_employee) then
-                                    case when #{employeeId} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2) then
-                                      employee_id
-                                    else
-                                      #{employeeId}
-                                    end
-                            else
-                              null
-                            end AS employee_id
-                          from partner_rela_employee where partner_id in
-                          (select partner_id from partner_rela_employee where employee_id = #{employeeId})
-                          having employee_id is not null
-                      )
-                      else true end end
+                        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                      else true end
             <if test="customer != null">
                 AND tab.customer = #{customer}
             </if>
@@ -576,27 +562,13 @@
                            when #{collectionLevel}  = 6 then tab.sendee = #{employeeId}
                   else true end
               </if>
-              AND CASE WHEN  #{maxGroupLevel}  = 0 THEN false else
-                  case when  #{maxGroupLevel}  = 1 then
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+                     when  #{maxGroupLevel} = 1 then
               tab.salesmanId in
-              (
-              select
-                DISTINCT
-              case
-                when #{employeeId} in (select employee_id from partner_rela_employee) then
-                  case when #{employeeId} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2) then
-                    employee_id
-                  else
-                    #{employeeId}
-                  end
-                else
-                  null
-              end AS employee_id
-              from partner_rela_employee where partner_id in
-              (select partner_id from partner_rela_employee where employee_id = #{employeeId})
-              having employee_id is not null
-              )
-              else true end end
+                  <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                      #{item}
+                  </foreach>
+              else true end
               <if test="orderId != null">
                   AND tab.id = #{orderId}
               </if>
@@ -794,12 +766,12 @@
                         null                                                                 AS refund_id,
                         null                                                                 AS sendee,
 
-             case when lp.order_status = 1 and  lp.loan_apply = 3  and
+                        case when lp.order_status = 1 and  lp.loan_apply = 3  and
                         (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
                         then false else true end                                             AS canUpdateLoanApply
                               from
-                        (
-                           SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
+                              (
+                                SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
                                  inner join
                                        ACT_RU_IDENTITYLINK I
                                        ON I.TASK_ID_ = RES.ID_
@@ -809,60 +781,10 @@
                                              SELECT name FROM user_group g
                                                 INNER JOIN
                                              (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId}) e
-                                                ON e.user_group_id = g.id and g.level != 1
+                                                ON e.user_group_id = g.id
                                           )
                                        )
-                              union
-                              select tab_u.* from
-                                 (
-                                    SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
-                                       inner join
-                                    ACT_RU_IDENTITYLINK I
-                                    ON I.TASK_ID_ = RES.ID_
-                                    WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' AND
-                                    ( I.GROUP_ID_ IN
-                                       (
-                                          SELECT name FROM user_group g
-                                             INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId}) e
-                                             ON e.user_group_id = g.id and g.level = 1
-                                       )
-                                    )
-                                 ) tab_u
-                              inner join
-                              (
-                              SELECT process_inst_id FROM loan_order o
-                                    INNER JOIN
-                              (
-                                    SELECT id FROM loan_base_info WHERE salesman_id IN
-                                       (
-                                       select
-                                               DISTINCT
-                                             case
-                                                when
-                                                    #{employeeId} in (select employee_id from partner_rela_employee)
-                                                then
-                                                   case
-                                                      when
-                                                          #{employeeId} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
-                                                      then
-                                                          employee_id
-                                                      else
-                                                          #{employeeId}
-                                                   end
-                                                else
-                                                      null
-                                             end AS employee_id
-                                             from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  #{employeeId})
-                                             having employee_id is not null
-                                       )
-                                    ) b on o.loan_base_info_id = b.id
-                                 ) tab_s
-                                 on tab_u.PROC_INST_ID_  =  tab_s.process_inst_id
                               ) result
-
-
                               INNER JOIN loan_order jorder     ON jorder.process_inst_id = result.PROC_INST_ID_
                               LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
                               LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
@@ -915,54 +837,7 @@
                               LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
-                     having filtration = 2 and
-                           case when
-                                    (3) in
-                                       (
-                                          SELECT level FROM user_group g
-                                             INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId}) e
-                                             ON e.user_group_id = g.id
-                                       )  then 1=1
-                                       when
-                                       (1) in
-                                       (
-                                          SELECT level FROM user_group g
-                                             INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId}) e
-                                             ON e.user_group_id = g.id
-                                       )  then
-                           processId in (
-                           SELECT process_inst_id FROM loan_order o
-                                    INNER JOIN
-                              (
-                                    SELECT id FROM loan_base_info WHERE salesman_id IN
-                                       (
-                                       select
-                                               DISTINCT
-                                             case
-                                                when
-                                                  #{employeeId} in (select employee_id from partner_rela_employee)
-                                                then
-                                                   case
-                                                      when
-                                                          #{employeeId} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
-                                                      then
-                                                         employee_id
-                                                      else
-                                                          #{employeeId}
-                                                   end
-                                                else
-                                                      null
-                                             end AS employee_id
-                                             from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id = #{employeeId})
-                                             having employee_id is not null
-                                       )
-                                    ) b on o.loan_base_info_id = b.id)
-                              else 1=2 end
-
-
+                     having filtration = 2
               union all
 
                SELECT
@@ -1018,54 +893,9 @@
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                      having filtration = 2 and
-                           case
-                                      when
-                                      (3) in
-                                       (
-                                          SELECT level FROM user_group g
-                                             INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId}) e
-                                             ON e.user_group_id = g.id
-                                       )  then 1=1
-                                      when taskKey = 'usertask_financial_scheme_modify_apply_review' then
-                                            case when #{telephoneVerifyLevel}>1 then 1=1 else 1=2 end
-                                       when
-                                       (1) in
-                                       (
-                                          SELECT level FROM user_group g
-                                             INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId}) e
-                                             ON e.user_group_id = g.id
-                                       )  then
-                           processId in (
-                           SELECT process_inst_id FROM loan_order o
-                                    INNER JOIN
-                              (
-                                    SELECT id FROM loan_base_info WHERE salesman_id IN
-                                       (
-                                       select
-                                               DISTINCT
-                                             case
-                                                when
-                                                    #{employeeId} in (select employee_id from partner_rela_employee)
-                                                then
-                                                   case
-                                                      when
-                                                        #{employeeId} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
-                                                      then
-                                                         employee_id
-                                                      else
-                                                         #{employeeId}
-                                                   end
-                                                else
-                                                      null
-                                             end AS employee_id
-                                             from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  #{employeeId})
-                                             having employee_id is not null
-                                       )
-                                    ) b on o.loan_base_info_id = b.id)
-                              else 1=2 end
+                           case when taskKey = 'usertask_financial_scheme_modify_apply_review' then
+                                case when #{telephoneVerifyLevel}>1 then true else false end
+                            else true end
 
                union all
 
@@ -1121,54 +951,9 @@
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                      having filtration = 2 and
-                           case
-                                      when
-                                      (3) in
-                                       (
-                                          SELECT level FROM user_group g
-                                             INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId}) e
-                                             ON e.user_group_id = g.id
-                                       )  then 1=1
-                                      when taskKey = 'usertask_refund_apply_review' then
-                                            case when #{financeLevel} >1 then 1=1 else 1=2 end
-                                       when
-                                       (1) in
-                                       (
-                                          SELECT level FROM user_group g
-                                             INNER JOIN
-                                          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId}) e
-                                             ON e.user_group_id = g.id
-                                       )  then
-                           processId in (
-                           SELECT process_inst_id FROM loan_order o
-                                    INNER JOIN
-                              (
-                                    SELECT id FROM loan_base_info WHERE salesman_id IN
-                                       (
-                                       select
-                                               DISTINCT
-                                             case
-                                                when
-                                                    #{employeeId} in (select employee_id from partner_rela_employee)
-                                                then
-                                                   case
-                                                      when
-                                                        #{employeeId} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
-                                                      then
-                                                         employee_id
-                                                      else
-                                                         #{employeeId}
-                                                   end
-                                                else
-                                                      null
-                                             end AS employee_id
-                                             from partner_rela_employee where partner_id in
-                                             (select partner_id from partner_rela_employee where employee_id =  #{employeeId})
-                                             having employee_id is not null
-                                       )
-                                    ) b on o.loan_base_info_id = b.id)
-                              else 1=2 end
+                           case when taskKey = 'usertask_refund_apply_review' then
+                                case when #{financeLevel} >1 then true else false end
+                            else true end
              union all
 
              SELECT
@@ -1228,9 +1013,16 @@
              taskdis
              on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
              and taskdis.status = 2
-             having
-              case when #{maxGroupLevel}  = 3 then 1=1
-                   when receiveManId is not null then
+             having true
+             and case when #{maxGroupLevel}  = 0 then false
+                      when  #{maxGroupLevel} = 1 then
+                      task.salesmanId in
+                          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                              #{item}
+                          </foreach>
+                    else true end
+             and case when #{maxGroupLevel}  = 3 then 1=1
+                      when receiveManId is not null then
                     case when receiveManId = #{employeeId} then 1=1 else 1=2 end
                    else 1=1
               end
