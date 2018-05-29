@@ -31,6 +31,9 @@
     </sql>
 
     <sql id="Base_Query_List">
+        <if test="id != null">
+            AND id = #{id}
+        </if>
         <if test="name != null and name != '' ">
             AND name LIKE CONCAT('%',#{name},'%')
         </if>
