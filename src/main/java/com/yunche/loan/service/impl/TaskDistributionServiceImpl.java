@@ -28,21 +28,26 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         if(taskId == null || StringUtils.isBlank(taskKey)){
             throw new BizException("必须传入任务id和任务key");
         }
+        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
 
-        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectLastTaskDistributionGroupByTaskKey(taskId,taskKey);
         if(taskDistributionDO!=null){
             Byte status = taskDistributionDO.getStatus();
             if(status.toString().equals("2")){
                 throw new BizException("该任务已被领取,正在执行中");
+            }else if(status.toString().equals("1")) {
+                throw new BizException("该任务已被完成");
+            }else{
+                throw new BizException("该任务状态异常");
             }
         }
         EmployeeDO employeeDO = SessionUtils.getLoginUser();
         TaskDistributionDO V = new TaskDistributionDO();
         V.setTaskId(taskId);
+        V.setFinishCreate(new Timestamp(new Date().getTime()));
         V.setSendee(employeeDO.getId());
         V.setSendeeName(employeeDO.getName());
         V.setStatus(new Byte("2"));
-        V.setTaskKey(taskKey);
+        V.setGetCreate(new Timestamp(new Date().getTime()));
         taskDistributionDOMapper.insertSelective(V);
     }
 
@@ -53,7 +58,8 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
             throw new BizException("必须传入任务id和任务key");
         }
 
-        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectLastTaskDistributionGroupByTaskKey(taskId,taskKey);
+        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
+
 
         if(taskDistributionDO==null) {
             throw new BizException("该任务无法被释放");
@@ -69,14 +75,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
             throw new BizException("该任务只能被领取人释放");
         }
 
-        TaskDistributionDO V = new TaskDistributionDO();
-        V.setTaskId(taskId);
-        V.setSendee(employeeDO.getId());
-        V.setSendeeName(employeeDO.getName());
-        V.setStatus(new Byte("3"));
-        V.setTaskKey(taskKey);
-        V.setReleaseCreate(new Timestamp(new Date().getTime()));
-        taskDistributionDOMapper.insertSelective(V);
+        taskDistributionDOMapper.deleteByPrimaryKey(taskId,taskKey);
     }
 
     //完成
@@ -85,10 +84,10 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         if(taskId == null || StringUtils.isBlank(taskKey)){
             throw new BizException("必须传入任务id和任务key");
         }
-        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectLastTaskDistributionGroupByTaskKey(taskId,taskKey);
+        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
 
         if(taskDistributionDO==null) {
-            throw new BizException("该任务无法被完成");
+            throw new BizException("该任务状态无法被完成");
         }
 
         Byte status = taskDistributionDO.getStatus();
@@ -103,12 +102,12 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
         TaskDistributionDO V = new TaskDistributionDO();
         V.setTaskId(taskId);
+        V.setTaskKey(taskKey);
         V.setSendee(employeeDO.getId());
         V.setSendeeName(employeeDO.getName());
         V.setStatus(new Byte("1"));
-        V.setTaskKey(taskKey);
         V.setFinishCreate(new Timestamp(new Date().getTime()));
-        taskDistributionDOMapper.insertSelective(V);
+        taskDistributionDOMapper.updateByPrimaryKeySelective(V);
     }
 
     @Override
@@ -118,7 +117,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         }
         TaskDisVO taskDisVO = new TaskDisVO();
 
-        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectLastTaskDistributionGroupByTaskKey(taskId, taskKey);
+        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
         if (taskDistributionDO == null) {
             taskDisVO.setStatus("1");
             return taskDisVO;
@@ -134,10 +133,8 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                 }
             } else if ("1".equals(status)){
                 taskDisVO.setStatus("4");
-            } else if ("3".equals(status)){
-                taskDisVO.setStatus("1");
             }else {
-                taskDisVO.setStatus("4");
+                throw new BizException("该任务状态异常");
             }
             taskDisVO.setSendee(taskDistributionDO.getSendee() == null?null:taskDistributionDO.getSendee().toString());
             taskDisVO.setSendeeName(taskDistributionDO.getSendeeName());

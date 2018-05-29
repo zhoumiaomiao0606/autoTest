@@ -694,17 +694,11 @@
               ) task
               left join
               (
-                select main.* from
-                  (select task_id,max(get_create) AS get_create,task_key from task_distribution GROUP BY task_key,task_id) t
-                inner join
-                  (select * from task_distribution) main
-                on main.task_id = t.task_id and main.get_create = t.get_create and main.task_key = t.task_key
-              <if test="taskStatus == 2 or taskStatus == 3">
-                  HAVING main.status = 2
-              </if>
+                select * from task_distribution
               )
               taskdis
               on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
+              where case when task.taskStatus = 3  then status = 2 else 1=1 end
             <if test="taskStatus == 2 or taskStatus == 3">
                 having
                   case when #{maxGroupLevel}  = 3 then 1=1
