@@ -64,7 +64,9 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
         //业务付款单
         LoanBusinessPaymentDO loanBusinessPaymentDO = loanBusinessPaymentDOMapper.selectByPrimaryKey(orderId);
         LoanBusinessPaymentVO loanBusinessPaymentVO = new LoanBusinessPaymentVO();
-        BeanUtils.copyProperties(loanBusinessPaymentDO,loanBusinessPaymentVO);
+        if(loanBusinessPaymentDO!=null){
+            BeanUtils.copyProperties(loanBusinessPaymentDO,loanBusinessPaymentVO);
+        }
         if(TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())){
             loanBusinessPaymentVO.setIsSendback(K_YORN_YES);
         }else{
