@@ -104,12 +104,6 @@
         limit #{startRow}, #{pageSize}
     </select>
 
-    <!-- getCascadeChildIdList -->
-    <select id="getCascadeChildIdList" parameterType="java.lang.Long" resultType="java.lang.Long">
-        select id from employee
-        WHERE parent_id = #{parentId}
-    </select>
-
     <!-- getAllOnlyProperty -->
     <select id="getAllOnlyProperty" resultMap="BaseResultMap">
         select id_card, mobile, email, ding_ding

@@ -41,6 +41,10 @@ public class EmployeeCache {
      */
     private static final String EMPLOYEE_WB_CASCADE_CACHE_KEY = "cascade:cache:employee:wb";
     /**
+     * 获取所有 级联子级
+     */
+    private static final String EMPLOYEE_CHILD_CASCADE_CACHE_KEY = "cascade:cache:employee:child";
+    /**
      * ID-BaseDO缓存
      */
     private static final String EMPLOYEE_ALL_CACHE_KEY = "all:cache:employee";
@@ -101,6 +105,86 @@ public class EmployeeCache {
     }
 
     /**
+     * 获取所有 级联子级ID列表
+     *
+     * @param parentId
+     * @return
+     */
+    public List<Long> getCascadeChildIdList(Long parentId) {
+        // get
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
+        String result = boundValueOps.get();
+
+        if (StringUtils.isNotBlank(result)) {
+
+            Map<String, BaseVO> idBaseDOMap = JSON.parseObject(result, Map.class);
+
+            if (!CollectionUtils.isEmpty(idBaseDOMap)) {
+
+                Collection<BaseVO> allEmployee = idBaseDOMap.values();
+
+                List<Long> cascadeChildIdList = Lists.newArrayList();
+
+                fillCascadeChildIdList(allEmployee, parentId, cascadeChildIdList, 20);
+
+                return cascadeChildIdList;
+            }
+        }
+
+        refreshAll();
+
+        // get
+        result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+
+            Map<String, BaseVO> idBaseDOMap = JSON.parseObject(result, Map.class);
+
+            if (!CollectionUtils.isEmpty(idBaseDOMap)) {
+
+                Collection<BaseVO> allEmployee = idBaseDOMap.values();
+
+                List<Long> cascadeChildIdList = Lists.newArrayList();
+
+                fillCascadeChildIdList(allEmployee, parentId, cascadeChildIdList, 20);
+
+                return cascadeChildIdList;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 递归填充 级联子级ID列表
+     *
+     * @param allEmployee
+     * @param parentId
+     * @param cascadeChildIdList 级联子级ID容器
+     * @param limit              递归限制次数
+     */
+    private void fillCascadeChildIdList(Collection<BaseVO> allEmployee, Long parentId, List<Long> cascadeChildIdList, int limit) {
+
+        limit--;
+        if (limit < 0) {
+            return;
+        }
+
+        int finalLimit = limit;
+        allEmployee.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    Long selfId = e.getId();
+                    Long parentId_ = e.getParentId();
+
+                    if (parentId.equals(parentId_)) {
+                        cascadeChildIdList.add(parentId_);
+                        fillCascadeChildIdList(allEmployee, selfId, cascadeChildIdList, finalLimit);
+                    }
+
+                });
+    }
+
+    /**
      * 通过ID获取
      *
      * @param userId
@@ -111,11 +195,10 @@ public class EmployeeCache {
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
-            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
+            Map<String, BaseVO> idBaseDOMap = JSON.parseObject(result, Map.class);
             if (!CollectionUtils.isEmpty(idBaseDOMap)) {
-                JSONObject baseDOMap = idBaseDOMap.get(String.valueOf(userId));
-                if (!CollectionUtils.isEmpty(baseDOMap)) {
-                    BaseVO baseVO = JSON.toJavaObject(baseDOMap, BaseVO.class);
+                BaseVO baseVO = idBaseDOMap.get(String.valueOf(userId));
+                if (null != baseVO) {
                     return baseVO;
                 }
             }
@@ -127,11 +210,10 @@ public class EmployeeCache {
         // get
         result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
-            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
+            Map<String, BaseVO> idBaseDOMap = JSON.parseObject(result, Map.class);
             if (!CollectionUtils.isEmpty(idBaseDOMap)) {
-                JSONObject baseDOMap = idBaseDOMap.get(String.valueOf(userId));
-                if (!CollectionUtils.isEmpty(baseDOMap)) {
-                    BaseVO baseVO = JSON.toJavaObject(baseDOMap, BaseVO.class);
+                BaseVO baseVO = idBaseDOMap.get(String.valueOf(userId));
+                if (null != baseVO) {
                     return baseVO;
                 }
             }

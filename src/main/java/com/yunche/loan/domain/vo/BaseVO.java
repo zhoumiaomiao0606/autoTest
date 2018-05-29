@@ -13,6 +13,8 @@ public class BaseVO {
 
     private String name;
 
+    private Long parentId;
+
     public BaseVO() {
     }
 
