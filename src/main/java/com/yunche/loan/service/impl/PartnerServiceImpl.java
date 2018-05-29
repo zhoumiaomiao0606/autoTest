@@ -75,6 +75,9 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
+
 
     @Override
     @Transactional
@@ -265,6 +268,13 @@ public class PartnerServiceImpl implements PartnerService {
         // fillMsg
         fillMsg(partnerDO, partnerVO);
 
+        List<Long> areaIdList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(id);
+        List<BaseAreaDO> areaDeail =  areaIdList.parallelStream().map(e->{
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
+            return baseAreaDO;
+        }).collect(Collectors.toList());
+
+        partnerVO.setBaseAreaDOS(areaDeail);
         return ResultBean.ofSuccess(partnerVO);
     }
 
@@ -554,6 +564,25 @@ public class PartnerServiceImpl implements PartnerService {
         bankSet.removeAll(Collections.singleton(null));
 
         return ResultBean.ofSuccess(bankSet);
+    }
+
+    /**
+     * 更新合伙人上牌地
+     * @param partnerParam
+     * @return
+     */
+    @Override
+    public ResultBean updatePartnerArea(PartnerParam partnerParam) {
+        Preconditions.checkNotNull(partnerParam.getId(),"合伙人编号不能为空");
+        partnerRelaAreaDOMapper.deleteAllByPartnerId(partnerParam.getId());
+        partnerParam.getAreaIdList().stream().filter(Objects :: nonNull).forEach(areaId->{
+            PartnerRelaAreaDO partnerRelaAreaDO = new PartnerRelaAreaDO();
+            partnerRelaAreaDO.setPartnerId(partnerParam.getId());
+            partnerRelaAreaDO.setAreaId(areaId);
+            partnerRelaAreaDO.setGmtCreate(new Date());
+            partnerRelaAreaDOMapper.insert(partnerRelaAreaDO);
+        });
+        return ResultBean.ofSuccess(null,"合伙人上牌地区域保存成功");
     }
 
 

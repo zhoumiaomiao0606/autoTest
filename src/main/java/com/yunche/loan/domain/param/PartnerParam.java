@@ -28,4 +28,10 @@ public class PartnerParam extends PartnerDO {
      * 关联银行卡账号列表
      */
     private List<PartnerBankAccountDO> bankAccountList;
+
+    /**
+     * 上牌地列表
+     */
+
+    private List<Long> areaIdList;
 }

@@ -39,4 +39,5 @@ public class UserGroupParam extends UserGroupDO {
      * 区域ID列表
      */
     private List<Long> areaIdList;
+
 }

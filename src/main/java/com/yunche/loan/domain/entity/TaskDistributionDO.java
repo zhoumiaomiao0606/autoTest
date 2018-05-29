@@ -5,10 +5,10 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class TaskDistributionDO {
-    private Long id;
-
+public class TaskDistributionDO{
     private Long taskId;
+
+    private String taskKey;
 
     private Long sendee;
 
@@ -18,9 +18,5 @@ public class TaskDistributionDO {
 
     private Date finishCreate;
 
-    private Date releaseCreate;
-
     private Byte status;
-
-    private String taskKey;
 }

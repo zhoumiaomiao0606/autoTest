@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.entity.BaseAreaDO;
 import lombok.Data;
 
 import java.util.Date;
@@ -27,4 +28,10 @@ public class UserGroupVO {
     private Date gmtModify;
 
     private Byte status;
+
+    private List<String> bankNameList;
+
+    private List<Long> areaIdList;
+
+    List<BaseAreaDO> baseAreaDOList;
 }

@@ -6,14 +6,11 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface TaskDistributionDOMapper {
-
-    TaskDistributionDO selectLastTaskDistributionGroupByTaskKey(@Param("taskId") Long taskId, @Param("taskKey") String taskKey);
-
-    int deleteByPrimaryKey(Long id);
+    int deleteByPrimaryKey(@Param("taskId") Long taskId,@Param("taskKey") String taskKey);
 
     int insertSelective(TaskDistributionDO record);
 
-    TaskDistributionDO selectByPrimaryKey(Long id);
+    TaskDistributionDO selectByPrimaryKey(@Param("taskId") Long taskId,@Param("taskKey") String taskKey);
 
     int updateByPrimaryKeySelective(TaskDistributionDO record);
 }
