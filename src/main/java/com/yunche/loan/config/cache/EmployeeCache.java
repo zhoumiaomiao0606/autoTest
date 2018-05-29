@@ -1,6 +1,7 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -9,6 +10,7 @@ import com.yunche.loan.mapper.EmployeeDOMapper;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.vo.CascadeVO;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundValueOperations;
@@ -117,11 +119,18 @@ public class EmployeeCache {
 
         if (StringUtils.isNotBlank(result)) {
 
-            Map<String, BaseVO> idBaseDOMap = JSON.parseObject(result, Map.class);
+            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
 
             if (!CollectionUtils.isEmpty(idBaseDOMap)) {
 
-                Collection<BaseVO> allEmployee = idBaseDOMap.values();
+                List<BaseVO> allEmployee = idBaseDOMap.values().stream()
+                        .filter(Objects::nonNull)
+                        .map(jsonObject -> {
+
+                            BaseVO baseVO = JSON.toJavaObject(jsonObject, BaseVO.class);
+                            return baseVO;
+                        })
+                        .collect(Collectors.toList());
 
                 List<Long> cascadeChildIdList = Lists.newArrayList();
 
@@ -137,11 +146,18 @@ public class EmployeeCache {
         result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
 
-            Map<String, BaseVO> idBaseDOMap = JSON.parseObject(result, Map.class);
+            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
 
             if (!CollectionUtils.isEmpty(idBaseDOMap)) {
 
-                Collection<BaseVO> allEmployee = idBaseDOMap.values();
+                List<BaseVO> allEmployee = idBaseDOMap.values().stream()
+                        .filter(Objects::nonNull)
+                        .map(jsonObject -> {
+
+                            BaseVO baseVO = JSON.toJavaObject(jsonObject, BaseVO.class);
+                            return baseVO;
+                        })
+                        .collect(Collectors.toList());
 
                 List<Long> cascadeChildIdList = Lists.newArrayList();
 
