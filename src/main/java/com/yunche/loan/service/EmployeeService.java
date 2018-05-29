@@ -20,7 +20,7 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    ResultBean<Long> create(EmployeeParam employeeParam) ;
+    ResultBean<Long> create(EmployeeParam employeeParam);
 
     ResultBean<Void> update(EmployeeDO employeeDO);
 
@@ -47,4 +47,12 @@ public interface EmployeeService {
     ResultBean<Void> logout();
 
     ResultBean<Void> editPassword(EmployeeParam employeeParam);
+
+    /**
+     * 获取 自身 和 级联子级 ID列表
+     *
+     * @param parentId
+     * @return
+     */
+    List<Long> getSelfAndCascadeChildIdList(Long parentId);
 }

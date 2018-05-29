@@ -28,6 +28,9 @@
     </sql>
 
     <sql id="Base_Query_List">
+        <if test="id != null">
+            AND id = #{id}
+        </if>
         <if test="name != null and name != '' ">
             AND name LIKE CONCAT('%',#{name},'%')
         </if>
@@ -99,6 +102,12 @@
         </where>
         ORDER BY gmt_create DESC
         limit #{startRow}, #{pageSize}
+    </select>
+
+    <!-- getCascadeChildIdList -->
+    <select id="getCascadeChildIdList" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select id from employee
+        WHERE parent_id = #{parentId}
     </select>
 
     <!-- getAllOnlyProperty -->

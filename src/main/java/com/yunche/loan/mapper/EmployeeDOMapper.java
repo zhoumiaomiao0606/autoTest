@@ -11,6 +11,7 @@ import java.util.List;
 
 @Mapper
 public interface EmployeeDOMapper {
+
     void setMachineIdForNull(Long id);
 
     int deleteByPrimaryKey(Long id);
@@ -99,4 +100,12 @@ public interface EmployeeDOMapper {
      * @return
      */
     String getNameById(Long visitSalesmanId);
+
+    /**
+     * 获取所有 级联子级ID列表
+     *
+     * @param parentId
+     * @return
+     */
+    List<Long> getCascadeChildIdList(Long parentId);
 }

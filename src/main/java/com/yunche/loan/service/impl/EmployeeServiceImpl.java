@@ -534,6 +534,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ResultBean.ofSuccess(null, "密码修改成功，请重新登录！");
     }
 
+    @Override
+    public List<Long> getSelfAndCascadeChildIdList(Long parentId) {
+
+        List<Long> cascadeChildIdList = employeeDOMapper.getCascadeChildIdList(parentId);
+
+        cascadeChildIdList.add(parentId);
+        cascadeChildIdList.removeAll(Collections.singleton(null));
+
+        return cascadeChildIdList;
+    }
+
     /**
      * 校验唯一属性 (身份证号、手机号、邮箱、钉钉)
      *
