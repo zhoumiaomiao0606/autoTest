@@ -2,9 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
-import com.yunche.loan.domain.entity.LoanFileDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.VehicleInformationDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -22,6 +20,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
@@ -45,6 +44,15 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
     @Autowired
     private LoanCarInfoDOMapper loanCarInfoDOMapper;
 
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+
     @Override
     public RecombinationVO detail(Long orderId) {
         VehicleInformationVO vehicleInformationVO = loanQueryDOMapper.selectVehicleInformation(orderId);
@@ -56,6 +64,28 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
             universalCustomerVO.setFiles(files);
         }
 
+        Long loanBaseInfoId = loanOrderDOMapper.selectByPrimaryKey(orderId, null).getLoanBaseInfoId();
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+
+        List<Long> areaList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(loanBaseInfoDO.getPartnerId());
+        List<BaseAreaDO> areaDeail =  areaList.parallelStream().map(e->{
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
+            return baseAreaDO;
+        }).collect(Collectors.toList());//允许的上牌地列表
+        vehicleInformationVO.setAbleApplyLicensePlateAreaList(areaDeail);
+
+        if(vehicleInformationVO.getApply_license_plate_area()!=null){
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationVO.getApply_license_plate_area()), VALID_STATUS);
+            vehicleInformationVO.setHasApplyLicensePlateArea(baseAreaDO);
+            String tmpApplyLicensePlateArea=null;
+            if(baseAreaDO.getParentAreaName()!=null){
+                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+" "+baseAreaDO.getAreaName();
+            }else{
+                tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+            }
+            vehicleInformationVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
+        }
         RecombinationVO<VehicleInformationVO> recombinationVO = new RecombinationVO<VehicleInformationVO>();
         recombinationVO.setInfo(vehicleInformationVO);
         recombinationVO.setCustomers(customers);
@@ -66,6 +96,9 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         types.add(new Byte("21"));
         types.add(new Byte("22"));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId,types));
+
+
+
         return recombinationVO;
     }
 

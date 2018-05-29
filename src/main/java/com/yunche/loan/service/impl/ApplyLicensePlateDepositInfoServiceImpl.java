@@ -3,22 +3,27 @@ package com.yunche.loan.service.impl;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO;
+import com.yunche.loan.domain.entity.BaseAreaDO;
+import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.VehicleInformationDO;
 import com.yunche.loan.domain.param.ApplyLicensePlateDepositInfoUpdateParam;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
-import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.ApplyLicensePlateDepositInfoDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.VehicleInformationDOMapper;
+import com.yunche.loan.domain.vo.ApplyLicensePlateDepositInfoVO;
+import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
+import com.yunche.loan.domain.vo.UniversalCustomerVO;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.ApplyLicensePlateDepositInfoService;
 import com.yunche.loan.service.VehicleInformationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 @Service
 @Transactional
@@ -36,10 +41,18 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
     @Resource
     private VehicleInformationService vehicleInformationService;
 
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
-
         ApplyLicensePlateDepositInfoVO applyLicensePlateDepositInfoVO = loanQueryDOMapper.selectApplyLicensePlateDepositInfo(orderId);
 
         List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
@@ -47,6 +60,27 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
         for(UniversalCustomerVO universalCustomerVO:customers){
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
+        }
+
+        Long loanBaseInfoId = loanOrderDOMapper.selectByPrimaryKey(orderId, null).getLoanBaseInfoId();
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+        List<Long> areaList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(loanBaseInfoDO.getPartnerId());
+        List<BaseAreaDO> areaDeail =  areaList.parallelStream().map(e->{
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
+            return baseAreaDO;
+        }).collect(Collectors.toList());//允许的上牌地列表
+        applyLicensePlateDepositInfoVO.setAbleApplyLicensePlateAreaList(areaDeail);
+
+        if(applyLicensePlateDepositInfoVO.getApply_license_plate_area()!=null){
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(applyLicensePlateDepositInfoVO.getApply_license_plate_area()), VALID_STATUS);
+            applyLicensePlateDepositInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
+            String tmpApplyLicensePlateArea=null;
+            if(baseAreaDO.getParentAreaName()!=null){
+                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+" "+baseAreaDO.getAreaName();
+            }else{
+                tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+            }
+            applyLicensePlateDepositInfoVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
         }
 
         RecombinationVO<ApplyLicensePlateDepositInfoVO> recombinationVO = new RecombinationVO<ApplyLicensePlateDepositInfoVO>();

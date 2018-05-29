@@ -1,6 +1,9 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.entity.BaseAreaDO;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class VehicleInformationVO {
@@ -42,4 +45,7 @@ public class VehicleInformationVO {
     private String down_payment_money;
     private String first_register_date;
     private String customize_brand;
+
+    private List<BaseAreaDO> AbleApplyLicensePlateAreaList;
+    private BaseAreaDO hasApplyLicensePlateArea;
 }

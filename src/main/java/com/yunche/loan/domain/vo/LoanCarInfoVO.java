@@ -1,6 +1,6 @@
 package com.yunche.loan.domain.vo;
 
-import com.yunche.loan.domain.entity.VehicleInformationDO;
+import com.yunche.loan.domain.entity.BaseAreaDO;
 import lombok.Data;
 
 import java.util.Date;
@@ -42,6 +42,9 @@ public class LoanCarInfoVO {
 
     private String applyLicensePlateArea;
 
+    //合伙人关联的上牌地
+    private List<BaseAreaDO> ableApplyLicensePlateAreaList;
+
     private String licensePlateType;
 
     private String color;
@@ -53,6 +56,8 @@ public class LoanCarInfoVO {
     private Date firstRegisterDate;
 
     private Byte businessSource;
+
+    private BaseAreaDO hasApplyLicensePlateArea;
 
     /**
      * 业务员

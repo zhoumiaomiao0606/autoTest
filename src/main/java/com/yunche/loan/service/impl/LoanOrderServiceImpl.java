@@ -5,11 +5,11 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.LoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.TaskService;
@@ -29,12 +29,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.CustomerConst.*;
+import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_BANK;
+import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_SOCIAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
-import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_ACTION;
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
 import static com.yunche.loan.config.constant.MultipartTypeConst.MULTIPART_TYPE_CUSTOMER_LOAN_DONE;
 
 /**
@@ -132,6 +134,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private PermissionService permissionService;
+
+    @Autowired
+    private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
 
 
     @Override
@@ -541,6 +546,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         Long loanCarInfoId = loanOrderDOMapper.getLoanCarInfoIdById(orderId);
 
+        Long loanBaseInfoId = loanOrderDOMapper.selectByPrimaryKey(orderId, null).getLoanBaseInfoId();
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+
+        List<Long> areaList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(loanBaseInfoDO.getPartnerId());
+        List<BaseAreaDO> areaDeail =  areaList.parallelStream().map(e->{
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
+            return baseAreaDO;
+        }).collect(Collectors.toList());//允许的上牌地列表
+        loanCarInfoVO.setAbleApplyLicensePlateAreaList(areaDeail);
+
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanCarInfoId);
         if (null != loanCarInfoDO) {
             BeanUtils.copyProperties(loanCarInfoDO, loanCarInfoVO);
@@ -557,7 +573,16 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
         if (vehicleInformationDO != null) {
-            loanCarInfoVO.setApplyLicensePlateArea(vehicleInformationDO.getApply_license_plate_area());
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
+            loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
+            String tmpApplyLicensePlateArea=null;
+//            loanCarInfoVO.setApplyLicensePlateArea(vehicleInformationDO.getApply_license_plate_area());
+            if(baseAreaDO.getParentAreaName()!=null){
+                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+" "+baseAreaDO.getAreaName();
+            }else{
+                tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+            }
+            loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());
