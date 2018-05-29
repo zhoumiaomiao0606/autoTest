@@ -536,15 +536,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<Long> getSelfAndCascadeChildIdList(Long parentId) {
+        Preconditions.checkNotNull(parentId, "parentId不能为空");
 
-        List<Long> cascadeChildIdList = employeeDOMapper.getCascadeChildIdList(parentId);
-        if(cascadeChildIdList == null){
-            cascadeChildIdList = Lists.newArrayList();
-        }
-        cascadeChildIdList.add(parentId);
-        cascadeChildIdList.removeAll(Collections.singleton(null));
+        List<Long> cascadeChildIdList = employeeCache.getCascadeChildIdList(parentId);
 
-        return cascadeChildIdList;
+        List<Long> selfAndCascadeChildIdList = Lists.newArrayList(parentId);
+        selfAndCascadeChildIdList.addAll(cascadeChildIdList);
+        selfAndCascadeChildIdList.removeAll(Collections.singleton(null));
+
+        return selfAndCascadeChildIdList;
     }
 
     /**
