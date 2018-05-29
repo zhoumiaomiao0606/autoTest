@@ -21,4 +21,6 @@ public interface UserGroupRelaAreaDOMapper {
     int updateByUserGroupId(UserGroupRelaAreaDO userGroupRelaAreaDO);
 
     int deleteByPrimaryKey(UserGroupRelaAreaDOKey userGroupRelaAreaDOKey);
+
+    int deleteAllByUserGroupId(Long userGroupId);
 }

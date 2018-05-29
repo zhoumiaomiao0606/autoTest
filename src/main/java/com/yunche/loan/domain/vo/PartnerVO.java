@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.entity.PartnerBankAccountDO;
 import lombok.Data;
 
@@ -77,4 +78,7 @@ public class PartnerVO {
      * 财务合作信息列表
      */
     private List<PartnerBankAccountDO> bankAccountList = Collections.EMPTY_LIST;
+
+
+    private List<BaseAreaDO> baseAreaDOS =Collections.EMPTY_LIST;
 }

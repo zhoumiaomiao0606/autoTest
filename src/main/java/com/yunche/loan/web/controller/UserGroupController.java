@@ -178,4 +178,26 @@ public class UserGroupController {
                                        @RequestParam("type") Byte type) {
         return userGroupService.unbindAuth(id, authIds, type);
     }
+
+    /**
+     * 修改用户组关联的区域
+     * @param userGroupParam
+     * @return
+     */
+    @PostMapping(value = "/updatearea")
+    public ResultBean<Void> modifyArea(@RequestBody UserGroupParam userGroupParam){
+
+        return userGroupService.updateUserArea(userGroupParam);
+    }
+
+
+    /**
+     * 修改用户组关联的银行
+     * @param userGroupParam
+     * @return
+     */
+    @PostMapping(value = "/updatebank")
+    public ResultBean<Void> modifybank(@RequestBody UserGroupParam userGroupParam){
+        return userGroupService.updateUserBank(userGroupParam);
+    }
 }

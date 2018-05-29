@@ -120,4 +120,9 @@
       and area_id = #{areaId,jdbcType=BIGINT}
   </update>
 
+    <delete id="deleteAllByUserGroupId" parameterType="java.lang.Long" >
+        delete from user_group_rela_area
+        where user_group_id = #{userGroupId,jdbcType=BIGINT}
+    </delete>
+
 </mapper>

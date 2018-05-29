@@ -43,4 +43,9 @@ public interface UserGroupService {
     ResultBean<Void> bindAuth(Long id, Long areaId, String authIds, Byte type);
 
     ResultBean<Void> unbindAuth(Long id, String authIds, Byte type);
+
+
+    ResultBean updateUserArea(UserGroupParam userGroupParam);
+
+    ResultBean updateUserBank(UserGroupParam userGroupParam);
 }

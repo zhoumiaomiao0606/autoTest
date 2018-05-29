@@ -87,4 +87,11 @@
     where ub.user_group_id =  #{userGroupId,jdbcType=BIGINT}
   </select>
 
+  <delete id="deleteAllByUserGroupId" parameterType="java.lang.Long">
+
+    delete from user_group_rela_bank
+    where user_group_id = #{userGroupId,jdbcType=BIGINT}
+  </delete>
+
+
 </mapper>

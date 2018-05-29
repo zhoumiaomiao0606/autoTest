@@ -173,4 +173,11 @@ public class PartnerController {
     public ResultBean<Set<String>> listBank(@RequestParam("employeeId") Long employeeId) {
         return partnerService.listBank(employeeId);
     }
+
+
+    @PostMapping(value = "/updatearea")
+    public ResultBean modifyPartnerArea(@RequestBody PartnerParam partnerParam){
+        return partnerService.updatePartnerArea(partnerParam);
+
+    }
 }

@@ -8,10 +8,7 @@ import com.yunche.loan.domain.param.UserGroupParam;
 import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.query.UserGroupQuery;
-import com.yunche.loan.domain.vo.AuthVO;
-import com.yunche.loan.domain.vo.BaseVO;
-import com.yunche.loan.domain.vo.EmployeeVO;
-import com.yunche.loan.domain.vo.UserGroupVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.UserGroupService;
 import org.apache.commons.lang3.StringUtils;
@@ -96,6 +93,7 @@ public class UserGroupServiceImpl implements UserGroupService {
     private void doBindBank(Long id, List<String> bankNameList) {
 
         List<BankDO> bankDOS = bankDOMapper.listAll(null);
+
         bankNameList.stream().filter(Objects::nonNull).forEach(bankName->{
             UserGroupRelaBankDO userGroupRelaBankDO = new UserGroupRelaBankDO();
             userGroupRelaBankDO.setUserGroupId(id);
@@ -163,6 +161,18 @@ public class UserGroupServiceImpl implements UserGroupService {
 
         fillDepartment(userGroupDO.getDepartmentId(), userGroupVO);
         fillArea(userGroupVO);
+        List<Long> areaIdList = userGroupRelaAreaDOMapper.getAreaIdListByUserGroupId(id);
+        List<BaseAreaDO> areaDeail =  areaIdList.parallelStream().map(e->{
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
+            return baseAreaDO;
+        }).collect(Collectors.toList());
+
+
+//        userGroupVO.setAreaIdList(areaIdList);
+        userGroupVO.setBaseAreaDOList(areaDeail);
+
+        List<String> bankNameList = userGroupRelaBankDOMapper.getBankNameListByUserGroupId(id);
+        userGroupVO.setBankNameList(bankNameList);
 
         return ResultBean.ofSuccess(userGroupVO);
     }
@@ -716,6 +726,31 @@ public class UserGroupServiceImpl implements UserGroupService {
                 });
 
         return ResultBean.ofSuccess(null, "取消关联成功");
+    }
+
+    /**
+     * 更新用户组关联区域
+     * @param userGroupParam
+     * @return
+     */
+    @Override
+    public ResultBean updateUserArea(UserGroupParam userGroupParam) {
+        //删除原先绑定的数据
+        userGroupRelaAreaDOMapper.deleteAllByUserGroupId(userGroupParam.getId());
+        doBindArea(userGroupParam.getId(),userGroupParam.getAreaIdList());
+        return ResultBean.ofSuccess(null,"更新完成");
+    }
+
+    /**
+     * 更新用户组关联银行
+     * @param userGroupParam
+     * @return
+     */
+    @Override
+    public ResultBean updateUserBank(UserGroupParam userGroupParam) {
+        userGroupRelaBankDOMapper.deleteAllByUserGroupId(userGroupParam.getId());
+        doBindBank(userGroupParam.getId(),userGroupParam.getBankNameList());
+        return ResultBean.ofSuccess(null,"更新完成");
     }
 
     /**

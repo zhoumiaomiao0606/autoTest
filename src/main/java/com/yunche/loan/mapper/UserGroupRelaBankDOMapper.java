@@ -21,4 +21,6 @@ public interface UserGroupRelaBankDOMapper {
     int updateByPrimaryKey(UserGroupRelaBankDO record);
 
     List<String> getBankNameListByUserGroupId(Long userGroupId);
+
+    int deleteAllByUserGroupId(Long userGroupId);
 }
