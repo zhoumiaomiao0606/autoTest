@@ -43,7 +43,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         EmployeeDO employeeDO = SessionUtils.getLoginUser();
         TaskDistributionDO V = new TaskDistributionDO();
         V.setTaskId(taskId);
-        V.setFinishCreate(new Timestamp(new Date().getTime()));
+        V.setTaskKey(taskKey);
         V.setSendee(employeeDO.getId());
         V.setSendeeName(employeeDO.getName());
         V.setStatus(new Byte("2"));

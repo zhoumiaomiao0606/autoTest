@@ -698,15 +698,13 @@
               )
               taskdis
               on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
-              where case when task.taskStatus = 3  then status = 2 else 1=1 end
-            <if test="taskStatus == 2 or taskStatus == 3">
-                having
+              and case when task.taskStatus = 3 then taskdis.status = 2 else 1=1 end
+                  having
                   case when #{maxGroupLevel}  = 3 then 1=1
                        when receiveManId is not null then
                   case when receiveManId = #{employeeId} then 1=1 else 1=2 end
                   else 1=1
                   end
-            </if>
             ) complex
                 where 1=1
                   and
@@ -1223,24 +1221,19 @@
                         else false end
             )
             task
-            left join
+             left join
              (
-             select main.* from
-              (select task_id,max(get_create) AS get_create,task_key from task_distribution GROUP BY task_key,task_id) t
-             inner join
-              (select * from task_distribution) main
-             on main.task_id = t.task_id and main.get_create = t.get_create and main.task_key = t.task_key
-             HAVING main.status = 2
+                select * from task_distribution
              )
              taskdis
              on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
-
+             and taskdis.status = 2
              having
-             case when #{maxGroupLevel}  = 3 then 1=1
-                  when receiveManId is not null then
-             case when receiveManId = #{employeeId} then 1=1 else 1=2 end
-             else 1=1
-             end
+              case when #{maxGroupLevel}  = 3 then 1=1
+                   when receiveManId is not null then
+                    case when receiveManId = #{employeeId} then 1=1 else 1=2 end
+                   else 1=1
+              end
             <if test="key != null">
                 and task.taskKey = #{key,jdbcType=VARCHAR}
             </if>
