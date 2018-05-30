@@ -6,7 +6,6 @@
     <groupId>com.yunche.loan</groupId>
     <artifactId>yunche-biz</artifactId>
     <version>1.0.0</version>
-    <!--<packaging>war</packaging>-->
     <packaging>jar</packaging>
 
     <name>yunche-biz</name>
@@ -40,16 +39,6 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.10-FINAL</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>3.10-FINAL</version>
-        </dependency>
         <!-- Spring boot健康检查 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -130,12 +119,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.mybatis</groupId>-->
-        <!--<artifactId>mybatis</artifactId>-->
-        <!--<version>3.4.1</version>-->
-        <!--</dependency>-->
-        <!--spring boot jdbc & mybatis-->
 
         <!--mybatis-generator-->
         <dependency>
@@ -179,13 +162,13 @@
         </dependency>
         <!--json-->
 
-        <!-- 缓存 -->
+        <!-- guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-        <!-- 缓存 -->
+        <!-- guava -->
 
         <!--Http 请求-->
         <dependency>
@@ -244,28 +227,20 @@
             <artifactId>activiti-spring-boot-starter-basic</artifactId>
             <version>${activiti.version}</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.activiti</groupId>-->
-        <!--<artifactId>activiti-spring-boot-starter-rest-api</artifactId>-->
-        <!--<version>${activiti.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.activiti</groupId>-->
-        <!--<artifactId>activiti-spring-boot-starter-actuator</artifactId>-->
-        <!--<version>${activiti.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--<groupId>org.activiti</groupId>-->
-        <!--<artifactId>activiti-modeler</artifactId>-->
-        <!--<version>${activiti.version}</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>org.activiti</groupId>-->
-        <!--<artifactId>activiti-diagram-rest</artifactId>-->
-        <!--<version>${activiti.version}</version>-->
-        <!--</dependency>-->
         <!-- activiti -->
+
+        <!-- poi -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.10-FINAL</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.10-FINAL</version>
+        </dependency>
+        <!-- poi -->
 
         <!-- druid -->
         <dependency>
@@ -274,6 +249,7 @@
             <version>${druid-spring-boot-starter.version}</version>
         </dependency>
         <!-- druid -->
+
         <!-- https://mvnrepository.com/artifact/cn.jpush.api/jpush-client -->
         <dependency>
             <groupId>cn.jpush.api</groupId>
@@ -304,7 +280,7 @@
             <version>3.2.0</version>
         </dependency>
 
-        <!--sdk-sdk-java-->
+        <!-- anychat-sdk-java -->
         <dependency>
             <groupId>com.bairuitech.anychat</groupId>
             <artifactId>anychat-sdk-java</artifactId>
@@ -312,7 +288,6 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/lib/anychat-sdk-java.jar</systemPath>
         </dependency>
-        <!--sdk-sdk-java-->
 
         <dependency>
             <groupId>com.bairuitech.anychat</groupId>
@@ -335,6 +310,9 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/lib/anychatsampleserver.jar</systemPath>
         </dependency>
+        <!-- anychat-sdk-java -->
+
+
     </dependencies>
 
     <build>
@@ -342,18 +320,6 @@
         <finalName>yunche-biz</finalName>
 
         <plugins>
-            <!--<plugin>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
-            <!--<dependencies>-->
-            <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>springloaded</artifactId>-->
-            <!--<version>1.2.6.RELEASE</version>-->
-            <!--</dependency>-->
-            <!--</dependencies>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -416,50 +382,6 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <!--打war包 -->
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-war-plugin</artifactId>-->
-            <!--<version>2.1.1</version>-->
-            <!--<configuration>-->
-            <!--&lt;!&ndash;指定web.xml的路径  &ndash;&gt;-->
-            <!--&lt;!&ndash;<webXml>WebRoot\WEB-INF\web.xml</webXml>&ndash;&gt;-->
-            <!--&lt;!&ndash;指定jsp、js、css的路劲  &ndash;&gt;-->
-            <!--&lt;!&ndash;<warSourceDirectory>WebRoot</warSourceDirectory>&ndash;&gt;-->
-            <!--<warName>loanBizSystem</warName>-->
-            <!--</configuration>-->
-            <!--</plugin>-->
-            <!--打war包到指定的目录下 -->
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.8</version>
-                <executions>
-                    <execution>
-                        <id>copy-war</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.yunche.loan</groupId>
-                                    <artifactId>yunche-biz</artifactId>
-                                    <version>1.0</version>
-                                    <type>war</type>
-                                </artifactItem>
-                            </artifactItems>
-                            &lt;!&ndash;   <outputDirectory>${dist.console.war.dir}</outputDirectory>   &ndash;&gt;
-                            &lt;!&ndash;指定war包保存地址&ndash;&gt;
-                            <outputDirectory>D:\Javaee\mypackage</outputDirectory>
-                            <includes>
-                                <include>*.war</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
         </plugins>
     </build>
 
