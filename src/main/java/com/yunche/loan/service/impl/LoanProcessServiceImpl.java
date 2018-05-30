@@ -31,8 +31,6 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
@@ -49,6 +47,7 @@ import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
+import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
 
 /**
@@ -59,15 +58,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoanProcessServiceImpl.class);
 
-
     /**
      * 换行符
      */
     public static final String NEW_LINE = System.getProperty("line.separator");
-    /**
-     * 线程池
-     */
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(20);
+
 
     @Autowired
     private RuntimeService runtimeService;
@@ -141,7 +136,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     public ResultBean<Void> approval(ApprovalParam approval) {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
-//        Preconditions.checkNotNull(approval.getTaskId(), "任务ID不能为空");
 
         // APP通过OrderId弃单
         if (isAppCancelByOrderId(approval)) {
@@ -228,7 +222,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 非[资料增补]  &&  PASS || CANCEL
         boolean needFinish = null != approval.getTaskId() && !ACTION_INFO_SUPPLEMENT.equals(approval.getAction())
-                && ACTION_PASS.equals(approval.getAction()) || ACTION_CANCEL.equals(approval.getAction());
+                && ACTION_PASS.equals(approval.getAction());
 
         if (needFinish) {
             taskDistributionService.finish(approval.getTaskId(), approval.getTaskDefinitionKey());
@@ -324,7 +318,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     try {
                         // 打包，并上传至OSS
                         resultBean = materialService.downloadFiles2OSS(loanProcessDO.getOrderId(), true);
-
                     } catch (Exception e) {
                         logger.error("asyncPackZipFile error", e);
                     } finally {
@@ -1223,6 +1216,33 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         } else if (ACTION_CANCEL.equals(action)) {
             // nothing
         }
+    }
+
+    private List<Task> getNewTaskList(String processInstanceId, List<String> startTaskIdList) {
+
+        // 获取提交之后的待执行任务列表
+        List<Task> endTaskList = getCurrentTaskList(processInstanceId);
+
+        if (CollectionUtils.isEmpty(endTaskList)) {
+            return null;
+        }
+
+        // 筛选出新产生和旧有的任务
+        List<Task> newTaskList = Lists.newArrayList();
+        List<Task> oldTaskList = Lists.newArrayList();
+        endTaskList.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+                    if (!startTaskIdList.contains(e.getId())) {
+                        // 不存在：新产生的任务
+                        newTaskList.add(e);
+                    } else {
+                        // 存在：旧有的任务
+                        oldTaskList.add(e);
+                    }
+                });
+
+        return newTaskList;
     }
 
     /**
