@@ -245,8 +245,8 @@
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway25" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow185" sourceRef="usertask_business_review" targetRef="exclusivegateway25"></sequenceFlow>
-    <sequenceFlow id="flow186" name="手动打回" sourceRef="exclusivegateway25" targetRef="usertask_business_pay">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
+    <sequenceFlow id="flow186" name="手动打回 或 自动打回" sourceRef="exclusivegateway25" targetRef="usertask_business_pay">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0 || action == -1}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
@@ -954,7 +954,7 @@
         <omgdi:waypoint x="3484.0" y="437.0"></omgdi:waypoint>
         <omgdi:waypoint x="3484.0" y="574.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="44.0" x="3959.0" y="421.0"></omgdc:Bounds>
+          <omgdc:Bounds height="48.0" width="100.0" x="3959.0" y="421.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
