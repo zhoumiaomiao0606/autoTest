@@ -26,4 +26,8 @@ public interface BaseAreaDOMapper {
     List<BaseAreaDO> query(BaseAreaQuery query);
 
     List<BaseAreaDO> getAll(@Param("status") Byte status);
+
+    List<BaseAreaDO> selectAllSubAreaByID(Long areaId);
+
+    List<Long> selectCityIdByProvenceId(Long areaId);
 }

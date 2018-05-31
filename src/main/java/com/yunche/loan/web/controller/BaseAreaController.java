@@ -54,4 +54,10 @@ public class BaseAreaController {
     public ResultBean<List<CascadeAreaVO>> list() {
         return baseAreaService.list();
     }
+
+    @GetMapping("/register")
+    public ResultBean<List<CascadeAreaVO>> queryApplyLicensePlateArea(@RequestParam("orderId") Long orderId){
+
+        return baseAreaService.getApplyLicensePlateArea(orderId);
+    }
 }

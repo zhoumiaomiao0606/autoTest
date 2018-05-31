@@ -215,4 +215,18 @@
       feature = #{feature,jdbcType=VARCHAR}
     where area_id = #{areaId,jdbcType=BIGINT}
   </update>
+    
+    <select id="selectAllSubAreaByID" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List"/>
+        from
+            base_area
+        where
+            parent_area_id=#{areaId}
+    </select>
+
+    <select id="selectCityIdByProvenceId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select area_id from base_area where parent_area_id=#{areaId}
+
+    </select>
 </mapper>

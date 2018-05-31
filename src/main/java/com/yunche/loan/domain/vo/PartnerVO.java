@@ -79,6 +79,5 @@ public class PartnerVO {
      */
     private List<PartnerBankAccountDO> bankAccountList = Collections.EMPTY_LIST;
 
-
-    private List<BaseAreaDO> baseAreaDOS =Collections.EMPTY_LIST;
+    private List<BaseAreaDO> hasApplyLicensePlateArea =Collections.EMPTY_LIST;
 }

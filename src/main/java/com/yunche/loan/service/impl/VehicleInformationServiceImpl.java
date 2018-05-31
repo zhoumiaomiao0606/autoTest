@@ -2,7 +2,10 @@ package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
-import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.entity.BaseAreaDO;
+import com.yunche.loan.domain.entity.LoanFileDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.VehicleInformationDO;
 import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -20,7 +23,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
@@ -63,17 +65,6 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
-
-        Long loanBaseInfoId = loanOrderDOMapper.selectByPrimaryKey(orderId, null).getLoanBaseInfoId();
-
-        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
-
-        List<Long> areaList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(loanBaseInfoDO.getPartnerId());
-        List<BaseAreaDO> areaDeail =  areaList.parallelStream().map(e->{
-            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
-            return baseAreaDO;
-        }).collect(Collectors.toList());//允许的上牌地列表
-        vehicleInformationVO.setAbleApplyLicensePlateAreaList(areaDeail);
 
         if(vehicleInformationVO.getApply_license_plate_area()!=null){
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationVO.getApply_license_plate_area()), VALID_STATUS);

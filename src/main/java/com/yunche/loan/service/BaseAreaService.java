@@ -29,4 +29,6 @@ public interface BaseAreaService {
     ResultBean<List<CascadeAreaVO>> list();
 
     ResultBean<String> getFullAreaName(Long areaId);
+
+    ResultBean<List<CascadeAreaVO>> getApplyLicensePlateArea(Long partnerId);
 }

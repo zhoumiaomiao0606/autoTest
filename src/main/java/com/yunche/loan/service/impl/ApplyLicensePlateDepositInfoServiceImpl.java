@@ -4,7 +4,6 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO;
 import com.yunche.loan.domain.entity.BaseAreaDO;
-import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.ApplyLicensePlateDepositInfoUpdateParam;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
@@ -62,14 +60,7 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
             universalCustomerVO.setFiles(files);
         }
 
-        Long loanBaseInfoId = loanOrderDOMapper.selectByPrimaryKey(orderId, null).getLoanBaseInfoId();
-        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
-        List<Long> areaList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(loanBaseInfoDO.getPartnerId());
-        List<BaseAreaDO> areaDeail =  areaList.parallelStream().map(e->{
-            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
-            return baseAreaDO;
-        }).collect(Collectors.toList());//允许的上牌地列表
-        applyLicensePlateDepositInfoVO.setAbleApplyLicensePlateAreaList(areaDeail);
+
 
         if(applyLicensePlateDepositInfoVO.getApply_license_plate_area()!=null){
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(applyLicensePlateDepositInfoVO.getApply_license_plate_area()), VALID_STATUS);
