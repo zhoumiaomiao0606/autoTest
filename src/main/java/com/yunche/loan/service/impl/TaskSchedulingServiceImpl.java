@@ -4,10 +4,13 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.AreaCache;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
@@ -62,6 +65,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private AreaCache areaCache;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
 
     @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
@@ -354,7 +362,23 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId->{
 
             List<Long> tmpUserAreaList = userGroupRelaAreaDOMapper.getAreaIdListByUserGroupId(groupId);
-            userAreaList.addAll(tmpUserAreaList);
+            if(tmpUserAreaList.size()>0){
+                List<BaseAreaDO> baseAreaDOS = baseAreaDOMapper.selectByIdList(tmpUserAreaList, BaseConst.VALID_STATUS);
+                baseAreaDOS.parallelStream().filter(Objects::nonNull).forEach(e->{
+
+                    switch(e.getLevel()){
+                        case 0:
+                            break;
+                        case 1:
+                            List<Long> idByProvenceId = baseAreaDOMapper.selectCityIdByProvenceId(e.getAreaId());
+                            userAreaList.addAll(idByProvenceId);
+                            break;
+                        case 2:
+                            userAreaList.add(e.getAreaId());
+                            break;
+                    }
+                });
+            }
         });
         return userAreaList.parallelStream().distinct().collect(Collectors.toList());
 
