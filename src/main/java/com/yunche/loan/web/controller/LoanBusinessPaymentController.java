@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 
 @CrossOrigin
 @RestController
@@ -27,15 +25,15 @@ public class LoanBusinessPaymentController {
      * @return
      */
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> create(@Valid @RequestBody  LoanBusinessPaymentParam loanBusinessPaymentParam) {
+    public ResultBean<Long> create(@RequestBody  LoanBusinessPaymentParam loanBusinessPaymentParam) {
         Preconditions.checkNotNull(loanBusinessPaymentParam,"业务付款记录不能为空");
         Preconditions.checkNotNull(loanBusinessPaymentParam.getOrderId(),"订单编号不能为空");
-        Preconditions.checkNotNull(loanBusinessPaymentParam.getApplicationDate(),"申请日期不能为空");
-        Preconditions.checkNotNull(loanBusinessPaymentParam.getReceiveOpenBank(),"收款开户行不能为空");
-        Preconditions.checkNotNull(loanBusinessPaymentParam.getReceiveAccount(),"收款账户不能为空");
-        Preconditions.checkNotNull(loanBusinessPaymentParam.getAccountNumber(),"收款账号不能为空");
-        Preconditions.checkNotNull(loanBusinessPaymentParam.getPaymentOrganization(),"付款组织不能为空");
-        Preconditions.checkNotNull(loanBusinessPaymentParam.getRemark(),"备注信息不能为空");
+//        Preconditions.checkNotNull(loanBusinessPaymentParam.getApplicationDate(),"申请日期不能为空");
+//        Preconditions.checkNotNull(loanBusinessPaymentParam.getReceiveOpenBank(),"收款开户行不能为空");
+//        Preconditions.checkNotNull(loanBusinessPaymentParam.getReceiveAccount(),"收款账户不能为空");
+//        Preconditions.checkNotNull(loanBusinessPaymentParam.getAccountNumber(),"收款账号不能为空");
+//        Preconditions.checkNotNull(loanBusinessPaymentParam.getPaymentOrganization(),"付款组织不能为空");
+//        Preconditions.checkNotNull(loanBusinessPaymentParam.getRemark(),"备注信息不能为空");
 
         return loanBusinessPaymentService.save(loanBusinessPaymentParam);
     }
