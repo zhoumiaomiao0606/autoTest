@@ -3,6 +3,7 @@ package com.yunche.loan.domain.vo;
 import com.yunche.loan.domain.entity.BaseAreaDO;
 import lombok.Data;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class LoanCarInfoVO {
     private String applyLicensePlateArea;
 
     //合伙人关联的上牌地
-    private List<BaseAreaDO> ableApplyLicensePlateAreaList;
+//    private List<BaseAreaDO> ableApplyLicensePlateAreaList;
 
     private String licensePlateType;
 
@@ -58,6 +59,15 @@ public class LoanCarInfoVO {
     private Byte businessSource;
 
     private BaseAreaDO hasApplyLicensePlateArea;
+
+    private List<BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
+
+    @Data
+    public static class BaseArea{
+        private Long provAreaId;
+        private String provName;
+        List<BaseAreaDO> cityList =Collections.EMPTY_LIST;
+    }
 
     /**
      * 业务员

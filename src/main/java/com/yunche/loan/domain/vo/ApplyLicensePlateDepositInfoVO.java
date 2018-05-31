@@ -3,8 +3,6 @@ package com.yunche.loan.domain.vo;
 import com.yunche.loan.domain.entity.BaseAreaDO;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class ApplyLicensePlateDepositInfoVO {
     private String order_id;
@@ -23,7 +21,5 @@ public class ApplyLicensePlateDepositInfoVO {
     private String apply_license_plate_date;
     private String apply_license_plate_deposit_date;
     private String registration_certificate_number;
-
-    private List<BaseAreaDO> AbleApplyLicensePlateAreaList;
     private BaseAreaDO hasApplyLicensePlateArea;
 }

@@ -3,16 +3,17 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.yunche.loan.config.util.MD5Utils;
+import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.*;
+import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.query.RelaQuery;
+import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.PartnerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -77,6 +78,9 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Autowired
     private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
+
+    @Autowired
+    private AreaCache areaCache;
 
 
     @Override
@@ -267,16 +271,13 @@ public class PartnerServiceImpl implements PartnerService {
 
         // fillMsg
         fillMsg(partnerDO, partnerVO);
-
         List<Long> areaIdList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(id);
-        List<BaseAreaDO> areaDeail =  areaIdList.parallelStream().map(e->{
-            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
-            return baseAreaDO;
-        }).collect(Collectors.toList());
-
-        partnerVO.setBaseAreaDOS(areaDeail);
+        List<BaseAreaDO> hasApplyLicensePlateArea = baseAreaDOMapper.selectByIdList(areaIdList, VALID_STATUS);
+        partnerVO.setHasApplyLicensePlateArea(hasApplyLicensePlateArea);
         return ResultBean.ofSuccess(partnerVO);
     }
+
+
 
     @Override
     public ResultBean<List<PartnerVO>> batchGetById(List<Long> idList) {
@@ -575,7 +576,7 @@ public class PartnerServiceImpl implements PartnerService {
     public ResultBean updatePartnerArea(PartnerParam partnerParam) {
         Preconditions.checkNotNull(partnerParam.getId(),"合伙人编号不能为空");
         partnerRelaAreaDOMapper.deleteAllByPartnerId(partnerParam.getId());
-        partnerParam.getAreaIdList().stream().filter(Objects :: nonNull).forEach(areaId->{
+        partnerParam.getAreaIdList().stream().distinct().filter(Objects :: nonNull).forEach(areaId->{
             PartnerRelaAreaDO partnerRelaAreaDO = new PartnerRelaAreaDO();
             partnerRelaAreaDO.setPartnerId(partnerParam.getId());
             partnerRelaAreaDO.setAreaId(areaId);

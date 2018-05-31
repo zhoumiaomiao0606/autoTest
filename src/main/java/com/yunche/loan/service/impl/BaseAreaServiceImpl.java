@@ -2,14 +2,19 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.AreaCache;
-import com.yunche.loan.config.constant.AreaConst;
-import com.yunche.loan.domain.vo.CascadeAreaVO;
-import com.yunche.loan.domain.vo.BaseAreaVO;
-import com.yunche.loan.mapper.BaseAreaDOMapper;
-import com.yunche.loan.domain.entity.BaseAreaDO;
-import com.yunche.loan.domain.query.BaseAreaQuery;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BaseAreaDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.query.BaseAreaQuery;
+import com.yunche.loan.domain.vo.BaseAreaVO;
+import com.yunche.loan.domain.vo.CascadeAreaVO;
+import com.yunche.loan.mapper.BaseAreaDOMapper;
+import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.PartnerRelaAreaDOMapper;
 import com.yunche.loan.service.BaseAreaService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
@@ -34,6 +40,15 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     private BaseAreaDOMapper baseAreaDOMapper;
     @Autowired
     private AreaCache areaCache;
+
+    @Autowired
+    private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
 
 
     @Override
@@ -152,4 +167,99 @@ public class BaseAreaServiceImpl implements BaseAreaService {
 
         return ResultBean.ofSuccess(fullAreaName);
     }
+
+    @Override
+    public ResultBean<List<CascadeAreaVO>> getApplyLicensePlateArea(Long orderId) {
+
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,null);
+        Preconditions.checkNotNull(loanOrderDO,"订单不存在");
+        Long partnerId=loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId()).getPartnerId();
+
+
+        List<CascadeAreaVO> ableAreaList = Lists.newArrayList();
+        List<Long> areaIdList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(partnerId);
+        List<BaseAreaDO> hasBindArea = areaIdList.parallelStream().map(e->{
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
+            return baseAreaDO;
+        }).distinct().collect(Collectors.toList());
+        List<CascadeAreaVO.City> baseAreaDOS = Lists.newArrayList();
+
+
+        HashMap<Long, Set<Long>> areaMap = Maps.newHashMap();
+
+        hasBindArea.stream().forEach(hasArea->{
+            switch(hasArea.getLevel()){
+
+                case 0:
+                    ableAreaList.addAll(areaCache.get());
+                    break;
+                case 1:
+                    List<Long> citys = baseAreaDOMapper.selectCityIdByProvenceId(hasArea.getAreaId());
+                    if(areaMap.keySet().contains(hasArea.getAreaId())){
+                        Set<Long> aaa = areaMap.get(hasArea.getAreaId());
+                        aaa.addAll(citys);
+                        areaMap.put(hasArea.getAreaId(),aaa);
+                    }else{
+                        Set<Long> tmp =  Sets.newHashSet();
+                        tmp.addAll(citys);
+                        areaMap.put(hasArea.getAreaId(),tmp);
+                    }
+                    break;
+                case 2:
+                    if(areaMap.keySet().contains(hasArea.getParentAreaId())){
+                        Set<Long> aaa = areaMap.get(hasArea.getParentAreaId());
+                        aaa.add(hasArea.getAreaId());
+                    }else{
+                        Set<Long> tmp =  Sets.newHashSet();
+                        tmp.add(hasArea.getAreaId());
+                        areaMap.put(hasArea.getParentAreaId(),tmp);
+                    }
+                    break;
+
+            }
+        });
+
+        List<CascadeAreaVO> cascadeAreaVOS = fillInfo(ableAreaList,areaMap);
+
+
+        return ResultBean.ofSuccess(cascadeAreaVOS);
+    }
+
+    /**
+     * 填充信息
+     * @param areaMap
+     */
+    private List<CascadeAreaVO> fillInfo( List<CascadeAreaVO> ableAreaList ,HashMap<Long, Set<Long>> areaMap) {
+        List<CascadeAreaVO> voList = areaCache.get();
+        voList.parallelStream().filter(Objects::nonNull).map(e->{
+
+            return null;
+        }).collect(Collectors.toList());
+        areaMap.keySet().parallelStream().filter(Objects::nonNull).forEach(e->{
+            CascadeAreaVO baseArea = new CascadeAreaVO();
+            BaseAreaDO prov = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);//省
+            baseArea.setId(prov.getAreaId());
+            baseArea.setName(prov.getAreaName());
+//            baseArea.setProvAreaId(prov.getAreaId());
+//            baseArea.setProvName(prov.getAreaName());
+
+            List<Long> list1 = new ArrayList(areaMap.get(e));
+            List<BaseAreaDO> cityList = baseAreaDOMapper.selectByIdList(list1, VALID_STATUS);
+            List citys = cityList.parallelStream().map(f->{
+                CascadeAreaVO.City city = new CascadeAreaVO.City();
+                city.setId(f.getAreaId());
+                city.setName(f.getAreaName());
+                city.setLevel(f.getLevel());
+                return city;
+            }).collect(Collectors.toList());
+
+            baseArea.setCityList(citys);
+
+            ableAreaList.add(baseArea);
+        });
+
+        return ableAreaList;
+    }
+
 }

@@ -550,13 +550,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
 
-        List<Long> areaList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(loanBaseInfoDO.getPartnerId());
-        List<BaseAreaDO> areaDeail =  areaList.parallelStream().map(e->{
-            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
-            return baseAreaDO;
-        }).collect(Collectors.toList());//允许的上牌地列表
-        loanCarInfoVO.setAbleApplyLicensePlateAreaList(areaDeail);
-
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanCarInfoId);
         if (null != loanCarInfoDO) {
             BeanUtils.copyProperties(loanCarInfoDO, loanCarInfoVO);
@@ -576,12 +569,14 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
             loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
             String tmpApplyLicensePlateArea=null;
-//            loanCarInfoVO.setApplyLicensePlateArea(vehicleInformationDO.getApply_license_plate_area());
-            if(baseAreaDO.getParentAreaName()!=null){
-                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+" "+baseAreaDO.getAreaName();
-            }else{
-                tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+            if(baseAreaDO!=null){
+                if(baseAreaDO.getParentAreaName()!=null){
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+" "+baseAreaDO.getAreaName();
+                }else{
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
             }
+
             loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
