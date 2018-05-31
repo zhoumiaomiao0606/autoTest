@@ -552,39 +552,39 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 更新金融方案原表数据
         updateFinancialPlan(loanFinancialPlanId, approval.getSupplementOrderId());
 
-        // 自动打回（重走【业务审批】）
-        if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
-
-            ApprovalParam approvalParam = new ApprovalParam();
-            approvalParam.setOrderId(approval.getOrderId());
-            approvalParam.setTaskDefinitionKey(LOAN_REVIEW.getCode());
-            approvalParam.setAction(ACTION_REJECT_AUTO);
-            approvalParam.setCheckPermission(false);
-            approvalParam.setNeedLog(false);
-            approvalParam.setNeedPush(false);
-            approval(approvalParam);
-
-            loanProcessDO.setBusinessReview(TASK_PROCESS_TODO);
-            loanProcessDO.setLoanReview(TASK_PROCESS_INIT);
-            loanProcessDO.setRemitReview(TASK_PROCESS_INIT);
-            updateLoanProcess(loanProcessDO);
-
+        // 自动打回 ->【业务付款】 （重走【业务付款】）
+        if (TASK_PROCESS_TODO.equals(loanProcessDO.getBusinessReview())) {
+            autoReject2BusinessPay(approval.getOrderId(), BUSINESS_REVIEW.getCode(), loanProcessDO);
+        } else if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
+            autoReject2BusinessPay(approval.getOrderId(), LOAN_REVIEW.getCode(), loanProcessDO);
         } else if (TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())) {
-
-            ApprovalParam approvalParam = new ApprovalParam();
-            approvalParam.setOrderId(approval.getOrderId());
-            approvalParam.setTaskDefinitionKey(REMIT_REVIEW_FILTER.getCode());
-            approvalParam.setAction(ACTION_REJECT_AUTO);
-            approvalParam.setCheckPermission(false);
-            approvalParam.setNeedLog(false);
-            approvalParam.setNeedPush(false);
-            approval(approvalParam);
-
-            loanProcessDO.setBusinessReview(TASK_PROCESS_TODO);
-            loanProcessDO.setLoanReview(TASK_PROCESS_INIT);
-            loanProcessDO.setRemitReview(TASK_PROCESS_INIT);
-            updateLoanProcess(loanProcessDO);
+            autoReject2BusinessPay(approval.getOrderId(), REMIT_REVIEW.getCode(), loanProcessDO);
         }
+    }
+
+    /**
+     * 自动打回 ->【业务付款】 （重走【业务付款】）
+     *
+     * @param orderId
+     * @param autoRejectOriginTaskDefinitionKey (打回)源节点
+     * @param loanProcessDO
+     */
+    private void autoReject2BusinessPay(Long orderId, String autoRejectOriginTaskDefinitionKey, LoanProcessDO loanProcessDO) {
+
+        ApprovalParam approvalParam = new ApprovalParam();
+        approvalParam.setOrderId(orderId);
+        approvalParam.setTaskDefinitionKey(autoRejectOriginTaskDefinitionKey);
+        approvalParam.setAction(ACTION_REJECT_AUTO);
+        approvalParam.setCheckPermission(false);
+        approvalParam.setNeedLog(false);
+        approvalParam.setNeedPush(false);
+        approval(approvalParam);
+
+        loanProcessDO.setBusinessPay(TASK_PROCESS_TODO);
+        loanProcessDO.setBusinessReview(TASK_PROCESS_INIT);
+        loanProcessDO.setLoanReview(TASK_PROCESS_INIT);
+        loanProcessDO.setRemitReview(TASK_PROCESS_INIT);
+        updateLoanProcess(loanProcessDO);
     }
 
     /**
