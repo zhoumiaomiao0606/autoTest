@@ -43,7 +43,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
         LoanBusinessPaymentDO loanBusinessPaymentDO1 = loanBusinessPaymentDOMapper.selectByPrimaryKey(loanBusinessPaymentParam.getOrderId());
         if(loanBusinessPaymentDO1==null){
             loanBusinessPaymentDO.setGmtCreate(new Date());
-            int count = loanBusinessPaymentDOMapper.insert(loanBusinessPaymentDO);
+            int count = loanBusinessPaymentDOMapper.insertSelective(loanBusinessPaymentDO);
             Preconditions.checkArgument(count>0,"业务申请单保存失败");
         }else{
             loanBusinessPaymentDO.setGmtModify(new Date());
