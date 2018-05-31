@@ -71,7 +71,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
             vehicleInformationVO.setHasApplyLicensePlateArea(baseAreaDO);
             String tmpApplyLicensePlateArea=null;
             if(baseAreaDO.getParentAreaName()!=null){
-                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+" "+baseAreaDO.getAreaName();
+                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+baseAreaDO.getAreaName();
             }else{
                 tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
             }

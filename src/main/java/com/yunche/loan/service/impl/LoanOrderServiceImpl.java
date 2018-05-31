@@ -571,7 +571,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             String tmpApplyLicensePlateArea=null;
             if(baseAreaDO!=null){
                 if(baseAreaDO.getParentAreaName()!=null){
-                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+" "+baseAreaDO.getAreaName();
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+baseAreaDO.getAreaName();
                 }else{
                     tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
                 }
