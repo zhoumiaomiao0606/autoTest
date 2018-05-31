@@ -42,7 +42,7 @@ public enum LoanProcessEnum {
     MATERIAL_REVIEW("usertask_material_review", "资料审核"),
     MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),
 
-    BUSINESS_PAY("usertask_business_pay", "业务付款"),
+    BUSINESS_PAY("usertask_business_pay", "业务付款申请"),
     BUSINESS_REVIEW("usertask_business_review", "业务审批"),
     LOAN_REVIEW("usertask_loan_review", "放款审批"),
     REMIT_REVIEW("usertask_remit_review", "打款确认"),
