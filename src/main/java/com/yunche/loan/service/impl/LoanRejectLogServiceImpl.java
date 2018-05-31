@@ -96,8 +96,6 @@ public class LoanRejectLogServiceImpl implements LoanRejectLogService {
             taskStatus = loanProcessDO.getVisitVerify();
         } else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getTelephoneVerify();
-        } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
-            taskStatus = loanProcessDO.getBusinessReview();
         } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getLoanReview();
         } else if (REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
@@ -128,6 +126,10 @@ public class LoanRejectLogServiceImpl implements LoanRejectLogService {
             taskStatus = loanProcessDO.getBankCardRecord();
         } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
             taskStatus = loanProcessDO.getFinancialScheme();
+        } else if (BUSINESS_PAY.getCode().equals(taskDefinitionKey)) {
+            taskStatus = loanProcessDO.getBusinessPay();
+        } else if (CUSTOMER_REPAY_PLAN.getCode().equals(taskDefinitionKey)) {
+            taskStatus = loanProcessDO.getCustomerRepayPlan();
         }
 
         return taskStatus;
