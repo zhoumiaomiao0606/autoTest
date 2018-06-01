@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -78,6 +79,33 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         taskDistributionDOMapper.deleteByPrimaryKey(taskId,taskKey);
     }
 
+    //打回完成
+    @Override
+    public void rejeckFinish(Long taskId,Long orderId,List<String> taskKeys) {
+        //遍历可能性
+        for(String taskKey:taskKeys){
+            TaskDistributionDO taskDistributionDOByTaskId = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
+            if(taskDistributionDOByTaskId!=null){
+                TaskDistributionDO V = new TaskDistributionDO();
+                V.setTaskKey(taskDistributionDOByTaskId.getTaskKey());
+                V.setTaskId(taskDistributionDOByTaskId.getTaskId());
+                V.setStatus(new Byte("2"));
+                taskDistributionDOMapper.updateByPrimaryKeySelective(V);
+            }
+
+
+            TaskDistributionDO taskDistributionDOByOrderId = taskDistributionDOMapper.selectByPrimaryKey(orderId,taskKey);
+            if(taskDistributionDOByOrderId!=null){
+                //open
+                TaskDistributionDO V = new TaskDistributionDO();
+                V.setTaskKey(taskDistributionDOByOrderId.getTaskKey());
+                V.setTaskId(taskDistributionDOByOrderId.getTaskId());
+                V.setStatus(new Byte("2"));
+                taskDistributionDOMapper.updateByPrimaryKeySelective(V);
+            }
+        }
+    }
+
     //完成
     @Override
     public void finish(Long taskId, String taskKey) {
@@ -117,7 +145,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         }
         TaskDisVO taskDisVO = new TaskDisVO();
 
-        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKeyAndStatus(taskId,taskKey);
+        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
         if (taskDistributionDO == null) {
             taskDisVO.setStatus("1");
             return taskDisVO;
