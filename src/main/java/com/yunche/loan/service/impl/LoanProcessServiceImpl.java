@@ -223,7 +223,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // PASS
             if (ACTION_PASS.equals(approval.getAction())) {
-                taskDistributionService.finish(approval.getTaskId(), approval.getTaskDefinitionKey());
+                taskDistributionService.finish(approval.getTaskId(),approval.getOrderId(), approval.getTaskDefinitionKey());
             }
 
             // 手动_REJECT

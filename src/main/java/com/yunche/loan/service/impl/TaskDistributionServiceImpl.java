@@ -108,7 +108,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
     //完成
     @Override
-    public void finish(Long taskId, String taskKey) {
+    public void finish(Long taskId, Long orderId,String taskKey) {
         if(taskId == null || StringUtils.isBlank(taskKey)){
             throw new BizException("必须传入任务id和任务key");
         }
@@ -126,6 +126,17 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         EmployeeDO employeeDO = SessionUtils.getLoginUser();
         if(employeeDO.getId().longValue()!=taskDistributionDO.getSendee().longValue()){
             throw new BizException("该任务只能被领取人完成");
+        }
+
+        if(taskKey.equals("usertask_financial_scheme_modify_apply_review")){
+            //重置放款审批任务领取状态
+            TaskDistributionDO loanReviewTaskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(orderId,"usertask_loan_review");
+            if(loanReviewTaskDistributionDO!=null){
+                TaskDistributionDO V = new TaskDistributionDO();
+                V.setTaskId(loanReviewTaskDistributionDO.getTaskId());
+                V.setTaskKey(loanReviewTaskDistributionDO.getTaskKey());
+                V.setStatus(new Byte("0"));
+            }
         }
 
         TaskDistributionDO V = new TaskDistributionDO();

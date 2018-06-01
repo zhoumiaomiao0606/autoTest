@@ -9,7 +9,7 @@ public interface TaskDistributionService {
 
     void release(Long taskId,String taskKey);
 
-    void finish(Long taskId,String taskKey);
+    void finish(Long taskId,Long orderId,String taskKey);
 
     TaskDisVO query(Long taskId, String taskKey);
 
