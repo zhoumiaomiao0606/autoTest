@@ -47,6 +47,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
             remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
             remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
+            remitDetailsDO.setRemark(loanBusinessPaymentParam.getRemark());
             remitDetailsDOMapper.insertSelective(remitDetailsDO);
             loanOrderDO.setRemitDetailsId(remitDetailsDO.getId());
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
@@ -62,6 +63,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
                 remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
                 remitDetailsDO.setId(remitDetailsId);
+                remitDetailsDO.setRemark(loanBusinessPaymentParam.getRemark());
                 remitDetailsDOMapper.insertSelective(remitDetailsDO);
                 //但是不用更新loanOrder 因为已经存在
             }else {
@@ -74,6 +76,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
                 remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
                 remitDetailsDO.setId(remitDetailsId);
+                remitDetailsDO.setRemark(loanBusinessPaymentParam.getRemark());
                 remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
 
             }

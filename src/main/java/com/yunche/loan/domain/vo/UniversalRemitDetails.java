@@ -18,5 +18,6 @@ public class UniversalRemitDetails {
 
     private String remit_payment_organization;
     private String remit_application_date;
+    private String remark;
 
 }
