@@ -255,11 +255,16 @@ public class EmployeeCache {
         // get
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
         String result = boundValueOps.get();
+
         if (StringUtils.isNotBlank(result)) {
-            Map<String, BaseVO> idBaseDOMap = JSON.parseObject(result, Map.class);
+
+            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
             if (!CollectionUtils.isEmpty(idBaseDOMap)) {
-                BaseVO baseVO = idBaseDOMap.get(String.valueOf(userId));
-                if (null != baseVO) {
+
+                JSONObject jsonObj = idBaseDOMap.get(String.valueOf(userId));
+                if (!CollectionUtils.isEmpty(jsonObj)) {
+
+                    BaseVO baseVO = JSON.toJavaObject(jsonObj, BaseVO.class);
                     return baseVO;
                 }
             }
@@ -271,10 +276,14 @@ public class EmployeeCache {
         // get
         result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
-            Map<String, BaseVO> idBaseDOMap = JSON.parseObject(result, Map.class);
+
+            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
             if (!CollectionUtils.isEmpty(idBaseDOMap)) {
-                BaseVO baseVO = idBaseDOMap.get(String.valueOf(userId));
-                if (null != baseVO) {
+
+                JSONObject jsonObj = idBaseDOMap.get(String.valueOf(userId));
+                if (!CollectionUtils.isEmpty(jsonObj)) {
+
+                    BaseVO baseVO = JSON.toJavaObject(jsonObj, BaseVO.class);
                     return baseVO;
                 }
             }
