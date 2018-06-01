@@ -68,6 +68,8 @@ public class LoanCarInfoParam {
 
     private String applyLicensePlateArea;
 
+    private String applyLicensePlateAreaId;
+
     private String licensePlateType;
 
     private String color;

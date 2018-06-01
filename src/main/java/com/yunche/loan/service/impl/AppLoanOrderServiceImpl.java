@@ -926,7 +926,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
-        vehicleInformationUpdateParam.setApply_license_plate_area(loanCarInfoParam.getApplyLicensePlateArea());
+        vehicleInformationUpdateParam.setApply_license_plate_area(loanCarInfoParam.getApplyLicensePlateAreaId());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
         vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
         vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
