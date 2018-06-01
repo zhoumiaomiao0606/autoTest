@@ -314,8 +314,10 @@ public class PartnerServiceImpl implements PartnerService {
         // fillMsg
         fillMsg(partnerDO, partnerVO);
         List<Long> areaIdList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(id);
-        List<BaseAreaDO> hasApplyLicensePlateArea = baseAreaDOMapper.selectByIdList(areaIdList, VALID_STATUS);
-        partnerVO.setHasApplyLicensePlateArea(hasApplyLicensePlateArea);
+        if(!CollectionUtils.isEmpty(areaIdList)){
+            List<BaseAreaDO> hasApplyLicensePlateArea = baseAreaDOMapper.selectByIdList(areaIdList, VALID_STATUS);
+            partnerVO.setHasApplyLicensePlateArea(hasApplyLicensePlateArea);
+        }
         return ResultBean.ofSuccess(partnerVO);
     }
 
