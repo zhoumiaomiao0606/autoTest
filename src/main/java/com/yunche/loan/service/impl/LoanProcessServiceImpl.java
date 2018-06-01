@@ -575,7 +575,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         } else if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
             autoReject2BusinessPay(approval.getOrderId(), LOAN_REVIEW.getCode(), loanProcessDO);
         } else if (TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())) {
-            autoReject2BusinessPay(approval.getOrderId(), REMIT_REVIEW.getCode(), loanProcessDO);
+            autoReject2BusinessPay(approval.getOrderId(), REMIT_REVIEW_FILTER.getCode(), loanProcessDO);
         }
     }
 
