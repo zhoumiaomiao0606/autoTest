@@ -12,5 +12,7 @@ public interface TaskDistributionDOMapper {
 
     TaskDistributionDO selectByPrimaryKey(@Param("taskId") Long taskId,@Param("taskKey") String taskKey);
 
+    TaskDistributionDO selectByPrimaryKeyAndStatus(@Param("taskId") Long taskId,@Param("taskKey") String taskKey);
+
     int updateByPrimaryKeySelective(TaskDistributionDO record);
 }
