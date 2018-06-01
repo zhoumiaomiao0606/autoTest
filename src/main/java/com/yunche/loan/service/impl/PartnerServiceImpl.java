@@ -131,6 +131,7 @@ public class PartnerServiceImpl implements PartnerService {
         String md5Password = MD5Utils.md5(initPassword);
         employeeDO.setPassword(md5Password);
 
+        employeeDO.setType(TYPE_WB);
         employeeDO.setStatus(VALID_STATUS);
         employeeDO.setGmtCreate(new Date());
         employeeDO.setGmtModify(new Date());
