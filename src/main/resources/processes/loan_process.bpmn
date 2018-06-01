@@ -3,18 +3,18 @@
   <signal id="contactChangeSignal" name="contactChangeSignal"></signal>
   <process id="loan_process" name="消费贷流程" isExecutable="true" isClosed="false" processType="None">
     <startEvent id="startevent_start_process" name="流程启动"></startEvent>
-    <userTask id="usertask_credit_apply" name="征信申请" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
+    <userTask id="usertask_credit_apply" name="征信申请" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,大区助理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理"></userTask>
     <sequenceFlow id="flow1" sourceRef="startevent_start_process" targetRef="usertask_credit_apply"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow6" name="贷款额 &gt;= 13W" sourceRef="exclusivegateway2" targetRef="parallelgateway1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount >= 2}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
-    <userTask id="usertask_loan_apply" name="业务申请" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
+    <userTask id="usertask_loan_apply" name="业务申请" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,大区助理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理"></userTask>
     <sequenceFlow id="flow13" name="&lt;13W 银行征信审核   征信通过" sourceRef="exclusivegateway3" targetRef="exclusivegateway21">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount == 1 && action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
+    <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,大区助理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理"></userTask>
     <sequenceFlow id="flow15" name="提交 或 弃单 或 自动打回" sourceRef="exclusivegateway20" targetRef="filter_loan_apply_visit_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ action == -1 || action == 2  ||   ( action == 1 && target != "usertask_social_credit_record" && reject_origin_task != "usertask_material_review") }]]></conditionExpression>
     </sequenceFlow>
@@ -47,12 +47,12 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 2}]]></conditionExpression>
     </sequenceFlow>
     <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
-    <userTask id="usertask_social_credit_record" name="社会征信录入" activiti:candidateGroups="管理员,总经理,培训经理,社会征信查询"></userTask>
+    <userTask id="usertask_social_credit_record" name="社会征信录入" activiti:candidateGroups="管理员,总经理,培训经理,社会征信查询,南京江宁支行驻点,哈尔滨顾乡支行驻点,杭州城站支行驻点,台州路桥支行驻点"></userTask>
     <sequenceFlow id="flow48" sourceRef="parallelgateway1" targetRef="usertask_social_credit_record"></sequenceFlow>
     <sequenceFlow id="flow49" name="&gt;=13W  征信通过" sourceRef="exclusivegateway11" targetRef="parallelgateway7">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_credit_record" name="银行征信录入" activiti:candidateGroups="管理员,总经理,培训经理,银行驻点"></userTask>
+    <userTask id="usertask_bank_credit_record" name="银行征信录入" activiti:candidateGroups="管理员,总经理,培训经理,银行驻点,南京江宁支行驻点,哈尔滨顾乡支行驻点,杭州城站支行驻点,台州路桥支行驻点"></userTask>
     <sequenceFlow id="flow51" name="贷款额 &lt; 13W" sourceRef="exclusivegateway2" targetRef="usertask_bank_credit_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -71,12 +71,12 @@
     <userTask id="usertask_apply_license_plate_deposit_info" name="车辆抵押" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,抵押专员,业务内勤"></userTask>
     <userTask id="usertask_car_insurance" name="车辆保险" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,大区助理"></userTask>
     <sequenceFlow id="flow63" sourceRef="parallelgateway3" targetRef="usertask_car_insurance"></sequenceFlow>
-    <userTask id="usertask_install_gps" name="GPS安装" activiti:candidateGroups="管理员,总经理,培训经理,催收主管,GPS专员,业务内勤,大区经理,大区助理"></userTask>
+    <userTask id="usertask_install_gps" name="GPS安装" activiti:candidateGroups="管理员,总经理,培训经理,催收主管,GPS专员,业务内勤,大区经理,大区助理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理"></userTask>
     <sequenceFlow id="flow65" sourceRef="parallelgateway3" targetRef="usertask_install_gps"></sequenceFlow>
     <userTask id="usertask_commit_key" name="待收钥匙" activiti:candidateGroups="管理员,总经理,培训经理,催收主管,收钥匙专员"></userTask>
     <sequenceFlow id="flow66" sourceRef="parallelgateway3" targetRef="usertask_commit_key"></sequenceFlow>
     <userTask id="usertask_loan_review" name="放款审批" activiti:candidateGroups="管理员,总经理,培训经理,财务经理,财务审核"></userTask>
-    <sequenceFlow id="flow68" name="审核通过" sourceRef="usertask_business_review" targetRef="usertask_loan_review">
+    <sequenceFlow id="flow68" name="审核通过" sourceRef="exclusivegateway25" targetRef="usertask_loan_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_remit_review" name="打款确认" activiti:candidateGroups="管理员,总经理,培训经理,财务经理,财务助理,出纳"></userTask>
@@ -101,8 +101,8 @@
     <sequenceFlow id="flow88" name="弃单" sourceRef="exclusivegateway3" targetRef="endevent14">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 2}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow90" name="手动打回 或 自动打回" sourceRef="exclusivegateway17" targetRef="usertask_business_review">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0 || action == -1}]]></conditionExpression>
+    <sequenceFlow id="flow90" name="自动打回" sourceRef="exclusivegateway17" targetRef="usertask_business_pay">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == -1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow93" name="打回" sourceRef="exclusivegateway14" targetRef="usertask_material_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
@@ -172,7 +172,7 @@
     <sequenceFlow id="flow155" name="自动打回" sourceRef="exclusivegateway9" targetRef="usertask_credit_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == -1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_lend_record" name="银行放款记录" activiti:candidateGroups="管理员,总经理,培训经理,财务经理,财务助理,银行驻点"></userTask>
+    <userTask id="usertask_bank_lend_record" name="银行放款记录" activiti:candidateGroups="管理员,总经理,培训经理,财务经理,财务助理,银行驻点,南京江宁支行驻点,哈尔滨顾乡支行驻点,杭州城站支行驻点,台州路桥支行驻点"></userTask>
     <sequenceFlow id="flow157" sourceRef="parallelgateway3" targetRef="usertask_bank_lend_record"></sequenceFlow>
     <endEvent id="endevent26" name="End"></endEvent>
     <sequenceFlow id="flow158" name="提交" sourceRef="servicetask_financial_scheme" targetRef="endevent26">
@@ -202,7 +202,7 @@
     <userTask id="usertask_refund_apply_review" name="退款申请审核" activiti:candidateGroups="管理员,总经理,培训经理,财务经理,财务助理,出纳"></userTask>
     <exclusiveGateway id="exclusivegateway22" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow171" sourceRef="filter_remit_review" targetRef="exclusivegateway22"></sequenceFlow>
-    <sequenceFlow id="flow172" name="自动打回" sourceRef="exclusivegateway22" targetRef="usertask_business_review">
+    <sequenceFlow id="flow172" name="自动打回" sourceRef="exclusivegateway22" targetRef="usertask_business_pay">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == -1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="filter_remit_review" name="拦截"></userTask>
@@ -224,12 +224,30 @@
     <sequenceFlow id="flow177" sourceRef="exclusivegateway13" targetRef="filter_loan_apply_visit_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 && target == "filter_loan_apply_visit_verify"}]]></conditionExpression>
     </sequenceFlow>
+    <sequenceFlow id="flow178" sourceRef="parallelgateway3" targetRef="usertask_business_pay"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway23" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow179" sourceRef="usertask_remit_review" targetRef="exclusivegateway23"></sequenceFlow>
-    <sequenceFlow id="flow180" name="打回" sourceRef="exclusivegateway23" targetRef="usertask_loan_review">
+    <sequenceFlow id="flow180" name="手动打回" sourceRef="exclusivegateway23" targetRef="usertask_loan_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow182" sourceRef="parallelgateway3" targetRef="usertask_business_review"></sequenceFlow>
+    <userTask id="usertask_business_pay" name="业务付款申请" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤"></userTask>
+    <sequenceFlow id="flow181" name="通过" sourceRef="exclusivegateway24" targetRef="usertask_business_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway24" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow182" sourceRef="usertask_business_pay" targetRef="exclusivegateway24"></sequenceFlow>
+    <endEvent id="endevent30" name="End"></endEvent>
+    <sequenceFlow id="flow183" name="弃单" sourceRef="exclusivegateway24" targetRef="endevent30">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 2}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow184" name="手动打回" sourceRef="exclusivegateway17" targetRef="usertask_business_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway25" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow185" sourceRef="usertask_business_review" targetRef="exclusivegateway25"></sequenceFlow>
+    <sequenceFlow id="flow186" name="手动打回 或 自动打回" sourceRef="exclusivegateway25" targetRef="usertask_business_pay">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0 || action == -1}]]></conditionExpression>
+    </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -428,6 +446,18 @@
       <bpmndi:BPMNShape bpmnElement="exclusivegateway23" id="BPMNShape_exclusivegateway23">
         <omgdc:Bounds height="40.0" width="40.0" x="5045.0" y="582.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_business_pay" id="BPMNShape_usertask_business_pay">
+        <omgdc:Bounds height="55.0" width="105.0" x="3432.0" y="574.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway24" id="BPMNShape_exclusivegateway24">
+        <omgdc:Bounds height="40.0" width="40.0" x="3641.0" y="582.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent30" id="BPMNShape_endevent30">
+        <omgdc:Bounds height="35.0" width="35.0" x="3644.0" y="361.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway25" id="BPMNShape_exclusivegateway25">
+        <omgdc:Bounds height="40.0" width="40.0" x="4036.0" y="581.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="36.0" y="1100.0"></omgdi:waypoint>
         <omgdi:waypoint x="202.0" y="1100.0"></omgdi:waypoint>
@@ -567,10 +597,10 @@
         <omgdi:waypoint x="3412.0" y="1885.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow68" id="BPMNEdge_flow68">
-        <omgdi:waypoint x="3925.0" y="601.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4076.0" y="601.0"></omgdi:waypoint>
         <omgdi:waypoint x="4230.0" y="601.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="44.0" x="4039.0" y="584.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="44.0" x="4129.0" y="584.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow69" id="BPMNEdge_flow69">
@@ -608,10 +638,10 @@
       <bpmndi:BPMNEdge bpmnElement="flow90" id="BPMNEdge_flow90">
         <omgdi:waypoint x="4580.0" y="581.0"></omgdi:waypoint>
         <omgdi:waypoint x="4580.0" y="497.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3871.0" y="497.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3872.0" y="574.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3484.0" y="496.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3484.0" y="574.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="48.0" width="100.0" x="4438.0" y="484.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="44.0" x="4438.0" y="484.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow93" id="BPMNEdge_flow93">
@@ -834,8 +864,8 @@
         <omgdi:waypoint x="5590.0" y="585.0"></omgdi:waypoint>
         <omgdi:waypoint x="5588.0" y="460.0"></omgdi:waypoint>
         <omgdi:waypoint x="4572.0" y="461.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3872.0" y="461.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3872.0" y="574.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3484.0" y="460.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3484.0" y="574.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="16.0" width="44.0" x="5436.0" y="451.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
@@ -867,6 +897,11 @@
         <omgdi:waypoint x="2054.0" y="1342.0"></omgdi:waypoint>
         <omgdi:waypoint x="2054.0" y="1103.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow178" id="BPMNEdge_flow178">
+        <omgdi:waypoint x="3322.0" y="1056.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3322.0" y="601.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3432.0" y="601.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow179" id="BPMNEdge_flow179">
         <omgdi:waypoint x="4895.0" y="601.0"></omgdi:waypoint>
         <omgdi:waypoint x="5045.0" y="602.0"></omgdi:waypoint>
@@ -875,16 +910,52 @@
         <omgdi:waypoint x="5065.0" y="582.0"></omgdi:waypoint>
         <omgdi:waypoint x="5064.0" y="432.0"></omgdi:waypoint>
         <omgdi:waypoint x="4680.0" y="432.0"></omgdi:waypoint>
-        <omgdi:waypoint x="4281.0" y="432.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4280.0" y="432.0"></omgdi:waypoint>
         <omgdi:waypoint x="4282.0" y="574.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="22.0" x="4947.0" y="416.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="44.0" x="4947.0" y="416.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow181" id="BPMNEdge_flow181">
+        <omgdi:waypoint x="3681.0" y="602.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3820.0" y="601.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="22.0" x="3719.0" y="587.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow182" id="BPMNEdge_flow182">
-        <omgdi:waypoint x="3322.0" y="1056.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3322.0" y="601.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3820.0" y="601.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3537.0" y="601.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3641.0" y="602.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow183" id="BPMNEdge_flow183">
+        <omgdi:waypoint x="3661.0" y="582.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3661.0" y="396.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="22.0" x="3650.0" y="516.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow184" id="BPMNEdge_flow184">
+        <omgdi:waypoint x="4580.0" y="581.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4580.0" y="536.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3872.0" y="537.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3872.0" y="574.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="44.0" x="4438.0" y="521.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow185" id="BPMNEdge_flow185">
+        <omgdi:waypoint x="3925.0" y="601.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4036.0" y="601.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow186" id="BPMNEdge_flow186">
+        <omgdi:waypoint x="4056.0" y="581.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4053.0" y="436.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3769.0" y="436.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3484.0" y="437.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3484.0" y="574.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="48.0" width="100.0" x="3959.0" y="421.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
