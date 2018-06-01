@@ -100,4 +100,36 @@ public interface EmployeeDOMapper {
      * @return
      */
     String getNameById(Long visitSalesmanId);
+
+    /**
+     * 将parentId置空
+     *
+     * @param id
+     * @return
+     */
+    int setParentIdIsNull(Long id);
+
+    /**
+     * 替换parentId
+     *
+     * @param oldParentId
+     * @param newParentId
+     */
+    int replaceParentId(@Param("oldParentId") Long oldParentId, @Param("newParentId") Long newParentId);
+
+    /**
+     * 更新parentId
+     *
+     * @param id
+     * @param parentId
+     */
+    int updateParentIdById(@Param("id") Long id, @Param("parentId") Long parentId);
+
+    /**
+     * 获取所有子账号
+     *
+     * @param parentId
+     * @return
+     */
+    List<Long> listChildByParentId(Long parentId);
 }

@@ -1,9 +1,7 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -12,7 +10,6 @@ import com.yunche.loan.mapper.EmployeeDOMapper;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.vo.CascadeVO;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundValueOperations;
@@ -22,7 +19,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,10 +41,6 @@ public class EmployeeCache {
      * 外包员工缓存
      */
     private static final String EMPLOYEE_WB_CASCADE_CACHE_KEY = "cascade:cache:employee:wb";
-    /**
-     * 获取所有 级联子级
-     */
-    private static final String EMPLOYEE_CHILD_CASCADE_CACHE_KEY = "cascade:cache:employee:child";
     /**
      * ID-BaseDO缓存
      */
@@ -115,14 +107,14 @@ public class EmployeeCache {
      * @param parentId
      * @return
      */
-    public Set<String> getCascadeChildIdList(String parentId) throws IOException {
+    public Set<String> getCascadeChildIdList(Long parentId) {
         // get
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
         String result = boundValueOps.get();
 
         if (StringUtils.isNotBlank(result)) {
 
-            return getSelfAndChildrenTree(result, parentId);
+            return getChildrenIdSet(result, parentId);
 
 //            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
 //
@@ -152,7 +144,7 @@ public class EmployeeCache {
         result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
 
-            return getSelfAndChildrenTree(result, parentId);
+            return getChildrenIdSet(result, parentId);
 
 //            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
 //
@@ -177,21 +169,29 @@ public class EmployeeCache {
         return null;
     }
 
-    private Set<String> getSelfAndChildrenTree(String allEmployeeJson, String parentId) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map map = objectMapper.readValue(allEmployeeJson, Map.class); //json转换成map
+    private Set<String> getChildrenIdSet(String allEmployeeJsonStr, Long parentId) {
+
+        JSONObject jsonObj = JSON.parseObject(allEmployeeJsonStr);
+
         Set<String> set = Sets.newHashSet();
         Set<String> tempSet = Sets.newHashSet();
-        set.add(parentId);
+
+        set.add(String.valueOf(parentId));
+
         int i = 0;
         while (true) {
+
             i++;
-            Iterator it = map.entrySet().iterator();
+            Iterator it = jsonObj.entrySet().iterator();
+
             while (it.hasNext()) {
+
                 Map.Entry result = (Map.Entry) it.next();
-                if(result.getValue() !=null) {
+                if (result.getValue() != null) {
+
                     Object parentIdObj = ((Map) result.getValue()).get("parentId");
                     if (parentIdObj != null) {
+
                         for (String str : set) {
                             if (parentIdObj.toString().equals(str)) {
                                 tempSet.add(((Map) result.getValue()).get("id").toString());
@@ -201,13 +201,16 @@ public class EmployeeCache {
                     }
                 }
             }
+
             if (i > set.size()) {
                 break;
             }
-            if (i > map.size()) {
+            if (i > jsonObj.size()) {
                 break;
             }
         }
+
+        set.remove(parentId);
         return set;
     }
 

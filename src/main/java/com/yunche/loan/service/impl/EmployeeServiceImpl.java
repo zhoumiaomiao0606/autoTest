@@ -6,9 +6,7 @@ import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.thread.ThreadPool;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
@@ -40,7 +38,6 @@ import org.springframework.util.CollectionUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -162,6 +159,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         Preconditions.checkNotNull(employeeDO.getId(), "id不能为空");
         Preconditions.checkArgument(!employeeDO.getId().equals(employeeDO.getParentId()), "直接主管不能为自己");
 
+        // 更新Parent
+        updateParent(employeeDO.getId(), employeeDO.getParentId());
+
         // 禁止通过update更新密码
         employeeDO.setPassword(null);
         employeeDO.setGmtModify(new Date());
@@ -174,10 +174,47 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
+    /**
+     * 更新Z的Parent
+     * <p>
+     * X  ->  Z的 旧上级
+     * Y  ->  Z的 新上级
+     * Z  ->  被更新parent者
+     *
+     * @param id_Z          Z
+     * @param newParentId_Y Y
+     */
+    private void updateParent(Long id_Z, Long newParentId_Y) {
+
+        BaseVO employee_Z = employeeCache.getById(id_Z);
+        Preconditions.checkNotNull(employee_Z, "账号不存在");
+
+        // 旧上级 X
+        Long oldParentId_X = employee_Z.getParentId();
+
+        // 新上级 Y     ->     newParentId_Y
+
+        // Y的新上级设置为X
+        if (null == oldParentId_X) {
+            employeeDOMapper.setParentIdIsNull(newParentId_Y);
+        } else {
+            EmployeeDO employeeDO_Y = new EmployeeDO();
+            employeeDO_Y.setId(newParentId_Y);
+            employeeDO_Y.setParentId(oldParentId_X);
+
+            employeeDO_Y.setGmtModify(new Date());
+            int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO_Y);
+            Preconditions.checkArgument(count > 0, "编辑失败");
+        }
+    }
+
     @Override
     @Transactional
     public ResultBean<Void> delete(Long id) {
         Preconditions.checkNotNull(id, "id不能为空");
+
+        List<Long> childList = employeeDOMapper.listChildByParentId(id);
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(childList), "请先解绑该账号下的所有子账号");
 
         int count = employeeDOMapper.deleteByPrimaryKey(id);
         Preconditions.checkArgument(count > 0, "删除失败");
@@ -543,14 +580,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Set<String> getSelfAndCascadeChildIdList(Long parentId) {
         Preconditions.checkNotNull(parentId, "parentId不能为空");
 
-        Set<String> cascadeChildIdList = null;
-        try {
-            cascadeChildIdList = employeeCache.getCascadeChildIdList(parentId.toString());
-        } catch (IOException e) {
-            throw new BizException("json转化失败");
-        }
+        Set<String> cascadeChildIdList = employeeCache.getCascadeChildIdList(parentId);
 
-        Set<String> selfAndCascadeChildIdList = Sets.newHashSet(parentId.toString());
+        Set<String> selfAndCascadeChildIdList = Sets.newHashSet(String.valueOf(parentId));
         selfAndCascadeChildIdList.addAll(cascadeChildIdList);
         selfAndCascadeChildIdList.removeAll(Collections.singleton(null));
 

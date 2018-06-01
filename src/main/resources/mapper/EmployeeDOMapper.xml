@@ -110,6 +110,33 @@
         from employee
     </select>
 
+    <!--setParentIdIsNull-->
+    <select id="setParentIdIsNull" parameterType="java.lang.Long">
+        UPDATE employee
+        SET parent_id = NULL
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!--replaceParentId-->
+    <select id="replaceParentId">
+        UPDATE employee
+        SET parent_id = #{newParentId,jdbcType=BIGINT}
+        where parent_id = #{oldParentId,jdbcType=BIGINT}
+    </select>
+
+    <!--listChildByParentId-->
+    <select id="listChildByParentId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT id FROM employee
+        where parent_id = #{parentId,jdbcType=BIGINT}
+    </select>
+
+    <!--updateParentIdById-->
+    <select id="updateParentIdById">
+        UPDATE employee
+        SET parent_id = #{parentId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
     <!-- countListEmployeeByUserGroupId -->
     <select id="countListEmployeeByUserGroupId" parameterType="com.yunche.loan.domain.query.RelaQuery"
             resultType="java.lang.Integer">
@@ -447,31 +474,31 @@
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.EmployeeDO">
-    update employee
-    set name = #{name,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      id_card = #{idCard,jdbcType=CHAR},
-      mobile = #{mobile,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      ding_ding = #{dingDing,jdbcType=VARCHAR},
-      department_id = #{departmentId,jdbcType=BIGINT},
-      parent_id = #{parentId,jdbcType=BIGINT},
-      title = #{title,jdbcType=VARCHAR},
-      entry_date = #{entryDate,jdbcType=TIMESTAMP},
-      level = #{level,jdbcType=INTEGER},
-      type = #{type,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      feature = #{feature,jdbcType=VARCHAR},
-      status = #{status,jdbcType=TINYINT}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update employee
+        set name = #{name,jdbcType=VARCHAR},
+        password = #{password,jdbcType=VARCHAR},
+        id_card = #{idCard,jdbcType=CHAR},
+        mobile = #{mobile,jdbcType=VARCHAR},
+        email = #{email,jdbcType=VARCHAR},
+        ding_ding = #{dingDing,jdbcType=VARCHAR},
+        department_id = #{departmentId,jdbcType=BIGINT},
+        parent_id = #{parentId,jdbcType=BIGINT},
+        title = #{title,jdbcType=VARCHAR},
+        entry_date = #{entryDate,jdbcType=TIMESTAMP},
+        level = #{level,jdbcType=INTEGER},
+        type = #{type,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
     <update id="setMachineIdForNull" parameterType="java.lang.Long">
-    update employee
-    set machine_id = null
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update employee
+        set machine_id = null
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
 
 </mapper>

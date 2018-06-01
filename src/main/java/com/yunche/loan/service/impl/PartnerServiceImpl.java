@@ -13,6 +13,7 @@ import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.query.RelaQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.PartnerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -79,6 +80,9 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
 
+    @Autowired
+    private EmployeeService employeeService;
+
 
     @Override
     @Transactional
@@ -93,11 +97,13 @@ public class PartnerServiceImpl implements PartnerService {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(partnerParam.getBankAccountList()), "财务合作信息不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(partnerParam.getLeaderEmail()), "邮箱不能为空");
 
-        // 给合伙人创建一个账号，并设置为leader
+        // 给合伙人创建一个账号
         Long leaderAccountId = createPartnerLeaderAccount(partnerParam);
 
-        // 创建实体，并返回ID
+        // 设置为leader
         partnerParam.setLeaderId(leaderAccountId);
+
+        // 创建实体，并返回ID
         Long partnerId = insertAndGetId(partnerParam);
 
         // 绑定leader账号
@@ -228,9 +234,14 @@ public class PartnerServiceImpl implements PartnerService {
     @Transactional
     public ResultBean<Void> update(PartnerParam partnerParam) {
         Preconditions.checkNotNull(partnerParam.getId(), "id不能为空");
+        Preconditions.checkNotNull(partnerParam.getLeaderId(), "团队负责人不能为空");
+
+        // 编辑leader
+        updateLeader(partnerParam.getId(), partnerParam.getLeaderId());
 
         PartnerDO partnerDO = new PartnerDO();
         BeanUtils.copyProperties(partnerParam, partnerDO);
+
         partnerParam.setGmtModify(new Date());
         int count = partnerDOMapper.updateByPrimaryKeySelective(partnerDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
@@ -244,6 +255,36 @@ public class PartnerServiceImpl implements PartnerService {
         updateRelaBizModelArea(partnerParam.getId(), partnerParam.getAreaId());
 
         return ResultBean.ofSuccess(null, "编辑成功");
+    }
+
+    /**
+     * 更新Z的Parent
+     * <p>
+     * X  ->  Z的 旧上级          -
+     * Y  ->  Z的 新上级          - newLeaderId
+     * Z  ->  被更新parent者      - oldLeader
+     *
+     * @param partnerId
+     * @param newLeaderId_Y
+     */
+    private void updateLeader(Long partnerId, Long newLeaderId_Y) {
+
+        // 根据合伙人ID  拿到Z
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(partnerId, null);
+        Preconditions.checkNotNull(partnerDO, "合伙人不存在");
+
+        // Z
+        Long oldLeaderId_Z = partnerDO.getLeaderId();
+        // leaderID无变化，则不编辑
+        if (newLeaderId_Y.equals(oldLeaderId_Z)) {
+            return;
+        }
+
+        EmployeeDO employeeDO_Z = new EmployeeDO();
+        employeeDO_Z.setId(oldLeaderId_Z);
+        employeeDO_Z.setParentId(newLeaderId_Y);
+        ResultBean<Void> updateResultBean = employeeService.update(employeeDO_Z);
+        Preconditions.checkArgument(updateResultBean.getSuccess(), updateResultBean.getMsg());
     }
 
     @Override

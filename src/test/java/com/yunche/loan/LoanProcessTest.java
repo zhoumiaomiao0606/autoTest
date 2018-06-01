@@ -1,6 +1,8 @@
 package com.yunche.loan;
 
+import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.cache.ActivitiCache;
+import com.yunche.loan.config.cache.EmployeeCache;
 import org.activiti.engine.*;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -37,6 +39,9 @@ public class LoanProcessTest extends BaseTest {
     @Autowired
     private ActivitiCache activitiCache;
 
+    @Autowired
+    private EmployeeCache employeeCache;
+
 //    @Autowired
 //    private ApplicantRepository applicantRepository;
 
@@ -52,6 +57,12 @@ public class LoanProcessTest extends BaseTest {
     public void test1() {
         Map<String, List<String>> map = activitiCache.get();
         System.out.println(map);
+    }
+
+    @Test
+    public void test2() {
+        Set<String> cascadeChildIdList = employeeCache.getCascadeChildIdList(238L);
+        logger.info(JSON.toJSONString(cascadeChildIdList));
     }
 
     @Before
