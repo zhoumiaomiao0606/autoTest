@@ -1,11 +1,13 @@
 package com.yunche.loan.domain.query;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class AppTaskListQuery extends BaseQuery {
@@ -42,7 +44,7 @@ public class AppTaskListQuery extends BaseQuery {
 
     Long maxGroupLevel;
 
-    List<Long> juniorIds = Lists.newArrayList();
+    Set<String> juniorIds = Sets.newHashSet();
 
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
     private List<String> bankList = Lists.newArrayList();//银行ID列表

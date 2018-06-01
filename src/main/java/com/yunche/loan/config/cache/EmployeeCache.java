@@ -3,8 +3,10 @@ package com.yunche.loan.config.cache;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.mapper.EmployeeDOMapper;
 import com.yunche.loan.domain.entity.EmployeeDO;
@@ -20,6 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -112,32 +115,35 @@ public class EmployeeCache {
      * @param parentId
      * @return
      */
-    public List<Long> getCascadeChildIdList(Long parentId) {
+    public Set<String> getCascadeChildIdList(Long parentId) throws IOException {
         // get
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
         String result = boundValueOps.get();
 
         if (StringUtils.isNotBlank(result)) {
 
-            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
+            return getSelfAndChildrenTree(result, parentId);
 
-            if (!CollectionUtils.isEmpty(idBaseDOMap)) {
-
-                List<BaseVO> allEmployee = idBaseDOMap.values().stream()
-                        .filter(Objects::nonNull)
-                        .map(jsonObject -> {
-
-                            BaseVO baseVO = JSON.toJavaObject(jsonObject, BaseVO.class);
-                            return baseVO;
-                        })
-                        .collect(Collectors.toList());
-
-                List<Long> cascadeChildIdList = Lists.newArrayList();
-
-                fillCascadeChildIdList(allEmployee, parentId, cascadeChildIdList, 20);
-
-                return cascadeChildIdList;
-            }
+//            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
+//
+//            if (!CollectionUtils.isEmpty(idBaseDOMap)) {
+//
+//                List<BaseVO> allEmployee = idBaseDOMap.values().stream()
+//                        .filter(Objects::nonNull)
+//                        .map(jsonObject -> {
+//
+//                            BaseVO baseVO = JSON.toJavaObject(jsonObject, BaseVO.class);
+//                            return baseVO;
+//                        })
+//                        .collect(Collectors.toList());
+//
+//
+//                List<Long> cascadeChildIdList = Lists.newArrayList();
+//
+//                fillCascadeChildIdList(allEmployee, parentId, cascadeChildIdList, 20);
+//
+//                return cascadeChildIdList;
+//            }
         }
 
         refreshAll();
@@ -146,27 +152,63 @@ public class EmployeeCache {
         result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
 
-            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
+            return getSelfAndChildrenTree(result, parentId);
 
-            if (!CollectionUtils.isEmpty(idBaseDOMap)) {
-
-                List<BaseVO> allEmployee = idBaseDOMap.values().stream()
-                        .filter(Objects::nonNull)
-                        .map(jsonObject -> {
-
-                            BaseVO baseVO = JSON.toJavaObject(jsonObject, BaseVO.class);
-                            return baseVO;
-                        })
-                        .collect(Collectors.toList());
-
-                List<Long> cascadeChildIdList = Lists.newArrayList();
-
-                fillCascadeChildIdList(allEmployee, parentId, cascadeChildIdList, 20);
-
-                return cascadeChildIdList;
-            }
+//            Map<String, JSONObject> idBaseDOMap = JSON.parseObject(result, Map.class);
+//
+//            if (!CollectionUtils.isEmpty(idBaseDOMap)) {
+//
+//                List<BaseVO> allEmployee = idBaseDOMap.values().stream()
+//                        .filter(Objects::nonNull)
+//                        .map(jsonObject -> {
+//
+//                            BaseVO baseVO = JSON.toJavaObject(jsonObject, BaseVO.class);
+//                            return baseVO;
+//                        })
+//                        .collect(Collectors.toList());
+//
+//                List<Long> cascadeChildIdList = Lists.newArrayList();
+//
+//                fillCascadeChildIdList(allEmployee, parentId, cascadeChildIdList, 20);
+//
+//                return cascadeChildIdList;
+//            }
         }
         return null;
+    }
+
+    private Set<String> getSelfAndChildrenTree(String allEmployeeJson, Long parentId) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map map = objectMapper.readValue(allEmployeeJson, Map.class); //json转换成map
+        Set<String> set = Sets.newHashSet();
+        Set<String> tempSet = Sets.newHashSet();
+        set.add(String.valueOf(parentId));
+        int i = 0;
+        while (true) {
+            i++;
+            Iterator it = map.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry result = (Map.Entry) it.next();
+                if(result.getValue() !=null) {
+                    Object parentIdObj = ((Map) result.getValue()).get("parentId");
+                    if (parentIdObj != null) {
+                        for (String str : set) {
+                            if (parentIdObj.toString().equals(str)) {
+                                tempSet.add(((Map) result.getValue()).get("id").toString());
+                            }
+                        }
+                        set.addAll(tempSet);
+                    }
+                }
+            }
+            if (i > set.size()) {
+                break;
+            }
+            if (i > map.size()) {
+                break;
+            }
+        }
+        return set;
     }
 
     /**

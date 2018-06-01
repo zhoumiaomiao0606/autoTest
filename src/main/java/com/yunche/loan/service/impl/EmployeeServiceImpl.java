@@ -2,9 +2,11 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.thread.ThreadPool;
 import com.yunche.loan.config.util.MD5Utils;
@@ -38,6 +40,7 @@ import org.springframework.util.CollectionUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -537,12 +540,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Long> getSelfAndCascadeChildIdList(Long parentId) {
+    public Set<String> getSelfAndCascadeChildIdList(Long parentId) {
         Preconditions.checkNotNull(parentId, "parentId不能为空");
 
-        List<Long> cascadeChildIdList = employeeCache.getCascadeChildIdList(parentId);
+        Set<String> cascadeChildIdList = null;
+        try {
+            cascadeChildIdList = employeeCache.getCascadeChildIdList(parentId);
+        } catch (IOException e) {
+            throw new BizException("json转化失败");
+        }
 
-        List<Long> selfAndCascadeChildIdList = Lists.newArrayList(parentId);
+        Set<String> selfAndCascadeChildIdList = Sets.newHashSet(parentId.toString());
         selfAndCascadeChildIdList.addAll(cascadeChildIdList);
         selfAndCascadeChildIdList.removeAll(Collections.singleton(null));
 

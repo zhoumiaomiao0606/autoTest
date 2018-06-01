@@ -13,6 +13,7 @@ import com.yunche.loan.domain.vo.UserGroupVO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author liuzhe
@@ -54,5 +55,5 @@ public interface EmployeeService {
      * @param parentId
      * @return
      */
-    List<Long> getSelfAndCascadeChildIdList(Long parentId);
+    Set<String> getSelfAndCascadeChildIdList(Long parentId);
 }
