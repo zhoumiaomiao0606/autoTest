@@ -359,7 +359,7 @@
             vehicle.color                                                                           AS vehicle_color,
             vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
             vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
-            vehicle.apply_license_plate_area                                                        AS vehicle_apply_license_plate_area,
+            CONCAT(area.parent_area_name,area.area_name)                                            AS vehicle_apply_license_plate_area,
             bank_credit.gmt_create                                                                  AS bank_credit_gmt_create,
             society_credit.gmt_create                                                               AS society_credit_gmt_create,
             financial.id                                                                            AS financial_id,
@@ -405,6 +405,7 @@
     left join loan_car_info car on main_order.loan_car_info_id = car.id
     left join remit_details remit on main_order.remit_details_id = remit.id
     left join vehicle_information vehicle on main_order.vehicle_information_id = vehicle.id
+    left join base_area area on vehicle.apply_license_plate_area = area.area_id
     left join loan_financial_plan financial on main_order.loan_financial_plan_id = financial.id
     left join financial_product product on financial.financial_product_id = product.prod_id
     left join loan_credit_info bank_credit on customer.id = bank_credit.customer_id and bank_credit.type = 1
