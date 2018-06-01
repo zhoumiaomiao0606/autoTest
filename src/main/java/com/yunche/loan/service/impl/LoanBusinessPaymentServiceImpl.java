@@ -86,6 +86,9 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
         recombinationVO.setFinancial(financialSchemeVO);
 
+        UniversalRemitDetails universalRemitDetails = loanQueryDOMapper.selectUniversalRemitDetails(orderId);
+        recombinationVO.setRemit(universalRemitDetails);
+
         return ResultBean.ofSuccess(recombinationVO);
     }
 }
