@@ -183,8 +183,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 获取当前执行任务（activiti中）
         Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
 
-        // 先获取提交之前的待执行任务列表
-        List<Task> startTaskList = getCurrentTaskList(task.getProcessInstanceId());
+        // 先获取提交之前的待执行任务ID列表
+        List<String> startTaskIdList = getCurrentTaskIdList(task.getProcessInstanceId());
 
         // 流程变量
         Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO, loanProcessDO);
@@ -193,7 +193,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         execTask(task, variables, approval, loanOrderDO);
 
         // 流程数据同步
-        syncProcess(startTaskList, approval);
+        syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval);
 
         // 异步推送
         asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
@@ -202,7 +202,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO.getProcessInstId());
 
         // [领取]完成
-        finishTask(approval, startTaskList, loanOrderDO.getProcessInstId());
+        finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 异步打包文件
 //        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
@@ -214,10 +214,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * [领取]完成
      *
      * @param approval
-     * @param startTaskList
+     * @param startTaskIdList
      * @param processInstId
      */
-    private void finishTask(ApprovalParam approval, List<Task> startTaskList, String processInstId) {
+    private void finishTask(ApprovalParam approval, List<String> startTaskIdList, String processInstId) {
 
         if (null != approval.getTaskId()) {
 
@@ -228,12 +228,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 手动_REJECT
             else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
-
-                List<String> startTaskIdList = startTaskList.stream()
-                        .filter(Objects::nonNull)
-                        .map(e -> {
-                            return e.getId();
-                        }).collect(Collectors.toList());
 
                 List<Task> newTaskList = getNewTaskList(processInstId, startTaskIdList);
 
@@ -758,18 +752,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 流程数据同步： 同步activiti与本地流程数据
      *
-     * @param startTaskList
+     * @param startTaskIdList 起始任务ID列表
+     * @param processInstId
      * @param approval
      */
-    private void syncProcess(List<Task> startTaskList, ApprovalParam approval) {
-
-        // 起始任务ID列表
-        List<String> startTaskIdList = startTaskList.stream()
-                .filter(Objects::nonNull)
-                .map(e -> {
-                    return e.getId();
-                })
-                .collect(Collectors.toList());
+    private void syncProcess(List<String> startTaskIdList, String processInstId, ApprovalParam approval) {
 
         // 更新状态
         LoanProcessDO loanProcessDO = new LoanProcessDO();
@@ -803,7 +790,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), taskProcessStatus);
 
         // 更新新产生的任务状态
-        updateNextTaskProcessStatus(loanProcessDO, startTaskList.get(0).getProcessInstanceId(), startTaskIdList, approval.getAction(), approval.getTaskDefinitionKey(), approval.getInfo());
+        updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskIdList, approval.getAction(), approval.getTaskDefinitionKey(), approval.getInfo());
 
         // 更新本地流程记录
         updateLoanProcess(loanProcessDO);
