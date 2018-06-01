@@ -107,7 +107,7 @@ public interface EmployeeDOMapper {
      * @param id
      * @return
      */
-    int setParentIdIsNull(Long id);
+    void setParentIdIsNull(Long id);
 
     /**
      * 替换parentId
