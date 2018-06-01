@@ -143,15 +143,18 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                     Long lastOrderId = lastRepayPlanLists.get(0).getOrderId();
                     int num = nper-overdueTimes+1;
                     LoanRepayPlanDO loanRepayPlanDO = bankRepayQueryDOMapper.selectRepayPlanByNper(lastOrderId, num);
-                    BigDecimal actual = loanRepayPlanDO
-                            .getPayableAmount().multiply(new BigDecimal(overdueTimes)).subtract(e.getOverdueAmount());
+                    if(loanRepayPlanDO!=null){
+                        BigDecimal actual = loanRepayPlanDO
+                                .getPayableAmount().multiply(new BigDecimal(overdueTimes)).subtract(e.getOverdueAmount());
 
-                    loanRepayPlanDO.setActualRepayAmount(actual);
-                    loanRepayPlanDO.setOverdueAmount(loanRepayPlanDO.getPayableAmount().subtract(loanRepayPlanDO.getActualRepayAmount()));
-                    if(loanRepayPlanDO.getOverdueAmount().doubleValue()<=0){
-                        loanRepayPlanDO.setIsOverdue(K_YORN_NO);
+                        loanRepayPlanDO.setActualRepayAmount(actual);
+                        loanRepayPlanDO.setOverdueAmount(loanRepayPlanDO.getPayableAmount().subtract(loanRepayPlanDO.getActualRepayAmount()));
+                        if(loanRepayPlanDO.getOverdueAmount().doubleValue()<=0){
+                            loanRepayPlanDO.setIsOverdue(K_YORN_NO);
+                        }
+                        loanRepayPlanDOMapper.updateByPrimaryKeySelective(loanRepayPlanDO);
                     }
-                    loanRepayPlanDOMapper.updateByPrimaryKeySelective(loanRepayPlanDO);
+
                 }
                 if(lastRepayPlanLists!=null){
                     LoanRepayPlanDO loanRepayPlanDO = bankRepayQueryDOMapper.selectRepayPlanByNper(e.getOrderId(), lastRepayPlanLists.get(0).getNper() - overdueTimes);
