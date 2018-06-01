@@ -2,13 +2,13 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanBusinessPaymentDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.entity.RemitDetailsDO;
 import com.yunche.loan.domain.param.LoanBusinessPaymentParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanBusinessPaymentService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 
-import static com.yunche.loan.config.constant.BaseConst.*;
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REFUND;
 
 
@@ -24,8 +25,7 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS
 @Transactional
 public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentService{
 
-    @Autowired
-    LoanBusinessPaymentDOMapper loanBusinessPaymentDOMapper;
+
     @Autowired
     LoanCustomerDOMapper loanCustomerDOMapper;
     @Autowired
@@ -34,22 +34,62 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
     LoanQueryDOMapper loanQueryDOMapper;
     @Autowired
     LoanProcessDOMapper loanProcessDOMapper;
+    @Autowired
+    RemitDetailsDOMapper remitDetailsDOMapper;
     @Override
     public ResultBean save(LoanBusinessPaymentParam loanBusinessPaymentParam) {
-        LoanBusinessPaymentDO loanBusinessPaymentDO = new LoanBusinessPaymentDO();
-        BeanUtils.copyProperties(loanBusinessPaymentParam,loanBusinessPaymentDO);
-        loanBusinessPaymentDO.setStatus(VALID_STATUS);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanBusinessPaymentParam.getOrderId(), null);
+        Long remitDetailsId  = loanOrderDO.getRemitDetailsId();//关联ID
 
-        LoanBusinessPaymentDO loanBusinessPaymentDO1 = loanBusinessPaymentDOMapper.selectByPrimaryKey(loanBusinessPaymentParam.getOrderId());
-        if(loanBusinessPaymentDO1==null){
-            loanBusinessPaymentDO.setGmtCreate(new Date());
-            int count = loanBusinessPaymentDOMapper.insertSelective(loanBusinessPaymentDO);
-            Preconditions.checkArgument(count>0,"业务申请单保存失败");
+        if(remitDetailsId == null){
+            RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
+            remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getReceiveAccount());//收款账户
+            remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getAccountNumber());//收款账号
+            remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getReceiveOpenBank());//收款银行
+            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.getPaymentOrganization());//付款组织
+            remitDetailsDO.setApplication_date(new Date());//申请日期
+            remitDetailsDOMapper.insertSelective(remitDetailsDO);
+            loanOrderDO.setRemitDetailsId(remitDetailsDO.getId());
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+
         }else{
-            loanBusinessPaymentDO.setGmtModify(new Date());
-            int count = loanBusinessPaymentDOMapper.updateByPrimaryKeySelective(loanBusinessPaymentDO);
-            Preconditions.checkArgument(count>0,"业务申请单更新失败");
+            if(remitDetailsDOMapper.selectByPrimaryKey(remitDetailsId) == null){
+                //那order表中是脏数据
+                //进行新增 但是id得用order_id表中存在的id
+                RemitDetailsDO remitDetailsDO =  new RemitDetailsDO();
+                remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getReceiveAccount());//收款账户
+                remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getAccountNumber());//收款账号
+                remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getReceiveOpenBank());//收款银行
+                remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.getPaymentOrganization());//付款组织
+                remitDetailsDO.setApplication_date(new Date());//申请日期
+                remitDetailsDO.setId(remitDetailsId);
+                remitDetailsDOMapper.insertSelective(remitDetailsDO);
+                //但是不用更新loanOrder 因为已经存在
+            }else {
+                //代表存在
+                //进行更新
+                RemitDetailsDO remitDetailsDO =  new RemitDetailsDO();
+                remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getReceiveAccount());//收款账户
+                remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getAccountNumber());//收款账号
+                remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getReceiveOpenBank());//收款银行
+                remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.getPaymentOrganization());//付款组织
+                remitDetailsDO.setApplication_date(new Date());//申请日期
+                remitDetailsDO.setId(remitDetailsId);
+                remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
+
+            }
         }
+
+//        LoanBusinessPaymentDO loanBusinessPaymentDO1 = loanBusinessPaymentDOMapper.selectByPrimaryKey(loanBusinessPaymentParam.getOrderId());
+//        if(loanBusinessPaymentDO1==null){
+//            loanBusinessPaymentDO.setGmtCreate(new Date());
+//            int count = loanBusinessPaymentDOMapper.insertSelective(loanBusinessPaymentDO);
+//            Preconditions.checkArgument(count>0,"业务申请单保存失败");
+//        }else{
+//            loanBusinessPaymentDO.setGmtModify(new Date());
+//            int count = loanBusinessPaymentDOMapper.updateByPrimaryKeySelective(loanBusinessPaymentDO);
+//            Preconditions.checkArgument(count>0,"业务申请单更新失败");
+//        }
         return   ResultBean.ofSuccess("创建成功");
     }
 
@@ -58,21 +98,20 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
 
         RecombinationVO recombinationVO = new RecombinationVO();
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO,"订单不存在");
         //客户基本信息
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
 
-        //业务付款单
-        LoanBusinessPaymentDO loanBusinessPaymentDO = loanBusinessPaymentDOMapper.selectByPrimaryKey(orderId);
-        LoanBusinessPaymentVO loanBusinessPaymentVO = new LoanBusinessPaymentVO();
-        if(loanBusinessPaymentDO!=null){
-            BeanUtils.copyProperties(loanBusinessPaymentDO,loanBusinessPaymentVO);
+        UniversalRemitDetails universalRemitDetails = loanQueryDOMapper.selectUniversalRemitDetails(orderId);
+        if(universalRemitDetails == null){
+            universalRemitDetails = new UniversalRemitDetails();
         }
         if(TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())){
-            loanBusinessPaymentVO.setIsSendback(K_YORN_YES);
+            universalRemitDetails.setRemit_is_sendback(K_YORN_YES);
         }else{
-            loanBusinessPaymentVO.setIsSendback(K_YORN_NO);
+            universalRemitDetails.setRemit_is_sendback(K_YORN_NO);
         }
-        recombinationVO.setLoanBusinessPaymentVO(loanBusinessPaymentVO);
+        recombinationVO.setRemit(universalRemitDetails);
 
         //共贷人信息
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
@@ -86,8 +125,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
         recombinationVO.setFinancial(financialSchemeVO);
 
-        UniversalRemitDetails universalRemitDetails = loanQueryDOMapper.selectUniversalRemitDetails(orderId);
-        recombinationVO.setRemit(universalRemitDetails);
+
 
         return ResultBean.ofSuccess(recombinationVO);
     }

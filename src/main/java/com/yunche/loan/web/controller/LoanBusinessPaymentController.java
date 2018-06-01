@@ -24,8 +24,8 @@ public class LoanBusinessPaymentController {
      * @param loanBusinessPaymentParam
      * @return
      */
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> create(@RequestBody  LoanBusinessPaymentParam loanBusinessPaymentParam) {
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> create(@RequestBody LoanBusinessPaymentParam loanBusinessPaymentParam) {
         Preconditions.checkNotNull(loanBusinessPaymentParam,"业务付款记录不能为空");
         Preconditions.checkNotNull(loanBusinessPaymentParam.getOrderId(),"订单编号不能为空");
 //        Preconditions.checkNotNull(loanBusinessPaymentParam.getApplicationDate(),"申请日期不能为空");

@@ -3,6 +3,7 @@ package com.yunche.loan.domain.entity;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 public class RemitDetailsDO {
@@ -25,4 +26,10 @@ public class RemitDetailsDO {
      * 保险情况
      */
     private String insurance_situation;
+
+    private String payment_organization;//付款组织
+
+    private Date application_date;//申请日期
+
+    private Date gmt_create;
 }

@@ -45,8 +45,6 @@ public class RecombinationVO<T> {
 
         private UniversalOverdueInfo overdue;
 
-        private LoanBusinessPaymentVO loanBusinessPaymentVO;//业务付款单
-
         private List<UniversalLoanRepaymentPlan>repayments = new ArrayList<UniversalLoanRepaymentPlan>();
 
         private List<UniversalCollectionRecord> collections = new ArrayList<UniversalCollectionRecord>();

@@ -11,10 +11,13 @@
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
     <result column="insurance_situation" property="insurance_situation" jdbcType="VARCHAR" />
+    <result column="payment_organization" property="payment_organization" jdbcType="VARCHAR" />
+    <result column="application_date" jdbcType="TIMESTAMP" property="application_date" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmt_create" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, beneficiary_bank, beneficiary_account, beneficiary_account_number, remit_amount, 
-    return_rate_amount, status, feature, insurance_situation
+    return_rate_amount, status, feature, insurance_situation, payment_organization, application_date, gmt_create
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -56,6 +59,17 @@
       <if test="insurance_situation != null">
         insurance_situation,
       </if>
+      <if test="payment_organization != null">
+        payment_organization,
+      </if>
+      <if test="application_date != null">
+        application_date,
+      </if>
+      <if test="gmt_create != null">
+        gmt_create,
+      </if>
+
+
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -83,7 +97,16 @@
         #{feature,jdbcType=VARCHAR},
       </if>
       <if test="insurance_situation != null">
-        #{insurance_situation,jdbcType=VARCHAR}
+        #{insurance_situation,jdbcType=VARCHAR},
+      </if>
+      <if test="payment_organization != null">
+        #{payment_organization,jdbcType=VARCHAR},
+      </if>
+      <if test="application_date != null">
+        #{application_date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmt_create != null">
+        #{gmt_create,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -112,8 +135,19 @@
         feature = #{feature,jdbcType=VARCHAR},
       </if>
       <if test="insurance_situation != null">
-        insurance_situation = #{insurance_situation,jdbcType=VARCHAR}
+        insurance_situation = #{insurance_situation,jdbcType=VARCHAR},
       </if>
+      <if test="payment_organization != null">
+        payment_organization = #{payment_organization,jdbcType=TIMESTAMP},
+      </if>
+      <if test="application_date != null">
+        application_date = #{application_date,jdbcType=VARCHAR},
+      </if>
+      <if test="gmt_create != null">
+        gmt_create = #{gmt_create,jdbcType=VARCHAR}
+      </if>
+
+
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>

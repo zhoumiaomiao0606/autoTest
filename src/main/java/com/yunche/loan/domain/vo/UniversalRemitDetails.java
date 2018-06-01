@@ -13,4 +13,10 @@ public class UniversalRemitDetails {
 
     private String remit_insurance_situation;//保险情况
 
+
+    private Byte remit_is_sendback;
+
+    private String remit_payment_organization;
+    private String remit_application_date;
+
 }

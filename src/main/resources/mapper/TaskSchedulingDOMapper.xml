@@ -401,7 +401,7 @@
               left  join department join_d                 on join_d.id             = join_p.department_id
               left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
-              left  join loan_business_payment join_bp     on main.id               = join_bp.order_id
+              left  join remit_details join_bp     on main.id               = join_bp.order_id
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
