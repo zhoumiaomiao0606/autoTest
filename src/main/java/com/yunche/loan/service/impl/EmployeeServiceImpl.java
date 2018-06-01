@@ -545,7 +545,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Set<String> cascadeChildIdList = null;
         try {
-            cascadeChildIdList = employeeCache.getCascadeChildIdList(parentId);
+            cascadeChildIdList = employeeCache.getCascadeChildIdList(parentId.toString());
         } catch (IOException e) {
             throw new BizException("json转化失败");
         }

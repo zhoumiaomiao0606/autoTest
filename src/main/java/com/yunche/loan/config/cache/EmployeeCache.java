@@ -115,7 +115,7 @@ public class EmployeeCache {
      * @param parentId
      * @return
      */
-    public Set<String> getCascadeChildIdList(Long parentId) throws IOException {
+    public Set<String> getCascadeChildIdList(String parentId) throws IOException {
         // get
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_CACHE_KEY);
         String result = boundValueOps.get();
@@ -177,12 +177,12 @@ public class EmployeeCache {
         return null;
     }
 
-    private Set<String> getSelfAndChildrenTree(String allEmployeeJson, Long parentId) throws IOException {
+    private Set<String> getSelfAndChildrenTree(String allEmployeeJson, String parentId) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map map = objectMapper.readValue(allEmployeeJson, Map.class); //json转换成map
         Set<String> set = Sets.newHashSet();
         Set<String> tempSet = Sets.newHashSet();
-        set.add(String.valueOf(parentId));
+        set.add(parentId);
         int i = 0;
         while (true) {
             i++;
