@@ -25,6 +25,7 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static com.yunche.loan.config.constant.BankUrgeConst.URGE_NO;
 import static com.yunche.loan.config.constant.BankUrgeConst.URGE_YES;
@@ -129,7 +130,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), overdueTimes);
                 //如果逾期多期先将逾期记录中的逾期金额全部更新成应还金额
                if(overdueTimes>1){
-                   overdueRepayPlanList.stream().forEach(r->{
+                   overdueRepayPlanList.stream().filter(Objects::nonNull).forEach(r->{
                        r.setOverdueAmount(r.getPayableAmount());
                        r.setCheckDate(e.getBatchDate());
                        r.setIsOverdue(K_YORN_YES);
@@ -154,14 +155,17 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 }
                 if(lastRepayPlanLists!=null){
                     LoanRepayPlanDO loanRepayPlanDO = bankRepayQueryDOMapper.selectRepayPlanByNper(e.getOrderId(), lastRepayPlanLists.get(0).getNper() - overdueTimes);
-                    List<LoanRepayPlanDO> loanRepayPlanDOS = bankRepayQueryDOMapper.selectOverdueRepayPlanList(e.getOrderId(), loanRepayPlanDO.getRepayDate(), null);
-                    loanRepayPlanDOS.stream().filter(old-> old.getIsOverdue().equals(K_YORN_YES)).forEach(old->{
-                        old.setActualRepayAmount(old.getPayableAmount());
-                        old.setIsOverdue(K_YORN_NO);
-                        old.setCheckDate(e.getBatchDate());
-                        old.setOverdueAmount(new BigDecimal(0));
-                        loanRepayPlanDOMapper.updateByPrimaryKeySelective(old);
-                    });
+                    if(loanRepayPlanDO!=null){
+                        List<LoanRepayPlanDO> loanRepayPlanDOS = bankRepayQueryDOMapper.selectOverdueRepayPlanList(e.getOrderId(), loanRepayPlanDO.getRepayDate(), null);
+                        loanRepayPlanDOS.stream().filter(old-> old.getIsOverdue().equals(K_YORN_YES)).forEach(old->{
+                            old.setActualRepayAmount(old.getPayableAmount());
+                            old.setIsOverdue(K_YORN_NO);
+                            old.setCheckDate(e.getBatchDate());
+                            old.setOverdueAmount(new BigDecimal(0));
+                            loanRepayPlanDOMapper.updateByPrimaryKeySelective(old);
+                        });
+                    }
+
                 }
             }else{
                 List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(e.getOrderId(), e.getBatchDate(), null);
