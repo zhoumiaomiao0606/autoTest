@@ -13,5 +13,5 @@ public interface TaskDistributionService {
 
     TaskDisVO query(Long taskId, String taskKey);
 
-    public void rejeckFinish(Long taskId,Long orderId,List<String> taskKeys);
+    public void rejectFinish(Long taskId,Long orderId,List<String> taskKeys);
 }

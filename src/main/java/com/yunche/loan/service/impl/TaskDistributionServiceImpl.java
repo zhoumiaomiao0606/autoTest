@@ -81,7 +81,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
     //打回完成
     @Override
-    public void rejeckFinish(Long taskId,Long orderId,List<String> taskKeys) {
+    public void rejectFinish(Long taskId,Long orderId,List<String> taskKeys) {
         //遍历可能性
         for(String taskKey:taskKeys){
             TaskDistributionDO taskDistributionDOByTaskId = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
