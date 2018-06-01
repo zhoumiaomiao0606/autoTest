@@ -14,9 +14,11 @@ import com.yunche.loan.service.CollectionService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
@@ -79,6 +81,11 @@ public class CollectionServiceImpl implements CollectionService {
     public void autoDistribution() {
         //催收人员列表
         List<UniversalTelephoneCollectionEmployee> universalTelephoneCollectionEmployees = loanQueryDOMapper.selectUniversalTelephoneCollectionEmployee();
+        if(CollectionUtils.isEmpty(universalTelephoneCollectionEmployees)){
+            return;
+
+        }
+
         //未分配的单子
         List<UniversalUndistributedCollection> UniversalUndistributedCollections = loanQueryDOMapper.selectUniversalUndistributedCollection();
         ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
