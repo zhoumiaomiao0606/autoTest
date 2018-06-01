@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.domain.entity.*;
@@ -32,6 +31,7 @@ import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
 import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
+import static com.yunche.loan.service.impl.EmployeeServiceImpl.initPassword;
 
 /**
  * @author liuzhe
@@ -79,9 +79,6 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
 
-    @Autowired
-    private AreaCache areaCache;
-
 
     @Override
     @Transactional
@@ -98,7 +95,6 @@ public class PartnerServiceImpl implements PartnerService {
 
         // 给合伙人创建一个账号，并设置为leader
         Long leaderAccountId = createPartnerLeaderAccount(partnerParam);
-//        createAccountIfNotExist(partnerParam.getLeaderMobile(), partnerParam.getName());
 
         // 创建实体，并返回ID
         partnerParam.setLeaderId(leaderAccountId);
@@ -130,6 +126,10 @@ public class PartnerServiceImpl implements PartnerService {
         employeeDO.setEmail(partnerParam.getLeaderEmail());
         employeeDO.setMobile(partnerParam.getLeaderMobile());
         employeeDO.setDingDing(partnerParam.getLeaderDingDing());
+
+        // 初始密码
+        String md5Password = MD5Utils.md5(initPassword);
+        employeeDO.setPassword(md5Password);
 
         employeeDO.setStatus(VALID_STATUS);
         employeeDO.setGmtCreate(new Date());
@@ -276,7 +276,6 @@ public class PartnerServiceImpl implements PartnerService {
         partnerVO.setHasApplyLicensePlateArea(hasApplyLicensePlateArea);
         return ResultBean.ofSuccess(partnerVO);
     }
-
 
 
     @Override
@@ -569,21 +568,22 @@ public class PartnerServiceImpl implements PartnerService {
 
     /**
      * 更新合伙人上牌地
+     *
      * @param partnerParam
      * @return
      */
     @Override
     public ResultBean updatePartnerArea(PartnerParam partnerParam) {
-        Preconditions.checkNotNull(partnerParam.getId(),"合伙人编号不能为空");
+        Preconditions.checkNotNull(partnerParam.getId(), "合伙人编号不能为空");
         partnerRelaAreaDOMapper.deleteAllByPartnerId(partnerParam.getId());
-        partnerParam.getAreaIdList().stream().distinct().filter(Objects :: nonNull).forEach(areaId->{
+        partnerParam.getAreaIdList().stream().distinct().filter(Objects::nonNull).forEach(areaId -> {
             PartnerRelaAreaDO partnerRelaAreaDO = new PartnerRelaAreaDO();
             partnerRelaAreaDO.setPartnerId(partnerParam.getId());
             partnerRelaAreaDO.setAreaId(areaId);
             partnerRelaAreaDO.setGmtCreate(new Date());
             partnerRelaAreaDOMapper.insert(partnerRelaAreaDO);
         });
-        return ResultBean.ofSuccess(null,"合伙人上牌地区域保存成功");
+        return ResultBean.ofSuccess(null, "合伙人上牌地区域保存成功");
     }
 
 

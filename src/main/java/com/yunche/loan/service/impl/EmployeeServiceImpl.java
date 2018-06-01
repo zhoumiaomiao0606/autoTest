@@ -6,6 +6,7 @@ import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.thread.ThreadPool;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
@@ -46,6 +47,7 @@ import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
+import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
 import static org.apache.shiro.web.mgt.CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME;
 import static org.springframework.web.util.WebUtils.getCookie;
@@ -62,6 +64,10 @@ public class EmployeeServiceImpl implements EmployeeService {
      * APP端session过期时间：180天 (单位：毫秒)
      */
     private static final long TERMINAL_SESSION_TIMEOUT = 3600 * 24 * 180 * 1000;
+    /**
+     * 账号初始密码
+     */
+    public static final String initPassword = "111111";
 
     @Value("${spring.mail.username}")
     private String from;
@@ -125,10 +131,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 生成随机密码
 //        String password = MD5Utils.getRandomString(10);
-        // 设置初始密码
-        String initPassword = "111111";
 
-        // MD5加密
+        // 初始密码
         String md5Password = MD5Utils.md5(initPassword);
         employeeParam.setPassword(md5Password);
 
@@ -139,11 +143,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         doBindUserGroup(id, employeeParam.getUserGroupIdList());
 
         // 发送账号密码到邮箱
-//        new Thread() {
-//            public void run() {
-//                sentAccountAndPassword(employeeParam.getEmail(), password);
-//            }
-//        }.start();
+//        executorService.execute(() -> {
+//            sentAccountAndPassword(employeeParam.getEmail(), password);
+//        });
 
         // 刷新缓存
         employeeCache.refresh();
