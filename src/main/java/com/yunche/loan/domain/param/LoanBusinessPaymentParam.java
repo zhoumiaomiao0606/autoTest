@@ -9,17 +9,16 @@ public class LoanBusinessPaymentParam {
 
     private Long orderId;
 
-    private Date applicationDate;
+    private Date remit_application_date;
 
-    private String receiveOpenBank;
+    private String remit_beneficiary_bank;
 
-    private String receiveAccount;
+    private String remit_beneficiary_account;
 
-    private String accountNumber;
+    private String remit_beneficiary_account_number;
 
-    private String paymentOrganization;
 
-    private Byte isSendback;
+    private Byte remit_is_sendback;
 
     private String remark;
 

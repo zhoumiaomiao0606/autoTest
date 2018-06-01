@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
@@ -43,11 +42,11 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
 
         if(remitDetailsId == null){
             RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
-            remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getReceiveAccount());//收款账户
-            remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getAccountNumber());//收款账号
-            remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getReceiveOpenBank());//收款银行
-            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.getPaymentOrganization());//付款组织
-            remitDetailsDO.setApplication_date(new Date());//申请日期
+            remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getRemit_beneficiary_account());//收款账户
+            remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getRemit_beneficiary_account_number());//收款账号
+            remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
+//            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
+            remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
             remitDetailsDOMapper.insertSelective(remitDetailsDO);
             loanOrderDO.setRemitDetailsId(remitDetailsDO.getId());
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
@@ -57,11 +56,11 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
                 //那order表中是脏数据
                 //进行新增 但是id得用order_id表中存在的id
                 RemitDetailsDO remitDetailsDO =  new RemitDetailsDO();
-                remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getReceiveAccount());//收款账户
-                remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getAccountNumber());//收款账号
-                remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getReceiveOpenBank());//收款银行
-                remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.getPaymentOrganization());//付款组织
-                remitDetailsDO.setApplication_date(new Date());//申请日期
+                remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getRemit_beneficiary_account());//收款账户
+                remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getRemit_beneficiary_account_number());//收款账号
+                remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
+//            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
+                remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
                 remitDetailsDO.setId(remitDetailsId);
                 remitDetailsDOMapper.insertSelective(remitDetailsDO);
                 //但是不用更新loanOrder 因为已经存在
@@ -69,11 +68,11 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
                 //代表存在
                 //进行更新
                 RemitDetailsDO remitDetailsDO =  new RemitDetailsDO();
-                remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getReceiveAccount());//收款账户
-                remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getAccountNumber());//收款账号
-                remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getReceiveOpenBank());//收款银行
-                remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.getPaymentOrganization());//付款组织
-                remitDetailsDO.setApplication_date(new Date());//申请日期
+                remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getRemit_beneficiary_account());//收款账户
+                remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getRemit_beneficiary_account_number());//收款账号
+                remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
+//            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
+                remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
                 remitDetailsDO.setId(remitDetailsId);
                 remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
 

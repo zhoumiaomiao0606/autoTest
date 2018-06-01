@@ -32,4 +32,6 @@ public class RemitDetailsDO {
     private Date application_date;//申请日期
 
     private Date gmt_create;
+
+    private String remark;
 }
