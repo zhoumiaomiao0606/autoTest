@@ -135,7 +135,8 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                 TaskDistributionDO V = new TaskDistributionDO();
                 V.setTaskId(loanReviewTaskDistributionDO.getTaskId());
                 V.setTaskKey(loanReviewTaskDistributionDO.getTaskKey());
-                V.setStatus(new Byte("0"));
+                V.setStatus(new Byte("2"));
+                taskDistributionDOMapper.updateByPrimaryKeySelective(V);
             }
         }
 

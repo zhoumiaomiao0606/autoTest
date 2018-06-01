@@ -223,7 +223,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // PASS
             if (ACTION_PASS.equals(approval.getAction())) {
-                taskDistributionService.finish(approval.getTaskId(),approval.getOrderId(), approval.getTaskDefinitionKey());
+                taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
             }
 
             // 手动_REJECT
@@ -242,6 +242,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         }
     }
+
+    /**
+     * [领取]完成
+     *
+     * @param approval
+     */
+    private void finishTask_(ApprovalParam approval) {
+
+        if (null != approval.getTaskId()) {
+
+            // PASS
+            if (ACTION_PASS.equals(approval.getAction())) {
+                taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
+            }
+        }
+    }
+
 
     /**
      * 生成客户还款计划
@@ -402,6 +419,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 锁定操作 -更新流程状态
             lockProcess(loanProcessDO);
 
+            // [领取]完成
+            finishTask_(approval);
+
             return ResultBean.ofSuccess(null, "[金融方案修改申请]任务执行成功");
         }
 
@@ -436,6 +456,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             } else {
                 throw new BizException("流程审核参数有误");
             }
+
+            // [领取]完成
+            finishTask_(approval);
 
             return ResultBean.ofSuccess(null, "[金融方案修改申请审核]任务执行成功");
         }
