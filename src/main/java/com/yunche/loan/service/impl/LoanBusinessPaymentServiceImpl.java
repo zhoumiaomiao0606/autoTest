@@ -109,9 +109,9 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
             universalRemitDetails = new UniversalRemitDetails();
         }
         if(TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())){
-            universalRemitDetails.setRemit_is_sendback(K_YORN_YES);
+            universalRemitDetails.setRemit_is_sendback(String.valueOf(K_YORN_YES));
         }else{
-            universalRemitDetails.setRemit_is_sendback(K_YORN_NO);
+            universalRemitDetails.setRemit_is_sendback(String.valueOf(K_YORN_NO));
         }
         recombinationVO.setRemit(universalRemitDetails);
 
