@@ -53,8 +53,6 @@ public class AppLoanCarInfoVO {
 
     private Date gmtModify;
 
-    private AppBaseAreaVO hasApplyLicensePlateArea;
-
     private Long applyLicensePlateAreaId;
 
     private List<LoanCarInfoVO.BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
