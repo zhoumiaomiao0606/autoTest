@@ -187,10 +187,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         List<Task> startTaskList = getCurrentTaskList(task.getProcessInstanceId());
 
         // 流程变量
-        Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO, loanProcessDO, startTaskList);
+        Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO, loanProcessDO);
 
         // 执行任务
-        execTask(task, variables, approval, loanOrderDO, startTaskList);
+        execTask(task, variables, approval, loanOrderDO);
 
         // 流程数据同步
         syncProcess(startTaskList, approval);
@@ -202,7 +202,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO.getProcessInstId());
 
         // [领取]完成
-        finishTask(approval);
+        finishTask(approval, startTaskList, loanOrderDO.getProcessInstId());
 
         // 异步打包文件
 //        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
@@ -214,15 +214,38 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * [领取]完成
      *
      * @param approval
+     * @param startTaskList
+     * @param processInstId
      */
-    private void finishTask(ApprovalParam approval) {
+    private void finishTask(ApprovalParam approval, List<Task> startTaskList, String processInstId) {
 
-        // 非[资料增补]  &&  PASS || CANCEL
-        boolean needFinish = null != approval.getTaskId() && !ACTION_INFO_SUPPLEMENT.equals(approval.getAction())
-                && ACTION_PASS.equals(approval.getAction());
+        if (null != approval.getTaskId()) {
 
-        if (needFinish) {
-            taskDistributionService.finish(approval.getTaskId(), approval.getTaskDefinitionKey());
+            // PASS
+            if (ACTION_PASS.equals(approval.getAction())) {
+                taskDistributionService.finish(approval.getTaskId(), approval.getTaskDefinitionKey());
+            }
+
+            // 手动_REJECT
+            else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+
+                List<String> startTaskIdList = startTaskList.stream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+                            return e.getId();
+                        }).collect(Collectors.toList());
+
+                List<Task> newTaskList = getNewTaskList(processInstId, startTaskIdList);
+
+                List<String> taskDefinitionKeyList = newTaskList.stream()
+                        .filter(Objects::nonNull)
+                        .map(e -> {
+                            return e.getTaskDefinitionKey();
+                        })
+                        .collect(Collectors.toList());
+
+                taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), taskDefinitionKeyList);
+            }
         }
     }
 
@@ -1125,9 +1148,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param variables
      * @param approval
      * @param loanOrderDO
-     * @param currentTaskList
      */
-    private void execTask(Task task, Map<String, Object> variables, ApprovalParam approval, LoanOrderDO loanOrderDO, List<Task> currentTaskList) {
+    private void execTask(Task task, Map<String, Object> variables, ApprovalParam approval, LoanOrderDO loanOrderDO) {
         // 电审任务
         if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
             // 执行电审任务
@@ -2286,9 +2308,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param loanOrderDO
      * @param loanProcessDO
-     * @param currentTaskList
      */
-    private Map<String, Object> setAndGetVariables(Task currentExecTask, ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO, List<Task> currentTaskList) {
+    private Map<String, Object> setAndGetVariables(Task currentExecTask, ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
         Map<String, Object> variables = Maps.newHashMap();
 
         // 流程变量：action
@@ -2299,7 +2320,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanOrderDO);
 
         // 填充其他的流程变量
-        fillOtherVariables(variables, approval, loanProcessDO, currentTaskList);
+        fillOtherVariables(variables, approval, loanProcessDO);
 
         return variables;
     }
@@ -2310,9 +2331,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param variables
      * @param approval
      * @param loanProcessDO
-     * @param currentTaskList
      */
-    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO, List<Task> currentTaskList) {
+    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO) {
         // 【业务申请】
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
 
@@ -2642,5 +2662,30 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 .processInstanceId(processInstanceId)
                 .list();
         return currentTaskList;
+    }
+
+    /**
+     * 获取当前待执行任务ID列表
+     *
+     * @param processInstanceId
+     * @return
+     */
+    public List<String> getCurrentTaskIdList(String processInstanceId) {
+
+        List<Task> currentTaskList = getCurrentTaskList(processInstanceId);
+
+        if (!CollectionUtils.isEmpty(currentTaskList)) {
+
+            List<String> currentTaskIdList = currentTaskList.stream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
+                        return e.getId();
+                    })
+                    .collect(Collectors.toList());
+
+            return currentTaskIdList;
+        }
+
+        return null;
     }
 }
