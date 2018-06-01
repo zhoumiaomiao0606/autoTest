@@ -2,7 +2,9 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -50,6 +52,12 @@ public class AppLoanCarInfoVO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private AppBaseAreaVO hasApplyLicensePlateArea;
+
+    private Long applyLicensePlateAreaId;
+
+    private List<LoanCarInfoVO.BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
 
     @Data
     public static class PartnerAccountInfo {

@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
 import static com.yunche.loan.config.constant.CustomerConst.*;
@@ -150,6 +151,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private EmployeeCache employeeCache;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
 
 
     @Override
@@ -982,7 +986,18 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
         if (vehicleInformationDO != null) {
-            loanCarInfoVO.setApplyLicensePlateArea(vehicleInformationDO.getApply_license_plate_area());
+
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
+            loanCarInfoVO.setApplyLicensePlateAreaId(baseAreaDO.getAreaId());
+            String tmpApplyLicensePlateArea=null;
+            if(baseAreaDO!=null){
+                if(baseAreaDO.getParentAreaName()!=null){
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+baseAreaDO.getAreaName();
+                }else{
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+            loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());
