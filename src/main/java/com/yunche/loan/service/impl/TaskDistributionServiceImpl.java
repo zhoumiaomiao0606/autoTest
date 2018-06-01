@@ -117,7 +117,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         }
         TaskDisVO taskDisVO = new TaskDisVO();
 
-        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
+        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKeyAndStatus(taskId,taskKey);
         if (taskDistributionDO == null) {
             taskDisVO.setStatus("1");
             return taskDisVO;

@@ -20,6 +20,14 @@
     where task_id = #{taskId,jdbcType=BIGINT}
       and task_key = #{taskKey,jdbcType=VARCHAR}
   </select>
+
+  <select id="selectByPrimaryKeyAndStatus" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from task_distribution
+    where task_id = #{taskId,jdbcType=BIGINT}
+    and task_key = #{taskKey,jdbcType=VARCHAR} and status = 2
+  </select>
   <delete id="deleteByPrimaryKey">
     delete from task_distribution
     where task_id = #{taskId,jdbcType=BIGINT}
