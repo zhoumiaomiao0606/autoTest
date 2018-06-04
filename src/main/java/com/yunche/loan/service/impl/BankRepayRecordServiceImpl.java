@@ -151,6 +151,8 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                         loanRepayPlanDO.setOverdueAmount(loanRepayPlanDO.getPayableAmount().subtract(loanRepayPlanDO.getActualRepayAmount()));
                         if(loanRepayPlanDO.getOverdueAmount().doubleValue()<=0){
                             loanRepayPlanDO.setIsOverdue(K_YORN_NO);
+                        }else{
+                            loanRepayPlanDO.setIsOverdue(K_YORN_YES);
                         }
                         loanRepayPlanDOMapper.updateByPrimaryKeySelective(loanRepayPlanDO);
                     }
