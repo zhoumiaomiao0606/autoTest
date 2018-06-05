@@ -140,6 +140,8 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                 V2.setTaskKey(socialCreditRecordTaskDistributionDO.getTaskKey());
                 V2.setStatus(new Byte("2"));
                 taskDistributionDOMapper.updateByPrimaryKeySelective(V2);
+
+                return;
             }
         }
 
