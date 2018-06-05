@@ -471,7 +471,7 @@
             vehicle.vehicle_identification_number                                   AS vehicle_vehicle_identification_number,
             vehicle.license_plate_number                                            AS vehicle_license_plate_number,
             vehicle.engine_number                                                   AS vehicle_engine_number,
-            vehicle.apply_license_plate_area                                        AS vehicle_apply_license_plate_area,
+            CONCAT(area.parent_area_name,area.area_name)                            AS vehicle_apply_license_plate_area,
             vehicle.registration_certificate_number                                 AS vehicle_registration_certificate_number,
             vehicle.color                                                           AS vehicle_color,
             vehicle.customize_brand                                                 AS vehicle_customize_brand,
@@ -488,6 +488,7 @@
         left join loan_car_info car on main_order.loan_car_info_id = car.id
         left join loan_financial_plan financial on main_order.loan_financial_plan_id = financial.id
         left join vehicle_information vehicle on main_order.vehicle_information_id = vehicle.id
+        left join base_area area on vehicle.apply_license_plate_area = area.area_id
         left join car_detail detail on car.car_detail_id = detail.id
         left join car_model model on detail.model_id = model.id
         left join car_brand brand on model.brand_id = brand.id
