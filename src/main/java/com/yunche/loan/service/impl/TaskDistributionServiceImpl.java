@@ -112,21 +112,6 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         if(taskId == null || StringUtils.isBlank(taskKey)){
             throw new BizException("必须传入任务id和任务key");
         }
-        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
-
-        if(taskDistributionDO==null) {
-            throw new BizException("该任务状态无法被完成");
-        }
-
-        Byte status = taskDistributionDO.getStatus();
-        if(!status.toString().equals("2")){
-            throw new BizException("该任务状态无法被完成");
-        }
-
-        EmployeeDO employeeDO = SessionUtils.getLoginUser();
-        if(employeeDO.getId().longValue()!=taskDistributionDO.getSendee().longValue()){
-            throw new BizException("该任务只能被领取人完成");
-        }
 
         if(taskKey.equals("usertask_financial_scheme_modify_apply_review")){
             //重置放款审批任务领取状态
@@ -156,6 +141,22 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                 V2.setStatus(new Byte("2"));
                 taskDistributionDOMapper.updateByPrimaryKeySelective(V2);
             }
+        }
+
+        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId,taskKey);
+
+        if(taskDistributionDO==null) {
+            throw new BizException("该任务状态无法被完成");
+        }
+
+        Byte status = taskDistributionDO.getStatus();
+        if(!status.toString().equals("2")){
+            throw new BizException("该任务状态无法被完成");
+        }
+
+        EmployeeDO employeeDO = SessionUtils.getLoginUser();
+        if(employeeDO.getId().longValue()!=taskDistributionDO.getSendee().longValue()){
+            throw new BizException("该任务只能被领取人完成");
         }
 
         TaskDistributionDO currentV = new TaskDistributionDO();
