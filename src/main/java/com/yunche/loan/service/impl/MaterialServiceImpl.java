@@ -811,8 +811,8 @@ public class MaterialServiceImpl implements MaterialService {
             LoanFileDO loanFileDO = new LoanFileDO();
             loanFileDO.setCustomerId(customerId);
             loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
-            List<String> urls= JSON.parseArray(path, String.class);
-            loanFileDO.setPath(urls.toString());
+            String s = JSON.toJSONString(path);
+            loanFileDO.setPath("["+s+"]");
             loanFileDO.setType(new Byte("26"));
             loanFileService.create(loanFileDO);
         }
