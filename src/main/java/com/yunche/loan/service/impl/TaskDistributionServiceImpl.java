@@ -138,16 +138,34 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                 V.setStatus(new Byte("2"));
                 taskDistributionDOMapper.updateByPrimaryKeySelective(V);
             }
+        }else if(taskKey.equals("usertask_credit_supplement")){
+            TaskDistributionDO bankCreditRecordTaskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(orderId,"usertask_bank_credit_record");
+            if(bankCreditRecordTaskDistributionDO!=null){
+                TaskDistributionDO V1 = new TaskDistributionDO();
+                V1.setTaskId(bankCreditRecordTaskDistributionDO.getTaskId());
+                V1.setTaskKey(bankCreditRecordTaskDistributionDO.getTaskKey());
+                V1.setStatus(new Byte("2"));
+                taskDistributionDOMapper.updateByPrimaryKeySelective(V1);
+            }
+
+            TaskDistributionDO socialCreditRecordTaskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(orderId,"usertask_social_credit_record");
+            if(socialCreditRecordTaskDistributionDO!=null){
+                TaskDistributionDO V2 = new TaskDistributionDO();
+                V2.setTaskId(socialCreditRecordTaskDistributionDO.getTaskId());
+                V2.setTaskKey(socialCreditRecordTaskDistributionDO.getTaskKey());
+                V2.setStatus(new Byte("2"));
+                taskDistributionDOMapper.updateByPrimaryKeySelective(V2);
+            }
         }
 
-        TaskDistributionDO V = new TaskDistributionDO();
-        V.setTaskId(taskId);
-        V.setTaskKey(taskKey);
-        V.setSendee(employeeDO.getId());
-        V.setSendeeName(employeeDO.getName());
-        V.setStatus(new Byte("1"));
-        V.setFinishCreate(new Timestamp(new Date().getTime()));
-        taskDistributionDOMapper.updateByPrimaryKeySelective(V);
+        TaskDistributionDO currentV = new TaskDistributionDO();
+        currentV.setTaskId(taskId);
+        currentV.setTaskKey(taskKey);
+        currentV.setSendee(employeeDO.getId());
+        currentV.setSendeeName(employeeDO.getName());
+        currentV.setStatus(new Byte("1"));
+        currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+        taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
     }
 
     @Override
