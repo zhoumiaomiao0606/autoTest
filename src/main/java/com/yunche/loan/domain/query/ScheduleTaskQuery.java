@@ -21,6 +21,10 @@ public class ScheduleTaskQuery {
 
     Long maxGroupLevel;
 
+    Long financeApplyLevel;
+
+    Long refundApplyLevel;
+
     Set<String> juniorIds = Sets.newHashSet();
 
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表

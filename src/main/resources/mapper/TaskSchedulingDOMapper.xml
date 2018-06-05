@@ -31,7 +31,19 @@
         ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{employeeId} ) t
     </select>
 
+    <select id="selectFinanceApplyLevel" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT
+        max( t.finance_apply_level )
+        FROM
+        ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{employeeId} ) t
+    </select>
 
+    <select id="selectRefundApplyLevel" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT
+        max( t.refund_apply_level )
+        FROM
+        ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{employeeId} ) t
+    </select>
 
     <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO">
         select complex.* from
@@ -897,7 +909,7 @@
                            case when taskKey = 'usertask_financial_scheme_modify_apply_review' then
                                   case when #{telephoneVerifyLevel} <![CDATA[>=]]> 4 then true else false end
                                 when taskKey = 'usertask_financial_scheme_modify_apply' then
-                                  case when #{telephoneVerifyLevel} <![CDATA[>=]]> 1 then true else false end
+                                  case when #{financeApplyLevel} <![CDATA[>=]]> 1 then true else false end
                             else true end
                union all
 
@@ -956,7 +968,7 @@
                            case when taskKey = 'usertask_refund_apply_review' then
                                   case when #{financeLevel} <![CDATA[>=]]> 4 then true else false end
                                 when taskKey = 'usertask_refund_apply' then
-                                  case when #{financeLevel} <![CDATA[>=]]> 1 then true else false end
+                                  case when #{refundApplyLevel} <![CDATA[>=]]> 1 then true else false end
                             else true end
              union all
 
