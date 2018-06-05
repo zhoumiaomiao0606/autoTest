@@ -984,6 +984,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return;
         }
 
+        // finish   ==》 open 【银行征信】/【社会征信】
+        finishTask_(approval);
+
         approval.setTaskDefinitionKey_(approval.getTaskDefinitionKey());
 
         // 判断当前任务流程   是否在电审前
