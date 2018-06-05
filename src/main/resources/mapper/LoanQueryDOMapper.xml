@@ -527,7 +527,8 @@
             remit.insurance_situation                                                               AS remit_insurance_situation,
             remit.payment_organization                                                              AS remit_payment_organization,
             DATE_FORMAT(remit.application_date,'%Y-%m-%d %H:%i:%S')                                 AS remit_application_date,
-            remit.remark                                                                            AS remark
+            remit.remark
+
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join remit_details remit on main_order.remit_details_id = remit.id
 
