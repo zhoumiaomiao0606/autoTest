@@ -2,15 +2,20 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.constant.LoanOrderProcessConst;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.LoanCreditInfoDO;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.param.CustomerParam;
+import com.yunche.loan.domain.vo.CustDetailVO;
+import com.yunche.loan.domain.vo.CustomerVO;
+import com.yunche.loan.domain.vo.FileVO;
+import com.yunche.loan.domain.vo.LoanRepeatVO;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.domain.entity.*;
-import com.yunche.loan.domain.param.AllCustDetailParam;
-import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanFileService;
@@ -21,7 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
@@ -276,7 +284,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         List<CustomerVO> guarantorList = Lists.newArrayList();
         List<CustomerVO> emergencyContactList = Lists.newArrayList();
 
-        loanCustomerDOList.parallelStream()
+        loanCustomerDOList.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 

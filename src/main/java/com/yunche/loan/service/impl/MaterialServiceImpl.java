@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.OSSObject;
@@ -38,7 +39,10 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
@@ -205,20 +209,24 @@ public class MaterialServiceImpl implements MaterialService {
         OSSClient ossClient = null;
         File zipFile = null;
         ZipOutputStream zos = null;
-
+        Set<String> NAME_ENTRY =  Sets.newHashSet();
         try {
 
-            List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId, null);
+            List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId, customerId);
             if (downloadParams == null) {
                 return null;
             }
-            downloadParams.stream().filter(Objects::nonNull)
+            downloadParams.parallelStream().filter(Objects::nonNull)
                     .filter(e -> StringUtils.isNotBlank(e.getPath()))
                     .forEach(param -> {
                         String nameByCode = LoanFileEnum.getNameByCode(param.getType());
                         param.setTypeName(nameByCode);
+                        String custTypeName = LoanCustomerEnum.getNameByCode(param.getCustType());
+                        param.setCustTypeName(custTypeName);
                         List<String> list = JSONArray.parseArray(param.getPath(), String.class);
-                        param.setPathList(list);
+
+                        List<String> unique = list.stream().distinct().collect(Collectors.toList());
+                        param.setPathList(unique);
                     });
 
             // 初始化
@@ -226,8 +234,8 @@ public class MaterialServiceImpl implements MaterialService {
             String fileName = null;
             if (downloadParams != null) {
                 fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard() + ".zip";
-                customerId = downloadParams.get(0).getCustomerId();
             }
+            // 创建临时文件
             // 创建临时文件
             zipFile = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
             zipFile.createNewFile();
@@ -240,7 +248,6 @@ public class MaterialServiceImpl implements MaterialService {
             CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
             // 用于将数据压缩成Zip文件格式
             zos = new ZipOutputStream(csum);
-
             for (MaterialDownloadParam typeFile : downloadParams) {
                 // 获取Object，返回结果为OSSObject对象
                 for (String url : typeFile.getPathList()) {
@@ -250,6 +257,7 @@ public class MaterialServiceImpl implements MaterialService {
                     // 对于每一个要被存放到压缩包的文件，都必须调用ZipOutputStream对象的putNextEntry()方法，确保压缩包里面文件不同名
                     byte t = typeFile.getType();
                     String documentType = null;
+
                     switch (t) {
                         case 19:
                         case 20:
@@ -267,9 +275,24 @@ public class MaterialServiceImpl implements MaterialService {
 
                         default:
                             documentType = "基本资料";
-                    }
-                    zos.putNextEntry(new ZipEntry(documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
 
+                    }
+
+                    String[] urlArr = url.split("\\.");
+                    if (ArrayUtils.isNotEmpty(urlArr) && urlArr.length == 2) {
+                        String urlSuffix = urlArr[1].trim().toLowerCase();
+
+                        if (HOME_VISIT_VIDEO.getType() == t || URL_FILTER_SUFFIX.contains(urlSuffix)) {
+                            continue;
+                        }
+                    }
+
+
+                    if(preCheck(NAME_ENTRY,typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])){
+                        zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
+                    }else{
+                        continue;
+                    }
                     int bytesRead = 0;
                     // 向压缩文件中输出数据
                     while ((bytesRead = inputStream.read()) != -1) {
@@ -279,18 +302,13 @@ public class MaterialServiceImpl implements MaterialService {
                     zos.closeEntry(); // 当前文件写完，定位为写入下一条项目
                 }
             }
-
-            fis = new FileInputStream(zipFile);
+            zos.close();
             String bucketName = ossConfig.getZipBucketName();
             if (StringUtil.isEmpty(bucketName)) {
                 Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
             }
             String diskName = ossConfig.getZipDiskName();
             OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
-
-//            // 设置URL过期时间为1小时
-//            Date expiration = new Date(new Date().getTime() + 3600 * 1000);
-//            URL url = ossClient.generatePresignedUrl(bucketName, zipFile.getName(), expiration);
             returnKey = diskName + File.separator + zipFile.getName();
 
         } catch (Exception e) {
@@ -303,15 +321,19 @@ public class MaterialServiceImpl implements MaterialService {
                 if (ossClient != null) {
                     ossClient.shutdown();
                 }
+
                 if (zipFile != null) {
                     // 删除临时文件
-                    zipFile.delete();
+//                    zipFile.delete();
                 }
                 if (zos != null) {
                     zos.close();
                 }
+
+
             } catch (IOException e) {
-                throw new RuntimeException("释放资源失败", e);
+                Preconditions.checkArgument(false, e.getMessage());
+
             }
         }
 
@@ -789,7 +811,8 @@ public class MaterialServiceImpl implements MaterialService {
             LoanFileDO loanFileDO = new LoanFileDO();
             loanFileDO.setCustomerId(customerId);
             loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
-            loanFileDO.setPath(path);
+            List<String> urls= JSON.parseArray(path, String.class);
+            loanFileDO.setPath(urls.toString());
             loanFileDO.setType(new Byte("26"));
             loanFileService.create(loanFileDO);
         }

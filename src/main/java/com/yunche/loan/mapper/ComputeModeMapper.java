@@ -92,6 +92,13 @@ public interface ComputeModeMapper {
      */
     BigDecimal bankFee_2(Map<String, BigDecimal> map);
 
+    /**
+     *还款总额
+     * @param map
+     * @return
+     */
+    BigDecimal totalRepayment_2(Map<String, BigDecimal> map);
+
 
     //公式三
 
@@ -131,6 +138,13 @@ public interface ComputeModeMapper {
      * @return
      */
     BigDecimal bankFee_3(Map<String, BigDecimal> map);
+
+    /**
+     *还款总额
+     * @param map
+     * @return
+     */
+    BigDecimal totalRepayment_3(Map<String, BigDecimal> map);
 
 
     //公式四

@@ -205,7 +205,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 异步打包文件
-//        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
+        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
