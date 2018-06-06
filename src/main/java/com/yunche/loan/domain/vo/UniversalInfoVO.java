@@ -51,6 +51,7 @@ public class UniversalInfoVO {
     private String vehicle_now_driving_license_owner;
     private String vehicle_license_plate_type;
     private String vehicle_apply_license_plate_area;
+    private String vehicle_old_driving_license_owner;
     private String bank_credit_gmt_create;
     private String society_credit_gmt_create;
     private Long   financial_id;

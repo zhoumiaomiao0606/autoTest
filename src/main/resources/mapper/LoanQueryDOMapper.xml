@@ -358,6 +358,7 @@
             car.info                                                                                AS car_info,
             vehicle.color                                                                           AS vehicle_color,
             vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
+            vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
             vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
             CONCAT(area.parent_area_name,area.area_name)                                            AS vehicle_apply_license_plate_area,
             bank_credit.gmt_create                                                                  AS bank_credit_gmt_create,
