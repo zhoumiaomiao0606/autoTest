@@ -161,24 +161,24 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
         if(!taskKey.equals(CREDIT_APPLY.getCode())){
 
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
-            if(loanOrderDO == null){
-                throw new BizException("订单不存在");
-            }
-            Long  financialPlan = loanOrderDO.getLoanFinancialPlanId();
-            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(financialPlan);
-            if(loanFinancialPlanDO == null){
-                throw new BizException("金融方案不存在");
-            }
-            if(loanFinancialPlanDO.getLoanAmount() == null){
-                throw new BizException("金额不能为0");
-            }
-            double loanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
-
-
-            Long telLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(SessionUtils.getLoginUser().getId());
             if(taskKey.equals(TELEPHONE_VERIFY.getCode()) || taskKey.equals(FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode()) ){
 
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+                if(loanOrderDO == null){
+                    throw new BizException("订单不存在");
+                }
+                Long  financialPlan = loanOrderDO.getLoanFinancialPlanId();
+                LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(financialPlan);
+                if(loanFinancialPlanDO == null){
+                    throw new BizException("金融方案不存在");
+                }
+                if(loanFinancialPlanDO.getLoanAmount() == null){
+                    throw new BizException("金额不能为0");
+                }
+                double loanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
+
+
+                Long telLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(SessionUtils.getLoginUser().getId());
                 TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
                 EmployeeDO employeeDO = SessionUtils.getLoginUser();
                 // 直接通过
