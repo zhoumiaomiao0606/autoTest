@@ -44,6 +44,13 @@
         FROM
         ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{employeeId} ) t
     </select>
+    
+    <select id="selectMaterialSupplementLevel" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT
+        max( t.material_supplement_level )
+        FROM
+        ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{employeeId} ) t
+    </select>
 
     <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO">
         select complex.* from
@@ -851,7 +858,9 @@
                               LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
                               INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
                      having filtration = 2
-              union all
+                     and
+                     case when #{materialSupplementLevel} <![CDATA[>=]]> 1 then true else false end
+             union all
 
                SELECT
                         his.id                                                                                          AS taskId,

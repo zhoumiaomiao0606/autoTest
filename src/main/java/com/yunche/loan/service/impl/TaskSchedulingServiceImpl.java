@@ -82,6 +82,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
+        Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
         ScheduleTaskQuery query = new ScheduleTaskQuery();
         query.setJuniorIds(juniorIds);
         query.setEmployeeId(loginUser.getId());
@@ -91,6 +92,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setMaxGroupLevel(maxGroupLevel);
         query.setFinanceApplyLevel(financeApplyLevel);
         query.setRefundApplyLevel(refundApplyLevel);
+        query.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
         query.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
@@ -111,6 +113,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
+        Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
         ScheduleTaskQuery query = new ScheduleTaskQuery();
         query.setJuniorIds(juniorIds);
         query.setKey(key);
@@ -121,6 +124,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setMaxGroupLevel(maxGroupLevel);
         query.setFinanceApplyLevel(financeApplyLevel);
         query.setRefundApplyLevel(refundApplyLevel);
+        query.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
         query.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
@@ -147,6 +151,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
+        Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
         taskListQuery.setJuniorIds(juniorIds);
         taskListQuery.setEmployeeId(loginUser.getId());
         taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
@@ -155,6 +160,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setMaxGroupLevel(maxGroupLevel);
         taskListQuery.setFinanceApplyLevel(financeApplyLevel);
         taskListQuery.setRefundApplyLevel(refundApplyLevel);
+        taskListQuery.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
         taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
@@ -176,6 +182,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
+        Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
         appTaskListQuery.setJuniorIds(juniorIds);
         appTaskListQuery.setEmployeeId(loginUser.getId());
         appTaskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
@@ -184,6 +191,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         appTaskListQuery.setMaxGroupLevel(maxGroupLevel);
         appTaskListQuery.setFinanceApplyLevel(financeApplyLevel);
         appTaskListQuery.setRefundApplyLevel(refundApplyLevel);
+        appTaskListQuery.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
         appTaskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行

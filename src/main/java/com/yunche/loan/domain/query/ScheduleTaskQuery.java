@@ -25,6 +25,8 @@ public class ScheduleTaskQuery {
 
     Long refundApplyLevel;
 
+    Long materialSupplementLevel;
+
     Set<String> juniorIds = Sets.newHashSet();
 
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
