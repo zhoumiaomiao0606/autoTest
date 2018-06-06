@@ -26,5 +26,6 @@ public class FinancialSchemeVO {
     private String principal_interest_sum;//本息合记
     private String first_month_repay;//首月还款
     private String each_month_repay;//本月还款
+    private String financial_bank_staging_ratio;
 
 }
