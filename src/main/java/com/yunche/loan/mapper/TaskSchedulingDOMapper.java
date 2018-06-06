@@ -34,4 +34,6 @@ public interface TaskSchedulingDOMapper {
     Long selectFinanceApplyLevel(Long employeeId);
 
     Long selectRefundApplyLevel(Long employeeId);
+
+    Long selectMaterialSupplementLevel(Long employeeId);
 }

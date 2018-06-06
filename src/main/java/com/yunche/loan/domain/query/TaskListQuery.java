@@ -38,6 +38,8 @@ public class TaskListQuery {
 
     Long refundApplyLevel;
 
+    Long materialSupplementLevel;
+
     Set<String> juniorIds = Sets.newHashSet();
 
     @NotBlank

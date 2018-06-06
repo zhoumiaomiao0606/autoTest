@@ -2,23 +2,24 @@ package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.EmployeeDO;
-import com.yunche.loan.domain.entity.TaskDistributionDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.vo.TaskDisVO;
-import com.yunche.loan.mapper.TaskDistributionDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.TaskDistributionService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
-import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_SUPPLEMENT;
-import static com.yunche.loan.config.constant.LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW;
+import static com.yunche.loan.config.constant.LoanProcessEnum.*;
+import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_DIRECTOR;
+import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_TELEPHONE_VERIFY_LEADER;
+import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_TELEPHONE_VERIFY_MANAGER;
 
 @Service
 @Transactional
@@ -26,6 +27,15 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
     @Resource
     private TaskDistributionDOMapper taskDistributionDOMapper;
+
+    @Resource
+    private TaskSchedulingDOMapper taskSchedulingDOMapper;
+
+    @Resource
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Resource
+    private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
 
 
     //领取
@@ -151,30 +161,208 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
         if(!taskKey.equals(CREDIT_APPLY.getCode())){
 
-            TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
-
-            if (taskDistributionDO == null) {
-                throw new BizException("该任务状态无法被完成");
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+            if(loanOrderDO == null){
+                throw new BizException("订单不存在");
             }
-
-            Byte status = taskDistributionDO.getStatus();
-            if (!status.toString().equals("2")) {
-                throw new BizException("该任务状态无法被完成");
+            Long  financialPlan = loanOrderDO.getLoanFinancialPlanId();
+            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(financialPlan);
+            if(loanFinancialPlanDO == null){
+                throw new BizException("金融方案不存在");
             }
-
-            EmployeeDO employeeDO = SessionUtils.getLoginUser();
-            if (employeeDO.getId().longValue() != taskDistributionDO.getSendee().longValue()) {
-                throw new BizException("该任务只能被领取人完成");
+            if(loanFinancialPlanDO.getLoanAmount() == null){
+                throw new BizException("金额不能为0");
             }
+            double loanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
 
-            TaskDistributionDO currentV = new TaskDistributionDO();
-            currentV.setTaskId(taskId);
-            currentV.setTaskKey(taskKey);
-            currentV.setSendee(employeeDO.getId());
-            currentV.setSendeeName(employeeDO.getName());
-            currentV.setStatus(new Byte("1"));
-            currentV.setFinishCreate(new Timestamp(new Date().getTime()));
-            taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
+
+            Long telLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(SessionUtils.getLoginUser().getId());
+            if(taskKey.equals(TELEPHONE_VERIFY.getCode()) || taskKey.equals(FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode()) ){
+
+                TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
+                EmployeeDO employeeDO = SessionUtils.getLoginUser();
+                // 直接通过
+                if (loanAmount >= 0 && loanAmount <= 100000) {
+                    if (taskDistributionDO == null) {
+                        throw new BizException("该任务状态无法被完成");
+                    }
+
+                    Byte status = taskDistributionDO.getStatus();
+                    if (!status.toString().equals("2")) {
+                        throw new BizException("该任务状态无法被完成");
+                    }
+
+
+                    if (employeeDO.getId().longValue() != taskDistributionDO.getSendee().longValue()) {
+                        throw new BizException("该任务只能被领取人完成");
+                    }
+
+                    // 完成任务：全部角色直接过单
+                    // 完成任务
+                    TaskDistributionDO currentV = new TaskDistributionDO();
+                    currentV.setTaskId(taskId);
+                    currentV.setTaskKey(taskKey);
+                    currentV.setSendee(employeeDO.getId());
+                    currentV.setSendeeName(employeeDO.getName());
+                    currentV.setStatus(new Byte("1"));
+                    currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                    taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
+                } else if (loanAmount > 100000 && loanAmount <= 300000) {
+                    // 电审主管以上可过单
+                    if (telLevel.longValue() < LEVEL_TELEPHONE_VERIFY_LEADER) {
+                        // finsh
+                        if (taskDistributionDO == null) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+                        Byte status = taskDistributionDO.getStatus();
+                        if (!status.toString().equals("2")) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+
+                        if (employeeDO.getId().longValue() != taskDistributionDO.getSendee().longValue()) {
+                            throw new BizException("该任务只能被领取人完成");
+                        }
+
+                        taskDistributionDOMapper.deleteByPrimaryKey(taskId,taskKey);
+                    } else {
+                        // 完成任务
+                        if (taskDistributionDO == null) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+                        Byte status = taskDistributionDO.getStatus();
+                        if (!status.toString().equals("2")) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+
+                        if (employeeDO.getId().longValue() != taskDistributionDO.getSendee().longValue()) {
+                            throw new BizException("该任务只能被领取人完成");
+                        }
+
+                        TaskDistributionDO currentV = new TaskDistributionDO();
+                        currentV.setTaskId(taskId);
+                        currentV.setTaskKey(taskKey);
+                        currentV.setSendee(employeeDO.getId());
+                        currentV.setSendeeName(employeeDO.getName());
+                        currentV.setStatus(new Byte("1"));
+                        currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                        taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
+                    }
+                } else if (loanAmount > 300000 && loanAmount <= 500000) {
+                    // 电审经理以上可过单
+                    if (telLevel.longValue() < LEVEL_TELEPHONE_VERIFY_MANAGER) {
+                        if (taskDistributionDO == null) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+                        Byte status = taskDistributionDO.getStatus();
+                        if (!status.toString().equals("2")) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+
+                        if (employeeDO.getId().longValue() != taskDistributionDO.getSendee().longValue()) {
+                            throw new BizException("该任务只能被领取人完成");
+                        }
+                        // 记录
+                        taskDistributionDOMapper.deleteByPrimaryKey(taskId,taskKey);
+                    } else {
+                        if (taskDistributionDO == null) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+                        Byte status = taskDistributionDO.getStatus();
+                        if (!status.toString().equals("2")) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+
+                        if (employeeDO.getId().longValue() != taskDistributionDO.getSendee().longValue()) {
+                            throw new BizException("该任务只能被领取人完成");
+                        }
+                        // 完成任务
+                        TaskDistributionDO currentV = new TaskDistributionDO();
+                        currentV.setTaskId(taskId);
+                        currentV.setTaskKey(taskKey);
+                        currentV.setSendee(employeeDO.getId());
+                        currentV.setSendeeName(employeeDO.getName());
+                        currentV.setStatus(new Byte("1"));
+                        currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                        taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
+                    }
+                } else if (loanAmount > 500000) {
+                    // 总监以上可过单
+                    if (telLevel.longValue() < LEVEL_DIRECTOR) {
+                        if (taskDistributionDO == null) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+                        Byte status = taskDistributionDO.getStatus();
+                        if (!status.toString().equals("2")) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+
+                        if (employeeDO.getId().longValue() != taskDistributionDO.getSendee().longValue()) {
+                            throw new BizException("该任务只能被领取人完成");
+                        }
+                        // 记录
+                        taskDistributionDOMapper.deleteByPrimaryKey(taskId,taskKey);
+                    } else {
+                        if (taskDistributionDO == null) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+                        Byte status = taskDistributionDO.getStatus();
+                        if (!status.toString().equals("2")) {
+                            throw new BizException("该任务状态无法被完成");
+                        }
+
+
+                        if (employeeDO.getId().longValue() != taskDistributionDO.getSendee().longValue()) {
+                            throw new BizException("该任务只能被领取人完成");
+                        }
+                        // 完成任务
+                        TaskDistributionDO currentV = new TaskDistributionDO();
+                        currentV.setTaskId(taskId);
+                        currentV.setTaskKey(taskKey);
+                        currentV.setSendee(employeeDO.getId());
+                        currentV.setSendeeName(employeeDO.getName());
+                        currentV.setStatus(new Byte("1"));
+                        currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                        taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
+                    }
+                }
+            }else {
+
+                TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
+
+                if (taskDistributionDO == null) {
+                    throw new BizException("该任务状态无法被完成");
+                }
+
+                Byte status = taskDistributionDO.getStatus();
+                if (!status.toString().equals("2")) {
+                    throw new BizException("该任务状态无法被完成");
+                }
+
+                EmployeeDO employeeDO = SessionUtils.getLoginUser();
+                if (employeeDO.getId().longValue() != taskDistributionDO.getSendee().longValue()) {
+                    throw new BizException("该任务只能被领取人完成");
+                }
+
+                TaskDistributionDO currentV = new TaskDistributionDO();
+                currentV.setTaskId(taskId);
+                currentV.setTaskKey(taskKey);
+                currentV.setSendee(employeeDO.getId());
+                currentV.setSendeeName(employeeDO.getName());
+                currentV.setStatus(new Byte("1"));
+                currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
+            }
         }
     }
 
