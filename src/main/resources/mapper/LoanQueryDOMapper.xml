@@ -1044,7 +1044,7 @@
              f.first_month_repay                  AS first_month_repay,
              f.each_month_repay                   AS each_month_repay,
              useCalculateStagingRatio(product.formula_id,f.loan_amount,f.sign_rate,useGetBankRate(f.financial_product_id,f.loan_time),f.car_price)
-                                                  AS financial_bank_staging_ratio,
+                                                  AS financial_bank_staging_ratio
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
