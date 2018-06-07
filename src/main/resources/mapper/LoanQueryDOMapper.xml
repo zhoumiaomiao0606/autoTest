@@ -358,6 +358,7 @@
             car.info                                                                                AS car_info,
             vehicle.color                                                                           AS vehicle_color,
             vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
+            vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
             vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
             CONCAT(area.parent_area_name,area.area_name)                                            AS vehicle_apply_license_plate_area,
             bank_credit.gmt_create                                                                  AS bank_credit_gmt_create,
@@ -1042,7 +1043,9 @@
              f.bank_fee                           AS bank_fee,
              f.principal_interest_sum             AS principal_interest_sum,
              f.first_month_repay                  AS first_month_repay,
-             f.each_month_repay                   AS each_month_repay
+             f.each_month_repay                   AS each_month_repay,
+             useCalculateStagingRatio(product.formula_id,f.loan_amount,f.sign_rate,useGetBankRate(f.financial_product_id,f.loan_time),f.car_price)
+                                                  AS financial_bank_staging_ratio
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -1065,6 +1068,9 @@
     left join material_audit m on o.material_audit_id = m.id
 
     left join loan_home_visit v on o.loan_home_visit_id = v.id
+
+    left join financial_product product on f.financial_product_id = product.prod_id
+
 
 
   </select>

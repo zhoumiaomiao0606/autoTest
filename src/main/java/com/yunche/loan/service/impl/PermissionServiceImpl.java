@@ -90,10 +90,10 @@ public class PermissionServiceImpl implements PermissionService {
         List<String> userGroupNameList = userGroupDOMapper.listUserGroupNameByEmployeeId(loginUser.getId());
 
         // 员工-所属部门 -间接关联的用户组
-        List<String> userGroupNameList_ = userGroupDOMapper.listUserGroupNameByEmployeeIdRelaDepartment(loginUser.getId());
+//        List<String> userGroupNameList_ = userGroupDOMapper.listUserGroupNameByEmployeeIdRelaDepartment(loginUser.getId());
 
         allUserGroupNameSet.addAll(userGroupNameList);
-        allUserGroupNameSet.addAll(userGroupNameList_);
+//        allUserGroupNameSet.addAll(userGroupNameList_);
 
         // TODO 有[管理员]角色，则赋予所有权限
         if (!CollectionUtils.isEmpty(allUserGroupNameSet) && allUserGroupNameSet.contains(USER_GROUP_ADMIN)) {

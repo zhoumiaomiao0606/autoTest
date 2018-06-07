@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
@@ -531,7 +530,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void execFinancialSchemeModifyApplyReviewTask(ApprovalParam approval, Long loanFinancialPlanId, LoanProcessDO loanProcessDO) {
 
         // 角色
-        Set<String> userGroupNameSet = getUserGroupNameSet();
+        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
         // 最大电审角色等级
         Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
@@ -983,6 +982,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (!isCreditSupplementTask) {
             return;
         }
+
+        // finish   ==》 open 【银行征信】/【社会征信】
+        finishTask_(approval);
 
         approval.setTaskDefinitionKey_(approval.getTaskDefinitionKey());
 
@@ -1483,7 +1485,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void execTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval, Long orderId, Long loanFinancialPlanId) {
 
         // 角色
-        Set<String> userGroupNameSet = getUserGroupNameSet();
+        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
         // 最大电审角色等级
         Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
@@ -1649,28 +1651,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 });
 
         return maxLevel[0];
-    }
-
-    /**
-     * 获取用户组名称
-     *
-     * @return
-     */
-    public Set<String> getUserGroupNameSet() {
-        // getUser
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-
-        // 员工-直接关联的用户组
-        List<String> userGroupNameList = userGroupDOMapper.listUserGroupNameByEmployeeId(loginUser.getId());
-
-        // 员工-所属部门 -间接关联的用户组
-        List<String> userGroupNameList_ = userGroupDOMapper.listUserGroupNameByEmployeeIdRelaDepartment(loginUser.getId());
-
-        Set<String> allUserGroupNameList = Sets.newHashSet();
-        allUserGroupNameList.addAll(userGroupNameList);
-        allUserGroupNameList.addAll(userGroupNameList_);
-
-        return allUserGroupNameList;
     }
 
     /**

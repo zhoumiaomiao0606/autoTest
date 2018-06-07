@@ -34,6 +34,12 @@ public class TaskListQuery {
 
     Long maxGroupLevel;
 
+    Long financeApplyLevel;
+
+    Long refundApplyLevel;
+
+    Long materialSupplementLevel;
+
     Set<String> juniorIds = Sets.newHashSet();
 
     @NotBlank
