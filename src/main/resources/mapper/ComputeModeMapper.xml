@@ -44,7 +44,9 @@
     <select id="bankFee_2" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select bankFee_2(#{loanAmt},#{exeRate},#{bankBaseRate})
     </select>
-
+    <select id="totalRepayment_2" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select totalRepayment_2(#{loanAmt},#{bankBaseRate})
+    </select>
 
 
     <!--方法三-->
@@ -67,7 +69,9 @@
     <select id="bankFee_3" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select bankFee_3(#{loanAmt},#{exeRate},#{bankBaseRate})
     </select>
-
+    <select id="totalRepayment_3" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select totalRepayment_3(#{loanAmt},#{exeRate},#{bankBaseRate})
+    </select>
 
 
     <!--方法四-->
