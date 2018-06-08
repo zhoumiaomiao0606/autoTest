@@ -13,4 +13,6 @@ public class MaterialAuditDO {
     private Byte status;
 
     private String feature;
+
+    private String remark;
 }

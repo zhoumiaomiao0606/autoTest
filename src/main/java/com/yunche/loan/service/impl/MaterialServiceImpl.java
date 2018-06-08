@@ -8,6 +8,7 @@ import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.OSSConfig;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanCustomerEnum;
 import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -60,7 +61,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     private final static Long CUSTOMER_DEFAULT_ID = (long) 0;
 
-    private static final Set<String> URL_FILTER_SUFFIX = Sets.newHashSet("rar", "mp4", "mov", "avi", "m4v", "3gp");
+    private static final Set<String> URL_FILTER_SUFFIX = Sets.newHashSet("rar", "mp4", "mov", "avi", "m4v", "3gp","zip");
 
 
 
@@ -186,8 +187,9 @@ public class MaterialServiceImpl implements MaterialService {
                 LoanFileDO loanFileDO = loanFileDOS.get(0);
                 if (null != loanFileDO) {
                     String path = loanFileDO.getPath();
-                    if (StringUtils.isNotBlank(path)) {
-                        return ResultBean.ofSuccess(path);
+                    List<String> url = JSON.parseArray(path, String.class);
+                    if(!CollectionUtils.isEmpty(url)){
+                        return ResultBean.ofSuccess(url.get(0));
                     }
                 }
             }
@@ -212,6 +214,22 @@ public class MaterialServiceImpl implements MaterialService {
         Set<String> NAME_ENTRY =  Sets.newHashSet();
         try {
 
+            //先将文件状态改为进行中
+            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
+            if(CollectionUtils.isEmpty(loanFileDOS)){
+                LoanFileDO loanFileDO = new LoanFileDO();
+                loanFileDO.setStatus((byte)3);
+                loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
+                loanFileDO.setType(ZIP_PACK.getType());
+                loanFileDO.setCustomerId(customerId);
+                loanFileDOMapper.insertSelective(loanFileDO);
+            }else{
+                loanFileDOS.parallelStream().forEach(e->{
+                    e.setStatus((byte)3);
+                    loanFileDOMapper.updateByPrimaryKeySelective(e);
+                });
+            }
+
             List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId, customerId);
             if (downloadParams == null) {
                 return null;
@@ -233,7 +251,8 @@ public class MaterialServiceImpl implements MaterialService {
             ossClient = OSSUnit.getOSSClient();
             String fileName = null;
             if (downloadParams != null) {
-                fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard() + ".zip";
+                fileName = downloadParams.get(0).getName() +"_"+ downloadParams.get(0).getIdCard() + ".zip";
+//                fileName = downloadParams.get(0).getName() +".zip";
             }
             // 创建临时文件
             // 创建临时文件
@@ -308,6 +327,8 @@ public class MaterialServiceImpl implements MaterialService {
                 Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
             }
             String diskName = ossConfig.getZipDiskName();
+            //删除OSS上的文件
+//            OSSUnit.deleteFile(ossClient,bucketName,diskName,zipFile.getName());
             OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
             returnKey = diskName + File.separator + zipFile.getName();
 
@@ -790,6 +811,27 @@ public class MaterialServiceImpl implements MaterialService {
         }
     }
 
+//    @Override
+//    public ResultBean zipCheck(Long orderId) {
+//        return null;
+//    }
+
+    @Override
+    public ResultBean zipCheck(Long orderId) {
+        MaterialDownloadParam materialDownloadParam = new MaterialDownloadParam();
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Long loanCustomerId = loanOrderDO.getLoanCustomerId();
+
+        // 是否已经存在文件了
+
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loanCustomerId,ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
+        materialDownloadParam.setFileStatus(false);
+        loanFileDOS.stream().filter(e -> e.getStatus().equals(BaseConst.VALID_STATUS)).forEach(e->{
+            materialDownloadParam.setFileStatus(true);
+        });
+        return ResultBean.ofSuccess(materialDownloadParam);
+    }
+
     private boolean checkParamsNotNull(String... args) {
         for (String str : args) {
             if (StringUtils.isNotBlank(str)) {
@@ -807,14 +849,21 @@ public class MaterialServiceImpl implements MaterialService {
      * @param path
      */
     private void saveToLoanFile(Long customerId, String path) {
-        if (null != customerId && StringUtils.isNotBlank(path)) {
-            LoanFileDO loanFileDO = new LoanFileDO();
-            loanFileDO.setCustomerId(customerId);
-            loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
-            String s = JSON.toJSONString(path);
-            loanFileDO.setPath("["+s+"]");
-            loanFileDO.setType(new Byte("26"));
-            loanFileService.create(loanFileDO);
-        }
+
+        //先将文件状态改为进行中
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
+
+            loanFileDOS.parallelStream().filter(Objects::nonNull).forEach(e->{
+                e.setCustomerId(customerId);
+                e.setUploadType(UPLOAD_TYPE_NORMAL);
+                String s = JSON.toJSONString(path);
+                e.setPath("["+s+"]");
+                e.setType(ZIP_PACK.getType());
+                e.setStatus(VALID_STATUS);
+                e.setGmtCreate(new Date());
+                loanFileDOMapper.updateByPrimaryKeySelective(e);
+            });
+
+
     }
 }

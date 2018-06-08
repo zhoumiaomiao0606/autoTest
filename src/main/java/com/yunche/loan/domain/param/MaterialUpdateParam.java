@@ -9,4 +9,6 @@ public class MaterialUpdateParam {
     private String order_id;
     @NotBlank
     private String complete_material_date;// 牌证齐全日期
+
+    private String remark;//资料审核备注
 }

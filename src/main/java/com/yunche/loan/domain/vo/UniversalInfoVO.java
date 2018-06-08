@@ -7,6 +7,7 @@ public class UniversalInfoVO {
 
     private String order_id;
     private String material_complete_material_date;
+    private String material_remark;
     private String loan_gmt_create;
     private String product_category_superior;
     private String department_name;

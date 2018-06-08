@@ -315,6 +315,7 @@
     select
             main_order.id                                                                           AS order_id,
             DATE_FORMAT(material.complete_material_date,'%Y-%m-%d %H:%i:%S')                        AS material_complete_material_date,
+            material.remark                                                                         AS material_remark,
             DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')                                        AS loan_gmt_create,
             product.category_superior                                                               AS product_category_superior,
             department.name                                                                         AS department_name,

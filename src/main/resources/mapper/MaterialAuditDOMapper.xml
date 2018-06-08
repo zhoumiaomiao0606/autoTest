@@ -6,9 +6,10 @@
         <result column="complete_material_date" property="complete_material_date" jdbcType="DATE"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
         <result column="feature" property="feature" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, complete_material_date,status, feature
+    id, complete_material_date,status, feature, remark
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
@@ -36,6 +37,10 @@
             <if test="feature != null">
                 feature,
             </if>
+            <if test="remark != null">
+                remark,
+            </if>
+
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -50,6 +55,10 @@
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
             </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
@@ -64,6 +73,10 @@
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -87,6 +100,6 @@
         <if test="customerId != null">
             AND b.customer_id = #{customerId}
         </if>
-        AND a.id = #{orderId}
+        AND a.id = #{orderId} AND b.type!=26
     </select>
 </mapper>

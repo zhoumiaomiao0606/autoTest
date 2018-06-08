@@ -141,7 +141,7 @@ public class OSSUnit {
      * @return 文件的contentType
      */
     public static final String getContentType(String fileName){
-        String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".")+1);
         if("bmp".equalsIgnoreCase(fileExtension)) return "image/bmp";
         if("gif".equalsIgnoreCase(fileExtension)) return "image/gif";
         if("jpeg".equalsIgnoreCase(fileExtension) || "jpg".equalsIgnoreCase(fileExtension)  || "png".equalsIgnoreCase(fileExtension) ) return "image/jpeg";
@@ -151,7 +151,7 @@ public class OSSUnit {
         if("ppt".equalsIgnoreCase(fileExtension) || "pptx".equalsIgnoreCase(fileExtension)) return "application/vnd.ms-powerpoint";
         if("doc".equalsIgnoreCase(fileExtension) || "docx".equalsIgnoreCase(fileExtension)) return "application/msword";
         if("xml".equalsIgnoreCase(fileExtension)) return "text/xml";
-//        if("zip".equalsIgnoreCase(fileExtension)) return "application/zip";
+        if("zip".equalsIgnoreCase(fileExtension)) return "application/zip";
         return "text/html";
     }
 

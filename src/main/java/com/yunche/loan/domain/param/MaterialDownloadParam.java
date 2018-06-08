@@ -20,4 +20,7 @@ public class MaterialDownloadParam {
     private Byte custType;
 
     private String custTypeName;
+
+
+    private boolean fileStatus;
 }
