@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.OSSObject;
 import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
@@ -28,6 +29,8 @@ import com.yunche.loan.service.LoanFileService;
 import com.yunche.loan.service.MaterialService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,10 +62,11 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.SOCIAL_CREDIT_RECO
 @Service
 public class MaterialServiceImpl implements MaterialService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
+
     private final static Long CUSTOMER_DEFAULT_ID = (long) 0;
 
-    private static final Set<String> URL_FILTER_SUFFIX = Sets.newHashSet("rar", "mp4", "mov", "avi", "m4v", "3gp","zip");
-
+    private static final Set<String> URL_FILTER_SUFFIX = Sets.newHashSet("rar", "mp4", "mov", "avi", "m4v", "3gp", "zip");
 
 
     @Resource
@@ -188,7 +192,7 @@ public class MaterialServiceImpl implements MaterialService {
                 if (null != loanFileDO) {
                     String path = loanFileDO.getPath();
                     List<String> url = JSON.parseArray(path, String.class);
-                    if(!CollectionUtils.isEmpty(url)){
+                    if (!CollectionUtils.isEmpty(url)) {
                         return ResultBean.ofSuccess(url.get(0));
                     }
                 }
@@ -211,21 +215,21 @@ public class MaterialServiceImpl implements MaterialService {
         OSSClient ossClient = null;
         File zipFile = null;
         ZipOutputStream zos = null;
-        Set<String> NAME_ENTRY =  Sets.newHashSet();
+        Set<String> NAME_ENTRY = Sets.newHashSet();
         try {
 
             //先将文件状态改为进行中
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
-            if(CollectionUtils.isEmpty(loanFileDOS)){
+            if (CollectionUtils.isEmpty(loanFileDOS)) {
                 LoanFileDO loanFileDO = new LoanFileDO();
-                loanFileDO.setStatus((byte)3);
+                loanFileDO.setStatus((byte) 3);
                 loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
                 loanFileDO.setType(ZIP_PACK.getType());
                 loanFileDO.setCustomerId(customerId);
                 loanFileDOMapper.insertSelective(loanFileDO);
-            }else{
-                loanFileDOS.parallelStream().forEach(e->{
-                    e.setStatus((byte)3);
+            } else {
+                loanFileDOS.parallelStream().forEach(e -> {
+                    e.setStatus((byte) 3);
                     loanFileDOMapper.updateByPrimaryKeySelective(e);
                 });
             }
@@ -251,7 +255,7 @@ public class MaterialServiceImpl implements MaterialService {
             ossClient = OSSUnit.getOSSClient();
             String fileName = null;
             if (downloadParams != null) {
-                fileName = downloadParams.get(0).getName() +"_"+ downloadParams.get(0).getIdCard() + ".zip";
+                fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard() + ".zip";
 //                fileName = downloadParams.get(0).getName() +".zip";
             }
             // 创建临时文件
@@ -270,7 +274,14 @@ public class MaterialServiceImpl implements MaterialService {
             for (MaterialDownloadParam typeFile : downloadParams) {
                 // 获取Object，返回结果为OSSObject对象
                 for (String url : typeFile.getPathList()) {
-                    OSSObject ossObject = OSSUnit.getObject(ossClient, url);
+                    OSSObject ossObject = null;
+                    try {
+                        ossObject = OSSUnit.getObject(ossClient, url);
+                    } catch (OSSException e) {
+                        logger.info(">>>>>>>>>文件不存在:"+url);
+                        continue;
+                    }
+
                     // 读去Object内容  返回
                     InputStream inputStream = ossObject.getObjectContent();
                     // 对于每一个要被存放到压缩包的文件，都必须调用ZipOutputStream对象的putNextEntry()方法，确保压缩包里面文件不同名
@@ -307,9 +318,9 @@ public class MaterialServiceImpl implements MaterialService {
                     }
 
 
-                    if(preCheck(NAME_ENTRY,typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])){
+                    if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
                         zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
-                    }else{
+                    } else {
                         continue;
                     }
                     int bytesRead = 0;
@@ -333,6 +344,7 @@ public class MaterialServiceImpl implements MaterialService {
             returnKey = diskName + File.separator + zipFile.getName();
 
         } catch (Exception e) {
+            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), null);
             throw new RuntimeException("文件打包/上传/下载失败", e);
         } finally {
             try {
@@ -380,7 +392,7 @@ public class MaterialServiceImpl implements MaterialService {
         FileInputStream fis = null;
         BufferedOutputStream out = null;
         File zipFile = null;
-        Set<String> NAME_ENTRY =  Sets.newHashSet();
+        Set<String> NAME_ENTRY = Sets.newHashSet();
 
         try {
 
@@ -459,15 +471,15 @@ public class MaterialServiceImpl implements MaterialService {
                     if (taskDefinitionKey != null && (taskDefinitionKey.equals(BANK_CREDIT_RECORD.getCode()) || taskDefinitionKey.equals(SOCIAL_CREDIT_RECORD.getCode()))) {
                         if (t == ID_CARD_FRONT.getType() || t == ID_CARD_BACK.getType() || t == AUTH_BOOK.getType() || t == AUTH_BOOK_SIGN_PHOTO.getType()) {
                             if (customerId != null) {
-                                if(preCheck(NAME_ENTRY,url.split("/")[url.split("/").length - 1])){
+                                if (preCheck(NAME_ENTRY, url.split("/")[url.split("/").length - 1])) {
                                     zos.putNextEntry(new ZipEntry(url.split("/")[url.split("/").length - 1]));
-                                }else{
+                                } else {
                                     continue;
                                 }
                             } else {
-                                if(preCheck(NAME_ENTRY,typeFile.getCustTypeName() + "/" + url.split("/")[url.split("/").length - 1])){
+                                if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
                                     zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
-                                }else{
+                                } else {
                                     continue;
                                 }
                             }
@@ -476,9 +488,9 @@ public class MaterialServiceImpl implements MaterialService {
                             continue;
                         }
                     } else {
-                        if(preCheck(NAME_ENTRY,typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])){
+                        if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
                             zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
-                        }else{
+                        } else {
                             continue;
                         }
 
@@ -549,14 +561,15 @@ public class MaterialServiceImpl implements MaterialService {
         return null;
     }
 
-    private  boolean preCheck(Set NAME_ENTRY ,String  pathFileName ){
-        if (! NAME_ENTRY.add(pathFileName)) {
-             return false;
-        }else{
-             return true;
+    private boolean preCheck(Set NAME_ENTRY, String pathFileName) {
+        if (!NAME_ENTRY.add(pathFileName)) {
+            return false;
+        } else {
+            return true;
         }
 
     }
+
     /**
      * @param orderId
      * @param taskDefinitionKey
@@ -824,12 +837,12 @@ public class MaterialServiceImpl implements MaterialService {
 
         // 是否已经存在文件了
 
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loanCustomerId,ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
-        if(CollectionUtils.isEmpty(loanFileDOS)){
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loanCustomerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
+        if (CollectionUtils.isEmpty(loanFileDOS)) {
             materialDownloadParam.setFileStatus("2");
-        }else{
+        } else {
             materialDownloadParam.setFileStatus("1");
-            loanFileDOS.stream().filter(e -> e.getStatus().equals(BaseConst.VALID_STATUS)).forEach(e->{
+            loanFileDOS.stream().filter(e -> e.getStatus().equals(BaseConst.VALID_STATUS)).forEach(e -> {
                 materialDownloadParam.setFileStatus("0");
             });
         }
@@ -858,16 +871,16 @@ public class MaterialServiceImpl implements MaterialService {
         //先将文件状态改为进行中
         List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
 
-            loanFileDOS.parallelStream().filter(Objects::nonNull).forEach(e->{
-                e.setCustomerId(customerId);
-                e.setUploadType(UPLOAD_TYPE_NORMAL);
-                String s = JSON.toJSONString(path);
-                e.setPath("["+s+"]");
-                e.setType(ZIP_PACK.getType());
-                e.setStatus(VALID_STATUS);
-                e.setGmtCreate(new Date());
-                loanFileDOMapper.updateByPrimaryKeySelective(e);
-            });
+        loanFileDOS.parallelStream().filter(Objects::nonNull).forEach(e -> {
+            e.setCustomerId(customerId);
+            e.setUploadType(UPLOAD_TYPE_NORMAL);
+            String s = JSON.toJSONString(path);
+            e.setPath("[" + s + "]");
+            e.setType(ZIP_PACK.getType());
+            e.setStatus(VALID_STATUS);
+            e.setGmtCreate(new Date());
+            loanFileDOMapper.updateByPrimaryKeySelective(e);
+        });
 
 
     }
