@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.OSSObject;
 import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
@@ -271,13 +270,14 @@ public class MaterialServiceImpl implements MaterialService {
             CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
             // 用于将数据压缩成Zip文件格式
             zos = new ZipOutputStream(csum);
+            logger.info("打包开始："+System.currentTimeMillis());
             for (MaterialDownloadParam typeFile : downloadParams) {
                 // 获取Object，返回结果为OSSObject对象
                 for (String url : typeFile.getPathList()) {
                     OSSObject ossObject = null;
                     try {
                         ossObject = OSSUnit.getObject(ossClient, url);
-                    } catch (OSSException e) {
+                    } catch (Exception e) {
                         logger.info(">>>>>>>>>文件不存在:"+url);
                         continue;
                     }
@@ -342,9 +342,12 @@ public class MaterialServiceImpl implements MaterialService {
 //            OSSUnit.deleteFile(ossClient,bucketName,diskName,zipFile.getName());
             OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
             returnKey = diskName + File.separator + zipFile.getName();
-
+            logger.info("打包结束："+System.currentTimeMillis());
         } catch (Exception e) {
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), null);
+            loanFileDOS.stream().filter(Objects::nonNull).forEach(f->{
+                loanFileDOMapper.deleteByPrimaryKey(f.getId());
+            });
             throw new RuntimeException("文件打包/上传/下载失败", e);
         } finally {
             try {
