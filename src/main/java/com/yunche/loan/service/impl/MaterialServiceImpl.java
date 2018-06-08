@@ -339,7 +339,7 @@ public class MaterialServiceImpl implements MaterialService {
             }
             String diskName = ossConfig.getZipDiskName();
             //删除OSS上的文件
-//            OSSUnit.deleteFile(ossClient,bucketName,diskName,zipFile.getName());
+            OSSUnit.deleteFile(ossClient,bucketName,diskName+File.separator,zipFile.getName());
             OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
             returnKey = diskName + File.separator + zipFile.getName();
             logger.info("打包结束："+System.currentTimeMillis());
