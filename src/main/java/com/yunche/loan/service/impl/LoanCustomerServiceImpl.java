@@ -134,8 +134,14 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
             Preconditions.checkNotNull(loanCustomerDO.getPrincipalCustId(), "主贷人ID不能为空");
         }
         List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getPrincipalCustId(), CUST_TYPE_GUARANTOR, VALID_STATUS);
-        if(!CollectionUtils.isEmpty(loanCustomerDOS) && String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())){
-            Preconditions.checkArgument(false,"您选择的担保人与主担保人关系有且仅有一个为本人！");
+        if(CollectionUtils.isEmpty(loanCustomerDOS)){
+            if(!String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())){
+                Preconditions.checkArgument(false,"您选择的担保人与主担保人关系有误，请核查");
+            }
+        }else{
+            if(String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())){
+                Preconditions.checkArgument(false,"您选择的担保人与主担保人关系有误，请核查");
+            }
         }
         loanCustomerDO.setStatus(VALID_STATUS);
         loanCustomerDO.setGmtCreate(new Date());
