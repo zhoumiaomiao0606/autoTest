@@ -648,6 +648,7 @@
         c.working_years           AS working_years,
         c.duty                    AS duty,
         c.age                     AS age,
+        c.guarantee_rela          AS guarantee_rela,
         cb.result                 AS bank_result,
         cs.result                 AS society_result
 

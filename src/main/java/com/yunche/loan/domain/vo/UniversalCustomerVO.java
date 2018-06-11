@@ -31,6 +31,7 @@ public class UniversalCustomerVO {
     private String guarantee_type;
     private String residence_address;//户籍地址
     private String age;//年龄
+    private String guarantee_rela;
 
     private List<UniversalCustomerFileVO> files = new ArrayList<UniversalCustomerFileVO>();
 
