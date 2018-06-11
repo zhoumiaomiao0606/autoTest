@@ -672,7 +672,9 @@
                   AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
               </if>
               <if test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review' or taskDefinitionKey == 'usertask_telephone_verify'">
+                  <if test="telephoneVerifyStatus != null">
                   AND tab.telephoneVerifyStatus = #{telephoneVerifyStatus}
+                  </if>
               </if>
               <if test="taskDefinitionKey == 'usertask_customer_repay_plan'">
                   <if test="isStraighten != null">
