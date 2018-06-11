@@ -317,6 +317,7 @@
                           deputy.visit_verify                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_telephone_verify'">
+                          deputy.telephone_verify                 AS telephoneVerifyStatus,
                           useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify)   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_business_pay'">
@@ -377,6 +378,7 @@
                       <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
                           join_his.id                              AS his_id,
                           DATE_FORMAT(join_his.start_time ,'%Y-%m-%d %H:%i:%S')          AS his_start_time,
+                          join_his.status                                                  AS telephoneVerifyStatus,
                           useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status)   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_refund_apply'">
@@ -668,6 +670,9 @@
               </if>
               <if test="endCreditGmtCreate != null">
                   AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
+              </if>
+              <if test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review' or taskDefinitionKey == 'usertask_telephone_verify'">
+                  AND tab.telephoneVerifyStatus = #{telephoneVerifyStatus}
               </if>
               <if test="taskDefinitionKey == 'usertask_customer_repay_plan'">
                   <if test="isStraighten != null">
