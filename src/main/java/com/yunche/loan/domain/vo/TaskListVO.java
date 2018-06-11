@@ -35,7 +35,7 @@ public class TaskListVO {
     private String loanTime;
     private String downPaymentMoney;
     private String overdueNum;
-
+    private String telephoneVerifyStatus;
     // 未加
     private String taskStatus;
     private String supplementOrderId;
