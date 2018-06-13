@@ -28,14 +28,14 @@ public class App {
         SpringApplication.run(App.class, args);
     }
 
-    @Primary
     @Bean
+    @Primary
     public TaskExecutor primaryTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         return executor;
     }
 
-    //    @Bean
+    @Bean
     public CommandLineRunner init(final RepositoryService repositoryService,
 //                                  final RuntimeService runtimeService,
 //                                  final TaskService taskService,
