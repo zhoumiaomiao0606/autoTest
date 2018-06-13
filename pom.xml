@@ -313,6 +313,14 @@
         <!-- anychat-sdk-java -->
 
 
+        <dependency>
+            <groupId>com.icbc.api</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/api_client.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
     <build>
