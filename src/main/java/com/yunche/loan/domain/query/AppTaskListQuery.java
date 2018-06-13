@@ -50,6 +50,8 @@ public class AppTaskListQuery extends BaseQuery {
 
     Long materialSupplementLevel;
 
+    String bankName;
+
     Set<String> juniorIds = Sets.newHashSet();
 
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表

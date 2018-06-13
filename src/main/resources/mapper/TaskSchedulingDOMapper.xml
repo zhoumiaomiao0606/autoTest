@@ -165,6 +165,9 @@
             <if test="customer != null">
                 AND tab.customer = #{customer}
             </if>
+            <if test="bankName !=null">
+                AND tab.bank = #{bankName}
+            </if>
         ) complex
         where 1=1
           and
