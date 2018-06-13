@@ -54,7 +54,7 @@ public class TaskListQuery {
 
 
 
-    private Boolean pull = true;
+    private boolean pull = true;
 
     private String orderId;//业务编号
 
