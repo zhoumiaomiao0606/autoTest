@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
+import static com.yunche.loan.config.constant.GuaranteeRelaConst.GUARANTOR_PERSONAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
 
@@ -132,7 +133,16 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         if (!CUST_TYPE_PRINCIPAL.equals(loanCustomerDO.getCustType())) {
             Preconditions.checkNotNull(loanCustomerDO.getPrincipalCustId(), "主贷人ID不能为空");
         }
-
+        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getPrincipalCustId(), CUST_TYPE_GUARANTOR, VALID_STATUS);
+        if(CollectionUtils.isEmpty(loanCustomerDOS)){
+            if(!String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())){
+                Preconditions.checkArgument(false,"您选择的担保人与主担保人关系有误，请核查");
+            }
+        }else{
+            if(String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())){
+                Preconditions.checkArgument(false,"您选择的担保人与主担保人关系有误，请核查");
+            }
+        }
         loanCustomerDO.setStatus(VALID_STATUS);
         loanCustomerDO.setGmtCreate(new Date());
         loanCustomerDO.setGmtModify(new Date());
@@ -219,7 +229,6 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
         // 根据主贷人ID获取客户详情列表
         ResultBean<CustDetailVO> resultBean = detailAll(orderId, null);
-
         return resultBean;
     }
 
