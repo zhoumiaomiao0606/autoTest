@@ -692,22 +692,25 @@
             )
             taskdis
             on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
-            <choose>
-                <when test="pull == false">
-                    where task.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key = #{taskDefinitionKey} ) )
-                </when>
-                <otherwise>
-                    <if test="taskStatus != 0">
-                        having
-                        case when #{maxGroupLevel}  = 3 then 1=1
-                        when receiveManId is not null then
-                        case when receiveManId = #{employeeId} then 1=1 else 1=2 end
-                        else 1=1
-                        end
-                    </if>
-                </otherwise>
-            </choose>
+            <if test="taskStatus != 0">
+                <choose>
+                    <when test="pull == false">
+                        where
+                              case when #{maxGroupLevel}  = 3 then 1=1 else
+                                task.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key = #{taskDefinitionKey} ) )
+                              end
+                    </when>
+                    <otherwise>
+                            having
+                              case when #{maxGroupLevel}  = 3 then 1=1
+                            when receiveManId is not null then
+                              case when receiveManId = #{employeeId} then 1=1 else 1=2 end
+                            else 1=1
+                            end
 
+                    </otherwise>
+                </choose>
+            </if>
             ) complex
                 where 1=1
                   and
