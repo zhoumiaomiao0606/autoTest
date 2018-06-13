@@ -97,12 +97,16 @@ public class BankCache {
      */
     public Long getBankIdByName(String bankName) {
 
-        Map<String, Long> nameIdMap = getNameIdMap();
+        Map<String, Integer> nameIdMap = getNameIdMap();
 
         if (!CollectionUtils.isEmpty(nameIdMap)) {
 
-            Long bankId = nameIdMap.get(bankName);
-            return bankId;
+            Integer bankId = nameIdMap.get(bankName);
+
+            if (null == bankId) {
+                return null;
+            }
+            return Long.valueOf(bankId);
         }
 
         return null;
@@ -113,7 +117,7 @@ public class BankCache {
      *
      * @return
      */
-    public Map<String, Long> getNameIdMap() {
+    public Map<String, Integer> getNameIdMap() {
 
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(BANK_NAME_ID_MAP_CACHE_KEY);
         String result = boundValueOps.get();

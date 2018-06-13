@@ -11,9 +11,9 @@ public class WebSocketMsgVO {
 
     private String roomId;
 
-    private Long sendUserId;
+    private Long appAnyChatUserId;
 
-    private Long receiveUserId;
+    private Long pcAnyChatUserId;
     /**
      * 排名
      */

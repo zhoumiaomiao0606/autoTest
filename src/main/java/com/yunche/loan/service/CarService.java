@@ -47,5 +47,5 @@ public interface CarService {
      * @param carType
      * @return
      */
-    ResultBean<String> getFullName(Long carId, Byte carType);
+    String getFullName(Long carId, Byte carType);
 }

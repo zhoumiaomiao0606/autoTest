@@ -19,6 +19,17 @@ public enum LoanAmountGradeEnum {
         this.name = name;
     }
 
+    public static String getNameByLevel(Byte level) {
+
+        for (LoanAmountGradeEnum e : LoanAmountGradeEnum.values()) {
+            if (e.getLevel().equals(level)) {
+
+                return e.getName();
+            }
+        }
+        return null;
+    }
+
     public Integer getLevel() {
         return level;
     }

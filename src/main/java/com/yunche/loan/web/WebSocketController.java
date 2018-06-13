@@ -40,10 +40,10 @@ public class WebSocketController {
      * @param webSocketParam 前端参数：以JSON格式发送，即可自动映射
      * @MessageMapping client -> server    发送消息的path      若有设置前缀,则还需加上前缀
      */
-    @MessageMapping("/queue/wait")
-    public void wait(WebSocketParam webSocketParam) {
+    @MessageMapping("/team/wait")
+    public void waitTeam(WebSocketParam webSocketParam) {
 
-        webSocketService.addQueue(webSocketParam);
+        webSocketService.waitTeam(webSocketParam);
     }
 
     /**
@@ -53,14 +53,16 @@ public class WebSocketController {
      *
      * @param webSocketParam
      */
-    @MessageMapping("/queue/exit")
-    public void exitQueue(WebSocketParam webSocketParam) {
+    @MessageMapping("/team/exit")
+    public void exitTeam(WebSocketParam webSocketParam) {
 
-        webSocketService.exitQueue(webSocketParam);
+        webSocketService.exitTeam(webSocketParam);
     }
 
     /**
      * PC端发起通话请求
+     * <p>
+     * 推送roomId给APP、PC        APP接通后，需要主动退出排队
      *
      * @param webSocketParam
      */
@@ -70,6 +72,27 @@ public class WebSocketController {
         webSocketService.call(webSocketParam);
     }
 
+    /**
+     * 图片存储路径转发
+     *
+     * @param webSocketParam
+     */
+    @MessageMapping("/livePhoto/path")
+    public void livePhotoPath(WebSocketParam webSocketParam) {
+
+        webSocketService.livePhotoPath(webSocketParam);
+    }
+
+    /**
+     * 经纬度转发
+     *
+     * @param webSocketParam
+     */
+    @MessageMapping("/latlon")
+    public void latlon(WebSocketParam webSocketParam) {
+
+        webSocketService.latlon(webSocketParam);
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -177,7 +200,7 @@ public class WebSocketController {
         webSocketParam.setBankId(bankId);
         webSocketParam.setUserId(userId);
 
-        webSocketService.addQueue(webSocketParam);
+        webSocketService.waitTeam(webSocketParam);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

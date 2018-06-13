@@ -1,6 +1,5 @@
 package com.yunche.loan.config.queue;
 
-import com.genxiaogu.ratelimiter.service.impl.DistributedLimiter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.domain.vo.CustomerVO;
@@ -13,7 +12,6 @@ import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +27,7 @@ public class VideoFaceRoomQueue {
     /**
      * 视频面签 -队列排队列表 前缀
      */
-    private static final String VIDEO_FACE_QUEUE_PREFIX = "video:face:queue:";
+    private static final String VIDEO_FACE_QUEUE_PREFIX = "video-face-queue:";
     /**
      * 分隔符
      */
@@ -54,25 +52,25 @@ public class VideoFaceRoomQueue {
     @Autowired
     private LoanCustomerService loanCustomerService;
 
-    @Autowired
-    private DistributedLimiter distributedLimiter;
-
 
     /**
      * 进入（队列）排队    or  刷新过期时间
      *
      * @param queueId
      * @param userId
-     * @param clientType  1-PC; 2-APP;
-     * @param wsSessionId WebSocket 会话ID
+     * @param clientType    1-PC; 2-APP;
+     * @param anyChatUserId
+     * @param orderId
+     * @param wsSessionId   WebSocket 会话ID
      */
-    public void addQueue(Long queueId, Long userId, Integer clientType, String wsSessionId) {
+    public void addQueue(Long queueId, Long userId, Integer clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
 
         // 队列排名依据   -> val ： 开始排队时间
         long startTime = System.currentTimeMillis();
 
-        // prefix  +  queue_id  +  client_type  +  ws_session_id  +  userId
-        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + wsSessionId + SEPARATOR + userId;
+        // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
+        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
+                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
 
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
 
@@ -88,12 +86,15 @@ public class VideoFaceRoomQueue {
      * @param queueId
      * @param userId
      * @param clientType
+     * @param anyChatUserId
+     * @param orderId
      * @param wsSessionId
      */
-    public void exitQueue(Long queueId, Long userId, Integer clientType, String wsSessionId) {
+    public void exitQueue(Long queueId, Long userId, Integer clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
 
-        // prefix  +  queue_id  +  client_type  +  ws_session_id  +  userId
-        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + wsSessionId + SEPARATOR + userId;
+        // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
+        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
+                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
 
         stringRedisTemplate.delete(key);
     }
@@ -150,7 +151,7 @@ public class VideoFaceRoomQueue {
     }
 
     /**
-     * sessionId:userId - startTime 映射
+     * sessionId:userId: - startTime 映射
      *
      * @param queueId
      * @param clientType
@@ -180,15 +181,49 @@ public class VideoFaceRoomQueue {
                         String[] keyArr = key.split(keyPrefix);
                         if (keyArr.length == 2) {
 
-                            String sessionId_userId = keyArr[1];
+                            // anyChatUserId:wsSessionId:userId:order_id               tips：PC端无orderId
+                            String anyChatUserId_wsSessionId_userId_orderId = keyArr[1];
 
-                            sessionIdStartTimeMap.put(sessionId_userId, Long.valueOf(startTime));
+                            sessionIdStartTimeMap.put(anyChatUserId_wsSessionId_userId_orderId, Long.valueOf(startTime));
                         }
 
                     });
         }
 
         return sessionIdStartTimeMap;
+    }
+
+    /**
+     * 获取wsSessionId
+     *
+     * @param queueId
+     * @param anyChatUserId
+     * @param clientType
+     * @return
+     */
+    public String getWsSessionIdByAnyChatUserId(Long queueId, Long anyChatUserId, Integer clientType) {
+
+        // prefix  +  queue_id  +  client_type  +  anyChat_userId
+        String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId + SEPARATOR;
+
+        Set<String> keys = stringRedisTemplate.keys(keyPrefix + "*");
+
+        if (!CollectionUtils.isEmpty(keys)) {
+
+            String key = keys.iterator().next();
+
+            String[] keyArr = key.split(keyPrefix);
+
+            // wsSessionId:userId:order_id                tips：PC端无orderId
+            String wsSessionId_userId_orderId = keyArr[1];
+
+            String[] strArr = wsSessionId_userId_orderId.split(SEPARATOR);
+            String wsSessionId = strArr[0];
+
+            return wsSessionId;
+        }
+
+        return null;
     }
 
 }

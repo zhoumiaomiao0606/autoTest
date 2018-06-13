@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.yunche.loan.config.constant.VideoFaceConst.TYPE_APP;
+import static com.yunche.loan.config.constant.VideoFaceConst.TYPE_PC;
 
 /**
  * @author liuzhe
@@ -23,8 +24,8 @@ public class WebSocketTest extends BaseTest {
         WebSocketParam webSocketParam = new WebSocketParam();
         webSocketParam.setBankId(1L);
         webSocketParam.setUserId(1L);
-        webSocketParam.setType(TYPE_APP);
-        webSocketService.addQueue(webSocketParam);
+        webSocketParam.setType(TYPE_PC);
+        webSocketService.waitTeam(webSocketParam);
 
         System.out.println("-----");
 

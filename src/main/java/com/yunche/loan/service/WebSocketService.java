@@ -8,9 +8,13 @@ import com.yunche.loan.domain.param.WebSocketParam;
  */
 public interface WebSocketService {
 
-    void addQueue(WebSocketParam webSocketParam);
+    void waitTeam(WebSocketParam webSocketParam);
 
-    void exitQueue(WebSocketParam webSocketParam);
+    void exitTeam(WebSocketParam webSocketParam);
 
     void call(WebSocketParam webSocketParam);
+
+    void livePhotoPath(WebSocketParam webSocketParam);
+
+    void latlon(WebSocketParam webSocketParam);
 }
