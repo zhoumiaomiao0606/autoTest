@@ -209,7 +209,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     private List<AppTaskVO> convert(List<TaskListVO> list) {
 
-        List<AppTaskVO> appTaskListVO = list.parallelStream()
+        List<AppTaskVO> appTaskListVO = list.stream()
                 .map(e -> {
 
                     AppTaskVO appTaskVO = new AppTaskVO();
@@ -218,6 +218,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     fillTaskStatus(appTaskVO);
 
                     canCreditSupplement(Long.valueOf(e.getId()), appTaskVO);
+
+
 
                     return appTaskVO;
                 })

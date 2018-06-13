@@ -3,10 +3,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.service.VideoFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,12 +21,23 @@ public class VideoFaceController {
 
 
     /**
+     * 加入房间   排队
+     *
+     * @return
+     */
+    @GetMapping(value = "/addRoom")
+    public ResultBean<Object> addRoom(@RequestParam Long customerId,
+                                      @RequestParam Long orderId) {
+        return videoFaceService.addRoom(customerId, orderId);
+    }
+
+    /**
      * 面签列表
      *
      * @return
      */
     @GetMapping(value = "/x")
-    public ResultBean<List<Object>> x() {
+    public ResultBean<List<Object>> x_() {
 //        return videoFaceService.x();
         return ResultBean.ofSuccess(null);
     }

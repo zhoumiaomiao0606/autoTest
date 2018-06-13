@@ -2,6 +2,7 @@ package com.yunche.loan.domain.entity;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -10,7 +11,9 @@ public class VideoFaceLogDO {
 
     private Long orderId;
 
-    private String guaranteeCompany;
+    private Long guaranteeCompanyId;
+
+    private String guaranteeCompanyName;
 
     private Long customerId;
 
@@ -20,13 +23,25 @@ public class VideoFaceLogDO {
 
     private String path;
 
-    private Byte type;
+    private Boolean type;
 
     private Long auditorId;
 
     private String auditorName;
 
-    private Byte action;
+    private Boolean action;
+
+    private String latlon;
+
+    private String location;
+
+    private Long carDetailId;
+
+    private String carDetailName;
+
+    private BigDecimal carPrice;
+
+    private BigDecimal expectLoanAmount;
 
     private Date gmtCreate;
 

@@ -421,7 +421,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // [领取]完成
             finishTask_(approval);
 
-            return ResultBean.ofSuccess(null, "[金融方案修改申请]任务执行成功");
+            return ResultBean.ofSuccess(null, "[金融方案修改]任务执行成功");
         }
 
         // 【金融方案修改申请审核】
@@ -459,7 +459,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // [领取]完成
             finishTask_(approval);
 
-            return ResultBean.ofSuccess(null, "[金融方案修改申请审核]任务执行成功");
+            return ResultBean.ofSuccess(null, "[金融方案审核]任务执行成功");
         }
 
         return ResultBean.ofError("参数有误");

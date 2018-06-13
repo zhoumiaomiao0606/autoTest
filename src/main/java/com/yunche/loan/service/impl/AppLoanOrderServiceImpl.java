@@ -180,16 +180,17 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
+        appInfoSupplementVO.setOrderId(String.valueOf(orderId));
+
         // 客户信息
         if (null != loanOrderDO.getLoanCustomerId()) {
-            ResultBean<CustomerVO> customerVOResultBean = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
-            Preconditions.checkArgument(customerVOResultBean.getSuccess(), customerVOResultBean.getMsg());
-            CustomerVO customerVO = customerVOResultBean.getData();
+            CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
 
-            appInfoSupplementVO.setOrderId(String.valueOf(orderId));
-            appInfoSupplementVO.setCustomerId(customerVO.getId());
-            appInfoSupplementVO.setCustomerName(customerVO.getName());
-            appInfoSupplementVO.setIdCard(customerVO.getIdCard());
+            if (null != customerVO) {
+                appInfoSupplementVO.setCustomerId(customerVO.getId());
+                appInfoSupplementVO.setCustomerName(customerVO.getName());
+                appInfoSupplementVO.setIdCard(customerVO.getIdCard());
+            }
         }
 
         // 贷款基本信息：贷款额、期限 & 银行
@@ -989,11 +990,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
             loanCarInfoVO.setApplyLicensePlateAreaId(baseAreaDO.getAreaId());
-            String tmpApplyLicensePlateArea=null;
-            if(baseAreaDO!=null){
-                if(baseAreaDO.getParentAreaName()!=null){
-                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+baseAreaDO.getAreaName();
-                }else{
+            String tmpApplyLicensePlateArea = null;
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
                     tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
                 }
             }

@@ -75,12 +75,23 @@ public class ShiroConfig {
         if (anno) {
             filterChainDefinitionMap.put("/**", "anon");
         } else {
+            filterChainDefinitionMap.put("/static/**", "anon");
+            filterChainDefinitionMap.put("/templates/**", "anon");
+
+            // websocket检查服务放行
+            filterChainDefinitionMap.put("/videoFace/info", "anon");
+
+            filterChainDefinitionMap.put("/api/v1/employee/login_", "anon");
+
             filterChainDefinitionMap.put("/api/v1/employee/logout", "anon");
             filterChainDefinitionMap.put("/api/v1/employee/login", "anon");
             filterChainDefinitionMap.put("/api/v1/app/version/check", "anon");
             filterChainDefinitionMap.put("/api/v1/loadqr/query", "anon");
             //        filterChainDefinitionMap.put("/**", "authc,perms");
             filterChainDefinitionMap.put("/**", "authc");
+
+            // TODO 删除！！！
+//            filterChainDefinitionMap.put("/**", "anon");
         }
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);

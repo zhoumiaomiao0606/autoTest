@@ -1,5 +1,7 @@
 package com.yunche.loan.web.aop;
 
+import com.alibaba.fastjson.JSONPathException;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
@@ -50,6 +52,10 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("邮件发送失败");
         } else if (e instanceof ActivitiException) {
             return ResultBean.ofError("流程审核参数有误");
+        } else if (e instanceof JsonParseException) {
+            return ResultBean.ofError("参数类型转换异常");
+        } else if (e instanceof JSONPathException) {
+            return ResultBean.ofError("类型转换异常");
         } else if (e instanceof BadSqlGrammarException) {
             return ResultBean.ofError("服务器异常,请联系管理员!");
         } else if (e instanceof MySQLSyntaxErrorException) {

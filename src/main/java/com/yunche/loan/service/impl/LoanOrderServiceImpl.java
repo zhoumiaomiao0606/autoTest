@@ -390,15 +390,15 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
-        ResultBean<CustomerVO> customerVOResultBean = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
-        Preconditions.checkArgument(customerVOResultBean.getSuccess(), customerVOResultBean.getMsg());
-        CustomerVO customerVO = customerVOResultBean.getData();
+        CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
 
         LoanSimpleInfoVO loanSimpleInfoVO = new LoanSimpleInfoVO();
-        loanSimpleInfoVO.setCustomerId(customerVO.getId());
-        loanSimpleInfoVO.setCustomerName(customerVO.getName());
-        loanSimpleInfoVO.setIdCard(customerVO.getIdCard());
-        loanSimpleInfoVO.setMobile(customerVO.getMobile());
+        if (null != customerVO) {
+            loanSimpleInfoVO.setCustomerId(customerVO.getId());
+            loanSimpleInfoVO.setCustomerName(customerVO.getName());
+            loanSimpleInfoVO.setIdCard(customerVO.getIdCard());
+            loanSimpleInfoVO.setMobile(customerVO.getMobile());
+        }
 
         ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
         Preconditions.checkArgument(loanBaseInfoVOResultBean.getSuccess(), loanBaseInfoVOResultBean.getMsg());
@@ -502,16 +502,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
+        infoSupplementVO.setOrderId(String.valueOf(orderId));
+
         // 客户信息
         if (null != loanOrderDO.getLoanCustomerId()) {
-            ResultBean<CustomerVO> customerVOResultBean = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
-            Preconditions.checkArgument(customerVOResultBean.getSuccess(), customerVOResultBean.getMsg());
-            CustomerVO customerVO = customerVOResultBean.getData();
+            CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
 
-            infoSupplementVO.setOrderId(String.valueOf(orderId));
-            infoSupplementVO.setCustomerId(customerVO.getId());
-            infoSupplementVO.setCustomerName(customerVO.getName());
-            infoSupplementVO.setIdCard(customerVO.getIdCard());
+            if (null != customerVO) {
+                infoSupplementVO.setCustomerId(customerVO.getId());
+                infoSupplementVO.setCustomerName(customerVO.getName());
+                infoSupplementVO.setIdCard(customerVO.getIdCard());
+            }
         }
 
         // 业务员信息
@@ -568,11 +569,11 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         if (vehicleInformationDO != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
             loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
-            String tmpApplyLicensePlateArea=null;
-            if(baseAreaDO!=null){
-                if(baseAreaDO.getParentAreaName()!=null){
-                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+baseAreaDO.getAreaName();
-                }else{
+            String tmpApplyLicensePlateArea = null;
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
                     tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
                 }
             }

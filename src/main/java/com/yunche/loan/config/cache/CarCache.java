@@ -148,7 +148,7 @@ public class CarCache {
             return;
         }
 
-        carBrandList.parallelStream()
+        carBrandList.stream()
                 .filter(b -> null != b && null != b.getId())
                 .forEach(b -> {
 
