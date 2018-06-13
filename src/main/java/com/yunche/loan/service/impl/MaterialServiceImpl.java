@@ -233,7 +233,7 @@ public class MaterialServiceImpl implements MaterialService {
                 });
             }
 
-            List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId, customerId);
+            List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId, null);
             if (downloadParams == null) {
                 return null;
             }
