@@ -62,6 +62,14 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
+    @PostMapping(value = "/countQueryTaskList")
+    public ResultBean<Long> countQueryTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
+        return taskSchedulingService.countQueryTaskList(taskListQuery);
+    }
+
+    /**
+     * 查询接口
+     */
     @PostMapping(value = "/queryAppTaskList")
     public ResultBean<List<AppTaskVO>> queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
         return taskSchedulingService.queryAppTaskList(appTaskListQuery);

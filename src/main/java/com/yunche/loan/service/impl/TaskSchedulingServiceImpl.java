@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -170,6 +171,46 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
+
+    @Override
+    public ResultBean<Long>  countQueryTaskList(TaskListQuery taskListQuery) {
+
+        if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
+            throw new BizException("错误的任务节点key");
+        }
+        // 节点权限校验
+        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
+        Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
+        Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
+        Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
+        Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+        taskListQuery.setJuniorIds(juniorIds);
+        taskListQuery.setEmployeeId(loginUser.getId());
+        taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
+        taskListQuery.setFinanceLevel(financeLevel);
+        taskListQuery.setCollectionLevel(collectionLevel);
+        taskListQuery.setMaxGroupLevel(maxGroupLevel);
+        taskListQuery.setFinanceApplyLevel(financeApplyLevel);
+        taskListQuery.setRefundApplyLevel(refundApplyLevel);
+        taskListQuery.setMaterialSupplementLevel(materialSupplementLevel);
+        //获取用户可见的区域
+        taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        //获取用户可见的银行
+        taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+        long count = PageHelper.count(new ISelect() {
+            @Override
+            public void doSelect() {
+                taskSchedulingDOMapper.selectTaskList(taskListQuery);
+            }
+        });
+       return ResultBean.ofSuccess(count);
+    }
+
 
     @Override
     public ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery) {
