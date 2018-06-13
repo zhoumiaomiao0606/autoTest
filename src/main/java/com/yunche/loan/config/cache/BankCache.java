@@ -29,9 +29,9 @@ public class BankCache {
 
     private static final Logger logger = LoggerFactory.getLogger(BankCache.class);
 
-    private static final String BANK_NAME_ALL_CACHE_KEY = "all:bank:name";
+    private static final String BANK_NAME_ALL_CACHE_KEY = "all:cache:bank:list:name";
 
-    private static final String BANK_NAME_ID_MAP_CACHE_KEY = "all:bank:map:name-id";
+    private static final String BANK_NAME_ID_MAP_CACHE_KEY = "all:cache:bank:map:name-id";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
