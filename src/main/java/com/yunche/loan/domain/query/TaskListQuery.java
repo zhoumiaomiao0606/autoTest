@@ -52,7 +52,9 @@ public class TaskListQuery {
     //查询条件
     private boolean fuse = false;
 
-    private String telephoneVerifyStatus;
+
+
+    private Boolean pull = true;
 
     private String orderId;//业务编号
 

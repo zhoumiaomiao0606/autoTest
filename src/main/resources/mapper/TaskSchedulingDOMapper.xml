@@ -150,7 +150,7 @@
                     AND deputy.remit_review = 1
                 </when>
                 <otherwise>
-                    AND 1=2
+                    AND 1=1
                 </otherwise>
             </choose>
             ) tab
@@ -317,7 +317,6 @@
                           deputy.visit_verify                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_telephone_verify'">
-                          deputy.telephone_verify                 AS telephoneVerifyStatus,
                           useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify)   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_business_pay'">
@@ -378,7 +377,6 @@
                       <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
                           join_his.id                              AS his_id,
                           DATE_FORMAT(join_his.start_time ,'%Y-%m-%d %H:%i:%S')          AS his_start_time,
-                          join_his.status                                                  AS telephoneVerifyStatus,
                           useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status)   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_refund_apply'">
@@ -505,7 +503,7 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_telephone_verify'">
                       AND useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify) !=-1
-                      AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify) != 0 else useLevelGetTaskStatus(#{telephoneVerifyLevel},deputy.telephone_verify) = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy.telephone_verify != 0 else deputy.telephone_verify = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_business_pay'">
                       AND case when #{taskStatus} = 0 then deputy.business_pay  != 0                              else deputy.business_pay                               = #{taskStatus} end
@@ -558,7 +556,7 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
                       AND useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status) !=-1
-                      AND case when #{taskStatus} = 0 then useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status) != 0 else useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status) = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then join_his.status != 0 else join_his.status = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_refund_apply'">
                       AND case when #{taskStatus} = 0 then join_refund.status  != 0                          else join_refund.status                 = #{taskStatus} end
@@ -671,11 +669,6 @@
               <if test="endCreditGmtCreate != null">
                   AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
               </if>
-              <if test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review' or taskDefinitionKey == 'usertask_telephone_verify'">
-                  <if test="telephoneVerifyStatus != null">
-                  AND tab.telephoneVerifyStatus = #{telephoneVerifyStatus}
-                  </if>
-              </if>
               <if test="taskDefinitionKey == 'usertask_customer_repay_plan'">
                   <if test="isStraighten != null">
                       AND tab.isStraighten = #{isStraighten}
@@ -690,20 +683,28 @@
                   </if>
               </if>
               ) task
-              left join
-              (
-                select * from task_distribution
-              )
-              taskdis
-              on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
-                  <if test="taskStatus != 0">
-                      having
-                      case when #{maxGroupLevel}  = 3 then 1=1
-                      when receiveManId is not null then
-                      case when receiveManId = #{employeeId} then 1=1 else 1=2 end
-                      else 1=1
-                      end
-                  </if>
+            left join
+            (
+            select * from task_distribution
+            )
+            taskdis
+            on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
+            <choose>
+                <when test="pull == false">
+                    where task.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key = #{taskDefinitionKey} ) )
+                </when>
+                <otherwise>
+                    <if test="taskStatus != 0">
+                        having
+                        case when #{maxGroupLevel}  = 3 then 1=1
+                        when receiveManId is not null then
+                        case when receiveManId = #{employeeId} then 1=1 else 1=2 end
+                        else 1=1
+                        end
+                    </if>
+                </otherwise>
+            </choose>
+
             ) complex
                 where 1=1
                   and
