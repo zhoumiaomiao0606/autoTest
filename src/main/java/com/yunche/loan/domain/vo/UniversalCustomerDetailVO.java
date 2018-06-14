@@ -60,6 +60,7 @@ public class UniversalCustomerDetailVO {
     private String customer_professional;
     private String customer_family_person_num;
     private String customer_debt_ratio;
+    private String customer_guarantee_rela;
     private String bank_info;
     private String bank_result;
     private String process_bank_credit_result;
