@@ -723,6 +723,7 @@
           customer.professional                          AS customer_professional,
           customer.family_person_num                     AS customer_family_person_num,
           customer.debt_ratio                            AS customer_debt_ratio,
+          customer.guarantee_rela                        AS customer_guarantee_rela,
           bank.info			      	                     AS bank_info,
           bank.result		          			         AS bank_result,
           process_bank.credit_result         	         AS process_bank_credit_result,
