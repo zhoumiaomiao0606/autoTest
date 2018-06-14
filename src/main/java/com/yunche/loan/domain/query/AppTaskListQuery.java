@@ -21,7 +21,7 @@ public class AppTaskListQuery extends BaseQuery {
      * 5-客户查询列表【在贷客户： [提交征信申请单后  ,    未放款)              】;
      * 6-客户查询列表【已贷客户： [已放款           ,    end]                】;
      */
-    @NotNull
+//    @NotNull
     private Integer multipartType;
 
     private String customer;
