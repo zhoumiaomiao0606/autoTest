@@ -255,9 +255,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
                     AppTaskVO appTaskVO = new AppTaskVO();
                     BeanUtils.copyProperties(e, appTaskVO);
-
+                    appTaskVO.setCarPrice(e.getCar_price());
+                    appTaskVO.setCarDetailId(e.getCar_detail_id());
                     fillTaskStatus(appTaskVO);
-
                     canCreditSupplement(Long.valueOf(e.getId()), appTaskVO);
 
                     return appTaskVO;
