@@ -52,6 +52,7 @@ public class AppTaskListQuery extends BaseQuery {
 
     String bankName;
 
+    String idCard;
     Set<String> juniorIds = Sets.newHashSet();
 
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
