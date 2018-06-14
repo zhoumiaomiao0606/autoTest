@@ -153,7 +153,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         // 转发给pc端
         simpMessagingTemplate.convertAndSendToUser(wsSessionId_pc,
-                "/queue/livePhoto/path", JSON.toJSONString(webSocketParam));
+                "/queue/livePhoto/path/pc", JSON.toJSONString(ResultBean.ofSuccess(webSocketParam)));
     }
 
     @Override
@@ -171,7 +171,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         // 转发给pc端
         simpMessagingTemplate.convertAndSendToUser(wsSessionId_pc,
-                "/queue/latlon", JSON.toJSONString(webSocketParam));
+                "/queue/latlon/pc", JSON.toJSONString(ResultBean.ofSuccess(webSocketParam)));
     }
 
     /**
@@ -286,7 +286,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                         }
 
                         // carInfo
-                        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+                        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
                         if (null != loanCarInfoDO) {
                             faceVideoCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
                             String carFullName = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);

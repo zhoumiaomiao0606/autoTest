@@ -6,15 +6,15 @@ package com.yunche.loan.config.constant;
  */
 public enum LoanAmountGradeEnum {
 
-    GRADE_ONE(1, "13W以下"),
-    GRADE_TWO(2, "13至20W"),
-    GRADE_THREE(3, "20W以上");
+    GRADE_ONE((byte) 1, "13W以下"),
+    GRADE_TWO((byte) 2, "13至20W"),
+    GRADE_THREE((byte) 3, "20W以上");
 
-    private Integer level;
+    private Byte level;
 
     private String name;
 
-    LoanAmountGradeEnum(Integer level, String name) {
+    LoanAmountGradeEnum(Byte level, String name) {
         this.level = level;
         this.name = name;
     }
@@ -30,11 +30,11 @@ public enum LoanAmountGradeEnum {
         return null;
     }
 
-    public Integer getLevel() {
+    public Byte getLevel() {
         return level;
     }
 
-    public void setLevel(Integer level) {
+    public void setLevel(Byte level) {
         this.level = level;
     }
 
