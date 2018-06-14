@@ -44,7 +44,7 @@
         FROM
         ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{employeeId} ) t
     </select>
-    
+
     <select id="selectMaterialSupplementLevel" resultType="java.lang.Long" parameterType="java.lang.Long">
         SELECT
         max( t.material_supplement_level )
@@ -162,13 +162,13 @@
                             #{item}
                         </foreach>
                       else true end
-            <if test="customer != null">
+            <if test="customer != null and customer != '' ">
                 AND tab.customer = #{customer}
             </if>
-            <if test="bankName !=null">
+            <if test="bankName !=null and bankName != '' ">
                 AND tab.bank = #{bankName}
             </if>
-            <if test="idCard !=null">
+            <if test="idCard !=null and idCard != '' ">
                 AND tab.idCard = #{idCard}
             </if>
         ) complex
