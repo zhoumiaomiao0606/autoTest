@@ -89,7 +89,8 @@
              h.apply_license_plate_area         AS apply_license_plate_area,
              h.apply_license_plate_date         AS apply_license_plate_date,
              a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
-             h.registration_certificate_number  AS registration_certificate_number
+             h.registration_certificate_number  AS registration_certificate_number,
+             h.vehicle_identification_number    AS vehicle_identification_number
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
