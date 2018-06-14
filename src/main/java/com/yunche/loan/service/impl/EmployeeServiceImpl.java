@@ -47,7 +47,6 @@ import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_ZS;
-import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
 import static org.apache.shiro.web.mgt.CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME;
 import static org.springframework.web.util.WebUtils.getCookie;
@@ -180,11 +179,15 @@ public class EmployeeServiceImpl implements EmployeeService {
      * X  ->  Z的 旧上级
      * Y  ->  Z的 新上级
      * Z  ->  被更新parent者
+     * sss
      *
      * @param id_Z          Z
      * @param newParentId_Y Y
      */
     private void updateParent(Long id_Z, Long newParentId_Y) {
+        if (newParentId_Y == null) {
+            return;
+        }
 
         BaseVO employee_Z = employeeCache.getById(id_Z);
         Preconditions.checkNotNull(employee_Z, "账号不存在");

@@ -87,4 +87,9 @@ public class MaterialController {
 
         return materialService.down2tomcat(orderId, taskDefinitionKey, customerId);
     }
+    @GetMapping(value = "/zipCheck")
+    public ResultBean checkZipStatus(@RequestParam(value = "orderId") Long orderId){
+       return materialService.zipCheck(orderId);
+    }
+
 }

@@ -124,4 +124,6 @@ public class LoanCustomerDO {
     private Byte guaranteeType;
 
     private String residenceAddress;//户籍地址
+
+    private String guaranteeRela;//担保人关系
 }

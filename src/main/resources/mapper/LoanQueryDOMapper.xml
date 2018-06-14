@@ -315,6 +315,7 @@
     select
             main_order.id                                                                           AS order_id,
             DATE_FORMAT(material.complete_material_date,'%Y-%m-%d %H:%i:%S')                        AS material_complete_material_date,
+            material.remark                                                                         AS material_remark,
             DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')                                        AS loan_gmt_create,
             product.category_superior                                                               AS product_category_superior,
             department.name                                                                         AS department_name,
@@ -529,7 +530,8 @@
             remit.insurance_situation                                                               AS remit_insurance_situation,
             remit.payment_organization                                                              AS remit_payment_organization,
             DATE_FORMAT(remit.application_date,'%Y-%m-%d %H:%i:%S')                                 AS remit_application_date,
-            remit.remark                                                                            AS remark
+            remit.remark
+
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join remit_details remit on main_order.remit_details_id = remit.id
 
@@ -646,6 +648,7 @@
         c.working_years           AS working_years,
         c.duty                    AS duty,
         c.age                     AS age,
+        c.guarantee_rela          AS guarantee_rela,
         cb.result                 AS bank_result,
         cs.result                 AS society_result
 
@@ -720,6 +723,7 @@
           customer.professional                          AS customer_professional,
           customer.family_person_num                     AS customer_family_person_num,
           customer.debt_ratio                            AS customer_debt_ratio,
+          customer.guarantee_rela                        AS customer_guarantee_rela,
           bank.info			      	                     AS bank_info,
           bank.result		          			         AS bank_result,
           process_bank.credit_result         	         AS process_bank_credit_result,

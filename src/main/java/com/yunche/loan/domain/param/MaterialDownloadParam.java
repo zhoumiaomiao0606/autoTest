@@ -20,4 +20,7 @@ public class MaterialDownloadParam {
     private Byte custType;
 
     private String custTypeName;
+
+
+    private String  fileStatus;//0-打包成功 1-打包中 2-文件不存在
 }

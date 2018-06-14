@@ -1,20 +1,18 @@
 package com.yunche.loan.config.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Locale;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.Bucket;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 
 public class OSSUnit {
 
@@ -143,7 +141,7 @@ public class OSSUnit {
      * @return 文件的contentType
      */
     public static final String getContentType(String fileName){
-        String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".")+1);
         if("bmp".equalsIgnoreCase(fileExtension)) return "image/bmp";
         if("gif".equalsIgnoreCase(fileExtension)) return "image/gif";
         if("jpeg".equalsIgnoreCase(fileExtension) || "jpg".equalsIgnoreCase(fileExtension)  || "png".equalsIgnoreCase(fileExtension) ) return "image/jpeg";

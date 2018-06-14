@@ -166,7 +166,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 【资料增补单】
         if (isInfoSupplementTask(approval)) {
-            return execInfoSupplementTask(approval);
+            return execInfoSupplementTask(approval,loanProcessDO);
         }
 
         // 【金融方案修改申请】
@@ -204,7 +204,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 异步打包文件
-//        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
+        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
@@ -331,8 +331,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (null == retryNum) {
             retryNum = 0;
         }
-
-        if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(loanProcessDO.getTelephoneVerify())) {
+        //资料增补、电审、录入提车资料后，都会出发异步打包操作
+         if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)
+                || INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)
+                || LOAN_APPLY.getCode().equals(taskDefinitionKey)
+                || VISIT_VERIFY.getCode().equals(taskDefinitionKey)) {
 
             if (retryNum < 0) {
                 return;
@@ -1061,7 +1064,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @return
      */
-    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval) {
+    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanProcessDO loanProcessDO ) {
 
         // 【发起】资料增补单
         if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
@@ -1074,6 +1077,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         else if (INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
             // 提交增补单
             endInfoSupplement(approval);
+            asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
             return ResultBean.ofSuccess(null, "资料增补提交成功");
         }
 

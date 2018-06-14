@@ -136,5 +136,7 @@ public class CustomerVO {
 
     private String residenceAddress;//户籍地址
 
+    private String guaranteeRela;//担保人关系
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

@@ -2,15 +2,20 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.constant.LoanOrderProcessConst;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.LoanCreditInfoDO;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.param.CustomerParam;
+import com.yunche.loan.domain.vo.CustDetailVO;
+import com.yunche.loan.domain.vo.CustomerVO;
+import com.yunche.loan.domain.vo.FileVO;
+import com.yunche.loan.domain.vo.LoanRepeatVO;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.domain.entity.*;
-import com.yunche.loan.domain.param.AllCustDetailParam;
-import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanFileService;
@@ -21,12 +26,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.*;
+import static com.yunche.loan.config.constant.GuaranteeRelaConst.GUARANTOR_PERSONAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
 
@@ -124,6 +133,18 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         if (!CUST_TYPE_PRINCIPAL.equals(loanCustomerDO.getCustType())) {
             Preconditions.checkNotNull(loanCustomerDO.getPrincipalCustId(), "主贷人ID不能为空");
         }
+        if(CUST_TYPE_GUARANTOR.equals(loanCustomerDO.getCustType())){
+            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getPrincipalCustId(), CUST_TYPE_GUARANTOR, VALID_STATUS);
+            if(CollectionUtils.isEmpty(loanCustomerDOS)){
+                if(!String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())){
+                    Preconditions.checkArgument(false,"您选择的担保人与主担保人关系有误，请核查");
+                }
+            }else{
+                if(String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())){
+                    Preconditions.checkArgument(false,"您选择的担保人与主担保人关系有误，请核查");
+                }
+            }
+        }
 
         loanCustomerDO.setStatus(VALID_STATUS);
         loanCustomerDO.setGmtCreate(new Date());
@@ -212,7 +233,6 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
         // 根据主贷人ID获取客户详情列表
         ResultBean<CustDetailVO> resultBean = detailAll(orderId, null);
-
         return resultBean;
     }
 
@@ -277,7 +297,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         List<CustomerVO> guarantorList = Lists.newArrayList();
         List<CustomerVO> emergencyContactList = Lists.newArrayList();
 
-        loanCustomerDOList.parallelStream()
+        loanCustomerDOList.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 

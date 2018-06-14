@@ -49,9 +49,12 @@ public class TaskListQuery {
     private Integer taskStatus;
 
 
-
     //查询条件
     private boolean fuse = false;
+
+
+
+    private boolean pull = true;
 
     private String orderId;//业务编号
 

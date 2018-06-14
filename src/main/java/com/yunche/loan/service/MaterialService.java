@@ -45,4 +45,8 @@ public interface MaterialService {
     ResultBean down2tomcat(Long orderId, String taskDefinitionKey, Long customerId);
 
     void carUpdate(CarUpdateParam param);
+
+
+    ResultBean zipCheck(Long orderId);
+
 }

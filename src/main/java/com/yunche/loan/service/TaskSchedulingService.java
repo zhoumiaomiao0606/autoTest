@@ -17,5 +17,7 @@ public interface TaskSchedulingService {
 
     ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery);
 
+    ResultBean<Long> countQueryTaskList(TaskListQuery taskListQuery);
+
     ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery);
 }

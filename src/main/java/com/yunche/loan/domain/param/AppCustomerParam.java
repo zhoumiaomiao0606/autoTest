@@ -145,5 +145,7 @@ public class AppCustomerParam {
 
     private String residenceAddress;
 
+    private String  guaranteeRela;//担保关系
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 }
