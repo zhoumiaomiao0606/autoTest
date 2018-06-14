@@ -55,6 +55,8 @@ public class AppLoanCarInfoVO {
 
     private Long applyLicensePlateAreaId;
 
+    private Byte  carCategory;
+
     private List<LoanCarInfoVO.BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
 
     @Data

@@ -484,7 +484,8 @@
             vehicle.displacement                                                    AS vehicle_displacement,
             vehicle.register_date                                                   AS vehicle_register_date,
             financial.appraisal                                                     AS financial_appraisal,
-            vehicle.qualified_certificate_number                                    AS qualified_certificate_number
+            vehicle.qualified_certificate_number                                    AS qualified_certificate_number,
+            car.car_category                                                        AS car_category
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
         left join loan_car_info car on main_order.loan_car_info_id = car.id

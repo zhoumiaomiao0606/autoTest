@@ -48,4 +48,6 @@ public class LoanCarInfoDO {
     private Byte cooperationDealer;
 
     private Byte vehicleProperty;
+
+    private Byte  carCategory;
 }

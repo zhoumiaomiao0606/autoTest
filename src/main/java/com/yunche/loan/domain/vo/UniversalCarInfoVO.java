@@ -27,5 +27,6 @@ public class UniversalCarInfoVO {
     private String vehicle_invoice_car_dealer;
     private String vehicle_displacement;
     private String vehicle_register_date;
+    private String car_category;
 
 }
