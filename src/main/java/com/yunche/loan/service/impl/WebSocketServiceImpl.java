@@ -131,11 +131,11 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         // 推送Msg 给APP
         simpMessagingTemplate.convertAndSendToUser(wsSessionId_app,
-                "/queue/call/app", JSON.toJSONString(webSocketMsgVO));
+                "/queue/call/app", JSON.toJSONString(ResultBean.ofSuccess(webSocketMsgVO)));
 
         // 推送Msg 给PC
         simpMessagingTemplate.convertAndSendToUser(wsSessionId_pc,
-                "/queue/call/pc", JSON.toJSONString(webSocketMsgVO));
+                "/queue/call/pc", JSON.toJSONString(ResultBean.ofSuccess(webSocketMsgVO)));
     }
 
     @Override
@@ -231,7 +231,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                 // APP   -> 排名、总排队数          -> 点对点 推送URL：   /user/{user}/queue/team/info/app       {user} -> wkSessionId
                 simpMessagingTemplate.convertAndSendToUser(wkSessionId,
-                        "/queue/team/info/app", JSON.toJSONString(msg));
+                        "/queue/team/info/app", JSON.toJSONString(ResultBean.ofSuccess(msg)));
             });
 
         }
@@ -294,12 +294,12 @@ public class WebSocketServiceImpl implements WebSocketService {
                         }
 
                         // photo
-                        faceVideoCustomerVO.setIdCardPhotoPath("xxx");
-                        faceVideoCustomerVO.setLivePhotoPath("xxx");
+//                        faceVideoCustomerVO.setIdCardPhotoPath("xxx");
+//                        faceVideoCustomerVO.setLivePhotoPath("xxx");
 
                         // latlon
-                        faceVideoCustomerVO.setLatlon("xxx");
-                        faceVideoCustomerVO.setLocation("xxx");
+//                        faceVideoCustomerVO.setLatlon("xxx");
+//                        faceVideoCustomerVO.setLocation("xxx");
 
                         customerVOList.add(faceVideoCustomerVO);
                     });
