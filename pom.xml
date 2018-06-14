@@ -294,13 +294,6 @@
         </dependency>
         <!-- thymeleaf -->
 
-        <!-- 引入security模块 -->
-        <!--<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>-->
-        <!-- 引入security模块 -->
-
     </dependencies>
 
     <build>

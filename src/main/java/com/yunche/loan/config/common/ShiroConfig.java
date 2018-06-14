@@ -89,9 +89,6 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/loadqr/query", "anon");
             //        filterChainDefinitionMap.put("/**", "authc,perms");
             filterChainDefinitionMap.put("/**", "authc");
-
-            // TODO 删除！！！
-//            filterChainDefinitionMap.put("/**", "anon");
         }
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
