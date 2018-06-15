@@ -49,7 +49,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
          *
          *    /videoFace  ->  就是websocket的端点，客户端需要注册这个端点进行 connect
          */
-        registry.addEndpoint("/videoFace")
+        registry.addEndpoint("/api/v1/videoFace")
                 .setAllowedOrigins("*").withSockJS();
     }
 
@@ -122,7 +122,8 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
          *
          *      不设置            则：send路径为：/call
          */
-        registry.setApplicationDestinationPrefixes("/ws");
+//        registry.setApplicationDestinationPrefixes("/ws");
+        registry.setApplicationDestinationPrefixes("/api/v1/ws");
 
 
         /**

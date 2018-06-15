@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSession;
  */
 @CrossOrigin
 @Controller
+@RequestMapping("/api/v1")
 public class WebSocketController {
 
     @Autowired
@@ -208,6 +209,21 @@ public class WebSocketController {
     @GetMapping("/hello")
     public String hello() {
         return "hello";
+    }
+
+    //    @GetMapping("/sockjs.min.js")
+    public String sockjs() {
+        return "sockjs.min.js";
+    }
+
+    //    @GetMapping("/stomp.min.js")
+    public String stomp() {
+        return "sockjs.min.js";
+    }
+
+    //    @GetMapping("/jquery.js")
+    public String jquery() {
+        return "jquery.js";
     }
 
     @GetMapping("/chat_app")

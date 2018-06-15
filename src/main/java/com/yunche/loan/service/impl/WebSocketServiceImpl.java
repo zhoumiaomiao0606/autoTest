@@ -70,12 +70,12 @@ public class WebSocketServiceImpl implements WebSocketService {
     @Override
     public void waitTeam(@NonNull WebSocketParam webSocketParam) {
         Preconditions.checkNotNull(webSocketParam.getBankId(bankCache), "bank不能为空");
-        Preconditions.checkNotNull(webSocketParam.getLoanAmount(), "loanAmount不能为空");
         Preconditions.checkNotNull(webSocketParam.getUserId(), "userId不能为空");
         Preconditions.checkNotNull(webSocketParam.getType(), "type不能为空");
         Preconditions.checkNotNull(webSocketParam.getAnyChatUserId(), "anyChatUserId不能为空");
         if (TYPE_APP.equals(webSocketParam.getType())) {
             Preconditions.checkNotNull(webSocketParam.getOrderId(), "orderId不能为空");
+            Preconditions.checkNotNull(webSocketParam.getLoanAmount(), "loanAmount不能为空");
         }
 
         // webSocket 会话ID
@@ -103,6 +103,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         Preconditions.checkNotNull(webSocketParam.getAnyChatUserId(), "anyChatUserId不能为空");
         if (TYPE_APP.equals(webSocketParam.getType())) {
             Preconditions.checkNotNull(webSocketParam.getOrderId(), "orderId不能为空");
+            Preconditions.checkNotNull(webSocketParam.getLoanAmount(), "loanAmount不能为空");
         }
 
         // webSocket 会话ID

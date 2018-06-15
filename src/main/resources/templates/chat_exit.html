@@ -35,7 +35,7 @@
     //链接endpoint名称为 "/endpointChat" 的endpoint。
     //    var sock = new SockJS("/endpointChat");
     //    var sock = new SockJS("http://localhost:8001" + "/videoFace");
-    var sock = new SockJS("/videoFace");
+    var sock = new SockJS("/api/v1/videoFace");
     var stomp = Stomp.over(sock);
     stomp.connect('guest', 'guest', function (frame) {
 
@@ -52,7 +52,7 @@
     }
 
     function sendSpittle(bankId, bankName, userId, type) {
-        stomp.send("/ws/team/exit", {}, JSON.stringify({
+        stomp.send("/api/v1/ws/team/exit", {}, JSON.stringify({
             'bankId': bankId,
             'bankName': bankName,
             'userId': userId,

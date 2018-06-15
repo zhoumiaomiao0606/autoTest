@@ -21,6 +21,7 @@
     userId：<textarea rows="2" cols="15" name="userId"></textarea>
     type：<textarea rows="2" cols="15" name="type"></textarea>
     anyChatUserId：<textarea rows="2" cols="15" name="anyChatUserId"></textarea>
+    loanAmount：<textarea rows="2" cols="15" name="loanAmount"></textarea>
     orderId：<textarea rows="2" cols="15" name="orderId"></textarea>
 
     <input type="submit" value="加入排队"/>
@@ -32,6 +33,7 @@
     userId：<textarea rows="2" cols="15" name="userId"></textarea>
     type：<textarea rows="2" cols="15" name="type"></textarea>
     anyChatUserId：<textarea rows="2" cols="15" name="anyChatUserId"></textarea>
+    loanAmount：<textarea rows="2" cols="15" name="loanAmount"></textarea>
     orderId：<textarea rows="2" cols="15" name="orderId"></textarea>
 
     <input type="submit" value="退出排队"/>
@@ -46,8 +48,9 @@
         var userId = $('#wiselyForm').find('textarea[name="userId"]').val();
         var type = $('#wiselyForm').find('textarea[name="type"]').val();
         var anyChatUserId = $('#wiselyForm').find('textarea[name="anyChatUserId"]').val();
+        var loanAmount = $('#wiselyForm').find('textarea[name="loanAmount"]').val();
         var orderId = $('#wiselyForm').find('textarea[name="orderId"]').val();
-        wait(bankId, bankName, userId, type, anyChatUserId, orderId);
+        wait(bankId, bankName, userId, type, anyChatUserId, loanAmount, orderId);
     })
     ;
 
@@ -58,14 +61,15 @@
         var userId = $('#wiselyForm_').find('textarea[name="userId"]').val();
         var type = $('#wiselyForm_').find('textarea[name="type"]').val();
         var anyChatUserId = $('#wiselyForm_').find('textarea[name="anyChatUserId"]').val();
+        var loanAmount = $('#wiselyForm_').find('textarea[name="loanAmount"]').val();
         var orderId = $('#wiselyForm_').find('textarea[name="orderId"]').val();
-        exit(bankId, bankName, userId, type, anyChatUserId, orderId);
+        exit(bankId, bankName, userId, type, anyChatUserId, loanAmount, orderId);
     })
     ;
     //链接endpoint名称为 "/endpointChat" 的endpoint。
     //    var sock = new SockJS("/endpointChat");
     //    var sock = new SockJS("http://localhost:8001" + "/videoFace");
-    var sock = new SockJS("/videoFace");
+    var sock = new SockJS("/api/v1/videoFace");
     var stomp = Stomp.over(sock);
     stomp.connect('guest', 'guest', function (frame) {
 
@@ -83,7 +87,7 @@
     };
 
     function sendSpittle(bankId, bankName, userId, type, anyChatUserId) {
-        stomp.send("/ws/team/wait", {}, JSON.stringify({
+        stomp.send("/api/v1/ws/team/wait", {}, JSON.stringify({
             'bankId': bankId,
             'bankName': bankName,
             'userId': userId,
@@ -92,24 +96,26 @@
         }));//3
     };
 
-    function wait(bankId, bankName, userId, type, anyChatUserId, orderId) {
-        stomp.send("/ws/team/wait", {}, JSON.stringify({
+    function wait(bankId, bankName, userId, type, anyChatUserId, loanAmount, orderId) {
+        stomp.send("/api/v1/ws/team/wait", {}, JSON.stringify({
             'bankId': bankId,
             'bankName': bankName,
             'userId': userId,
             'type': type,
             'anyChatUserId': anyChatUserId,
+            'loanAmount': loanAmount,
             'orderId': orderId
         }));//3
     };
 
-    function exit(bankId, bankName, userId, type, anyChatUserId, orderId) {
-        stomp.send("/ws/team/exit", {}, JSON.stringify({
+    function exit(bankId, bankName, userId, type, anyChatUserId, loanAmount, orderId) {
+        stomp.send("/api/v1/ws/team/exit", {}, JSON.stringify({
             'bankId': bankId,
             'bankName': bankName,
             'userId': userId,
             'type': type,
             'anyChatUserId': anyChatUserId,
+            'loanAmount': loanAmount,
             'orderId': orderId
         }));//3
     };
