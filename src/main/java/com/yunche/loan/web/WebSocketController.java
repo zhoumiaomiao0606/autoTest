@@ -2,6 +2,7 @@ package com.yunche.loan.web;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.param.WebSocketParam;
 import com.yunche.loan.service.WebSocketService;
@@ -205,6 +206,17 @@ public class WebSocketController {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @GetMapping("/videoFace/info")
+    @ResponseBody
+    public JSONObject info() {
+        JSONObject info = new JSONObject();
+        info.put("origins", Lists.newArrayList("*"));
+        info.put("cookie_needed", true);
+        info.put("websocket", true);
+        info.put("entropy", 278083309);
+        return info;
+    }
 
     @GetMapping("/hello")
     public String hello() {
