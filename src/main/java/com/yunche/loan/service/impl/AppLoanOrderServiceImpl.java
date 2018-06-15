@@ -206,9 +206,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         if (null != loanOrderDO.getLoanCarInfoId()) {
             LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
             if (null != loanCarInfoDO && null != loanCarInfoDO.getCarDetailId()) {
-                ResultBean<String> carFullNameResultBean = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
-                Preconditions.checkArgument(carFullNameResultBean.getSuccess(), carFullNameResultBean.getMsg());
-                appInfoSupplementVO.setCarName(carFullNameResultBean.getData());
+                String carFullName = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
+                appInfoSupplementVO.setCarName(carFullName);
             }
         }
 
@@ -616,10 +615,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
             if (null != loanCarInfoDO) {
                 // 车名
-                ResultBean<String> carFullNameResultBean = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
-                Preconditions.checkArgument(carFullNameResultBean.getSuccess(), carFullNameResultBean.getMsg());
+                String carFullName = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
                 //车型名称
-                businessInfoVO.setCarName(carFullNameResultBean.getData());
+                businessInfoVO.setCarName(carFullName);
 
                 // 车辆类型
                 businessInfoVO.setCarType(loanCarInfoDO.getCarType());
@@ -989,11 +987,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
             loanCarInfoVO.setApplyLicensePlateAreaId(baseAreaDO.getAreaId());
-            String tmpApplyLicensePlateArea=null;
-            if(baseAreaDO!=null){
-                if(baseAreaDO.getParentAreaName()!=null){
-                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+baseAreaDO.getAreaName();
-                }else{
+            String tmpApplyLicensePlateArea = null;
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
                     tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
                 }
             }

@@ -205,7 +205,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public ResultBean<String> getFullName(Long carId, Byte carType) {
+    public String getFullName(Long carId, Byte carType) {
         Preconditions.checkNotNull(carId, "车辆ID不能为空");
         Preconditions.checkNotNull(carType, "车辆等级不能为空");
 
@@ -240,7 +240,7 @@ public class CarServiceImpl implements CarService {
             }
         }
 
-        return ResultBean.ofSuccess(carName.trim());
+        return carName.trim();
     }
 
     /**

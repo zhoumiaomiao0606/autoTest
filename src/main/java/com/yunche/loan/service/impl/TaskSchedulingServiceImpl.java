@@ -5,7 +5,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -22,10 +21,7 @@ import com.yunche.loan.domain.vo.ScheduleTaskVO;
 import com.yunche.loan.domain.vo.TaskListVO;
 import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.EmployeeService;
-import com.yunche.loan.service.LoanProcessService;
-import com.yunche.loan.service.PermissionService;
-import com.yunche.loan.service.TaskSchedulingService;
+import com.yunche.loan.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +34,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 
 @Service
@@ -68,7 +65,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     private EmployeeService employeeService;
 
     @Autowired
-    private AreaCache areaCache;
+    private CarService carService;
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
@@ -258,6 +255,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
                     appTaskVO.setCarPrice(e.getCar_price());
                     appTaskVO.setCarDetailId(e.getCar_detail_id());
+                    appTaskVO.setCarName(carService.getFullName(Long.valueOf(appTaskVO.getCarDetailId()), CAR_DETAIL));
                     appTaskVO.setBankName(e.getBank());
 
                     fillTaskStatus(appTaskVO);
