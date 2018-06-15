@@ -37,9 +37,10 @@ public class VideoFaceQueue {
      */
     private static final String VIDEO_FACE_ROOM_ID_KEY_PREFIX = "video:face:room:id:";
     /**
-     * 排队过期时间：3s
+     * TODO 排队过期时间：30s
      */
-    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 300000L;
+//    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 300000L;
+    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 30000000L;
 
     /**
      * 默认过期时间：30min

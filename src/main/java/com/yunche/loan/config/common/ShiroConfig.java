@@ -79,7 +79,7 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/templates/**", "anon");
 
             // websocket检查服务放行
-            filterChainDefinitionMap.put("/videoFace/info", "anon");
+            filterChainDefinitionMap.put("/api/v1/videoFace/info", "anon");
 
             filterChainDefinitionMap.put("/api/v1/employee/login_", "anon");
 

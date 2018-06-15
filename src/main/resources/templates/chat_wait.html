@@ -69,8 +69,9 @@
     //链接endpoint名称为 "/endpointChat" 的endpoint。
     //    var sock = new SockJS("/endpointChat");
     //    var sock = new SockJS("http://localhost:8001" + "/videoFace");
-//        var sock = new SockJS("http://www.yunchejinrong.com:8090" + "/api/v1/videoFace");
-    var sock = new SockJS("/api/v1/videoFace");
+    //    var sock = new SockJS("http://www.yunchejinrong.com:8090" + "/api/v1/videoFace");
+//    var sock = new SockJS("http://192.168.0.145:8001" + "/api/v1/videoFace");
+        var sock = new SockJS("/api/v1/videoFace");
     var stomp = Stomp.over(sock);
     stomp.connect('guest', 'guest', function (frame) {
 

@@ -207,7 +207,7 @@ public class WebSocketController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @GetMapping("/videoFace/info")
+//    @GetMapping("/videoFace/info")
     @ResponseBody
     public JSONObject info() {
         JSONObject info = new JSONObject();
