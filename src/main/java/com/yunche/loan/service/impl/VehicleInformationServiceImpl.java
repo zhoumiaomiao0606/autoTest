@@ -44,15 +44,6 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
     private LoanFileDOMapper loanFileDOMapper;
 
     @Autowired
-    private LoanCarInfoDOMapper loanCarInfoDOMapper;
-
-    @Autowired
-    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
-
-    @Autowired
-    private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
-
-    @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
     @Override
@@ -66,16 +57,19 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
             universalCustomerVO.setFiles(files);
         }
 
-        if(vehicleInformationVO.getApply_license_plate_area()!=null){
-            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationVO.getApply_license_plate_area()), VALID_STATUS);
-            vehicleInformationVO.setHasApplyLicensePlateArea(baseAreaDO);
-            String tmpApplyLicensePlateArea=null;
-            if(baseAreaDO.getParentAreaName()!=null){
-                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+baseAreaDO.getAreaName();
-            }else{
-                tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+        if(vehicleInformationVO!=null) {
+
+            if (vehicleInformationVO.getApply_license_plate_area() != null) {
+                BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationVO.getApply_license_plate_area()), VALID_STATUS);
+                vehicleInformationVO.setHasApplyLicensePlateArea(baseAreaDO);
+                String tmpApplyLicensePlateArea = null;
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+                vehicleInformationVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
             }
-            vehicleInformationVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
         }
         RecombinationVO<VehicleInformationVO> recombinationVO = new RecombinationVO<VehicleInformationVO>();
         recombinationVO.setInfo(vehicleInformationVO);
