@@ -173,7 +173,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     @Override
-    public ResultBean<Long>  countQueryTaskList(TaskListQuery taskListQuery) {
+    public ResultBean<Long> countQueryTaskList(TaskListQuery taskListQuery) {
 
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
@@ -208,7 +208,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                 taskSchedulingDOMapper.selectTaskList(taskListQuery);
             }
         });
-       return ResultBean.ofSuccess(count);
+        return ResultBean.ofSuccess(count);
     }
 
 
@@ -250,13 +250,16 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     private List<AppTaskVO> convert(List<TaskListVO> list) {
 
-        List<AppTaskVO> appTaskListVO = list.parallelStream()
+        List<AppTaskVO> appTaskListVO = list.stream()
                 .map(e -> {
 
                     AppTaskVO appTaskVO = new AppTaskVO();
                     BeanUtils.copyProperties(e, appTaskVO);
+
                     appTaskVO.setCarPrice(e.getCar_price());
                     appTaskVO.setCarDetailId(e.getCar_detail_id());
+                    appTaskVO.setBankName(e.getBank());
+
                     fillTaskStatus(appTaskVO);
                     canCreditSupplement(Long.valueOf(e.getId()), appTaskVO);
 
@@ -404,14 +407,16 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         return taskTypeText;
     }
+
     /**
      * 获取用户可见的银行
+     *
      * @param id
      */
     private List<String> getUserHaveBank(Long id) {
         List<Long> groupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(id);
-        List<String> userBankIdList =Lists.newArrayList();
-        groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId->{
+        List<String> userBankIdList = Lists.newArrayList();
+        groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId -> {
             List<String> tmpBankidList = userGroupRelaBankDOMapper.getBankNameListByUserGroupId(groupId);
             userBankIdList.addAll(tmpBankidList);
         });
@@ -421,19 +426,20 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     /**
      * 获取用户可见的区域
+     *
      * @param id
      */
     private List<Long> getUserHaveArea(Long id) {
         List<Long> groupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(id);
         List<Long> userAreaList = Lists.newArrayList();
-        groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId->{
+        groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId -> {
 
             List<Long> tmpUserAreaList = userGroupRelaAreaDOMapper.getAreaIdListByUserGroupId(groupId);
-            if(tmpUserAreaList.size()>0){
+            if (tmpUserAreaList.size() > 0) {
                 List<BaseAreaDO> baseAreaDOS = baseAreaDOMapper.selectByIdList(tmpUserAreaList, BaseConst.VALID_STATUS);
-                baseAreaDOS.parallelStream().filter(Objects::nonNull).forEach(e->{
+                baseAreaDOS.parallelStream().filter(Objects::nonNull).forEach(e -> {
 
-                    switch(e.getLevel()){
+                    switch (e.getLevel()) {
                         case 0:
                             break;
                         case 1:
