@@ -100,12 +100,15 @@
             join_h.license_plate_number AS licensePlateNumber,
             join_p.name AS partner,
             join_f.loan_time AS loanTime,
-            join_f.down_payment_money AS downPaymentMoney
+            join_f.down_payment_money AS downPaymentMoney,
+            join_car.car_detail_id,
+            join_f.car_price
             from loan_order main
             inner join loan_process deputy on main.id = deputy.order_id
             left join loan_customer join_c on join_c.id = main.loan_customer_id
             left join loan_base_info join_b on join_b.id = main.loan_base_info_id
             left join loan_financial_plan join_f on join_f.id = main.loan_financial_plan_id
+            left join loan_car_info  join_car on join_car.id = main.loan_car_info_id
             left join loan_car_info join_i on join_i.id = main.loan_car_info_id
             left join partner join_p on join_p.id = join_b.partner_id
             left join employee join_e on join_e.id = join_b.salesman_id

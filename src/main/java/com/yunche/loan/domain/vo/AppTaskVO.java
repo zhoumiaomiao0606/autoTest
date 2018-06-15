@@ -1,7 +1,9 @@
 package com.yunche.loan.domain.vo;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+
+import java.text.DecimalFormat;
 
 /**
  * @author liuzhe
@@ -25,7 +27,13 @@ public class AppTaskVO {
 
     private String overdueNum;
     private String taskStatus;
-    private String bank;
+    private String bankName;
+    private String carDetailId;
+    private String carPrice;
+    // 贷款金额
+    private String loanAmount;
+    // 贷款比例
+    private String loanRatio;
 
     private String currentTask;
 
@@ -42,4 +50,26 @@ public class AppTaskVO {
      * 是否可以发起【征信增补】
      */
     private Boolean canCreditSupplement;
+
+
+    /**
+     * 贷款比例计算
+     *
+     * @return
+     */
+    public String getLoanRatio() {
+
+        if (StringUtils.isNotBlank(loanAmount) && StringUtils.isNotBlank(carPrice)) {
+
+            double loanRatio = Double.valueOf(loanAmount) / Double.valueOf(carPrice);
+            DecimalFormat df = new DecimalFormat("#0.00");
+            String loanRatioStr = df.format(loanRatio);
+
+            String[] ratioArr = loanRatioStr.split("\\.");
+            return ratioArr[1];
+        }
+
+        return null;
+    }
+
 }

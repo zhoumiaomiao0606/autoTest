@@ -44,6 +44,7 @@ public class TaskListVO {
     private String supplementContent;
     private String supplementStartTime;
 
+    private String car_detail_id;
     // 已加
     private String lendDate;
     private String financial_product_name;

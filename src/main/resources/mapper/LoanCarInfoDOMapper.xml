@@ -23,11 +23,12 @@
         <result column="business_source" property="businessSource" jdbcType="TINYINT" />
         <result column="cooperation_dealer" property="cooperationDealer" jdbcType="TINYINT" />
         <result column="vehicle_property" property="vehicleProperty" jdbcType="TINYINT" />
+        <result column="car_category" property="carCategory" jdbcType="TINYINT" />
     </resultMap>
     <sql id="Base_Column_List" >
     id, car_detail_id, car_detail_name, car_type, gps_num, car_key, partner_id, partner_name,
     open_bank, account_name, bank_account, pay_month, info, status, gmt_create, gmt_modify,
-    feature, first_register_date, business_source, cooperation_dealer, vehicle_property
+    feature, first_register_date, business_source, cooperation_dealer, vehicle_property,car_category
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
@@ -123,6 +124,9 @@
             <if test="vehicleProperty != null" >
                 vehicle_property,
             </if>
+            <if test="carCategory != null" >
+                car_category,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -188,6 +192,9 @@
             <if test="vehicleProperty != null" >
                 #{vehicleProperty,jdbcType=TINYINT},
             </if>
+            <if test="carCategory != null" >
+                #{carCategory,jdbcType=TINYINT},
+            </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO" >
@@ -252,6 +259,9 @@
             </if>
             <if test="vehicleProperty != null" >
                 vehicle_property = #{vehicleProperty,jdbcType=TINYINT},
+            </if>
+            <if test="carCategory != null" >
+                car_category = #{carCategory,jdbcType=TINYINT},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
