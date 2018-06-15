@@ -5,7 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.constant.LoanAmountGradeEnum;
-import com.yunche.loan.config.queue.VideoFaceRoomQueue;
+import com.yunche.loan.config.queue.VideoFaceQueue;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MapSortUtils;
 import com.yunche.loan.config.util.SessionUtils;
@@ -28,9 +28,10 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
+import static com.yunche.loan.config.constant.FaceSignConst.FACE_SIGN_MACHINE;
 import static com.yunche.loan.config.constant.VideoFaceConst.TYPE_APP;
 import static com.yunche.loan.config.constant.VideoFaceConst.TYPE_PC;
-import static com.yunche.loan.config.queue.VideoFaceRoomQueue.SEPARATOR;
+import static com.yunche.loan.config.queue.VideoFaceQueue.SEPARATOR;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -42,7 +43,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
-    private VideoFaceRoomQueue videoFaceRoomQueue;
+    private VideoFaceQueue videoFaceQueue;
 
     @Autowired
     private LoanCustomerService loanCustomerService;
@@ -69,6 +70,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     @Override
     public void waitTeam(@NonNull WebSocketParam webSocketParam) {
         Preconditions.checkNotNull(webSocketParam.getBankId(bankCache), "bank不能为空");
+        Preconditions.checkNotNull(webSocketParam.getLoanAmount(), "loanAmount不能为空");
         Preconditions.checkNotNull(webSocketParam.getUserId(), "userId不能为空");
         Preconditions.checkNotNull(webSocketParam.getType(), "type不能为空");
         Preconditions.checkNotNull(webSocketParam.getAnyChatUserId(), "anyChatUserId不能为空");
@@ -79,8 +81,14 @@ public class WebSocketServiceImpl implements WebSocketService {
         // webSocket 会话ID
         String wsSessionId = SessionUtils.getWebSocketSessionId();
 
+        // 前置判断：是否需要排队
+        boolean needWaitTeam = needWaitTeam(webSocketParam, wsSessionId);
+        if (!needWaitTeam) {
+            return;
+        }
+
         // 加入队列排队
-        videoFaceRoomQueue.addQueue(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
+        videoFaceQueue.addQueue(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
                 webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
 
         // 推送     -> APP /  PC
@@ -101,7 +109,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         String wsSessionId = SessionUtils.getWebSocketSessionId();
 
         // 退出队列排队
-        videoFaceRoomQueue.exitQueue(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
+        videoFaceQueue.exitQueue(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
                 webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
 
         // 推送    -> APP /  PC
@@ -125,7 +133,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         webSocketMsgVO.setAppAnyChatUserId(webSocketParam.getAppAnyChatUserId());
 
         // wsSessionId
-        String wsSessionId_app = videoFaceRoomQueue.getWsSessionIdByAnyChatUserId(webSocketParam.getBankId(),
+        String wsSessionId_app = videoFaceQueue.getWsSessionIdByAnyChatUserId(webSocketParam.getBankId(),
                 webSocketParam.getAppAnyChatUserId(), TYPE_APP);
         String wsSessionId_pc = SessionUtils.getWebSocketSessionId();
 
@@ -148,7 +156,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 
         // PC端 wsSessionId
-        String wsSessionId_pc = videoFaceRoomQueue.getWsSessionIdByAnyChatUserId(webSocketParam.getBankId(),
+        String wsSessionId_pc = videoFaceQueue.getWsSessionIdByAnyChatUserId(webSocketParam.getBankId(),
                 webSocketParam.getPcAnyChatUserId(), TYPE_PC);
 
         // 转发给pc端
@@ -166,12 +174,76 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 
         // PC端 wsSessionId
-        String wsSessionId_pc = videoFaceRoomQueue.getWsSessionIdByAnyChatUserId(webSocketParam.getBankId(),
+        String wsSessionId_pc = videoFaceQueue.getWsSessionIdByAnyChatUserId(webSocketParam.getBankId(),
                 webSocketParam.getPcAnyChatUserId(), TYPE_PC);
 
         // 转发给pc端
         simpMessagingTemplate.convertAndSendToUser(wsSessionId_pc,
                 "/queue/latlon/pc", JSON.toJSONString(ResultBean.ofSuccess(webSocketParam)));
+    }
+
+    /**
+     * 是否需要排队
+     *
+     * @param webSocketParam
+     * @param wsSessionId
+     * @return
+     */
+    private boolean needWaitTeam(WebSocketParam webSocketParam, String wsSessionId) {
+
+        // 若贷款银行为杭州城站支行，则进入人工面签
+        if ("杭州城站支行".equals(webSocketParam.getBankName())) {
+
+            // nothing  -> 正常排队
+        }
+
+        // 若贷款银行为台州路桥支行，则判断：
+        else if ("台州路桥支行".equals(webSocketParam.getBankName())) {
+
+            double loanAmount = webSocketParam.getLoanAmount().doubleValue();
+
+            // a、若银行分期本金小于10万，进入机器面签
+            if (loanAmount < 100000) {
+
+                // 机器面签
+                machineFace(wsSessionId);
+
+                // 退出排队
+                exitTeam(webSocketParam);
+
+                return false;
+            }
+
+            // b、若银行分期本金大于等于10万且小于30万，进入人工面签，人工面签等待1min后，若无应答，自动转入机器面签
+            else if (loanAmount >= 100000 && loanAmount < 300000) {
+
+                // 排队时间
+                long waitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
+                        webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
+
+                // 60s
+                if (waitTime >= 60000) {
+
+                    // 机器面签
+                    machineFace(wsSessionId);
+
+                    // 退出排队
+                    exitTeam(webSocketParam);
+
+                    return false;
+                }
+
+                // nothing  -> 正常排队
+            }
+
+            // c、若银行分期本金大于30万，进入人工面签，若无人应答，一直处于排队中
+            if (loanAmount >= 300000) {
+
+                // nothing  -> 正常排队
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -202,7 +274,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 获取所有app端 排队用户列表        循环发送消息
 
         // anyChatUserId:wsSessionId:userId:order_id - startTime
-        Map<String, Long> sessionIdStartTimeMap_APP = videoFaceRoomQueue.listSessionInQueue(bankId, TYPE_APP);
+        Map<String, Long> sessionIdStartTimeMap_APP = videoFaceQueue.listSessionInQueue(bankId, TYPE_APP);
 
         if (!CollectionUtils.isEmpty(sessionIdStartTimeMap_APP)) {
 
@@ -246,7 +318,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     private void sendMsgToPC(Long bankId, List<String> anyChatUserId_wsSessionId_userId_orderId_List) {
 
         // 排队客户列表
-        List<FaceVideoCustomerVO> customerVOList = Lists.newArrayList();
+        List<VideoFaceCustomerVO> customerVOList = Lists.newArrayList();
 
         if (!CollectionUtils.isEmpty(anyChatUserId_wsSessionId_userId_orderId_List)) {
 
@@ -260,15 +332,15 @@ public class WebSocketServiceImpl implements WebSocketService {
                         Long customerId = Long.valueOf(userMsgArr[2]);
                         Long orderId = Long.valueOf(userMsgArr[3]);
 
-                        FaceVideoCustomerVO faceVideoCustomerVO = new FaceVideoCustomerVO();
+                        VideoFaceCustomerVO videoFaceCustomerVO = new VideoFaceCustomerVO();
 
                         // anyChatUserId
-                        faceVideoCustomerVO.setAnyChatUserId(anyChatUserId);
+                        videoFaceCustomerVO.setAnyChatUserId(anyChatUserId);
 
                         // customer info
                         CustomerVO customerVO = loanCustomerService.getById(customerId);
                         if (null != customerVO) {
-                            BeanUtils.copyProperties(customerVO, faceVideoCustomerVO);
+                            BeanUtils.copyProperties(customerVO, videoFaceCustomerVO);
                         }
 
                         // order
@@ -277,36 +349,36 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                         // loanAmount
                         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-                        faceVideoCustomerVO.setExpectLoanAmount(LoanAmountGradeEnum.getNameByLevel(loanBaseInfoDO.getLoanAmount()));
+                        videoFaceCustomerVO.setExpectLoanAmount(LoanAmountGradeEnum.getNameByLevel(loanBaseInfoDO.getLoanAmount()));
 
                         // carPrice
                         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
                         if (null != loanFinancialPlanDO) {
-                            faceVideoCustomerVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
+                            videoFaceCustomerVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
                         }
 
                         // carInfo
                         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
                         if (null != loanCarInfoDO) {
-                            faceVideoCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
+                            videoFaceCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
                             String carFullName = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
-                            faceVideoCustomerVO.setCarName(carFullName);
+                            videoFaceCustomerVO.setCarName(carFullName);
                         }
 
                         // photo
-//                        faceVideoCustomerVO.setIdCardPhotoPath("xxx");
-//                        faceVideoCustomerVO.setLivePhotoPath("xxx");
+//                        videoFaceCustomerVO.setIdCardPhotoPath("xxx");
+//                        videoFaceCustomerVO.setLivePhotoPath("xxx");
 
                         // latlon
-//                        faceVideoCustomerVO.setLatlon("xxx");
-//                        faceVideoCustomerVO.setLocation("xxx");
+//                        videoFaceCustomerVO.setLatlon("xxx");
+//                        videoFaceCustomerVO.setLocation("xxx");
 
-                        customerVOList.add(faceVideoCustomerVO);
+                        customerVOList.add(videoFaceCustomerVO);
                     });
         }
 
         // 获取所有pc端  列表               循环发送消息
-        Map<String, Long> sessionIdStartTimeMap_PC = videoFaceRoomQueue.listSessionInQueue(bankId, TYPE_PC);
+        Map<String, Long> sessionIdStartTimeMap_PC = videoFaceQueue.listSessionInQueue(bankId, TYPE_PC);
 
         if (!CollectionUtils.isEmpty(sessionIdStartTimeMap_PC)) {
 
@@ -323,6 +395,20 @@ public class WebSocketServiceImpl implements WebSocketService {
                         "/queue/team/info/pc", JSON.toJSONString(ResultBean.ofSuccess(customerVOList)));
             });
         }
+    }
+
+    /**
+     * 机器面签
+     *
+     * @param wsSessionId
+     */
+    private void machineFace(String wsSessionId) {
+
+        WebSocketMsgVO webSocketMsgVO = new WebSocketMsgVO();
+        webSocketMsgVO.setFaceSign(FACE_SIGN_MACHINE);
+
+        simpMessagingTemplate.convertAndSendToUser(wsSessionId, "/queue/faceSign/machine",
+                JSON.toJSONString(ResultBean.ofSuccess(webSocketMsgVO)));
     }
 
 }

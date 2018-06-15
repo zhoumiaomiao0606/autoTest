@@ -6,6 +6,8 @@ import com.yunche.loan.config.constant.VideoFaceConst;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
+
 /**
  * @author liuzhe
  * @date 2018/6/10
@@ -22,6 +24,10 @@ public class WebSocketParam {
     private Long bankId;
 
     private String bankName;
+    /**
+     * 贷款金额
+     */
+    private BigDecimal loanAmount;
     /**
      * anyChat生成的UserId
      */

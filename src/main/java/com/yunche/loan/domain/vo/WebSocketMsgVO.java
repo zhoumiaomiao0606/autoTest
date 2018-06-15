@@ -24,7 +24,7 @@ public class WebSocketMsgVO {
     private Integer totalNum;
 
     /**
-     * 排队客户
+     * 面签方式：1-人工面签;2-机器面签;
      */
-    private CustomerVO customerVO;
+    private Integer faceSign;
 }

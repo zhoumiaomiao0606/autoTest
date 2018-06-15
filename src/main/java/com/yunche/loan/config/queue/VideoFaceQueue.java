@@ -20,9 +20,9 @@ import java.util.concurrent.TimeUnit;
  * @date 2018/6/4
  */
 @Component
-public class VideoFaceRoomQueue {
+public class VideoFaceQueue {
 
-    private static final Logger logger = LoggerFactory.getLogger(VideoFaceRoomQueue.class);
+    private static final Logger logger = LoggerFactory.getLogger(VideoFaceQueue.class);
 
     /**
      * 视频面签 -队列排队列表 前缀
@@ -224,6 +224,35 @@ public class VideoFaceRoomQueue {
         }
 
         return null;
+    }
+
+    /**
+     * 排队时间     单位：毫秒
+     *
+     * @param queueId
+     * @param userId
+     * @param clientType
+     * @param anyChatUserId
+     * @param orderId
+     * @param wsSessionId
+     * @return
+     */
+    public long getWaitTime(Long queueId, Long userId, Integer clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
+
+        // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
+        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
+                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
+
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
+
+        String waitTime = boundValueOps.get();
+
+        if (StringUtils.isNotBlank(waitTime)) {
+
+            return Long.valueOf(waitTime);
+        }
+
+        return 0;
     }
 
 }
