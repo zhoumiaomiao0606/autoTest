@@ -120,7 +120,9 @@
     <select id="stagingRatio_5" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select stagingRatio_5(#{loanAmt},#{exeRate},#{bankBaseRate},#{carPrice})
     </select>
-
+    <select id="totalRepayment_5" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select totalRepayment_5(#{loanAmt},#{bankBaseRate})
+    </select>
     <!--公式六-->
      <select id="periodPrincipal_6" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select periodPrincipal_6(#{loanAmt},#{exeRate},#{bankBaseRate})
