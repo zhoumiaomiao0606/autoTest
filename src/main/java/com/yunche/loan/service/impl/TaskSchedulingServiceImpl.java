@@ -237,7 +237,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         PageHelper.startPage(appTaskListQuery.getPageIndex(), appTaskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectAppTaskList(appTaskListQuery);
-        List<AppTaskVO> appTaskVOList = convert(list);
+        List<AppTaskVO> appTaskVOList = convert(list, appTaskListQuery.getMultipartType());
         // 取分页信息
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
@@ -245,18 +245,24 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
 
-    private List<AppTaskVO> convert(List<TaskListVO> list) {
+    private List<AppTaskVO> convert(List<TaskListVO> list, Integer multipartType) {
 
-        List<AppTaskVO> appTaskListVO = list.stream()
+        List<AppTaskVO> appTaskListVO = list.parallelStream()
                 .map(e -> {
 
                     AppTaskVO appTaskVO = new AppTaskVO();
                     BeanUtils.copyProperties(e, appTaskVO);
 
+                    appTaskVO.setBankName(e.getBank());
                     appTaskVO.setCarPrice(e.getCar_price());
                     appTaskVO.setCarDetailId(e.getCar_detail_id());
-                    appTaskVO.setCarName(carService.getFullName(Long.valueOf(appTaskVO.getCarDetailId()), CAR_DETAIL));
-                    appTaskVO.setBankName(e.getBank());
+
+                    // 面签客户查询时，才需要车型
+                    if (null == multipartType) {
+                        if (StringUtils.isNotBlank(appTaskVO.getCarDetailId())) {
+                            appTaskVO.setCarName(carService.getFullName(Long.valueOf(appTaskVO.getCarDetailId()), CAR_DETAIL));
+                        }
+                    }
 
                     fillTaskStatus(appTaskVO);
                     canCreditSupplement(Long.valueOf(e.getId()), appTaskVO);
