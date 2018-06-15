@@ -44,4 +44,5 @@ public class VehicleInformationVO {
     private String first_register_date;
     private String customize_brand;
     private BaseAreaDO hasApplyLicensePlateArea;
+    private String car_category;
 }
