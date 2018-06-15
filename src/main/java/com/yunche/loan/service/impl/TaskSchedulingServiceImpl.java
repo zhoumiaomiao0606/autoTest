@@ -70,6 +70,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+
     @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
@@ -265,7 +266,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     }
 
                     fillTaskStatus(appTaskVO);
-                    canCreditSupplement(Long.valueOf(e.getId()), appTaskVO);
+                    canCreditSupplementAndCanVideoFace(Long.valueOf(e.getId()), appTaskVO);
 
                     return appTaskVO;
                 })
@@ -275,19 +276,27 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     /**
-     * 是否可以发起【征信增补】
+     * 发起【征信增补】&【贷款申请】前置条件校验
      *
      * @param orderId
      * @param appTaskVO
      */
-    private void canCreditSupplement(Long orderId, AppTaskVO appTaskVO) {
+    private void canCreditSupplementAndCanVideoFace(Long orderId, AppTaskVO appTaskVO) {
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
+        // 发起【征信增补】前置条件校验： ->  未过【电审】
         if (TASK_PROCESS_INIT.equals(loanProcessDO.getTelephoneVerify()) && ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
             appTaskVO.setCanCreditSupplement(true);
         } else {
             appTaskVO.setCanCreditSupplement(false);
+        }
+
+        // 发起【视频面签】前置条件校验： ->  已过【贷款申请】
+        if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply()) && ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
+            appTaskVO.setCanVideoFace(true);
+        } else {
+            appTaskVO.setCanVideoFace(false);
         }
     }
 
