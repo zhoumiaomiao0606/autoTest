@@ -29,6 +29,7 @@ public class AppTaskVO {
     private String taskStatus;
     private String bankName;
     private String carDetailId;
+    private String carName;
     private String carPrice;
     // 贷款金额
     private String loanAmount;
