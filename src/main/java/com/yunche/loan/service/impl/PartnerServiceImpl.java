@@ -260,14 +260,18 @@ public class PartnerServiceImpl implements PartnerService {
     /**
      * 更新Z的Parent
      * <p>
-     * X  ->  Z的 旧上级          -
-     * Y  ->  Z的 新上级          - newLeaderId
-     * Z  ->  被更新parent者      - oldLeader
+     * X  ->  Z的 旧上级          - oldLeader_Z_parentId_X
+     * Y  ->  Z的 新上级          - newLeaderId_Y
+     * Z  ->  被更新parent者      - oldLeaderId_Z
      *
      * @param partnerId
      * @param newLeaderId_Y
      */
     private void updateLeader(Long partnerId, Long newLeaderId_Y) {
+
+        if (null == newLeaderId_Y) {
+            return;
+        }
 
         // 根据合伙人ID  拿到Z
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(partnerId, null);
@@ -275,8 +279,17 @@ public class PartnerServiceImpl implements PartnerService {
 
         // Z
         Long oldLeaderId_Z = partnerDO.getLeaderId();
+        if (null == oldLeaderId_Z) {
+            return;
+        }
+
+        // X
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(oldLeaderId_Z, null);
+        Preconditions.checkNotNull(employeeDO, "Z不存在");
+        Long oldLeader_Z_parentId_X = employeeDO.getParentId();
+
         // leaderID无变化，则不编辑
-        if (newLeaderId_Y.equals(oldLeaderId_Z)) {
+        if (newLeaderId_Y.equals(oldLeader_Z_parentId_X)) {
             return;
         }
 
@@ -314,7 +327,7 @@ public class PartnerServiceImpl implements PartnerService {
         // fillMsg
         fillMsg(partnerDO, partnerVO);
         List<Long> areaIdList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(id);
-        if(!CollectionUtils.isEmpty(areaIdList)){
+        if (!CollectionUtils.isEmpty(areaIdList)) {
             List<BaseAreaDO> hasApplyLicensePlateArea = baseAreaDOMapper.selectByIdList(areaIdList, VALID_STATUS);
             partnerVO.setHasApplyLicensePlateArea(hasApplyLicensePlateArea);
         }
