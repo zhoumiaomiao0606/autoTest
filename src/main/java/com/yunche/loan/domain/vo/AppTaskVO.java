@@ -15,6 +15,7 @@ public class AppTaskVO {
     private String id;
 
     private String salesmanId;
+    private String customerId;
     private String customer;
     private String partnerId;
     private String partner;
