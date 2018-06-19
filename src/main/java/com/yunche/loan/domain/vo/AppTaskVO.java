@@ -28,6 +28,7 @@ public class AppTaskVO {
 
     private String overdueNum;
     private String taskStatus;
+    private String bankId;
     private String bankName;
     private String carDetailId;
     private String carName;

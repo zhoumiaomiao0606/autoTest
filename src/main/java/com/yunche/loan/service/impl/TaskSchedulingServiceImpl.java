@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -69,6 +70,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+
+    @Autowired
+    private BankCache bankCache;
 
 
     @Override
@@ -254,6 +258,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     AppTaskVO appTaskVO = new AppTaskVO();
                     BeanUtils.copyProperties(e, appTaskVO);
 
+                    appTaskVO.setBankId(String.valueOf(bankCache.getBankIdByName(e.getBank())));
                     appTaskVO.setBankName(e.getBank());
                     appTaskVO.setCarPrice(e.getCar_price());
                     appTaskVO.setCarDetailId(e.getCar_detail_id());
@@ -267,8 +272,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
                     fillTaskStatus(appTaskVO);
                     canCreditSupplementAndCanVideoFace(Long.valueOf(e.getId()), appTaskVO);
-
-
 
                     return appTaskVO;
                 })
