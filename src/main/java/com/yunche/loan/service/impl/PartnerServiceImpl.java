@@ -260,7 +260,7 @@ public class PartnerServiceImpl implements PartnerService {
     /**
      * 更新Z的Parent
      * <p>
-     * X  ->  Z的 旧上级          - oldLeader_Z_parentId_X
+     * X  ->  Z的 旧上级          - oldLeader_Z_parentId_X  这里其实是和X没任何关系了  直接断开联系了
      * Y  ->  Z的 新上级          - newLeaderId_Y
      * Z  ->  被更新parent者      - oldLeaderId_Z
      *
@@ -273,6 +273,17 @@ public class PartnerServiceImpl implements PartnerService {
             return;
         }
 
+        // 根据Y 拿到其parentId -> X
+        EmployeeDO employeeDO_Y = employeeDOMapper.selectByPrimaryKey(newLeaderId_Y, null);
+        Preconditions.checkNotNull(employeeDO_Y, "leaderId不存在");
+        Long Y_parentId_X = employeeDO_Y.getParentId();
+
+        // 属于同一个合伙人团队下，则需将Y的parentId置为空     --> 即：Y的原上级X   和Z同属于一个团队
+        Long X_belong_partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(Y_parentId_X);
+        if (partnerId.equals(X_belong_partnerId)) {
+            employeeDOMapper.setParentIdIsNull(newLeaderId_Y);
+        }
+
         // 根据合伙人ID  拿到Z
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(partnerId, null);
         Preconditions.checkNotNull(partnerDO, "合伙人不存在");
@@ -283,13 +294,8 @@ public class PartnerServiceImpl implements PartnerService {
             return;
         }
 
-        // X
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(oldLeaderId_Z, null);
-        Preconditions.checkNotNull(employeeDO, "Z不存在");
-        Long oldLeader_Z_parentId_X = employeeDO.getParentId();
-
         // leaderID无变化，则不编辑
-        if (newLeaderId_Y.equals(oldLeader_Z_parentId_X)) {
+        if (newLeaderId_Y.equals(oldLeaderId_Z)) {
             return;
         }
 
