@@ -29,8 +29,7 @@ import java.util.*;
 
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.FaceSignConst.FACE_SIGN_MACHINE;
-import static com.yunche.loan.config.constant.VideoFaceConst.TYPE_APP;
-import static com.yunche.loan.config.constant.VideoFaceConst.TYPE_PC;
+import static com.yunche.loan.config.constant.VideoFaceConst.*;
 import static com.yunche.loan.config.queue.VideoFaceQueue.SEPARATOR;
 
 @Service
@@ -183,6 +182,11 @@ public class WebSocketServiceImpl implements WebSocketService {
                 "/queue/latlon/pc", JSON.toJSONString(ResultBean.ofSuccess(webSocketParam)));
     }
 
+    @Override
+    public ResultBean<Object> listLog() {
+        return null;
+    }
+
     /**
      * 是否需要排队
      *
@@ -193,13 +197,13 @@ public class WebSocketServiceImpl implements WebSocketService {
     private boolean needWaitTeam(WebSocketParam webSocketParam, String wsSessionId) {
 
         // 若贷款银行为杭州城站支行，则进入人工面签
-        if ("杭州城站支行".equals(webSocketParam.getBankName())) {
+        if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
 
             // nothing  -> 正常排队
         }
 
         // 若贷款银行为台州路桥支行，则判断：
-        else if ("台州路桥支行".equals(webSocketParam.getBankName())) {
+        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())) {
 
             double loanAmount = webSocketParam.getLoanAmount().doubleValue();
 

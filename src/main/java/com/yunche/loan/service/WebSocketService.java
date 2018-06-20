@@ -1,5 +1,6 @@
 package com.yunche.loan.service;
 
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.WebSocketParam;
 
 /**
@@ -17,4 +18,6 @@ public interface WebSocketService {
     void livePhotoPath(WebSocketParam webSocketParam);
 
     void latlon(WebSocketParam webSocketParam);
+
+    ResultBean<Object> listLog();
 }
