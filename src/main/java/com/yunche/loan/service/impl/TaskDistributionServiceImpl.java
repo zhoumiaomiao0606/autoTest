@@ -37,6 +37,9 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
     @Resource
     private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
 
+    @Resource
+    private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
+
 
     //领取
     @Override
@@ -172,11 +175,22 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                 if(loanFinancialPlanDO == null){
                     throw new BizException("金融方案不存在");
                 }
-                if(loanFinancialPlanDO.getLoanAmount() == null){
+
+                double loanAmount = 0;
+
+                if(taskKey.equals(TELEPHONE_VERIFY.getCode())){
+                    loanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
+                }else{
+                    LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.selectByPrimaryKey(taskId);
+
+                    if(loanFinancialPlanTempHisDO!=null){
+                        loanAmount = loanFinancialPlanTempHisDO.getFinancial_loan_amount().doubleValue();
+                    }
+                }
+
+                if(loanAmount == 0){
                     throw new BizException("金额不能为0");
                 }
-                double loanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
-
 
                 Long telLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(SessionUtils.getLoginUser().getId());
                 TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
