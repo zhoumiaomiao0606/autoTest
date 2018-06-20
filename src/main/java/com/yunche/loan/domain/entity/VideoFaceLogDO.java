@@ -37,11 +37,13 @@ public class VideoFaceLogDO {
 
     private Long carDetailId;
 
-    private String carDetailName;
+    private String carName;
 
     private BigDecimal carPrice;
 
     private BigDecimal expectLoanAmount;
+
+    private BigDecimal photoSimilarityDegree;
 
     private Date gmtCreate;
 

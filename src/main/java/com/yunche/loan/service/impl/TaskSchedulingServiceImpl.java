@@ -258,7 +258,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     AppTaskVO appTaskVO = new AppTaskVO();
                     BeanUtils.copyProperties(e, appTaskVO);
 
-                    appTaskVO.setBankId(String.valueOf(bankCache.getBankIdByName(e.getBank())));
                     appTaskVO.setBankName(e.getBank());
                     appTaskVO.setCarPrice(e.getCar_price());
                     appTaskVO.setCarDetailId(e.getCar_detail_id());
@@ -267,6 +266,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     if (null == multipartType) {
                         if (StringUtils.isNotBlank(appTaskVO.getCarDetailId())) {
                             appTaskVO.setCarName(carService.getFullName(Long.valueOf(appTaskVO.getCarDetailId()), CAR_DETAIL));
+                        }
+                        if (StringUtils.isNotBlank(appTaskVO.getBankName())) {
+                            appTaskVO.setBankId(String.valueOf(bankCache.getBankIdByName(e.getBank())));
                         }
                     }
 
