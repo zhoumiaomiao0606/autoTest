@@ -711,8 +711,10 @@
                             when receiveManId is not null then
                               case when receiveManId = #{employeeId} then 1=1 else 1=2 end
                             else 1=1 end
-                            and
-                            task.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key = #{taskDefinitionKey} ) )
+                            <if test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review' or taskDefinitionKey == 'usertask_telephone_verify'">
+                                and
+                                task.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key = #{taskDefinitionKey} ) )
+                            </if>
                     </otherwise>
                 </choose>
             </if>
