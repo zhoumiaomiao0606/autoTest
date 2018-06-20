@@ -316,10 +316,15 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
+
+        <table tableName="video_face_log" domainObjectName="VideoFaceLogDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
 -->
 
 
-        <table tableName="video_face_log" domainObjectName="VideoFaceLogDO"
+        <table tableName="employee" domainObjectName="EmployeeDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

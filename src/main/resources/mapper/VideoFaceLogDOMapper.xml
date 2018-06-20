@@ -15,7 +15,7 @@
         <result column="auditor_name" jdbcType="VARCHAR" property="auditorName"/>
         <result column="action" jdbcType="BIT" property="action"/>
         <result column="latlon" jdbcType="VARCHAR" property="latlon"/>
-        <result column="location" jdbcType="VARCHAR" property="location"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="car_detail_id" jdbcType="BIGINT" property="carDetailId"/>
         <result column="car_name" jdbcType="VARCHAR" property="carName"/>
         <result column="car_price" jdbcType="DECIMAL" property="carPrice"/>
@@ -24,41 +24,140 @@
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
     </resultMap>
+
     <sql id="Base_Column_List">
     id, order_id, guarantee_company_id, guarantee_company_name, customer_id, customer_name,
-    customer_id_card, path, type, auditor_id, auditor_name, action, latlon, location,
+    customer_id_card, path, type, auditor_id, auditor_name, action, latlon, address,
     car_detail_id, car_name, car_price, expect_loan_amount, photo_similarity_degree,
     gmt_create, gmt_modify
   </sql>
+
+    <sql id="Base_Query_List">
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="guaranteeCompanyId != null">
+            AND guarantee_company_id = #{guaranteeCompanyId}
+        </if>
+        <if test="guaranteeCompanyName != null and guaranteeCompanyName != '' ">
+            AND guarantee_company_name LIKE CONCAT('%',#{guaranteeCompanyName},'%')
+        </if>
+        <if test="customerId != null">
+            AND customer_id = #{customerId}
+        </if>
+        <if test="customerName != null and customerName != '' ">
+            AND customer_name = #{customerName}
+        </if>
+        <if test="customerIdCard != null and customerIdCard != '' ">
+            AND customer_id_card = #{customerIdCard}
+        </if>
+        <if test="path != null">
+            AND path = #{path}
+        </if>
+        <if test="type != null">
+            AND type = #{type}
+        </if>
+        <if test="auditorId != null">
+            AND auditor_id = #{auditorId}
+        </if>
+        <if test="auditorName != null and auditorName != '' ">
+            AND auditor_name = #{auditorName}
+        </if>
+        <if test="action != null">
+            AND action = #{action}
+        </if>
+        <if test="latlon != null and latlon != '' ">
+            AND latlon = #{latlon}
+        </if>
+        <if test="latlon != null and latlon != '' ">
+            AND latlon = #{latlon}
+        </if>
+        <if test="address != null and address != '' ">
+            AND address = #{address}
+        </if>
+        <if test="carDetailId != null and carDetailId != '' ">
+            AND car_detail_id = #{carDetailId}
+        </if>
+        <if test="carName != null and carName != '' ">
+            AND car_name = #{carName}
+        </if>
+        <if test="carPrice != null and carPrice != '' ">
+            AND car_price = #{carPrice}
+        </if>
+        <if test="expectLoanAmount != null and expectLoanAmount != '' ">
+            AND expect_loan_amount = #{expectLoanAmount}
+        </if>
+        <if test="photoSimilarityDegree != null">
+            AND photo_similarity_degree = #{photoSimilarityDegree}
+        </if>
+        <if test="gmtCreateStart != null">
+            <![CDATA[ AND gmt_create >= #{gmtCreateStart} ]]>
+        </if>
+        <if test="gmtCreateEnd != null">
+            <![CDATA[ AND gmt_create <= #{gmtCreateEnd} ]]>
+        </if>
+        <if test="gmtModifyStart != null">
+            <![CDATA[ AND gmt_modify >= #{gmtModifyStart} ]]>
+        </if>
+        <if test="gmtModifyEnd != null">
+            <![CDATA[ AND gmt_modify <= #{gmtModifyEnd} ]]>
+        </if>
+    </sql>
+
+    <!--query-->
+    <select id="query" parameterType="com.yunche.loan.domain.query.VideoFaceQuery" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from video_face_log
+        <where>
+            <include refid="Base_Query_List"/>
+        </where>
+        ORDER BY gmt_create DESC
+    </select>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from video_face_log
         where id = #{id,jdbcType=BIGINT}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from video_face_log
     where id = #{id,jdbcType=BIGINT}
   </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
-    insert into video_face_log (id, order_id, guarantee_company_id,
-    guarantee_company_name, customer_id, customer_name,
-    customer_id_card, path, type,
-    auditor_id, auditor_name, action,
-    latlon, location, car_detail_id,
-    car_name, car_price, expect_loan_amount,
-    photo_similarity_degree, gmt_create, gmt_modify
-    )
-    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{guaranteeCompanyId,jdbcType=BIGINT},
-    #{guaranteeCompanyName,jdbcType=VARCHAR}, #{customerId,jdbcType=BIGINT}, #{customerName,jdbcType=VARCHAR},
-    #{customerIdCard,jdbcType=CHAR}, #{path,jdbcType=VARCHAR}, #{type,jdbcType=BIT},
-    #{auditorId,jdbcType=BIGINT}, #{auditorName,jdbcType=VARCHAR}, #{action,jdbcType=BIT},
-    #{latlon,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR}, #{carDetailId,jdbcType=BIGINT},
-    #{carName,jdbcType=VARCHAR}, #{carPrice,jdbcType=DECIMAL}, #{expectLoanAmount,jdbcType=DECIMAL},
-    #{photoSimilarityDegree,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
-    )
-  </insert>
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into video_face_log (id, order_id, guarantee_company_id,
+        guarantee_company_name, customer_id, customer_name,
+        customer_id_card, path, type,
+        auditor_id, auditor_name, action,
+        latlon, address, car_detail_id,
+        car_name, car_price, expect_loan_amount,
+        photo_similarity_degree, gmt_create, gmt_modify
+        )
+        values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{guaranteeCompanyId,jdbcType=BIGINT},
+        #{guaranteeCompanyName,jdbcType=VARCHAR}, #{customerId,jdbcType=BIGINT}, #{customerName,jdbcType=VARCHAR},
+        #{customerIdCard,jdbcType=CHAR}, #{path,jdbcType=VARCHAR}, #{type,jdbcType=BIT},
+        #{auditorId,jdbcType=BIGINT}, #{auditorName,jdbcType=VARCHAR}, #{action,jdbcType=BIT},
+        #{latlon,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{carDetailId,jdbcType=BIGINT},
+        #{carName,jdbcType=VARCHAR}, #{carPrice,jdbcType=DECIMAL}, #{expectLoanAmount,jdbcType=DECIMAL},
+        #{photoSimilarityDegree,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into video_face_log
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -100,8 +199,8 @@
             <if test="latlon != null">
                 latlon,
             </if>
-            <if test="location != null">
-                location,
+            <if test="address != null">
+                address,
             </if>
             <if test="carDetailId != null">
                 car_detail_id,
@@ -165,8 +264,8 @@
             <if test="latlon != null">
                 #{latlon,jdbcType=VARCHAR},
             </if>
-            <if test="location != null">
-                #{location,jdbcType=VARCHAR},
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
             </if>
             <if test="carDetailId != null">
                 #{carDetailId,jdbcType=BIGINT},
@@ -191,6 +290,7 @@
             </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
         update video_face_log
         <set>
@@ -230,8 +330,8 @@
             <if test="latlon != null">
                 latlon = #{latlon,jdbcType=VARCHAR},
             </if>
-            <if test="location != null">
-                location = #{location,jdbcType=VARCHAR},
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
             </if>
             <if test="carDetailId != null">
                 car_detail_id = #{carDetailId,jdbcType=BIGINT},
@@ -257,6 +357,7 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
     update video_face_log
     set order_id = #{orderId,jdbcType=BIGINT},
@@ -271,7 +372,7 @@
     auditor_name = #{auditorName,jdbcType=VARCHAR},
     action = #{action,jdbcType=BIT},
     latlon = #{latlon,jdbcType=VARCHAR},
-    location = #{location,jdbcType=VARCHAR},
+    address = #{address,jdbcType=VARCHAR},
     car_detail_id = #{carDetailId,jdbcType=BIGINT},
     car_name = #{carName,jdbcType=VARCHAR},
     car_price = #{carPrice,jdbcType=DECIMAL},
@@ -281,4 +382,5 @@
     gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
 </mapper>

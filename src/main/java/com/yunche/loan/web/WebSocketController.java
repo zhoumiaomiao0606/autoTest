@@ -3,13 +3,11 @@ package com.yunche.loan.web;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.param.WebSocketParam;
 import com.yunche.loan.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.MediaType;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -99,13 +97,6 @@ public class WebSocketController {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @PostMapping(value = "/videoFace/log/list", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Object> listLog() {
-
-        return webSocketService.listLog();
-    }
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

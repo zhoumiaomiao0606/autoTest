@@ -1,6 +1,8 @@
 package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.BankCache;
@@ -9,11 +11,9 @@ import com.yunche.loan.config.queue.VideoFaceQueue;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MapSortUtils;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.LoanBaseInfoDO;
-import com.yunche.loan.domain.entity.LoanCarInfoDO;
-import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.WebSocketParam;
+import com.yunche.loan.domain.query.VideoFaceQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
@@ -23,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -61,6 +62,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
     private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Autowired
+    private VideoFaceLogDOMapper videoFaceLogDOMapper;
 
     @Autowired
     private CarService carService;
@@ -124,7 +128,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         // 生成roomId
         int randomNum = new Random().nextInt(1000);
-        String roomId = webSocketParam.getPcAnyChatUserId() + "" + webSocketParam.getAppAnyChatUserId() + "" + randomNum;
+        String roomId = Math.abs(webSocketParam.getPcAnyChatUserId()) + "" + Math.abs(webSocketParam.getAppAnyChatUserId()) + "" + randomNum;
 
         // 消息对象
         WebSocketMsgVO webSocketMsgVO = new WebSocketMsgVO();
@@ -180,11 +184,6 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 转发给pc端
         simpMessagingTemplate.convertAndSendToUser(wsSessionId_pc,
                 "/queue/latlon/pc", JSON.toJSONString(ResultBean.ofSuccess(webSocketParam)));
-    }
-
-    @Override
-    public ResultBean<Object> listLog() {
-        return null;
     }
 
     /**

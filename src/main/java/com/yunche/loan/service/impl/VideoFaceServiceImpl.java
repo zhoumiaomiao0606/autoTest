@@ -1,12 +1,19 @@
 package com.yunche.loan.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.queue.AnychatQueue;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.VideoFaceLogDO;
+import com.yunche.loan.domain.query.VideoFaceQuery;
 import com.yunche.loan.mapper.VideoFaceLogDOMapper;
 import com.yunche.loan.service.VideoFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -18,43 +25,43 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     @Autowired
     private VideoFaceLogDOMapper videoFaceLogDOMapper;
 
-    @Autowired
-    private AnychatQueue anychatQueue;
 
+    @Override
+    @Transactional
+    public ResultBean<Long> saveLog(VideoFaceLogDO videoFaceLogDO) {
+        Preconditions.checkNotNull(videoFaceLogDO.getOrderId(), "订单号不能为空");
 
-    //    @PostConstruct
-    public ResultBean test() {
+        videoFaceLogDO.setGmtCreate(new Date());
+        videoFaceLogDO.setGmtModify(new Date());
+        int count = videoFaceLogDOMapper.insertSelective(videoFaceLogDO);
+        Preconditions.checkArgument(count > 0, "保存失败");
 
-//        /Library/Java/JavaVirtualMachines/jdk1.8.0_151.jdk/Contents/Home/jre/lib
-
-//        int[] ints = AnyChatServerSDK.GetRoomIdList();
-
-        // /Users/liuzhe/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.
-        String library = System.getProperty("java.library.path");
-
-
-//        export LD_LIBRARY_PATH=/usr/work/java/jdk1.6.0_21/jre/lib:$LD_LIBRARY_PATH
-
-//        export LD_LIBRARY_PATH=/Library/Java/JavaVirtualMachines/jdk1.8.0_151.jdk/Contents/Home/jre/lib:$LD_LIBRARY_PATH
-
-        System.out.println(library);
-
-
-//        AnyChatServerSDK anyChatServerSDK = new AnyChatServerSDK();
-//        System.out.println(JSON.toJSONString(anyChatServerSDK));
-
-
-        return ResultBean.ofSuccess(null);
+        return ResultBean.ofSuccess(videoFaceLogDO.getId(), "保存成功");
     }
 
     @Override
-    public ResultBean<Object> addRoom(Long customerId, Long orderId) {
-        Preconditions.checkNotNull(customerId, "客户ID不能为空");
-        Preconditions.checkNotNull(orderId, "订单号不能为空");
+    @Transactional
+    public ResultBean<Void> updateLog(VideoFaceLogDO videoFaceLogDO) {
+        Preconditions.checkArgument(null != videoFaceLogDO && null != videoFaceLogDO.getId(), "id不能为空");
 
-        AnychatQueue.Room room = anychatQueue.getRoomByOrderId(orderId);
+        videoFaceLogDO.setGmtModify(new Date());
+        int count = videoFaceLogDOMapper.updateByPrimaryKeySelective(videoFaceLogDO);
+        Preconditions.checkArgument(count > 0, "编辑失败");
 
+        return ResultBean.ofSuccess(null, "编辑成功");
+    }
 
-        return null;
+    @Override
+    public ResultBean<List<VideoFaceLogDO>> listLog(VideoFaceQuery videoFaceQuery) {
+
+        PageHelper.startPage(videoFaceQuery.getPageIndex(), videoFaceQuery.getPageSize(), true);
+
+        List<VideoFaceLogDO> videoFaceLogDOList = videoFaceLogDOMapper.query(videoFaceQuery);
+
+        // 取分页信息
+        PageInfo<VideoFaceLogDO> pageInfo = new PageInfo<>(videoFaceLogDOList);
+
+        return ResultBean.ofSuccess(videoFaceLogDOList, Math.toIntExact(pageInfo.getTotal()),
+                pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 }

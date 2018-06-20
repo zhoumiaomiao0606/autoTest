@@ -33,7 +33,7 @@ public class VideoFaceLogDO {
 
     private String latlon;
 
-    private String location;
+    private String address;
 
     private Long carDetailId;
 

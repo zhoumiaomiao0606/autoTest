@@ -15,9 +15,13 @@ public class VideoFaceQuery extends BaseQuery {
     private Long id;
 
     private Long orderId;
-
+    /**
+     * 担保公司ID
+     */
     private Long guaranteeCompanyId;
-
+    /**
+     * 担保公司名称
+     */
     private String guaranteeCompanyName;
 
     private Long customerId;
@@ -38,7 +42,7 @@ public class VideoFaceQuery extends BaseQuery {
 
     private String latlon;
 
-    private String location;
+    private String address;
 
     private Long carDetailId;
 

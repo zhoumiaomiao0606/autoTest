@@ -1,6 +1,10 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.VideoFaceLogDO;
+import com.yunche.loan.domain.query.VideoFaceQuery;
+
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -8,5 +12,9 @@ import com.yunche.loan.config.result.ResultBean;
  */
 public interface VideoFaceService {
 
-    ResultBean<Object> addRoom(Long customerId, Long orderId);
+    ResultBean<Long> saveLog(VideoFaceLogDO videoFaceLogDO);
+
+    ResultBean<Void> updateLog(VideoFaceLogDO videoFaceLogDO);
+
+    ResultBean<List<VideoFaceLogDO>> listLog(VideoFaceQuery videoFaceQuery);
 }

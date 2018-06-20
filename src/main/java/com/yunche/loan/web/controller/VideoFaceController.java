@@ -1,10 +1,14 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.VideoFaceLogDO;
+import com.yunche.loan.domain.query.VideoFaceQuery;
 import com.yunche.loan.service.VideoFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -21,57 +25,38 @@ public class VideoFaceController {
 
 
     /**
-     * 加入房间   排队
+     * 保存面签记录
      *
+     * @param videoFaceLogDO
      * @return
      */
-    @GetMapping(value = "/addRoom")
-    public ResultBean<Object> addRoom(@RequestParam Long customerId,
-                                      @RequestParam Long orderId) {
-        return videoFaceService.addRoom(customerId, orderId);
+    @PostMapping(value = "/log/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> saveLog(@RequestBody @NotNull VideoFaceLogDO videoFaceLogDO) {
+
+        return videoFaceService.saveLog(videoFaceLogDO);
     }
 
     /**
-     * 面签列表
+     * 编辑面签记录
      *
+     * @param videoFaceLogDO
      * @return
      */
-    @GetMapping(value = "/x")
-    public ResultBean<List<Object>> x_() {
-//        return videoFaceService.x();
-        return ResultBean.ofSuccess(null);
+    @PostMapping(value = "/log/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> updateLog(@RequestBody @NotNull VideoFaceLogDO videoFaceLogDO) {
+
+        return videoFaceService.updateLog(videoFaceLogDO);
     }
 
     /**
-     * 面签排队
+     * 面签记录查询
      *
+     * @param videoFaceQuery
      * @return
      */
-    @GetMapping(value = "/xx")
-    public ResultBean<List<Object>> xx() {
-//        return videoFaceService.xx();
-        return ResultBean.ofSuccess(null);
-    }
+    @PostMapping(value = "/log/list", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<VideoFaceLogDO>> listLog(@RequestBody @NotNull VideoFaceQuery videoFaceQuery) {
 
-    /**
-     * 人工面签
-     *
-     * @return
-     */
-    @GetMapping(value = "/xxx")
-    public ResultBean<List<Object>> xxx() {
-//        return videoFaceService.xxx();
-        return ResultBean.ofSuccess(null);
-    }
-
-    /**
-     * 机器面签
-     *
-     * @return
-     */
-    @GetMapping(value = "/xxxx")
-    public ResultBean<List<Object>> xxxx() {
-//        return videoFaceService.xxxx();
-        return ResultBean.ofSuccess(null);
+        return videoFaceService.listLog(videoFaceQuery);
     }
 }

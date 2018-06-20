@@ -55,6 +55,10 @@ public class WebSocketParam {
      * APP端面签定位点 经纬度
      */
     private String latlon;
+    /**
+     * 地址信息
+     */
+    private String address;
 
 
     public Long getBankId(BankCache bankCache) {
