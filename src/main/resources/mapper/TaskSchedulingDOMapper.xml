@@ -711,7 +711,7 @@
                             when receiveManId is not null then
                               case when receiveManId = #{employeeId} then 1=1 else 1=2 end
                             else 1=1 end
-                            <if test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review' or taskDefinitionKey == 'usertask_telephone_verify'">
+                            <if test="(taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review' or taskDefinitionKey == 'usertask_telephone_verify') and taskStatus == 2">
                                 and
                                 case when #{maxGroupLevel}  = 3 then 1=1
                                 else
