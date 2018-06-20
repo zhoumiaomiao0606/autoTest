@@ -20,7 +20,6 @@ public class ICBCApiParam {
         //----- request ------
         private Customer customer;//客户信息
         private List<Picture> pictures;//客户照片资料
-
     }
 
     @Data

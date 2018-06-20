@@ -19,4 +19,26 @@ public class ICBCController {
     public ResultBean<Long> query( @RequestBody ICBCApiParam.ApplyCredit applyCredit) {
         return icbcService.applyCredit(applyCredit);
     }
+
+
+    @PostMapping (value = "/creditresult", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean creditresult( @RequestBody ICBCApiParam.ApplyCredit applyCredit) {
+        return icbcService.applyCredit(applyCredit);
+    }
+
+
+    @PostMapping (value = "/creditreturn", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean creditreturn( @RequestBody ICBCApiParam.ApplyCredit applyCredit) {
+        return icbcService.applyCredit(applyCredit);
+    }
+
+    @PostMapping (value = "/creditcardresult", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean creditcardresult( @RequestBody ICBCApiParam.ApplyCredit applyCredit) {
+        return icbcService.applyCredit(applyCredit);
+    }
+
+    @PostMapping (value = "/fileNotice", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean fileNotice( @RequestBody ICBCApiParam.ApplyCredit applyCredit) {
+        return icbcService.applyCredit(applyCredit);
+    }
 }
