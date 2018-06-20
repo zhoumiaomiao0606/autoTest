@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.mapper.VehicleInformationDOMapper;
 import com.yunche.loan.config.tree.TreeFactory;
 import com.yunche.loan.config.tree.TreeNode;
@@ -21,10 +22,12 @@ import java.util.Set;
 public class Test extends BaseTest {
     @Resource
     private CollectionService collectionService;
+
     @org.junit.Test
     public void test() throws IOException {
 
-        testDiGui();
+        //testDiGui();
+        tests();
     }
 
 
@@ -42,30 +45,37 @@ public class Test extends BaseTest {
         Set<String> tempSet = Sets.newHashSet();
         set.add(loginUserId);
         int i = 0;
-        while (true){
+        while (true) {
             i++;
             Iterator it = map.entrySet().iterator();
-            while (it.hasNext())
-            {
-                Map.Entry result = (Map.Entry)it.next();
-                Object parentId = ((Map)result .getValue()).get("parentId");
-               if( parentId != null ){
-                   for(String str:set){
-                       if(parentId.toString().equals(str)){
-                           tempSet.add(((Map)result .getValue()).get("id").toString());
-                       }
-                   }
-                   set.addAll(tempSet);
-               }
+            while (it.hasNext()) {
+                Map.Entry result = (Map.Entry) it.next();
+                Object parentId = ((Map) result.getValue()).get("parentId");
+                if (parentId != null) {
+                    for (String str : set) {
+                        if (parentId.toString().equals(str)) {
+                            tempSet.add(((Map) result.getValue()).get("id").toString());
+                        }
+                    }
+                    set.addAll(tempSet);
+                }
             }
-            if(i>set.size()){
+            if (i > set.size()) {
                 break;
             }
-            if(i>map.size()){
+            if (i > map.size()) {
                 break;
             }
         }
         System.out.println(set);
     }
 
+    @Resource
+    private LoanStatementDOMapper loanStatementDOMapper;
+
+    public  void tests() throws IOException {
+        List list = loanStatementDOMapper.statisticsTelephoneVerifyNodeOrders("2016-08-09", "2018-07-01");
+        System.out.println(list);
+
+    }
 }
