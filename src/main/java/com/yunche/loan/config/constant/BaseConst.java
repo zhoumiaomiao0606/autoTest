@@ -19,6 +19,17 @@ public class BaseConst {
     public static final Byte DEL_STATUS = 2;
 
 
+
+
+
+    /**
+     * 处理中
+     */
+    public static final Byte DOING_STATUS = 3;
+
+
+
+
     /**
      * 是
      */

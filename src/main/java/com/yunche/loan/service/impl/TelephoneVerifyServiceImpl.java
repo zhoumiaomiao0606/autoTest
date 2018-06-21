@@ -1,8 +1,11 @@
 package com.yunche.loan.service.impl;
 
+import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
+import com.yunche.loan.config.util.OSSUnit;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
@@ -24,12 +27,18 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @Transactional
 public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
+
+    private static final String TASK_NON_EXIST="0";
+    private static final String TASK_DOING="1";
+    private static final String TASK_DONE="2";
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
 
@@ -50,6 +59,9 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
     @Autowired
     private LoanStatementDOMapper loanStatementDOMapper;
+
+    @Autowired
+    private LoanFileDOMapper loanFileDOMapper;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -119,18 +131,30 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
      * @return
      */
     @Override
-    public String export() {
+    public String export(String startDate,String endDate) {
+        String ossResultKey = createExcelFile(startDate,endDate);
+        return ossResultKey;
+    }
+    /**
+     * 导出文件
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    private String createExcelFile(String startDate,String endDate){
+
+        String timestamp =  new SimpleDateFormat("yyyyMMdd").format(new Date());
+        Long id = SessionUtils.getLoginUser().getId();
+        String fileName = timestamp+id+".xlsx";
         //创建workbook
-        File file = new File(ossConfig.getDownLoadBasepath()+File.separator+"aaa.xlsx");
+        File file = new File(ossConfig.getDownLoadBasepath()+File.separator+fileName);
         FileOutputStream out = null;
         XSSFWorkbook workbook = null;
-
-
         try {
 
             out = new FileOutputStream(file);
             // TODO 开始 结束时间外部传入
-            List<TelephoneVerifyNodeOrdersVO> list = loanStatementDOMapper.statisticsTelephoneVerifyNodeOrders("2016-08-09", "2018-07-01");
+            List<TelephoneVerifyNodeOrdersVO> list = loanStatementDOMapper.statisticsTelephoneVerifyNodeOrders(startDate, endDate);
             workbook = new XSSFWorkbook();
             XSSFSheet sheet = workbook.createSheet();
 
@@ -204,21 +228,29 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             sheet.autoSizeColumn((short)10);
             sheet.autoSizeColumn((short)11);
             sheet.autoSizeColumn((short)12);
-            workbook.write(out);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            workbook.write(out);
+            //上传OSS
+            OSSClient ossClient = OSSUnit.getOSSClient();
+            String bucketName= ossConfig.getBucketName();
+            String diskName = ossConfig.getDownLoadDiskName();
+            OSSUnit.deleteFile(ossClient,bucketName,diskName+File.separator,fileName);
+            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+        } catch (Exception e) {
+            Preconditions.checkArgument(false,e.getMessage());
         }finally {
             try {
                 if(out!=null){
                     out.close();
                 }
-
             } catch (IOException e) {
                 Preconditions.checkArgument(false,e.getMessage());
             }
         }
 
-        return null;
+        return ossConfig.getDownLoadDiskName()+File.separator+fileName;
     }
+
+
+
 }
