@@ -39,11 +39,11 @@ public class TelephoneVerifyController {
     /**
      * EXCEl导出
      */
-    @GetMapping(value = "/export")
-    public ResultBean export(@RequestParam  String startDate ,@RequestParam String endDate) {
-        Preconditions.checkNotNull(startDate,"开始时间不能为空");
-        Preconditions.checkNotNull(endDate,"结束时间不能为空");
-        return ResultBean.ofSuccess(telephoneVerifyService.export(startDate,endDate));
+    @PostMapping(value = "/export")
+    public ResultBean export(@RequestBody  TelephoneVerifyParam telephoneVerifyParam) {
+        Preconditions.checkNotNull(telephoneVerifyParam.getStartDate(),"开始时间不能为空");
+        Preconditions.checkNotNull(telephoneVerifyParam.getEndDate(),"结束时间不能为空");
+        return ResultBean.ofSuccess(telephoneVerifyService.export(telephoneVerifyParam));
     }
 
 

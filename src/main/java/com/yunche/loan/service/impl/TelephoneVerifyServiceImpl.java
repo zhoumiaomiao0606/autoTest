@@ -122,18 +122,19 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
      * @return
      */
     @Override
-    public String export(String startDate,String endDate) {
-        String ossResultKey = createExcelFile(startDate,endDate);
+    public String export(TelephoneVerifyParam telephoneVerifyParam) {
+        String ossResultKey = createExcelFile(telephoneVerifyParam);
         return ossResultKey;
     }
+
     /**
      * 导出文件
-     * @param startDate
-     * @param endDate
+     * @param telephoneVerifyParam
      * @return
      */
-    private String createExcelFile(String startDate,String endDate){
-
+    private String createExcelFile(TelephoneVerifyParam telephoneVerifyParam){
+        String startDate = telephoneVerifyParam.getStartDate();
+        String endDate = telephoneVerifyParam.getEndDate();
         String timestamp =  new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
         String fileName = timestamp+id+".xlsx";
@@ -145,7 +146,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
             out = new FileOutputStream(file);
             // TODO 开始 结束时间外部传入
-            List<TelephoneVerifyNodeOrdersVO> list = loanStatementDOMapper.statisticsTelephoneVerifyNodeOrders(startDate, endDate);
+            List<TelephoneVerifyNodeOrdersVO> list = loanStatementDOMapper.statisticsTelephoneVerifyNodeOrders(telephoneVerifyParam);
             workbook = new XSSFWorkbook();
             XSSFSheet sheet = workbook.createSheet();
 

@@ -8,6 +8,6 @@ public interface TelephoneVerifyService {
 
     public void update(TelephoneVerifyParam param);
 
-    public String export(String startDate,String endDate);
+    public String export(TelephoneVerifyParam telephoneVerifyParam);
 
 }
