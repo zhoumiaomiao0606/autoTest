@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BankRelaQuestionDO;
 import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import com.yunche.loan.domain.query.VideoFaceQuery;
 import com.yunche.loan.service.VideoFaceService;
@@ -58,5 +59,17 @@ public class VideoFaceController {
     public ResultBean<List<VideoFaceLogDO>> listLog(@RequestBody @NotNull VideoFaceQuery videoFaceQuery) {
 
         return videoFaceService.listLog(videoFaceQuery);
+    }
+
+    /**
+     * 问题列表
+     *
+     * @param bankId
+     * @return
+     */
+    @GetMapping("/question/list")
+    public ResultBean<List<BankRelaQuestionDO>> listQuestion(@RequestParam @NotNull Long bankId) {
+
+        return videoFaceService.listQuestion(bankId);
     }
 }

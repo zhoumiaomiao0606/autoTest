@@ -11,7 +11,7 @@
         </commentGenerator>
         <!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&amp;characterEncoding=utf-8"
+                        connectionURL="jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&amp;characterEncoding=utf-8&amp;tinyInt1isBit=false"
                         userId="yunche"
                         password="123456">
         </jdbcConnection>
@@ -316,18 +316,20 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
+        <table tableName="bank_rela_question" domainObjectName="BankRelaQuestionDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+-->
+
 
         <table tableName="video_face_log" domainObjectName="VideoFaceLogDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
--->
 
 
-        <table tableName="employee" domainObjectName="EmployeeDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

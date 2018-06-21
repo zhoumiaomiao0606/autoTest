@@ -23,13 +23,13 @@ public class VideoFaceLogDO {
 
     private String path;
 
-    private Boolean type;
+    private Byte type;
 
     private Long auditorId;
 
     private String auditorName;
 
-    private Boolean action;
+    private Byte action;
 
     private String latlon;
 
@@ -48,4 +48,6 @@ public class VideoFaceLogDO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String info;
 }

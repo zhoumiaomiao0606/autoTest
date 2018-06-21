@@ -4,8 +4,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BankRelaQuestionDO;
 import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import com.yunche.loan.domain.query.VideoFaceQuery;
+import com.yunche.loan.mapper.BankRelaQuestionDOMapper;
 import com.yunche.loan.mapper.VideoFaceLogDOMapper;
 import com.yunche.loan.service.VideoFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
     @Autowired
     private VideoFaceLogDOMapper videoFaceLogDOMapper;
+
+    @Autowired
+    private BankRelaQuestionDOMapper bankRelaQuestionDOMapper;
 
 
     @Override
@@ -63,5 +68,14 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         return ResultBean.ofSuccess(videoFaceLogDOList, Math.toIntExact(pageInfo.getTotal()),
                 pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    @Override
+    public ResultBean<List<BankRelaQuestionDO>> listQuestion(Long bankId) {
+        Preconditions.checkNotNull(bankId, "bankId不能为空");
+
+        List<BankRelaQuestionDO> bankRelaQuestionDOList = bankRelaQuestionDOMapper.listByBankIdAndType(bankId, null);
+
+        return ResultBean.ofSuccess(bankRelaQuestionDOList);
     }
 }

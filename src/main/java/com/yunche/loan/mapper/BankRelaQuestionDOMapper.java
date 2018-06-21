@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.BankRelaQuestionDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -26,5 +27,5 @@ public interface BankRelaQuestionDOMapper {
      * @param type
      * @return
      */
-    List<BankRelaQuestionDO> listByBankIdAndType(Long bankId, Byte type);
+    List<BankRelaQuestionDO> listByBankIdAndType(@Param("bankId") Long bankId, @Param("type") Byte type);
 }

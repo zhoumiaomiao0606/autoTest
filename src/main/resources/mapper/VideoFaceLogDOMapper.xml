@@ -1,36 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.VideoFaceLogDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VideoFaceLogDO">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="order_id" jdbcType="BIGINT" property="orderId"/>
-        <result column="guarantee_company_id" jdbcType="BIGINT" property="guaranteeCompanyId"/>
-        <result column="guarantee_company_name" jdbcType="VARCHAR" property="guaranteeCompanyName"/>
-        <result column="customer_id" jdbcType="BIGINT" property="customerId"/>
-        <result column="customer_name" jdbcType="VARCHAR" property="customerName"/>
-        <result column="customer_id_card" jdbcType="CHAR" property="customerIdCard"/>
-        <result column="path" jdbcType="VARCHAR" property="path"/>
-        <result column="type" jdbcType="BIT" property="type"/>
-        <result column="auditor_id" jdbcType="BIGINT" property="auditorId"/>
-        <result column="auditor_name" jdbcType="VARCHAR" property="auditorName"/>
-        <result column="action" jdbcType="BIT" property="action"/>
-        <result column="latlon" jdbcType="VARCHAR" property="latlon"/>
-        <result column="address" jdbcType="VARCHAR" property="address"/>
-        <result column="car_detail_id" jdbcType="BIGINT" property="carDetailId"/>
-        <result column="car_name" jdbcType="VARCHAR" property="carName"/>
-        <result column="car_price" jdbcType="DECIMAL" property="carPrice"/>
-        <result column="expect_loan_amount" jdbcType="DECIMAL" property="expectLoanAmount"/>
-        <result column="photo_similarity_degree" jdbcType="DECIMAL" property="photoSimilarityDegree"/>
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="guarantee_company_id" property="guaranteeCompanyId" jdbcType="BIGINT"/>
+        <result column="guarantee_company_name" property="guaranteeCompanyName" jdbcType="VARCHAR"/>
+        <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
+        <result column="customer_id_card" property="customerIdCard" jdbcType="CHAR"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="auditor_id" property="auditorId" jdbcType="BIGINT"/>
+        <result column="auditor_name" property="auditorName" jdbcType="VARCHAR"/>
+        <result column="action" property="action" jdbcType="TINYINT"/>
+        <result column="latlon" property="latlon" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="car_detail_id" property="carDetailId" jdbcType="BIGINT"/>
+        <result column="car_name" property="carName" jdbcType="VARCHAR"/>
+        <result column="car_price" property="carPrice" jdbcType="DECIMAL"/>
+        <result column="expect_loan_amount" property="expectLoanAmount" jdbcType="DECIMAL"/>
+        <result column="photo_similarity_degree" property="photoSimilarityDegree" jdbcType="DECIMAL"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.VideoFaceLogDO" extends="BaseResultMap">
+        <result column="info" property="info" jdbcType="LONGVARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, order_id, guarantee_company_id, guarantee_company_name, customer_id, customer_name,
-    customer_id_card, path, type, auditor_id, auditor_name, action, latlon, address,
-    car_detail_id, car_name, car_price, expect_loan_amount, photo_similarity_degree,
-    gmt_create, gmt_modify
-  </sql>
+        id, order_id, guarantee_company_id, guarantee_company_name, customer_id, customer_name,
+        customer_id_card, path, type, auditor_id, auditor_name, action, latlon, address,
+        car_detail_id, car_name, car_price, expect_loan_amount, photo_similarity_degree,
+        gmt_create, gmt_modify
+    </sql>
+
+    <sql id="Blob_Column_List">
+        info
+    </sql>
 
     <sql id="Base_Query_List">
         <if test="id != null">
@@ -108,9 +116,11 @@
     </sql>
 
     <!--query-->
-    <select id="query" parameterType="com.yunche.loan.domain.query.VideoFaceQuery" resultMap="BaseResultMap">
+    <select id="query" parameterType="com.yunche.loan.domain.query.VideoFaceQuery" resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
         from video_face_log
         <where>
             <include refid="Base_Query_List"/>
@@ -118,17 +128,19 @@
         ORDER BY gmt_create DESC
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
         from video_face_log
         where id = #{id,jdbcType=BIGINT}
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from video_face_log
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+        delete from video_face_log
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
@@ -141,16 +153,16 @@
         auditor_id, auditor_name, action,
         latlon, address, car_detail_id,
         car_name, car_price, expect_loan_amount,
-        photo_similarity_degree, gmt_create, gmt_modify
-        )
+        photo_similarity_degree, gmt_create, gmt_modify,
+        info)
         values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{guaranteeCompanyId,jdbcType=BIGINT},
         #{guaranteeCompanyName,jdbcType=VARCHAR}, #{customerId,jdbcType=BIGINT}, #{customerName,jdbcType=VARCHAR},
-        #{customerIdCard,jdbcType=CHAR}, #{path,jdbcType=VARCHAR}, #{type,jdbcType=BIT},
-        #{auditorId,jdbcType=BIGINT}, #{auditorName,jdbcType=VARCHAR}, #{action,jdbcType=BIT},
+        #{customerIdCard,jdbcType=CHAR}, #{path,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT},
+        #{auditorId,jdbcType=BIGINT}, #{auditorName,jdbcType=VARCHAR}, #{action,jdbcType=TINYINT},
         #{latlon,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{carDetailId,jdbcType=BIGINT},
         #{carName,jdbcType=VARCHAR}, #{carPrice,jdbcType=DECIMAL}, #{expectLoanAmount,jdbcType=DECIMAL},
-        #{photoSimilarityDegree,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
-        )
+        #{photoSimilarityDegree,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{info,jdbcType=LONGVARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
@@ -223,6 +235,9 @@
             <if test="gmtModify != null">
                 gmt_modify,
             </if>
+            <if test="info != null">
+                info,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -250,7 +265,7 @@
                 #{path,jdbcType=VARCHAR},
             </if>
             <if test="type != null">
-                #{type,jdbcType=BIT},
+                #{type,jdbcType=TINYINT},
             </if>
             <if test="auditorId != null">
                 #{auditorId,jdbcType=BIGINT},
@@ -259,7 +274,7 @@
                 #{auditorName,jdbcType=VARCHAR},
             </if>
             <if test="action != null">
-                #{action,jdbcType=BIT},
+                #{action,jdbcType=TINYINT},
             </if>
             <if test="latlon != null">
                 #{latlon,jdbcType=VARCHAR},
@@ -287,6 +302,9 @@
             </if>
             <if test="gmtModify != null">
                 #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="info != null">
+                #{info,jdbcType=LONGVARCHAR},
             </if>
         </trim>
     </insert>
@@ -316,7 +334,7 @@
                 path = #{path,jdbcType=VARCHAR},
             </if>
             <if test="type != null">
-                type = #{type,jdbcType=BIT},
+                type = #{type,jdbcType=TINYINT},
             </if>
             <if test="auditorId != null">
                 auditor_id = #{auditorId,jdbcType=BIGINT},
@@ -325,7 +343,7 @@
                 auditor_name = #{auditorName,jdbcType=VARCHAR},
             </if>
             <if test="action != null">
-                action = #{action,jdbcType=BIT},
+                action = #{action,jdbcType=TINYINT},
             </if>
             <if test="latlon != null">
                 latlon = #{latlon,jdbcType=VARCHAR},
@@ -354,32 +372,61 @@
             <if test="gmtModify != null">
                 gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
             </if>
+            <if test="info != null">
+                info = #{info,jdbcType=LONGVARCHAR},
+            </if>
         </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
+        update video_face_log
+        set order_id = #{orderId,jdbcType=BIGINT},
+        guarantee_company_id = #{guaranteeCompanyId,jdbcType=BIGINT},
+        guarantee_company_name = #{guaranteeCompanyName,jdbcType=VARCHAR},
+        customer_id = #{customerId,jdbcType=BIGINT},
+        customer_name = #{customerName,jdbcType=VARCHAR},
+        customer_id_card = #{customerIdCard,jdbcType=CHAR},
+        path = #{path,jdbcType=VARCHAR},
+        type = #{type,jdbcType=TINYINT},
+        auditor_id = #{auditorId,jdbcType=BIGINT},
+        auditor_name = #{auditorName,jdbcType=VARCHAR},
+        action = #{action,jdbcType=TINYINT},
+        latlon = #{latlon,jdbcType=VARCHAR},
+        address = #{address,jdbcType=VARCHAR},
+        car_detail_id = #{carDetailId,jdbcType=BIGINT},
+        car_name = #{carName,jdbcType=VARCHAR},
+        car_price = #{carPrice,jdbcType=DECIMAL},
+        expect_loan_amount = #{expectLoanAmount,jdbcType=DECIMAL},
+        photo_similarity_degree = #{photoSimilarityDegree,jdbcType=DECIMAL},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        info = #{info,jdbcType=LONGVARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
 
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
     update video_face_log
     set order_id = #{orderId,jdbcType=BIGINT},
-    guarantee_company_id = #{guaranteeCompanyId,jdbcType=BIGINT},
-    guarantee_company_name = #{guaranteeCompanyName,jdbcType=VARCHAR},
-    customer_id = #{customerId,jdbcType=BIGINT},
-    customer_name = #{customerName,jdbcType=VARCHAR},
-    customer_id_card = #{customerIdCard,jdbcType=CHAR},
-    path = #{path,jdbcType=VARCHAR},
-    type = #{type,jdbcType=BIT},
-    auditor_id = #{auditorId,jdbcType=BIGINT},
-    auditor_name = #{auditorName,jdbcType=VARCHAR},
-    action = #{action,jdbcType=BIT},
-    latlon = #{latlon,jdbcType=VARCHAR},
-    address = #{address,jdbcType=VARCHAR},
-    car_detail_id = #{carDetailId,jdbcType=BIGINT},
-    car_name = #{carName,jdbcType=VARCHAR},
-    car_price = #{carPrice,jdbcType=DECIMAL},
-    expect_loan_amount = #{expectLoanAmount,jdbcType=DECIMAL},
-    photo_similarity_degree = #{photoSimilarityDegree,jdbcType=DECIMAL},
-    gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-    gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+      guarantee_company_id = #{guaranteeCompanyId,jdbcType=BIGINT},
+      guarantee_company_name = #{guaranteeCompanyName,jdbcType=VARCHAR},
+      customer_id = #{customerId,jdbcType=BIGINT},
+      customer_name = #{customerName,jdbcType=VARCHAR},
+      customer_id_card = #{customerIdCard,jdbcType=CHAR},
+      path = #{path,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      auditor_id = #{auditorId,jdbcType=BIGINT},
+      auditor_name = #{auditorName,jdbcType=VARCHAR},
+      action = #{action,jdbcType=TINYINT},
+      latlon = #{latlon,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      car_detail_id = #{carDetailId,jdbcType=BIGINT},
+      car_name = #{carName,jdbcType=VARCHAR},
+      car_price = #{carPrice,jdbcType=DECIMAL},
+      expect_loan_amount = #{expectLoanAmount,jdbcType=DECIMAL},
+      photo_similarity_degree = #{photoSimilarityDegree,jdbcType=DECIMAL},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
