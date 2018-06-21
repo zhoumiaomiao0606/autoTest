@@ -292,25 +292,7 @@ public class CarServiceImpl implements CarService {
 
         }
 
-        long start = System.currentTimeMillis();
         String fullName = getFullName(carId_, carType_);
-        long end = System.currentTimeMillis();
-
-
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println("=============car===============");
-
-        long sqlTime = end - start;
-
-        System.out.println("fullName : >>>>   " + fullName);
-        System.out.println("sql   :    >>>>   " + sqlTime + "ms");
-
-        System.out.println("=============car===============");
-        System.out.println();
-        System.out.println();
-        System.out.println();
 
         return fullName;
     }
