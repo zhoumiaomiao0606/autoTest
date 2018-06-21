@@ -28,7 +28,9 @@ public class VideoFaceLogDO {
     private Long auditorId;
 
     private String auditorName;
-
+    /**
+     * 1-通过; 2-不通过;
+     */
     private Byte action;
 
     private String latlon;

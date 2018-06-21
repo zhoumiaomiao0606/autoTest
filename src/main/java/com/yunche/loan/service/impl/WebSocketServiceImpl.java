@@ -117,9 +117,8 @@ public class WebSocketServiceImpl implements WebSocketService {
         Preconditions.checkNotNull(webSocketParam.getAppAnyChatUserId(), "appAnyChatUserId不能为空");
         Preconditions.checkNotNull(webSocketParam.getPcAnyChatUserId(), "pcAnyChatUserId不能为空");
 
-        // 生成roomId
-        int randomNum = new Random().nextInt(1000);
-        String roomId = Math.abs(webSocketParam.getPcAnyChatUserId()) + "" + Math.abs(webSocketParam.getAppAnyChatUserId()) + "" + randomNum;
+        // 生成roomId     -> 9位随机数
+        int roomId = new Random().nextInt(1000000000);
 
         // 消息对象
         WebSocketMsgVO webSocketMsgVO = new WebSocketMsgVO();
@@ -187,13 +186,14 @@ public class WebSocketServiceImpl implements WebSocketService {
     private boolean needWaitTeam(WebSocketParam webSocketParam, String wsSessionId) {
 
         // 若贷款银行为杭州城站支行，则进入人工面签
-        if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
+        /*if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
 
             // nothing  -> 正常排队
         }
 
         // 若贷款银行为台州路桥支行，则判断：
-        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())) {
+//        boolean AAA = BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId());
+        else */if (true) {
 
             double loanAmount = webSocketParam.getLoanAmount().doubleValue();
 

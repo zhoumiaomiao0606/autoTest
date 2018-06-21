@@ -4,6 +4,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankRelaQuestionDO;
 import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import com.yunche.loan.domain.query.VideoFaceQuery;
+import com.yunche.loan.domain.vo.VideoFaceLogVO;
 import com.yunche.loan.service.VideoFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -56,7 +57,7 @@ public class VideoFaceController {
      * @return
      */
     @PostMapping(value = "/log/list", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<VideoFaceLogDO>> listLog(@RequestBody @NotNull VideoFaceQuery videoFaceQuery) {
+    public ResultBean<List<VideoFaceLogVO>> listLog(@RequestBody @NotNull VideoFaceQuery videoFaceQuery) {
 
         return videoFaceService.listLog(videoFaceQuery);
     }
@@ -72,4 +73,11 @@ public class VideoFaceController {
 
         return videoFaceService.listQuestion(bankId);
     }
+
+    @PostMapping(value = "/log/export", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<String> exportLog(@RequestBody VideoFaceQuery videoFaceQuery) {
+
+        return videoFaceService.exportLog(videoFaceQuery);
+    }
+
 }

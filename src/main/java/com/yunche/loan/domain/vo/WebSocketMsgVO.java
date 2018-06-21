@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class WebSocketMsgVO {
 
-    private String roomId;
+    private Integer roomId;
 
     private Long appAnyChatUserId;
 

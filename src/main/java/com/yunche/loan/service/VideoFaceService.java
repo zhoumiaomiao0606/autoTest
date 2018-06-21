@@ -4,6 +4,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankRelaQuestionDO;
 import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import com.yunche.loan.domain.query.VideoFaceQuery;
+import com.yunche.loan.domain.vo.VideoFaceLogVO;
 
 import java.util.List;
 
@@ -17,7 +18,9 @@ public interface VideoFaceService {
 
     ResultBean<Void> updateLog(VideoFaceLogDO videoFaceLogDO);
 
-    ResultBean<List<VideoFaceLogDO>> listLog(VideoFaceQuery videoFaceQuery);
+    ResultBean<List<VideoFaceLogVO>> listLog(VideoFaceQuery videoFaceQuery);
 
     ResultBean<List<BankRelaQuestionDO>> listQuestion(Long bankId);
+
+    ResultBean<String> exportLog(VideoFaceQuery videoFaceQuery);
 }

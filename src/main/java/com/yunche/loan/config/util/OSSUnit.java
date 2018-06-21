@@ -16,35 +16,43 @@ import java.util.ResourceBundle;
 
 public class OSSUnit {
 
-    //log
+    // log
     private static final Logger LOG = LoggerFactory.getLogger(OSSUnit.class);
 
-    //阿里云API的内或外网域名
-    private static String ENDPOINT ="oss-cn-hangzhou.aliyuncs.com";
-    //阿里云API的密钥Access Key ID
-    private static String ACCESS_KEY_ID="LTAIet7Gwv5j98m4";
-    //阿里云API的密钥Access Key Secret
-    private static String ACCESS_KEY_SECRET="UlIzIv8Mp30OQkhOatRufB5bBwQVRN";
-    //bucketName
-    private  static String BUCKET_NAME="yunche-2018";
+    // OSSClient
+    private static final OSSClient ossClient = null;
 
-//    //init static datas
-    static{
+    // 阿里云API的内或外网域名
+    private static String ENDPOINT = "oss-cn-hangzhou.aliyuncs.com";
+    // 阿里云API的密钥Access Key ID
+    private static String ACCESS_KEY_ID = "LTAIet7Gwv5j98m4";
+    // 阿里云API的密钥Access Key Secret
+    private static String ACCESS_KEY_SECRET = "UlIzIv8Mp30OQkhOatRufB5bBwQVRN";
+    // bucketName
+    public static String BUCKET_NAME = "yunche-2018";
+
+    //    //init static datas
+    static {
         ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
         ENDPOINT = bundle.containsKey("endpoint") == false ? "" : bundle.getString("endpoint");
-        ACCESS_KEY_ID = bundle.containsKey("accessKeyId") == false? "" : bundle.getString("accessKeyId");
+        ACCESS_KEY_ID = bundle.containsKey("accessKeyId") == false ? "" : bundle.getString("accessKeyId");
         ACCESS_KEY_SECRET = bundle.containsKey("accessKeySecret") == false ? "" : bundle.getString("accessKeySecret");
         BUCKET_NAME = bundle.containsKey("bucketName") == false ? "" : bundle.getString("bucketName");
     }
 
     /**
      * 获取阿里云OSS客户端对象
-     * */
-    public static final OSSClient getOSSClient(){
-        return new OSSClient(ENDPOINT,ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+     */
+    public static final OSSClient getOSSClient() {
+
+        if (null == ossClient) {
+            return new OSSClient(ENDPOINT, ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+        }
+
+        return ossClient;
     }
 
-    public static final OSSObject getObject(OSSClient ossClient,String key){
+    public static final OSSObject getObject(OSSClient ossClient, String key) {
 
         return ossClient.getObject(BUCKET_NAME, key);
 
@@ -52,38 +60,41 @@ public class OSSUnit {
 
     /**
      * 新建Bucket  --Bucket权限:私有
+     *
      * @param bucketName bucket名称
      * @return true 新建Bucket成功
-     * */
-    public static final boolean createBucket(OSSClient client, String bucketName){
+     */
+    public static final boolean createBucket(OSSClient client, String bucketName) {
         Bucket bucket = client.createBucket(bucketName);
         return bucketName.equals(bucket.getName());
     }
 
     /**
      * 删除Bucket
+     *
      * @param bucketName bucket名称
-     * */
-    public static final void deleteBucket(OSSClient client, String bucketName){
+     */
+    public static final void deleteBucket(OSSClient client, String bucketName) {
         client.deleteBucket(bucketName);
         LOG.info("删除" + bucketName + "Bucket成功");
     }
 
     /**
      * 向阿里云的OSS存储中存储文件  --file也可以用InputStream替代
-     * @param client OSS客户端
-     * @param file 上传文件
+     *
+     * @param client     OSS客户端
+     * @param file       上传文件
      * @param bucketName bucket名称
-     * @param diskName 上传文件的目录  --bucket下文件的路径
-     * @return String 唯一MD5数字签名
-     * */
+     * @param diskName   上传文件的目录  --bucket下文件的路径
+     * @return String    唯一MD5数字签名
+     */
     public static final String uploadObject2OSS(OSSClient client, File file, String bucketName, String diskName) {
         String resultStr = null;
         try {
             InputStream is = new FileInputStream(file);
             String fileName = file.getName();
             Long fileSize = file.length();
-            //创建上传Object的Metadata
+            // 创建上传Object的Metadata
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(is.available());
             metadata.setCacheControl("no-cache");
@@ -101,57 +112,65 @@ public class OSSUnit {
         return resultStr;
     }
 
+
     /**
      * 根据key获取OSS服务器上的文件输入流
-     * @param client OSS客户端
+     *
+     * @param client     OSS客户端
      * @param bucketName bucket名称
-     * @param key Bucket下的文件的路径名+文件名
+     * @param key        Bucket下的文件的路径名+文件名
      */
-    public static final InputStream getOSS2InputStream(OSSClient client, String bucketName, String key){
+    public static final InputStream getOSS2InputStream(OSSClient client, String bucketName, String key) {
         OSSObject ossObj = client.getObject(bucketName, key);
         return ossObj.getObjectContent();
     }
 
     /**
      * 根据key获取文件流
+     *
      * @param key
      * @return
      */
-    public static final InputStream getOSS2InputStream(String key){
-        OSSClient ossClient =  new OSSClient(ENDPOINT,ACCESS_KEY_ID, ACCESS_KEY_SECRET);
-        return ossClient.getObject(BUCKET_NAME,key).getObjectContent();
+    public static final InputStream getOSS2InputStream(String key) {
+        OSSClient ossClient = new OSSClient(ENDPOINT, ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+        return ossClient.getObject(BUCKET_NAME, key).getObjectContent();
 
     }
 
     /**
      * 根据key删除OSS服务器上的文件
-     * @param client OSS客户端
+     *
+     * @param client     OSS客户端
      * @param bucketName bucket名称
-     * @param diskName 文件路径
-     * @param key Bucket下的文件的路径名+文件名
+     * @param diskName   文件路径
+     * @param key        Bucket下的文件的路径名+文件名
      */
-    public static void deleteFile(OSSClient client, String bucketName, String diskName, String key){
+    public static void deleteFile(OSSClient client, String bucketName, String diskName, String key) {
         client.deleteObject(bucketName, diskName + key);
         LOG.info("删除" + bucketName + "下的文件" + diskName + key + "成功");
     }
 
     /**
      * 通过文件名判断并获取OSS服务文件上传时文件的contentType
+     *
      * @param fileName 文件名
      * @return 文件的contentType
      */
-    public static final String getContentType(String fileName){
-        String fileExtension = fileName.substring(fileName.lastIndexOf(".")+1);
-        if("bmp".equalsIgnoreCase(fileExtension)) return "image/bmp";
-        if("gif".equalsIgnoreCase(fileExtension)) return "image/gif";
-        if("jpeg".equalsIgnoreCase(fileExtension) || "jpg".equalsIgnoreCase(fileExtension)  || "png".equalsIgnoreCase(fileExtension) ) return "image/jpeg";
-        if("html".equalsIgnoreCase(fileExtension)) return "text/html";
-        if("txt".equalsIgnoreCase(fileExtension)) return "text/plain";
-        if("vsd".equalsIgnoreCase(fileExtension)) return "application/vnd.visio";
-        if("ppt".equalsIgnoreCase(fileExtension) || "pptx".equalsIgnoreCase(fileExtension)) return "application/vnd.ms-powerpoint";
-        if("doc".equalsIgnoreCase(fileExtension) || "docx".equalsIgnoreCase(fileExtension)) return "application/msword";
-        if("xml".equalsIgnoreCase(fileExtension)) return "text/xml";
-        if("zip".equalsIgnoreCase(fileExtension)) return "application/zip";
+    public static final String getContentType(String fileName) {
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        if ("bmp".equalsIgnoreCase(fileExtension)) return "image/bmp";
+        if ("gif".equalsIgnoreCase(fileExtension)) return "image/gif";
+        if ("jpeg".equalsIgnoreCase(fileExtension) || "jpg".equalsIgnoreCase(fileExtension) || "png".equalsIgnoreCase(fileExtension))
+            return "image/jpeg";
+        if ("html".equalsIgnoreCase(fileExtension)) return "text/html";
+        if ("txt".equalsIgnoreCase(fileExtension)) return "text/plain";
+        if ("vsd".equalsIgnoreCase(fileExtension)) return "application/vnd.visio";
+        if ("ppt".equalsIgnoreCase(fileExtension) || "pptx".equalsIgnoreCase(fileExtension))
+            return "application/vnd.ms-powerpoint";
+        if ("doc".equalsIgnoreCase(fileExtension) || "docx".equalsIgnoreCase(fileExtension))
+            return "application/msword";
+        if ("xml".equalsIgnoreCase(fileExtension)) return "text/xml";
+        if ("zip".equalsIgnoreCase(fileExtension)) return "application/zip";
         return "text/html";
     }
 
