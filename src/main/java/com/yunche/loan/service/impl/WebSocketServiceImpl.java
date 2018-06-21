@@ -1,19 +1,16 @@
 package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yunche.loan.config.cache.BankCache;
-import com.yunche.loan.config.constant.LoanAmountGradeEnum;
 import com.yunche.loan.config.queue.VideoFaceQueue;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MapSortUtils;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.WebSocketParam;
-import com.yunche.loan.domain.query.VideoFaceQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
@@ -23,12 +20,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
+import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
 import static com.yunche.loan.config.constant.FaceSignConst.FACE_SIGN_MACHINE;
 import static com.yunche.loan.config.constant.VideoFaceConst.*;
 import static com.yunche.loan.config.queue.VideoFaceQueue.SEPARATOR;
@@ -55,16 +52,10 @@ public class WebSocketServiceImpl implements WebSocketService {
     private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
-    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
-
-    @Autowired
     private LoanCarInfoDOMapper loanCarInfoDOMapper;
 
     @Autowired
     private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
-
-    @Autowired
-    private VideoFaceLogDOMapper videoFaceLogDOMapper;
 
     @Autowired
     private CarService carService;
@@ -258,22 +249,22 @@ public class WebSocketServiceImpl implements WebSocketService {
     private void sendMsg(Long bankId) {
 
         // customerId-orderId  排队客户ID-订单ID 映射
-        List<String> anyChatUserId_wsSessionId_userId_orderId_List = Lists.newArrayList();
+        List<String> anyChatUserId_wsSessionId_userId_orderId_rankNum_List = Lists.newArrayList();
 
         // APP
-        sendMsgToApp(bankId, anyChatUserId_wsSessionId_userId_orderId_List);
+        sendMsgToApp(bankId, anyChatUserId_wsSessionId_userId_orderId_rankNum_List);
 
         // PC
-        sendMsgToPC(bankId, anyChatUserId_wsSessionId_userId_orderId_List);
+        sendMsgToPC(bankId, anyChatUserId_wsSessionId_userId_orderId_rankNum_List);
     }
 
     /**
      * 推送Msg给APP
      *
      * @param bankId
-     * @param anyChatUserId_wsSessionId_userId_orderId_List
+     * @param anyChatUserId_wsSessionId_userId_orderId_rankNum_List
      */
-    private void sendMsgToApp(Long bankId, List<String> anyChatUserId_wsSessionId_userId_orderId_List) {
+    private void sendMsgToApp(Long bankId, List<String> anyChatUserId_wsSessionId_userId_orderId_rankNum_List) {
 
         // 获取所有app端 排队用户列表        循环发送消息
 
@@ -302,8 +293,9 @@ public class WebSocketServiceImpl implements WebSocketService {
                 String customerId = userMsgArr[2];
                 String orderId = userMsgArr[3];
 
-                // 收集anyChatUserId:wsSessionId:userId:order_id
-                anyChatUserId_wsSessionId_userId_orderId_List.add(k);
+                // 收集anyChatUserId:wsSessionId:userId:order_id     : rankNum
+                String k_rankNum = k + SEPARATOR + rankNum;
+                anyChatUserId_wsSessionId_userId_orderId_rankNum_List.add(k_rankNum);
 
                 // APP   -> 排名、总排队数          -> 点对点 推送URL：   /user/{user}/queue/team/info/app       {user} -> wkSessionId
                 simpMessagingTemplate.convertAndSendToUser(wkSessionId,
@@ -317,16 +309,16 @@ public class WebSocketServiceImpl implements WebSocketService {
      * 推送Msg给PC
      *
      * @param bankId
-     * @param anyChatUserId_wsSessionId_userId_orderId_List 已经按照排队时间排过序了
+     * @param anyChatUserId_wsSessionId_userId_orderId_rankNum_List 已经按照排队时间排过序了
      */
-    private void sendMsgToPC(Long bankId, List<String> anyChatUserId_wsSessionId_userId_orderId_List) {
+    private void sendMsgToPC(Long bankId, List<String> anyChatUserId_wsSessionId_userId_orderId_rankNum_List) {
 
         // 排队客户列表
-        List<VideoFaceCustomerVO> customerVOList = Lists.newArrayList();
+        Map<Long, VideoFaceCustomerVO> rankNum_customerVO_Map = Maps.newTreeMap();
 
-        if (!CollectionUtils.isEmpty(anyChatUserId_wsSessionId_userId_orderId_List)) {
+        if (!CollectionUtils.isEmpty(anyChatUserId_wsSessionId_userId_orderId_rankNum_List)) {
 
-            anyChatUserId_wsSessionId_userId_orderId_List.stream()
+            anyChatUserId_wsSessionId_userId_orderId_rankNum_List.parallelStream()
                     .filter(StringUtils::isNotBlank)
                     .forEach(e -> {
 
@@ -335,6 +327,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                         String wkSessionId = userMsgArr[1];
                         Long customerId = Long.valueOf(userMsgArr[2]);
                         Long orderId = Long.valueOf(userMsgArr[3]);
+                        Long rankNum = Long.valueOf(userMsgArr[4]);
 
                         VideoFaceCustomerVO videoFaceCustomerVO = new VideoFaceCustomerVO();
 
@@ -351,14 +344,13 @@ public class WebSocketServiceImpl implements WebSocketService {
                         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
                         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
-                        // loanAmount
-                        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-                        videoFaceCustomerVO.setExpectLoanAmount(LoanAmountGradeEnum.getNameByLevel(loanBaseInfoDO.getLoanAmount()));
-
-                        // carPrice
+                        // financial plan
                         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
                         if (null != loanFinancialPlanDO) {
+                            // carPrice
                             videoFaceCustomerVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
+                            // 意向贷款金额    -> 银行分期本金
+                            videoFaceCustomerVO.setExpectLoanAmount(loanFinancialPlanDO.getBankPeriodPrincipal());
                         }
 
                         // carInfo
@@ -366,20 +358,16 @@ public class WebSocketServiceImpl implements WebSocketService {
                         if (null != loanCarInfoDO) {
                             videoFaceCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
                             String carFullName = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
-                            videoFaceCustomerVO.setCarName(carFullName);
+                            String carName = carService.getName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
+                            videoFaceCustomerVO.setCarName(carName);
                         }
 
-                        // photo
-//                        videoFaceCustomerVO.setIdCardPhotoPath("xxx");
-//                        videoFaceCustomerVO.setLivePhotoPath("xxx");
-
-                        // latlon
-//                        videoFaceCustomerVO.setLatlon("xxx");
-//                        videoFaceCustomerVO.setLocation("xxx");
-
-                        customerVOList.add(videoFaceCustomerVO);
+                        rankNum_customerVO_Map.put(rankNum, videoFaceCustomerVO);
                     });
         }
+
+        // customerVOList
+        Collection<VideoFaceCustomerVO> customerVOList = rankNum_customerVO_Map.values();
 
         // 获取所有pc端  列表               循环发送消息
         Map<String, Long> sessionIdStartTimeMap_PC = videoFaceQueue.listSessionInQueue(bankId, TYPE_PC);

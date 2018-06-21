@@ -243,6 +243,78 @@ public class CarServiceImpl implements CarService {
         return carName.trim();
     }
 
+    @Override
+    public String getName(Long carId, Byte carType, Byte nameLevel) {
+        Preconditions.checkNotNull(carId, "车辆ID不能为空");
+        Preconditions.checkNotNull(carType, "车辆等级不能为空");
+        Preconditions.checkNotNull(nameLevel, "名称等级不能为空");
+
+        Long carId_ = null;
+        Byte carType_ = null;
+
+        if (null == nameLevel || nameLevel >= carType) {
+
+            carType_ = carType;
+            carId_ = carId;
+
+        } else if (nameLevel < carType) {
+
+            carType_ = nameLevel;
+
+            // carId_
+            if (CAR_DETAIL.equals(carType)) {
+
+                CarDetailDO carDetail = carDetailDOMapper.selectByPrimaryKey(carId, null);
+                if (null != carDetail) {
+
+                    if (CAR_MODEL.equals(nameLevel)) {
+
+                        carId_ = carDetail.getModelId();
+
+                    } else if (CAR_BRAND.equals(nameLevel)) {
+
+                        CarModelDO carModel = carModelDOMapper.selectByPrimaryKey(carDetail.getModelId(), null);
+                        if (null != carModel) {
+                            carId_ = carModel.getBrandId();
+                        }
+                    }
+
+                }
+
+            } else if (CAR_MODEL.equals(carType)) {
+
+                CarModelDO carModel = carModelDOMapper.selectByPrimaryKey(carId, null);
+                if (null != carModel) {
+                    carId_ = carModel.getBrandId();
+                }
+
+            }
+
+        }
+
+        long start = System.currentTimeMillis();
+        String fullName = getFullName(carId_, carType_);
+        long end = System.currentTimeMillis();
+
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("=============car===============");
+
+        long sqlTime = end - start;
+
+        System.out.println("fullName : >>>>   " + fullName);
+        System.out.println("sql   :    >>>>   " + sqlTime + "ms");
+
+        System.out.println("=============car===============");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
+        return fullName;
+    }
+
     /**
      * 跟前品牌ID,获取并填充当前品牌   -ONE
      *

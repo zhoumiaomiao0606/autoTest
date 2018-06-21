@@ -1,6 +1,7 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import com.yunche.loan.domain.entity.CarBrandDO;
 import com.yunche.loan.domain.entity.CarDetailDO;
@@ -96,6 +97,18 @@ public class CarCache {
 
     @PostConstruct
     public void refresh() {
+        // Cascade
+        refreshCarCascade();
+
+//        // 品牌
+//        refreshAllCarBrand();
+//        // 车系
+//        refreshAllCarModel();
+//        // 车型
+//        refreshAllCarDetail();
+    }
+
+    private void refreshCarCascade() {
         CarCascadeVO carCascadeVO = new CarCascadeVO();
 
         // 获取并填充所有品牌
@@ -190,11 +203,14 @@ public class CarCache {
 
     /**
      * 获取
+     * <p>
+     * 数据量太大 还不如用sql查询快
      *
      * @param carDetailId
      * @return
      */
-    public CarDetailDO getCarDetail(Long carDetailId) {
+    @Deprecated
+    private CarDetailDO getCarDetail(Long carDetailId) {
         if (null == carDetailId) {
             return null;
         }
@@ -203,12 +219,13 @@ public class CarCache {
         String allCarDetail = boundValueOps.get();
 
         if (StringUtils.isBlank(allCarDetail)) {
-            cacheAllCarDetail();
+            refreshAllCarDetail();
         }
 
         if (StringUtils.isNotBlank(allCarDetail)) {
-            Map<String, CarDetailDO> map = JSON.parseObject(allCarDetail, Map.class);
-            CarDetailDO carDetailDO = map.get(String.valueOf(carDetailId));
+            Map<String, JSONObject> map = JSON.parseObject(allCarDetail, Map.class);
+            JSONObject jsonObject = map.get(String.valueOf(carDetailId));
+            CarDetailDO carDetailDO = JSON.toJavaObject(jsonObject, CarDetailDO.class);
             return carDetailDO;
         }
 
@@ -216,10 +233,13 @@ public class CarCache {
     }
 
     /**
+     * 数据量太大 还不如用sql查询快
+     *
      * @param carModelId
      * @return
      */
-    public CarModelDO getCarModel(Long carModelId) {
+    @Deprecated
+    private CarModelDO getCarModel(Long carModelId) {
         if (null == carModelId) {
             return null;
         }
@@ -228,12 +248,13 @@ public class CarCache {
         String allCarModel = boundValueOps.get();
 
         if (StringUtils.isBlank(allCarModel)) {
-            cacheAllCarModel();
+            refreshAllCarModel();
         }
 
         if (StringUtils.isNotBlank(allCarModel)) {
-            Map<String, CarModelDO> map = JSON.parseObject(allCarModel, Map.class);
-            CarModelDO carModelDO = map.get(String.valueOf(carModelId));
+            Map<String, JSONObject> map = JSON.parseObject(allCarModel, Map.class);
+            JSONObject jsonObject = map.get(String.valueOf(carModelId));
+            CarModelDO carModelDO = JSON.toJavaObject(jsonObject, CarModelDO.class);
             return carModelDO;
         }
 
@@ -241,10 +262,13 @@ public class CarCache {
     }
 
     /**
+     * 数据量太大 还不如用sql查询快
+     *
      * @param carBrandId
      * @return
      */
-    public CarBrandDO getCarBrand(Long carBrandId) {
+    @Deprecated
+    private CarBrandDO getCarBrand(Long carBrandId) {
         if (null == carBrandId) {
             return null;
         }
@@ -253,20 +277,20 @@ public class CarCache {
         String allCarBrand = boundValueOps.get();
 
         if (StringUtils.isBlank(allCarBrand)) {
-            cacheAllCarBrand();
+            refreshAllCarBrand();
         }
 
         if (StringUtils.isNotBlank(allCarBrand)) {
-            Map<String, CarBrandDO> map = JSON.parseObject(allCarBrand, Map.class);
-            CarBrandDO carBrandDO = map.get(String.valueOf(carBrandId));
+            Map<String, JSONObject> map = JSON.parseObject(allCarBrand, Map.class);
+            JSONObject jsonObject = map.get(String.valueOf(carBrandId));
+            CarBrandDO carBrandDO = JSON.toJavaObject(jsonObject, CarBrandDO.class);
             return carBrandDO;
         }
 
         return null;
     }
 
-    @PostConstruct
-    public void cacheAllCarBrand() {
+    private void refreshAllCarBrand() {
 
         Map<String, CarBrandDO> idCarBrandMap = Maps.newConcurrentMap();
 
@@ -283,8 +307,7 @@ public class CarCache {
         boundValueOps.set(JSON.toJSONString(idCarBrandMap));
     }
 
-    @PostConstruct
-    public void cacheAllCarModel() {
+    private void refreshAllCarModel() {
 
         Map<String, CarModelDO> idCarModelMap = Maps.newConcurrentMap();
 
@@ -301,8 +324,7 @@ public class CarCache {
         boundValueOps.set(JSON.toJSONString(idCarModelMap));
     }
 
-    //    @PostConstruct
-    public void cacheAllCarDetail() {
+    private void refreshAllCarDetail() {
 
         Map<String, CarDetailDO> idCarDetailMap = Maps.newConcurrentMap();
 

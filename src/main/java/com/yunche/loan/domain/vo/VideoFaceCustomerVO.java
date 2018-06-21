@@ -34,7 +34,7 @@ public class VideoFaceCustomerVO {
     /**
      * 意向金额
      */
-    private String expectLoanAmount;
+    private BigDecimal expectLoanAmount;
     /**
      * 车型ID
      */
