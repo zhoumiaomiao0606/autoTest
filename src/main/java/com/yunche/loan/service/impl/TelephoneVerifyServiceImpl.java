@@ -36,9 +36,6 @@ import java.util.List;
 @Transactional
 public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
-    private static final String TASK_NON_EXIST="0";
-    private static final String TASK_DOING="1";
-    private static final String TASK_DONE="2";
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
 
