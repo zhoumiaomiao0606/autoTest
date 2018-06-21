@@ -35,6 +35,16 @@ public class TelephoneVerifyController {
         return ResultBean.ofSuccess(null,"保存成功");
     }
 
+    /**
+     * EXCEl导出
+     */
+    @GetMapping(value = "/export")
+    public ResultBean export() {
+        return ResultBean.ofSuccess(telephoneVerifyService.export());
+    }
+
+
+
 
 }
 

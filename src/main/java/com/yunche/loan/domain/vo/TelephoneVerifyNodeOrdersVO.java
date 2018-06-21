@@ -17,4 +17,6 @@ public class TelephoneVerifyNodeOrdersVO {
     String op_user_name;
     String result;
     String action;
+    String op_time;
+    String op_info;
 }
