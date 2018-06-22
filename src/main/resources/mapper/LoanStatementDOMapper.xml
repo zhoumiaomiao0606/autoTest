@@ -79,7 +79,7 @@
     having partner_name not like '%测试%' and op_time between #{startDate} and #{endDate}
 	 <if test="actionList != null and actionList.size() > 0">
 		 and
-		 telephone_verify in
+		 action in
 		 <foreach item="item" index="index" collection="actionList" open="(" separator="," close=")">
 			 #{item}
 		 </foreach>
