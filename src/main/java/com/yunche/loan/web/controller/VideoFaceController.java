@@ -74,6 +74,12 @@ public class VideoFaceController {
         return videoFaceService.listQuestion(bankId);
     }
 
+    /**
+     * 面签记录 导出
+     *
+     * @param videoFaceQuery
+     * @return
+     */
     @PostMapping(value = "/log/export", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<String> exportLog(@RequestBody VideoFaceQuery videoFaceQuery) {
 
