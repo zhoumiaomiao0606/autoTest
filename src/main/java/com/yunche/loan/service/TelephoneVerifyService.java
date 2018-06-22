@@ -7,4 +7,7 @@ public interface TelephoneVerifyService {
     public RecombinationVO detail(Long orderId);
 
     public void update(TelephoneVerifyParam param);
+
+    public String export(TelephoneVerifyParam telephoneVerifyParam);
+
 }

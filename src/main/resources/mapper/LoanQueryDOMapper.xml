@@ -475,6 +475,7 @@
             useGetCarName(car.car_detail_id)                                        AS car_name,
             car.vehicle_property                                                    AS car_vehicle_property,
             car.car_type                                                            AS car_type,
+            car.car_category                                                        AS car_category,
             vehicle.vehicle_identification_number                                   AS vehicle_vehicle_identification_number,
             vehicle.license_plate_number                                            AS vehicle_license_plate_number,
             vehicle.engine_number                                                   AS vehicle_engine_number,

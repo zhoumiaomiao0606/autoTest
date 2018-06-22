@@ -1,21 +1,14 @@
 package com.yunche.loan;
 
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
-import com.yunche.loan.mapper.VehicleInformationDOMapper;
-import com.yunche.loan.config.tree.TreeFactory;
-import com.yunche.loan.config.tree.TreeNode;
 import com.yunche.loan.service.CollectionService;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,8 +67,9 @@ public class Test extends BaseTest {
     private LoanStatementDOMapper loanStatementDOMapper;
 
     public  void tests() throws IOException {
-        List list = loanStatementDOMapper.statisticsTelephoneVerifyNodeOrders("2016-08-09", "2018-07-01");
-        System.out.println(list);
+//        List list = loanStatementDOMapper.statisticsTelephoneVerifyNodeOrders("2016-08-09", "2018-07-01");
+//        System.out.println(list);
+
 
     }
 }

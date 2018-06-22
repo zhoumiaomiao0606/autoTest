@@ -29,5 +29,6 @@ public class CarUpdateParam {
     private String vehicle_register_date;
     private String qualified_certificate_number;
     private String financial_appraisal;
+    private String car_category;
 
 }

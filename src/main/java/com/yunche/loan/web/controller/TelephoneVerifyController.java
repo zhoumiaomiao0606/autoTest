@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.TelephoneVerifyParam;
 import com.yunche.loan.service.TelephoneVerifyService;
@@ -34,6 +35,21 @@ public class TelephoneVerifyController {
         telephoneVerifyService.update(param);
         return ResultBean.ofSuccess(null,"保存成功");
     }
+
+    /**
+     * EXCEl导出
+     */
+    @PostMapping(value = "/export")
+    public ResultBean export(@RequestBody  TelephoneVerifyParam telephoneVerifyParam) {
+        Preconditions.checkNotNull(telephoneVerifyParam.getStartDate(),"开始时间不能为空");
+        Preconditions.checkNotNull(telephoneVerifyParam.getEndDate(),"结束时间不能为空");
+        return ResultBean.ofSuccess(telephoneVerifyService.export(telephoneVerifyParam));
+    }
+
+
+
+
+
 
 
 }

@@ -19,4 +19,5 @@ public class OSSConfig {
     private String downLoadBasepath;
     private String zipDiskName;
     private String down2tomcatBasepath;
+    private String downLoadDiskName;
 }

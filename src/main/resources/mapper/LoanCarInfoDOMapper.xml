@@ -23,7 +23,7 @@
         <result column="business_source" property="businessSource" jdbcType="TINYINT" />
         <result column="cooperation_dealer" property="cooperationDealer" jdbcType="TINYINT" />
         <result column="vehicle_property" property="vehicleProperty" jdbcType="TINYINT" />
-        <result column="car_category" property="carCategory" jdbcType="TINYINT" />
+        <result column="car_category" property="carCategory" jdbcType="VARCHAR" />
     </resultMap>
     <sql id="Base_Column_List" >
     id, car_detail_id, car_detail_name, car_type, gps_num, car_key, partner_id, partner_name,
@@ -193,7 +193,7 @@
                 #{vehicleProperty,jdbcType=TINYINT},
             </if>
             <if test="carCategory != null" >
-                #{carCategory,jdbcType=TINYINT},
+                #{carCategory,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -261,7 +261,7 @@
                 vehicle_property = #{vehicleProperty,jdbcType=TINYINT},
             </if>
             <if test="carCategory != null" >
-                car_category = #{carCategory,jdbcType=TINYINT},
+                car_category = #{carCategory,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

@@ -52,6 +52,7 @@ import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static com.yunche.loan.config.constant.BaseConst.DOING_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
@@ -228,7 +229,7 @@ public class MaterialServiceImpl implements MaterialService {
                 loanFileDOMapper.insertSelective(loanFileDO);
             } else {
                 loanFileDOS.parallelStream().forEach(e -> {
-                    e.setStatus((byte) 3);
+                    e.setStatus(DOING_STATUS);
                     loanFileDOMapper.updateByPrimaryKeySelective(e);
                 });
             }
@@ -811,6 +812,9 @@ public class MaterialServiceImpl implements MaterialService {
             if (!StringUtils.isBlank(param.getCar_type())) {
                 loanCarInfoDO.setCarType(new Byte(param.getCar_type()));
             }
+            if (!StringUtils.isBlank(param.getCar_category())) {
+                loanCarInfoDO.setCarCategory(param.getCar_category());
+            }
             loanCarInfoDOMapper.updateByPrimaryKeySelective(loanCarInfoDO);
         }
 
@@ -842,11 +846,11 @@ public class MaterialServiceImpl implements MaterialService {
 
         List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loanCustomerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
         if (CollectionUtils.isEmpty(loanFileDOS)) {
-            materialDownloadParam.setFileStatus("2");
+            materialDownloadParam.setFileStatus("2");//文件存在
         } else {
-            materialDownloadParam.setFileStatus("1");
+            materialDownloadParam.setFileStatus("1");//文件处理中
             loanFileDOS.stream().filter(e -> e.getStatus().equals(BaseConst.VALID_STATUS)).forEach(e -> {
-                materialDownloadParam.setFileStatus("0");
+                materialDownloadParam.setFileStatus("0");//文件已经打包完成
             });
         }
 
