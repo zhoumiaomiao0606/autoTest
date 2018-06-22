@@ -15,18 +15,26 @@ public class LoanUserGroupConst {
      * [0, 10W]
      */
     public static final String USER_GROUP_TELEPHONE_VERIFY_COMMISSIONER = "电审专员";
+
+    public static final String USER_GROUP_TELEPHONE_VERIFY_COMMISSIONER_Harbin = "哈尔滨电审专员";
     /**
      * [10W+1, 30W]
      */
     public static final String USER_GROUP_TELEPHONE_VERIFY_LEADER = "电审主管";
+
+    public static final String USER_GROUP_TELEPHONE_VERIFY_LEADER_Harbin = "哈尔滨电审主管";
     /**
      * [30W+1, 50W]
      */
     public static final String USER_GROUP_TELEPHONE_VERIFY_MANAGER = "电审经理";
+
+    public static final String USER_GROUP_TELEPHONE_VERIFY_MANAGER_Harbin = "哈尔滨电审经理";
     /**
      * [50W+1, +∞)
      */
     public static final String USER_GROUP_DIRECTOR = "总监";
+
+    public static final String USER_GROUP_DIRECTOR_Harbin = "哈尔滨总监";
 
     /**
      * 电审专员等级
@@ -62,5 +70,10 @@ public class LoanUserGroupConst {
         TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_TELEPHONE_VERIFY_LEADER, LEVEL_TELEPHONE_VERIFY_LEADER);
         TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_TELEPHONE_VERIFY_MANAGER, LEVEL_TELEPHONE_VERIFY_MANAGER);
         TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_DIRECTOR, LEVEL_DIRECTOR);
+
+        TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_TELEPHONE_VERIFY_COMMISSIONER_Harbin, LEVEL_TELEPHONE_VERIFY_COMMISSIONER);
+        TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_TELEPHONE_VERIFY_LEADER_Harbin, LEVEL_TELEPHONE_VERIFY_LEADER);
+        TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_TELEPHONE_VERIFY_MANAGER_Harbin, LEVEL_TELEPHONE_VERIFY_MANAGER);
+        TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_DIRECTOR_Harbin, LEVEL_DIRECTOR);
     }
 }
