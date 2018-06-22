@@ -219,7 +219,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             sheet.autoSizeColumn((short)7);
             sheet.autoSizeColumn((short)8);
             sheet.autoSizeColumn((short)9);
-            sheet.autoSizeColumn((short)10);
+            //sheet.autoSizeColumn((short)10);
             sheet.autoSizeColumn((short)11);
             sheet.autoSizeColumn((short)12);
 
