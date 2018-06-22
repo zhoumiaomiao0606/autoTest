@@ -76,7 +76,7 @@
     left join employee saleman on baseinfo.salesman_id = saleman.id
     left join department department on saleman.department_id = department.id
     where process.telephone_verify in (1,2,4,5,6,7,12)
-    having partner_name not like '%测试%' and op_time between #{startDate} and #{endDate}
+    having  op_time between #{startDate} and #{endDate}
 	 <if test="actionList != null and actionList.size() > 0">
 		 and
 		 action in
