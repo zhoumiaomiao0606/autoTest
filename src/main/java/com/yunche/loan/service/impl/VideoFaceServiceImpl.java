@@ -14,8 +14,6 @@ import com.yunche.loan.mapper.VideoFaceLogDOMapper;
 import com.yunche.loan.service.CarService;
 import com.yunche.loan.service.VideoFaceService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -163,17 +161,6 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         // 生成一个表格
         XSSFSheet sheet = workBook.createSheet();
 
-        // 自动调整列宽
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-        sheet.autoSizeColumn(5);
-        sheet.autoSizeColumn(6);
-        sheet.autoSizeColumn(7);
-        sheet.autoSizeColumn(8);
-
         // sheet name
         workBook.setSheetName(0, "面签记录");
 
@@ -204,6 +191,17 @@ public class VideoFaceServiceImpl implements VideoFaceService {
             row.createCell(7).setCellValue(videoFaceLogVO.getGmtCreateStr());
             row.createCell(8).setCellValue(videoFaceLogVO.getActionVal());
         }
+
+        // 自动调整列宽
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+        sheet.autoSizeColumn(2);
+        sheet.autoSizeColumn(3);
+        sheet.autoSizeColumn(4);
+        sheet.autoSizeColumn(5);
+        sheet.autoSizeColumn(6);
+        sheet.autoSizeColumn(7);
+        sheet.autoSizeColumn(8);
 
         // file
         File file = new File("/tmp/" + exportFileName);
