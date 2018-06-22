@@ -78,7 +78,7 @@ public class LoanCarInfoParam {
 
     private Byte vehicleProperty;
 
-    private Byte  carCategory;
+    private String  carCategory;
 
     @Data
     public static class PartnerAccountInfo {
