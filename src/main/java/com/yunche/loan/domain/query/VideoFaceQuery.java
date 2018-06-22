@@ -32,13 +32,13 @@ public class VideoFaceQuery extends BaseQuery {
 
     private String path;
 
-    private Boolean type;
+    private Byte type;
 
     private Long auditorId;
 
     private String auditorName;
 
-    private Boolean action;
+    private Byte action;
 
     private String latlon;
 

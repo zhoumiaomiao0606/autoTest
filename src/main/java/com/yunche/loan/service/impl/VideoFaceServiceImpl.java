@@ -12,7 +12,9 @@ import com.yunche.loan.domain.query.VideoFaceQuery;
 import com.yunche.loan.domain.vo.VideoFaceLogVO;
 import com.yunche.loan.mapper.BankRelaQuestionDOMapper;
 import com.yunche.loan.mapper.VideoFaceLogDOMapper;
+import com.yunche.loan.service.CarService;
 import com.yunche.loan.service.VideoFaceService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -28,6 +30,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
+import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
+import static com.yunche.loan.config.constant.VideoFaceConst.GUARANTEE_COMPANY_ID;
+import static com.yunche.loan.config.constant.VideoFaceConst.GUARANTEE_COMPANY_NAME;
+import static com.yunche.loan.config.constant.VideoFaceConst.TYPE_APP;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;
 
 /**
@@ -46,11 +53,26 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     @Autowired
     private BankRelaQuestionDOMapper bankRelaQuestionDOMapper;
 
+    @Autowired
+    private CarService carService;
+
 
     @Override
     @Transactional
     public ResultBean<Long> saveLog(VideoFaceLogDO videoFaceLogDO) {
         Preconditions.checkNotNull(videoFaceLogDO.getOrderId(), "订单号不能为空");
+
+        // APP端  车型名称
+        if (TYPE_APP.equals(videoFaceLogDO.getType())) {
+            String carName = carService.getName(videoFaceLogDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
+            if (StringUtils.isNotBlank(carName)) {
+                videoFaceLogDO.setCarName(carName);
+            }
+        }
+
+        // 担保公司  就一个   写死
+        videoFaceLogDO.setGuaranteeCompanyId(GUARANTEE_COMPANY_ID);
+        videoFaceLogDO.setGuaranteeCompanyName(GUARANTEE_COMPANY_NAME);
 
         videoFaceLogDO.setGmtCreate(new Date());
         videoFaceLogDO.setGmtModify(new Date());

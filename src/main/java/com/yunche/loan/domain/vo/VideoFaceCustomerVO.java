@@ -45,9 +45,13 @@ public class VideoFaceCustomerVO {
     private String carName;
 
     /**
-     * 合作机构    固定
+     * 担保公司 ID
      */
-    private String cooperationOrganization = "云车金融";
+    private Long guaranteeCompanyId;
+    /**
+     * 担保公司 name
+     */
+    private String guaranteeCompanyName;
     /**
      * 公安网纹照片
      */
@@ -63,6 +67,6 @@ public class VideoFaceCustomerVO {
     /**
      * 位置
      */
-    private String location;
+    private String address;
 
 }

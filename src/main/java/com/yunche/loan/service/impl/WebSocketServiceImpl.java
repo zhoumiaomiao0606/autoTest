@@ -193,7 +193,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         // 若贷款银行为台州路桥支行，则判断：
 //        boolean AAA = BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId());
-        else */if (true) {
+        else */
+        if (true) {
 
             double loanAmount = webSocketParam.getLoanAmount().doubleValue();
 
@@ -331,6 +332,10 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                         VideoFaceCustomerVO videoFaceCustomerVO = new VideoFaceCustomerVO();
 
+                        // 担保公司
+                        videoFaceCustomerVO.setGuaranteeCompanyId(GUARANTEE_COMPANY_ID);
+                        videoFaceCustomerVO.setGuaranteeCompanyName(GUARANTEE_COMPANY_NAME);
+
                         // anyChatUserId
                         videoFaceCustomerVO.setAnyChatUserId(anyChatUserId);
 
@@ -357,7 +362,6 @@ public class WebSocketServiceImpl implements WebSocketService {
                         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
                         if (null != loanCarInfoDO) {
                             videoFaceCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
-                            String carFullName = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
                             String carName = carService.getName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
                             videoFaceCustomerVO.setCarName(carName);
                         }

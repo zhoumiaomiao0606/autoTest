@@ -61,4 +61,10 @@ public class VideoFaceConst {
      */
     public static final String OSS_DISK_NAME = "videoFace/log/";
 
+    /**
+     * 担保公司
+     */
+    public static final Long GUARANTEE_COMPANY_ID = 1L;
+    public static final String GUARANTEE_COMPANY_NAME = "云车金融";
+
 }
