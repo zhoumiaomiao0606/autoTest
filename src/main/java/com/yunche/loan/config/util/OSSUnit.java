@@ -152,6 +152,8 @@ public class OSSUnit {
         if("doc".equalsIgnoreCase(fileExtension) || "docx".equalsIgnoreCase(fileExtension)) return "application/msword";
         if("xml".equalsIgnoreCase(fileExtension)) return "text/xml";
         if("zip".equalsIgnoreCase(fileExtension)) return "application/zip";
+        if("xlsx".equalsIgnoreCase(fileExtension)) return "application/vndopenxmlformats-officedocumentspreadsheetmlsheet";
+
         return "text/html";
     }
 
