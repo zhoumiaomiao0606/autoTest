@@ -186,15 +186,14 @@ public class WebSocketServiceImpl implements WebSocketService {
     private boolean needWaitTeam(WebSocketParam webSocketParam, String wsSessionId) {
 
         // 若贷款银行为杭州城站支行，则进入人工面签
-        /*if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
+        if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
 
             // nothing  -> 正常排队
         }
 
-        // 若贷款银行为台州路桥支行，则判断：
-//        boolean AAA = BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId());
-        else */
-        if (true) {
+        // TODO 若贷款银行为台州路桥支行，则判断：
+//        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())) {
+        else if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
 
             double loanAmount = webSocketParam.getLoanAmount().doubleValue();
 
