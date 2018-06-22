@@ -2,81 +2,91 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.LoanStatementDOMapper">
  <select id="statisticsTelephoneVerifyNodeOrders" parameterType="com.yunche.loan.domain.param.TelephoneVerifyParam" resultType="com.yunche.loan.domain.vo.TelephoneVerifyNodeOrdersVO">
-       select
-    	case when process.telephone_verify = 2 then '待处理'
-    			 when process.telephone_verify = 12 then '弃单'
-    			 when process.telephone_verify = 4 then '电审专员提交'
-    			 when process.telephone_verify = 5 then '电审组长提交'
-    			 when process.telephone_verify = 6 then '电审主管提交'
-    			 when process.telephone_verify = 7 then '电审总监提交'
-    			 when process.telephone_verify = 1 then
-    						case when
-    								(select max(g.telephone_verify_level) from employee_rela_user_group ug
-    									left join user_group g on ug.user_group_id = g.id where ug.employee_id =
-    									(select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1)
-    								) = 7 then '电审总监过单'
-    								when
-    								(select max(g.telephone_verify_level) from employee_rela_user_group ug
-    									left join user_group g on ug.user_group_id = g.id where ug.employee_id =
-    									(select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1)
-    								) = 6 then '电审主管过单'
-    								when
-    								(select max(g.telephone_verify_level) from employee_rela_user_group ug
-    									left join user_group g on ug.user_group_id = g.id where ug.employee_id =
-    									(select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1)
-    								) = 5 then '电审组长过单'
-    								when
-    								(select max(g.telephone_verify_level) from employee_rela_user_group ug
-    									left join user_group g on ug.user_group_id = g.id where ug.employee_id =
-    									(select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id =  orders.id order by create_time desc limit 1)
-    								) = 4 then '电审专员过单'
-    						else '异常提交' end
-    			else '未知' end   AS commit_status,
-    			orders.id 		   AS order_id,
-    			customer.name    AS customer_name,
-    			'身份证'				   AS customer_card_type,
-    			customer.id_card AS customer_id_card,
-    			saleman.name		 AS saleman_name,
-    			partner.name		 AS partner_name,
-    			department.name  AS saleman_department_name,
-    			plan.loan_amount AS loan_amount,
-	 			process.telephone_verify AS telephone_verify,
-	 			partner.id       AS partner_id,
-	 			baseinfo.bank    AS bank,
-    			case
-    			when
-    				(select count(order_id) from install_gps group by order_id having order_id = orders.id) is null
-    			then 0
-    			else
-    				(select count(order_id) from install_gps group by order_id having order_id = orders.id)
-    			end
-    										   AS gps_number,
-    			(select name  from employee where id =
-    				(select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1)
-    			) 							 AS op_user_name,
-    			(select create_time from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) op_time,
-    			case when (select credit_result from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 1 then '通过'
-    					 when (select credit_result from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 1 then '通融通过'
-    			 else '未知' end AS result,
-    			(select info from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) op_info,
-    			case when (select action from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 3 then '资料增补'
-    					 when (select action from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 2 then '弃单'
-    					 when (select action from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 1 then '通过'
-    					 when (select action from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 0 then '打回'
-    			else '未知' end AS action
+     select
+     process.telephone_verify,
+     process.gmt_create as gmt_create_time,
+     process.gmt_modify as gmt_modify_time,
+     case when process.telephone_verify = 2 then '待处理'
+     when process.telephone_verify = 12 then '弃单'
+     when process.telephone_verify = 4 then '电审专员提交'
+     when process.telephone_verify = 5 then '电审组长提交'
+     when process.telephone_verify = 6 then '电审主管提交'
+     when process.telephone_verify = 7 then '电审总监提交'
+     when process.telephone_verify = 1 then
+     case when
+     (select max(g.telephone_verify_level) from employee_rela_user_group ug
+     left join user_group g on ug.user_group_id = g.id where ug.employee_id =
+     (select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1)
+     ) = 7 then '电审总监过单'
+     when
+     (select max(g.telephone_verify_level) from employee_rela_user_group ug
+     left join user_group g on ug.user_group_id = g.id where ug.employee_id =
+     (select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1)
+     ) = 6 then '电审主管过单'
+     when
+     (select max(g.telephone_verify_level) from employee_rela_user_group ug
+     left join user_group g on ug.user_group_id = g.id where ug.employee_id =
+     (select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1)
+     ) = 5 then '电审组长过单'
+     when
+     (select max(g.telephone_verify_level) from employee_rela_user_group ug
+     left join user_group g on ug.user_group_id = g.id where ug.employee_id =
+     (select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id =  orders.id order by create_time desc limit 1)
+     ) = 4 then '电审专员过单'
+     else '异常提交' end
+     else '待处理' end   AS commit_status,
+     orders.id      AS order_id,
+     customer.name    AS customer_name,
+     '身份证'       AS customer_card_type,
+     customer.id_card AS customer_id_card,
+     saleman.name   AS saleman_name,
+     partner.name   AS partner_name,
+     department.name  AS saleman_department_name,
+     plan.loan_amount AS loan_amount,
+     case
+     when
+     (select count(order_id) from install_gps group by order_id having order_id = orders.id) is null
+     then 0
+     else
+     (select count(order_id) from install_gps group by order_id having order_id = orders.id)
+     end
+     AS gps_number,
+     (select name  from employee where id =
+     (select user_id from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1)
+     )         AS op_user_name,
+     (select create_time from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) op_time,
+     case when (select credit_result from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 1 then '通过'
+     when (select credit_result from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 1 then '通融通过'
+     else '待审核' end AS result,
+     (select info from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) op_info,
+     case when (select action from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 3 then '资料增补'
+     when (select action from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 2 then '弃单'
+     when (select action from loan_process_log where task_definition_key = 'usertask_telephone_verify' and order_id = orders.id order by create_time desc limit 1) = 1 then '通过'
+     when (select count(1) from loan_reject_log where reject_origin_task ='usertask_telephone_verify' and order_id = process.order_id and gmt_create BETWEEN process.gmt_create and process.gmt_modify) = 0 then '待审核'
+     else '已打回' end AS action
+     from
+     loan_order orders
+     left join loan_process process on orders.id = process.order_id
+     left join loan_base_info baseinfo on orders.loan_base_info_id = baseinfo.id
+     left join loan_customer customer on customer.id = orders.loan_customer_id
+     left join loan_financial_plan plan on plan.id = orders.loan_financial_plan_id
+     left join partner partner on baseinfo.partner_id = partner.id
+     left join employee saleman on baseinfo.salesman_id = saleman.id
+     left join department department on saleman.department_id = department.id
+     where process.telephone_verify in (0,1,2,4,5,6,7,12)
+     having
+     case when telephone_verify = 0 then
+     case when
+     (
+     select count(1) from loan_reject_log rej where rej.reject_origin_task ='usertask_telephone_verify' and rej.order_id = order_id and rej.gmt_create BETWEEN
+     gmt_create_time and gmt_modify_time
+     ) = 0
+     then false else true end
+     else true end
+     and
+     case when op_time is null then true
+     else op_time between #{startDate} and #{endDate} end
 
-
-    from
-    loan_order orders
-    inner join loan_process process on orders.id = process.order_id
-    left join loan_base_info baseinfo on orders.loan_base_info_id = baseinfo.id
-    left join loan_customer customer on customer.id = orders.loan_customer_id
-    left join loan_financial_plan plan on plan.id = orders.loan_financial_plan_id
-    left join partner partner on baseinfo.partner_id = partner.id
-    left join employee saleman on baseinfo.salesman_id = saleman.id
-    left join department department on saleman.department_id = department.id
-    where process.telephone_verify in (1,2,4,5,6,7,12)
-    having  op_time between #{startDate} and #{endDate}
 	 <if test="actionList != null and actionList.size() > 0">
 		 and
 		 action in
