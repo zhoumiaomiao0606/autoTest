@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.constant.VideoFaceConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.BankRelaQuestionDO;
@@ -27,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.VideoFaceConst.OSS_DISK_NAME;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;
 
 /**
@@ -158,26 +158,37 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         // file
-        File file = new File("/tmp/" + exportFileName);
+        File file = new File("/lib/" + exportFileName);
 
+        FileOutputStream os = null;
         try {
             // 文件输出流
-            FileOutputStream outStream = new FileOutputStream(file);
-            workBook.write(outStream);
-
-            outStream.flush();
-            outStream.close();
+            os = new FileOutputStream(file);
+            workBook.write(os);
 
         } catch (FileNotFoundException e) {
             logger.error("", e);
         } catch (IOException e) {
             logger.error("", e);
+        } finally {
+            try {
+                os.flush();
+
+            } catch (IOException e) {
+                logger.error("", e);
+            }
+
+            try {
+                os.close();
+            } catch (IOException e) {
+                logger.error("", e);
+            }
         }
 
         // 上传到OSS
-        OSSUnit.uploadObject2OSS(OSSUnit.getOSSClient(), file, OSSUnit.BUCKET_NAME, OSS_DISK_NAME);
+        OSSUnit.uploadObject2OSS(OSSUnit.getOSSClient(), file, OSSUnit.BUCKET_NAME, VideoFaceConst.OSS_DISK_NAME);
 
-        return ResultBean.ofSuccess(OSS_DISK_NAME + exportFileName);
+        return ResultBean.ofSuccess(VideoFaceConst.OSS_DISK_NAME + exportFileName);
     }
 
 }
