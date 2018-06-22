@@ -16,6 +16,10 @@ public class VideoFaceCustomerVO {
      */
     private Long id;
     /**
+     * 客户贷款银行
+     */
+    private Long bankId;
+    /**
      * orderId
      */
     private Long orderId;

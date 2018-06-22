@@ -335,6 +335,9 @@ public class WebSocketServiceImpl implements WebSocketService {
                         videoFaceCustomerVO.setGuaranteeCompanyId(GUARANTEE_COMPANY_ID);
                         videoFaceCustomerVO.setGuaranteeCompanyName(GUARANTEE_COMPANY_NAME);
 
+                        // bankId
+                        videoFaceCustomerVO.setBankId(bankId);
+
                         // orderId
                         videoFaceCustomerVO.setOrderId(orderId);
 

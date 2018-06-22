@@ -1,9 +1,9 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.BankRelaQuestionDO;
 import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import com.yunche.loan.domain.query.VideoFaceQuery;
+import com.yunche.loan.domain.vo.VideoFaceCustomerVO;
 import com.yunche.loan.domain.vo.VideoFaceLogVO;
 import com.yunche.loan.service.VideoFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,13 +71,13 @@ public class VideoFaceController {
     /**
      * 问题列表
      *
-     * @param bankId
+     * @param videoFaceCustomerVO
      * @return
      */
-    @GetMapping("/question/list")
-    public ResultBean<List<BankRelaQuestionDO>> listQuestion(@RequestParam @NotNull Long bankId) {
+    @PostMapping(value = "/question/list", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<String>> listQuestion(@RequestBody VideoFaceCustomerVO videoFaceCustomerVO) {
 
-        return videoFaceService.listQuestion(bankId);
+        return videoFaceService.listQuestion(videoFaceCustomerVO);
     }
 
     /**

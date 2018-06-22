@@ -3,20 +3,19 @@ package com.yunche.loan.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
-import com.yunche.loan.domain.entity.BankRelaQuestionDO;
 import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import com.yunche.loan.domain.query.VideoFaceQuery;
+import com.yunche.loan.domain.vo.VideoFaceCustomerVO;
 import com.yunche.loan.domain.vo.VideoFaceLogVO;
 import com.yunche.loan.mapper.BankRelaQuestionDOMapper;
 import com.yunche.loan.mapper.VideoFaceLogDOMapper;
 import com.yunche.loan.service.CarService;
 import com.yunche.loan.service.VideoFaceService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
@@ -43,6 +43,8 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
     // log
     private static final Logger logger = LoggerFactory.getLogger(VideoFaceServiceImpl.class);
+
+    public static final String HTML_NEW_LINE = "<br/>";
 
     @Autowired
     private VideoFaceLogDOMapper videoFaceLogDOMapper;
@@ -131,15 +133,6 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     }
 
     @Override
-    public ResultBean<List<BankRelaQuestionDO>> listQuestion(Long bankId) {
-        Preconditions.checkNotNull(bankId, "bankId不能为空");
-
-        List<BankRelaQuestionDO> bankRelaQuestionDOList = bankRelaQuestionDOMapper.listByBankIdAndType(bankId, null);
-
-        return ResultBean.ofSuccess(bankRelaQuestionDOList);
-    }
-
-    @Override
     public ResultBean<String> exportLog(VideoFaceQuery videoFaceQuery) {
 
         // 需要导出的数据
@@ -152,11 +145,18 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         // 文件名
         String exportFileName = "面签记录_" + now + ".xlsx";
-        String[] cellTitle = {"担保公司名称", "客户姓名", "客户身份证号码", "视频路径", "定位位置", "面签类型",
-                "面签员工", "生成时间", "审核结果"};
+        String[] cellTitle = {"担保公司名称", "客户姓名", "客户身份证号码", "面签类型", "面签员工",
+                "生成时间", "审核结果", "视频路径", "定位位置",};
 
         // 声明一个工作薄
         XSSFWorkbook workBook = new XSSFWorkbook();
+
+        // 样式
+        XSSFCellStyle cellStyle = workBook.createCellStyle();
+        // 水平居中
+        cellStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
+        // 垂直居中
+        cellStyle.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
 
         // 生成一个表格
         XSSFSheet sheet = workBook.createSheet();
@@ -164,11 +164,14 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         // sheet name
         workBook.setSheetName(0, "面签记录");
 
-        // 创建表格标题行 第一行
+        // 创建表格标题行  第一行
         XSSFRow titleRow = sheet.createRow(0);
+//        titleRow.setRowStyle(cellStyle);
         for (int i = 0; i < cellTitle.length; i++) {
             // 列
-            titleRow.createCell(i).setCellValue(cellTitle[i]);
+            XSSFCell cell = titleRow.createCell(i);
+            cell.setCellStyle(cellStyle);
+            cell.setCellValue(cellTitle[i]);
         }
 
         // 插入需导出的数据
@@ -184,12 +187,12 @@ public class VideoFaceServiceImpl implements VideoFaceService {
             row.createCell(0).setCellValue(videoFaceLogVO.getGuaranteeCompanyName());
             row.createCell(1).setCellValue(videoFaceLogVO.getCustomerName());
             row.createCell(2).setCellValue(videoFaceLogVO.getCustomerIdCard());
-            row.createCell(3).setCellValue(videoFaceLogVO.getPath());
-            row.createCell(4).setCellValue(videoFaceLogVO.getAddress());
-            row.createCell(5).setCellValue(videoFaceLogVO.getTypeVal());
-            row.createCell(6).setCellValue(videoFaceLogVO.getAuditorName());
-            row.createCell(7).setCellValue(videoFaceLogVO.getGmtCreateStr());
-            row.createCell(8).setCellValue(videoFaceLogVO.getActionVal());
+            row.createCell(3).setCellValue(videoFaceLogVO.getTypeVal());
+            row.createCell(4).setCellValue(videoFaceLogVO.getAuditorName());
+            row.createCell(5).setCellValue(videoFaceLogVO.getGmtCreateStr());
+            row.createCell(6).setCellValue(videoFaceLogVO.getActionVal());
+            row.createCell(7).setCellValue(videoFaceLogVO.getPath());
+            row.createCell(8).setCellValue(videoFaceLogVO.getAddress());
         }
 
         // 自动调整列宽
@@ -235,6 +238,119 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         OSSUnit.uploadObject2OSS(OSSUnit.getOSSClient(), file, BUCKET_NAME_VIDEO_FACE, OSS_DISK_NAME_VIDEO_FACE_LOG);
 
         return ResultBean.ofSuccess(OSS_DISK_NAME_VIDEO_FACE_LOG + exportFileName);
+    }
+
+    @Override
+    public ResultBean<List<String>> listQuestion(VideoFaceCustomerVO videoFaceCustomerVO) {
+        Preconditions.checkNotNull(videoFaceCustomerVO.getBankId(), "bankId不能为空");
+        Preconditions.checkNotNull(videoFaceCustomerVO.getOrderId(), "orderId不能为空");
+
+//        List<BankRelaQuestionDO> bankRelaQuestionDOList = bankRelaQuestionDOMapper.listByBankIdAndType(bankId, null);
+
+        List<String> questionList = Collections.EMPTY_LIST;
+
+        // 1
+        if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(videoFaceCustomerVO.getBankId())) {
+            questionList = get_Question_List_ICBC_HangZhou_City_Station_Branch(videoFaceCustomerVO);
+        }
+
+        // 3
+        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(videoFaceCustomerVO.getBankId())) {
+            questionList = get_Question_List_ICBC_TaiZhou_LuQiao_Branch(videoFaceCustomerVO);
+        }
+
+        return ResultBean.ofSuccess(questionList);
+    }
+
+    public List<String> get_Question_List_ICBC_TaiZhou_LuQiao_Branch(VideoFaceCustomerVO videoFaceCustomerVO) {
+
+        String question_1 = "1、你好，这里是工商银行路桥支行，请问是 " + redText(videoFaceCustomerVO.getName()) + " 先生/女士吗？（参考答案）是";
+        String question_2 = "2、我是工商银行路桥支行的工作人员，请问您现在是否需要在我行申请一笔信用卡购车分期付款业务？您对此分期付款业务情况是否了解（参考答案）是";
+        String question_3 = "3、下面需要核对一下您的身份信息（选问项，选三个或以上）";
+
+        String yyyy_MM_dd = "";
+        String idCard_last_six_num = "";
+
+        String idCard = videoFaceCustomerVO.getIdCard();
+        if (StringUtils.isNotBlank(idCard)) {
+            String year = idCard.substring(6, 10);
+            String month = idCard.substring(10, 12);
+            String day = idCard.substring(12, 14);
+
+            yyyy_MM_dd = year + "-" + month + "-" + day;
+            idCard_last_six_num = idCard.substring(12, 18);
+        }
+
+        String question_4 = "4、Q1请问您的出生年月日是？   参考答案：" + redText(yyyy_MM_dd);
+        String question_5 = "5、Q2你的身份证号码后六位是什么？   参考答案：" + redText(idCard_last_six_num);
+        String question_6 = "6、Q3你所购车辆的型号是什么？   参考答案：" + redText(videoFaceCustomerVO.getCarName());
+        String question_7 = "7、Q4您现在的工作单位是什么？（面签人员无法核实）";
+        String question_8 = "8、Q5您单位地址是？   （面签人员无法核实）";
+        String question_9 = "9、Q6您家庭住址是哪里？   （面签人员无法核实）";
+        String question_10 = "10、Q7您身份证上的地址是哪里？   （面签人员无法核实）";
+        String question_11 = "11、Q8您所购买车辆是什么颜色？   （面签人员无法核实）";
+        String question_12 = "12、Q9你现在所处位置？   参考答案：" + redText(videoFaceCustomerVO.getAddress());
+        String question_13 = "13、请问您购买的是什么品牌的汽车？购买车辆是否自用？   （参考答案）是  车辆品牌：" + redText(videoFaceCustomerVO.getCarName());
+        String question_14 = "14、您了解该笔贷款是由浙江鑫宝行担保有限公司提供担保的吗？   参考答案：了解";
+        String question_15 = "15、请您务必在合同上填写正确的手机号码和联系地址";
+        String question_16 = "16、请您现在在信用卡申请书、分期付款合同以及客户告知书上签名";
+        String question_17 = "17、银行：请您认真仔细阅读担保方签署相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，" +
+                "均与工商银行无关。您办理该笔分期业务无需向我行和担保公司缴纳任何保证金和押金。" + HTML_NEW_LINE +
+                "银行：请您务必下载和使用工银融E联，通过申请时预留手机号注册登录后，即可享受相应服务。" + HTML_NEW_LINE +
+                "银行：感谢您的配合，业务办理成功后，请您留意查收合同及客户告知书并仔细阅读，后续如有问题，欢迎致电我行告知书上的汽车分期服务专线电话。";
+
+        List<String> questionList = Lists.newArrayList(question_1, question_2, question_3, question_4, question_5,
+                question_6, question_7, question_8, question_9, question_10,
+                question_11, question_12, question_13, question_14, question_15,
+                question_16, question_17);
+
+        return questionList;
+    }
+
+    private List<String> get_Question_List_ICBC_HangZhou_City_Station_Branch(VideoFaceCustomerVO videoFaceCustomerVO) {
+
+        String question_1 = "1、你好，这里是工商银行杭州城站支行，请问是" + redText(videoFaceCustomerVO.getName()) + "先生/女士吗？（参考答案）是";
+        String question_2 = "2、我是工商银行杭州分行城站支行的工作人员,请问您现在是否需要在我行申请一笔信用卡汽车分期付款业务用于购买汽车？（参考答案）是";
+        String question_3 = "3、下面需要核对一下您的身份信息（选问项，选三个或以上）";
+        String question_4 = "4、请报一下您的身份证号？（参考答案）" + redText(videoFaceCustomerVO.getIdCard());
+        String question_5 = "5、请问您现在的工作单位是什么？（参考答案）{收入证明开具工作单位}";
+        String question_6 = "6、请问征信查询授权书是您本人签字吗？（参考答案）是";
+        String question_7 = "7、请问您办理业务所需的个人信息材料都是您本人提供并签字的吗？（参考答案）是";
+        String question_8 = "8、您了解该笔贷款是由浙江鑫宝行担保有限公司担保的吗？（参考答案）是";
+        String question_9 = "9、请您翻开《牡丹信用卡透支分期付款/抵押合同》 第一页确认相关信息。" +
+                "您申请信用卡汽车分期业务用于购买 {品牌名称} 品牌的汽车，车辆交易总价 {品牌名称} 元，分期金额是 {银行分期本金} 元。" +
+                "每月还款 {月还款} 元，{借款期间/12} 年总计需还款 {本息合计} 元。以上信息您是否确认无误？";
+        String question_10 = "10、在您足额偿清合同约定的所有债务之前，您所购车辆的商业保险保单的第一受益人为工商银行，请问您是否同意？（参考答案）是";
+        String question_11 = "11、我行审批通过后将根据您的授权对您的信用卡进行激活并将您的分期款项汇给浙江鑫宝行担保有限公司账户，您是否有异议？（参考答案）是";
+        String question_12 = "12、请您务必在合同上填写正确的手机号码和联系地址";
+        String question_13 = "13、现在请您在信用卡分期表、分期付款/抵押合同以及客户告知书上签字";
+        String question_14 = "14、银行：请您认真阅读您与担保方签订的相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，均与工商银行无关。" +
+                "您办理该笔分期业务无需向我行和担保公司缴纳任何保证金和押金。" + HTML_NEW_LINE +
+                "银行：请您务必下载和使用工银融E联，通过申请时预留手机号注册登录后，即可享受相应服务。" + HTML_NEW_LINE +
+                "银行：感谢您的配合，业务办理成功后，我行会向您邮寄合同和客户告知书，" + HTML_NEW_LINE +
+                "请您注意查收并仔细阅读，后续如有问题，欢迎致电客户告知书上的汽车分期服务专线电话。";
+
+        List<String> questionList = Lists.newArrayList(question_1, question_2, question_3, question_4, question_5,
+                question_6, question_7, question_8, question_9, question_10,
+                question_11, question_12, question_13, question_14);
+
+        return questionList;
+    }
+
+    /**
+     * 加红
+     *
+     * @param text
+     * @return
+     */
+    private String redText(String text) {
+
+        if (StringUtils.isBlank(text)) {
+            text = "未知";
+        }
+
+        String redText = "<font color='red'>" + text + "</font>";
+        return redText;
     }
 
 }
