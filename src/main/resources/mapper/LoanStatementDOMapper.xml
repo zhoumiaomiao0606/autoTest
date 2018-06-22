@@ -2,10 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.LoanStatementDOMapper">
  <select id="statisticsTelephoneVerifyNodeOrders" parameterType="com.yunche.loan.domain.param.TelephoneVerifyParam" resultType="com.yunche.loan.domain.vo.TelephoneVerifyNodeOrdersVO">
+     select tab.* from
+     (
      select
+     process.gmt_create as ct,
+     process.gmt_modify as mt,
      process.telephone_verify,
-     process.gmt_create as gmt_create_time,
-     process.gmt_modify as gmt_modify_time,
      case when process.telephone_verify = 2 then '待处理'
      when process.telephone_verify = 12 then '弃单'
      when process.telephone_verify = 4 then '电审专员提交'
@@ -73,20 +75,18 @@
      left join partner partner on baseinfo.partner_id = partner.id
      left join employee saleman on baseinfo.salesman_id = saleman.id
      left join department department on saleman.department_id = department.id
-     where process.telephone_verify in (0,1,2,4,5,6,7,12)
-     having
-     case when telephone_verify = 0 then
+     where telephone_verify in (0,1,2,4,5,6,7,12)
+     ) tab
+     where
+     case when tab.telephone_verify = 0 then
      case when
      (
-     select count(1) from loan_reject_log rej where rej.reject_origin_task ='usertask_telephone_verify' and rej.order_id = order_id and rej.gmt_create BETWEEN
-     gmt_create_time and gmt_modify_time
+     select count(1) from loan_reject_log rej where rej.reject_origin_task ='usertask_telephone_verify' and rej.order_id = tab.order_id and rej.gmt_create BETWEEN
+     tab.ct and tab.mt
      ) = 0
      then false else true end
      else true end
-     and
-     case when op_time is null then true
-     else op_time between #{startDate} and #{endDate} end
-
+     and case when tab.op_time is null then true else tab.op_time between #{startDate} and #{endDate} end
 	 <if test="actionList != null and actionList.size() > 0">
 		 and
 		 action in
