@@ -149,11 +149,11 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             workbook = new XSSFWorkbook();
             XSSFSheet sheet = workbook.createSheet();
 
-            //申请单号、贷款金额、客户名称、证件类型、证件号、业务员名称、合伙人名称、gps数量、操作人、操作日期、提交状态、订单状态，备注
-            ArrayList<String> header = Lists.newArrayList("申请单号","贷款金额","客户名称","证件类型","证件号",
-                    "业务员名称","合伙人名称","gps数量","操作人","操作日期","提交状态","订单状态","备注"
-            );
 
+            ArrayList<String> header= Lists.newArrayList("申请单号","客户名称","证件类型","证件号",
+                    "业务员","合伙人团队","贷款金额","gps数量","申请单状态","提交状态","备注","审核员","审核时间"
+            );
+            //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);
             for(int i=0;i<header.size();i++){
                 XSSFCell cell = headRow.createCell(i);
@@ -170,40 +170,43 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOrder_id());
 
                 cell= row.createCell(1);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getLoan_amount());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCustomer_name());
+                //
 
                 cell= row.createCell(2);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCustomer_name());
-
-                cell= row.createCell(3);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getCustomer_card_type());
 
-                cell= row.createCell(4);
+                cell= row.createCell(3);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getCustomer_id_card());
 
-                cell= row.createCell(5);
+                cell= row.createCell(4);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getSaleman_name());
 
-                cell= row.createCell(6);
+                cell= row.createCell(5);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getPartner_name());
+
+                cell= row.createCell(6);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getLoan_amount());
 
                 cell= row.createCell(7);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getGps_number());
 
                 cell= row.createCell(8);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_user_name());
-
-                cell = row.createCell(9);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_time());
-
-                cell = row.createCell(10);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCommit_status());
-
-                cell = row.createCell(11);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getAction());
 
-                cell = row.createCell(12);
+                cell = row.createCell(9);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCommit_status());
+
+                cell = row.createCell(10);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
+
+                cell = row.createCell(11);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_user_name());
+
+
+                cell = row.createCell(12);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_time());
+
             }
             //文件宽度自适应
             sheet.autoSizeColumn((short)0);
