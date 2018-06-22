@@ -1,11 +1,14 @@
 package com.yunche.loan.config.websocket;
 
+import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.annotation.support.PrincipalMethodArgumentResolver;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -162,6 +165,14 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
         public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
             StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+            StompCommand command = accessor.getCommand();
+            String destination = accessor.getDestination();
+
+            Principal user = accessor.getUser();
+            String sessionId = accessor.getSessionId();
+
+            String headerJSON = JSON.toJSONString(accessor.getMessageHeaders());
+
             if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
                 // webSocketSessionId

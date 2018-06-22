@@ -16,6 +16,10 @@ public class VideoFaceCustomerVO {
      */
     private Long id;
     /**
+     * orderId
+     */
+    private Long orderId;
+    /**
      * anyChatUserId   -APP端
      */
     private Long anyChatUserId;
