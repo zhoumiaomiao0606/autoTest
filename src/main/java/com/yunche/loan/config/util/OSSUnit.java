@@ -158,19 +158,30 @@ public class OSSUnit {
      */
     public static final String getContentType(String fileName) {
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-        if ("bmp".equalsIgnoreCase(fileExtension)) return "image/bmp";
-        if ("gif".equalsIgnoreCase(fileExtension)) return "image/gif";
-        if ("jpeg".equalsIgnoreCase(fileExtension) || "jpg".equalsIgnoreCase(fileExtension) || "png".equalsIgnoreCase(fileExtension))
+        if ("bmp".equalsIgnoreCase(fileExtension)) {
+            return "image/bmp";
+        } else if ("gif".equalsIgnoreCase(fileExtension)) {
+            return "image/gif";
+        } else if ("jpeg".equalsIgnoreCase(fileExtension) || "jpg".equalsIgnoreCase(fileExtension) || "png".equalsIgnoreCase(fileExtension)) {
             return "image/jpeg";
-        if ("html".equalsIgnoreCase(fileExtension)) return "text/html";
-        if ("txt".equalsIgnoreCase(fileExtension)) return "text/plain";
-        if ("vsd".equalsIgnoreCase(fileExtension)) return "application/vnd.visio";
-        if ("ppt".equalsIgnoreCase(fileExtension) || "pptx".equalsIgnoreCase(fileExtension))
+        } else if ("html".equalsIgnoreCase(fileExtension)) {
+            return "text/html";
+        } else if ("txt".equalsIgnoreCase(fileExtension)) {
+            return "text/plain";
+        } else if ("vsd".equalsIgnoreCase(fileExtension)) {
+            return "application/vnd.visio";
+        } else if ("ppt".equalsIgnoreCase(fileExtension) || "pptx".equalsIgnoreCase(fileExtension)) {
             return "application/vnd.ms-powerpoint";
-        if ("doc".equalsIgnoreCase(fileExtension) || "docx".equalsIgnoreCase(fileExtension))
+        } else if ("doc".equalsIgnoreCase(fileExtension) || "docx".equalsIgnoreCase(fileExtension)) {
             return "application/msword";
-        if ("xml".equalsIgnoreCase(fileExtension)) return "text/xml";
-        if ("zip".equalsIgnoreCase(fileExtension)) return "application/zip";
+        } else if ("xml".equalsIgnoreCase(fileExtension)) {
+            return "text/xml";
+        } else if ("zip".equalsIgnoreCase(fileExtension)) {
+            return "application/zip";
+        } else if ("xlsx".equalsIgnoreCase(fileExtension)) {
+            return "application/vndopenxmlformats-officedocumentspreadsheetmlsheet";
+        }
+
         return "text/html";
     }
 
