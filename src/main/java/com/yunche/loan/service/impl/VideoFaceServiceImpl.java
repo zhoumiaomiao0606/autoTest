@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.constant.VideoFaceConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.BankRelaQuestionDO;
@@ -15,6 +14,8 @@ import com.yunche.loan.mapper.VideoFaceLogDOMapper;
 import com.yunche.loan.service.CarService;
 import com.yunche.loan.service.VideoFaceService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -32,9 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
-import static com.yunche.loan.config.constant.VideoFaceConst.GUARANTEE_COMPANY_ID;
-import static com.yunche.loan.config.constant.VideoFaceConst.GUARANTEE_COMPANY_NAME;
-import static com.yunche.loan.config.constant.VideoFaceConst.TYPE_APP;
+import static com.yunche.loan.config.constant.VideoFaceConst.*;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;
 
 /**
@@ -120,6 +119,20 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     }
 
     @Override
+    public ResultBean<VideoFaceLogVO> getById(Long id) {
+        Preconditions.checkNotNull(id, "id不能为空");
+
+        VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.selectByPrimaryKey(id);
+
+        VideoFaceLogVO videoFaceLogVO = new VideoFaceLogVO();
+        if (null != videoFaceLogDO) {
+            BeanUtils.copyProperties(videoFaceLogDO, videoFaceLogVO);
+        }
+
+        return ResultBean.ofSuccess(videoFaceLogVO);
+    }
+
+    @Override
     public ResultBean<List<BankRelaQuestionDO>> listQuestion(Long bankId) {
         Preconditions.checkNotNull(bankId, "bankId不能为空");
 
@@ -149,6 +162,19 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         // 生成一个表格
         XSSFSheet sheet = workBook.createSheet();
+
+        // 自动调整列宽
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+        sheet.autoSizeColumn(2);
+        sheet.autoSizeColumn(3);
+        sheet.autoSizeColumn(4);
+        sheet.autoSizeColumn(5);
+        sheet.autoSizeColumn(6);
+        sheet.autoSizeColumn(7);
+        sheet.autoSizeColumn(8);
+
+        // sheet name
         workBook.setSheetName(0, "面签记录");
 
         // 创建表格标题行 第一行
@@ -180,7 +206,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         // file
-        File file = new File("/lib/" + exportFileName);
+        File file = new File("/tmp/" + exportFileName);
 
         FileOutputStream os = null;
         try {
@@ -208,9 +234,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         // 上传到OSS
-        OSSUnit.uploadObject2OSS(OSSUnit.getOSSClient(), file, OSSUnit.BUCKET_NAME, VideoFaceConst.OSS_DISK_NAME);
+        OSSUnit.uploadObject2OSS(OSSUnit.getOSSClient(), file, BUCKET_NAME_VIDEO_FACE, OSS_DISK_NAME_VIDEO_FACE_LOG);
 
-        return ResultBean.ofSuccess(VideoFaceConst.OSS_DISK_NAME + exportFileName);
+        return ResultBean.ofSuccess(OSS_DISK_NAME_VIDEO_FACE_LOG + exportFileName);
     }
 
 }

@@ -62,6 +62,12 @@ public class VideoFaceController {
         return videoFaceService.listLog(videoFaceQuery);
     }
 
+    @GetMapping("/log/getById")
+    public ResultBean<VideoFaceLogVO> getById(@RequestParam @NotNull Long id) {
+
+        return videoFaceService.getById(id);
+    }
+
     /**
      * 问题列表
      *

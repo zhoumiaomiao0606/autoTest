@@ -1,9 +1,5 @@
 package com.yunche.loan.config.constant;
 
-import com.google.common.collect.Maps;
-
-import java.util.Map;
-
 /**
  * @author liuzhe
  * @date 2018/6/4
@@ -57,12 +53,17 @@ public class VideoFaceConst {
     public static final Long BANK_ID_ICBC_NanJing_JiangNing_Branch = 4L;
 
     /**
-     * diskName
+     * 面签记录 diskName
      */
-    public static final String OSS_DISK_NAME = "videoFace/log/";
+    public static final String OSS_DISK_NAME_VIDEO_FACE_LOG = "log/";
 
     /**
-     * 担保公司
+     * 视频面签 bucket
+     */
+    public static final String BUCKET_NAME_VIDEO_FACE = "yunche-videosign";
+
+    /**
+     * 担保公司  写死
      */
     public static final Long GUARANTEE_COMPANY_ID = 1L;
     public static final String GUARANTEE_COMPANY_NAME = "云车金融";

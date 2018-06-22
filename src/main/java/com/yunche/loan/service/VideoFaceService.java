@@ -20,6 +20,8 @@ public interface VideoFaceService {
 
     ResultBean<List<VideoFaceLogVO>> listLog(VideoFaceQuery videoFaceQuery);
 
+    ResultBean<VideoFaceLogVO> getById(Long id);
+
     ResultBean<List<BankRelaQuestionDO>> listQuestion(Long bankId);
 
     ResultBean<String> exportLog(VideoFaceQuery videoFaceQuery);
