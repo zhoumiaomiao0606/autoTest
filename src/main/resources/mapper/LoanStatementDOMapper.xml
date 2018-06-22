@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.LoanStatementDOMapper">
- <select id="statisticsTelephoneVerifyNodeOrders" resultType="com.yunche.loan.domain.vo.TelephoneVerifyNodeOrdersVO">
+ <select id="statisticsTelephoneVerifyNodeOrders" parameterType="com.yunche.loan.domain.param.TelephoneVerifyParam" resultType="com.yunche.loan.domain.vo.TelephoneVerifyNodeOrdersVO">
        select
     	case when process.telephone_verify = 2 then '待处理'
     			 when process.telephone_verify = 12 then '弃单'
@@ -40,6 +40,9 @@
     			partner.name		 AS partner_name,
     			department.name  AS saleman_department_name,
     			plan.loan_amount AS loan_amount,
+	 			process.telephone_verify AS telephone_verify,
+	 			partner.id       AS partner_id,
+	 			baseinfo.bank    AS bank,
     			case
     			when
     				(select count(order_id) from install_gps group by order_id having order_id = orders.id) is null
@@ -74,6 +77,27 @@
     left join department department on saleman.department_id = department.id
     where process.telephone_verify in (1,2,4,5,6,7,12)
     having partner_name not like '%测试%' and op_time between #{startDate} and #{endDate}
+	 <if test="actionList != null and actionList.size() > 0">
+		 and
+		 telephone_verify in
+		 <foreach item="item" index="index" collection="actionList" open="(" separator="," close=")">
+			 #{item}
+		 </foreach>
+	 </if>
+	 <if test="partnerList != null and partnerList.size() > 0">
+		 and
+		 partner_id in
+		 <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+			 #{item}
+		 </foreach>
+	 </if>
+	 <if test="bankList != null and bankList.size() > 0">
+		 and
+		 bank in
+		 <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+			 #{item}
+		 </foreach>
+	 </if>
     order by op_time asc
  </select>
 </mapper>

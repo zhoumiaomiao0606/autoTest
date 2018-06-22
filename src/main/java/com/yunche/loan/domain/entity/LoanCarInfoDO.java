@@ -49,5 +49,5 @@ public class LoanCarInfoDO {
 
     private Byte vehicleProperty;
 
-    private Byte  carCategory;
+    private String  carCategory;
 }

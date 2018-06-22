@@ -178,18 +178,9 @@ public class POIUtil {
     }
 
     public static Workbook getWorkBookOSS(InputStream is,String  key ) {
-//        //获得文件名
-//        String fileName = file.getName();
-//        //创建Workbook工作薄对象，表示整个excel
+
         Workbook workbook = null;
         try {
-//            //获取excel文件的io流
-//            InputStream is = new FileInputStream(file) {
-//                @Override
-//                public int read() throws IOException {
-//                    return 0;
-//                }
-//            };
             //根据文件后缀名不同(xls和xlsx)获得不同的Workbook实现类对象
             if(key.endsWith(xls)){
                 //2003
@@ -238,4 +229,60 @@ public class POIUtil {
         }
         return cellValue;
     }
+
+//    /**
+//     * 往excel中写入.
+//     * @param filePath    文件路径
+//     * @param sheetName  表格索引
+//     * @param object
+//     */
+//    public void writeToExcel(String filePath,String sheetName, Object object,List list){
+//        //创建workbook
+//        File file = new File(filePath);
+//
+//        Workbook workBook = getWorkBook(file);
+//        Sheet sheet = workBook.createSheet("sheet1");
+//
+//
+//        for(int i=0;i<list.size();i++){
+//            Row row = sheet.createRow(i);
+//
+//            Cell cell = row.createCell(i);
+//            cell.setCellValue();
+//
+//
+//        }
+//
+//        FileOutputStream out = null;
+//        Sheet sheet = workBook.getSheet(sheetName);
+//        // 获取表格的总行数
+//        int rowCount = sheet.getLastRowNum() + 1; // 需要加一
+//        try {
+//            Row row = sheet.createRow(rowCount);     //最新要添加的一行
+//            //通过反射获得object的字段,对应表头插入
+//            // 获取该对象的class对象
+//            Class<? extends Object> class_ = object.getClass();
+//
+//            for(int i = 0;i < titleRow.length;i++){
+//                String title = titleRow[i];
+//                String UTitle = Character.toUpperCase(title.charAt(0))+ title.substring(1, title.length()); // 使其首字母大写;
+//                String methodName  = "get"+UTitle;
+//                Method method = class_.getDeclaredMethod(methodName); // 设置要执行的方法
+//                String data = method.invoke(object).toString(); // 执行该get方法,即要插入的数据
+//                Cell cell = row.createCell(i);
+//                cell.setCellValue(data);
+//            }
+//            out = new FileOutputStream(filePath);
+//            workbook.write(out);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                out.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
 }
