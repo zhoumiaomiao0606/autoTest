@@ -69,7 +69,7 @@
     <userTask id="usertask_business_review" name="业务审批" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,放款专员,哈尔滨放款专员"></userTask>
     <userTask id="usertask_material_review" name="资料审核" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,纸审,哈尔滨纸审,台州纸审,杭州城站纸审,南京纸审"></userTask>
     <userTask id="usertask_apply_license_plate_deposit_info" name="车辆抵押" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,哈尔滨抵押专员,台州抵押专员,杭州城站抵押专员,南京抵押专员"></userTask>
-    <userTask id="usertask_car_insurance" name="车辆保险" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管"></userTask>
+    <userTask id="usertask_car_insurance" name="车辆保险" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,哈尔滨保险专员"></userTask>
     <sequenceFlow id="flow63" sourceRef="parallelgateway3" targetRef="usertask_car_insurance"></sequenceFlow>
     <userTask id="usertask_install_gps" name="GPS安装" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,GPS专员,哈尔滨GPS专员"></userTask>
     <sequenceFlow id="flow65" sourceRef="parallelgateway3" targetRef="usertask_install_gps"></sequenceFlow>
