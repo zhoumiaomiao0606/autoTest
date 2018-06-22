@@ -60,7 +60,7 @@ public class LoanCarInfoVO {
 
     private BaseAreaDO hasApplyLicensePlateArea;
 
-    private Byte  carCategory;
+    private String  carCategory;
 
     private List<BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
 
