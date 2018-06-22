@@ -813,7 +813,7 @@ public class MaterialServiceImpl implements MaterialService {
                 loanCarInfoDO.setCarType(new Byte(param.getCar_type()));
             }
             if (!StringUtils.isBlank(param.getCar_category())) {
-                loanCarInfoDO.setCarCategory(new Byte(param.getCar_category()));
+                loanCarInfoDO.setCarCategory(param.getCar_category());
             }
             loanCarInfoDOMapper.updateByPrimaryKeySelective(loanCarInfoDO);
         }
