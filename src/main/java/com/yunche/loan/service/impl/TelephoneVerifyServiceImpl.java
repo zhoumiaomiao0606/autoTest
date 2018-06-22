@@ -145,7 +145,6 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         try {
 
             out = new FileOutputStream(file);
-            // TODO 开始 结束时间外部传入
             List<TelephoneVerifyNodeOrdersVO> list = loanStatementDOMapper.statisticsTelephoneVerifyNodeOrders(telephoneVerifyParam);
             workbook = new XSSFWorkbook();
             XSSFSheet sheet = workbook.createSheet();
