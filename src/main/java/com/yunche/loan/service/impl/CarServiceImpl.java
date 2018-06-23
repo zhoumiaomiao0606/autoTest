@@ -50,6 +50,8 @@ public class CarServiceImpl implements CarService {
      */
     public static final String NEW_LINE = System.getProperty("line.separator");
 
+    public static final String SEPARATOR_SPACE = " ";
+
 
     /**
      * 阿里云车型大全API服务——HOST
@@ -218,25 +220,25 @@ public class CarServiceImpl implements CarService {
                 if (null != carModelDO && null != carModelDO.getBrandId()) {
                     CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carModelDO.getBrandId(), null);
                     if (null != carBrandDO) {
-                        carName = carName + " " + carBrandDO.getName();
+                        carName = carName + SEPARATOR_SPACE + carBrandDO.getName();
                     }
-                    carName = carName + " " + carModelDO.getName();
+                    carName = carName + SEPARATOR_SPACE + carModelDO.getName();
                 }
-                carName = carName + " " + carDetailDO.getName();
+                carName = carName + SEPARATOR_SPACE + carDetailDO.getName();
             }
         } else if (CAR_MODEL.equals(carType)) {
             CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(carId, null);
             if (null != carModelDO && null != carModelDO.getBrandId()) {
                 CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carModelDO.getBrandId(), null);
                 if (null != carBrandDO) {
-                    carName = carName + " " + carBrandDO.getName();
+                    carName = carName + SEPARATOR_SPACE + carBrandDO.getName();
                 }
-                carName = carName + " " + carModelDO.getName();
+                carName = carName + SEPARATOR_SPACE + carModelDO.getName();
             }
         } else if (CAR_BRAND.equals(carType)) {
             CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carId, null);
             if (null != carBrandDO) {
-                carName = carName + " " + carBrandDO.getName();
+                carName = carName + SEPARATOR_SPACE + carBrandDO.getName();
             }
         }
 

@@ -14,6 +14,7 @@ import com.yunche.loan.mapper.BankRelaQuestionDOMapper;
 import com.yunche.loan.mapper.VideoFaceLogDOMapper;
 import com.yunche.loan.service.CarService;
 import com.yunche.loan.service.VideoFaceService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
 import static com.yunche.loan.config.constant.VideoFaceConst.*;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;
+import static com.yunche.loan.service.impl.CarServiceImpl.SEPARATOR_SPACE;
 
 /**
  * @author liuzhe
@@ -309,6 +311,11 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
     private List<String> get_Question_List_ICBC_HangZhou_City_Station_Branch(VideoFaceCustomerVO videoFaceCustomerVO) {
 
+
+        String carName = videoFaceCustomerVO.getCarName();
+        String[] carNameArr = carName.split(SEPARATOR_SPACE);
+        String carBrandName = carNameArr[0];
+
         String question_1 = "1、你好，这里是工商银行杭州城站支行，请问是" + redText(videoFaceCustomerVO.getName()) + "先生/女士吗？（参考答案）是";
         String question_2 = "2、我是工商银行杭州分行城站支行的工作人员,请问您现在是否需要在我行申请一笔信用卡汽车分期付款业务用于购买汽车？（参考答案）是";
         String question_3 = "3、下面需要核对一下您的身份信息（选问项，选三个或以上）";
@@ -318,7 +325,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_7 = "7、请问您办理业务所需的个人信息材料都是您本人提供并签字的吗？（参考答案）是";
         String question_8 = "8、您了解该笔贷款是由浙江鑫宝行担保有限公司担保的吗？（参考答案）是";
         String question_9 = "9、请您翻开《牡丹信用卡透支分期付款/抵押合同》 第一页确认相关信息。" +
-                "您申请信用卡汽车分期业务用于购买 {品牌名称} 品牌的汽车，车辆交易总价 {品牌名称} 元，分期金额是 {银行分期本金} 元。" +
+                "您申请信用卡汽车分期业务用于购买 " + redText(carBrandName) + " 品牌的汽车，车辆交易总价 " + redText(videoFaceCustomerVO.getCarPrice()) + " 元，分期金额是 {银行分期本金} 元。" +
                 "每月还款 {月还款} 元，{借款期间/12} 年总计需还款 {本息合计} 元。以上信息您是否确认无误？";
         String question_10 = "10、在您足额偿清合同约定的所有债务之前，您所购车辆的商业保险保单的第一受益人为工商银行，请问您是否同意？（参考答案）是";
         String question_11 = "11、我行审批通过后将根据您的授权对您的信用卡进行激活并将您的分期款项汇给浙江鑫宝行担保有限公司账户，您是否有异议？（参考答案）是";
@@ -343,9 +350,10 @@ public class VideoFaceServiceImpl implements VideoFaceService {
      * @param text
      * @return
      */
-    private String redText(String text) {
+    private String redText(Object text) {
 
-        if (StringUtils.isBlank(text)) {
+        boolean isEmpty = null == text || (text instanceof String && StringUtils.isBlank((String) text));
+        if (isEmpty) {
             text = "未知";
         }
 
