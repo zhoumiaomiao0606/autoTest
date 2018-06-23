@@ -151,7 +151,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
 
             ArrayList<String> header= Lists.newArrayList("申请单号","客户名称","证件类型","证件号",
-                    "业务员","合伙人团队","贷款金额","gps数量","申请单状态","提交状态","备注","审核员","审核时间"
+                    "业务员","合伙人团队","贷款金额","gps数量","提交状态","申请单状态","备注","审核员","审核时间"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);
