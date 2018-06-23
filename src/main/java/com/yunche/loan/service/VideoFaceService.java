@@ -3,7 +3,6 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import com.yunche.loan.domain.query.VideoFaceQuery;
-import com.yunche.loan.domain.vo.VideoFaceCustomerVO;
 import com.yunche.loan.domain.vo.VideoFaceLogVO;
 
 import java.util.List;
@@ -24,5 +23,5 @@ public interface VideoFaceService {
 
     ResultBean<String> exportLog(VideoFaceQuery videoFaceQuery);
 
-    ResultBean<List<String>> listQuestion(VideoFaceCustomerVO videoFaceCustomerVO);
+    ResultBean<List<String>> listQuestion(Long bankId, Long orderId, String address);
 }

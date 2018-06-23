@@ -71,13 +71,17 @@ public class VideoFaceController {
     /**
      * 问题列表
      *
-     * @param videoFaceCustomerVO
+     * @param bankId
+     * @param orderId
+     * @param address
      * @return
      */
-    @PostMapping(value = "/question/list", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<String>> listQuestion(@RequestBody VideoFaceCustomerVO videoFaceCustomerVO) {
+    @GetMapping(value = "/question/list")
+    public ResultBean<List<String>> listQuestion(@RequestParam @NotNull Long bankId,
+                                                 @RequestParam @NotNull Long orderId,
+                                                 @RequestParam String address) {
 
-        return videoFaceService.listQuestion(videoFaceCustomerVO);
+        return videoFaceService.listQuestion(bankId, orderId, address);
     }
 
     /**

@@ -329,47 +329,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                         Long orderId = Long.valueOf(userMsgArr[3]);
                         Long rankNum = Long.valueOf(userMsgArr[4]);
 
-                        VideoFaceCustomerVO videoFaceCustomerVO = new VideoFaceCustomerVO();
-
-                        // 担保公司
-                        videoFaceCustomerVO.setGuaranteeCompanyId(GUARANTEE_COMPANY_ID);
-                        videoFaceCustomerVO.setGuaranteeCompanyName(GUARANTEE_COMPANY_NAME);
-
-                        // bankId
-                        videoFaceCustomerVO.setBankId(bankId);
-
-                        // orderId
-                        videoFaceCustomerVO.setOrderId(orderId);
-
-                        // anyChatUserId
-                        videoFaceCustomerVO.setAnyChatUserId(anyChatUserId);
-
-                        // customer info
-                        CustomerVO customerVO = loanCustomerService.getById(customerId);
-                        if (null != customerVO) {
-                            BeanUtils.copyProperties(customerVO, videoFaceCustomerVO);
-                        }
-
-                        // order
-                        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
-                        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
-
-                        // financial plan
-                        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
-                        if (null != loanFinancialPlanDO) {
-                            // carPrice
-                            videoFaceCustomerVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
-                            // 意向贷款金额    -> 银行分期本金
-                            videoFaceCustomerVO.setExpectLoanAmount(loanFinancialPlanDO.getBankPeriodPrincipal());
-                        }
-
-                        // carInfo
-                        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
-                        if (null != loanCarInfoDO) {
-                            videoFaceCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
-                            String carName = carService.getName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
-                            videoFaceCustomerVO.setCarName(carName);
-                        }
+                        VideoFaceCustomerVO videoFaceCustomerVO = setAndGetVideoFaceCustomerVO(bankId, orderId, anyChatUserId);
 
                         rankNum_customerVO_Map.put(rankNum, videoFaceCustomerVO);
                     });
@@ -396,6 +356,60 @@ public class WebSocketServiceImpl implements WebSocketService {
                         "/queue/team/info/pc", JSON.toJSONString(ResultBean.ofSuccess(customerVOList)));
             });
         }
+    }
+
+    /**
+     * 获取并填充客户信息
+     *
+     * @param bankId
+     * @param orderId
+     * @param anyChatUserId
+     * @return
+     */
+    private VideoFaceCustomerVO setAndGetVideoFaceCustomerVO(Long bankId, Long orderId, Long anyChatUserId) {
+        VideoFaceCustomerVO videoFaceCustomerVO = new VideoFaceCustomerVO();
+
+        // 担保公司
+        videoFaceCustomerVO.setGuaranteeCompanyId(GUARANTEE_COMPANY_ID);
+        videoFaceCustomerVO.setGuaranteeCompanyName(GUARANTEE_COMPANY_NAME);
+
+        // bankId
+        videoFaceCustomerVO.setBankId(bankId);
+
+        // orderId
+        videoFaceCustomerVO.setOrderId(orderId);
+
+        // anyChatUserId
+        videoFaceCustomerVO.setAnyChatUserId(anyChatUserId);
+
+        // order
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
+
+        // customer info
+        CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
+        if (null != customerVO) {
+            BeanUtils.copyProperties(customerVO, videoFaceCustomerVO);
+        }
+
+        // financial plan
+        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+        if (null != loanFinancialPlanDO) {
+            // carPrice
+            videoFaceCustomerVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
+            // 意向贷款金额    -> 银行分期本金
+            videoFaceCustomerVO.setExpectLoanAmount(loanFinancialPlanDO.getBankPeriodPrincipal());
+        }
+
+        // carInfo
+        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+        if (null != loanCarInfoDO) {
+            videoFaceCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
+            String carName = carService.getName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
+            videoFaceCustomerVO.setCarName(carName);
+        }
+
+        return videoFaceCustomerVO;
     }
 
     /**
