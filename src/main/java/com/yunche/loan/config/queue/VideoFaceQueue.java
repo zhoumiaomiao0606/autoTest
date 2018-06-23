@@ -39,7 +39,7 @@ public class VideoFaceQueue {
     /**
      * TODO 排队过期时间：10s
      */
-//    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 100000L;
+//    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 10L;
     private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 3600L * 24 * 30;
 
     /**
@@ -78,7 +78,7 @@ public class VideoFaceQueue {
         // 不存在，则更新排队时间
         boundValueOps.setIfAbsent(String.valueOf(startTime));
         // 设置过期时间
-        boundValueOps.expire(VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE, TimeUnit.MILLISECONDS);
+        boundValueOps.expire(VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE, TimeUnit.SECONDS);
     }
 
     /**

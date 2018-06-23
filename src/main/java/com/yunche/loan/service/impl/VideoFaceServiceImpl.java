@@ -14,7 +14,6 @@ import com.yunche.loan.mapper.BankRelaQuestionDOMapper;
 import com.yunche.loan.mapper.VideoFaceLogDOMapper;
 import com.yunche.loan.service.CarService;
 import com.yunche.loan.service.VideoFaceService;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
