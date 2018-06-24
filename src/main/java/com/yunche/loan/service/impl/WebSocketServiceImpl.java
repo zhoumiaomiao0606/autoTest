@@ -377,7 +377,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         videoFaceCustomerVO.setBankId(bankId);
 
         // orderId
-        videoFaceCustomerVO.setOrderId(orderId);
+        videoFaceCustomerVO.setOrderId(String.valueOf(orderId));
 
         // anyChatUserId
         videoFaceCustomerVO.setAnyChatUserId(anyChatUserId);

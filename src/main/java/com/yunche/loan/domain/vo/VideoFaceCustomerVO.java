@@ -22,7 +22,7 @@ public class VideoFaceCustomerVO {
     /**
      * orderId
      */
-    private Long orderId;
+    private String orderId;
     /**
      * anyChatUserId   -APP端
      */
