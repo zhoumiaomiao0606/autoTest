@@ -1,8 +1,8 @@
 package com.yunche.loan.domain.vo;
 
-import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -15,9 +15,54 @@ import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd
  * @date 2018/6/21
  */
 @Data
-public class VideoFaceLogVO extends VideoFaceLogDO {
+public class VideoFaceLogVO {
+
+    private Long id;
 
     private String orderId;
+
+    private Long guaranteeCompanyId;
+
+    private String guaranteeCompanyName;
+
+    private Long customerId;
+
+    private String customerName;
+
+    private String customerIdCard;
+
+    private String path;
+
+    private Byte type;
+
+    private Long auditorId;
+
+    private String auditorName;
+    /**
+     * 1-通过; 2-不通过;
+     */
+    private Byte action;
+
+    private String latlon;
+
+    private String address;
+
+    private Long carDetailId;
+
+    private String carName;
+
+    private BigDecimal carPrice;
+
+    private BigDecimal expectLoanAmount;
+
+    private BigDecimal photoSimilarityDegree;
+
+    private Date gmtCreate;
+
+    private Date gmtModify;
+
+    private String info;
+
 
     private String typeVal;
 
