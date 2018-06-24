@@ -120,6 +120,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
                     VideoFaceLogVO videoFaceLogVO = new VideoFaceLogVO();
                     BeanUtils.copyProperties(e, videoFaceLogVO);
+                    videoFaceLogVO.setOrderId(String.valueOf(e.getOrderId()));
 
                     return videoFaceLogVO;
                 })
@@ -141,6 +142,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         VideoFaceLogVO videoFaceLogVO = new VideoFaceLogVO();
         if (null != videoFaceLogDO) {
             BeanUtils.copyProperties(videoFaceLogDO, videoFaceLogVO);
+            videoFaceLogVO.setOrderId(String.valueOf(videoFaceLogDO.getOrderId()));
         }
 
         return ResultBean.ofSuccess(videoFaceLogVO);

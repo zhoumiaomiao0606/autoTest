@@ -17,6 +17,8 @@ import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd
 @Data
 public class VideoFaceLogVO extends VideoFaceLogDO {
 
+    private String orderId;
+
     private String typeVal;
 
     private String actionVal;
