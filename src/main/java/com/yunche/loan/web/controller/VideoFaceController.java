@@ -3,7 +3,6 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import com.yunche.loan.domain.query.VideoFaceQuery;
-import com.yunche.loan.domain.vo.VideoFaceCustomerVO;
 import com.yunche.loan.domain.vo.VideoFaceLogVO;
 import com.yunche.loan.service.VideoFaceService;
 import org.springframework.beans.factory.annotation.Autowired;
