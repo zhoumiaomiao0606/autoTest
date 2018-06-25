@@ -151,7 +151,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
 
             ArrayList<String> header= Lists.newArrayList("申请单号","客户名称","证件类型","证件号",
-                    "业务员","合伙人团队","贷款金额","gps数量","审核结果","审核状态","审核员","审核时间","备注"
+                    "业务员","合伙人团队","贷款银行","贷款金额","银行分期本金","gps数量","审核结果","审核状态","审核员","审核时间","备注"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);
@@ -186,25 +186,31 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getPartner_name());
 
                 cell= row.createCell(6);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getLoan_amount());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank());
 
                 cell= row.createCell(7);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getGps_number());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getLoan_amount());
 
                 cell= row.createCell(8);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank_period_principal());
+
+                cell= row.createCell(9);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getGps_number());
+
+                cell= row.createCell(10);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getAction());
 
-                cell = row.createCell(9);
+                cell = row.createCell(11);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getCommit_status());
 
-                cell = row.createCell(10);
+                cell = row.createCell(12);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_user_name());
 
 
-                cell = row.createCell(11);
+                cell = row.createCell(13);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_time());
 
-                cell = row.createCell(12);
+                cell = row.createCell(14);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
 
 
@@ -223,6 +229,8 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             sheet.autoSizeColumn((short)10);
             sheet.autoSizeColumn((short)11);
             sheet.autoSizeColumn((short)12);
+            sheet.autoSizeColumn((short)13);
+            sheet.autoSizeColumn((short)14);
 
             workbook.write(out);
             //上传OSS
