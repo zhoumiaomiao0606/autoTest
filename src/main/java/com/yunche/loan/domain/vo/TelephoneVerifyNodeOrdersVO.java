@@ -19,4 +19,6 @@ public class TelephoneVerifyNodeOrdersVO {
     String action;
     String op_time;
     String op_info;
+    String bank_period_principal;
+    String bank;
 }

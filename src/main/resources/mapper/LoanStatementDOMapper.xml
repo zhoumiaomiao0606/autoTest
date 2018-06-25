@@ -10,6 +10,8 @@
      process.gmt_create AS ct,
      process.gmt_modify AS mt,
      process.telephone_verify,
+     plan.bank_period_principal,
+     plan.bank,
      CASE
 
      WHEN process.telephone_verify = 2 THEN
