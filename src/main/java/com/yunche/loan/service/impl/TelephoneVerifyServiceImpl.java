@@ -151,7 +151,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
 
             ArrayList<String> header= Lists.newArrayList("申请单号","客户名称","证件类型","证件号",
-                    "业务员","合伙人团队","贷款金额","gps数量","申请单状态","提交状态","备注","审核员","审核时间"
+                    "业务员","合伙人团队","贷款金额","gps数量","审核结果","审核状态","审核员","审核时间","备注"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);
@@ -198,14 +198,15 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getCommit_status());
 
                 cell = row.createCell(10);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
-
-                cell = row.createCell(11);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_user_name());
 
 
-                cell = row.createCell(12);
+                cell = row.createCell(11);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_time());
+
+                cell = row.createCell(12);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
+
 
             }
             //文件宽度自适应
@@ -219,7 +220,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             sheet.autoSizeColumn((short)7);
             sheet.autoSizeColumn((short)8);
             sheet.autoSizeColumn((short)9);
-            //sheet.autoSizeColumn((short)10);
+            sheet.autoSizeColumn((short)10);
             sheet.autoSizeColumn((short)11);
             sheet.autoSizeColumn((short)12);
 
