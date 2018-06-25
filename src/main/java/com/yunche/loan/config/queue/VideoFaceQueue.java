@@ -5,8 +5,6 @@ import com.google.common.collect.Maps;
 import com.yunche.loan.domain.vo.CustomerVO;
 import com.yunche.loan.service.LoanCustomerService;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
@@ -22,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class VideoFaceQueue {
 
-    private static final Logger logger = LoggerFactory.getLogger(VideoFaceQueue.class);
-
     /**
      * 视频面签 -队列排队列表 前缀
      */
@@ -31,21 +27,12 @@ public class VideoFaceQueue {
     /**
      * 分隔符
      */
-    public static final String SEPARATOR = ":";
+    public static final String VIDEO_FACE_QUEUE_KEY_SEPARATOR = ":";
     /**
-     * 房间ID
+     * 排队过期时间：10s
      */
-    private static final String VIDEO_FACE_ROOM_ID_KEY_PREFIX = "video:face:room:id:";
-    /**
-     * TODO 排队过期时间：10s
-     */
-//    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 10L;
-    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 3600L * 24 * 30;
+    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 10L;
 
-    /**
-     * 默认过期时间：30min
-     */
-    private static final Long VIDEO_FACE_ROOM_ID_KEY_EXPIRE = 1800L;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -70,8 +57,8 @@ public class VideoFaceQueue {
         long startTime = System.currentTimeMillis();
 
         // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
-        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
-                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
+        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR + anyChatUserId
+                + VIDEO_FACE_QUEUE_KEY_SEPARATOR + wsSessionId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + userId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + orderId;
 
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
 
@@ -94,8 +81,8 @@ public class VideoFaceQueue {
     public void exitQueue(Long queueId, Long userId, Integer clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
 
         // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
-        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
-                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
+        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR + anyChatUserId
+                + VIDEO_FACE_QUEUE_KEY_SEPARATOR + wsSessionId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + userId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + orderId;
 
         stringRedisTemplate.delete(key);
     }
@@ -161,7 +148,7 @@ public class VideoFaceQueue {
     public Map<String, Long> listSessionInQueue(Long queueId, Integer clientType) {
 
         // prefix  +  queue_id  +  client_type  +
-        String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR;
+        String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR;
 
         Set<String> keys = stringRedisTemplate.keys(keyPrefix + "*");
 
@@ -205,7 +192,7 @@ public class VideoFaceQueue {
     public String getWsSessionIdByAnyChatUserId(Long queueId, Long anyChatUserId, Integer clientType) {
 
         // prefix  +  queue_id  +  client_type  +  anyChat_userId
-        String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId + SEPARATOR;
+        String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR + anyChatUserId + VIDEO_FACE_QUEUE_KEY_SEPARATOR;
 
         Set<String> keys = stringRedisTemplate.keys(keyPrefix + "*");
 
@@ -218,7 +205,7 @@ public class VideoFaceQueue {
             // wsSessionId:userId:order_id                tips：PC端无orderId
             String wsSessionId_userId_orderId = keyArr[1];
 
-            String[] strArr = wsSessionId_userId_orderId.split(SEPARATOR);
+            String[] strArr = wsSessionId_userId_orderId.split(VIDEO_FACE_QUEUE_KEY_SEPARATOR);
             String wsSessionId = strArr[0];
 
             return wsSessionId;
@@ -241,8 +228,8 @@ public class VideoFaceQueue {
     public long getWaitTime(Long queueId, Long userId, Integer clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
 
         // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
-        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
-                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
+        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR + anyChatUserId
+                + VIDEO_FACE_QUEUE_KEY_SEPARATOR + wsSessionId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + userId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + orderId;
 
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
 
