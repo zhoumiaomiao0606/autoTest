@@ -14,6 +14,10 @@ public class VideoFaceQuestionAnswerVO {
     private String customerName;
 
     private String customerIdCard;
+    /**
+     * 收入证明单位名称
+     */
+    private String incomeCertificateCompanyName;
 
     private String carName;
 

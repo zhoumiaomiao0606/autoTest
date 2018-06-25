@@ -333,7 +333,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_2 = "2、我是工商银行杭州分行城站支行的工作人员,请问您现在是否需要在我行申请一笔信用卡汽车分期付款业务用于购买汽车？（参考答案）是";
         String question_3 = "3、下面需要核对一下您的身份信息（选问项，选三个或以上）";
         String question_4 = "4、请报一下您的身份证号？（参考答案）" + redText(videoFaceQuestionAnswerVO.getCustomerIdCard());
-        String question_5 = "5、请问您现在的工作单位是什么？（参考答案）{收入证明开具工作单位}";
+        String question_5 = "5、请问您现在的工作单位是什么？（参考答案）" + redText(videoFaceQuestionAnswerVO.getIncomeCertificateCompanyName());
         String question_6 = "6、请问征信查询授权书是您本人签字吗？（参考答案）是";
         String question_7 = "7、请问您办理业务所需的个人信息材料都是您本人提供并签字的吗？（参考答案）是";
         String question_8 = "8、您了解该笔贷款是由浙江鑫宝行担保有限公司担保的吗？（参考答案）是";
@@ -375,6 +375,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         if (null != customerVO) {
             videoFaceQuestionAnswerVO.setCustomerName(customerVO.getName());
             videoFaceQuestionAnswerVO.setCustomerIdCard(customerVO.getIdCard());
+            videoFaceQuestionAnswerVO.setIncomeCertificateCompanyName(customerVO.getIncomeCertificateCompanyName());
         }
 
         // financial plan
