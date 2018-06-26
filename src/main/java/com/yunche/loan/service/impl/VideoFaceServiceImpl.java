@@ -151,6 +151,10 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     @Override
     public ResultBean<String> exportLog(VideoFaceQuery videoFaceQuery) {
 
+        // 导出不分页
+        videoFaceQuery.setPageIndex(null);
+        videoFaceQuery.setPageSize(null);
+
         // 需要导出的数据
         ResultBean<List<VideoFaceLogVO>> listResultBean = listLog(videoFaceQuery);
         Preconditions.checkArgument(listResultBean.getSuccess(), listResultBean.getMsg());
