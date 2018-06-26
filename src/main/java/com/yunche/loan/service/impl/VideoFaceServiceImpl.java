@@ -167,12 +167,12 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         // 声明一个工作薄
         XSSFWorkbook workBook = new XSSFWorkbook();
 
-        // 样式
-        XSSFCellStyle cellStyle = workBook.createCellStyle();
-        // 水平居中
-        cellStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
-        // 垂直居中
-        cellStyle.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
+//        // 样式
+//        XSSFCellStyle cellStyle = workBook.createCellStyle();
+//        // 水平居中
+//        cellStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
+//        // 垂直居中
+//        cellStyle.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
 
         // 生成一个表格
         XSSFSheet sheet = workBook.createSheet();
@@ -182,12 +182,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         // 创建表格标题行  第一行
         XSSFRow titleRow = sheet.createRow(0);
-//        titleRow.setRowStyle(cellStyle);
         for (int i = 0; i < cellTitle.length; i++) {
             // 列
-            XSSFCell cell = titleRow.createCell(i);
-            cell.setCellStyle(cellStyle);
-            cell.setCellValue(cellTitle[i]);
+            titleRow.createCell(i).setCellValue(cellTitle[i]);
         }
 
         // 插入需导出的数据
