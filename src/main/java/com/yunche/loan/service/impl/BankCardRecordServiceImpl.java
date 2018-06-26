@@ -50,7 +50,7 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
 //            returnList = POIUtil.readExcel(0,1,pathFileName);
             returnList = POIUtil.readExcelFromOSS(0,1,key);
             BankCardRecordDO bankCardRecordDO = new BankCardRecordDO();
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             for(String[] tmp :returnList){
                 if(tmp.length!=9){
                     continue;

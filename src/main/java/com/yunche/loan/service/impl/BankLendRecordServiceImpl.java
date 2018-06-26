@@ -94,7 +94,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
             returnList = POIUtil.readExcelFromOSS(0,1,key);
             BankLendRecordDO bankLendRecordDO =new BankLendRecordDO();
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             for(String[] tmp :returnList){
 //                tmp[0].trim();//客户姓名
 //                tmp[1].trim();//身份证号

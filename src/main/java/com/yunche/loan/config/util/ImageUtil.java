@@ -1,8 +1,6 @@
 package com.yunche.loan.config.util;
 
 import com.google.common.base.Preconditions;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
@@ -14,7 +12,10 @@ import org.docx4j.wml.R;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -79,8 +80,7 @@ public class ImageUtil {
             // 释放此图形的上下文以及它使用的所有系统资源。
             g.dispose();
             //将绘制的图像生成至输出流
-            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-            encoder.encode(tag);
+            ImageIO.write(tag,PIC_SUFFIX,out);
         }catch(Exception e){
             e.printStackTrace();
         }finally {
