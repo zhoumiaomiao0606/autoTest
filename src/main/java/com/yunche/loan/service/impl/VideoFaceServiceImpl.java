@@ -110,7 +110,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     @Override
     public ResultBean<List<VideoFaceLogVO>> listLog(VideoFaceQuery videoFaceQuery) {
 
-        PageHelper.startPage(videoFaceQuery.getPageIndex(), videoFaceQuery.getPageSize(), true);
+        if (null != videoFaceQuery.getPageIndex() && null != videoFaceQuery.getPageSize()) {
+            PageHelper.startPage(videoFaceQuery.getPageIndex(), videoFaceQuery.getPageSize(), true);
+        }
 
         List<VideoFaceLogDO> videoFaceLogDOList = videoFaceLogDOMapper.query(videoFaceQuery);
 
