@@ -389,7 +389,9 @@ public class WebSocketServiceImpl implements WebSocketService {
         // customer info
         CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
         if (null != customerVO) {
-            BeanUtils.copyProperties(customerVO, videoFaceCustomerVO);
+            videoFaceCustomerVO.setId(customerVO.getId());
+            videoFaceCustomerVO.setName(customerVO.getName());
+            videoFaceCustomerVO.setIdCard(customerVO.getIdCard());
         }
 
         // financial plan
