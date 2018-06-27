@@ -74,6 +74,8 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     @Transactional
     public ResultBean<Long> saveLog(VideoFaceLogDO videoFaceLogDO) {
         Preconditions.checkNotNull(videoFaceLogDO.getOrderId(), "订单号不能为空");
+        Preconditions.checkNotNull(videoFaceLogDO.getBankId(), "银行ID不能为空");
+        Preconditions.checkNotNull(videoFaceLogDO.getBankName(), "银行名称不能为空");
 
         // APP端  车型名称
         if (TYPE_APP.equals(videoFaceLogDO.getType())) {
