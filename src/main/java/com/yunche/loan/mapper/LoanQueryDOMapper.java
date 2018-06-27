@@ -95,4 +95,6 @@ public interface LoanQueryDOMapper {
     Long  selectOrderIdByIDCard(String idCard);
 
     BankCardRecordVO selectBankCardRecordDetail(Long orderId);
+
+    boolean checkCustomerHavingCreditON14Day(String idCard);
 }
