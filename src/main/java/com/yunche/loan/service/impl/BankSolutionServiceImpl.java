@@ -22,7 +22,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private LoanQueryDOMapper loanQueryDOMapper;
 
     @Override
-    public void execute(@Validated @NotNull Long bankId, @Validated @NotNull List<LoanCustomerDO> customers) {
+    public void creditAutomaticCommit(@Validated @NotNull Long bankId, @Validated @NotNull List<LoanCustomerDO> customers) {
         checkCustomerHavingCreditON14Day(customers);
         int value = bankId.intValue();
         switch (value) {
@@ -36,7 +36,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     @Override
-    public void compensation(@Validated @NotNull Long bankId,@Validated @NotNull Long customerId) {
+    public void creditArtificialCompensation(@Validated @NotNull Long bankId,@Validated @NotNull Long customerId) {
 
     }
 
