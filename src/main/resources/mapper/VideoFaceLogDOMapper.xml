@@ -53,13 +53,13 @@
             AND guarantee_company_id = #{guaranteeCompanyId}
         </if>
         <if test="guaranteeCompanyName != null and guaranteeCompanyName != '' ">
-            AND guarantee_company_name LIKE CONCAT('%',#{guaranteeCompanyName},'%')
+            AND guarantee_company_name = #{guaranteeCompanyName}
         </if>
         <if test="customerId != null">
             AND customer_id = #{customerId}
         </if>
         <if test="customerName != null and customerName != '' ">
-            AND customer_name = #{customerName}
+            AND customer_name LIKE CONCAT(#{customerName}, '%')
         </if>
         <if test="customerIdCard != null and customerIdCard != '' ">
             AND customer_id_card = #{customerIdCard}
