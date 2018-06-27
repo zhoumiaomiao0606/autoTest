@@ -294,7 +294,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         VideoFaceQuestionAnswerVO videoFaceQuestionAnswerVO = setAndGetVideoFaceQuestionAnswerVO(bankId, orderId);
 
-        String question_1 = "1、你好，这里是工商银行路桥支行，请问是 " + redText(videoFaceQuestionAnswerVO.getCustomerName()) + " 先生/女士吗？（参考答案）是";
+        String question_1 = "1、你好，这里是工商银行路桥支行，请问是" + redText(videoFaceQuestionAnswerVO.getCustomerName()) + "先生/女士吗？（参考答案）是";
         String question_2 = "2、我是工商银行路桥支行的工作人员，请问您现在是否需要在我行申请一笔信用卡购车分期付款业务？您对此分期付款业务情况是否了解（参考答案）是";
         String question_3 = "3、下面需要核对一下您的身份信息（选问项，选三个或以上）";
 
@@ -350,12 +350,12 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_7 = "7、请问您办理业务所需的个人信息材料都是您本人提供并签字的吗？（参考答案）是";
         String question_8 = "8、您了解该笔贷款是由浙江鑫宝行担保有限公司担保的吗？（参考答案）是";
         String question_9 = "9、请您翻开《牡丹信用卡透支分期付款/抵押合同》 第一页确认相关信息。" +
-                "您申请信用卡汽车分期业务用于购买 " + redText(videoFaceQuestionAnswerVO.getCarBrandName()) + " 品牌的汽车，" +
-                "车辆交易总价 " + redText(videoFaceQuestionAnswerVO.getCarPrice()) + " 元，" +
-                "分期金额是 " + redText(videoFaceQuestionAnswerVO.getLoanAmount()) + " 元。" +
-                "每月还款 " + redText(videoFaceQuestionAnswerVO.getEachMonthRepay()) + " 元，"
-                + redText(videoFaceQuestionAnswerVO.getLoanTime() / 12) + " 年" +
-                "总计需还款 " + redText(videoFaceQuestionAnswerVO.getPrincipalInterestSum()) + " 元。" +
+                "您申请信用卡汽车分期业务用于购买" + redText(videoFaceQuestionAnswerVO.getCarBrandName()) + "品牌的汽车，" +
+                "车辆交易总价" + redText(videoFaceQuestionAnswerVO.getCarPrice()) + "元，" +
+                "分期金额是" + redText(videoFaceQuestionAnswerVO.getLoanAmount()) + "元。" +
+                "每月还款" + redText(videoFaceQuestionAnswerVO.getEachMonthRepay()) + "元，"
+                + redText(videoFaceQuestionAnswerVO.getLoanTime() / 12) + "年" +
+                "总计需还款" + redText(videoFaceQuestionAnswerVO.getPrincipalInterestSum()) + "元。" +
                 "以上信息您是否确认无误？";
         String question_10 = "10、在您足额偿清合同约定的所有债务之前，您所购车辆的商业保险保单的第一受益人为工商银行，请问您是否同意？（参考答案）是";
         String question_11 = "11、我行审批通过后将根据您的授权对您的信用卡进行激活并将您的分期款项汇给浙江鑫宝行担保有限公司账户，您是否有异议？（参考答案）是";
