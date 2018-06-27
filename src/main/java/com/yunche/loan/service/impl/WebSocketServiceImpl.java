@@ -193,7 +193,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         // TODO 若贷款银行为台州路桥支行，则判断：
 //        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())) {
-        else if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
+        else if (BANK_ID_ICBC_Harbin_GuXiang_Branch.equals(webSocketParam.getBankId())) {
 
             double loanAmount = webSocketParam.getLoanAmount().doubleValue();
 
