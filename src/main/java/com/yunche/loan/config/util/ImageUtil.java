@@ -27,7 +27,7 @@ public class ImageUtil {
     private  static String downLoadBasepath="/tmp";
 
     private static final String PIC_SUFFIX=".jpg";
-    private static final String DOC_SUFFIX=".doc";
+    private static final String DOC_SUFFIX=".docx";
 
     static {
         ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
@@ -119,7 +119,7 @@ public class ImageUtil {
                 }
                 BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(wordMLPackage, bytes);
                 int docPrId = 1;
-                int cNvPrId = 1;
+                int cNvPrId = 2;
                 Inline inline = imagePart.createImageInline("AAA","BBB", docPrId, cNvPrId, false);
                 ObjectFactory factory = new ObjectFactory();
                 P paragraph = factory.createP();
