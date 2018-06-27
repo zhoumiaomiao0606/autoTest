@@ -51,7 +51,7 @@ public class VideoFaceQueue {
      * @param orderId
      * @param wsSessionId   WebSocket 会话ID
      */
-    public void addQueue(Long queueId, Long userId, Integer clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
+    public void addQueue(Long queueId, Long userId, Byte clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
 
         // 队列排名依据   -> val ： 开始排队时间
         long startTime = System.currentTimeMillis();
@@ -78,7 +78,7 @@ public class VideoFaceQueue {
      * @param orderId
      * @param wsSessionId
      */
-    public void exitQueue(Long queueId, Long userId, Integer clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
+    public void exitQueue(Long queueId, Long userId, Byte clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
 
         // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
         String key = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR + anyChatUserId
@@ -145,7 +145,7 @@ public class VideoFaceQueue {
      * @param clientType
      * @return
      */
-    public Map<String, Long> listSessionInQueue(Long queueId, Integer clientType) {
+    public Map<String, Long> listSessionInQueue(Long queueId, Byte clientType) {
 
         // prefix  +  queue_id  +  client_type  +
         String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR;
@@ -189,7 +189,7 @@ public class VideoFaceQueue {
      * @param clientType
      * @return
      */
-    public String getWsSessionIdByAnyChatUserId(Long queueId, Long anyChatUserId, Integer clientType) {
+    public String getWsSessionIdByAnyChatUserId(Long queueId, Long anyChatUserId, Byte clientType) {
 
         // prefix  +  queue_id  +  client_type  +  anyChat_userId
         String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR + anyChatUserId + VIDEO_FACE_QUEUE_KEY_SEPARATOR;
@@ -225,7 +225,7 @@ public class VideoFaceQueue {
      * @param wsSessionId
      * @return
      */
-    public long getWaitTime(Long queueId, Long userId, Integer clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
+    public long getWaitTime(Long queueId, Long userId, Byte clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
 
         // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
         String key = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR + anyChatUserId

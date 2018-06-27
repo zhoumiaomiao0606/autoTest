@@ -195,7 +195,7 @@ public class WebSocketController {
     }
 
     @GetMapping("/queue/wait")
-    public void wait_(@RequestParam Integer type,
+    public void wait_(@RequestParam Byte type,
                       @RequestParam Long bankId,
                       @RequestParam Long userId) {
 

@@ -19,7 +19,7 @@ public class WebSocketParam {
      *
      * @see VideoFaceConst
      */
-    private Integer type;
+    private Byte type;
 
     private Long bankId;
 

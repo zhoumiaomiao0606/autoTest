@@ -34,6 +34,11 @@ import static com.yunche.loan.config.queue.VideoFaceQueue.VIDEO_FACE_QUEUE_KEY_S
 public class WebSocketServiceImpl implements WebSocketService {
 
     /**
+     * 机器面签-语音路径
+     */
+    public static final String voice_path = "https://yunche-base.oss-cn-hangzhou.aliyuncs.com/videoface.m4a";
+
+    /**
      * 使用SimpMessagingTemplate 向浏览器发送消息
      */
     @Autowired
@@ -423,6 +428,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         WebSocketMsgVO webSocketMsgVO = new WebSocketMsgVO();
         webSocketMsgVO.setFaceSign(FACE_SIGN_MACHINE);
+        webSocketMsgVO.setVoicePath(voice_path);
 
         simpMessagingTemplate.convertAndSendToUser(wsSessionId, "/queue/faceSign/machine",
                 JSON.toJSONString(ResultBean.ofSuccess(webSocketMsgVO)));

@@ -27,4 +27,8 @@ public class WebSocketMsgVO {
      * 面签方式：1-人工面签;2-机器面签;
      */
     private Integer faceSign;
+    /**
+     * 机器面签语音路径
+     */
+    private String voicePath;
 }

@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
@@ -69,13 +70,19 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     @Autowired
     private CarService carService;
 
+    @Autowired
+    private BankCache bankCache;
+
 
     @Override
     @Transactional
     public ResultBean<Long> saveLog(VideoFaceLogDO videoFaceLogDO) {
         Preconditions.checkNotNull(videoFaceLogDO.getOrderId(), "订单号不能为空");
         Preconditions.checkNotNull(videoFaceLogDO.getBankId(), "银行ID不能为空");
-        Preconditions.checkNotNull(videoFaceLogDO.getBankName(), "银行名称不能为空");
+
+        if (StringUtils.isBlank(videoFaceLogDO.getBankName())) {
+            videoFaceLogDO.setBankName(bankCache.getNameById(videoFaceLogDO.getBankId()));
+        }
 
         // APP端  车型名称
         if (TYPE_APP.equals(videoFaceLogDO.getType())) {

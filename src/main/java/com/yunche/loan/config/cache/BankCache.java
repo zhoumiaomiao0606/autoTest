@@ -27,11 +27,11 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Component
 public class BankCache {
 
-    private static final Logger logger = LoggerFactory.getLogger(BankCache.class);
-
     private static final String BANK_NAME_ALL_CACHE_KEY = "all:cache:bank:list:name";
 
     private static final String BANK_NAME_ID_MAP_CACHE_KEY = "all:cache:bank:map:name-id";
+
+    private static final String BANK_ID_NAME_MAP_CACHE_KEY = "all:cache:bank:map:id-name";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -67,6 +67,7 @@ public class BankCache {
     public void refresh() {
         refreshListBankName();
         refreshBankNameIdMap();
+        refreshBankIdNameMap();
     }
 
     private void refreshListBankName() {
@@ -97,13 +98,13 @@ public class BankCache {
      */
     public Long getBankIdByName(String bankName) {
 
-        Map<String, Integer> nameIdMap = getNameIdMap();
+        Map<String, String> nameIdMap = getNameIdMap();
 
         if (!CollectionUtils.isEmpty(nameIdMap)) {
 
-            Integer bankId = nameIdMap.get(bankName);
+            String bankId = nameIdMap.get(bankName);
 
-            if (null == bankId) {
+            if (StringUtils.isBlank(bankId)) {
                 return null;
             }
             return Long.valueOf(bankId);
@@ -117,7 +118,7 @@ public class BankCache {
      *
      * @return
      */
-    public Map<String, Integer> getNameIdMap() {
+    public Map<String, String> getNameIdMap() {
 
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(BANK_NAME_ID_MAP_CACHE_KEY);
         String result = boundValueOps.get();
@@ -139,7 +140,7 @@ public class BankCache {
 
         List<BankDO> bankList = bankDOMapper.listAll(VALID_STATUS);
 
-        Map<String, Long> nameIdMap = Maps.newHashMap();
+        Map<String, String> nameIdMap = Maps.newHashMap();
 
         if (!CollectionUtils.isEmpty(bankList)) {
 
@@ -147,7 +148,7 @@ public class BankCache {
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
-                        nameIdMap.put(e.getName(), e.getId());
+                        nameIdMap.put(e.getName(), String.valueOf(e.getId()));
                     });
 
             if (!CollectionUtils.isEmpty(nameIdMap)) {
@@ -155,6 +156,63 @@ public class BankCache {
                 boundValueOps.set(JSON.toJSONString(nameIdMap));
             }
         }
+    }
+
+    private void refreshBankIdNameMap() {
+
+        List<BankDO> bankList = bankDOMapper.listAll(VALID_STATUS);
+
+        Map<String, String> nameIdMap = Maps.newHashMap();
+
+        if (!CollectionUtils.isEmpty(bankList)) {
+
+            bankList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        nameIdMap.put(String.valueOf(e.getId()), e.getName());
+                    });
+
+            if (!CollectionUtils.isEmpty(nameIdMap)) {
+                BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(BANK_ID_NAME_MAP_CACHE_KEY);
+                boundValueOps.set(JSON.toJSONString(nameIdMap));
+            }
+        }
+    }
+
+    public String getNameById(Long bankId) {
+
+        Map<String, String> idNameMap = getIdNameMap();
+
+        if (!CollectionUtils.isEmpty(idNameMap)) {
+
+            String bankName = idNameMap.get(String.valueOf(bankId));
+
+            if (StringUtils.isBlank(bankName)) {
+                return null;
+            }
+            return bankName;
+        }
+
+        return null;
+    }
+
+    public Map<String, String> getIdNameMap() {
+
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(BANK_ID_NAME_MAP_CACHE_KEY);
+        String result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            return JSON.parseObject(result, Map.class);
+        }
+
+        refreshBankNameIdMap();
+
+        result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            return JSON.parseObject(result, Map.class);
+        }
+
+        return null;
     }
 
 }
