@@ -57,11 +57,15 @@ public class VideoFaceLogVO {
 
     private BigDecimal photoSimilarityDegree;
 
+    private Long bankId;
+
+    private String bankName;
+
+    private String info;
+
     private Date gmtCreate;
 
     private Date gmtModify;
-
-    private String info;
 
 
     private String typeVal;

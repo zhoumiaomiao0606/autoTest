@@ -54,6 +54,10 @@ public class VideoFaceQuery extends BaseQuery {
 
     private BigDecimal photoSimilarityDegree;
 
+    private Long bankId;
+
+    private String bankName;
+
     private Date gmtCreate;
 
     private Date gmtModify;
