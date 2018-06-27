@@ -1,6 +1,7 @@
 package com.yunche.loan.config.util;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.common.OSSConfig;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
@@ -8,6 +9,7 @@ import org.docx4j.wml.Drawing;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -24,11 +26,13 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class ImageUtil {
+    @Autowired
+    OSSConfig ossConfig;
     private  static String downLoadBasepath="/tmp";
 
     private static final String PIC_SUFFIX=".jpg";
-    private static final String DOC_SUFFIX=".doc";
-
+    private static final String DOC_SUFFIX=".docx";
+    private static final String FORMATNAME="jpg";
     static {
         ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
         downLoadBasepath = bundle.containsKey("downLoadBasepath") == false ? "" : bundle.getString("downLoadBasepath");
@@ -38,8 +42,9 @@ public class ImageUtil {
      * 图片合并成jpg
      * @param imageList
      */
-    public static void mergeImage2Pic(List<String> imageList){
+    public static final  String  mergeImage2Pic(List<String> imageList){
         FileOutputStream out = null;
+        String fileName=null;
         try{
             //创建文件对象
             List<Image> images = imageList.stream().map(pic->{
@@ -67,20 +72,20 @@ public class ImageUtil {
             //构造一个类型为预定义图像类型之一的 BufferedImage。 高度为各个图片高度之和
             BufferedImage tag = new BufferedImage(maxWidth, totalHeight, BufferedImage.TYPE_INT_RGB);
             //创建输出流
-            String fileName = downLoadBasepath+File.separator+generateName()+PIC_SUFFIX;
+            fileName = downLoadBasepath+File.separator+generateName()+PIC_SUFFIX;
             out = new FileOutputStream(fileName);
             //绘制合成图像
             Graphics g = tag.createGraphics();
             int tmpHeight=0;
             for(int i=0;i<images.size();i++){
                 Image image = images.get(i);
-                g.drawImage(image, 0, tmpHeight, maxWidth, image.getHeight(null), null);
+                g.drawImage(image, 0, tmpHeight, image.getWidth(null), image.getHeight(null), null);
                 tmpHeight+=image.getHeight(null);
             }
             // 释放此图形的上下文以及它使用的所有系统资源。
             g.dispose();
             //将绘制的图像生成至输出流
-            ImageIO.write(tag,PIC_SUFFIX,out);
+            boolean write = ImageIO.write(tag, FORMATNAME, out);
         }catch(Exception e){
             e.printStackTrace();
         }finally {
@@ -93,14 +98,16 @@ public class ImageUtil {
                 Preconditions.checkArgument(false,e.getMessage());
             }
         }
+        return fileName;
     }
 
     /**
      * 图片合成word文档
      * @param imageList
      */
-    public static void mergeImage2Doc(List<String> imageList) {
+    public static final String  mergeImage2Doc(List<String> imageList) {
         InputStream is =null;
+        String fileName=null;
         try {
             WordprocessingMLPackage  wordMLPackage =  WordprocessingMLPackage.createPackage();
             for(int i=0;i<imageList.size();i++){
@@ -130,7 +137,7 @@ public class ImageUtil {
                 drawing.getAnchorOrInline().add(inline);
                 wordMLPackage.getMainDocumentPart().addObject(paragraph);
             }
-            String fileName = downLoadBasepath+File.separator+generateName()+DOC_SUFFIX;
+            fileName = downLoadBasepath+File.separator+generateName()+DOC_SUFFIX;
             wordMLPackage.save(new File(fileName));
 
         } catch (Exception e) {
@@ -145,6 +152,7 @@ public class ImageUtil {
                 }
             }
         }
+        return fileName;
     }
 
     private static  String generateName(){
