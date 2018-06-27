@@ -311,7 +311,7 @@
         </table>
 -->
 
-        <table tableName="task_distribution" domainObjectName="TaskDistributionDO"
+        <table tableName="bank_interface_serial" domainObjectName="BankInterfaceSerialDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

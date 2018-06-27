@@ -1,8 +1,10 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.constant.BankInterfaceSerialStatusEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +30,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         switch (value) {
             case 4:
                 //判断当前客户贷款银行是否为台州工行，如为台州工行：
-                tzICBCBankProcess(customers);
+                tzICBCBankCreditProcess(customers);
                 break;
             default:
                 return;
@@ -41,8 +43,22 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
 
-    private void tzICBCBankProcess(List<LoanCustomerDO> customers){
-        //1、提交征信申请后，系统判断当前客户14天内是否存在贷款申请人，如存在，则提示客户“当前客户14天内存在征信申请，不能重复提交”。
+    private void tzICBCBankCreditProcess(List<LoanCustomerDO> customers){
+            //①判断客户是否已提交了征信记录，且银行征信结果非退回，若满足，则不会推送该客户，否则继续②
+            for(LoanCustomerDO loanCustomerDO:customers){
+                UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId());
+                if(result!=null){
+                    //之前提交过
+                    //处理中 和 查询成功的不做推送
+                    if(!result.getStatus().equals(BankInterfaceSerialStatusEnum.SUCCESS.toString()) && !result.getStatus().equals(BankInterfaceSerialStatusEnum.PROCESS.toString())){
+                        
+                    }
+                }
+
+
+            }
+
+
     }
 
     private void checkCustomerHavingCreditON14Day(List<LoanCustomerDO> customers){

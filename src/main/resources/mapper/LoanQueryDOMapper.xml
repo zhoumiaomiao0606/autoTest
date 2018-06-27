@@ -954,6 +954,17 @@
     </select>
 
 
+    <select id="selectUniversalLatestBankInterfaceSerial" resultType="com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO">
+        select
+            serial_no                                      as serialNo,
+            customer_id                                    as customerId,
+            status                                         as status,
+            DATE_FORMAT(request_time,'%Y-%m-%d %H:%i:%S')  as requestTime,
+            DATE_FORMAT(callback_time,'%Y-%m-%d %H:%i:%S') as callbackTime
+        from bank_lend_record where customer_id = #{customerId} order by request_time desc limit 1
+    </select>
+
+
 
     <!--=============================================end===================================================-->
 

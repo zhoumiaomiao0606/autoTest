@@ -1,5 +1,6 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.TaskDistributionDO;
 import com.yunche.loan.domain.vo.*;
 
@@ -11,6 +12,8 @@ import java.util.Set;
 
 @Mapper
 public interface LoanQueryDOMapper {
+
+    UniversalBankInterfaceSerialVO selectUniversalLatestBankInterfaceSerial(Long customerId);
 
     String selectTelephoneVerifyLevel(@Param("loginUserId") Long loginUserId );
 
