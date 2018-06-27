@@ -4,6 +4,7 @@ package com.yunche.loan.config.util;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.SocketException;
@@ -14,6 +15,7 @@ import java.util.StringTokenizer;
 /**
  * FTP 服务
  */
+@Service
 public class FtpImpl implements Ftp {
     private FTPClient ftpClient;
     public static final int BINARY = 2;
