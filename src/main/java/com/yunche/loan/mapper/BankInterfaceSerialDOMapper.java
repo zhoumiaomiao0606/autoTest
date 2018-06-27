@@ -1,5 +1,7 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
+
 public interface BankInterfaceSerialDOMapper {
     int deleteByPrimaryKey(String serialNo);
 

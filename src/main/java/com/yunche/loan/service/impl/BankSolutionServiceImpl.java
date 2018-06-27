@@ -1,8 +1,8 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.constant.BankInterfaceSerialStatusEnum;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
@@ -16,12 +16,18 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.BankInterfaceSerialStatusEnum.PROCESS;
+import static com.yunche.loan.config.constant.BankInterfaceSerialStatusEnum.SUCCESS;
+
 @Service
 @Transactional
 public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Resource
+    private ICBCFeignClient icbcFeignClient;
 
     @Override
     public void creditAutomaticCommit(@Validated @NotNull Long bankId, @Validated @NotNull List<LoanCustomerDO> customers) {
@@ -49,9 +55,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId());
                 if(result!=null){
                     //之前提交过
-                    //处理中 和 查询成功的不做推送
-                    if(!result.getStatus().equals(BankInterfaceSerialStatusEnum.SUCCESS.toString()) && !result.getStatus().equals(BankInterfaceSerialStatusEnum.PROCESS.toString())){
-                        
+                    //非处理中 并且 非查询成功的可以进行推送
+                    if(!result.getStatus().equals(SUCCESS.getStatus().toString()) && !result.getStatus().equals(PROCESS.getStatus().toString())){
+
                     }
                 }
 
@@ -69,4 +75,5 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             }
         }
     }
+
 }
