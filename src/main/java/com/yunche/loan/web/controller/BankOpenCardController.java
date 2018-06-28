@@ -1,8 +1,12 @@
 package com.yunche.loan.web.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.google.common.base.Preconditions;
+import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.BankOpenCardParam;
+import com.yunche.loan.service.BankOpenCardService;
+import com.yunche.loan.service.BankSolutionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
@@ -22,6 +26,22 @@ public class BankOpenCardController {
      *
      */
 
+    @Autowired
+    BankOpenCardService bankOpenCardService;
 
+
+    @Autowired
+    BankSolutionService bankSolutionService;
+
+
+    @GetMapping(value = "/detail")
+    public ResultBean detail(@RequestParam("orderId") Long orderId ) {
+        Preconditions.checkNotNull(orderId,"业务单号不能为空");
+        return bankOpenCardService.detail(orderId);
+    }
+    @PostMapping(value = "/openCard")
+    public ResultBean open(@RequestBody BankOpenCardParam bankOpenCardParam){
+        return bankOpenCardService.openCard(bankOpenCardParam);
+    }
 
 }

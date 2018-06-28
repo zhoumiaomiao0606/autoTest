@@ -3,7 +3,9 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.BankSolutionService;
@@ -75,5 +77,16 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             }
         }
     }
+
+    /**
+     * 银行开卡
+     * @param bankOpenCardParam
+     */
+    public ResultBean creditcardapply(BankOpenCardParam bankOpenCardParam){
+
+        ResultBean creditcardapply = icbcFeignClient.creditcardapply(bankOpenCardParam);
+        return ResultBean.ofSuccess(creditcardapply);
+    }
+
 
 }

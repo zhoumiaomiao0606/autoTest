@@ -1,6 +1,7 @@
 package com.yunche.loan.config.feign.client;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.param.ICBCApiParam;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,4 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface ICBCFeignClient {
     @RequestMapping(value = "/api/v1/icbc/apply/applyCredit",method = RequestMethod.POST)
     public ResultBean applyCredit(@RequestBody ICBCApiParam.ApplyCredit applyCredit);
+
+    @RequestMapping(value = "/api/v1/icbc/apply/creditcardapply",method = RequestMethod.POST)
+    public ResultBean creditcardapply(@RequestBody BankOpenCardParam bankOpenCardParam);
 }

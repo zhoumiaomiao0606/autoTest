@@ -40,7 +40,8 @@ public enum LoanFileEnum {
     ASSESSMENT_DATA((byte)24,"评估资料"),
     PAYMENT_VOUCHER((byte)25,"打款凭证"),
     ZIP_PACK((byte)26,"zip包"),
-    OPEN_CARD_DATA((byte)27,"开卡资料");
+    SPECIAL_QUOTA_APPLY((byte)27,"专项额度核定申请表"),
+    OPEN_CARD_DATA((byte)28,"开卡申请表");
 
     @Getter
     @Setter

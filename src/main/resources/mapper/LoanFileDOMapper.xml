@@ -190,4 +190,16 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
+    <select id="selectByCustomerAndTypes" resultType="com.yunche.loan.domain.entity.LoanFileDO">
+        select
+            path
+        from loan_file where customer_id=#{customerId}
+            and
+            type in
+            <foreach item="item" index="index" collection="typeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+
+    </select>
+
 </mapper>
