@@ -1,8 +1,6 @@
 package com.yunche.loan.config.queue;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yunche.loan.domain.vo.CustomerVO;
 import com.yunche.loan.service.LoanCustomerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,57 +83,6 @@ public class VideoFaceQueue {
                 + VIDEO_FACE_QUEUE_KEY_SEPARATOR + wsSessionId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + userId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + orderId;
 
         stringRedisTemplate.delete(key);
-    }
-
-    /**
-     * 队列中的 排队用户列表
-     *
-     * @param queueId
-     * @return
-     */
-    public List<CustomerVO> listCustomerInQueue(Long queueId) {
-
-//        Set<String> keys = listKeyInQueue(queueId);
-
-        // prefix  +  queue_id  +  customerId / userId
-        String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + ":";
-
-        Set<String> keys = stringRedisTemplate.keys(keyPrefix + "*");
-
-        List<CustomerVO> customerVOList = Lists.newArrayList();
-
-        if (!CollectionUtils.isEmpty(keys)) {
-
-            keys.stream()
-                    .filter(StringUtils::isNotBlank)
-                    .forEach(e -> {
-
-                        String[] keyArr = e.split(keyPrefix);
-
-                        if (keyArr.length == 2) {
-
-                            String userId = keyArr[1];
-
-                            CustomerVO customerVO = loanCustomerService.getById(Long.valueOf(userId));
-
-                            customerVOList.add(customerVO);
-                        }
-
-                    });
-
-        }
-
-        return customerVOList;
-    }
-
-    public Set<String> listKeyInQueue(Long queueId) {
-
-        // prefix  +  queue_id  +  userId
-        String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + ":";
-
-        Set<String> keys = stringRedisTemplate.keys(keyPrefix + "*");
-
-        return keys;
     }
 
     /**
