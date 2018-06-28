@@ -21,6 +21,7 @@ import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.util.List;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -69,28 +70,57 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
      */
     @Override
     public ResultBean openCard(BankOpenCardParam bankOpenCardParam) {
-        // TODO 图片合成
-        //1001 【开卡】专项额度核定申请表 Special quota apply
-        //1002  【开卡】开卡申请表(和身份证正反面合并成一张图片)
-//        loanFileDOMapper
-        List typets = Lists.newArrayList();
-        typets.add(ID_CARD_FRONT);
-        typets.add(ID_CARD_BACK);
-        typets.add(OPEN_CARD_DATA);
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.selectByCustomerAndTypes(bankOpenCardParam.getCustomerId(), typets);
-        List<LoanFileDO> loanFileDOS1 = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_FRONT.getType(), (byte) 1);
-        List<LoanFileDO> loanFileDOS2 = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_BACK.getType(), (byte) 1);
-        List<LoanFileDO> loanFileDOS3 = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_BACK.getType(), (byte) 1);
 
+        List<LoanFileDO> idCardFront = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_FRONT.getType(), (byte) 1);
+        List<LoanFileDO> idCardback = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_BACK.getType(), (byte) 1);
+        List<LoanFileDO> specialQuotaApply = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), SPECIAL_QUOTA_APPLY.getType(), (byte) 1);
+        List<LoanFileDO> openCardData = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), OPEN_CARD_DATA.getType(), (byte) 1);
+
+        List<LoanFileDO> openCardTypes = Lists.newArrayList();
+        openCardTypes.addAll(idCardFront);
+        openCardTypes.addAll(idCardback);
+        openCardTypes.addAll(openCardData);
+
+        //【开卡】专项额度核定申请表
         List<String> keys = Lists.newArrayList();
-        loanFileDOS.stream().filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e->{
+        specialQuotaApply.stream().filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e->{
             String path = e.getPath();
             List<String> list = JSONArray.parseArray(path, String.class);
             keys.addAll(list);
         });
-        String mergerFilePath = ImageUtil.mergeImage2Pic(keys);//合成图片本地路径
-        boolean b = FtpUtil.icbcUpload(mergerFilePath);
-        if(!b){
+
+        String mergerFilePath1 = ImageUtil.mergeImage2Pic(keys);//合成图片本地路径
+
+        String fileName = mergerFilePath1.substring(mergerFilePath1.lastIndexOf(File.separator) + 1);
+        BankOpenCardParam.Picture picture1 = new BankOpenCardParam.Picture();
+        picture1.setPicid(IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY);
+        picture1.setPicname(fileName);
+
+
+
+
+        //开卡】开卡申请表(和身份证正反面合并成一张图片)
+        List<String> openCardTypesStr = Lists.newArrayList();
+        openCardTypes.stream().filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e->{
+            String path = e.getPath();
+            List<String> list = JSONArray.parseArray(path, String.class);
+            openCardTypesStr.addAll(list);
+        });
+        String mergerFilePath2 = ImageUtil.mergeImage2Pic(openCardTypesStr);
+
+        String fileName2 = mergerFilePath2.substring(mergerFilePath2.lastIndexOf(File.separator) + 1);
+        BankOpenCardParam.Picture picture2 = new BankOpenCardParam.Picture();
+        picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
+        picture2.setPicname(fileName2);
+
+
+
+
+        bankOpenCardParam.getPictures().add(picture1);
+        bankOpenCardParam.getPictures().add(picture2);
+        boolean b1 = FtpUtil.icbcUpload(mergerFilePath1);
+        boolean b2 = FtpUtil.icbcUpload(mergerFilePath2);
+        if(!b1 || !b2){
             return ResultBean.of("图片上传失败",false,null);
         }
         return bankSolutionService.creditcardapply(bankOpenCardParam);

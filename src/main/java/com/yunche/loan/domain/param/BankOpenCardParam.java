@@ -23,7 +23,7 @@ public class BankOpenCardParam {
         @Data
         public static class Picture {
             private String picid;
-            private String picurl;
+            private String picname;
             private String picnote;
         }
 
