@@ -1,79 +1,125 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.BankInterfaceSerialDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankInterfaceSerialDO" >
-    <id column="serial_no" property="serialNo" jdbcType="VARCHAR" />
-    <result column="customer_id" property="customerId" jdbcType="BIGINT" />
-    <result column="status" property="status" jdbcType="TINYINT" />
-    <result column="request_time" property="requestTime" jdbcType="TIMESTAMP" />
-    <result column="callback_time" property="callbackTime" jdbcType="TIMESTAMP" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.BankInterfaceSerialDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
+    <id column="serial_no" jdbcType="VARCHAR" property="serialNo" />
+    <result column="customer_id" jdbcType="BIGINT" property="customerId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="request_time" jdbcType="TIMESTAMP" property="requestTime" />
+    <result column="callback_time" jdbcType="TIMESTAMP" property="callbackTime" />
+    <result column="reject_reason" jdbcType="VARCHAR" property="rejectReason" />
+    <result column="trans_code" jdbcType="VARCHAR" property="transCode" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    serial_no, customer_id, status, request_time, callback_time
+  <sql id="Base_Column_List">
+    serial_no, customer_id, status, request_time, callback_time, reject_reason, trans_code
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from bank_interface_serial
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from bank_interface_serial
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </delete>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO" >
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
+    insert into bank_interface_serial (serial_no, customer_id, status, 
+      request_time, callback_time, reject_reason, 
+      trans_code)
+    values (#{serialNo,jdbcType=VARCHAR}, #{customerId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}, 
+      #{requestTime,jdbcType=TIMESTAMP}, #{callbackTime,jdbcType=TIMESTAMP}, #{rejectReason,jdbcType=VARCHAR}, 
+      #{transCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
     insert into bank_interface_serial
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="serialNo != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="serialNo != null">
         serial_no,
       </if>
-      <if test="customerId != null" >
+      <if test="customerId != null">
         customer_id,
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status,
       </if>
-      <if test="requestTime != null" >
+      <if test="requestTime != null">
         request_time,
       </if>
-      <if test="callbackTime != null" >
+      <if test="callbackTime != null">
         callback_time,
       </if>
+      <if test="rejectReason != null">
+        reject_reason,
+      </if>
+      <if test="transCode != null">
+        trans_code,
+      </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="serialNo != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="serialNo != null">
         #{serialNo,jdbcType=VARCHAR},
       </if>
-      <if test="customerId != null" >
+      <if test="customerId != null">
         #{customerId,jdbcType=BIGINT},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         #{status,jdbcType=TINYINT},
       </if>
-      <if test="requestTime != null" >
+      <if test="requestTime != null">
         #{requestTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="callbackTime != null" >
+      <if test="callbackTime != null">
         #{callbackTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rejectReason != null">
+        #{rejectReason,jdbcType=VARCHAR},
+      </if>
+      <if test="transCode != null">
+        #{transCode,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
     update bank_interface_serial
-    <set >
-      <if test="customerId != null" >
+    <set>
+      <if test="customerId != null">
         customer_id = #{customerId,jdbcType=BIGINT},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status = #{status,jdbcType=TINYINT},
       </if>
-      <if test="requestTime != null" >
+      <if test="requestTime != null">
         request_time = #{requestTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="callbackTime != null" >
+      <if test="callbackTime != null">
         callback_time = #{callbackTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rejectReason != null">
+        reject_reason = #{rejectReason,jdbcType=VARCHAR},
+      </if>
+      <if test="transCode != null">
+        trans_code = #{transCode,jdbcType=VARCHAR},
       </if>
     </set>
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
+    update bank_interface_serial
+    set customer_id = #{customerId,jdbcType=BIGINT},
+      status = #{status,jdbcType=TINYINT},
+      request_time = #{requestTime,jdbcType=TIMESTAMP},
+      callback_time = #{callbackTime,jdbcType=TIMESTAMP},
+      reject_reason = #{rejectReason,jdbcType=VARCHAR},
+      trans_code = #{transCode,jdbcType=VARCHAR}
+    where serial_no = #{serialNo,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectByCustomerIdAndTransCode"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from bank_interface_serial
+    where customer_id = #{customerId,jdbcType=BIGINT}
+          and trans_code=#{transCode,jdbcType=VARCHAR}
+  </select>
 </mapper>
