@@ -16,7 +16,6 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -197,8 +196,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
 
         // TODO 若贷款银行为台州路桥支行，则判断：
-//        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())) {
-        else if (BANK_ID_ICBC_Harbin_GuXiang_Branch.equals(webSocketParam.getBankId())) {
+        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())) {
 
             double loanAmount = webSocketParam.getLoanAmount().doubleValue();
 
