@@ -10,7 +10,6 @@ import java.io.*;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * FTP 服务
@@ -88,18 +87,19 @@ public class FtpImpl implements Ftp {
     }
 
     public boolean mkdir(String pathName) throws IOException {
-        if (!existDirectory(pathName)) {
-            StringTokenizer st = new StringTokenizer(pathName, "/");
-            String path = "";
-            while (st.hasMoreTokens())
-            {
-                path = path + "/" + st.nextToken();
-                if ((!existDirectory(path)) &&
-                        (!this.ftpClient.makeDirectory(path))) {
-                    return false;
-                }
-            }
-        }
+//        if (!existDirectory(pathName)) {
+//            StringTokenizer st = new StringTokenizer(pathName, "/");
+//            String path = "";
+//            while (st.hasMoreTokens())
+//            {
+//                path = path + "/" + st.nextToken();
+//                if ((!existDirectory(path)) &&
+//                        (!this.ftpClient.makeDirectory(path))) {
+//                    return false;
+//                }
+//            }
+//        }
+        this.ftpClient.makeDirectory(pathName);
         return true;
     }
 

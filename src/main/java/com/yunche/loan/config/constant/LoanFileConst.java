@@ -57,6 +57,7 @@ public class LoanFileConst {
         TYPE_NAME_MAP.put((byte) 24, "评估资料");
         TYPE_NAME_MAP.put((byte) 25, "打款凭证");
         TYPE_NAME_MAP.put((byte) 26, "zip包");
-        TYPE_NAME_MAP.put((byte) 27, "开卡资料");
+        TYPE_NAME_MAP.put((byte) 27, "专项额度核定申请表");
+        TYPE_NAME_MAP.put((byte) 28, "开卡申请表");
     }
 }

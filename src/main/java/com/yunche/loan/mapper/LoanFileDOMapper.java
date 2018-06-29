@@ -50,4 +50,12 @@ public interface LoanFileDOMapper {
      * @return
      */
     int batchInsert(List<LoanFileDO> loanFileDOS);
+
+    /**
+     * 查询客户部分类型信息
+     * @param customerId
+     * @param typeList
+     * @return
+     */
+    List<LoanFileDO> selectByCustomerAndTypes(Long customerId ,List typeList);
 }

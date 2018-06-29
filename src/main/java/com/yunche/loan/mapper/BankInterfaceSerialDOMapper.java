@@ -10,4 +10,6 @@ public interface BankInterfaceSerialDOMapper {
     BankInterfaceSerialDO selectByPrimaryKey(String serialNo);
 
     int updateByPrimaryKeySelective(BankInterfaceSerialDO record);
+
+    BankInterfaceSerialDO selectByCustomerIdAndTransCode(Long customerId,String transCode);
 }

@@ -114,4 +114,58 @@ public class IDict {
         public  static final String APPLYCREDITSTATUS ="com.icbc.bcis.apply.applycreditstatus";
 
     }
+
+    /**
+     * 图片资料ID
+     */
+    public static abstract interface  K_PIC_ID{
+        /**
+         * 授权书签字照片
+         */
+        public  static final String AUTHORIZATION_SIGNATURE_PHOTO ="0004";
+        /**
+         * 客户征信查询授权书+身份证正反面.doc
+         */
+        public  static final String AUTHORIZATION_SIGNATURE_IDCARD_WORD ="0005";
+        /**
+         * 【开卡】专项额度核定申请表
+         */
+        public  static final String SPECIAL_QUOTA_APPLY = "1001";
+        /**
+         * 【开卡】开卡申请表(和身份证正反面合并成一张图片)
+         */
+        public  static final String OPEN_CARD_DATA = "1002";
+    }
+
+
+    /**
+     *
+     */
+    public static abstract interface  K_JJZT{
+        /**
+         * 处理成功
+         */
+        public  static final Byte SUCCESS = 1;
+        /**
+         * 进行中
+         */
+        public  static final Byte PROCESS = 2;
+        /**
+         * 银行驳回
+         */
+        public  static final Byte BACK = 3;
+        /**
+         * 超时
+         */
+        public  static final Byte TIMEOUT = 4;
+        /**
+         * 请求银行成功
+         */
+        public  static final Byte REQ_SUCC = 5;
+        /**
+         * 请求银行失败
+         */
+        public  static final Byte REQ_FAIL = 6;
+
+    }
 }

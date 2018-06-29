@@ -15,4 +15,10 @@ public class BankInterfaceSerialDO {
     private Timestamp requestTime;
 
     private Timestamp callbackTime;
+
+    private String rejectReason;
+
+    private String transCode;
+
+    private Byte apiStatus;
 }
