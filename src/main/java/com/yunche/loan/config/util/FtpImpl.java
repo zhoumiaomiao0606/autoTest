@@ -57,7 +57,7 @@ public class FtpImpl implements Ftp {
 //            if ("false".equals(pasvMode)) {
                 this.ftpClient.enterLocalActiveMode();
 //            } else {
-//                this.ftpClient.enterLocalPassiveMode();
+//                this.ftpClient.enterLocalPassiveMode();//233580
 //            }
         }catch (Exception e) {
             this.ftpClient.enterLocalPassiveMode();

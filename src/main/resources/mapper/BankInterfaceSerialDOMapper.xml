@@ -134,4 +134,11 @@
     </set>
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </update>
+  <select id="selectByCustomerIdAndTransCode"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from bank_interface_serial
+    where customer_id = #{customerId,jdbcType=BIGINT}
+    and trans_code=#{transCode,jdbcType=VARCHAR}
+  </select>
 </mapper>
