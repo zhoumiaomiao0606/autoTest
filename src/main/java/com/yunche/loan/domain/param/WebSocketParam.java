@@ -3,10 +3,15 @@ package com.yunche.loan.domain.param;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.constant.VideoFaceConst;
 
+import com.yunche.loan.web.aop.GlobalExceptionHandler;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 
 /**
  * @author liuzhe
@@ -14,6 +19,10 @@ import java.math.BigDecimal;
  */
 @Data
 public class WebSocketParam {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+
     /**
      * 客户端类型
      *
@@ -78,6 +87,27 @@ public class WebSocketParam {
         }
 
         return bankId;
+    }
+
+    /**
+     * URL decode
+     *
+     * @return
+     */
+    public String getAddress() {
+
+        if (StringUtils.isNotBlank(address)) {
+
+            try {
+                String decode = URLDecoder.decode(address, "UTF-8");
+                return decode;
+            } catch (UnsupportedEncodingException e) {
+                logger.error("", e);
+            }
+
+        }
+
+        return null;
     }
 
 }
