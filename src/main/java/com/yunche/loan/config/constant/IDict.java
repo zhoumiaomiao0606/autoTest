@@ -1,5 +1,7 @@
 package com.yunche.loan.config.constant;
 
+import org.omg.CORBA.TIMEOUT;
+
 public class IDict {
 
 
@@ -64,6 +66,16 @@ public class IDict {
         public  static final String ONESELF="本人";
         public  static final String SPOUSE="配偶";
         public  static final String ANTI_GUARANTEE ="反担保";
+    }
+
+    /**
+     * K_JJSTS
+     */
+    public static abstract interface K_JJSTS{
+        public  static final String SUCCESS = "1";
+        public  static final String PROCESS = "2";
+        public  static final String BACK = "3";
+        public  static final String TIMEOUT = "4";
     }
 
 

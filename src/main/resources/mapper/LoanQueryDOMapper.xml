@@ -785,6 +785,21 @@
         </if>
     </select>
 
+    <!--资料增补根据type-->
+    <select id="selectUniversalCustomerFiles" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
+        select
+        path                      AS urls,
+        type                      AS type,
+        useFileTypeCastName(type) AS name
+        from loan_file where customer_id = #{customerId,jdbcType=BIGINT}
+        <if test="types != null">
+            and type in
+            <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
     <!--关联订单-->
     <select id="selectUniversalRelevanceOrderId" parameterType="java.lang.Long" resultType="java.lang.String">
 						select t.id from (
