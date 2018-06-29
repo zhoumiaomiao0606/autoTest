@@ -2,23 +2,27 @@ package com.yunche.loan.domain.entity;
 
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 public class BankInterfaceSerialDO {
     private String serialNo;
 
+    private Long orderId;
+
     private Long customerId;
 
     private Byte status;
 
-    private Timestamp requestTime;
+    private Date requestTime;
 
-    private Timestamp callbackTime;
+    private Date callbackTime;
 
     private String rejectReason;
 
     private String transCode;
 
     private Byte apiStatus;
+
+    private String apiMsg;
 }
