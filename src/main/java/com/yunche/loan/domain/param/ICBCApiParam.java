@@ -9,25 +9,11 @@ import java.util.List;
 
 public class ICBCApiParam {
 
+    /**
+     * 征信申请
+     */
     @Data
-    public static class ApplyCredit {
-        //----- pub -----
-        @NotBlank
-        private String platno;
-        @NotBlank
-        private String cmpseq;
-        @NotBlank
-        private String zoneno;
-        @NotBlank
-        private String phybrno;
-        @NotBlank
-        private String orderno;
-        @NotBlank
-        private String assurerno;
-        @NotBlank
-        private String cmpdate;
-        @NotBlank
-        private String cmptime;
+    public static class ApplyCredit extends Pub {
         //----- request ------
         @Valid
         @NotNull
@@ -36,6 +22,11 @@ public class ICBCApiParam {
         @NotNull
         private List<Picture> pictures;//客户照片资料
     }
+
+
+
+
+
 
     @Data
     public static class Picture {
@@ -63,4 +54,24 @@ public class ICBCApiParam {
 
 
 
+    @Data
+    public static class Pub {
+        //----- pub -----
+        @NotBlank
+        private String platno;
+        @NotBlank
+        private String cmpseq;
+        @NotBlank
+        private String zoneno;
+        @NotBlank
+        private String phybrno;
+        @NotBlank
+        private String orderno;
+        @NotBlank
+        private String assurerno;
+        @NotBlank
+        private String cmpdate;
+        @NotBlank
+        private String cmptime;
+    }
 }
