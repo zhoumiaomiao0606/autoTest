@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
+import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.RelationEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -16,7 +17,6 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.ICBCApiParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
-import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.param.BankOpenCardParam;
@@ -67,7 +67,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 break;
             case 3:
                 //判断当前客户贷款银行是否为台州工行，如为台州工行：
+<<<<<<< HEAD
                 ICBCBankCreditProcess(orderId,sysConfig.getTzphybrno(),customers);
+=======
+//                tzICBCBankCreditProcess(customers);
+>>>>>>> f76d619670d553c55dd90356e03e762b2946be3d
                 break;
             default:
                 return;
@@ -158,8 +162,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
 
             }
-
-
     }
 
     private String convertRelation(LoanCustomerDO loanCustomerDO){

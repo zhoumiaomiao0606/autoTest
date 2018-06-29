@@ -48,7 +48,7 @@
         <result column="family_mobile" property="familyMobile" jdbcType="BIGINT" />
         <result column="family_monthly_income" property="familyMonthlyIncome" jdbcType="DECIMAL" />
         <result column="feeding_num" property="feedingNum" jdbcType="BIGINT" />
-        <result column="floor_space" property="floorSpace" jdbcType="BIGINT" />
+        <result column="floor_space" property="floorSpace" jdbcType="DECIMAL" />
         <result column="house_owner_relation" property="houseOwnerRelation" jdbcType="TINYINT" />
         <result column="bank_card_transmit_address" property="bankCardTransmitAddress" jdbcType="VARCHAR" />
         <result column="bank_card_transmit_postcode" property="bankCardTransmitPostcode" jdbcType="VARCHAR" />
@@ -169,7 +169,7 @@
       #{reserveMobile,jdbcType=VARCHAR}, #{companyNature,jdbcType=TINYINT}, #{industryCategory,jdbcType=TINYINT},
       #{incomeCertificateCompanyName,jdbcType=VARCHAR}, #{incomeCertificateCompanyAddress,jdbcType=VARCHAR},
       #{familyAddress,jdbcType=VARCHAR}, #{familyMobile,jdbcType=BIGINT}, #{familyMonthlyIncome,jdbcType=DECIMAL},
-      #{feedingNum,jdbcType=BIGINT}, #{floorSpace,jdbcType=BIGINT}, #{houseOwnerRelation,jdbcType=TINYINT},
+      #{feedingNum,jdbcType=BIGINT}, #{floorSpace,jdbcType=DECIMAL}, #{houseOwnerRelation,jdbcType=TINYINT},
       #{bankCardTransmitAddress,jdbcType=VARCHAR}, #{bankCardTransmitPostcode,jdbcType=VARCHAR},
       #{houseCertificateType,jdbcType=TINYINT}, #{bankCardTransmitAddressType,jdbcType=TINYINT},
       #{companyPostcode,jdbcType=VARCHAR}, #{elementarySchool,jdbcType=VARCHAR}, #{professional,jdbcType=VARCHAR},
@@ -507,7 +507,7 @@
                 #{feedingNum,jdbcType=BIGINT},
             </if>
             <if test="floorSpace != null" >
-                #{floorSpace,jdbcType=BIGINT},
+                #{floorSpace,jdbcType=DECIMAL},
             </if>
             <if test="houseOwnerRelation != null" >
                 #{houseOwnerRelation,jdbcType=TINYINT},
@@ -691,7 +691,7 @@
                 feeding_num = #{feedingNum,jdbcType=BIGINT},
             </if>
             <if test="floorSpace != null" >
-                floor_space = #{floorSpace,jdbcType=BIGINT},
+                floor_space = #{floorSpace,jdbcType=DECIMAL},
             </if>
             <if test="houseOwnerRelation != null" >
                 house_owner_relation = #{houseOwnerRelation,jdbcType=TINYINT},
@@ -784,7 +784,7 @@
       family_mobile = #{familyMobile,jdbcType=BIGINT},
       family_monthly_income = #{familyMonthlyIncome,jdbcType=DECIMAL},
       feeding_num = #{feedingNum,jdbcType=BIGINT},
-      floor_space = #{floorSpace,jdbcType=BIGINT},
+      floor_space = #{floorSpace,jdbcType=DECIMAL},
       house_owner_relation = #{houseOwnerRelation,jdbcType=TINYINT},
       bank_card_transmit_address = #{bankCardTransmitAddress,jdbcType=VARCHAR},
       bank_card_transmit_postcode = #{bankCardTransmitPostcode,jdbcType=VARCHAR},

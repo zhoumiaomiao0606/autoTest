@@ -110,7 +110,7 @@ public class CustomerVO {
 
     private Long feedingNum;
 
-    private Long floorSpace;
+    private BigDecimal floorSpace;
 
     private Byte houseOwnerRelation;
 

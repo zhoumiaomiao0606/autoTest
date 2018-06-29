@@ -107,7 +107,7 @@ public class CustomerParam {
 
     private Long feedingNum;
 
-    private Long floorSpace;
+    private BigDecimal floorSpace;
 
     private Byte houseOwnerRelation;
 
