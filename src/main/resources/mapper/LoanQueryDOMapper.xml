@@ -800,6 +800,15 @@
         </if>
     </select>
 
+    <!--资料增补根据type-->
+    <select id="getUniversalCustomerFilesByType" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
+        select
+        path                      AS urls,
+        type                      AS type,
+        useFileTypeCastName(type) AS name
+        from loan_file where customer_id = #{customerId} and type =  #{type}
+    </select>
+
     <!--关联订单-->
     <select id="selectUniversalRelevanceOrderId" parameterType="java.lang.Long" resultType="java.lang.String">
 						select t.id from (
@@ -976,7 +985,7 @@
             status                                         as status,
             DATE_FORMAT(request_time,'%Y-%m-%d %H:%i:%S')  as requestTime,
             DATE_FORMAT(callback_time,'%Y-%m-%d %H:%i:%S') as callbackTime
-        from bank_lend_record where customer_id = #{customerId} order by request_time desc limit 1
+        from bank_interface_serial where customer_id = #{customerId} order by request_time desc limit 1
     </select>
 
 
@@ -1232,13 +1241,17 @@
     </select>
 
     <select id="checkCustomerHavingCreditON14Day" resultType="java.lang.Boolean">
-        select count(tab.credit_id) from
-        (
-          select customer.id_card as customer_id_card,credit.id as credit_id,credit.gmt_modify from loan_customer customer
-          left join loan_credit_info credit on customer.id = credit.customer_id
-          where customer.id_card = #{idCard} and credit.type = 1 and credit.result is not null and UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP(credit.gmt_modify) &lt; 14*24*60*60 and customer.cust_type in (1,2,3)
-        ) tab GROUP BY tab.customer_id_card
+        select count(1) from
+		(
+			select tab.credit_id from
+			(
+				select customer.id_card as customer_id_card,credit.id as credit_id,credit.gmt_modify from loan_customer customer
+				left join loan_credit_info credit on customer.id = credit.customer_id
+				where customer.id_card = #{customerId} and credit.type = 1 and credit.result is not null and UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP(credit.gmt_modify) &lt; 14*24*60*60 and customer.cust_type in (1,2,3)
+			) tab GROUP BY tab.customer_id_card
+		) b
     </select>
+
 
 
 </mapper>

@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface LoanCustomerDOMapper {
@@ -56,4 +57,8 @@ public interface LoanCustomerDOMapper {
      * @return
      */
     List<Long> listPrincipalCustIdByIdCard(@Param("idCard") String idCard);
+
+
+    //根据orderid获得关于这个主贷人的自己和关联的客户
+    List<LoanCustomerDO> selectSelfAndRelevanceCustomersByCustTypes(@Param("orderId") Long orderId, @Param("types") Set types);
 }

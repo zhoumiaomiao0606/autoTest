@@ -9,10 +9,7 @@ import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.RelationEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
-import com.yunche.loan.config.util.DesEncryptUtil;
-import com.yunche.loan.config.util.FtpUtil;
-import com.yunche.loan.config.util.GeneratorIDUtil;
-import com.yunche.loan.config.util.ImageUtil;
+import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.ICBCApiParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
@@ -22,22 +19,26 @@ import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.param.BankReturnParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
+import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import static com.yunche.loan.config.constant.LoanCustomerEnum.GUARANTOR;
+import static com.yunche.loan.config.constant.LoanCustomerEnum.PRINCIPAL_LENDER;
 
 
 @Service
@@ -53,11 +54,23 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Resource
     private ICBCFeignClient icbcFeignClient;
 
-    @Autowired
+    @Resource
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
+    @Resource
+    private LoanCustomerDOMapper loanCustomerDOMapper;
+    //征信自动提交
     @Override
-    public void creditAutomaticCommit(@Validated @NotNull  Long orderId,@Validated @NotNull Long bankId, @Validated @NotNull List<LoanCustomerDO> customers) {
+    public void creditAutomaticCommit(@Validated @NotNull  Long orderId,@Validated @NotNull Long bankId) {
+        //紧急联系人不推送
+        Set types  = Sets.newHashSet();
+        types.add(new Byte("1"));
+        types.add(new Byte("2"));
+        types.add(new Byte("3"));
+        List<LoanCustomerDO> customers = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(orderId,types);
+        if(CollectionUtils.isEmpty(customers)){
+            throw new BizException("贷款客户信息不存在");
+        }
         checkCustomerHavingCreditON14Day(customers);
         int value = bankId.intValue();
         switch (value) {
@@ -67,17 +80,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 break;
             case 3:
                 //判断当前客户贷款银行是否为台州工行，如为台州工行：
-<<<<<<< HEAD
                 ICBCBankCreditProcess(orderId,sysConfig.getTzphybrno(),customers);
-=======
-//                tzICBCBankCreditProcess(customers);
->>>>>>> f76d619670d553c55dd90356e03e762b2946be3d
                 break;
             default:
                 return;
         }
     }
-
+    //征信人工补偿
     @Override
     public void creditArtificialCompensation(@Validated @NotNull  Long orderId,@Validated @NotNull Long bankId,@Validated @NotNull Long customerId) {
 
@@ -92,6 +101,16 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                     //之前提交过
                     //非处理中 并且 非查询成功的可以进行推送
                     if(!result.getStatus().equals(IDict.K_JJSTS.SUCCESS) && !result.getStatus().equals(IDict.K_JJSTS.PROCESS)){
+                        //获取用户授权书签字照
+                        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(loanCustomerDO.getId(),new Byte("5"));
+                        if(authSignPic == null){
+                            throw new BizException(loanCustomerDO.getName()+"授权书签字照不存在");
+                        }
+
+                        if(CollectionUtils.isEmpty(authSignPic.getUrls())){
+                            throw new BizException(loanCustomerDO.getName()+"授权书签字照不存在");
+                        }
+
                         //将身份证正反面、授权书、授权书签字照合成一个word（一个客户合成一张word，如征信申请中有2个客户，则合成2个word）。若存在一个客户合成失败，流程终止。
                         //2-身份证正面;3-身份证反面;4-授权书;5-授权书签字照;
                         Set types = Sets.newHashSet();
@@ -115,7 +134,18 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
                         Preconditions.checkArgument(CollectionUtils.isNotEmpty(uniqueTypes), loanCustomerDO.getName()+"附件合成失败");
                         Preconditions.checkArgument(uniqueTypes.size() == 4, loanCustomerDO.getName()+"附件合成失败");
-                        String localFilePath = ImageUtil.mergeImage2Doc(mergeImages);
+
+
+                        //上传图片和doc
+                        String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
+                        String picPath = ImageUtil.mergeImage2Pic(picName,authSignPic.getUrls());
+
+                        String docName = GeneratorIDUtil.execute()+ImageUtil.DOC_SUFFIX;
+                        String docPath = ImageUtil.mergeImage2Doc(docName,mergeImages);
+
+                        uploadFile(picPath);
+                        uploadFile(docPath);
+
                         //第三方接口调用
                         //数据封装
                         ICBCApiParam.ApplyCredit applyCredit = new ICBCApiParam.ApplyCredit();
@@ -142,21 +172,21 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                         ICBCApiParam.Picture picture_1 = new ICBCApiParam.Picture();
                         picture_1.setPicid("0004");
                         picture_1.setPicnote("0004【征信】授权书签字照片");
-                        picture_1.setPicname();
-
+                        picture_1.setPicname(picName);
                         //0005【征信】客户征信查询授权书+身份证正反面.doc
                         ICBCApiParam.Picture picture_2 = new ICBCApiParam.Picture();
                         picture_2.setPicid("0005");
                         picture_2.setPicnote("0005【征信】客户征信查询授权书+身份证正反面.doc");
-                        picture_2.setPicname();
+                        picture_2.setPicname(docName);
+
+                        pictures.add(picture_1);
+                        pictures.add(picture_2);
 
                         //final
                         applyCredit.setCustomer(customer);
                         applyCredit.setPictures(pictures);
+                        //走你
                         icbcFeignClient.applyCredit(applyCredit);
-                        DesEncryptUtil.decryptBasedDes(sysConfig.getPassword());
-                        FtpUtil.upload(localFilePath,sysConfig.getServerpath(),sysConfig.getServierIP(),sysConfig.getPort(),sysConfig.getUserName(),sysConfig.getPassword(),"");
-
                     }
                 }
 
@@ -164,18 +194,27 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             }
     }
 
+    private String path2Name(String path){
+        String[] strs = path.split(File.separator);
+        return  strs[strs.length-1];
+    }
+
+
     private String convertRelation(LoanCustomerDO loanCustomerDO){
         if(loanCustomerDO.getCustType() == null){
             throw new BizException(loanCustomerDO.getName()+"的客户类型不明");
         }
-        if("3".equals(loanCustomerDO.getCustType())){
+        if(GUARANTOR.getType().toString().equals(loanCustomerDO.getCustType().toString())){
             //担保人会将关系转化成反担保
             return "反担保";
         }
-        String custRelation =  RelationEnum.getValueByKey(loanCustomerDO.getCustRelation());
-        if(StringUtils.isBlank(custRelation)){
-            throw new BizException(loanCustomerDO.getName()+"与贷款人关系不明");
+
+        if(PRINCIPAL_LENDER.getType().toString().equals(loanCustomerDO.getCustType().toString())){
+            return "本人";
         }
+
+        String custRelation =  RelationEnum.getValueByKey(loanCustomerDO.getCustRelation());
+
         return custRelation;
     }
 
@@ -186,6 +225,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 throw new BizException(loanCustomerDO.getName()+"在14天内重复查询征信");
             }
         }
+    }
+
+    private void uploadFile(String path){
+        //DesEncryptUtil.decryptBasedDes(sysConfig.getPassword());
+        //FtpUtil.upload(path,sysConfig.getServerpath(),sysConfig.getServierIP(),sysConfig.getPort(),sysConfig.getUserName(),sysConfig.getPassword(),"");
+        FtpUtil.icbcUpload(path);
     }
 
 

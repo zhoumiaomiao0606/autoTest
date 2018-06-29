@@ -42,7 +42,7 @@ public enum  RelationEnum {
                 return e.value;
             }
         }
-        return null;
+        return "其他";
     }
 
 }
