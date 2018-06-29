@@ -29,6 +29,10 @@ public class VideoFaceQuestionAnswerVO {
      */
     private BigDecimal loanAmount;
     /**
+     * 银行分期本金
+     */
+    private BigDecimal bankPeriodPrincipal;
+    /**
      * 每月还款
      */
     private BigDecimal eachMonthRepay;

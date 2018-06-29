@@ -29,6 +29,10 @@ public class WebSocketParam {
      */
     private BigDecimal loanAmount;
     /**
+     * 银行分期本金
+     */
+    private BigDecimal bankPeriodPrincipal;
+    /**
      * anyChat生成的UserId
      */
     private Long anyChatUserId;
@@ -69,7 +73,7 @@ public class WebSocketParam {
 
         if (StringUtils.isNotBlank(bankName)) {
 
-            Long bankId = bankCache.getBankIdByName(bankName);
+            Long bankId = bankCache.getIdByName(bankName);
             this.bankId = bankId;
         }
 

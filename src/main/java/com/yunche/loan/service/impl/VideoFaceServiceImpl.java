@@ -352,7 +352,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_9 = "9、请您翻开《牡丹信用卡透支分期付款/抵押合同》 第一页确认相关信息。" +
                 "您申请信用卡汽车分期业务用于购买" + redText(videoFaceQuestionAnswerVO.getCarBrandName()) + "品牌的汽车，" +
                 "车辆交易总价" + redText(videoFaceQuestionAnswerVO.getCarPrice()) + "元，" +
-                "分期金额是" + redText(videoFaceQuestionAnswerVO.getLoanAmount()) + "元。" +
+                "分期金额是" + redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal()) + "元。" +
                 "每月还款" + redText(videoFaceQuestionAnswerVO.getEachMonthRepay()) + "元，"
                 + redText(videoFaceQuestionAnswerVO.getLoanTime() / 12) + "年" +
                 "总计需还款" + redText(videoFaceQuestionAnswerVO.getPrincipalInterestSum()) + "元。" +
@@ -396,7 +396,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
             // carPrice
             videoFaceQuestionAnswerVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
             // 意向贷款金额    -> 银行分期本金
-            videoFaceQuestionAnswerVO.setLoanAmount(loanFinancialPlanDO.getBankPeriodPrincipal());
+            videoFaceQuestionAnswerVO.setBankPeriodPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
             // 每月还款
             videoFaceQuestionAnswerVO.setEachMonthRepay(loanFinancialPlanDO.getEachMonthRepay());
             // 贷款期数

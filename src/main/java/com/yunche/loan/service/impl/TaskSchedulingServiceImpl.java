@@ -134,7 +134,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setBankList(getUserHaveBank(loginUser.getId()));
         PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
-        PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<ScheduleTaskVO>(list);
+        PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
@@ -264,12 +264,15 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
                     // 面签客户查询时，才需要车型
                     if (null == multipartType) {
+                        // carName
                         if (StringUtils.isNotBlank(appTaskVO.getCarDetailId())) {
                             appTaskVO.setCarName(carService.getFullName(Long.valueOf(appTaskVO.getCarDetailId()), CAR_DETAIL));
                         }
-                        if (StringUtils.isNotBlank(appTaskVO.getBankName())) {
-                            appTaskVO.setBankId(String.valueOf(bankCache.getBankIdByName(e.getBank())));
-                        }
+                    }
+
+                    // bankId  convert
+                    if (StringUtils.isNotBlank(appTaskVO.getBankName())) {
+                        appTaskVO.setBankId(String.valueOf(bankCache.getIdByName(e.getBank())));
                     }
 
                     fillTaskStatus(appTaskVO);

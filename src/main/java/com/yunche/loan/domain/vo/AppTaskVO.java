@@ -35,6 +35,8 @@ public class AppTaskVO {
     private String carPrice;
     // 贷款金额
     private String loanAmount;
+    // 银行分期本金
+    private String bankPeriodPrincipal;
     // 贷款比例
     private String loanRatio;
 

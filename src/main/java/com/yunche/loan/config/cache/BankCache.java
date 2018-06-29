@@ -5,8 +5,6 @@ import com.google.common.collect.Maps;
 import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.mapper.BankDOMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -96,7 +94,7 @@ public class BankCache {
      * @param bankName
      * @return
      */
-    public Long getBankIdByName(String bankName) {
+    public Long getIdByName(String bankName) {
 
         Map<String, String> nameIdMap = getNameIdMap();
 

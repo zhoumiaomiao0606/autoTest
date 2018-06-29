@@ -73,7 +73,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         Preconditions.checkNotNull(webSocketParam.getAnyChatUserId(), "anyChatUserId不能为空");
         if (TYPE_APP.equals(webSocketParam.getType())) {
             Preconditions.checkNotNull(webSocketParam.getOrderId(), "orderId不能为空");
-            Preconditions.checkNotNull(webSocketParam.getLoanAmount(), "loanAmount不能为空");
+            Preconditions.checkNotNull(webSocketParam.getBankPeriodPrincipal(), "bankPeriodPrincipal不能为空");
         }
 
         // webSocket 会话ID
@@ -101,7 +101,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         Preconditions.checkNotNull(webSocketParam.getAnyChatUserId(), "anyChatUserId不能为空");
         if (TYPE_APP.equals(webSocketParam.getType())) {
             Preconditions.checkNotNull(webSocketParam.getOrderId(), "orderId不能为空");
-            Preconditions.checkNotNull(webSocketParam.getLoanAmount(), "loanAmount不能为空");
+            Preconditions.checkNotNull(webSocketParam.getBankPeriodPrincipal(), "bankPeriodPrincipal不能为空");
         }
 
         // webSocket 会话ID
@@ -189,6 +189,11 @@ public class WebSocketServiceImpl implements WebSocketService {
      */
     private boolean needWaitTeam(WebSocketParam webSocketParam, String wsSessionId) {
 
+        // PC端直接排队
+        if (TYPE_PC.equals(webSocketParam.getType())) {
+            return true;
+        }
+
         // 若贷款银行为杭州城站支行，则进入人工面签
         if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
 
@@ -198,10 +203,11 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 若贷款银行为台州路桥支行，则判断：
         else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())) {
 
-            double loanAmount = webSocketParam.getLoanAmount().doubleValue();
+            // 银行分期本金
+            double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
 
             // a、若银行分期本金小于10万，进入机器面签
-            if (loanAmount < 100000) {
+            if (bankPeriodPrincipal < 100000) {
 
                 // 机器面签
                 machineFace(wsSessionId);
@@ -213,7 +219,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             }
 
             // b、若银行分期本金大于等于10万且小于30万，进入人工面签，人工面签等待1min后，若无应答，自动转入机器面签
-            else if (loanAmount >= 100000 && loanAmount < 300000) {
+            else if (bankPeriodPrincipal >= 100000 && bankPeriodPrincipal < 300000) {
 
                 // 排队时间
                 Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
@@ -240,7 +246,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             }
 
             // c、若银行分期本金大于30万，进入人工面签，若无人应答，一直处于排队中
-            if (loanAmount >= 300000) {
+            if (bankPeriodPrincipal >= 300000) {
 
                 // nothing  -> 正常排队
             }
