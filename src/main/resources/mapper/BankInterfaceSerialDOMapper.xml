@@ -10,7 +10,6 @@
     <result column="reject_reason" jdbcType="VARCHAR" property="rejectReason" />
     <result column="trans_code" jdbcType="VARCHAR" property="transCode" />
     <result column="api_status" jdbcType="TINYINT" property="apiStatus" />
-
   </resultMap>
   <sql id="Base_Column_List">
     serial_no, customer_id, status, request_time, callback_time, reject_reason, trans_code, api_status

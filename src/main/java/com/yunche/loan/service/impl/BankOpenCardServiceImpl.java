@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.ImageUtil;
@@ -20,6 +21,7 @@ import com.yunche.loan.service.BankSolutionService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.List;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
 
+@Service
 public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     @Autowired
@@ -71,6 +74,24 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Override
     public ResultBean openCard(BankOpenCardParam bankOpenCardParam) {
 
+        boolean b = mergeUpload(bankOpenCardParam);
+        if(!b){
+            throw new BizException("图片上传失败");
+        }
+        return bankSolutionService.creditcardapply(bankOpenCardParam);
+    }
+
+
+
+
+
+    /**
+     * 合并资料并上传至中间服务器
+     * @param bankOpenCardParam
+     * @return
+     */
+    private boolean mergeUpload(BankOpenCardParam bankOpenCardParam) {
+
         List<LoanFileDO> idCardFront = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_FRONT.getType(), (byte) 1);
         List<LoanFileDO> idCardback = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_BACK.getType(), (byte) 1);
         List<LoanFileDO> specialQuotaApply = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), SPECIAL_QUOTA_APPLY.getType(), (byte) 1);
@@ -113,17 +134,12 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
         picture2.setPicname(fileName2);
 
-
-
-
         bankOpenCardParam.getPictures().add(picture1);
         bankOpenCardParam.getPictures().add(picture2);
         boolean b1 = FtpUtil.icbcUpload(mergerFilePath1);
         boolean b2 = FtpUtil.icbcUpload(mergerFilePath2);
-        if(!b1 || !b2){
-            return ResultBean.of("图片上传失败",false,null);
-        }
-        return bankSolutionService.creditcardapply(bankOpenCardParam);
+
+        return b1&&b2;
     }
 
 

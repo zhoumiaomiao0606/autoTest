@@ -163,6 +163,7 @@ public class FtpUtil {
 
         boolean flag=false;
         try {
+            serverpath = serverpath.replaceAll("YYYYMMDD",DateUtil.getDate());
             password = DesEncryptUtil.decryptBasedDes(password);
             ftp.connect(servierIP,Integer.parseInt(port),userName,password);
 //            if(!ftp.existDirectory(serverpath)){
