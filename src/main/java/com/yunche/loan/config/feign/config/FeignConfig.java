@@ -1,12 +1,13 @@
 package com.yunche.loan.config.feign.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.response.ApplyCreditResponse;
+import com.yunche.loan.config.feign.response.base.BasicResponse;
+import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
+import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import feign.FeignException;
 import feign.Logger;
 import feign.Response;
@@ -17,6 +18,9 @@ import feign.codec.ErrorDecoder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -25,12 +29,15 @@ import java.util.Set;
 import static com.yunche.loan.config.constant.BaseExceptionEnum.EC00000200;
 
 @Configuration
+@DependsOn
 public class FeignConfig {
     private Set<Class> clazzs = Sets.newHashSet();
     public FeignConfig(){
         clazzs.add(ApplyCreditResponse.class);
     }
 
+    @Resource
+    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
     @Bean
     Logger.Level feignLoggerLevel() {
@@ -61,12 +68,17 @@ public class FeignConfig {
                 if (StringUtils.isBlank(result)) {
                     throw new BizException("报文为空,无法解析");
                 }
+
                 Map map = formatMap(result);
                 checkMain(map);
                 checkData(map);
 
+
                 for(Class value: clazzs){
                     if (value.equals(type)) {
+                        if(value.getSuperclass().equals(BasicResponse.class)){
+                            throw new BizException("不符合规范的返回类型,无法解析");
+                        }
                         return formatJson(map, value);
                     }
                 }

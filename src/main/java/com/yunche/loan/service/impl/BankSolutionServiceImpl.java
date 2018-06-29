@@ -9,26 +9,17 @@ import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.RelationEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
-<<<<<<< HEAD
-import com.yunche.loan.config.util.*;
-=======
+
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.ImageUtil;
->>>>>>> 2d0d1edb4ab4254171bf7020d6cee5ace150c9d5
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.param.ICBCApiParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
-<<<<<<< HEAD
-import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.BankOpenCardParam;
-import com.yunche.loan.domain.param.BankReturnParam;
-=======
->>>>>>> 2d0d1edb4ab4254171bf7020d6cee5ace150c9d5
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
