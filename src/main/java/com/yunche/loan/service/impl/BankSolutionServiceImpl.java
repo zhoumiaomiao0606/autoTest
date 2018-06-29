@@ -1,7 +1,6 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-<<<<<<< HEAD
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
@@ -15,19 +14,12 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.ICBCApiParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
-=======
 import com.yunche.loan.config.constant.IConstant;
-import com.yunche.loan.config.constant.IDict;
-import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
-import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.param.BankReturnParam;
-import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
->>>>>>> 26787bd0eace9ff9c42dd3edc4e275c20c03b27a
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.collections.CollectionUtils;
@@ -35,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
@@ -171,8 +162,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
     }
 
-<<<<<<< HEAD
-=======
+
     /**
      * 银行开卡
      * @param bankOpenCardParam
@@ -206,6 +196,5 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     }
 
->>>>>>> 26787bd0eace9ff9c42dd3edc4e275c20c03b27a
 
 }

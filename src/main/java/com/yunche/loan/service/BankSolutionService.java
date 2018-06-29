@@ -12,10 +12,8 @@ public interface BankSolutionService {
      //自动征信
      void creditAutomaticCommit(@Validated @NotNull  Long orderId,@Validated @NotNull  Long bankId,@Validated @NotNull List<LoanCustomerDO> customers);
      //人工补偿
-<<<<<<< HEAD
      void creditArtificialCompensation(@Validated @NotNull  Long orderId,@Validated @NotNull  Long bankId,@Validated @NotNull Long customerId);
-=======
-     void creditArtificialCompensation(@Validated @NotNull  Long bankId,@Validated @NotNull Long customerId);
+
 
      /**
       * 银行开卡
@@ -23,5 +21,4 @@ public interface BankSolutionService {
       * @return
       */
      public  ResultBean creditcardapply(BankOpenCardParam bankOpenCardParam);
->>>>>>> 26787bd0eace9ff9c42dd3edc4e275c20c03b27a
 }
