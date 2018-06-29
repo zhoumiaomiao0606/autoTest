@@ -23,8 +23,72 @@ public class ICBCApiParam {
         private List<Picture> pictures;//客户照片资料
     }
 
+    /**
+     * 专项卡开卡
+     */
+    @Data
+    public static class Creditcardapply extends Pub{
 
+        private List<Picture> pictures;//客户照片资料
 
+        private String  feeamount;
+        private String  loanamount;
+        private String  term;
+        private String  loanratio;
+        private String  carprice;
+        private String  feeratio;
+
+        private String  engname;
+        private String  rtcophon2;
+        private String  birthdate;
+        private String  cprovince;
+        private String  drawaddr;
+        private String  relaphone1;
+        private String  statdate;
+        private String  unitname;
+        private String  accgetm;
+        private String  mvblno;
+        private String  caddress;
+        private String  authref;
+        private String  haddress;
+        private String  machgf;
+        private String  machgmobile;
+        private String  joindate;
+        private String  drawmode;
+        private String  ccounty;
+        private String  chnsname;
+        private String  mrtlstat;
+        private String  reltship1;
+        private String  reltship2;
+        private String  modelcode;
+        private String  indate;
+        private String  hcity;
+        private String  cadrchoic;
+        private String  reltmobl2;
+        private String  hphoneno;
+        private String  reltmobl1;
+        private String  homezip;
+        private String  mamobile;
+        private String  custsort;
+        private String  cophoneno;
+        private String  corpzip;
+        private String  custcode;
+        private String  mblchoic;
+        private String  cophozono;
+        private String  cophonext;
+        private String  sex;
+        private String  hadrchoic;
+        private String  hprovince;
+        private String  ccity;
+        private String  occptn;
+        private String  reltname2;
+        private String  smsphone;
+        private String  reltname1;
+        private String  hcounty;
+        private String  reltsex2;
+        private String  reltsex1;
+        private String  emladdrf;
+    }
 
 
 

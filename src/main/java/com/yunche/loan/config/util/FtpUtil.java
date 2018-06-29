@@ -164,8 +164,8 @@ public class FtpUtil {
         boolean flag=false;
         try {
             serverpath = serverpath.replaceAll("YYYYMMDD",DateUtil.getDate());
-            password = DesEncryptUtil.decryptBasedDes(password);
-            ftp.connect(servierIP,Integer.parseInt(port),userName,password);
+            String realPassword = DesEncryptUtil.decryptBasedDes(password);
+            ftp.connect(servierIP,Integer.parseInt(port),userName,realPassword);
 //            if(!ftp.existDirectory(serverpath)){
                 ftp.mkdir(serverpath);
 //            }
@@ -174,6 +174,7 @@ public class FtpUtil {
                 throw new BizException("路径切换失败");
             }
             ftp.bin();
+//            ftp.setCache();
             flag = ftp.uploadFile(localFilePath,fileName);
 
         } catch (IOException e) {

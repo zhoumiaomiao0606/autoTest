@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.constraints.NotNull;
 
 //@FeignClient(name = "icbcFeignClient" ,url = "http://122.225.203.102:8090/")
-@FeignClient(name = "iCBCFeignClient" ,url = "http://localhost:8090/")
+@FeignClient(name = "iCBCFeignClient" ,url = "http://localhost:18090/")
 public interface ICBCFeignClient {
     @RequestMapping(value = "/api/v1/icbc/apply/applyCredit",method = RequestMethod.POST)
     public ResultBean applyCredit(@RequestBody @Validated @NotNull ICBCApiParam.ApplyCredit applyCredit);

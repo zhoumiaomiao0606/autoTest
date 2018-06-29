@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
@@ -104,13 +106,14 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         //【开卡】专项额度核定申请表
         List<String> keys = Lists.newArrayList();
-        specialQuotaApply.stream().filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e->{
+        specialQuotaApply.stream().filter(Objects::nonNull).filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e->{
             String path = e.getPath();
             List<String> list = JSONArray.parseArray(path, String.class);
             keys.addAll(list);
         });
-
+        Preconditions.checkArgument(keys.size()>0,"专项额度核定申请表,不存在");
         String mergerFilePath1 = ImageUtil.mergeImage2Pic(keys);//合成图片本地路径
+        Preconditions.checkNotNull(mergerFilePath1,"图片合成失败");
 
         String fileName = mergerFilePath1.substring(mergerFilePath1.lastIndexOf(File.separator) + 1);
         BankOpenCardParam.Picture picture1 = new BankOpenCardParam.Picture();
@@ -127,7 +130,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             List<String> list = JSONArray.parseArray(path, String.class);
             openCardTypesStr.addAll(list);
         });
+        Preconditions.checkArgument(openCardTypesStr.size()>0,"开卡申请表(和身份证正反面合并成一张图片)");
         String mergerFilePath2 = ImageUtil.mergeImage2Pic(openCardTypesStr);
+        Preconditions.checkNotNull(mergerFilePath2,"图片合成失败");
 
         String fileName2 = mergerFilePath2.substring(mergerFilePath2.lastIndexOf(File.separator) + 1);
         BankOpenCardParam.Picture picture2 = new BankOpenCardParam.Picture();
@@ -137,9 +142,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         bankOpenCardParam.getPictures().add(picture1);
         bankOpenCardParam.getPictures().add(picture2);
         boolean b1 = FtpUtil.icbcUpload(mergerFilePath1);
-        boolean b2 = FtpUtil.icbcUpload(mergerFilePath2);
-
-        return b1&&b2;
+//        boolean b2 = FtpUtil.icbcUpload(mergerFilePath2);
+        return b1;
+//        return b1&&b2;
     }
 
 

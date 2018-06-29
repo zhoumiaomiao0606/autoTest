@@ -23,6 +23,7 @@ public class FtpImpl implements Ftp {
     public FtpImpl() {
         this.ftpClient = new FTPClient();
         this.ftpClient.setControlEncoding("UTF-8");
+        this.ftpClient.setBufferSize(100000);
     }
 
     public void setControlEncoding(String encoding) {
@@ -67,6 +68,9 @@ public class FtpImpl implements Ftp {
         this.ftpClient.setFileType(fileType);
     }
 
+//    public void setCache() throws IOException {
+//        this.ftpClient.setBufferSize(100000);
+//    }
     public void bin() throws IOException {
         setFileType(2);
     }
@@ -165,8 +169,9 @@ public class FtpImpl implements Ftp {
         boolean flag = false;
         InputStream iStream = null;
         try {
+            BufferedInputStream  input = new BufferedInputStream(new FileInputStream(fileName));
             iStream = new FileInputStream(fileName);
-            flag = this.ftpClient.storeFile(newName, iStream);
+            flag = this.ftpClient.storeFile(newName, input);
         }catch (IOException e){
             flag = false;
             return flag;

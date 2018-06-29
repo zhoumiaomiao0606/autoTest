@@ -1,6 +1,7 @@
 package com.yunche.loan.domain.param;
 
 
+import com.google.common.collect.Lists;
 import lombok.Data;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class BankOpenCardParam {
         private String cmpdate;//合作机构日期
         private String cmptime;//合作机构时间
 
-        private List<Picture> pictures;
+        private List<Picture> pictures= Lists.newArrayList();
 
 
         @Data
