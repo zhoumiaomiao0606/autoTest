@@ -30,19 +30,25 @@ public class ImageUtil {
     OSSConfig ossConfig;
     private  static String downLoadBasepath="/tmp";
 
-    private static final String PIC_SUFFIX=".jpg";
-    private static final String DOC_SUFFIX=".docx";
+    public static final String PIC_SUFFIX=".jpg";
+    public static final String DOC_SUFFIX=".docx";
     private static final String FORMATNAME="jpg";
     static {
         ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
         downLoadBasepath = bundle.containsKey("downLoadBasepath") == false ? "" : bundle.getString("downLoadBasepath");
     }
+    public static final String  mergeImage2Doc(List<String> imageList) {
+        return mergeImage2Pic(generateName()+DOC_SUFFIX,imageList);
+    }
 
-    /**
-     * 图片合并成jpg
-     * @param imageList
-     */
-    public static final  String  mergeImage2Pic(List<String> imageList){
+    public static final  String  mergeImage2Pic(List<String> imageList) {
+        return mergeImage2Pic(generateName()+PIC_SUFFIX,imageList);
+    }
+        /**
+         * 图片合并成jpg
+         * @param imageList
+         */
+    public static final  String  mergeImage2Pic(String name,List<String> imageList){
         FileOutputStream out = null;
         String fileName=null;
         try{
@@ -72,7 +78,7 @@ public class ImageUtil {
             //构造一个类型为预定义图像类型之一的 BufferedImage。 高度为各个图片高度之和
             BufferedImage tag = new BufferedImage(maxWidth, totalHeight, BufferedImage.TYPE_INT_RGB);
             //创建输出流
-            fileName = downLoadBasepath+File.separator+generateName()+PIC_SUFFIX;
+            fileName = downLoadBasepath+File.separator+name;
             out = new FileOutputStream(fileName);
             //绘制合成图像
             Graphics g = tag.createGraphics();
@@ -105,7 +111,7 @@ public class ImageUtil {
      * 图片合成word文档
      * @param imageList
      */
-    public static final String  mergeImage2Doc(List<String> imageList) {
+    public static final String  mergeImage2Doc(String name,List<String> imageList) {
         InputStream is =null;
         String fileName=null;
         try {
@@ -137,7 +143,7 @@ public class ImageUtil {
                 drawing.getAnchorOrInline().add(inline);
                 wordMLPackage.getMainDocumentPart().addObject(paragraph);
             }
-            fileName = downLoadBasepath+File.separator+generateName()+DOC_SUFFIX;
+            fileName = downLoadBasepath+File.separator+name;
             wordMLPackage.save(new File(fileName));
 
         } catch (Exception e) {

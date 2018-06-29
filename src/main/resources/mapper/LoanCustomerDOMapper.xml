@@ -76,7 +76,18 @@
     house_certificate_type, bank_card_transmit_address_type, company_postcode, elementary_school,
     professional, family_person_num, debt_ratio, guarantee_type, residence_address, guarantee_rela
   </sql>
+    <select id="selectSelfAndRelevanceCustomersByCustTypes" resultMap="BaseResultMap">
+        select *
+	      from
+        loan_customer where principal_cust_id = (select loan_customer_id from loan_order where id = #{orderId})
+        <if test="types != null">
+            and cust_type in
+            <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
 
+    </select>
     <!--listPrincipalCustIdByIdCard-->
     <select id="listPrincipalCustIdByIdCard" resultType="java.lang.Long">
         SELECT id
