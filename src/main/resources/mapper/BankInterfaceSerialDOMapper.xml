@@ -134,4 +134,26 @@
     </set>
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </update>
+<<<<<<< HEAD
+=======
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
+    update bank_interface_serial
+    set customer_id = #{customerId,jdbcType=BIGINT},
+      status = #{status,jdbcType=TINYINT},
+      request_time = #{requestTime,jdbcType=TIMESTAMP},
+      callback_time = #{callbackTime,jdbcType=TIMESTAMP},
+      reject_reason = #{rejectReason,jdbcType=VARCHAR},
+      trans_code = #{transCode,jdbcType=VARCHAR},
+      api_status = #{api_status,jdbcType=TINYINT}
+    where serial_no = #{apiStatus,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectByCustomerIdAndTransCode"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from bank_interface_serial
+    where customer_id = #{customerId,jdbcType=BIGINT}
+          and trans_code=#{transCode,jdbcType=VARCHAR}
+  </select>
+>>>>>>> 2d0d1edb4ab4254171bf7020d6cee5ace150c9d5
 </mapper>
