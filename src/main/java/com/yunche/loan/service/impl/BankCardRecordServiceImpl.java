@@ -17,6 +17,7 @@ import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.BankCardRecordService;
 import com.yunche.loan.service.LoanProcessService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
 //            returnList = POIUtil.readExcel(0,1,pathFileName);
             returnList = POIUtil.readExcelFromOSS(0,1,key);
             BankCardRecordDO bankCardRecordDO = new BankCardRecordDO();
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             for(String[] tmp :returnList){
                 if(tmp.length!=9){
                     continue;
@@ -67,18 +68,20 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
                 bankCardRecordDO.setRepayDate(tmp[4].trim());//还款日
                 bankCardRecordDO.setFirstRepaymentDate(df.parse(tmp[5].trim()));//首月还款日
                 bankCardRecordDO.setRepayCardId( tmp[6].trim());//还款卡号
-                bankCardRecordDO.setReceiveDate(df.parse(tmp[7].trim()));//接收日期
-                bankCardRecordDO.setSendee( tmp[8].trim());//接收人
+                if(StringUtils.isNotBlank(tmp[7].trim())){
+                    bankCardRecordDO.setReceiveDate(df.parse(tmp[7].trim()));//接收日期
+                }
+                bankCardRecordDO.setSendee(tmp[8].trim());//接收人
                 bankCardRecordDO.setStatus(Byte.valueOf("0"));
 
                 //兼容重复导入
                 BankCardRecordDO tmpBankCardRecordDO = bankCardRecordDOMapper.selectByOrderId(orderId);
                 if(tmpBankCardRecordDO == null){
-                    int count  =  bankCardRecordDOMapper.insert(bankCardRecordDO);
+                    int count  =  bankCardRecordDOMapper.insertSelective(bankCardRecordDO);
                     Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录导入出错");
                 }else{
                     bankCardRecordDO.setId(tmpBankCardRecordDO.getId());
-                    int count  =  bankCardRecordDOMapper.updateByPrimaryKey(bankCardRecordDO);
+                    int count  =  bankCardRecordDOMapper.updateByPrimaryKeySelective(bankCardRecordDO);
                     Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录更新出错");
                 }
 

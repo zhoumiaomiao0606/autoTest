@@ -10,6 +10,8 @@
      process.gmt_create AS ct,
      process.gmt_modify AS mt,
      process.telephone_verify,
+     plan.bank_period_principal,
+     plan.bank,
      CASE
 
      WHEN process.telephone_verify = 2 THEN
@@ -93,7 +95,7 @@
      END AS result,
      ( SELECT info FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) op_info,
      CASE
-     WHEN process.telephone_verify = 2 then '待处理'
+     WHEN process.telephone_verify = 2 then '待审核'
 
      WHEN ( SELECT action FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) = 3 THEN
      '资料增补'
