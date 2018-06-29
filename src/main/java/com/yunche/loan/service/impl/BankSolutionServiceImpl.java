@@ -100,98 +100,103 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 if(result!=null){
                     //之前提交过
                     //非处理中 并且 非查询成功的可以进行推送
-                    if(!result.getStatus().equals(IDict.K_JJSTS.SUCCESS) && !result.getStatus().equals(IDict.K_JJSTS.PROCESS)){
-                        //获取用户授权书签字照
-                        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(loanCustomerDO.getId(),new Byte("5"));
-                        if(authSignPic == null){
-                            throw new BizException(loanCustomerDO.getName()+"授权书签字照不存在");
-                        }
-
-                        if(CollectionUtils.isEmpty(authSignPic.getUrls())){
-                            throw new BizException(loanCustomerDO.getName()+"授权书签字照不存在");
-                        }
-
-                        //将身份证正反面、授权书、授权书签字照合成一个word（一个客户合成一张word，如征信申请中有2个客户，则合成2个word）。若存在一个客户合成失败，流程终止。
-                        //2-身份证正面;3-身份证反面;4-授权书;5-授权书签字照;
-                        Set types = Sets.newHashSet();
-                        types.add(new Byte("2"));
-                        types.add(new Byte("3"));
-                        types.add(new Byte("4"));
-                        types.add(new Byte("5"));
-                        List<UniversalMaterialRecordVO> list = loanQueryDOMapper.selectUniversalCustomerFiles(loanCustomerDO.getId(),types);
-                        list.sort(new Comparator<UniversalMaterialRecordVO>() {
-                            @Override
-                            public int compare(UniversalMaterialRecordVO o1, UniversalMaterialRecordVO o2) {
-                                return Integer.parseInt(o1.getType())-Integer.parseInt(o2.getType());
-                            }
-                        });
-                        List<String> mergeImages = Lists.newLinkedList();
-                        Set uniqueTypes = Sets.newHashSet();
-                        for(UniversalMaterialRecordVO V:list){
-                            uniqueTypes.add(V.getType());
-                            mergeImages.addAll(V.getUrls());
-                        }
-
-                        Preconditions.checkArgument(CollectionUtils.isNotEmpty(uniqueTypes), loanCustomerDO.getName()+"附件合成失败");
-                        Preconditions.checkArgument(uniqueTypes.size() == 4, loanCustomerDO.getName()+"附件合成失败");
-
-
-                        //上传图片和doc
-                        String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
-                        String picPath = ImageUtil.mergeImage2Pic(picName,authSignPic.getUrls());
-
-                        String docName = GeneratorIDUtil.execute()+ImageUtil.DOC_SUFFIX;
-                        String docPath = ImageUtil.mergeImage2Doc(docName,mergeImages);
-
-                        uploadFile(picPath);
-                        uploadFile(docPath);
-
-                        //第三方接口调用
-                        //数据封装
-                        ICBCApiParam.ApplyCredit applyCredit = new ICBCApiParam.ApplyCredit();
-                        ICBCApiParam.Customer customer = new ICBCApiParam.Customer();
-                        //pub
-                        applyCredit.setPlatno(sysConfig.getPlatno());
-                        applyCredit.setCmpseq(GeneratorIDUtil.execute());
-                        applyCredit.setZoneno("1202");
-                        applyCredit.setPhybrno(phybrno);
-                        applyCredit.setOrderno(orderId.toString());
-                        applyCredit.setAssurerno(sysConfig.getAssurerno());
-                        applyCredit.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-                        applyCredit.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
-                        //customer
-                        customer.setMastername(loanCustomerDO.getName());
-                        customer.setCustname(loanCustomerDO.getName());
-                        customer.setIdtype(IDict.K_JJLX.IDCARD);
-                        customer.setIdno(loanCustomerDO.getIdCard());
-                        customer.setRelation(convertRelation(loanCustomerDO));
-                        //pic
-                        List<ICBCApiParam.Picture> pictures = Lists.newArrayList();
-                        //File.separator
-                        //0004 【征信】授权书签字照片
-                        ICBCApiParam.Picture picture_1 = new ICBCApiParam.Picture();
-                        picture_1.setPicid("0004");
-                        picture_1.setPicnote("0004【征信】授权书签字照片");
-                        picture_1.setPicname(picName);
-                        //0005【征信】客户征信查询授权书+身份证正反面.doc
-                        ICBCApiParam.Picture picture_2 = new ICBCApiParam.Picture();
-                        picture_2.setPicid("0005");
-                        picture_2.setPicnote("0005【征信】客户征信查询授权书+身份证正反面.doc");
-                        picture_2.setPicname(docName);
-
-                        pictures.add(picture_1);
-                        pictures.add(picture_2);
-
-                        //final
-                        applyCredit.setCustomer(customer);
-                        applyCredit.setPictures(pictures);
-                        //走你
-                        icbcFeignClient.applyCredit(applyCredit);
+                    if(!result.getStatus().equals(IDict.K_JJSTS.SUCCESS) && !result.getStatus().equals(IDict.K_JJSTS.PROCESS)) {
+                        process(orderId,phybrno,loanCustomerDO);
                     }
+                }else{
+                    process(orderId,phybrno,loanCustomerDO);
                 }
-
-
             }
+    }
+
+    private void process(Long orderId,String phybrno,LoanCustomerDO loanCustomerDO){
+        //获取用户授权书签字照
+        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(loanCustomerDO.getId(),new Byte("5"));
+        if(authSignPic == null){
+            throw new BizException(loanCustomerDO.getName()+"授权书签字照不存在");
+        }
+
+        if(CollectionUtils.isEmpty(authSignPic.getUrls())){
+            throw new BizException(loanCustomerDO.getName()+"授权书签字照不存在");
+        }
+
+        //将身份证正反面、授权书、授权书签字照合成一个word（一个客户合成一张word，如征信申请中有2个客户，则合成2个word）。若存在一个客户合成失败，流程终止。
+        //2-身份证正面;3-身份证反面;4-授权书;5-授权书签字照;
+        Set types = Sets.newHashSet();
+        types.add(new Byte("2"));
+        types.add(new Byte("3"));
+        types.add(new Byte("4"));
+        types.add(new Byte("5"));
+        List<UniversalMaterialRecordVO> list = loanQueryDOMapper.selectUniversalCustomerFiles(loanCustomerDO.getId(),types);
+        list.sort(new Comparator<UniversalMaterialRecordVO>() {
+            @Override
+            public int compare(UniversalMaterialRecordVO o1, UniversalMaterialRecordVO o2) {
+                return Integer.parseInt(o1.getType())-Integer.parseInt(o2.getType());
+            }
+        });
+        List<String> mergeImages = Lists.newLinkedList();
+        Set uniqueTypes = Sets.newHashSet();
+        for(UniversalMaterialRecordVO V:list){
+            uniqueTypes.add(V.getType());
+            mergeImages.addAll(V.getUrls());
+        }
+
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(uniqueTypes), loanCustomerDO.getName()+"附件合成失败");
+        Preconditions.checkArgument(uniqueTypes.size() == 4, loanCustomerDO.getName()+"附件合成失败");
+
+
+        //上传图片和doc
+        String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
+        String picPath = ImageUtil.mergeImage2Pic(picName,authSignPic.getUrls());
+
+        String docName = GeneratorIDUtil.execute()+ImageUtil.DOC_SUFFIX;
+        String docPath = ImageUtil.mergeImage2Doc(docName,mergeImages);
+
+        uploadFile(picPath);
+        uploadFile(docPath);
+
+        //第三方接口调用
+        //数据封装
+        ICBCApiParam.ApplyCredit applyCredit = new ICBCApiParam.ApplyCredit();
+        ICBCApiParam.Customer customer = new ICBCApiParam.Customer();
+        //pub
+        applyCredit.setPlatno(sysConfig.getPlatno());
+        applyCredit.setCmpseq(GeneratorIDUtil.execute());
+        applyCredit.setZoneno("1202");
+        applyCredit.setPhybrno(phybrno);
+        applyCredit.setOrderno(orderId.toString());
+        applyCredit.setAssurerno(sysConfig.getAssurerno());
+        applyCredit.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        applyCredit.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
+        //customer
+        customer.setMastername(loanCustomerDO.getName());
+        customer.setCustname(loanCustomerDO.getName());
+        customer.setIdtype(IDict.K_JJLX.IDCARD);
+        customer.setIdno(loanCustomerDO.getIdCard());
+        customer.setRelation(convertRelation(loanCustomerDO));
+        //pic
+        List<ICBCApiParam.Picture> pictures = Lists.newArrayList();
+        //File.separator
+        //0004 【征信】授权书签字照片
+        ICBCApiParam.Picture picture_1 = new ICBCApiParam.Picture();
+        picture_1.setPicid("0004");
+        picture_1.setPicnote("0004【征信】授权书签字照片");
+        picture_1.setPicname(picName);
+        //0005【征信】客户征信查询授权书+身份证正反面.doc
+        ICBCApiParam.Picture picture_2 = new ICBCApiParam.Picture();
+        picture_2.setPicid("0005");
+        picture_2.setPicnote("0005【征信】客户征信查询授权书+身份证正反面.doc");
+        picture_2.setPicname(docName);
+
+        pictures.add(picture_1);
+        pictures.add(picture_2);
+
+        //final
+        applyCredit.setCustomer(customer);
+        applyCredit.setPictures(pictures);
+        //走你
+        icbcFeignClient.applyCredit(applyCredit);
+
     }
 
     private String path2Name(String path){
