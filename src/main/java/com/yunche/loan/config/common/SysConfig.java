@@ -15,4 +15,9 @@ public class SysConfig {
     private String password;//ftp 密码
     private String serverpath;//ftp 远程服务器地址
     private int port;//ftp 端口
+    private String platno;
+    private String assurerno;
+    private String tzphybrno;
+    private String hzphybrno;
+
 }

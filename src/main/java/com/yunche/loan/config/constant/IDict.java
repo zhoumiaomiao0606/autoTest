@@ -68,6 +68,7 @@ public class IDict {
         public  static final String ANTI_GUARANTEE ="反担保";
     }
 
+
     /**
      * K_JJSTS
      */

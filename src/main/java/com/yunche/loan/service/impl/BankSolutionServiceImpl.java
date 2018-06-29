@@ -5,10 +5,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.constant.RelationEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.util.DesEncryptUtil;
 import com.yunche.loan.config.util.FtpUtil;
+import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.ImageUtil;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.ICBCApiParam;
@@ -31,7 +33,9 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -57,9 +61,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         checkCustomerHavingCreditON14Day(customers);
         int value = bankId.intValue();
         switch (value) {
-            case 4:
+            case 1:
+                //判断当前客户贷款银行是否为台州工行，如为杭州工行：
+                ICBCBankCreditProcess(orderId,sysConfig.getHzphybrno(),customers);
+                break;
+            case 3:
                 //判断当前客户贷款银行是否为台州工行，如为台州工行：
-                tzICBCBankCreditProcess(customers);
+                ICBCBankCreditProcess(orderId,sysConfig.getTzphybrno(),customers);
                 break;
             default:
                 return;
@@ -72,7 +80,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
 
-    private void tzICBCBankCreditProcess(Long orderId,List<LoanCustomerDO> customers){
+    private void ICBCBankCreditProcess(Long orderId,String phybrno,List<LoanCustomerDO> customers){
             //①判断客户是否已提交了征信记录，且银行征信结果非退回，若满足，则不会推送该客户，否则继续②
             for(LoanCustomerDO loanCustomerDO:customers){
                 UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId());
@@ -108,39 +116,40 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                         //数据封装
                         ICBCApiParam.ApplyCredit applyCredit = new ICBCApiParam.ApplyCredit();
                         ICBCApiParam.Customer customer = new ICBCApiParam.Customer();
-                        ICBCApiParam.Picture picture = new ICBCApiParam.Picture();
-                        //start
-                        applyCredit.setPlatno();
-                        applyCredit.setCmpseq();
-                        applyCredit.setZoneno();
-                        applyCredit.setPhybrno();
-                        applyCredit.setOrderno();
-                        applyCredit.setAssurerno();
-                        applyCredit.setCmpdate();
-                        applyCredit.setCmptime();
+                        //pub
+                        applyCredit.setPlatno(sysConfig.getPlatno());
+                        applyCredit.setCmpseq(GeneratorIDUtil.execute());
+                        applyCredit.setZoneno("1202");
+                        applyCredit.setPhybrno(phybrno);
+                        applyCredit.setOrderno(orderId.toString());
+                        applyCredit.setAssurerno(sysConfig.getAssurerno());
+                        applyCredit.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+                        applyCredit.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
                         //customer
-                        customer.setMastername()
-                        customer.setCustname();
-                        customer.setIdtype();
-                        customer.setIdno();
-                        customer.setRelation();
+                        customer.setMastername(loanCustomerDO.getName());
+                        customer.setCustname(loanCustomerDO.getName());
+                        customer.setIdtype(IDict.K_JJLX.IDCARD);
+                        customer.setIdno(loanCustomerDO.getIdCard());
+                        customer.setRelation(convertRelation(loanCustomerDO));
                         //pic
-
-
-
                         List<ICBCApiParam.Picture> pictures = Lists.newArrayList();
+                        //File.separator
+                        //0004 【征信】授权书签字照片
+                        ICBCApiParam.Picture picture_1 = new ICBCApiParam.Picture();
+                        picture_1.setPicid("0004");
+                        picture_1.setPicnote("0004【征信】授权书签字照片");
+                        picture_1.setPicname();
 
+                        //0005【征信】客户征信查询授权书+身份证正反面.doc
+                        ICBCApiParam.Picture picture_2 = new ICBCApiParam.Picture();
+                        picture_2.setPicid("0005");
+                        picture_2.setPicnote("0005【征信】客户征信查询授权书+身份证正反面.doc");
+                        picture_2.setPicname();
 
-
-
+                        //final
                         applyCredit.setCustomer(customer);
                         applyCredit.setPictures(pictures);
                         icbcFeignClient.applyCredit(applyCredit);
-
-
-
-
-
                         DesEncryptUtil.decryptBasedDes(sysConfig.getPassword());
                         FtpUtil.upload(localFilePath,sysConfig.getServerpath(),sysConfig.getServierIP(),sysConfig.getPort(),sysConfig.getUserName(),sysConfig.getPassword(),"");
 
@@ -151,6 +160,21 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             }
 
 
+    }
+
+    private String convertRelation(LoanCustomerDO loanCustomerDO){
+        if(loanCustomerDO.getCustType() == null){
+            throw new BizException(loanCustomerDO.getName()+"的客户类型不明");
+        }
+        if("3".equals(loanCustomerDO.getCustType())){
+            //担保人会将关系转化成反担保
+            return "反担保";
+        }
+        String custRelation =  RelationEnum.getValueByKey(loanCustomerDO.getCustRelation());
+        if(StringUtils.isBlank(custRelation)){
+            throw new BizException(loanCustomerDO.getName()+"与贷款人关系不明");
+        }
+        return custRelation;
     }
 
     private void checkCustomerHavingCreditON14Day(List<LoanCustomerDO> customers){
