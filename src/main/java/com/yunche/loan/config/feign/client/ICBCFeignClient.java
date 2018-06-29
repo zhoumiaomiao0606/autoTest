@@ -15,7 +15,6 @@ import javax.validation.constraints.NotNull;
 @FeignClient(name = "iCBCFeignClient" ,url = "http://localhost:8090/")
 public interface ICBCFeignClient {
     @RequestMapping(value = "/api/v1/icbc/apply/applyCredit",method = RequestMethod.POST)
-
     public ResultBean applyCredit(@RequestBody @Validated @NotNull ICBCApiParam.ApplyCredit applyCredit);
 
 

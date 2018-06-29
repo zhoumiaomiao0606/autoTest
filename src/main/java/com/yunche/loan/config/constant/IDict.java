@@ -1,7 +1,5 @@
 package com.yunche.loan.config.constant;
 
-import org.omg.CORBA.TIMEOUT;
-
 public class IDict {
 
 
@@ -140,9 +138,9 @@ public class IDict {
 
 
     /**
-     *
+     * 交易状态
      */
-    public static abstract interface  K_JJZT{
+    public static abstract interface  K_JYZT{
         /**
          * 处理成功
          */
