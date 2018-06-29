@@ -124,7 +124,7 @@
       callback_time = #{callbackTime,jdbcType=TIMESTAMP},
       reject_reason = #{rejectReason,jdbcType=VARCHAR},
       trans_code = #{transCode,jdbcType=VARCHAR},
-      api_status = #{status,jdbcType=TINYINT}
+      api_status = #{api_status,jdbcType=TINYINT}
     where serial_no = #{apiStatus,jdbcType=VARCHAR}
   </update>
 

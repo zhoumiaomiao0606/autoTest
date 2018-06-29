@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface BankInterfaceSerialDOMapper {
@@ -13,5 +14,5 @@ public interface BankInterfaceSerialDOMapper {
 
     int updateByPrimaryKeySelective(BankInterfaceSerialDO record);
 
-    BankInterfaceSerialDO selectByCustomerIdAndTransCode(Long customerId,String transCode);
+    BankInterfaceSerialDO selectByCustomerIdAndTransCode(@Param("customerId") Long customerId, @Param("transCode") String transCode);
 }

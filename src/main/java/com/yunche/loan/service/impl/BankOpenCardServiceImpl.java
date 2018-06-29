@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.ImageUtil;
@@ -30,6 +29,7 @@ import java.util.Objects;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
+import static com.yunche.loan.config.thread.ThreadPool.executorService;
 
 @Service
 public class BankOpenCardServiceImpl implements BankOpenCardService{
@@ -75,11 +75,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
      */
     @Override
     public ResultBean openCard(BankOpenCardParam bankOpenCardParam) {
-
-        boolean b = mergeUpload(bankOpenCardParam);
-        if(!b){
-            throw new BizException("图片上传失败");
-        }
+        mergeUpload(bankOpenCardParam);
         return bankSolutionService.creditcardapply(bankOpenCardParam);
     }
 
@@ -92,7 +88,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
      * @param bankOpenCardParam
      * @return
      */
-    private boolean mergeUpload(BankOpenCardParam bankOpenCardParam) {
+    private void mergeUpload(BankOpenCardParam bankOpenCardParam) {
 
         List<LoanFileDO> idCardFront = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_FRONT.getType(), (byte) 1);
         List<LoanFileDO> idCardback = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_BACK.getType(), (byte) 1);
@@ -141,10 +137,25 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         bankOpenCardParam.getPictures().add(picture1);
         bankOpenCardParam.getPictures().add(picture2);
-        boolean b1 = FtpUtil.icbcUpload(mergerFilePath1);
+
+        List<String> uploadFiles = Lists.newArrayList();
+        uploadFiles.add(mergerFilePath1);
+        uploadFiles.add(mergerFilePath2);
+        asyncPush(uploadFiles);
+//        boolean b1 = FtpUtil.icbcUpload(mergerFilePath1);
 //        boolean b2 = FtpUtil.icbcUpload(mergerFilePath2);
-        return b1;
-//        return b1&&b2;
+
+    }
+    private void asyncPush(List<String> list){
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                list.parallelStream().forEach(e->{
+                    FtpUtil.icbcUpload(e);
+                });
+
+            }
+        });
     }
 
 
