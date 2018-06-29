@@ -19,4 +19,6 @@ public class BankInterfaceSerialDO {
     private String rejectReason;
 
     private String transCode;
+
+    private Byte apiStatus;
 }

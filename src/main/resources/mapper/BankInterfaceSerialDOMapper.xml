@@ -9,9 +9,11 @@
     <result column="callback_time" jdbcType="TIMESTAMP" property="callbackTime" />
     <result column="reject_reason" jdbcType="VARCHAR" property="rejectReason" />
     <result column="trans_code" jdbcType="VARCHAR" property="transCode" />
+    <result column="api_status" jdbcType="TINYINT" property="apiStatus" />
+
   </resultMap>
   <sql id="Base_Column_List">
-    serial_no, customer_id, status, request_time, callback_time, reject_reason, trans_code
+    serial_no, customer_id, status, request_time, callback_time, reject_reason, trans_code, api_status
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
@@ -26,10 +28,10 @@
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
     insert into bank_interface_serial (serial_no, customer_id, status, 
       request_time, callback_time, reject_reason, 
-      trans_code)
+      trans_code, api_status)
     values (#{serialNo,jdbcType=VARCHAR}, #{customerId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}, 
       #{requestTime,jdbcType=TIMESTAMP}, #{callbackTime,jdbcType=TIMESTAMP}, #{rejectReason,jdbcType=VARCHAR}, 
-      #{transCode,jdbcType=VARCHAR})
+      #{transCode,jdbcType=VARCHAR},#{apiStatus,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
     insert into bank_interface_serial
@@ -55,6 +57,10 @@
       <if test="transCode != null">
         trans_code,
       </if>
+      <if test="apiStatus != null">
+        api_status,
+      </if>
+
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="serialNo != null">
@@ -78,6 +84,10 @@
       <if test="transCode != null">
         #{transCode,jdbcType=VARCHAR},
       </if>
+      <if test="apiStatus != null">
+        #{apiStatus,jdbcType=TINYINT},
+      </if>
+
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
@@ -101,6 +111,9 @@
       <if test="transCode != null">
         trans_code = #{transCode,jdbcType=VARCHAR},
       </if>
+      <if test="apiStatus != null">
+        api_status = #{apiStatus,jdbcType=TINYINT},
+      </if>
     </set>
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </update>
@@ -111,8 +124,9 @@
       request_time = #{requestTime,jdbcType=TIMESTAMP},
       callback_time = #{callbackTime,jdbcType=TIMESTAMP},
       reject_reason = #{rejectReason,jdbcType=VARCHAR},
-      trans_code = #{transCode,jdbcType=VARCHAR}
-    where serial_no = #{serialNo,jdbcType=VARCHAR}
+      trans_code = #{transCode,jdbcType=VARCHAR},
+      api_status = #{status,jdbcType=TINYINT}
+    where serial_no = #{apiStatus,jdbcType=VARCHAR}
   </update>
 
   <select id="selectByCustomerIdAndTransCode"  resultMap="BaseResultMap">

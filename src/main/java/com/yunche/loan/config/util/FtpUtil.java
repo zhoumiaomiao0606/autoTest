@@ -164,12 +164,14 @@ public class FtpUtil {
         boolean flag=false;
         try {
             password = DesEncryptUtil.decryptBasedDes(password);
-
             ftp.connect(servierIP,Integer.parseInt(port),userName,password);
-            if(!ftp.existDirectory(serverpath)){
+//            if(!ftp.existDirectory(serverpath)){
                 ftp.mkdir(serverpath);
+//            }
+            boolean cd = ftp.cd(serverpath);
+            if(!cd){
+                throw new BizException("路径切换失败");
             }
-            ftp.cd(serverpath);
             ftp.bin();
             flag = ftp.uploadFile(localFilePath,fileName);
 

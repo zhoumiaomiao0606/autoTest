@@ -103,6 +103,9 @@ public class IDict {
 
     }
 
+    /**
+     * 图片资料ID
+     */
     public static abstract interface  K_PIC_ID{
         /**
          * 授权书签字照片
@@ -120,5 +123,37 @@ public class IDict {
          * 【开卡】开卡申请表(和身份证正反面合并成一张图片)
          */
         public  static final String OPEN_CARD_DATA = "1002";
+    }
+
+
+    /**
+     *
+     */
+    public static abstract interface  K_JJZT{
+        /**
+         * 处理成功
+         */
+        public  static final Byte SUCCESS = 1;
+        /**
+         * 进行中
+         */
+        public  static final Byte PROCESS = 2;
+        /**
+         * 银行驳回
+         */
+        public  static final Byte BACK = 3;
+        /**
+         * 超时
+         */
+        public  static final Byte TIMEOUT = 4;
+        /**
+         * 请求银行成功
+         */
+        public  static final Byte REQ_SUCC = 5;
+        /**
+         * 请求银行失败
+         */
+        public  static final Byte REQ_FAIL = 6;
+
     }
 }

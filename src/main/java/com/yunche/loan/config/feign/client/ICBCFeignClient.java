@@ -14,6 +14,6 @@ public interface ICBCFeignClient {
     @RequestMapping(value = "/api/v1/icbc/apply/applyCredit",method = RequestMethod.POST)
     public ResultBean applyCredit(@RequestBody ICBCApiParam.ApplyCredit applyCredit);
 
-    @RequestMapping(value = "/api/v1/icbc/apply/creditcardapply",method = RequestMethod.POST)
+    @RequestMapping(value = "/api/v1/icbc/test/apply/creditcardapply",method = RequestMethod.POST)
     public ResultBean creditcardapply(@RequestBody BankOpenCardParam bankOpenCardParam);
 }
