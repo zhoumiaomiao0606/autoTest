@@ -160,25 +160,37 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //记录银行开发流水信息
         BankInterfaceSerialDO serialDO = new BankInterfaceSerialDO();
         //TODO 生成流水号
-        serialDO.setSerialNo("12242423423423423423423");
-        serialDO.setCustomerId(bankOpenCardParam.getCustomerId());
-        serialDO.setTransCode(IDict.K_API.CREDITCARDAPPLY);
-        serialDO.setStatus(IDict.K_JJZT.PROCESS);
-        int count = bankInterfaceSerialDOMapper.insertSelective(serialDO);
-        Preconditions.checkArgument(count>0,"插入银行开卡流水失败");
+        String serialNo = "20180629112657263970";
+        BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(bankOpenCardParam.getCustomerId(), IDict.K_API.CREDITCARDAPPLY);
+        if(bankInterfaceSerialDO==null){
+            serialDO.setSerialNo("20180629112657263970");
+            serialDO.setCustomerId(bankOpenCardParam.getCustomerId());
+            serialDO.setTransCode(IDict.K_API.CREDITCARDAPPLY);
+            serialDO.setStatus(IDict.K_JYZT.PROCESS);
+            int count = bankInterfaceSerialDOMapper.insertSelective(serialDO);
+            Preconditions.checkArgument(count>0,"插入银行开卡流水失败");
+        }else{
+            serialNo = bankInterfaceSerialDO.getSerialNo();
+
+        }
+
+        //数据准备    beg
+        bankOpenCardParam.setCmpseq(serialNo);
+        //数据准备结束 end
+
 
         //发送银行接口
         ResultBean creditcardapply = icbcFeignClient.creditcardapply(bankOpenCardParam);
         //应答数据
         BankReturnParam returnParam = (BankReturnParam)creditcardapply.getData();
         if(IConstant.SUCCESS.equals(returnParam.getReturnCode()) && IConstant.API_SUCCESS.equals(returnParam.getIcbcApiRetcode())){
-            serialDO.setApiStatus(IDict.K_JJZT.REQ_SUCC);
-            count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(serialDO);//更新状态
+            serialDO.setApiStatus(IDict.K_JYZT.REQ_SUCC);
+            int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(serialDO);//更新状态
             Preconditions.checkArgument(count>0,"更新银行开卡流水失败");
             return ResultBean.ofSuccess(returnParam);
         }else{
-            serialDO.setApiStatus(IDict.K_JJZT.REQ_FAIL);
-            count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(serialDO);//更新状态
+            serialDO.setApiStatus(IDict.K_JYZT.REQ_FAIL);
+            int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(serialDO);//更新状态
             Preconditions.checkArgument(count>0,"更新银行开卡流水失败");
             throw  new BizException("发送银行开卡流水失败");
         }
