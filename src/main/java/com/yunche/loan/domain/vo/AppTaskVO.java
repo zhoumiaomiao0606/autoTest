@@ -68,9 +68,9 @@ public class AppTaskVO {
      */
     public String getLoanRatio() {
 
-        if (StringUtils.isNotBlank(loanAmount) && StringUtils.isNotBlank(carPrice)) {
+        if (StringUtils.isNotBlank(bankPeriodPrincipal) && StringUtils.isNotBlank(carPrice)) {
 
-            double loanRatio = Double.valueOf(loanAmount) / Double.valueOf(carPrice);
+            double loanRatio = Double.valueOf(bankPeriodPrincipal) / Double.valueOf(carPrice);
             DecimalFormat df = new DecimalFormat("#0.00");
             String loanRatioStr = df.format(loanRatio);
 
