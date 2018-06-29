@@ -216,22 +216,27 @@ public class WebSocketServiceImpl implements WebSocketService {
             else if (loanAmount >= 100000 && loanAmount < 300000) {
 
                 // 排队时间
-                long waitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
+                Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
                         webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
 
-                // 60s
-                if (waitTime >= 60000) {
+                if (null != startWaitTime) {
+                    // 排队时间
+                    long waitTime = System.currentTimeMillis() - startWaitTime;
 
-                    // 机器面签
-                    machineFace(wsSessionId);
+                    // 60s
+                    if (waitTime >= 60000) {
 
-                    // 退出排队
-                    exitTeam(webSocketParam);
+                        // 机器面签
+                        machineFace(wsSessionId);
 
-                    return false;
+                        // 退出排队
+                        exitTeam(webSocketParam);
+
+                        return false;
+                    }
+
+                    // nothing  -> 正常排队
                 }
-
-                // nothing  -> 正常排队
             }
 
             // c、若银行分期本金大于30万，进入人工面签，若无人应答，一直处于排队中

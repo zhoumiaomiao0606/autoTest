@@ -172,7 +172,7 @@ public class VideoFaceQueue {
      * @param wsSessionId
      * @return
      */
-    public long getWaitTime(Long queueId, Long userId, Byte clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
+    public Long getWaitTime(Long queueId, Long userId, Byte clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
 
         // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
         String key = VIDEO_FACE_QUEUE_PREFIX + queueId + VIDEO_FACE_QUEUE_KEY_SEPARATOR + clientType + VIDEO_FACE_QUEUE_KEY_SEPARATOR + anyChatUserId
@@ -187,7 +187,7 @@ public class VideoFaceQueue {
             return Long.valueOf(waitTime);
         }
 
-        return 0;
+        return null;
     }
 
 }

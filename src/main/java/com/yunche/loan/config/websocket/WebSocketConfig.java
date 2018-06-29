@@ -165,13 +165,13 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
         public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
             StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-            StompCommand command = accessor.getCommand();
-            String destination = accessor.getDestination();
-
-            Principal user = accessor.getUser();
-            String sessionId = accessor.getSessionId();
-
-            String headerJSON = JSON.toJSONString(accessor.getMessageHeaders());
+//            StompCommand command = accessor.getCommand();
+//            String destination = accessor.getDestination();
+//
+//            Principal user = accessor.getUser();
+//            String sessionId = accessor.getSessionId();
+//
+//            String headerJSON = JSON.toJSONString(accessor.getMessageHeaders());
 
             if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
