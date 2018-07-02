@@ -4,7 +4,6 @@
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankInterfaceSerialDO" >
     <id column="serial_no" property="serialNo" jdbcType="VARCHAR" />
     <result column="order_id" property="orderId" jdbcType="BIGINT" />
-    <result column="customer_id" property="customerId" jdbcType="BIGINT" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="request_time" property="requestTime" jdbcType="TIMESTAMP" />
     <result column="callback_time" property="callbackTime" jdbcType="TIMESTAMP" />
@@ -14,18 +13,11 @@
     <result column="api_msg" property="apiMsg" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    serial_no, order_id, customer_id, status, request_time, callback_time, reject_reason,
-    trans_code, api_status, api_msg
+    serial_no, order_id, status, request_time, callback_time, reject_reason, trans_code, 
+    api_status, api_msg
   </sql>
-  <select id="selectByCustomerIdAndTransCode"  resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from bank_interface_serial
-    where customer_id = #{customerId,jdbcType=BIGINT}
-    and trans_code=#{transCode,jdbcType=VARCHAR}
-  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select
+    select 
     <include refid="Base_Column_List" />
     from bank_interface_serial
     where serial_no = #{serialNo,jdbcType=VARCHAR}
@@ -42,9 +34,6 @@
       </if>
       <if test="orderId != null" >
         order_id,
-      </if>
-      <if test="customerId != null" >
-        customer_id,
       </if>
       <if test="status != null" >
         status,
@@ -75,9 +64,6 @@
       <if test="orderId != null" >
         #{orderId,jdbcType=BIGINT},
       </if>
-      <if test="customerId != null" >
-        #{customerId,jdbcType=BIGINT},
-      </if>
       <if test="status != null" >
         #{status,jdbcType=TINYINT},
       </if>
@@ -106,9 +92,6 @@
     <set >
       <if test="orderId != null" >
         order_id = #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="customerId != null" >
-        customer_id = #{customerId,jdbcType=BIGINT},
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=TINYINT},

@@ -10,8 +10,6 @@ public class BankInterfaceSerialDO {
 
     private Long orderId;
 
-    private Long customerId;
-
     private Byte status;
 
     private Date requestTime;

@@ -3,9 +3,11 @@ package com.yunche.loan.config.feign.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.response.ApplyCreditResponse;
 import com.yunche.loan.config.feign.response.base.BasicResponse;
+import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import feign.FeignException;
@@ -47,16 +49,24 @@ public class FeignConfig {
 
     @Bean
     public ErrorDecoder basicErrorDecoder(){
+        //feign 将 404 和 非200的状态全部交给errorDecoder
         return new ErrorDecoder() {
             @Override
             public Exception decode(String methodKey, Response response) {
+                    //BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
+                    //DO.setSerialNo(GeneratorIDUtil.execute());
+                    //DO.setOrderId();
+                    //DO.setTransCode();
+                    //DO.setApiStatus(IDict.K_JYZT.REQ_FAIL);
+                    //DO.setApiMsg();
+                    //bankInterfaceSerialDOMapper.insertSelective();
                     throw new BizException(methodKey+"接口请求失败:");
             }
         };
     }
 
     @Bean
-    public Decoder basicDecoder() {
+    public <T extends BasicResponse>Decoder basicDecoder() {
         return new Decoder() {
             @Override
             public Object decode(Response response, Type type) throws IOException, DecodeException, FeignException {
@@ -76,10 +86,16 @@ public class FeignConfig {
 
                 for(Class value: clazzs){
                     if (value.equals(type)) {
-                        if(value.getSuperclass().equals(BasicResponse.class)){
+                        if(!value.getSuperclass().equals(BasicResponse.class)){
                             throw new BizException("不符合规范的返回类型,无法解析");
                         }
-                        return formatJson(map, value);
+                        Object obj =  formatJson(map,value);
+                        ((BasicResponse) obj).getIcbcApiRetcode();
+                        ((BasicResponse) obj).getIcbcApiRetmsg();
+
+
+
+
                     }
                 }
                 throw new BizException("找不到指定的解析方法");
@@ -88,7 +104,7 @@ public class FeignConfig {
     }
 
 
-    private <T>T formatJson(Map map,Class<T> clazz){
+    private <T extends BasicResponse>T formatJson(Map map,Class<T> clazz){
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String result =  objectMapper.writeValueAsString(map.get("data"));
@@ -99,6 +115,9 @@ public class FeignConfig {
         }
     }
 
+    private void processSerial(){
+
+    };
 
     private void checkMain(Map map){
 
