@@ -20,11 +20,12 @@ public class BankInterfaceSerialDO {
 
     private String transCode;
 
-    private Byte apiStatus;
+    private Integer apiStatus;
 
     private String apiMsg;
 
-    private String fileType;
+    private Boolean fileType;
 
     private String fileName;
+
 }

@@ -982,6 +982,7 @@
         select
             serial_no                                      as serialNo,
             customer_id                                    as customerId,
+            api_status                                     as apiStatus,
             status                                         as status,
             DATE_FORMAT(request_time,'%Y-%m-%d %H:%i:%S')  as requestTime,
             DATE_FORMAT(callback_time,'%Y-%m-%d %H:%i:%S') as callbackTime

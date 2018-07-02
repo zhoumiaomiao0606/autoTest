@@ -9,12 +9,14 @@
     <result column="callback_time" property="callbackTime" jdbcType="TIMESTAMP" />
     <result column="reject_reason" property="rejectReason" jdbcType="VARCHAR" />
     <result column="trans_code" property="transCode" jdbcType="VARCHAR" />
-    <result column="api_status" property="apiStatus" jdbcType="TINYINT" />
+    <result column="api_status" property="apiStatus" jdbcType="INTEGER" />
     <result column="api_msg" property="apiMsg" jdbcType="VARCHAR" />
+    <result column="file_type" property="fileType" jdbcType="BIT" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     serial_no, customer_id, status, request_time, callback_time, reject_reason, trans_code, 
-    api_status, api_msg
+    api_status, api_msg, file_type, file_name
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
@@ -56,6 +58,12 @@
       <if test="apiMsg != null" >
         api_msg,
       </if>
+      <if test="fileType != null" >
+        file_type,
+      </if>
+      <if test="fileName != null" >
+        file_name,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="serialNo != null" >
@@ -80,10 +88,16 @@
         #{transCode,jdbcType=VARCHAR},
       </if>
       <if test="apiStatus != null" >
-        #{apiStatus,jdbcType=TINYINT},
+        #{apiStatus,jdbcType=INTEGER},
       </if>
       <if test="apiMsg != null" >
         #{apiMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="fileType != null" >
+        #{fileType,jdbcType=BIT},
+      </if>
+      <if test="fileName != null" >
+        #{fileName,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -109,10 +123,16 @@
         trans_code = #{transCode,jdbcType=VARCHAR},
       </if>
       <if test="apiStatus != null" >
-        api_status = #{apiStatus,jdbcType=TINYINT},
+        api_status = #{apiStatus,jdbcType=INTEGER},
       </if>
       <if test="apiMsg != null" >
         api_msg = #{apiMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="fileType != null" >
+        file_type = #{fileType,jdbcType=BIT},
+      </if>
+      <if test="fileName != null" >
+        file_name = #{fileName,jdbcType=VARCHAR},
       </if>
     </set>
     where serial_no = #{serialNo,jdbcType=VARCHAR}
