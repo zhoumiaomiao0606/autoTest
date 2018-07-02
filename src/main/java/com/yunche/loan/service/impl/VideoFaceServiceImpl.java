@@ -363,7 +363,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
                 "总计需还款" + redText(videoFaceQuestionAnswerVO.getPrincipalInterestSum()) + "元。" +
                 "以上信息您是否确认无误？";
         String question_10 = "10、在您足额偿清合同约定的所有债务之前，您所购车辆的商业保险保单的第一受益人为工商银行，请问您是否同意？（参考答案）是";
-        String question_11 = "11、我行审批通过后将根据您的授权对您的信用卡进行激活并将您的分期款项汇给浙江鑫宝行担保有限公司账户，您是否有异议？（参考答案）是";
+        String question_11 = "11、我行审批通过后将根据您的授权对您的信用卡进行激活并将您的分期款项汇给浙江鑫宝行担保有限公司账户，您是否有异议？（参考答案）否";
         String question_12 = "12、请您务必在合同上填写正确的手机号码和联系地址";
         String question_13 = "13、现在请您在信用卡分期表、分期付款/抵押合同以及客户告知书上签字";
         String question_14 = "14、银行：请您认真阅读您与担保方签订的相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，均与工商银行无关。" +
