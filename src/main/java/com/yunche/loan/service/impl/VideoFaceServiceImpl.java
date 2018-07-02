@@ -166,6 +166,11 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         videoFaceQuery.setPageIndex(null);
         videoFaceQuery.setPageSize(null);
 
+        // 指定时间基点：以当前时间为基点，之后的数据不处理
+        if (null == videoFaceQuery.getGmtCreateEnd()) {
+            videoFaceQuery.setGmtCreateEnd(new Date());
+        }
+
         // 需要导出的数据
         ResultBean<List<VideoFaceLogVO>> listResultBean = listLog(videoFaceQuery);
         Preconditions.checkArgument(listResultBean.getSuccess(), listResultBean.getMsg());
