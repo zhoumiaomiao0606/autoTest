@@ -8,7 +8,7 @@ import java.util.Date;
 public class BankInterfaceSerialDO {
     private String serialNo;
 
-    private Long orderId;
+    private Long customerId;
 
     private Byte status;
 

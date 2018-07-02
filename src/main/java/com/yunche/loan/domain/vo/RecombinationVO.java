@@ -1,6 +1,5 @@
 package com.yunche.loan.domain.vo;
 
-import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
 

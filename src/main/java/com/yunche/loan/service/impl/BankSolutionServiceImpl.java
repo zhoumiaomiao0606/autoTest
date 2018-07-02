@@ -152,8 +152,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         String docName = GeneratorIDUtil.execute()+ImageUtil.DOC_SUFFIX;
         String docPath = ImageUtil.mergeImage2Doc(docName,mergeImages);
 
-        uploadFile(picPath);
-        uploadFile(docPath);
 
         //第三方接口调用
         //数据封装
@@ -196,7 +194,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyCredit.setPictures(pictures);
         //走你
         icbcFeignClient.applyCredit(applyCredit);
-
+        //上传
+        uploadFile(picPath);
+        uploadFile(docPath);
     }
 
     private String path2Name(String path){
