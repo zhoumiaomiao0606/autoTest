@@ -10,6 +10,8 @@ public class UniversalBankInterfaceSerialVO {
 
     private String customerId;
 
+    private String apiStatus;
+
     private String status;
 
     private String requestTime;

@@ -76,7 +76,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Override
     public ResultBean openCard(BankOpenCardParam bankOpenCardParam) {
         mergeUpload(bankOpenCardParam);
-        return bankSolutionService.creditcardapply(bankOpenCardParam);
+        bankSolutionService.creditcardapply(bankOpenCardParam);
+        return ResultBean.ofSuccess(null);
     }
 
 

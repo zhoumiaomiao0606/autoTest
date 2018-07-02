@@ -86,31 +86,31 @@ public class IDict {
         /**
          * 合作机构征信查询请求接口
          */
-        public  static final String APPLYCREDIT ="com.icbc.bcis.apply.applycredit";
+        public  static final String APPLYCREDIT ="applycredit";
         /**
          * 查询申请进度
          */
-        public  static final String APPLYSTATUS="com.icbc.bcis.apply.applystatus";
+        public  static final String APPLYSTATUS="applystatus";
         /**
          * 专项卡申请信息上送接口
          */
-        public  static final String CREDITCARDAPPLY ="com.icbc.bcis.apply.creditcardapply";
+        public  static final String CREDITCARDAPPLY ="creditcardapply";
         /**
          * 文件清单信息下载接口
          */
-        public  static final String FILEDOWNLOAD ="com.icbc.bcis.apply.filedownload";
+        public  static final String FILEDOWNLOAD ="filedownload";
         /**
          * 文件清单信息上送接口
          */
-        public  static final String FILEUPLOAD ="com.icbc.bcis.apply.fileupload";
+        public  static final String FILEUPLOAD ="fileupload";
         /**
          * 通用业务申请接口
          */
-        public  static final String APPLYDIVIGENERAL ="com.icbc.bcis.apply.applydivigeneral";
+        public  static final String APPLYDIVIGENERAL ="applydivigeneral";
         /**
          * 查询专项卡开卡进度
          */
-        public  static final String APPLYCREDITSTATUS ="com.icbc.bcis.apply.applycreditstatus";
+        public  static final String APPLYCREDITSTATUS ="applycreditstatus";
 
     }
 
@@ -158,13 +158,9 @@ public class IDict {
          */
         public  static final Byte TIMEOUT = 4;
         /**
-         * 请求银行成功
-         */
-        public  static final Byte REQ_SUCC = 5;
-        /**
          * 请求银行失败
          */
-        public  static final Byte REQ_FAIL = 6;
+        public  static final Byte REQ_FAIL = 5;
 
     }
 }

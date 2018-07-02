@@ -20,5 +20,5 @@ public interface BankSolutionService {
       * @param bankOpenCardParam
       * @return
       */
-     public  ResultBean creditcardapply(BankOpenCardParam bankOpenCardParam);
+     public  void creditcardapply(BankOpenCardParam bankOpenCardParam);
 }
