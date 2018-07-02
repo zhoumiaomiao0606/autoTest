@@ -436,6 +436,14 @@ public class VideoFaceServiceImpl implements VideoFaceService {
             text = "未知";
         }
 
+        // 数字：向上取整
+        else if (text instanceof Number) {
+            Number num = (Number) text;
+            double ceil = Math.ceil(num.doubleValue());
+            int intVal = Double.valueOf(ceil).intValue();
+            text = intVal;
+        }
+
         String redText = "<font color='red'>" + text + "</font>";
         return redText;
     }
