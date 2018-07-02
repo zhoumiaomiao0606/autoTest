@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.param;
+package com.yunche.loan.config.feign.request;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
@@ -7,7 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-public class ICBCApiParam {
+public class ICBCApiRequest {
 
     /**
      * 征信申请
@@ -27,7 +27,7 @@ public class ICBCApiParam {
      * 专项卡开卡
      */
     @Data
-    public static class Creditcardapply extends Pub{
+    public static class ApplyBankOpenCard extends Pub{
 
         private List<Picture> pictures;//客户照片资料
 
