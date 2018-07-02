@@ -12,25 +12,25 @@ import java.util.Set;
 @Mapper
 public interface LoanQueryDOMapper {
 
-    String selectTelephoneVerifyLevel(@Param("loginUserId") Long loginUserId );
+    String selectTelephoneVerifyLevel(@Param("loginUserId") Long loginUserId);
 
     boolean checkCollectionUserRole(@Param("loginUserId") Long loginUserId);
 
-    List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId,@Param("name")  String name);
+    List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
 
-    List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId,@Param("name")  String name);
+    List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
 
     VehicleInformationVO selectVehicleInformation(Long orderId);
 
     public ApplyLicensePlateDepositInfoVO selectApplyLicensePlateDepositInfo(Long orderId);
 
-    UniversalLoanFinancialPlanTempHisVO selectUniversalLoanFinancialPlanTempHis(@Param("orderId") Long orderId,@Param("hisId") Long hisId);
+    UniversalLoanFinancialPlanTempHisVO selectUniversalLoanFinancialPlanTempHis(@Param("orderId") Long orderId, @Param("hisId") Long hisId);
 
-    UniversalLoanRefundApplyVO selectUniversalLoanRefundApply(@Param("orderId") Long orderId,@Param("refundId") Long refundId);
+    UniversalLoanRefundApplyVO selectUniversalLoanRefundApply(@Param("orderId") Long orderId, @Param("refundId") Long refundId);
 
     public UniversalInfoVO selectUniversalInfo(Long orderId);
 
-    public UniversalApprovalInfo selectUniversalApprovalInfo(@Param("taskDefinitionKey") String taskDefinitionKey,@Param("orderId") Long orderId);
+    public UniversalApprovalInfo selectUniversalApprovalInfo(@Param("taskDefinitionKey") String taskDefinitionKey, @Param("orderId") Long orderId);
 
     public UniversalLoanInfoVO selectUniversalLoanInfo(Long orderId);
 
@@ -40,7 +40,7 @@ public interface LoanQueryDOMapper {
 
     public List<UniversalRelationCustomerVO> selectUniversalRelationCustomer(Long orderId);
 
-    public List<String> selectUniversalRelevanceOrderIdByCustomerId(@Param("orderId") Long orderId,@Param("customerId") Long customerId);
+    public List<String> selectUniversalRelevanceOrderIdByCustomerId(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
 
     public UniversalRemitDetails selectUniversalRemitDetails(Long orderId);
 
@@ -54,10 +54,16 @@ public interface LoanQueryDOMapper {
 
     public List<UniversalCustomerVO> selectUniversalCustomer(Long orderId);
 
-    public UniversalCustomerDetailVO selectUniversalCustomerDetail(@Param("orderId") Long orderId,@Param("customerId") Long customerId);
+    public UniversalCustomerDetailVO selectUniversalCustomerDetail(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
 
     public List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId);
 
+    /**
+     * 资料增补  文件列表（最新一次增补）
+     *
+     * @param orderId
+     * @return
+     */
     public List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
     public List<UniversalMaterialRecordVO> selectUniversalCustomerFileByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
@@ -92,7 +98,7 @@ public interface LoanQueryDOMapper {
 
     BankLendRecordVO selectBankLendRecordDetail(Long orderId);
 
-    Long  selectOrderIdByIDCard(String idCard);
+    Long selectOrderIdByIDCard(String idCard);
 
     BankCardRecordVO selectBankCardRecordDetail(Long orderId);
 }

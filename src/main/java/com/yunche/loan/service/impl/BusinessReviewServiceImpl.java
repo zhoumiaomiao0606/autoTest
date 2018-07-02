@@ -2,7 +2,6 @@ package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
-import com.yunche.loan.config.util.CostCalculate;
 import com.yunche.loan.domain.entity.CostDetailsDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.RemitDetailsDO;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 @Transactional
@@ -45,16 +43,17 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
         recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
-        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_business_review",orderId));
-        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify",orderId));
+        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_business_review", orderId));
+        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify", orderId));
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
         return recombinationVO;
     }
 
     @Override
     public void update(BusinessReviewUpdateParam param) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()),new Byte("0"));
-        if(loanOrderDO == null){
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()), new Byte("0"));
+        if (loanOrderDO == null) {
             throw new BizException("此业务单不存在");
         }
 
@@ -111,56 +110,56 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         }*/
 
         //打款金额校验=================================end
-        Long costDetailsId  = loanOrderDO.getCostDetailsId();//关联ID
+        Long costDetailsId = loanOrderDO.getCostDetailsId();//关联ID
 
-        if(costDetailsId == null){
+        if (costDetailsId == null) {
             //新增提交
-            CostDetailsDO V =  BeanPlasticityUtills.copy(CostDetailsDO.class,param);
+            CostDetailsDO V = BeanPlasticityUtills.copy(CostDetailsDO.class, param);
             costDetailsDOMapper.insertSelective(V);
             //进行绑定
             Long id = V.getId();
             loanOrderDO.setCostDetailsId(id);
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        }else{
-            if(costDetailsDOMapper.selectByPrimaryKey(costDetailsId) == null){
+        } else {
+            if (costDetailsDOMapper.selectByPrimaryKey(costDetailsId) == null) {
                 //那order表中是脏数据
                 //进行新增 但是id得用order_id表中存在的id
-                CostDetailsDO V= BeanPlasticityUtills.copy(CostDetailsDO.class,param);
+                CostDetailsDO V = BeanPlasticityUtills.copy(CostDetailsDO.class, param);
                 V.setId(costDetailsId);
                 costDetailsDOMapper.insertSelective(V);
                 //但是不用更新loanOrder 因为已经存在
-            }else {
+            } else {
                 //代表存在
                 //进行更新
-                CostDetailsDO V= BeanPlasticityUtills.copy(CostDetailsDO.class,param);
+                CostDetailsDO V = BeanPlasticityUtills.copy(CostDetailsDO.class, param);
                 V.setId(costDetailsId);
                 costDetailsDOMapper.updateByPrimaryKeySelective(V);
             }
         }
 
 
-        Long remitDetailsId  = loanOrderDO.getRemitDetailsId();//关联ID
+        Long remitDetailsId = loanOrderDO.getRemitDetailsId();//关联ID
 
-        if(remitDetailsId == null){
+        if (remitDetailsId == null) {
             //新增提交
-            RemitDetailsDO V =  BeanPlasticityUtills.copy(RemitDetailsDO.class,param);
+            RemitDetailsDO V = BeanPlasticityUtills.copy(RemitDetailsDO.class, param);
             remitDetailsDOMapper.insertSelective(V);
             //进行绑定
             Long id = V.getId();
             loanOrderDO.setRemitDetailsId(id);
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        }else{
-            if(remitDetailsDOMapper.selectByPrimaryKey(remitDetailsId) == null){
+        } else {
+            if (remitDetailsDOMapper.selectByPrimaryKey(remitDetailsId) == null) {
                 //那order表中是脏数据
                 //进行新增 但是id得用order_id表中存在的id
-                RemitDetailsDO V= BeanPlasticityUtills.copy(RemitDetailsDO.class,param);
+                RemitDetailsDO V = BeanPlasticityUtills.copy(RemitDetailsDO.class, param);
                 V.setId(remitDetailsId);
                 remitDetailsDOMapper.insertSelective(V);
                 //但是不用更新loanOrder 因为已经存在
-            }else {
+            } else {
                 //代表存在
                 //进行更新
-                RemitDetailsDO V= BeanPlasticityUtills.copy(RemitDetailsDO.class,param);
+                RemitDetailsDO V = BeanPlasticityUtills.copy(RemitDetailsDO.class, param);
                 V.setId(remitDetailsId);
                 remitDetailsDOMapper.updateByPrimaryKeySelective(V);
 
@@ -190,7 +189,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         BigDecimal extra_fee = initDecimal(param.getExtra_fee());
         BigDecimal other_fee = initDecimal(param.getOther_fee());
         //月结 0 否 1 是
-        if("1".equals(pay_month)){
+        if ("1".equals(pay_month)) {
             //月结算
             return bank_period_principal
                     .subtract(service_fee)
@@ -204,8 +203,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
                     .subtract(extra_fee)
                     .subtract(other_fee)
                     .subtract(return_rate_amount)
-                    .setScale(2,BigDecimal.ROUND_HALF_UP);
-        }else{
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+        } else {
             //日结
             return bank_period_principal
                     .subtract(service_fee)
@@ -218,19 +217,18 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
                     .subtract(based_margin_fee)
                     .subtract(extra_fee)
                     .subtract(other_fee)
-                    .setScale(2,BigDecimal.ROUND_HALF_UP);
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
         }
     }
 
 
-    private BigDecimal initDecimal(String fee){
+    private BigDecimal initDecimal(String fee) {
         BigDecimal decimal = new BigDecimal(0);
-        if(!StringUtils.isBlank(fee)){
+        if (!StringUtils.isBlank(fee)) {
             decimal = new BigDecimal(fee);
         }
         return decimal;
     }
-
 
 
 }
