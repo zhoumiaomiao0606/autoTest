@@ -4,20 +4,18 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
-import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.RelationEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
+import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.ImageUtil;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.BankOpenCardParam;
-import com.yunche.loan.domain.param.ICBCApiParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
-import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.BankSolutionService;
@@ -50,9 +48,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Resource
     private ICBCFeignClient icbcFeignClient;
-
-    @Resource
-    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
     @Resource
     private LoanCustomerDOMapper loanCustomerDOMapper;
@@ -153,8 +148,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         //第三方接口调用
         //数据封装
-        ICBCApiParam.ApplyCredit applyCredit = new ICBCApiParam.ApplyCredit();
-        ICBCApiParam.Customer customer = new ICBCApiParam.Customer();
+        ICBCApiRequest.ApplyCredit applyCredit = new ICBCApiRequest.ApplyCredit();
+        ICBCApiRequest.Customer customer = new ICBCApiRequest.Customer();
         //pub
         applyCredit.setPlatno(sysConfig.getPlatno());
         applyCredit.setCmpseq(GeneratorIDUtil.execute());
@@ -171,15 +166,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setIdno(loanCustomerDO.getIdCard());
         customer.setRelation(convertRelation(loanCustomerDO));
         //pic
-        List<ICBCApiParam.Picture> pictures = Lists.newArrayList();
+        List<ICBCApiRequest.Picture> pictures = Lists.newArrayList();
         //File.separator
         //0004 【征信】授权书签字照片
-        ICBCApiParam.Picture picture_1 = new ICBCApiParam.Picture();
+        ICBCApiRequest.Picture picture_1 = new ICBCApiRequest.Picture();
         picture_1.setPicid("0004");
         picture_1.setPicnote("0004【征信】授权书签字照片");
         picture_1.setPicname(picName);
         //0005【征信】客户征信查询授权书+身份证正反面.doc
-        ICBCApiParam.Picture picture_2 = new ICBCApiParam.Picture();
+        ICBCApiRequest.Picture picture_2 = new ICBCApiRequest.Picture();
         picture_2.setPicid("0005");
         picture_2.setPicnote("0005【征信】客户征信查询授权书+身份证正反面.doc");
         picture_2.setPicname(docName);
@@ -252,16 +247,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //    Preconditions.checkArgument(count>0,"插入银行开卡流水失败");
         //}else{
         //    BeanUtils.copyProperties(bankInterfaceSerialDO,serialDO);
-
         //}
-
         //数据准备    beg
         bankOpenCardParam.setCmpseq(GeneratorIDUtil.execute());
+        ICBCApiRequest.ApplyBankOpenCard  applyBankOpenCard= new ICBCApiRequest.ApplyBankOpenCard();
         //数据准备结束 end
-
+        BeanUtils.copyProperties(applyBankOpenCard,bankOpenCardParam);
         //发送银行接口
         //ResultBean creditcardapply = null
-        icbcFeignClient.creditcardapply(bankOpenCardParam);
+        icbcFeignClient.creditcardapply(applyBankOpenCard);
         //应答数据
         //Map<String,String> data = (Map)creditcardapply.getData();
 

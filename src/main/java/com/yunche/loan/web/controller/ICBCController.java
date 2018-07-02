@@ -8,7 +8,6 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.domain.entity.MaterialDownHisDO;
 import com.yunche.loan.domain.param.ICBCApiCallbackParam;
-import com.yunche.loan.domain.param.ICBCApiParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.BankSolutionProcessService;
