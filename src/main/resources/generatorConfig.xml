@@ -311,7 +311,7 @@
         </table>
 -->
 
-        <table tableName="bank_interface_serial" domainObjectName="BankInterfaceSerialDO"
+        <table tableName="material_down_his" domainObjectName="MaterialDownHisDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

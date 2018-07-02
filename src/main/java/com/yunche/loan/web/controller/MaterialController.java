@@ -74,19 +74,6 @@ public class MaterialController {
         return materialService.downloadFiles2OSS(orderId, false);
     }
 
-    /**
-     * 下载文件完成后上传至tomcat
-     *
-     * @param orderId
-     * @return
-     */
-    @GetMapping(value = "/down2tomcat")
-    public ResultBean down2tomcat(@RequestParam Long orderId,
-                                  @RequestParam(value = "taskDefinitionKey") String taskDefinitionKey,
-                                  @RequestParam(value = "customerId", required = false) Long customerId) {
-
-        return materialService.down2tomcat(orderId, taskDefinitionKey, customerId);
-    }
     @GetMapping(value = "/zipCheck")
     public ResultBean checkZipStatus(@RequestParam(value = "orderId") Long orderId){
        return materialService.zipCheck(orderId);

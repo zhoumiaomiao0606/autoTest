@@ -91,6 +91,34 @@ public class ICBCApiParam {
     }
 
 
+    /**
+     * 文件清单生成通知接口
+     */
+    @Data
+    public static class FileNotice{
+        private Pub pub;
+        private FileNoticeReq req;
+
+    }
+
+    @Data
+    public static class ReturnMsg{
+        ReturnPub pub;
+
+        @Data
+        public static class ReturnPub{
+            private String retcode;
+            private String retmsg;
+        }
+    }
+
+
+    @Data
+    public static class FileNoticeReq {
+        private String  filetype;
+        private String  filesrc;
+        private String  datadt;
+    }
 
     @Data
     public static class Picture {

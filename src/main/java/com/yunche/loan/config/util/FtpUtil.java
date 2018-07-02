@@ -14,6 +14,7 @@ public class FtpUtil {
     private static String password;
     private static String serverpath;
     private static String port;
+    private static String tempDir;
 
     static{
         ResourceBundle bundle = PropertyResourceBundle.getBundle("sysconfig");
@@ -22,6 +23,7 @@ public class FtpUtil {
         password = bundle.containsKey("password") == false ? "" : bundle.getString("password");
         serverpath = bundle.containsKey("serverpath") == false ? "" : bundle.getString("serverpath");
         port = bundle.containsKey("port") == false ? "" : bundle.getString("port");
+        tempDir = bundle.containsKey("tempDir") == false ? "" : bundle.getString("tempDir");
     }
 
     /**
@@ -187,5 +189,41 @@ public class FtpUtil {
             }
         }
         return flag;
+    }
+
+    /**
+     * 文件下载
+     * @param serverFilePath
+     */
+    public static String icbcDownload(String serverFilePath){
+        Preconditions.checkNotNull(serverFilePath,"文件服务器路径未配置");
+        Preconditions.checkNotNull(serverpath,"服务器文件路径未配置");
+        Preconditions.checkNotNull(servierIP,"服务器IP未配置");
+        Preconditions.checkNotNull(port,"端口未配置");
+        Preconditions.checkNotNull(password,"密码未配置");
+        FtpImpl ftp = new FtpImpl();
+
+        String localName = null;
+        try {
+            String fileName = serverFilePath.substring(serverFilePath.lastIndexOf(File.separator) + 1);
+            ftp.connect(servierIP,Integer.parseInt(port),userName,password);
+            ftp.cd(serverFilePath);
+            ftp.asc();
+            boolean download = ftp.download(fileName, tempDir + fileName);
+
+            if(!download){
+                Preconditions.checkArgument(false,"文件下载失败");
+            }
+            localName= tempDir + fileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                ftp.disconnect();
+            } catch (IOException e) {
+                Preconditions.checkNotNull(false,e.getMessage());
+            }
+        }
+        return localName;
     }
 }

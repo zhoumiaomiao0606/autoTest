@@ -4,7 +4,8 @@ package com.yunche.loan.config.constant;
  * @author liuzhe
  * @date 2018/4/26
  */
-public class ApplyOrderStatusConst {
+public class
+ApplyOrderStatusConst {
 
     /**
      * 初始状态

@@ -44,4 +44,9 @@ public class BankOpenCardController {
         return bankOpenCardService.openCard(bankOpenCardParam);
     }
 
+    @GetMapping(value = "/importFile")
+    public ResultBean importFile(){
+        return null;
+    }
+
 }

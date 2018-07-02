@@ -19,5 +19,9 @@ public class SysConfig {
     private String assurerno;
     private String tzphybrno;
     private String hzphybrno;
+    private String priKey;
+    private String apiUrl;
+    private String fileServerpath;
+    private String tempDir;
 
 }

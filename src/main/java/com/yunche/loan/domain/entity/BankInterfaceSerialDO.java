@@ -23,4 +23,8 @@ public class BankInterfaceSerialDO {
     private Byte apiStatus;
 
     private String apiMsg;
+
+    private String fileType;
+
+    private String fileName;
 }

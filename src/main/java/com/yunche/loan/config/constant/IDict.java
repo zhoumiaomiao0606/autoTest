@@ -158,13 +158,45 @@ public class IDict {
          */
         public  static final Byte TIMEOUT = 4;
         /**
-         * 请求银行成功
+         * 请求成功
          */
         public  static final Byte REQ_SUCC = 5;
         /**
-         * 请求银行失败
+         * 请求失败
          */
         public  static final Byte REQ_FAIL = 6;
+        /**
+         * 文件已下载
+         */
+        public  static final Byte DOWNLOAD = 7;
+        /**
+         * 文件已导入
+         */
+        public  static final Byte LEADING_IN = 8;
+
+
+    }
+
+    /**
+     * 文件类型
+     */
+    public static abstract interface  K_FILE_TYPE{
+        /**
+         * 开卡清单文件
+         */
+        public  static final Byte OPEN_CARD_LIST_FILE = 0;
+        /**
+         * 逾期催收清单文件
+         */
+        public  static final Byte OVERDUE_BILL_COLLECTION = 1;
+        /**
+         * 未抵押明细清单文件
+         */
+        public  static final Byte UNSECURED_DETAILED_LIST = 2;
+        /**
+         * 逾期催缴清单文件
+         */
+        public  static final Byte OVERDUE_BILL_PAYMENT =3 ;
 
     }
 }
