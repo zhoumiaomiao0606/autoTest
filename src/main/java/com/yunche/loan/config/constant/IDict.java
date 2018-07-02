@@ -77,6 +77,41 @@ public class IDict {
         public  static final String TIMEOUT = "4";
     }
 
+    /**
+     * 工行接口code
+     */
+    public static abstract interface K_TRANS_CODE{
+        /**
+         * 合作机构征信查询请求接口
+         */
+        public  static final String APPLYCREDIT ="applycredit";
+        /**
+         * 查询申请进度
+         */
+        public  static final String APPLYSTATUS="applystatus";
+        /**
+         * 专项卡申请信息上送接口
+         */
+        public  static final String CREDITCARDAPPLY ="creditcardapply";
+        /**
+         * 文件清单信息下载接口
+         */
+        public  static final String FILEDOWNLOAD ="filedownload";
+        /**
+         * 文件清单信息上送接口
+         */
+        public  static final String FILEUPLOAD ="fileupload";
+        /**
+         * 通用业务申请接口
+         */
+        public  static final String APPLYDIVIGENERAL ="applydivigeneral";
+        /**
+         * 查询专项卡开卡进度
+         */
+        public  static final String APPLYCREDITSTATUS ="applycreditstatus";
+
+    }
+
 
 
     /**
