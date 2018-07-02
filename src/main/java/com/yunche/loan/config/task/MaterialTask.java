@@ -31,8 +31,8 @@ public class MaterialTask {
     @Scheduled(cron = "0 0/10 0 * * ?")
     public void deleteOverdueFile(){
         List<MaterialDownHisDO> all = Lists.newArrayList();
-        List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.SUCCESS);
-        List<MaterialDownHisDO> materialDownHisFAIL = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.REQ_FAIL);
+        List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.PRE_TRANSACTION);
+        List<MaterialDownHisDO> materialDownHisFAIL = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.FAIL);
         all.addAll(materialDownHisSUCC);
         all.addAll(materialDownHisFAIL);
         if(!CollectionUtils.isEmpty(all)){
@@ -41,23 +41,34 @@ public class MaterialTask {
                 //先锁定记录为处理中
                 e.setStatus(IDict.K_JYZT.PROCESS);
                 materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+
                 //文件下载
-                String  key = bankSolutionProcessService.fileDownload(e.getFileName());
-                if(StringUtil.isEmpty(key)){
-                    e.setStatus(IDict.K_JYZT.REQ_FAIL);
-                    e.setInfo("文件下载失败");
-                    materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-                    LOG.info(e.getFileName()+":文件下载失败");
+                String  key=null;
+                if(StringUtil.isEmpty(e.getFileKey())){
+                    key = bankSolutionProcessService.fileDownload(e.getFileName());
+                    if(StringUtil.isEmpty(key)){
+                        e.setStatus(IDict.K_JYZT.FAIL);
+                        e.setInfo("文件下载失败");
+                        materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+                        LOG.info(e.getFileName()+":文件下载失败");
+                        return;
+                    }
+                }else{
+                    key = e.getFileKey();
                 }
-                e.setStatus(IDict.K_JYZT.DOWNLOAD);
-                e.setFileKey(key);
-                materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+
                 LOG.info(e.getFileName()+":文件下载完成");
                 LOG.info(e.getFileName()+":文件导入开始");
                 boolean b = bankOpenCardService.importFile(key);
                 if(b){
+                    e.setStatus(IDict.K_JYZT.SUCCESS);
+                    e.setInfo("文件导入成功");
+                    materialDownHisDOMapper.updateByPrimaryKeySelective(e);
                     LOG.info(e.getFileName()+":文件导入完成,key:"+key);
                 }else {
+                    e.setStatus(IDict.K_JYZT.FAIL);
+                    e.setInfo("文件导入失败");
+                    materialDownHisDOMapper.updateByPrimaryKeySelective(e);
                     LOG.info(e.getFileName()+":文件导入失败,key:"+key);
                 }
             });

@@ -234,7 +234,7 @@ public class FeignConfig {
                         DO.setSerialNo(serialNoList.get(0).toString());
                         DO.setCustomerId(Long.valueOf(customerIdList.get(0).toString()));
                         DO.setTransCode(transCodeList.get(0).toString());
-                        DO.setStatus(IDict.K_JYZT.REQ_FAIL);
+                        DO.setStatus(IDict.K_JYZT.FAIL);
                         DO.setApiStatus(200);
                         DO.setApiMsg("icbcApiRetmsg:"+icbcApiRetmsg+"&"+"returnMsg:"+returnMsg);
                         if(V!=null){

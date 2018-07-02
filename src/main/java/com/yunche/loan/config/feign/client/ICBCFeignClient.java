@@ -7,9 +7,8 @@ import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.param.ICBCApiParam;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+
 import javax.validation.constraints.NotNull;
 
 @FeignClient(name = "icbcFeignClient" ,url = "http://122.225.203.102:18090/",configuration = FeignConfig.class)
@@ -23,4 +22,6 @@ public interface ICBCFeignClient {
     @RequestMapping(value = "/api/v1/icbc/test/apply/creditcardapply",method = RequestMethod.POST)
     public CreditCardApplyResponse creditcardapply(@RequestBody BankOpenCardParam bankOpenCardParam);
 
+    @GetMapping(value = "/api/v1/icbc/test/apply/filedownload")
+    public boolean filedownload(@RequestParam("filesrc") String  filesrc);
 }

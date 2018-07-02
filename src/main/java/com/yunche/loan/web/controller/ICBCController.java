@@ -70,7 +70,7 @@ public class ICBCController {
         materialDownHisDO.setSerialNo(GeneratorIDUtil.execute());
         materialDownHisDO.setFileType(fileNotice.getReq().getFiletype());
         materialDownHisDO.setFileName(fileNotice.getReq().getFilesrc());
-        materialDownHisDO.setStatus(IDict.K_JYZT.SUCCESS);
+        materialDownHisDO.setStatus(IDict.K_JYZT.PRE_TRANSACTION);
         int count = materialDownHisDOMapper.insertSelective(materialDownHisDO);
         Preconditions.checkArgument(count>0,"插入文件清单流水异常");
         ICBCApiParam.ReturnMsg returnMsg = new ICBCApiParam.ReturnMsg();

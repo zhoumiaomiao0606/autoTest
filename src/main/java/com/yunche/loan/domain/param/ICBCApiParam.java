@@ -100,7 +100,6 @@ public class ICBCApiParam {
         private FileNoticeReq req;
 
     }
-
     @Data
     public static class ReturnMsg{
         ReturnPub pub;

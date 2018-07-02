@@ -194,13 +194,21 @@ public class IDict {
          */
         public  static final Byte TIMEOUT = 4;
         /**
-         * 请求银行成功
+         * 请求成功
          */
         public  static final Byte REQ_SUCC = 5;
         /**
-         * 请求银行失败
+         * 请求失败
          */
-        public  static final Byte REQ_FAIL = 6;
+        public  static final Byte FAIL = 6;
+        /**
+         * 交易处理前
+         */
+        public  static final Byte PRE_TRANSACTION = 7;
+        /**
+         * 文件下载完成
+         */
+        public  static final Byte DOWNLOAD = 8;
 
     }
 }
