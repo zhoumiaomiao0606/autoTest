@@ -34,16 +34,6 @@ public interface MaterialService {
     String zipFilesDown(HttpServletRequest request, HttpServletResponse response,
                         Long orderId, String taskDefinitionKey, Long customerId);
 
-    /**
-     * 中转tomcat下载
-     *
-     * @param orderId
-     * @param taskDefinitionKey
-     * @param customerId
-     * @return
-     */
-    ResultBean down2tomcat(Long orderId, String taskDefinitionKey, Long customerId);
-
     void carUpdate(CarUpdateParam param);
 
 

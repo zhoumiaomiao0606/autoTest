@@ -1,42 +1,64 @@
 package com.yunche.loan.config.task;
 
-import com.google.common.base.Preconditions;
-import com.yunche.loan.config.constant.BaseConst;
+import com.github.pagehelper.util.StringUtil;
+import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.MaterialDownHisDO;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
+import com.yunche.loan.service.BankOpenCardService;
+import com.yunche.loan.service.BankSolutionProcessService;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Component
 public class MaterialTask {
-    SimpleDateFormat  df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+    private static final Logger LOG = LoggerFactory.getLogger(OSSUnit.class);
     @Autowired
     MaterialDownHisDOMapper materialDownHisDOMapper;
 
-    @Scheduled(cron = "0 0 2 * * ?")
+    @Autowired
+    BankSolutionProcessService bankSolutionProcessService;
+
+    @Autowired
+    BankOpenCardService bankOpenCardService;
+    @Scheduled(cron = "0 0/10 0 * * ?")
     public void deleteOverdueFile(){
-
-        List<MaterialDownHisDO> materialDownHisDOS = materialDownHisDOMapper.listAll();
-
-        if(!CollectionUtils.isEmpty(materialDownHisDOS)){
-            materialDownHisDOS.stream().forEach(e->{
-                long  day=(new Date().getTime()-e.getGmtCreate().getTime())/(24*60*60*1000);
-                if(day>=1){
-                    File file = new File(e.getUrl());
-                    if(file!=null){
-                        file.delete();
-                    }
-                    e.setStatus(BaseConst.DEL_STATUS);
-                    int count = materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-                    Preconditions.checkArgument(count>0,"更新数据出错");
+        List<MaterialDownHisDO> all = Lists.newArrayList();
+        List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.SUCCESS);
+        List<MaterialDownHisDO> materialDownHisFAIL = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.REQ_FAIL);
+        all.addAll(materialDownHisSUCC);
+        all.addAll(materialDownHisFAIL);
+        if(!CollectionUtils.isEmpty(all)){
+            all.parallelStream().forEach(e->{
+                LOG.info(e.getFileName()+"文件下载开始");
+                //先锁定记录为处理中
+                e.setStatus(IDict.K_JYZT.PROCESS);
+                materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+                //文件下载
+                String  key = bankSolutionProcessService.fileDownload(e.getFileName());
+                if(StringUtil.isEmpty(key)){
+                    e.setStatus(IDict.K_JYZT.REQ_FAIL);
+                    e.setInfo("文件下载失败");
+                    materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+                    LOG.info(e.getFileName()+":文件下载失败");
+                }
+                e.setStatus(IDict.K_JYZT.DOWNLOAD);
+                e.setFileKey(key);
+                materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+                LOG.info(e.getFileName()+":文件下载完成");
+                LOG.info(e.getFileName()+":文件导入开始");
+                boolean b = bankOpenCardService.importFile(key);
+                if(b){
+                    LOG.info(e.getFileName()+":文件导入完成,key:"+key);
+                }else {
+                    LOG.info(e.getFileName()+":文件导入失败,key:"+key);
                 }
             });
         }

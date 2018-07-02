@@ -10,12 +10,14 @@ import com.yunche.loan.config.util.ImageUtil;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.MaterialDownHisDO;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.BankOpenCardService;
 import com.yunche.loan.service.BankSolutionService;
 import com.yunche.loan.service.LoanQueryService;
@@ -49,6 +51,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     LoanFileDOMapper loanFileDOMapper;
 
+    @Autowired
+    MaterialDownHisDOMapper materialDownHisDOMapper;
+
     /**
      * 银行开卡详情页
      * @param orderId
@@ -80,8 +85,13 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         return ResultBean.ofSuccess(null);
     }
 
+    @Override
+    public boolean importFile(String ossKey) {
+        List<MaterialDownHisDO> hisDOS = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.DOWNLOAD);
+        //TODO 导入
 
-
+        return true;
+    }
 
 
     /**
