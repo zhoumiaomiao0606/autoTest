@@ -47,6 +47,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify", orderId));
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
+        recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
+        recombinationVO.setCustomers(loanQueryDOMapper.selectUniversalCustomer(orderId));
         return recombinationVO;
     }
 
