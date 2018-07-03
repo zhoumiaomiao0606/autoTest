@@ -1,6 +1,5 @@
 package com.yunche.loan.domain.vo;
 
-import com.sun.org.apache.xpath.internal.operations.String;
 import lombok.Data;
 
 import java.util.Date;

@@ -9,7 +9,7 @@ import java.util.Date;
 public class VehicleInformationDO {
     private Long id;
 
-    private Boolean license_plate_type;
+    private Byte license_plate_type;
 
     private String color;
 
@@ -47,11 +47,11 @@ public class VehicleInformationDO {
 
     private Date purchase_car_invoice_date;
 
-    private Boolean retrieve_key;
+    private Byte retrieve_key;
 
     private String customize_brand;
 
-    private Boolean status;
+    private Byte status;
 
     private String feature;
 
