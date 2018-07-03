@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @Transactional
@@ -39,6 +40,12 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     @Override
     public RecombinationVO detail(Long orderId) {
 
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
         recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
@@ -48,7 +55,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
         recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
-        recombinationVO.setCustomers(loanQueryDOMapper.selectUniversalCustomer(orderId));
+        recombinationVO.setCustomers(customers);
         return recombinationVO;
     }
 
