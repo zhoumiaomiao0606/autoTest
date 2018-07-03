@@ -59,19 +59,36 @@ public class MaterialTask {
 
                 LOG.info(e.getFileName()+":文件下载完成");
                 LOG.info(e.getFileName()+":文件导入开始");
-                boolean b = bankOpenCardService.importFile(key);
-                if(b){
-                    e.setStatus(IDict.K_JYZT.SUCCESS);
-                    e.setInfo("文件导入成功");
-                    materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-                    LOG.info(e.getFileName()+":文件导入完成,key:"+key);
-                }else {
-                    e.setStatus(IDict.K_JYZT.FAIL);
-                    e.setInfo("文件导入失败");
-                    materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-                    LOG.info(e.getFileName()+":文件导入失败,key:"+key);
+                switch(e.getFileType()){
+                    case IDict.K_WJLX.WJLX_0:
+                        boolean b = bankOpenCardService.importFile(key);
+                        if(b){
+                            e.setStatus(IDict.K_JYZT.SUCCESS);
+                            e.setInfo("文件导入成功");
+                            materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+                            LOG.info(e.getFileName()+":文件导入完成,key:"+key);
+                        }else {
+                            e.setStatus(IDict.K_JYZT.FAIL);
+                            e.setInfo("文件导入失败");
+                            materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+                            LOG.info(e.getFileName()+":文件导入失败,key:"+key);
+                        }
+                        break;
+                    case IDict.K_WJLX.WJLX_1:
+
+                        break;
+                    case IDict.K_WJLX.WJLX_2:break;
+                    case IDict.K_WJLX.WJLX_3:break;
+                    default:
+                       break;
                 }
+
+
             });
         }
+    }
+
+    public void afterAction(){
+
     }
 }
