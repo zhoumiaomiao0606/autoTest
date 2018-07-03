@@ -311,11 +311,11 @@
         </table>
 -->
 
-<<<<<<< HEAD
+
 <!--        <table tableName="material_down_his" domainObjectName="MaterialDownHisDO"
-=======
+
         <table tableName="bank_file_list_record" domainObjectName="BankFileListRecordDO"
->>>>>>> 986c291dc01b769d978357ad7a8d26b7190e7e2e
+
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>-->
