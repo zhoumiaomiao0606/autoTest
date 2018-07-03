@@ -3,7 +3,7 @@
 <mapper namespace="com.yunche.loan.mapper.VehicleInformationDOMapper" >
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VehicleInformationDO" >
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="license_plate_type" property="license_plate_type" jdbcType="TINYINT" />
+    <result column="license_plate_type" property="license_plate_type" jdbcType="BIT" />
     <result column="color" property="color" jdbcType="VARCHAR" />
     <result column="qualified_certificate_number" property="qualified_certificate_number" jdbcType="VARCHAR" />
     <result column="register_date" property="register_date" jdbcType="DATE" />
@@ -22,10 +22,12 @@
     <result column="purchase_car_invoice_price" property="purchase_car_invoice_price" jdbcType="DECIMAL" />
     <result column="invoice_down_payment" property="invoice_down_payment" jdbcType="DECIMAL" />
     <result column="purchase_car_invoice_date" property="purchase_car_invoice_date" jdbcType="DATE" />
-    <result column="retrieve_key" property="retrieve_key" jdbcType="TINYINT" />
+    <result column="retrieve_key" property="retrieve_key" jdbcType="BIT" />
     <result column="customize_brand" property="customize_brand" jdbcType="VARCHAR" />
-    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="BIT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
+    <result column="order_id" property="order_id" jdbcType="BIGINT" />
+    <result column="assess_org" property="assess_org" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, license_plate_type, color, qualified_certificate_number, register_date, vehicle_identification_number,
@@ -33,7 +35,7 @@
     transfer_ownership_date, now_driving_license_owner, old_driving_license_owner, engine_number,
     registration_certificate_number, invoice_car_dealer, purchase_car_invoice_num, purchase_car_invoice_price,
     invoice_down_payment, purchase_car_invoice_date, retrieve_key, customize_brand, status,
-    feature
+    feature, order_id, assess_org
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select
@@ -45,7 +47,7 @@
     delete from vehicle_information
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.yunche.loan.domain.entity.VehicleInformationDO" >
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VehicleInformationDO" >
     insert into vehicle_information
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -120,13 +122,19 @@
       <if test="feature != null" >
         feature,
       </if>
+      <if test="order_id != null" >
+        order_id,
+      </if>
+      <if test="assess_org != null" >
+        assess_org,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         #{id,jdbcType=BIGINT},
       </if>
       <if test="license_plate_type != null" >
-        #{license_plate_type,jdbcType=TINYINT},
+        #{license_plate_type,jdbcType=BIT},
       </if>
       <if test="color != null" >
         #{color,jdbcType=VARCHAR},
@@ -183,16 +191,22 @@
         #{purchase_car_invoice_date,jdbcType=DATE},
       </if>
       <if test="retrieve_key != null" >
-        #{retrieve_key,jdbcType=TINYINT},
+        #{retrieve_key,jdbcType=BIT},
       </if>
       <if test="customize_brand != null" >
         #{customize_brand,jdbcType=VARCHAR},
       </if>
       <if test="status != null" >
-        #{status,jdbcType=TINYINT},
+        #{status,jdbcType=BIT},
       </if>
       <if test="feature != null" >
         #{feature,jdbcType=VARCHAR},
+      </if>
+      <if test="order_id != null" >
+        #{order_id,jdbcType=BIGINT},
+      </if>
+      <if test="assess_org != null" >
+        #{assess_org,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -200,7 +214,7 @@
     update vehicle_information
     <set >
       <if test="license_plate_type != null" >
-        license_plate_type = #{license_plate_type,jdbcType=TINYINT},
+        license_plate_type = #{license_plate_type,jdbcType=BIT},
       </if>
       <if test="color != null" >
         color = #{color,jdbcType=VARCHAR},
@@ -257,16 +271,22 @@
         purchase_car_invoice_date = #{purchase_car_invoice_date,jdbcType=DATE},
       </if>
       <if test="retrieve_key != null" >
-        retrieve_key = #{retrieve_key,jdbcType=TINYINT},
+        retrieve_key = #{retrieve_key,jdbcType=BIT},
       </if>
       <if test="customize_brand != null" >
         customize_brand = #{customize_brand,jdbcType=VARCHAR},
       </if>
       <if test="status != null" >
-        status = #{status,jdbcType=TINYINT},
+        status = #{status,jdbcType=BIT},
       </if>
       <if test="feature != null" >
         feature = #{feature,jdbcType=VARCHAR},
+      </if>
+      <if test="order_id != null" >
+        order_id = #{order_id,jdbcType=BIGINT},
+      </if>
+      <if test="assess_org != null" >
+        assess_org = #{assess_org,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

@@ -3,27 +3,28 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.cache.CarCache;
 import com.yunche.loan.config.common.SysConfig;
+import com.yunche.loan.config.constant.BusitypeEnum;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.RelationEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
+import com.yunche.loan.config.feign.request.group.New;
+import com.yunche.loan.config.feign.request.group.Second;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.ImageUtil;
-import com.yunche.loan.domain.entity.LoanBaseInfoDO;
-import com.yunche.loan.domain.entity.LoanCustomerDO;
-import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
-import com.yunche.loan.domain.vo.UniversalInfoVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,8 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.io.File;
+import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -66,6 +69,21 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Resource
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Resource
+    private LoanCarInfoDOMapper loanCarInfoDOMapper;
+
+    @Resource
+    private CarCache carCache;
+
+    @Resource
+    private VehicleInformationDOMapper vehicleInformationDOMapper;
+
+    @Resource
+    private ProductRateDOMapper productRateDOMapper;
+
+    @Resource
+    private FinancialProductDOMapper financialProductDOMapper;
 
     //征信自动提交
     @Override
@@ -163,16 +181,229 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     public void ICBCCommonBusinessApplyProcess(Long orderId,String phybrno){
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        //获取数据源
+        Long baseId = loanOrderDO.getLoanBaseInfoId();
+        if(baseId == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        if(loanBaseInfoDO == null){
+            throw new BizException("征信信息不存在");
+        }
+        //数据映射层
+        //所贷车辆类型：1-新车; 2-二手车; 3-不限;
+        String busitype = BusitypeEnum.getValueByKey(loanBaseInfoDO.getCarType());
+        if(StringUtils.isBlank(busitype)){
+            throw new BizException("此业务类型暂时不支持");
+        }
+
+        Long customerId = loanOrderDO.getLoanCustomerId();
+        if(customerId == null){
+            throw new BizException("贷款人不存在");
+        }
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(customerId,new Byte("0"));
+        if(loanCustomerDO == null){
+            throw new BizException("贷款人不存在");
+        }
+
+        Long carId = loanOrderDO.getLoanCarInfoId();
+        if(carId == null){
+            throw new BizException("贷款车辆不存在");
+        }
+        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(carId);
+        if(loanCarInfoDO == null){
+            throw new BizException("贷款车辆不存在");
+        }
+        Long carDetailId = loanCarInfoDO.getCarDetailId();
+        if(carDetailId == null){
+            throw new BizException("贷款车辆不存在");
+        }
+        CarDetailDO carDetailDO = carCache.getCarDetail(carDetailId);
+        if(carDetailDO == null){
+            throw new BizException("贷款车辆不存在");
+        }
+
+        CarModelDO carModelDO = carCache.getCarModel(carDetailDO.getModelId());
+        if(carModelDO == null){
+            throw new BizException("贷款车辆不存在");
+        }
+
+        CarBrandDO carBrandDO = carCache.getCarBrand(carModelDO.getBrandId());
+        if(carBrandDO == null){
+            throw new BizException("贷款车辆不存在");
+        }
+
+        String carFullName = carBrandDO.getName() + carModelDO.getName() + carDetailDO.getName();
+        if(StringUtils.isBlank(carFullName)){
+            if(carBrandDO == null){
+                throw new BizException("贷款车辆不存在");
+            }
+        }
+
+        Long planId  = loanOrderDO.getLoanFinancialPlanId();
+        if(planId == null){
+            throw new BizException("此订单金融方案不存在");
+        }
+
+        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(planId);
+        if(loanFinancialPlanDO == null){
+            throw new BizException("此订单金融方案不存在");
+        }
+
+        if(loanFinancialPlanDO.getCarPrice() == null){
+            throw new BizException("车辆价格不能为空");
+        }
+
+        if(loanFinancialPlanDO.getCarPrice().compareTo(new BigDecimal("0")) == 0){
+            throw new BizException("车辆价格不能为0");
+        }
+
+        Long vehId = loanOrderDO.getVehicleInformationId();
+        if(vehId == null){
+            throw new BizException("车辆信息不能为空");
+        }
+        VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vehId);
+        if(vehicleInformationDO == null){
+            throw new BizException("车辆信息不能为空");
+        }
+
+        Long proId = loanFinancialPlanDO.getFinancialProductId();
+        if(proId == null){
+            throw new BizException("贷款产品为空");
+        }
+
+        FinancialProductDO financialProductDO = financialProductDOMapper.selectByPrimaryKey(proId);
+        if(financialProductDO == null){
+            throw new BizException("贷款产品为空");
+        }
+
+        ProductRateDOKey pk = new ProductRateDOKey();
+        pk.setProdId(proId);
+        pk.setLoanTime(pk.getLoanTime() == null?new Integer(0):pk.getLoanTime());
+
+        ProductRateDO pkDO = productRateDOMapper.selectByPrimaryKey(pk);
+        if(pkDO == null){
+            throw new BizException("此产品银行基准利率为空");
+        }
+
+        Long useYear = new Long(0);
+        try {
+            SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA);
+            Date old = simpleFormat.parse(simpleFormat.format(loanCarInfoDO.getFirstRegisterDate() == null?new Date():loanCarInfoDO.getFirstRegisterDate()));
+            Date now = new Date();
+            long l=now.getTime()-old.getTime();
+            long day=l/(24*60*60*1000);
+            long hour=day*24;
+            long mon=day/30;
+            long year=mon/12;
+            useYear = new Long(year);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        BigDecimal dawnPaymentMoney = new BigDecimal("0");
+        if(loanFinancialPlanDO.getDownPaymentMoney() != null ){
+            dawnPaymentMoney = vehicleInformationDO.getInvoice_down_payment();
+        }
+
+        BigDecimal bankPeriodPrincipal = new BigDecimal("0");
+        if(loanFinancialPlanDO.getBankPeriodPrincipal() != null){
+            bankPeriodPrincipal = loanFinancialPlanDO.getBankPeriodPrincipal();
+        }
+
+
+        Integer loanTime = new Integer(0);
+        if(loanFinancialPlanDO.getLoanTime() != null){
+            loanTime = loanFinancialPlanDO.getLoanTime();
+        }
+
+        BigDecimal loanTimeFee = new BigDecimal("0");
+        if(loanFinancialPlanDO.getBankFee() != null){
+            loanTimeFee = pkDO.getBankRate();
+        }
+
+
+        String paidAmt = dawnPaymentMoney.toString();
+        String amount = bankPeriodPrincipal.toString();
+        String term = loanTime.toString();
+        String interest = loanTimeFee.toString();
+
+
         //封装数据
         ICBCApiRequest.ApplyDiviGeneral applyDiviGeneral = new ICBCApiRequest.ApplyDiviGeneral();
         ICBCApiRequest.ApplyDiviGeneralCustomer customer = new ICBCApiRequest.ApplyDiviGeneralCustomer();
         ICBCApiRequest.ApplyDiviGeneralBusi busi = new ICBCApiRequest.ApplyDiviGeneralBusi();
         ICBCApiRequest.ApplyDiviGeneralCar car = new ICBCApiRequest.ApplyDiviGeneralCar();
         ICBCApiRequest.ApplyDiviGeneralDivi divi = new ICBCApiRequest.ApplyDiviGeneralDivi();
+        //start 封装
+        //pub
+        applyDiviGeneral.setPlatno(sysConfig.getPlatno());
+        applyDiviGeneral.setCmpseq(GeneratorIDUtil.execute());
+        applyDiviGeneral.setZoneno("1202");
+        applyDiviGeneral.setPhybrno(phybrno);
+        applyDiviGeneral.setOrderno(orderId.toString());
+        applyDiviGeneral.setAssurerno(sysConfig.getAssurerno());
+        applyDiviGeneral.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        applyDiviGeneral.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
+        applyDiviGeneral.setBusitype(busitype);
+        //customer
+        customer.setCustName(loanCustomerDO.getName());
+        customer.setIdType(IDict.K_JJLX.IDCARD);
+        customer.setIdNo(loanCustomerDO.getIdCard());
+        customer.setMobile(loanCustomerDO.getMobile());
+        customer.setAddress(loanCustomerDO.getAddress());
+        customer.setUnit(loanCustomerDO.getIncomeCertificateCompanyName());
+        customer.setNote(loanCustomerDO.getName()+"申请分期");
+        //busi
+        //car
+        car.setCarType(carFullName);
+        car.setPrice(loanFinancialPlanDO.getCarPrice().toString());
+        car.setCarNo1(vehicleInformationDO.getVehicle_identification_number());
+        car.setCarRegNo(vehicleInformationDO.getRegistration_certificate_number());
+        car.setShorp4s(vehicleInformationDO.getInvoice_car_dealer());
+        car.setCarNo2(vehicleInformationDO.getLicense_plate_number());
+        car.setAssessPrice(carDetailDO.getPrice());//车辆评估价格（元
+        car.setAssessOrg(vehicleInformationDO.getAssess_org());//评估机构
+        car.setUsedYears(useYear.toString());//使用年限(月)
+
+        divi.setPaidAmt(paidAmt);
+        divi.setAmount(amount);
+        divi.setTerm(term);
+        divi.setInterest(interest);
+        divi.setFeeMode(IDict.K_FEEMODE.TERM);
+        divi.setIsPawn(IDict.K_ISPAWN.YES);
+        divi.setPawnGoods(vehicleInformationDO.getVehicle_identification_number()+carFullName);
+        divi.setIsAssure(IDict.K_ISASSURE.YES);
+        divi.setCard();
+        divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);
+        divi.setTiexiRate("0");
 
 
-
+        //封装完毕
+        //针对新 - 二手车进行校验
+        if(BusitypeEnum.NEW.getKey().toString().equals(loanCarInfoDO.getCarType())){
+            autoCheckNewProcess(car,divi);
+        }else if(BusitypeEnum.SECOND.getKey().toString().equals(loanCarInfoDO.getCarType())){
+            autoCheckSecondProcess(car,divi);
+        }else{
+            throw new BizException("此业务类型暂时不支持");
+        }
+        busi.setCar(car);
+        busi.setDivi(divi);
+        applyDiviGeneral.setBusi(busi);
+        applyDiviGeneral.setCustomer(customer);
         icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
+    }
+
+    private void autoCheckNewProcess(@Validated(New.class) @NotNull ICBCApiRequest.ApplyDiviGeneralCar car,@Validated(New.class) @NotNull ICBCApiRequest.ApplyDiviGeneralDivi divi){
+        //这个方法只是用spring jpa 触发校验
+    }
+
+    private void autoCheckSecondProcess(@Validated(Second.class) ICBCApiRequest.ApplyDiviGeneralCar car,@Validated(Second.class) ICBCApiRequest.ApplyDiviGeneralDivi divi){
+        //这个方法只是用spring jpa 触发校验
     }
 
 

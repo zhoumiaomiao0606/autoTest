@@ -1,7 +1,10 @@
 package com.yunche.loan.config.feign.request;
 
+import com.yunche.loan.config.feign.request.group.New;
+import com.yunche.loan.config.feign.request.group.Second;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -28,6 +31,7 @@ public class ICBCApiRequest {
      * 通用业务申请
      */
     @Data
+    @Validated(ApplyDiviGeneral.class)
     public static class ApplyDiviGeneral extends Pub {
         //----- request ------
         @Valid
@@ -44,6 +48,7 @@ public class ICBCApiRequest {
 
     }
 
+    @Data
     public static class ApplyDiviGeneralBusi {
         @Valid
         @NotNull
@@ -108,21 +113,23 @@ public class ICBCApiRequest {
 
     @Data
     public static class ApplyDiviGeneralCar{
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String carType;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String Price;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String carNo1;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String carRegNo;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String shorp4s;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String carNo2;
-
+        @NotBlank(groups = {Second.class})
         private String AssessPrice;
+        @NotBlank(groups = {Second.class})
         private String AssessOrg;
+        @NotBlank(groups = {Second.class})
         private String UsedYears;
 
 
@@ -130,26 +137,27 @@ public class ICBCApiRequest {
 
     @Data
     public static class  ApplyDiviGeneralDivi{
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String PaidAmt;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String Amount;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String Term;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String Interest;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String FeeMode;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String IsPawn;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String PawnGoods;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String IsAssure;
-        @NotBlank
+        @NotBlank(groups = {New.class, Second.class})
         private String card;
-
+        @NotBlank(groups = {New.class})
         private String tiexiFlag;
+        @NotBlank(groups = {New.class})
         private String tiexiRate;
     }
     //---------------------------------------customer-----------------------------------------------------
@@ -251,21 +259,23 @@ public class ICBCApiRequest {
     @Data
     public static class Pub {
         //----- pub -----
-        @NotBlank
+        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
         private String platno;
-        @NotBlank
+        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
         private String cmpseq;
-        @NotBlank
+        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
         private String zoneno;
-        @NotBlank
+        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
         private String phybrno;
-        @NotBlank
+        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
         private String orderno;
-        @NotBlank
+        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
         private String assurerno;
-        @NotBlank
+        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
         private String cmpdate;
-        @NotBlank
+        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
         private String cmptime;
+        @NotBlank(groups = ApplyDiviGeneral.class)
+        private String busitype;
     }
 }

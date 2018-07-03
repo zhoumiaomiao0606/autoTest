@@ -51,5 +51,7 @@ public class VehicleInformationUpdateParam {
     private String retrieve_key;
     private String customize_brand;
 
+    private String assess_org;
+
     private List<UniversalFileParam> files;
 }

@@ -311,10 +311,20 @@
         </table>
 -->
 
-        <table tableName="material_down_his" domainObjectName="MaterialDownHisDO"
+<!--        <table tableName="material_down_his" domainObjectName="MaterialDownHisDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>-->
+
+        <table tableName="vehicle_information" domainObjectName="VehicleInformationDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <property name="useActualColumnNames" value="true"/>
         </table>
+
+
+
+
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

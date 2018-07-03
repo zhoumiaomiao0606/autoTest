@@ -77,6 +77,30 @@ public class IDict {
         public  static final String TIMEOUT = "4";
     }
 
+    public static abstract interface K_FEEMODE{
+        public  static final String FIRST = "1";
+
+        public  static final String TERM = "2";
+    }
+
+    public static abstract interface K_ISPAWN{
+        public  static final String YES = "1";
+
+        public  static final String NO = "0";
+    }
+
+    public static abstract interface K_ISASSURE{
+        public  static final String YES = "1";
+
+        public  static final String NO = "0";
+    }
+
+    public static abstract interface K_TIEXIFLAG{
+        public  static final String YES = "1";
+
+        public  static final String NO = "0";
+    }
+
     /**
      * 工行接口code
      */

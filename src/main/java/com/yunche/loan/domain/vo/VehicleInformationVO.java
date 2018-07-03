@@ -45,4 +45,5 @@ public class VehicleInformationVO {
     private String customize_brand;
     private BaseAreaDO hasApplyLicensePlateArea;
     private String car_category;
+    private String assess_org;
 }

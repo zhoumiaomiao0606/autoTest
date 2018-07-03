@@ -48,7 +48,8 @@
             v.customize_brand                 AS customize_brand,
             f.down_payment_money              AS down_payment_money,
             DATE_FORMAT(i.first_register_date,'%Y-%m-%d')        AS first_register_date,
-            i.car_category                                     AS car_category
+            i.car_category                                     AS car_category,
+            v.assess_org                                       AS assess_org
 
 
 
