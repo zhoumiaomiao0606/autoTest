@@ -4,5 +4,6 @@ import com.yunche.loan.config.feign.response.base.BasicResponse;
 import lombok.Data;
 
 @Data
-public class CreditCardApplyResponse extends BasicResponse {
+public class ApplyDiviGeneralResponse extends BasicResponse {
+
 }

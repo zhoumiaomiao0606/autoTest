@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface BankSolutionService {
      //自动征信
-     void creditAutomaticCommit(@Validated @NotNull  Long orderId,@Validated @NotNull  Long bankId);
+     void creditAutomaticCommit(@Validated @NotNull  Long orderId);
+     //通用业务申请接口
+     void commonBusinessApply(@Validated @NotNull Long orderId);
      //人工补偿
      void creditArtificialCompensation(@Validated @NotNull  Long orderId,@Validated @NotNull  Long bankId,@Validated @NotNull Long customerId);
 
