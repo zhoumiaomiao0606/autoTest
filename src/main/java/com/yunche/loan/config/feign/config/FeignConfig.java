@@ -28,8 +28,6 @@ import java.util.Map;
 
 import static com.yunche.loan.config.constant.BaseExceptionEnum.EC00000200;
 
-@Configuration
-@DependsOn
 public class FeignConfig {
     @Resource
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;

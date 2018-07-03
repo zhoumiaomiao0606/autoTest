@@ -85,6 +85,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Resource
     private FinancialProductDOMapper financialProductDOMapper;
 
+    @Resource
+    private BankFileListRecordDOMapper bankFileListRecordDOMapper;
+
     //征信自动提交
     @Override
     public void creditAutomaticCommit(@Validated @NotNull  Long orderId) {
@@ -303,7 +306,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             e.printStackTrace();
         }
 
-
         BigDecimal dawnPaymentMoney = new BigDecimal("0");
         if(loanFinancialPlanDO.getDownPaymentMoney() != null ){
             dawnPaymentMoney = vehicleInformationDO.getInvoice_down_payment();
@@ -331,6 +333,14 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         String term = loanTime.toString();
         String interest = loanTimeFee.toString();
 
+        BankFileListRecordDO bankFileListRecordDO = bankFileListRecordDOMapper.selectNewestByOrderId(orderId);
+        if(bankFileListRecordDO == null){
+            throw new BizException("信用卡卡号为空");
+        }
+
+        if(bankFileListRecordDO.getCardNumber() == null ){
+            throw new BizException("信用卡卡号为空");
+        }
 
         //封装数据
         ICBCApiRequest.ApplyDiviGeneral applyDiviGeneral = new ICBCApiRequest.ApplyDiviGeneral();
@@ -377,7 +387,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         divi.setIsPawn(IDict.K_ISPAWN.YES);
         divi.setPawnGoods(vehicleInformationDO.getVehicle_identification_number()+carFullName);
         divi.setIsAssure(IDict.K_ISASSURE.YES);
-        divi.setCard();
+        divi.setCard(bankFileListRecordDO.getCardNumber().toString());
         divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);
         divi.setTiexiRate("0");
 

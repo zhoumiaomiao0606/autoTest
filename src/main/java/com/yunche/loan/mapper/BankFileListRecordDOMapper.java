@@ -8,6 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface BankFileListRecordDOMapper {
+
+    BankFileListRecordDO selectNewestByOrderId(Long orderId);
+
     int deleteByPrimaryKey(Long bankFileListId);
 
     int insert(BankFileListRecordDO record);
