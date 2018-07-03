@@ -12,12 +12,15 @@ import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.ImageUtil;
+import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
+import com.yunche.loan.domain.vo.UniversalInfoVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
-import com.yunche.loan.mapper.LoanCustomerDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,9 +54,44 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Resource
     private LoanCustomerDOMapper loanCustomerDOMapper;
+
+    @Resource
+    private BankDOMapper bankDOMapper;
+
+    @Resource
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Resource
+    private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Resource
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
     //征信自动提交
     @Override
-    public void creditAutomaticCommit(@Validated @NotNull  Long orderId,@Validated @NotNull Long bankId) {
+    public void creditAutomaticCommit(@Validated @NotNull  Long orderId) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        if(loanOrderDO == null){
+            throw new BizException("此订单不存在");
+        }
+
+        Long baseId = loanOrderDO.getLoanBaseInfoId();
+        if(baseId == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        if(loanBaseInfoDO == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        //征信银行
+        Long bankId  =  bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
+        if(bankId == null){
+            throw new BizException("贷款银行不存在");
+        }
+
+
         //紧急联系人不推送
         Set types  = Sets.newHashSet();
         types.add(new Byte("1"));
@@ -67,7 +105,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         int value = bankId.intValue();
         switch (value) {
             case 1:
-                //判断当前客户贷款银行是否为台州工行，如为杭州工行：
+                //判断当前客户贷款银行是否为杭州工行，如为杭州工行：
                 ICBCBankCreditProcess(orderId,sysConfig.getHzphybrno(),customers);
                 break;
             case 3:
@@ -78,11 +116,65 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 return;
         }
     }
+
+    @Override
+    public void commonBusinessApply(@Validated @NotNull Long orderId) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        if(loanOrderDO == null){
+            throw new BizException("此订单不存在");
+        }
+
+        Long planId  = loanOrderDO.getLoanFinancialPlanId();
+        if(planId == null){
+            throw new BizException("此订单金融方案不存在");
+        }
+
+        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(planId);
+        if(loanFinancialPlanDO == null){
+            throw new BizException("此订单金融方案不存在");
+        }
+        //贷款银行
+        Long bankId  =  bankDOMapper.selectIdByName(loanFinancialPlanDO.getBank());
+        if(bankId == null){
+            throw new BizException("贷款银行不存在");
+        }
+
+        int value = bankId.intValue();
+        switch (value) {
+            case 1:
+                //判断当前客户贷款银行是否为杭州工行，如为杭州工行：
+                ICBCCommonBusinessApplyProcess(orderId,sysConfig.getHzphybrno());
+                break;
+            case 3:
+                //判断当前客户贷款银行是否为台州工行，如为台州工行：
+                ICBCCommonBusinessApplyProcess(orderId,sysConfig.getHzphybrno());
+                break;
+            default:
+                return;
+        }
+
+
+    }
+
     //征信人工补偿
     @Override
     public void creditArtificialCompensation(@Validated @NotNull  Long orderId,@Validated @NotNull Long bankId,@Validated @NotNull Long customerId) {
-
+        //todo
     }
+
+    public void ICBCCommonBusinessApplyProcess(Long orderId,String phybrno){
+        //封装数据
+        ICBCApiRequest.ApplyDiviGeneral applyDiviGeneral = new ICBCApiRequest.ApplyDiviGeneral();
+        ICBCApiRequest.ApplyDiviGeneralCustomer customer = new ICBCApiRequest.ApplyDiviGeneralCustomer();
+        ICBCApiRequest.ApplyDiviGeneralBusi busi = new ICBCApiRequest.ApplyDiviGeneralBusi();
+        ICBCApiRequest.ApplyDiviGeneralCar car = new ICBCApiRequest.ApplyDiviGeneralCar();
+        ICBCApiRequest.ApplyDiviGeneralDivi divi = new ICBCApiRequest.ApplyDiviGeneralDivi();
+
+
+
+        icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
+    }
+
 
 
     private void ICBCBankCreditProcess(Long orderId,String phybrno,List<LoanCustomerDO> customers){
@@ -94,15 +186,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                     //只有调用接口成功才算
                     //非处理中 并且 非查询成功的可以进行推送
                     if(!IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) && !IDict.K_JJSTS.PROCESS.equals(result.getStatus())) {
-                        process(orderId,phybrno,loanCustomerDO);
+                        bankCreditProcess(orderId,phybrno,loanCustomerDO);
                     }
                 }else{
-                    process(orderId,phybrno,loanCustomerDO);
+                    bankCreditProcess(orderId,phybrno,loanCustomerDO);
                 }
             }
     }
 
-    private void process(Long orderId,String phybrno,LoanCustomerDO loanCustomerDO){
+    private void bankCreditProcess(Long orderId,String phybrno,LoanCustomerDO loanCustomerDO){
         //获取用户授权书签字照
         UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(loanCustomerDO.getId(),new Byte("5"));
         if(authSignPic == null){
@@ -149,7 +241,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //第三方接口调用
         //数据封装
         ICBCApiRequest.ApplyCredit applyCredit = new ICBCApiRequest.ApplyCredit();
-        ICBCApiRequest.Customer customer = new ICBCApiRequest.Customer();
+        ICBCApiRequest.ApplyCreditCustomer customer = new ICBCApiRequest.ApplyCreditCustomer();
         //pub
         applyCredit.setPlatno(sysConfig.getPlatno());
         applyCredit.setCmpseq(GeneratorIDUtil.execute());

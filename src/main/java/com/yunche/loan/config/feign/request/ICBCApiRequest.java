@@ -17,10 +17,41 @@ public class ICBCApiRequest {
         //----- request ------
         @Valid
         @NotNull
-        private Customer customer;//客户信息
+        private ApplyCreditCustomer customer;//客户信息
         @Valid
         @NotNull
         private List<Picture> pictures;//客户照片资料
+    }
+
+
+    /**
+     * 通用业务申请
+     */
+    @Data
+    public static class ApplyDiviGeneral extends Pub {
+        //----- request ------
+        @Valid
+        @NotNull
+        private ApplyDiviGeneralCustomer customer;//客户信息
+
+        @Valid
+        @NotNull
+        private ApplyDiviGeneralBusi busi;
+
+        @Valid
+        @NotNull
+        private List<Picture> pictures;//客户照片资料
+
+    }
+
+    public static class ApplyDiviGeneralBusi {
+        @Valid
+        @NotNull
+        private ApplyDiviGeneralCar car;
+
+        @Valid
+        @NotNull
+        private ApplyDiviGeneralDivi divi;
     }
 
     /**
@@ -29,8 +60,133 @@ public class ICBCApiRequest {
     @Data
     public static class ApplyBankOpenCard extends Pub{
 
+        private ApplyBankOpenCardCustomer customer;
+
         private List<Picture> pictures;//客户照片资料
 
+    }
+
+
+    /**
+     * 文件清单生成通知接口
+     */
+    @Data
+    public static class FileNotice{
+        private Pub pub;
+        private FileNoticeReq req;
+
+    }
+    @Data
+    public static class ReturnMsg{
+        ReturnPub pub;
+
+        @Data
+        public static class ReturnPub{
+            private String retcode;
+            private String retmsg;
+        }
+    }
+
+
+    @Data
+    public static class FileNoticeReq {
+        private String  filetype;
+        private String  filesrc;
+        private String  datadt;
+    }
+
+    @Data
+    public static class Picture {
+        @NotBlank
+        private String picid;
+        @NotBlank
+        private String picname;
+        @NotBlank
+        private String picnote;
+    }
+    //---------------------------------------car-----------------------------------------------------
+
+    @Data
+    public static class ApplyDiviGeneralCar{
+        @NotBlank
+        private String carType;
+        @NotBlank
+        private String Price;
+        @NotBlank
+        private String carNo1;
+        @NotBlank
+        private String carRegNo;
+        @NotBlank
+        private String shorp4s;
+        @NotBlank
+        private String carNo2;
+
+        private String AssessPrice;
+        private String AssessOrg;
+        private String UsedYears;
+
+
+    }
+
+    @Data
+    public static class  ApplyDiviGeneralDivi{
+        @NotBlank
+        private String PaidAmt;
+        @NotBlank
+        private String Amount;
+        @NotBlank
+        private String Term;
+        @NotBlank
+        private String Interest;
+        @NotBlank
+        private String FeeMode;
+        @NotBlank
+        private String IsPawn;
+        @NotBlank
+        private String PawnGoods;
+        @NotBlank
+        private String IsAssure;
+        @NotBlank
+        private String card;
+
+        private String tiexiFlag;
+        private String tiexiRate;
+    }
+    //---------------------------------------customer-----------------------------------------------------
+    @Data
+    public static class ApplyDiviGeneralCustomer{
+        @NotBlank
+        private String CustName;
+        @NotBlank
+        private String IdType;
+        @NotBlank
+        private String IdNo;
+        @NotBlank
+        private String Mobile;
+        @NotBlank
+        private String Address;
+        @NotBlank
+        private String Unit;
+        @NotBlank
+        private String Note;
+    }
+
+    @Data
+    public static class ApplyCreditCustomer {
+        @NotBlank
+        private String mastername;
+        @NotBlank
+        private String custname;
+        @NotBlank
+        private String idtype;
+        @NotBlank
+        private String idno;
+        @NotBlank
+        private String relation;
+    }
+
+    @Data
+    public static class ApplyBankOpenCardCustomer {
         private String  feeamount;
         private String  loanamount;
         private String  term;
@@ -90,60 +246,7 @@ public class ICBCApiRequest {
         private String  emladdrf;
     }
 
-
-    /**
-     * 文件清单生成通知接口
-     */
-    @Data
-    public static class FileNotice{
-        private Pub pub;
-        private FileNoticeReq req;
-
-    }
-    @Data
-    public static class ReturnMsg{
-        ReturnPub pub;
-
-        @Data
-        public static class ReturnPub{
-            private String retcode;
-            private String retmsg;
-        }
-    }
-
-
-    @Data
-    public static class FileNoticeReq {
-        private String  filetype;
-        private String  filesrc;
-        private String  datadt;
-    }
-
-    @Data
-    public static class Picture {
-        @NotBlank
-        private String picid;
-        @NotBlank
-        private String picname;
-        @NotBlank
-        private String picnote;
-    }
-
-    @Data
-    public static class Customer {
-        @NotBlank
-        private String mastername;
-        @NotBlank
-        private String custname;
-        @NotBlank
-        private String idtype;
-        @NotBlank
-        private String idno;
-        @NotBlank
-        private String relation;
-    }
-
-
+    //pub
 
     @Data
     public static class Pub {
