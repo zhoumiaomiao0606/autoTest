@@ -170,7 +170,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         bankFileListRecordDO.setCredentialNo(credentialNo);
         bankFileListRecordDO.setHairpinFlag(hairpinFlag);
         bankFileListRecordDO.setAccountStatement(accountStatement);
-        bankFileListRecordDO.setRepayDate(DateUtil.getDate(repayDate));
+        bankFileListRecordDO.setRepayDate(repayDate);
 
         return bankFileListRecordDO;
     }

@@ -18,7 +18,6 @@ import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
-import com.yunche.loan.domain.vo.UniversalInfoVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionService;
@@ -33,7 +32,10 @@ import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import static com.yunche.loan.config.constant.LoanCustomerEnum.GUARANTOR;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.PRINCIPAL_LENDER;
@@ -327,43 +329,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
      * @param bankOpenCardParam
      */
     public void creditcardapply(BankOpenCardParam bankOpenCardParam) {
-        //记录银行开发流水信息
-        //BankInterfaceSerialDO serialDO = new BankInterfaceSerialDO();
-        //BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(bankOpenCardParam.getCustomerId(), IDict.K_API.CREDITCARDAPPLY);
-        //if(bankInterfaceSerialDO==null){
-        //    serialDO.setSerialNo(GeneratorIDUtil.execute());
-        //    serialDO.setCustomerId(bankOpenCardParam.getCustomerId());
-        //    serialDO.setTransCode(IDict.K_API.CREDITCARDAPPLY);
-        //    serialDO.setStatus(IDict.K_JYZT.PROCESS);
-        //    int count = bankInterfaceSerialDOMapper.insertSelective(serialDO);
-        //    Preconditions.checkArgument(count>0,"插入银行开卡流水失败");
-        //}else{
-        //    BeanUtils.copyProperties(bankInterfaceSerialDO,serialDO);
-        //}
-        //数据准备    beg
+        //数据准备
         bankOpenCardParam.setCmpseq(GeneratorIDUtil.execute());
         ICBCApiRequest.ApplyBankOpenCard  applyBankOpenCard= new ICBCApiRequest.ApplyBankOpenCard();
-        //数据准备结束 end
         BeanUtils.copyProperties(applyBankOpenCard,bankOpenCardParam);
         //发送银行接口
-        //ResultBean creditcardapply = null
         icbcFeignClient.creditcardapply(applyBankOpenCard);
-        //应答数据
-        //Map<String,String> data = (Map)creditcardapply.getData();
-
-        //if(IConstant.SUCCESS.equals(data.get(IConstant.RETURN_CODE)) && IConstant.API_SUCCESS.equals(data.get(IConstant.ICBC_API_RETCODE))){
-        //    serialDO.setApiStatus(IDict.K_JYZT.REQ_SUCC);
-
-        //    int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(serialDO);//更新状态
-        //    Preconditions.checkArgument(count>0,"更新银行开卡流水失败");
-        //    return creditcardapply;
-        //}else{
-        //    serialDO.setApiStatus(IDict.K_JYZT.REQ_FAIL);
-        //    int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(serialDO);//更新状态
-        //    Preconditions.checkArgument(count>0,"更新银行开卡流水失败");
-        //    throw  new BizException("银行开卡失败");
-        //}
-
     }
 
 

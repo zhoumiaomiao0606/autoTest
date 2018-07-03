@@ -1,6 +1,5 @@
 package com.yunche.loan.config.feign.client;
 
-import com.yunche.loan.config.feign.config.FeignConfig;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.response.ApplyCreditResponse;
 import com.yunche.loan.config.feign.response.ApplyDiviGeneralResponse;
@@ -11,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 
-@FeignClient(name = "icbcFeignClient" ,url = "http://122.225.203.102:18090/",configuration = FeignConfig.class)
-//@FeignClient(name = "iCBCFeignClient" ,url = "http://192.168.0.166:18090",configuration = FeignLogConfig.class)
+//@FeignClient(name = "icbcFeignClient" ,url = "http://122.225.203.102:18090/",configuration = FeignConfig.class)
+@FeignClient(name = "iCBCFeignClient" ,url = "http://localhost:18090/")
 public interface ICBCFeignClient {
 
     //wanggang
@@ -28,6 +27,6 @@ public interface ICBCFeignClient {
     @RequestMapping(value = "/api/v1/icbc/test/apply/creditcardapply",method = RequestMethod.POST)
     public CreditCardApplyResponse creditcardapply(@RequestBody @Validated @NotNull ICBCApiRequest.ApplyBankOpenCard applyBankOpenCard);
 
-    @GetMapping(value = "/api/v1/icbc/test/apply/filedownload")
-    public boolean filedownload(@RequestParam("filesrc") String  filesrc);
+    @RequestMapping(value = "/api/v1/test/icbc/apply/filedownload",method = RequestMethod.GET)
+    public boolean filedownload(@RequestParam(value = "filesrc") String  filesrc);
 }

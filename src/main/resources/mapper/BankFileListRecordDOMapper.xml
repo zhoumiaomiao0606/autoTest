@@ -3,6 +3,7 @@
 <mapper namespace="com.yunche.loan.mapper.BankFileListRecordDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankFileListRecordDO">
     <id column="bank_file_list_id" jdbcType="BIGINT" property="bankFileListId" />
+    <result column="customer_id" jdbcType="BIGINT" property="customerId" />
     <result column="order_id" jdbcType="BIGINT" property="orderId" />
     <result column="area_id" jdbcType="VARCHAR" property="areaId" />
     <result column="plat_no" jdbcType="VARCHAR" property="platNo" />
@@ -14,14 +15,14 @@
     <result column="credential_no" jdbcType="VARCHAR" property="credentialNo" />
     <result column="hairpin_flag" jdbcType="VARCHAR" property="hairpinFlag" />
     <result column="account_statement" jdbcType="VARCHAR" property="accountStatement" />
-    <result column="repay_date" jdbcType="TIMESTAMP" property="repayDate" />
+    <result column="repay_date" jdbcType="VARCHAR" property="repayDate" />
     <result column="gmt_greate" jdbcType="TIMESTAMP" property="gmtGreate" />
     <result column="status" jdbcType="TINYINT" property="status" />
   </resultMap>
   <sql id="Base_Column_List">
-    bank_file_list_id, order_id, area_id, plat_no, guaranty_unit, opencard_date, card_number, 
-    name, card_type, credential_no, hairpin_flag, account_statement, repay_date, gmt_greate, 
-    status
+    bank_file_list_id, customer_id, order_id, area_id, plat_no, guaranty_unit, opencard_date, 
+    card_number, name, card_type, credential_no, hairpin_flag, account_statement, repay_date, 
+    gmt_greate, status
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -34,24 +35,27 @@
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDO">
-    insert into bank_file_list_record (bank_file_list_id, order_id, area_id, 
-      plat_no, guaranty_unit, opencard_date, 
-      card_number, name, card_type, 
-      credential_no, hairpin_flag, account_statement, 
-      repay_date, gmt_greate, status
-      )
-    values (#{bankFileListId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{areaId,jdbcType=VARCHAR}, 
-      #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR}, #{opencardDate,jdbcType=TIMESTAMP}, 
-      #{cardNumber,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{cardType,jdbcType=VARCHAR}, 
-      #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR}, #{accountStatement,jdbcType=VARCHAR}, 
-      #{repayDate,jdbcType=TIMESTAMP}, #{gmtGreate,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
-      )
+    insert into bank_file_list_record (bank_file_list_id, customer_id, order_id, 
+      area_id, plat_no, guaranty_unit, 
+      opencard_date, card_number, name, 
+      card_type, credential_no, hairpin_flag, 
+      account_statement, repay_date, gmt_greate, 
+      status)
+    values (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
+      #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR}, 
+      #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR}, 
+      #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDO">
     insert into bank_file_list_record
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="bankFileListId != null">
         bank_file_list_id,
+      </if>
+      <if test="customerId != null">
+        customer_id,
       </if>
       <if test="orderId != null">
         order_id,
@@ -100,6 +104,9 @@
       <if test="bankFileListId != null">
         #{bankFileListId,jdbcType=BIGINT},
       </if>
+      <if test="customerId != null">
+        #{customerId,jdbcType=BIGINT},
+      </if>
       <if test="orderId != null">
         #{orderId,jdbcType=BIGINT},
       </if>
@@ -134,7 +141,7 @@
         #{accountStatement,jdbcType=VARCHAR},
       </if>
       <if test="repayDate != null">
-        #{repayDate,jdbcType=TIMESTAMP},
+        #{repayDate,jdbcType=VARCHAR},
       </if>
       <if test="gmtGreate != null">
         #{gmtGreate,jdbcType=TIMESTAMP},
@@ -147,6 +154,9 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDO">
     update bank_file_list_record
     <set>
+      <if test="customerId != null">
+        customer_id = #{customerId,jdbcType=BIGINT},
+      </if>
       <if test="orderId != null">
         order_id = #{orderId,jdbcType=BIGINT},
       </if>
@@ -181,7 +191,7 @@
         account_statement = #{accountStatement,jdbcType=VARCHAR},
       </if>
       <if test="repayDate != null">
-        repay_date = #{repayDate,jdbcType=TIMESTAMP},
+        repay_date = #{repayDate,jdbcType=VARCHAR},
       </if>
       <if test="gmtGreate != null">
         gmt_greate = #{gmtGreate,jdbcType=TIMESTAMP},
@@ -194,7 +204,8 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDO">
     update bank_file_list_record
-    set order_id = #{orderId,jdbcType=BIGINT},
+    set customer_id = #{customerId,jdbcType=BIGINT},
+      order_id = #{orderId,jdbcType=BIGINT},
       area_id = #{areaId,jdbcType=VARCHAR},
       plat_no = #{platNo,jdbcType=VARCHAR},
       guaranty_unit = #{guarantyUnit,jdbcType=VARCHAR},
@@ -205,30 +216,29 @@
       credential_no = #{credentialNo,jdbcType=VARCHAR},
       hairpin_flag = #{hairpinFlag,jdbcType=VARCHAR},
       account_statement = #{accountStatement,jdbcType=VARCHAR},
-      repay_date = #{repayDate,jdbcType=TIMESTAMP},
+      repay_date = #{repayDate,jdbcType=VARCHAR},
       gmt_greate = #{gmtGreate,jdbcType=TIMESTAMP},
       status = #{status,jdbcType=TINYINT}
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
   </update>
 
-
   <insert id="insertBatch">
     INSERT INTO bank_file_list_record
-    (
-    bank_file_list_id, order_id, area_id,
-    plat_no, guaranty_unit, opencard_date,
-    card_number, name, card_type,
-    credential_no, hairpin_flag, account_statement,
-    repay_date, gmt_greate, status
-    )
+    (bank_file_list_id, customer_id, order_id,
+    area_id, plat_no, guaranty_unit,
+    opencard_date, card_number, name,
+    card_type, credential_no, hairpin_flag,
+    account_statement, repay_date, gmt_greate,
+    status)
     VALUES
     <foreach collection ="list" item="recordLists" separator =",">
-      (#{bankFileListId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{areaId,jdbcType=VARCHAR},
-      #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR}, #{opencardDate,jdbcType=TIMESTAMP},
-      #{cardNumber,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{cardType,jdbcType=VARCHAR},
-      #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR}, #{accountStatement,jdbcType=VARCHAR},
-      #{repayDate,jdbcType=TIMESTAMP}, #{gmtGreate,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
-      )
+      (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT},
+      #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR},
+      #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
+      #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR},
+      #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP},
+      #{status,jdbcType=TINYINT})
     </foreach >
   </insert>
+
 </mapper>

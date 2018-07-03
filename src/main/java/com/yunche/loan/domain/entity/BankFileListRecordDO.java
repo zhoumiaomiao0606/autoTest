@@ -8,6 +8,8 @@ import java.util.Date;
 public class BankFileListRecordDO {
     private Long bankFileListId;
 
+    private Long customerId;
+
     private Long orderId;
 
     private String areaId;
@@ -30,7 +32,7 @@ public class BankFileListRecordDO {
 
     private String accountStatement;
 
-    private Date repayDate;
+    private String repayDate;
 
     private Date gmtGreate;
 

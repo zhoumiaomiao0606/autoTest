@@ -3,21 +3,16 @@ package com.yunche.loan;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
-import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.service.BankSolutionService;
 import com.yunche.loan.service.CollectionService;
-import com.yunche.loan.service.LoanCustomerService;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 public class Test extends BaseTest {
     @Resource
@@ -34,7 +29,7 @@ public class Test extends BaseTest {
 
 
 
-        bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"),new Long(3));
+        bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
     }
 
 

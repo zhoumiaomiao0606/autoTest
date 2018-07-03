@@ -28,8 +28,8 @@ public class MaterialTask {
 
     @Autowired
     BankOpenCardService bankOpenCardService;
-    @Scheduled(cron = "0 0/10 0 * * ?")
-    public void deleteOverdueFile(){
+    @Scheduled(cron = "0 0/1 * * * ?")
+    public void filedownload(){
         List<MaterialDownHisDO> all = Lists.newArrayList();
         List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.PRE_TRANSACTION);
         List<MaterialDownHisDO> materialDownHisFAIL = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.FAIL);
@@ -41,16 +41,19 @@ public class MaterialTask {
                 //先锁定记录为处理中
                 e.setStatus(IDict.K_JYZT.PROCESS);
                 materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-
                 //文件下载
                 String  key=null;
                 if(StringUtil.isEmpty(e.getFileKey())){
-                    key = bankSolutionProcessService.fileDownload(e.getFileName());
+                    try{
+                        key = bankSolutionProcessService.fileDownload(e.getFileName());
+                    }catch(Exception e2){
+                        e2.printStackTrace();
+                        modifyFail(e);
+                        return;
+                    }
+
                     if(StringUtil.isEmpty(key)){
-                        e.setStatus(IDict.K_JYZT.FAIL);
-                        e.setInfo("文件下载失败");
-                        materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-                        LOG.info(e.getFileName()+":文件下载失败");
+                        modifyFail(e);
                         return;
                     }
                 }else{
@@ -63,15 +66,9 @@ public class MaterialTask {
                     case IDict.K_WJLX.WJLX_0:
                         boolean b = bankOpenCardService.importFile(key);
                         if(b){
-                            e.setStatus(IDict.K_JYZT.SUCCESS);
-                            e.setInfo("文件导入成功");
-                            materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-                            LOG.info(e.getFileName()+":文件导入完成,key:"+key);
+                            modifyFail(e);
                         }else {
-                            e.setStatus(IDict.K_JYZT.FAIL);
-                            e.setInfo("文件导入失败");
-                            materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-                            LOG.info(e.getFileName()+":文件导入失败,key:"+key);
+                            modifySucc(e);
                         }
                         break;
                     case IDict.K_WJLX.WJLX_1:
@@ -82,13 +79,24 @@ public class MaterialTask {
                     default:
                        break;
                 }
-
-
             });
         }
     }
 
     public void afterAction(){
 
+    }
+
+    public void modifySucc(MaterialDownHisDO e){
+        e.setStatus(IDict.K_JYZT.SUCCESS);
+        e.setInfo("文件处理成功");
+        materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+        LOG.info(e.getFileName()+":文件处理完成,key:"+e.getFileKey());
+    }
+    public void modifyFail(MaterialDownHisDO e){
+        e.setStatus(IDict.K_JYZT.FAIL);
+        e.setInfo("文件处理失败");
+        materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+        LOG.info(e.getFileName()+":文件处理失败,key:"+e.getFileKey());
     }
 }
