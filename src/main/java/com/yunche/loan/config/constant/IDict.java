@@ -235,4 +235,26 @@ public class IDict {
         public  static final Byte DOWNLOAD = 8;
 
     }
+
+    /**
+     * 文件类型
+     */
+    public static abstract interface K_WJLX{
+        /**
+         * 开卡清单文件
+         */
+        public  static final String WJLX_0="0";
+        /**
+         * 逾期催收清单文件
+         */
+        public  static final String WJLX_1="1";
+        /**
+         * 未抵押明细清单文件
+         */
+        public  static final String WJLX_2="2";
+        /**
+         * 逾期催缴清单文件
+         */
+        public  static final String WJLX_3="3";
+    }
 }

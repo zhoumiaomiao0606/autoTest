@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
+import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.domain.entity.MaterialDownHisDO;
@@ -37,7 +38,7 @@ public class ICBCController {
     //请求接口
     @PostMapping (value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 
-    public ResultBean<Long> query( @RequestBody ICBCApiParam.ApplyCredit applyCredit) {
+    public ResultBean<Long> query( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
         //return icbcFeignClient.applyCredit(applyCredit);
         return null;
     }
@@ -53,17 +54,17 @@ public class ICBCController {
 
 
     @PostMapping (value = "/creditreturn", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean creditreturn( @RequestBody ICBCApiParam.ApplyCredit applyCredit) {
+    public ResultBean creditreturn( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
         return null;
     }
 
     @PostMapping (value = "/creditcardresult", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean creditcardresult( @RequestBody ICBCApiParam.ApplyCredit applyCredit) {
+    public ResultBean creditcardresult( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
         return null;
     }
 
     @PostMapping (value = "/fileNotice", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean fileNotice( ICBCApiParam.FileNotice fileNotice) {
+    public ResultBean fileNotice( ICBCApiRequest.FileNotice fileNotice) {
         //记录回调信息
         MaterialDownHisDO materialDownHisDO = new MaterialDownHisDO();
         materialDownHisDO.setSerialNo(GeneratorIDUtil.execute());
@@ -72,7 +73,7 @@ public class ICBCController {
         materialDownHisDO.setStatus(IDict.K_JYZT.PRE_TRANSACTION);
         int count = materialDownHisDOMapper.insertSelective(materialDownHisDO);
         Preconditions.checkArgument(count>0,"插入文件清单流水异常");
-        ICBCApiParam.ReturnMsg returnMsg = new ICBCApiParam.ReturnMsg();
+        ICBCApiRequest.ReturnMsg returnMsg = new ICBCApiRequest.ReturnMsg();
         returnMsg.getPub().setRetcode(IConstant.SUCCESS);
         returnMsg.getPub().setRetmsg("成功");
         return ResultBean.ofSuccess(returnMsg);

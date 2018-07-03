@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.BankFileListDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankFileListDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="file_type" jdbcType="VARCHAR" property="fileType" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="file_key" jdbcType="VARCHAR" property="fileKey" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, file_type, file_name, operator, status, file_key, gmt_create
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bank_file_list
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from bank_file_list
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankFileListDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into bank_file_list (id, file_type, file_name, 
+      operator, status, file_key, 
+      gmt_create)
+    values (#{id,jdbcType=BIGINT}, #{fileType,jdbcType=VARCHAR}, #{fileName,jdbcType=VARCHAR}, 
+      #{operator,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{fileKey,jdbcType=VARCHAR}, 
+      #{gmtCreate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankFileListDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into bank_file_list
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="fileType != null">
+        file_type,
+      </if>
+      <if test="fileName != null">
+        file_name,
+      </if>
+      <if test="operator != null">
+        operator,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="fileKey != null">
+        file_key,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="fileType != null">
+        #{fileType,jdbcType=VARCHAR},
+      </if>
+      <if test="fileName != null">
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="fileKey != null">
+        #{fileKey,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankFileListDO">
+    update bank_file_list
+    <set>
+      <if test="fileType != null">
+        file_type = #{fileType,jdbcType=VARCHAR},
+      </if>
+      <if test="fileName != null">
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null">
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="fileKey != null">
+        file_key = #{fileKey,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankFileListDO">
+    update bank_file_list
+    set file_type = #{fileType,jdbcType=VARCHAR},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      operator = #{operator,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      file_key = #{fileKey,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

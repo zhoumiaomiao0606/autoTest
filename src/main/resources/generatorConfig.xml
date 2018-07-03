@@ -11,7 +11,7 @@
         </commentGenerator>
         <!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&amp;characterEncoding=utf-8"
+                        connectionURL="jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&amp;characterEncoding=utf-8&amp;tinyInt1isBit=false"
                         userId="yunche"
                         password="123456">
         </jdbcConnection>
@@ -311,7 +311,11 @@
         </table>
 -->
 
+<<<<<<< HEAD
 <!--        <table tableName="material_down_his" domainObjectName="MaterialDownHisDO"
+=======
+        <table tableName="bank_file_list_record" domainObjectName="BankFileListRecordDO"
+>>>>>>> 986c291dc01b769d978357ad7a8d26b7190e7e2e
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>-->
@@ -330,7 +334,7 @@
         <ignoreColumn column="FRED" />-->
 
         <!-- 指定列的java数据类型
-        <columnOverride column="tinyint" jdbcType="BYTE"/> -->
+        <columnOverride column="tinyint" jdbcType="BYTE"/>-->
 
 
     </context>

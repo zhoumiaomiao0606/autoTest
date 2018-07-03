@@ -290,7 +290,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         Long useYear = new Long(0);
         try {
-            SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA);
+            SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
             Date old = simpleFormat.parse(simpleFormat.format(loanCarInfoDO.getFirstRegisterDate() == null?new Date():loanCarInfoDO.getFirstRegisterDate()));
             Date now = new Date();
             long l=now.getTime()-old.getTime();
@@ -558,43 +558,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
      * @param bankOpenCardParam
      */
     public void creditcardapply(BankOpenCardParam bankOpenCardParam) {
-        //记录银行开发流水信息
-        //BankInterfaceSerialDO serialDO = new BankInterfaceSerialDO();
-        //BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(bankOpenCardParam.getCustomerId(), IDict.K_API.CREDITCARDAPPLY);
-        //if(bankInterfaceSerialDO==null){
-        //    serialDO.setSerialNo(GeneratorIDUtil.execute());
-        //    serialDO.setCustomerId(bankOpenCardParam.getCustomerId());
-        //    serialDO.setTransCode(IDict.K_API.CREDITCARDAPPLY);
-        //    serialDO.setStatus(IDict.K_JYZT.PROCESS);
-        //    int count = bankInterfaceSerialDOMapper.insertSelective(serialDO);
-        //    Preconditions.checkArgument(count>0,"插入银行开卡流水失败");
-        //}else{
-        //    BeanUtils.copyProperties(bankInterfaceSerialDO,serialDO);
-        //}
-        //数据准备    beg
+        //数据准备
         bankOpenCardParam.setCmpseq(GeneratorIDUtil.execute());
         ICBCApiRequest.ApplyBankOpenCard  applyBankOpenCard= new ICBCApiRequest.ApplyBankOpenCard();
-        //数据准备结束 end
         BeanUtils.copyProperties(applyBankOpenCard,bankOpenCardParam);
         //发送银行接口
-        //ResultBean creditcardapply = null
         icbcFeignClient.creditcardapply(applyBankOpenCard);
-        //应答数据
-        //Map<String,String> data = (Map)creditcardapply.getData();
-
-        //if(IConstant.SUCCESS.equals(data.get(IConstant.RETURN_CODE)) && IConstant.API_SUCCESS.equals(data.get(IConstant.ICBC_API_RETCODE))){
-        //    serialDO.setApiStatus(IDict.K_JYZT.REQ_SUCC);
-
-        //    int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(serialDO);//更新状态
-        //    Preconditions.checkArgument(count>0,"更新银行开卡流水失败");
-        //    return creditcardapply;
-        //}else{
-        //    serialDO.setApiStatus(IDict.K_JYZT.REQ_FAIL);
-        //    int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(serialDO);//更新状态
-        //    Preconditions.checkArgument(count>0,"更新银行开卡流水失败");
-        //    throw  new BizException("银行开卡失败");
-        //}
-
     }
 
 
