@@ -1,7 +1,5 @@
 package com.yunche.loan.domain.entity;
 
-import com.sun.org.apache.xpath.internal.operations.String;
-import com.yunche.loan.config.constant.LoanAmountGradeEnum;
 import com.yunche.loan.domain.vo.FileVO;
 import lombok.Data;
 

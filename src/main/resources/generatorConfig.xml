@@ -5,6 +5,7 @@
 
 <generatorConfiguration>
     <context id="testTables" targetRuntime="MyBatis3">
+
         <commentGenerator>
             <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
             <property name="suppressAllComments" value="true"/>
@@ -311,11 +312,8 @@
         </table>
 -->
 
-<<<<<<< HEAD
 <!--        <table tableName="material_down_his" domainObjectName="MaterialDownHisDO"
-=======
         <table tableName="bank_file_list_record" domainObjectName="BankFileListRecordDO"
->>>>>>> 986c291dc01b769d978357ad7a8d26b7190e7e2e
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>-->
