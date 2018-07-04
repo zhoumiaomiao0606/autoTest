@@ -358,9 +358,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         ICBCApiRequest.ApplyDiviGeneralDivi divi = new ICBCApiRequest.ApplyDiviGeneralDivi();
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
         //start 封装
+        String serNo = GeneratorIDUtil.execute();
         //pub
         applyDiviGeneral.setPlatno(sysConfig.getPlatno());
-        applyDiviGeneral.setCmpseq(GeneratorIDUtil.execute());
+        applyDiviGeneral.setCmpseq(serNo);
         applyDiviGeneral.setZoneno("1202");
         applyDiviGeneral.setPhybrno(phybrno);
         applyDiviGeneral.setOrderno(orderId.toString());
@@ -403,7 +404,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //封装文件
 
         for (TermFileEnum e : TermFileEnum.values()) {
-            setPicture(pictures,loanCustomerDO.getId(),e.getKey(),e.getValue(),LoanFileEnum.getNameByCode(e.getKey()));
+            setPicture(pictures,serNo,loanCustomerDO.getId(),e.getKey(),e.getValue(),LoanFileEnum.getNameByCode(e.getKey()));
         }
 
         //封装完毕
@@ -427,7 +428,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     }
 
-    private void setPicture(List<ICBCApiRequest.Picture> pictures,Long customerId,Byte key,String picId,String picNote){
+    private void setPicture(List<ICBCApiRequest.Picture> pictures,String serialNo, Long customerId,Byte key,String picId,String picNote){
 
         UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,key);
         if(authSignPic != null){
@@ -449,7 +450,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 picture.setPicname(picName);
                 picture.setPicnote(picNote);
                 pictures.add(picture);
-                asyncUpload.upload(picName,authSignPic.getUrls().get(0));
+                asyncUpload.upload(serialNo,picId,picName,authSignPic.getUrls().get(0));
             }
         }
 
@@ -514,7 +515,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         String docName = GeneratorIDUtil.execute()+ImageUtil.DOC_SUFFIX;
 
-
+        String serNo = GeneratorIDUtil.execute();
 
         //第三方接口调用
         //数据封装
@@ -522,7 +523,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         ICBCApiRequest.ApplyCreditCustomer customer = new ICBCApiRequest.ApplyCreditCustomer();
         //pub
         applyCredit.setPlatno(sysConfig.getPlatno());
-        applyCredit.setCmpseq(GeneratorIDUtil.execute());
+        applyCredit.setCmpseq(serNo);
         applyCredit.setZoneno("1202");
         applyCredit.setPhybrno(phybrno);
         applyCredit.setOrderno(orderId.toString());
@@ -560,8 +561,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         icbcFeignClient.applyCredit(applyCredit);
         //上传
 
-        asyncUpload.upload(picName,authSignPic.getUrls());
-        asyncUpload.upload(docName,mergeImages);
+        asyncUpload.upload(serNo,"0004",picName,authSignPic.getUrls());
+        asyncUpload.upload(serNo,"0005",docName,mergeImages);
 
     }
 
