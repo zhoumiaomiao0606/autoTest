@@ -41,7 +41,58 @@ public enum LoanFileEnum {
     PAYMENT_VOUCHER((byte)25,"打款凭证"),
     ZIP_PACK((byte)26,"zip包"),
     SPECIAL_QUOTA_APPLY((byte)27,"专项额度核定申请表"),
-    OPEN_CARD_DATA((byte)28,"开卡申请表");
+    OPEN_CARD_DATA((byte)28,"开卡申请表"),
+
+    //0101【分期】注册登记证1
+    REGISTRATION1((byte)30,"注册登记证1"),
+    //0102【分期】注册登记证2
+    REGISTRATION2((byte)31,"注册登记证2"),
+    //0103【分期】注册登记证3
+    REGISTRATION3((byte)32,"注册登记证3"),
+    //0104【分期】注册登记证4
+    REGISTRATION4((byte)33,"注册登记证4"),
+    //0201【分期】【证件】证件本人正面
+    SELF_CERTIFICATE_FRONT((byte)34,"证件本人正面"),
+    //0202【分期】【证件】证件本人反面
+    SELF_CERTIFICATE_REVERSE((byte)34,"证件本人反面"),
+    //0203【分期】【证件】证件配偶正面
+    SPOUSE_CERTIFICATE_FRONT((byte)36,"证件配偶正面"),
+    //0204【分期】【证件】证件配偶反面
+    SPOUSE_CERTIFICATE_REVERSE((byte)37,"证件配偶反面"),
+    //0301【分期】【婚姻证明】结婚证
+    MARRY_CERTIFICATE((byte)38,"结婚证"),
+    //0302【分期】【婚姻证明】离婚证
+    DIVORCE_CERTIFICATE((byte)39,"离婚证"),
+    //0303【分期】【婚姻证明】单身证明
+    BACHELORDOM_CERTIFICATE((byte)40,"单身证明"),
+    //0401【分期】购车发票
+    CAR_INVOICE((byte)41,"购车发票"),
+    //0501【分期】上门照片1
+    VISIT1((byte)42,"上门照片1"),
+    //0502【分期】上门照片2
+    VISIT2((byte)43,"上门照片2"),
+    //0503【分期】上门照片3
+    VISIT3((byte)44,"上门照片3"),
+    //0601【分期】客户签字照片1
+    CUSTOMER_SIGNATURE1((byte)45,"客户签字照片1"),
+    //0602【分期】客户签字照片2
+    CUSTOMER_SIGNATURE2((byte)46,"客户签字照片2"),
+    //0701【分期】【户口本】户口本1
+    HOUSEHOLD_REGISTER1((byte)47,"户口本1"),
+    //0702【分期】【户口本】户口本2
+    HOUSEHOLD_REGISTER2((byte)48,"户口本2"),
+    //0703【分期】【户口本】户口本3
+    HOUSEHOLD_REGISTER3((byte)49,"户口本3"),
+    //0704【分期】【户口本】户口本4
+    HOUSEHOLD_REGISTER4((byte)50,"户口本4"),
+    //0801【分期】【收入证明】收入证明1
+    INCOME_PROVE1((byte)51,"收入证明1"),
+    //0802【分期】【收入证明】收入证明2
+    INCOME_PROVE2((byte)52,"收入证明2"),
+    //0901【分期】其他图片(zip包的格式)
+    OTHER_ZIP((byte)53,"其他图片"),
+    //0902【分期】视频面签视频资料
+    VIDEO_INTERVIEW((byte)54,"视频面签视频资料");
 
     @Getter
     @Setter

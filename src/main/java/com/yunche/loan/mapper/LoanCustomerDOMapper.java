@@ -9,6 +9,9 @@ import java.util.Set;
 
 @Mapper
 public interface LoanCustomerDOMapper {
+
+    List<LoanCustomerDO> listByPrincipalCustIdAndRelation(@Param("principalCustId") Long principalLenderId, @Param("custRelation") Byte custRelation);
+
     int deleteByPrimaryKey(Long id);
 
     int insert(LoanCustomerDO record);

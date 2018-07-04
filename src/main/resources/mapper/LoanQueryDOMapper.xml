@@ -995,7 +995,7 @@
             status                                         as status,
             DATE_FORMAT(request_time,'%Y-%m-%d %H:%i:%S')  as requestTime,
             DATE_FORMAT(callback_time,'%Y-%m-%d %H:%i:%S') as callbackTime
-        from bank_interface_serial where customer_id = #{customerId} order by request_time desc limit 1
+        from bank_interface_serial where customer_id = #{customerId} and trans_code = #{transCode} order by request_time desc limit 1
     </select>
 
 

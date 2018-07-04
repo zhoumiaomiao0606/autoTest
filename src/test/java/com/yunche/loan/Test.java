@@ -28,7 +28,7 @@ public class Test extends BaseTest {
     public void test() throws IOException {
 
 
-
+        //bankSolutionService.commonBusinessApply(new Long("1805241619246179093"));
         bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
     }
 

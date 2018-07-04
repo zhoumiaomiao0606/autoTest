@@ -5,17 +5,15 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface BankSolutionService {
      //自动征信
-     void creditAutomaticCommit(@Validated @NotNull  Long orderId);
+     void creditAutomaticCommit(Long orderId);
      //通用业务申请接口
-     void commonBusinessApply(@Validated @NotNull Long orderId);
-     //人工补偿
-     void creditArtificialCompensation(@Validated @NotNull  Long orderId,@Validated @NotNull  Long bankId,@Validated @NotNull Long customerId);
-
+     void commonBusinessApply(Long orderId);
 
      /**
       * 银行开卡

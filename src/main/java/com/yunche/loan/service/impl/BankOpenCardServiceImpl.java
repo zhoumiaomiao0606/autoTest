@@ -57,6 +57,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     BankFileListRecordDOMapper bankFileListRecordDOMapper;
 
+    @Autowired
+    FtpUtil ftpUtil;
 
 
     /**
@@ -243,12 +245,13 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         asyncPush(uploadFiles);//文件上传
 
     }
+
     private void asyncPush(List<String> list){
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 list.parallelStream().forEach(e->{
-                    FtpUtil.icbcUpload(e);
+                    ftpUtil.icbcUpload(e);
                 });
 
             }

@@ -1,12 +1,13 @@
 package com.yunche.loan.config.feign.request;
 
-import com.yunche.loan.config.feign.request.group.New;
-import com.yunche.loan.config.feign.request.group.Second;
+import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
+import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
+import com.yunche.loan.config.feign.request.group.NewValidated;
+import com.yunche.loan.config.feign.request.group.SecondValidated;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -18,11 +19,11 @@ public class ICBCApiRequest {
     @Data
     public static class ApplyCredit extends Pub {
         //----- request ------
-        @Valid
         @NotNull
+        @Valid
         private ApplyCreditCustomer customer;//客户信息
-        @Valid
         @NotNull
+        @Valid
         private List<Picture> pictures;//客户照片资料
     }
 
@@ -31,31 +32,30 @@ public class ICBCApiRequest {
      * 通用业务申请
      */
     @Data
-    @Validated(ApplyDiviGeneral.class)
     public static class ApplyDiviGeneral extends Pub {
         //----- request ------
-        @Valid
         @NotNull
+        @Valid
         private ApplyDiviGeneralCustomer customer;//客户信息
 
-        @Valid
         @NotNull
+        @Valid
         private ApplyDiviGeneralBusi busi;
 
-        @Valid
         @NotNull
+        @Valid
         private List<Picture> pictures;//客户照片资料
 
     }
 
     @Data
     public static class ApplyDiviGeneralBusi {
-        @Valid
         @NotNull
+        @Valid
         private ApplyDiviGeneralCar car;
 
-        @Valid
         @NotNull
+        @Valid
         private ApplyDiviGeneralDivi divi;
     }
 
@@ -102,34 +102,34 @@ public class ICBCApiRequest {
 
     @Data
     public static class Picture {
-        @NotBlank
+        @NotEmpty
         private String picid;
-        @NotBlank
+        @NotEmpty
         private String picname;
-        @NotBlank
+        @NotEmpty
         private String picnote;
     }
     //---------------------------------------car-----------------------------------------------------
 
     @Data
     public static class ApplyDiviGeneralCar{
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String carType;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String Price;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String carNo1;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String carRegNo;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String shorp4s;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String carNo2;
-        @NotBlank(groups = {Second.class})
+        @NotEmpty(groups = {SecondValidated.class})
         private String AssessPrice;
-        @NotBlank(groups = {Second.class})
+        @NotEmpty(groups = {SecondValidated.class})
         private String AssessOrg;
-        @NotBlank(groups = {Second.class})
+        @NotEmpty(groups = {SecondValidated.class})
         private String UsedYears;
 
 
@@ -137,59 +137,59 @@ public class ICBCApiRequest {
 
     @Data
     public static class  ApplyDiviGeneralDivi{
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String PaidAmt;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String Amount;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String Term;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String Interest;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String FeeMode;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String IsPawn;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String PawnGoods;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String IsAssure;
-        @NotBlank(groups = {New.class, Second.class})
+        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
         private String card;
-        @NotBlank(groups = {New.class})
+        @NotEmpty(groups = {NewValidated.class})
         private String tiexiFlag;
-        @NotBlank(groups = {New.class})
+        @NotEmpty(groups = {NewValidated.class})
         private String tiexiRate;
     }
     //---------------------------------------customer-----------------------------------------------------
     @Data
     public static class ApplyDiviGeneralCustomer{
-        @NotBlank
+        @NotEmpty
         private String CustName;
-        @NotBlank
+        @NotEmpty
         private String IdType;
-        @NotBlank
+        @NotEmpty
         private String IdNo;
-        @NotBlank
+        @NotEmpty
         private String Mobile;
-        @NotBlank
+        @NotEmpty
         private String Address;
-        @NotBlank
+        @NotEmpty
         private String Unit;
-        @NotBlank
+        @NotEmpty
         private String Note;
     }
 
     @Data
     public static class ApplyCreditCustomer {
-        @NotBlank
+        @NotEmpty
         private String mastername;
-        @NotBlank
+        @NotEmpty
         private String custname;
-        @NotBlank
+        @NotEmpty
         private String idtype;
-        @NotBlank
+        @NotEmpty
         private String idno;
-        @NotBlank
+        @NotEmpty
         private String relation;
     }
 
@@ -259,23 +259,23 @@ public class ICBCApiRequest {
     @Data
     public static class Pub {
         //----- pub -----
-        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
+        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
         private String platno;
-        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
+        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
         private String cmpseq;
-        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
+        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
         private String zoneno;
-        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
+        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
         private String phybrno;
-        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
+        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
         private String orderno;
-        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
+        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
         private String assurerno;
-        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
+        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
         private String cmpdate;
-        @NotBlank(groups = {ApplyCredit.class,ApplyDiviGeneral.class})
+        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
         private String cmptime;
-        @NotBlank(groups = ApplyDiviGeneral.class)
+        @NotEmpty(groups = ApplyDiviGeneralValidated.class)
         private String busitype;
     }
 }

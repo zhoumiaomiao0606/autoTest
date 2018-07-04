@@ -10,17 +10,43 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 @SpringBootApplication
 @EnableTransactionManagement
 @EnableFeignClients
 @EnableScheduling
+@EnableAsync
 public class App {
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
+    }
+
+
+    /* 1.1）自动寻找Validator实现。
+    LocalValidatorFactoryBean自动检查在classpath中的Bean Validation的实现，
+    将javax.validation.ValidatorFactory作为其缺省备选，本例将自动找到Hibernate Validator。
+    但是如果在classpath下面有超过一个实现（例如运行在完全的J2EE web应用服务器，
+    如GlassFish或WebSphere），这时通过下面方式指定采用哪个，以避免不可测性。
+    validator.setProviderClass(HibernateValidator.class);
+    但这样的缺点在于是complie的而不是runtime的。要runtime，可以采用
+    validator.setProviderClass(Class.forName("org.hibernate.validator.HibernateValidator"));
+    但如果类写错了，无法在compile的时候查出 */
+    // validator.setProviderClass(Class.forName("org.hibernate.validator.HibernateValidator"));
+    /* 1.2）为Validator进行消息本地化
+    缺省的使用classpath路径下的ValidationMessages.properties,
+    ValidationMessages_[language].properties, ValidationMessages_[language]_[region].properties），
+    但在Bean validation1.1开始，可以自行提供国际化方式。
+    */
+    @Bean
+    public LocalValidatorFactoryBean localValidatorFactoryBean() {
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        return validator;
     }
 
 

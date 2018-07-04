@@ -5,17 +5,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.CarCache;
 import com.yunche.loan.config.common.SysConfig;
-import com.yunche.loan.config.constant.BusitypeEnum;
-import com.yunche.loan.config.constant.IDict;
-import com.yunche.loan.config.constant.RelationEnum;
+import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
-import com.yunche.loan.config.feign.request.group.New;
-import com.yunche.loan.config.feign.request.group.Second;
+import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
+import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
+import com.yunche.loan.config.feign.request.group.NewValidated;
+import com.yunche.loan.config.feign.request.group.SecondValidated;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.ImageUtil;
+import com.yunche.loan.config.util.ViolationUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
@@ -24,14 +25,12 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.BeanUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -45,6 +44,9 @@ import static com.yunche.loan.config.constant.LoanCustomerEnum.PRINCIPAL_LENDER;
 @Service
 @Transactional
 public class BankSolutionServiceImpl implements BankSolutionService {
+
+    @Resource
+    private ViolationUtil violationUtil;
 
     @Resource
     private SysConfig sysConfig;
@@ -88,9 +90,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Resource
     private BankFileListRecordDOMapper bankFileListRecordDOMapper;
 
+    @Resource
+    private FtpUtil ftpUtil;
+
     //征信自动提交
     @Override
-    public void creditAutomaticCommit(@Validated @NotNull  Long orderId) {
+    public void creditAutomaticCommit(Long orderId) {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
@@ -139,7 +144,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     @Override
-    public void commonBusinessApply(@Validated @NotNull Long orderId) {
+    public void commonBusinessApply(Long orderId) {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
@@ -177,13 +182,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     }
 
-    //征信人工补偿
-    @Override
-    public void creditArtificialCompensation(@Validated @NotNull  Long orderId,@Validated @NotNull Long bankId,@Validated @NotNull Long customerId) {
-        //todo
-    }
-
     public void ICBCCommonBusinessApplyProcess(Long orderId,String phybrno){
+
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
         //获取数据源
         Long baseId = loanOrderDO.getLoanBaseInfoId();
@@ -195,12 +195,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(loanBaseInfoDO == null){
             throw new BizException("征信信息不存在");
         }
-        //数据映射层
-        //所贷车辆类型：1-新车; 2-二手车; 3-不限;
-        String busitype = BusitypeEnum.getValueByKey(loanBaseInfoDO.getCarType());
-        if(StringUtils.isBlank(busitype)){
-            throw new BizException("此业务类型暂时不支持");
-        }
 
         Long customerId = loanOrderDO.getLoanCustomerId();
         if(customerId == null){
@@ -211,6 +205,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款人不存在");
         }
 
+        UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
+        if(result != null) {
+            if (IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) || IDict.K_JJSTS.PROCESS.equals(result.getStatus())) {
+                throw new BizException("已经申请过分期");
+            }
+        }
         Long carId = loanOrderDO.getLoanCarInfoId();
         if(carId == null){
             throw new BizException("贷款车辆不存在");
@@ -219,6 +219,16 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(loanCarInfoDO == null){
             throw new BizException("贷款车辆不存在");
         }
+        //数据映射层
+        //所贷车辆类型：1-新车; 2-二手车; 3-不限;
+        if(loanCarInfoDO.getCarType() == null){
+            throw new BizException("此业务类型暂时不支持");
+        }
+        String busitype = BusitypeEnum.getValueByKey(loanCarInfoDO.getCarType());
+        if(StringUtils.isBlank(busitype)){
+            throw new BizException("此业务类型暂时不支持");
+        }
+
         Long carDetailId = loanCarInfoDO.getCarDetailId();
         if(carDetailId == null){
             throw new BizException("贷款车辆不存在");
@@ -284,7 +294,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         ProductRateDOKey pk = new ProductRateDOKey();
         pk.setProdId(proId);
-        pk.setLoanTime(pk.getLoanTime() == null?new Integer(0):pk.getLoanTime());
+        pk.setLoanTime(loanFinancialPlanDO.getLoanTime() == null?new Integer(0):loanFinancialPlanDO.getLoanTime());
 
         ProductRateDO pkDO = productRateDOMapper.selectByPrimaryKey(pk);
         if(pkDO == null){
@@ -348,6 +358,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         ICBCApiRequest.ApplyDiviGeneralBusi busi = new ICBCApiRequest.ApplyDiviGeneralBusi();
         ICBCApiRequest.ApplyDiviGeneralCar car = new ICBCApiRequest.ApplyDiviGeneralCar();
         ICBCApiRequest.ApplyDiviGeneralDivi divi = new ICBCApiRequest.ApplyDiviGeneralDivi();
+        List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
         //start 封装
         //pub
         applyDiviGeneral.setPlatno(sysConfig.getPlatno());
@@ -391,13 +402,20 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);
         divi.setTiexiRate("0");
 
+        //封装文件
+
+        for (TermFileEnum e : TermFileEnum.values()) {
+            setPicture(pictures,loanCustomerDO.getId(),e.getKey(),e.getValue(),LoanFileEnum.getNameByCode(e.getKey()));
+        }
 
         //封装完毕
         //针对新 - 二手车进行校验
-        if(BusitypeEnum.NEW.getKey().toString().equals(loanCarInfoDO.getCarType())){
-            autoCheckNewProcess(car,divi);
-        }else if(BusitypeEnum.SECOND.getKey().toString().equals(loanCarInfoDO.getCarType())){
-            autoCheckSecondProcess(car,divi);
+        if(BusitypeEnum.NEW.getKey().toString().equals(loanCarInfoDO.getCarType().toString())){
+            violationUtil.violation(car,NewValidated.class);
+            violationUtil.violation(divi,NewValidated.class);
+        }else if(BusitypeEnum.SECOND.getKey().toString().equals(loanCarInfoDO.getCarType().toString())){
+            violationUtil.violation(car,SecondValidated.class);
+            violationUtil.violation(divi,SecondValidated.class);
         }else{
             throw new BizException("此业务类型暂时不支持");
         }
@@ -405,23 +423,37 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         busi.setDivi(divi);
         applyDiviGeneral.setBusi(busi);
         applyDiviGeneral.setCustomer(customer);
+        applyDiviGeneral.setPictures(pictures);
+        violationUtil.violation(applyDiviGeneral,ApplyDiviGeneralValidated.class);
         icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
+
     }
 
-    private void autoCheckNewProcess(@Validated(New.class) @NotNull ICBCApiRequest.ApplyDiviGeneralCar car,@Validated(New.class) @NotNull ICBCApiRequest.ApplyDiviGeneralDivi divi){
-        //这个方法只是用spring jpa 触发校验
-    }
+    private void setPicture(List<ICBCApiRequest.Picture> pictures,Long customerId,Byte key,String picId,String picNote){
 
-    private void autoCheckSecondProcess(@Validated(Second.class) ICBCApiRequest.ApplyDiviGeneralCar car,@Validated(Second.class) ICBCApiRequest.ApplyDiviGeneralDivi divi){
-        //这个方法只是用spring jpa 触发校验
-    }
+        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,key);
+        if(authSignPic != null){
+            if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
+                List<String> list = Lists.newArrayList();
+                list.add(authSignPic.getUrls().get(0));
+                String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
+                String picPath = ImageUtil.mergeImage2Pic(picName,list);
+                ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+                picture.setPicid(picId);
+                picture.setPicname(picName);
+                picture.setPicnote(picNote);
+                pictures.add(picture);
+                ftpUtil.icbcUpload(picPath);
+            }
+        }
 
+    }
 
 
     private void ICBCBankCreditProcess(Long orderId,String phybrno,List<LoanCustomerDO> customers){
             //①判断客户是否已提交了征信记录，且银行征信结果非退回，若满足，则不会推送该客户，否则继续②
             for(LoanCustomerDO loanCustomerDO:customers){
-                UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId());
+                UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYCREDIT);
                 if(result!=null){
                     //之前提交过
                     //只有调用接口成功才算
@@ -519,16 +551,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyCredit.setCustomer(customer);
         applyCredit.setPictures(pictures);
         //走你
+        violationUtil.violation(applyCredit, ApplyCreditValidated.class);
         icbcFeignClient.applyCredit(applyCredit);
         //上传
-        uploadFile(picPath);
-        uploadFile(docPath);
+        ftpUtil.icbcUpload(picPath);
+        ftpUtil.icbcUpload(docPath);
     }
 
-    private String path2Name(String path){
-        String[] strs = path.split(File.separator);
-        return  strs[strs.length-1];
-    }
 
 
     private String convertRelation(LoanCustomerDO loanCustomerDO){
@@ -558,9 +587,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
     }
 
-    private void uploadFile(String path){
-        FtpUtil.icbcUpload(path);
-    }
 
 
     /**
