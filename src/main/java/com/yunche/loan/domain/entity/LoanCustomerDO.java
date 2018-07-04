@@ -123,7 +123,27 @@ public class LoanCustomerDO {
 
     private Byte guaranteeType;
 
-    private String residenceAddress;//户籍地址
+    private String residenceAddress;
 
-    private String guaranteeRela;//担保人关系
+    private String paddingCompany;
+
+    private String playCompany;
+
+    private String guaranteeRela;
+
+    private String namePinyin;
+
+    private Date checkInDate;
+
+    private Date enrollmentDate;
+
+    private String cardReceiveMode;
+
+    private String cardSendAddrType;
+
+    private String balanceChangeRemind;
+
+    private String openEmail;
+
+    private String email;
 }

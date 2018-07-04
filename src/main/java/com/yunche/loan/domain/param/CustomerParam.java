@@ -135,6 +135,22 @@ public class CustomerParam {
 
     private String guaranteeRela;//担保人关系（与主担保人关系）
 
+    private String namePinyin;//姓名拼音
+
+    private Date checkInDate;//住房入住日期
+
+    private Date enrollmentDate;//入职日期
+
+    private String cardReceiveMode;//银行卡接收方式
+
+    private String cardSendAddrType;//银行卡寄送地址类型
+
+    private String balanceChangeRemind;//是否开通余额变动提醒
+
+    private String openEmail;//是否开通邮件通知
+
+    private String email;//邮件地址
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 
 }

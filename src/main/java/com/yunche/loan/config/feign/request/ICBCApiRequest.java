@@ -5,9 +5,9 @@ import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
 import com.yunche.loan.config.feign.request.group.NewValidated;
 import com.yunche.loan.config.feign.request.group.SecondValidated;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
