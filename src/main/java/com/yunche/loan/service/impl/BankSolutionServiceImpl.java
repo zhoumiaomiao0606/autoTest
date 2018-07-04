@@ -432,13 +432,24 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,key);
         if(authSignPic != null){
             if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-                String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
+                String picName = GeneratorIDUtil.execute();
+                if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(key.toString())){
+                    //zip
+                    picName = picName +ImageUtil.ZIP_SUFFIX;
+                }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(key.toString())){
+                    //mp4
+                    picName = picName +ImageUtil.MP4_SUFFIX;
+                }else{
+                    //jpg
+                    picName = picName+ImageUtil.PIC_SUFFIX;
+                }
+
                 ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
                 picture.setPicid(picId);
                 picture.setPicname(picName);
                 picture.setPicnote(picNote);
                 pictures.add(picture);
-                asyncUpload.upload(picName,authSignPic.getUrls());
+                asyncUpload.upload(picName,authSignPic.getUrls().get(0));
             }
         }
 

@@ -29,10 +29,11 @@ public class ImageUtil {
     @Autowired
     OSSConfig ossConfig;
     private  static String downLoadBasepath="/tmp";
-
-    public static final String PIC_SUFFIX=".jpg";
-    public static final String DOC_SUFFIX=".docx";
-    private static final String FORMATNAME="jpg";
+    public static  final String ZIP_SUFFIX = ".zip";
+    public static  final String MP4_SUFFIX = ".mp4";
+    public  static  final String PIC_SUFFIX=".jpg";
+    public  static  final String DOC_SUFFIX=".docx";
+    private static  final String FORMATNAME="jpg";
     static {
         ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
         downLoadBasepath = bundle.containsKey("downLoadBasepath") == false ? "" : bundle.getString("downLoadBasepath");

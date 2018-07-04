@@ -9,6 +9,12 @@ import java.util.List;
 public class AsyncUpload {
 
     @Async
+    public void upload(String name, String urls){
+        String picPath = null;
+        FtpUtil.icbcUpload(picPath);
+    }
+
+    @Async
     public void upload(String name, List<String > urls){
         String picPath = ImageUtil.mergeImage2Pic(name,urls);
         FtpUtil.icbcUpload(picPath);

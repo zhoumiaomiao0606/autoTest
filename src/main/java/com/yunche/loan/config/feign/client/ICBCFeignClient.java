@@ -14,11 +14,11 @@ public interface ICBCFeignClient {
 
     //wanggang
     //征信查询
-    @RequestMapping(value = "/api/v1/test/icbc/apply/applyCredit",method = RequestMethod.POST)
+    @RequestMapping(value = "/api/v1/icbc/apply/applyCredit",method = RequestMethod.POST)
     public ApplyCreditResponse applyCredit(@RequestBody ICBCApiRequest.ApplyCredit applyCredit);
 
     //通用申请接口
-    @RequestMapping(value = "/api/v1/test/icbc/apply/applydivigeneral",method = RequestMethod.POST)
+    @RequestMapping(value = "/api/v1/icbc/apply/applydivigeneral",method = RequestMethod.POST)
     public ApplyDiviGeneralResponse applyDiviGeneral(@RequestBody ICBCApiRequest.ApplyDiviGeneral applyDiviGeneral);
 
     //zhengdu

@@ -67,4 +67,15 @@ public enum TermFileEnum {
         this.key = key;
         this.value = value;
     }
+
+    public static String getValueByKey(byte key) {
+
+        for (TermFileEnum e : TermFileEnum.values()) {
+            if (e.key.equals(key)) {
+
+                return e.value;
+            }
+        }
+        return null;
+    }
 }
