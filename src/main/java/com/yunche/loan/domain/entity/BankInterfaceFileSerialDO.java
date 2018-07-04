@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 public class BankInterfaceFileSerialDO {
-    private String id;
+    private Long id;
 
     private String serialNo;
 
@@ -16,11 +16,9 @@ public class BankInterfaceFileSerialDO {
 
     private String fileType;
 
-    private Byte error;
-
     private Byte success;
 
     private Date requestTime;
 
-
+    private Byte error;
 }
