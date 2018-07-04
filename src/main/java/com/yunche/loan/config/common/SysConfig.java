@@ -23,5 +23,5 @@ public class SysConfig {
     private String apiUrl;
     private String fileServerpath;
     private String tempDir;
-
+    private String serverRecvPath;
 }

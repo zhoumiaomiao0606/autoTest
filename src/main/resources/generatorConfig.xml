@@ -320,10 +320,9 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>-->
 
-        <table tableName="vehicle_information" domainObjectName="VehicleInformationDO"
+        <table tableName="bank_file_list_record" domainObjectName="BankFileListRecordDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <property name="useActualColumnNames" value="true"/>
         </table>
 
 

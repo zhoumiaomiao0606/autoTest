@@ -20,7 +20,7 @@ public class BankFileListRecordDO {
 
     private Date opencardDate;
 
-    private Integer cardNumber;
+    private String cardNumber;
 
     private String name;
 

@@ -39,6 +39,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             OSSClient ossClient = OSSUnit.getOSSClient();
             String diskName = ossConfig.getDownLoadDiskName();
             File file = new File(fileAndPath);
+            OSSUnit.deleteFile(ossClient,ossConfig.getBucketName(),ossConfig.getDownLoadDiskName()+File.separator,file.getName());
             OSSUnit.uploadObject2OSS(ossClient, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName() + File.separator);
             returnKey = diskName + File.separator + file.getName();
         } catch (Exception e) {

@@ -9,7 +9,7 @@
     <result column="plat_no" jdbcType="VARCHAR" property="platNo" />
     <result column="guaranty_unit" jdbcType="VARCHAR" property="guarantyUnit" />
     <result column="opencard_date" jdbcType="TIMESTAMP" property="opencardDate" />
-    <result column="card_number" jdbcType="INTEGER" property="cardNumber" />
+    <result column="card_number" jdbcType="VARCHAR" property="cardNumber" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="card_type" jdbcType="VARCHAR" property="cardType" />
     <result column="credential_no" jdbcType="VARCHAR" property="credentialNo" />
@@ -48,7 +48,7 @@
       status)
     values (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
       #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR}, 
-      #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
       #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR}, 
       #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP}, 
       #{status,jdbcType=TINYINT})
@@ -128,7 +128,7 @@
         #{opencardDate,jdbcType=TIMESTAMP},
       </if>
       <if test="cardNumber != null">
-        #{cardNumber,jdbcType=INTEGER},
+        #{cardNumber,jdbcType=VARCHAR},
       </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
@@ -178,7 +178,7 @@
         opencard_date = #{opencardDate,jdbcType=TIMESTAMP},
       </if>
       <if test="cardNumber != null">
-        card_number = #{cardNumber,jdbcType=INTEGER},
+        card_number = #{cardNumber,jdbcType=VARCHAR},
       </if>
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
@@ -215,7 +215,7 @@
       plat_no = #{platNo,jdbcType=VARCHAR},
       guaranty_unit = #{guarantyUnit,jdbcType=VARCHAR},
       opencard_date = #{opencardDate,jdbcType=TIMESTAMP},
-      card_number = #{cardNumber,jdbcType=INTEGER},
+      card_number = #{cardNumber,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
       card_type = #{cardType,jdbcType=VARCHAR},
       credential_no = #{credentialNo,jdbcType=VARCHAR},
@@ -227,7 +227,7 @@
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
   </update>
 
-  <insert id="insertBatch">
+  <insert id="insertBatch" parameterType="java.util.List">
     INSERT INTO bank_file_list_record
     (bank_file_list_id, customer_id, order_id,
     area_id, plat_no, guaranty_unit,
@@ -236,13 +236,13 @@
     account_statement, repay_date, gmt_greate,
     status)
     VALUES
-    <foreach collection ="list" item="recordLists" separator =",">
-      (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT},
-      #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR},
-      #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
-      #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR},
-      #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP},
-      #{status,jdbcType=TINYINT})
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.bankFileListId,jdbcType=BIGINT}, #{item.customerId,jdbcType=BIGINT}, #{item.orderId,jdbcType=BIGINT},
+      #{item.areaId,jdbcType=VARCHAR}, #{item.platNo,jdbcType=VARCHAR}, #{item.guarantyUnit,jdbcType=VARCHAR},
+      #{item.opencardDate,jdbcType=TIMESTAMP}, #{item.cardNumber,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR},
+      #{item.cardType,jdbcType=VARCHAR}, #{item.credentialNo,jdbcType=VARCHAR}, #{item.hairpinFlag,jdbcType=VARCHAR},
+      #{item.accountStatement,jdbcType=VARCHAR}, #{item.repayDate,jdbcType=VARCHAR}, #{item.gmtGreate,jdbcType=TIMESTAMP},
+      #{item.status,jdbcType=TINYINT})
     </foreach >
   </insert>
 

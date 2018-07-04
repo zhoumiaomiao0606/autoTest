@@ -58,6 +58,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     BankFileListRecordDOMapper bankFileListRecordDOMapper;
 
+
+
     /**
      * 银行开卡详情页
      * @param orderId
@@ -157,20 +159,21 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         String  hairpinFlag = split[9].trim();//发卡标志
         String  accountStatement = split[10].trim();//对账单日
         String  repayDate = split[11].trim();//还款日
-
-
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderId), VALID_STATUS);
+        Preconditions.checkNotNull(loanOrderDO,"订单不存在");
         bankFileListRecordDO.setAreaId(areaId);
         bankFileListRecordDO.setPlatNo(platNo);
         bankFileListRecordDO.setGuarantyUnit(guarantyUnit);
         bankFileListRecordDO.setOrderId(Long.valueOf(orderId));
         bankFileListRecordDO.setOpencardDate(DateUtil.getDate(openCardDate));
-        bankFileListRecordDO.setCardNumber(Integer.parseInt(cardNumber));
+        bankFileListRecordDO.setCardNumber(cardNumber);
         bankFileListRecordDO.setName(name);
         bankFileListRecordDO.setCardType(cardType);
         bankFileListRecordDO.setCredentialNo(credentialNo);
         bankFileListRecordDO.setHairpinFlag(hairpinFlag);
         bankFileListRecordDO.setAccountStatement(accountStatement);
         bankFileListRecordDO.setRepayDate(repayDate);
+        bankFileListRecordDO.setCustomerId(loanOrderDO.getLoanCustomerId());
 
         return bankFileListRecordDO;
     }
