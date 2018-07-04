@@ -76,7 +76,7 @@ public class FeignConfig {
                 }
 
 
-                String transCode = template.url().substring(template.url().lastIndexOf("/")+1,template.url().length()-1);
+                String transCode = template.url().substring(template.url().lastIndexOf("/")+1,template.url().length());
                 template.header("transCode",transCode);
                 template.header("customerId",customerId.toString());
                 template.header("serialNo",cmpseq.toString());

@@ -108,7 +108,7 @@ public class IDict {
         /**
          * 合作机构征信查询请求接口
          */
-        public  static final String APPLYCREDIT ="applycredit";
+        public  static final String APPLYCREDIT ="applyCredit";
         /**
          * 查询申请进度
          */
