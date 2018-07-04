@@ -41,14 +41,11 @@
     from bank_file_list_record
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
   </select>
-<<<<<<< HEAD
   <select id="selectNewestByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from bank_file_list_record where order_id = #{orderId,jdbcType=BIGINT} and customer_id =  (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) ORDER BY bank_file_list_id desc limit 1
   </select>
-=======
->>>>>>> cafdf1a44449442e42a9fb6fc95ae5c68d7b14ab
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from bank_file_list_record
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
