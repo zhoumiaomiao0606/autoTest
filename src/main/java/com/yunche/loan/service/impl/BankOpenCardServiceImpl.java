@@ -56,12 +56,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     BankFileListRecordDOMapper bankFileListRecordDOMapper;
 
-<<<<<<< HEAD
     @Autowired
     FtpUtil ftpUtil;
-=======
 
->>>>>>> cafdf1a44449442e42a9fb6fc95ae5c68d7b14ab
 
     /**
      * 银行开卡详情页

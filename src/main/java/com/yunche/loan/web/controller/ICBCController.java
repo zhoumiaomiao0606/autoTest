@@ -12,6 +12,7 @@ import com.yunche.loan.domain.param.ICBCApiCallbackParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.BankSolutionProcessService;
+import com.yunche.loan.service.BankSolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -34,13 +35,24 @@ public class ICBCController {
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
     @Autowired
+    private BankSolutionService bankSolutionService;
+
+    @Autowired
     private MaterialDownHisDOMapper materialDownHisDOMapper;
     //请求接口
     @PostMapping (value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-
     public ResultBean<Long> query( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
         //return icbcFeignClient.applyCredit(applyCredit);
-        return null;
+        bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
+        return ResultBean.ofSuccess(null);
+    }
+
+    //请求接口
+    @PostMapping (value = "/term", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> term( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
+        //return icbcFeignClient.applyCredit(applyCredit);
+        bankSolutionService.commonBusinessApply(new Long("1805241619246179093"));
+        return ResultBean.ofSuccess(null);
     }
 
 

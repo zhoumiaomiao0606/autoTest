@@ -27,11 +27,10 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     ICBCFeignClient icbcFeignClient;
 
     @Autowired
-<<<<<<< HEAD
     FtpUtil ftpUtil;
-=======
+
+    @Autowired
     ICBCFeignFileDownLoad icbcFeignFileDownLoad;
->>>>>>> cafdf1a44449442e42a9fb6fc95ae5c68d7b14ab
 
     @Override
     public String  fileDownload(String filesrc) {
