@@ -18,22 +18,28 @@
     <result column="repay_date" jdbcType="VARCHAR" property="repayDate" />
     <result column="gmt_greate" jdbcType="TIMESTAMP" property="gmtGreate" />
     <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="card_balance" jdbcType="DECIMAL" property="cardBalance" />
+    <result column="optimal_return" jdbcType="DECIMAL" property="optimalReturn" />
+    <result column="cumulative_breach_number" jdbcType="INTEGER" property="cumulativeBreachNumber" />
+    <result column="consecutive_breach_number" jdbcType="INTEGER" property="consecutiveBreachNumber" />
+    <result column="run_bank" jdbcType="VARCHAR" property="runBank" />
+    <result column="instalment_types" jdbcType="VARCHAR" property="instalmentTypes" />
+    <result column="instalment_amount" jdbcType="DECIMAL" property="instalmentAmount" />
+    <result column="sum_number" jdbcType="INTEGER" property="sumNumber" />
+    <result column="sum_amount" jdbcType="DECIMAL" property="sumAmount" />
+    <result column="reminders" jdbcType="VARCHAR" property="reminders" />
   </resultMap>
   <sql id="Base_Column_List">
     bank_file_list_id, customer_id, order_id, area_id, plat_no, guaranty_unit, opencard_date, 
     card_number, name, card_type, credential_no, hairpin_flag, account_statement, repay_date, 
-    gmt_greate, status
+    gmt_greate, status, card_balance, optimal_return, cumulative_breach_number, consecutive_breach_number, 
+    run_bank, instalment_types, instalment_amount, sum_number, sum_amount, reminders
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from bank_file_list_record
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
-  </select>
-  <select id="selectNewestByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from bank_file_list_record where order_id = #{orderId,jdbcType=BIGINT} and customer_id =  (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT})ORDER BY bank_file_list_id desc limit 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from bank_file_list_record
@@ -45,13 +51,21 @@
       opencard_date, card_number, name, 
       card_type, credential_no, hairpin_flag, 
       account_statement, repay_date, gmt_greate, 
-      status)
+      status, card_balance, optimal_return, 
+      cumulative_breach_number, consecutive_breach_number, 
+      run_bank, instalment_types, instalment_amount, 
+      sum_number, sum_amount, reminders
+      )
     values (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
       #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR}, 
-      #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+      #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR}, 
       #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP}, 
-      #{status,jdbcType=TINYINT})
+      #{status,jdbcType=TINYINT}, #{cardBalance,jdbcType=DECIMAL}, #{optimalReturn,jdbcType=DECIMAL}, 
+      #{cumulativeBreachNumber,jdbcType=INTEGER}, #{consecutiveBreachNumber,jdbcType=INTEGER}, 
+      #{runBank,jdbcType=VARCHAR}, #{instalmentTypes,jdbcType=VARCHAR}, #{instalmentAmount,jdbcType=DECIMAL}, 
+      #{sumNumber,jdbcType=INTEGER}, #{sumAmount,jdbcType=DECIMAL}, #{reminders,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDO">
     insert into bank_file_list_record
@@ -104,6 +118,36 @@
       <if test="status != null">
         status,
       </if>
+      <if test="cardBalance != null">
+        card_balance,
+      </if>
+      <if test="optimalReturn != null">
+        optimal_return,
+      </if>
+      <if test="cumulativeBreachNumber != null">
+        cumulative_breach_number,
+      </if>
+      <if test="consecutiveBreachNumber != null">
+        consecutive_breach_number,
+      </if>
+      <if test="runBank != null">
+        run_bank,
+      </if>
+      <if test="instalmentTypes != null">
+        instalment_types,
+      </if>
+      <if test="instalmentAmount != null">
+        instalment_amount,
+      </if>
+      <if test="sumNumber != null">
+        sum_number,
+      </if>
+      <if test="sumAmount != null">
+        sum_amount,
+      </if>
+      <if test="reminders != null">
+        reminders,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="bankFileListId != null">
@@ -153,6 +197,36 @@
       </if>
       <if test="status != null">
         #{status,jdbcType=TINYINT},
+      </if>
+      <if test="cardBalance != null">
+        #{cardBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="optimalReturn != null">
+        #{optimalReturn,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeBreachNumber != null">
+        #{cumulativeBreachNumber,jdbcType=INTEGER},
+      </if>
+      <if test="consecutiveBreachNumber != null">
+        #{consecutiveBreachNumber,jdbcType=INTEGER},
+      </if>
+      <if test="runBank != null">
+        #{runBank,jdbcType=VARCHAR},
+      </if>
+      <if test="instalmentTypes != null">
+        #{instalmentTypes,jdbcType=VARCHAR},
+      </if>
+      <if test="instalmentAmount != null">
+        #{instalmentAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sumNumber != null">
+        #{sumNumber,jdbcType=INTEGER},
+      </if>
+      <if test="sumAmount != null">
+        #{sumAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="reminders != null">
+        #{reminders,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -204,6 +278,36 @@
       <if test="status != null">
         status = #{status,jdbcType=TINYINT},
       </if>
+      <if test="cardBalance != null">
+        card_balance = #{cardBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="optimalReturn != null">
+        optimal_return = #{optimalReturn,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeBreachNumber != null">
+        cumulative_breach_number = #{cumulativeBreachNumber,jdbcType=INTEGER},
+      </if>
+      <if test="consecutiveBreachNumber != null">
+        consecutive_breach_number = #{consecutiveBreachNumber,jdbcType=INTEGER},
+      </if>
+      <if test="runBank != null">
+        run_bank = #{runBank,jdbcType=VARCHAR},
+      </if>
+      <if test="instalmentTypes != null">
+        instalment_types = #{instalmentTypes,jdbcType=VARCHAR},
+      </if>
+      <if test="instalmentAmount != null">
+        instalment_amount = #{instalmentAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sumNumber != null">
+        sum_number = #{sumNumber,jdbcType=INTEGER},
+      </if>
+      <if test="sumAmount != null">
+        sum_amount = #{sumAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="reminders != null">
+        reminders = #{reminders,jdbcType=VARCHAR},
+      </if>
     </set>
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
   </update>
@@ -223,27 +327,40 @@
       account_statement = #{accountStatement,jdbcType=VARCHAR},
       repay_date = #{repayDate,jdbcType=VARCHAR},
       gmt_greate = #{gmtGreate,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=TINYINT}
+      status = #{status,jdbcType=TINYINT},
+      card_balance = #{cardBalance,jdbcType=DECIMAL},
+      optimal_return = #{optimalReturn,jdbcType=DECIMAL},
+      cumulative_breach_number = #{cumulativeBreachNumber,jdbcType=INTEGER},
+      consecutive_breach_number = #{consecutiveBreachNumber,jdbcType=INTEGER},
+      run_bank = #{runBank,jdbcType=VARCHAR},
+      instalment_types = #{instalmentTypes,jdbcType=VARCHAR},
+      instalment_amount = #{instalmentAmount,jdbcType=DECIMAL},
+      sum_number = #{sumNumber,jdbcType=INTEGER},
+      sum_amount = #{sumAmount,jdbcType=DECIMAL},
+      reminders = #{reminders,jdbcType=VARCHAR}
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
   </update>
-
   <insert id="insertBatch" parameterType="java.util.List">
-    INSERT INTO bank_file_list_record
-    (bank_file_list_id, customer_id, order_id,
-    area_id, plat_no, guaranty_unit,
-    opencard_date, card_number, name,
-    card_type, credential_no, hairpin_flag,
-    account_statement, repay_date, gmt_greate,
-    status)
-    VALUES
-    <foreach collection="list" item="item" index="index" separator=",">
-      (#{item.bankFileListId,jdbcType=BIGINT}, #{item.customerId,jdbcType=BIGINT}, #{item.orderId,jdbcType=BIGINT},
-      #{item.areaId,jdbcType=VARCHAR}, #{item.platNo,jdbcType=VARCHAR}, #{item.guarantyUnit,jdbcType=VARCHAR},
-      #{item.opencardDate,jdbcType=TIMESTAMP}, #{item.cardNumber,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR},
-      #{item.cardType,jdbcType=VARCHAR}, #{item.credentialNo,jdbcType=VARCHAR}, #{item.hairpinFlag,jdbcType=VARCHAR},
-      #{item.accountStatement,jdbcType=VARCHAR}, #{item.repayDate,jdbcType=VARCHAR}, #{item.gmtGreate,jdbcType=TIMESTAMP},
-      #{item.status,jdbcType=TINYINT})
-    </foreach >
+      INSERT INTO bank_file_list_record(bank_file_list_id, customer_id, order_id,
+          area_id, plat_no, guaranty_unit,
+          opencard_date, card_number, name,
+          card_type, credential_no, hairpin_flag,
+          account_statement, repay_date, gmt_greate,
+          status, card_balance, optimal_return,
+          cumulative_breach_number, consecutive_breach_number,
+          run_bank, instalment_types, instalment_amount,
+          sum_number, sum_amount, reminders
+      )VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+          (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT},
+          #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR},
+          #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+          #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR},
+          #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP},
+          #{status,jdbcType=TINYINT}, #{cardBalance,jdbcType=DECIMAL}, #{optimalReturn,jdbcType=DECIMAL},
+          #{cumulativeBreachNumber,jdbcType=INTEGER}, #{consecutiveBreachNumber,jdbcType=INTEGER},
+          #{runBank,jdbcType=VARCHAR}, #{instalmentTypes,jdbcType=VARCHAR}, #{instalmentAmount,jdbcType=DECIMAL},
+          #{sumNumber,jdbcType=INTEGER}, #{sumAmount,jdbcType=DECIMAL}, #{reminders,jdbcType=VARCHAR} )
+        </foreach >
   </insert>
-
 </mapper>

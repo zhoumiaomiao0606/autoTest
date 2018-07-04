@@ -6,10 +6,7 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.DateUtil;
-import com.yunche.loan.config.util.FtpUtil;
-import com.yunche.loan.config.util.ImageUtil;
-import com.yunche.loan.config.util.OSSUnit;
+import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -24,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.*;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -113,6 +111,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             bankFileListDO.setFileName(fileName);
             bankFileListDO.setFileKey(ossKey);
             bankFileListDO.setFileType(IDict.K_WJLX.WJLX_0);
+            bankFileListDO.setGmtCreate(new Date());
+            bankFileListDO.setOperator(SessionUtils.getLoginUser().getName());
             int bankFileListId = bankFileListDOMapper.insertSelective(bankFileListDO);
 
             String line="";
