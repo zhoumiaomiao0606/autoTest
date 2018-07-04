@@ -73,4 +73,13 @@ public class UniversalCustomerDetailVO {
     private String process_society_add_condition;
 
     private String customer_residence_address;//户籍地址
+
+    private String customer_name_pinyin;//
+    private String customer_check_in_date;//
+    private String customer_enrollment_date;//
+    private String customer_card_receive_mode;//
+    private String customer_card_send_addr_type;//
+    private String customer_balance_change_remind;//
+    private String customer_open_email;//
+    private String customer_email;//
 }

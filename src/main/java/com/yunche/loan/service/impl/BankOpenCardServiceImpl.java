@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
@@ -208,7 +209,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Preconditions.checkNotNull(mergerFilePath1,"图片合成失败");
 
         String fileName = mergerFilePath1.substring(mergerFilePath1.lastIndexOf(File.separator) + 1);
-        BankOpenCardParam.Picture picture1 = new BankOpenCardParam.Picture();
+
+        ICBCApiRequest.Picture picture1 = new ICBCApiRequest.Picture();
         picture1.setPicid(IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY);
         picture1.setPicname(fileName);
 
@@ -227,7 +229,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Preconditions.checkNotNull(mergerFilePath2,"图片合成失败");
 
         String fileName2 = mergerFilePath2.substring(mergerFilePath2.lastIndexOf(File.separator) + 1);
-        BankOpenCardParam.Picture picture2 = new BankOpenCardParam.Picture();
+
+        ICBCApiRequest.Picture picture2 = new ICBCApiRequest.Picture();
         picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
         picture2.setPicname(fileName2);
 
@@ -237,9 +240,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         List<String> uploadFiles = Lists.newArrayList();
         uploadFiles.add(mergerFilePath1);
         uploadFiles.add(mergerFilePath2);
-        asyncPush(uploadFiles);
-//        boolean b1 = FtpUtil.icbcUpload(mergerFilePath1);
-//        boolean b2 = FtpUtil.icbcUpload(mergerFilePath2);
+        asyncPush(uploadFiles);//文件上传
 
     }
     private void asyncPush(List<String> list){
