@@ -2,13 +2,24 @@ package com.yunche.loan.config.util;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.service.impl.ActivitiVersionServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.concurrent.Future;
 
+@Component
 public class FtpUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(FtpUtil.class);
+
     private static String servierIP;
     private static String userName;
     private static String password;
@@ -37,7 +48,7 @@ public class FtpUtil {
      * @param fileName
      */
 
-    public static void download(String localFilePath,String serverPath,String serverIp,int port ,String userName, String password,String fileName){
+    public  void download(String localFilePath,String serverPath,String serverIp,int port ,String userName, String password,String fileName){
         Preconditions.checkNotNull(localFilePath,"本地存放路径未配置");
         Preconditions.checkNotNull(serverPath,"服务器文件路径未配置");
         Preconditions.checkNotNull(serverIp,"服务器IP未配置");
@@ -78,7 +89,7 @@ public class FtpUtil {
      * @param password
      * @param fileName
      */
-    public static void upload(String localFilePath,String serverPath,String serverIp,int port ,String userName, String password,String fileName){
+    public  void upload(String localFilePath,String serverPath,String serverIp,int port ,String userName, String password,String fileName){
         Preconditions.checkNotNull(localFilePath,"本地存放路径未配置");
         Preconditions.checkNotNull(serverPath,"服务器文件路径未配置");
         Preconditions.checkNotNull(serverIp,"服务器IP未配置");
@@ -118,8 +129,7 @@ public class FtpUtil {
      * @param password
      * @param fileName
      */
-
-    public static void icbcDownload(String localFilePath,String serverPath,String serverIp,int port ,String userName, String password,String fileName){
+    public  void icbcDownload(String localFilePath,String serverPath,String serverIp,int port ,String userName, String password,String fileName){
         Preconditions.checkNotNull(localFilePath,"本地存放路径未配置");
         Preconditions.checkNotNull(serverPath,"服务器文件路径未配置");
         Preconditions.checkNotNull(serverIp,"服务器IP未配置");
@@ -154,7 +164,8 @@ public class FtpUtil {
      * 上传文件
      * @param localFilePath
      */
-    public static boolean icbcUpload(String localFilePath){
+    @Async
+    public Future<Boolean> icbcUpload(String localFilePath){
         Preconditions.checkNotNull(localFilePath,"本地存放路径未配置");
         Preconditions.checkNotNull(serverpath,"服务器文件路径未配置");
         Preconditions.checkNotNull(servierIP,"服务器IP未配置");
@@ -188,14 +199,17 @@ public class FtpUtil {
                 throw new BizException("ftp关闭连接异常");
             }
         }
-        return flag;
+        logger.info("文件上传============================================= result:"+flag);
+        return new AsyncResult<Boolean>(flag);
+
     }
+
 
     /**
      * 文件下载
      * @param serverFilePath
      */
-    public static String icbcDownload(String serverFilePath){
+    public  String icbcDownload(String serverFilePath){
         Preconditions.checkNotNull(serverFilePath,"文件服务器路径未配置");
         Preconditions.checkNotNull(serverpath,"服务器文件路径未配置");
         Preconditions.checkNotNull(servierIP,"服务器IP未配置");

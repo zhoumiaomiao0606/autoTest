@@ -109,6 +109,16 @@
         </if>
     </select>
 
+    <select id="listByPrincipalCustIdAndRelation" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM loan_customer
+        WHERE principal_cust_id = #{principalCustId,jdbcType=BIGINT}
+        <if test="custRelation != null">
+            AND cust_relation = #{custRelation}
+        </if>
+    </select>
+
     <!--getFilesById-->
     <select id="getFilesById" parameterType="java.lang.Long" resultType="java.lang.String">
         SELECT files

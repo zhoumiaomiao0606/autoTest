@@ -208,7 +208,8 @@ public class CarCache {
 
         if (StringUtils.isNotBlank(allCarDetail)) {
             Map<String, CarDetailDO> map = JSON.parseObject(allCarDetail, Map.class);
-            CarDetailDO carDetailDO = map.get(String.valueOf(carDetailId));
+            String str = JSON.toJSONString(map.get(String.valueOf(carDetailId)));
+            CarDetailDO carDetailDO = JSON.parseObject(str,CarDetailDO.class);
             return carDetailDO;
         }
 
@@ -233,7 +234,8 @@ public class CarCache {
 
         if (StringUtils.isNotBlank(allCarModel)) {
             Map<String, CarModelDO> map = JSON.parseObject(allCarModel, Map.class);
-            CarModelDO carModelDO = map.get(String.valueOf(carModelId));
+            String str = JSON.toJSONString(map.get(String.valueOf(carModelId)));
+            CarModelDO carModelDO = JSON.parseObject(str,CarModelDO.class);
             return carModelDO;
         }
 
@@ -258,7 +260,8 @@ public class CarCache {
 
         if (StringUtils.isNotBlank(allCarBrand)) {
             Map<String, CarBrandDO> map = JSON.parseObject(allCarBrand, Map.class);
-            CarBrandDO carBrandDO = map.get(String.valueOf(carBrandId));
+            String str = JSON.toJSONString(map.get(String.valueOf(carBrandId)));
+            CarBrandDO carBrandDO = JSON.parseObject(str,CarBrandDO.class);
             return carBrandDO;
         }
 

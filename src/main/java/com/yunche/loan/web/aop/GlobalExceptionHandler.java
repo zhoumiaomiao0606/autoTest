@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.validation.ConstraintViolationException;
+
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -42,6 +44,8 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof MethodArgumentNotValidException) {
             return ResultBean.ofError("必入参数未填写");
+        } else if (e instanceof ConstraintViolationException) {
+            return ResultBean.ofError(e.getMessage());
         } else if (e instanceof IllegalArgumentException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof NullPointerException) {

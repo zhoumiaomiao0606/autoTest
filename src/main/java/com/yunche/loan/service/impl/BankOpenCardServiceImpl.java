@@ -58,6 +58,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     BankFileListRecordDOMapper bankFileListRecordDOMapper;
 
+    @Autowired
+    FtpUtil ftpUtil;
+
     /**
      * 银行开卡详情页
      * @param orderId
@@ -239,12 +242,13 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 //        boolean b2 = FtpUtil.icbcUpload(mergerFilePath2);
 
     }
+
     private void asyncPush(List<String> list){
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 list.parallelStream().forEach(e->{
-                    FtpUtil.icbcUpload(e);
+                    ftpUtil.icbcUpload(e);
                 });
 
             }

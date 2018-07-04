@@ -25,12 +25,15 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     @Autowired
     ICBCFeignClient icbcFeignClient;
 
+    @Autowired
+    FtpUtil ftpUtil;
+
     @Override
     public String  fileDownload(String filesrc) {
         boolean filedownload = icbcFeignClient.filedownload(filesrc);
         String returnKey=null;
         try {
-            String fileAndPath = FtpUtil.icbcDownload(sysConfig.getFileServerpath() + filesrc);
+            String fileAndPath = ftpUtil.icbcDownload(sysConfig.getFileServerpath() + filesrc);
             OSSClient ossClient = OSSUnit.getOSSClient();
             String diskName = ossConfig.getDownLoadDiskName();
             File file = new File(fileAndPath);
