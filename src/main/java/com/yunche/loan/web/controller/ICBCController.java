@@ -41,7 +41,7 @@ public class ICBCController {
     private MaterialDownHisDOMapper materialDownHisDOMapper;
     //请求接口
     @PostMapping (value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> query( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
+    public ResultBean<Long> query() {
         //return icbcFeignClient.applyCredit(applyCredit);
         bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
         return ResultBean.ofSuccess(null);
@@ -49,7 +49,7 @@ public class ICBCController {
 
     //请求接口
     @PostMapping (value = "/term", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> term( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
+    public ResultBean<Long> term() {
         //return icbcFeignClient.applyCredit(applyCredit);
         bankSolutionService.commonBusinessApply(new Long("1805241619246179093"));
         return ResultBean.ofSuccess(null);

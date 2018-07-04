@@ -13,10 +13,7 @@ import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
 import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
 import com.yunche.loan.config.feign.request.group.NewValidated;
 import com.yunche.loan.config.feign.request.group.SecondValidated;
-import com.yunche.loan.config.util.FtpUtil;
-import com.yunche.loan.config.util.GeneratorIDUtil;
-import com.yunche.loan.config.util.ImageUtil;
-import com.yunche.loan.config.util.ViolationUtil;
+import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
@@ -91,7 +88,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private BankFileListRecordDOMapper bankFileListRecordDOMapper;
 
     @Resource
-    private FtpUtil ftpUtil;
+    private AsyncUpload asyncUpload;
+
 
     //征信自动提交
     @Override
@@ -434,16 +432,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,key);
         if(authSignPic != null){
             if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-                List<String> list = Lists.newArrayList();
-                list.add(authSignPic.getUrls().get(0));
                 String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
-                String picPath = ImageUtil.mergeImage2Pic(picName,list);
                 ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
                 picture.setPicid(picId);
                 picture.setPicname(picName);
                 picture.setPicnote(picNote);
                 pictures.add(picture);
-                ftpUtil.icbcUpload(picPath);
+                asyncUpload.upload(picName,authSignPic.getUrls());
             }
         }
 
@@ -505,10 +500,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         //上传图片和doc
         String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
-        String picPath = ImageUtil.mergeImage2Pic(picName,authSignPic.getUrls());
 
         String docName = GeneratorIDUtil.execute()+ImageUtil.DOC_SUFFIX;
-        String docPath = ImageUtil.mergeImage2Doc(docName,mergeImages);
+
 
 
         //第三方接口调用
@@ -554,9 +548,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         violationUtil.violation(applyCredit, ApplyCreditValidated.class);
         icbcFeignClient.applyCredit(applyCredit);
         //上传
-        ftpUtil.icbcUpload(picPath);
-        ftpUtil.icbcUpload(docPath);
+
+        asyncUpload.upload(picName,authSignPic.getUrls());
+        asyncUpload.upload(docName,mergeImages);
+
     }
+
 
 
 
