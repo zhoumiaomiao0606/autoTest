@@ -43,7 +43,7 @@ public class ICBCController {
     @PostMapping (value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> query() {
         //return icbcFeignClient.applyCredit(applyCredit);
-        bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
+        bankSolutionService.creditAutomaticCommit(new Long("1807041505062473741"));
         return ResultBean.ofSuccess(null);
     }
 

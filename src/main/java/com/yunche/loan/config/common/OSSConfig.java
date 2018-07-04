@@ -20,4 +20,5 @@ public class OSSConfig {
     private String zipDiskName;
     private String down2tomcatBasepath;
     private String downLoadDiskName;
+    private String videoBucketName;
 }
