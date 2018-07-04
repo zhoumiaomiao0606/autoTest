@@ -26,6 +26,8 @@ public class FtpUtil {
     private static String serverpath;
     private static String port;
     private static String tempDir;
+    private static String serverRecvPath;
+
 
     static{
         ResourceBundle bundle = PropertyResourceBundle.getBundle("sysconfig");
@@ -35,6 +37,8 @@ public class FtpUtil {
         serverpath = bundle.containsKey("serverpath") == false ? "" : bundle.getString("serverpath");
         port = bundle.containsKey("port") == false ? "" : bundle.getString("port");
         tempDir = bundle.containsKey("tempDir") == false ? "" : bundle.getString("tempDir");
+        serverRecvPath = bundle.containsKey("serverRecvPath") == false ? "" : bundle.getString("serverRecvPath");
+
     }
 
     /**
@@ -220,8 +224,9 @@ public class FtpUtil {
         String localName = null;
         try {
             String fileName = serverFilePath.substring(serverFilePath.lastIndexOf(File.separator) + 1);
-            ftp.connect(servierIP,Integer.parseInt(port),userName,password);
-            ftp.cd(serverFilePath);
+            String realPassword = DesEncryptUtil.decryptBasedDes(password);
+            ftp.connect(servierIP,Integer.parseInt(port),userName,realPassword);
+            ftp.cd(serverRecvPath);
             ftp.asc();
             boolean download = ftp.download(fileName, tempDir + fileName);
 

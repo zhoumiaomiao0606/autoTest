@@ -2,6 +2,7 @@ package com.yunche.loan.domain.entity;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -20,7 +21,7 @@ public class BankFileListRecordDO {
 
     private Date opencardDate;
 
-    private Integer cardNumber;
+    private String cardNumber;
 
     private String name;
 
@@ -37,4 +38,24 @@ public class BankFileListRecordDO {
     private Date gmtGreate;
 
     private Byte status;
+
+    private BigDecimal cardBalance;
+
+    private BigDecimal optimalReturn;
+
+    private Integer cumulativeBreachNumber;
+
+    private Integer consecutiveBreachNumber;
+
+    private String runBank;
+
+    private String instalmentTypes;
+
+    private BigDecimal instalmentAmount;
+
+    private Integer sumNumber;
+
+    private BigDecimal sumAmount;
+
+    private String reminders;
 }

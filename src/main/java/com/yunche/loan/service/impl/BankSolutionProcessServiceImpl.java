@@ -5,6 +5,7 @@ import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
+import com.yunche.loan.config.feign.client.ICBCFeignFileDownLoad;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.service.BankSolutionProcessService;
@@ -26,17 +27,23 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     ICBCFeignClient icbcFeignClient;
 
     @Autowired
+<<<<<<< HEAD
     FtpUtil ftpUtil;
+=======
+    ICBCFeignFileDownLoad icbcFeignFileDownLoad;
+>>>>>>> cafdf1a44449442e42a9fb6fc95ae5c68d7b14ab
 
     @Override
     public String  fileDownload(String filesrc) {
-        boolean filedownload = icbcFeignClient.filedownload(filesrc);
+        boolean filedownload = icbcFeignFileDownLoad.filedownload(filesrc);
+//        boolean filedownload = icbcFeignClient.filedownload(filesrc);
         String returnKey=null;
         try {
             String fileAndPath = ftpUtil.icbcDownload(sysConfig.getFileServerpath() + filesrc);
             OSSClient ossClient = OSSUnit.getOSSClient();
             String diskName = ossConfig.getDownLoadDiskName();
             File file = new File(fileAndPath);
+            OSSUnit.deleteFile(ossClient,ossConfig.getBucketName(),ossConfig.getDownLoadDiskName()+File.separator,file.getName());
             OSSUnit.uploadObject2OSS(ossClient, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName() + File.separator);
             returnKey = diskName + File.separator + file.getName();
         } catch (Exception e) {

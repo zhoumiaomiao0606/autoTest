@@ -6,10 +6,7 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.DateUtil;
-import com.yunche.loan.config.util.FtpUtil;
-import com.yunche.loan.config.util.ImageUtil;
-import com.yunche.loan.config.util.OSSUnit;
+import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -24,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.*;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,8 +56,12 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     BankFileListRecordDOMapper bankFileListRecordDOMapper;
 
+<<<<<<< HEAD
     @Autowired
     FtpUtil ftpUtil;
+=======
+
+>>>>>>> cafdf1a44449442e42a9fb6fc95ae5c68d7b14ab
 
     /**
      * 银行开卡详情页
@@ -114,6 +116,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             bankFileListDO.setFileName(fileName);
             bankFileListDO.setFileKey(ossKey);
             bankFileListDO.setFileType(IDict.K_WJLX.WJLX_0);
+            bankFileListDO.setGmtCreate(new Date());
+            bankFileListDO.setOperator(SessionUtils.getLoginUser().getName());
             int bankFileListId = bankFileListDOMapper.insertSelective(bankFileListDO);
 
             String line="";
@@ -160,20 +164,21 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         String  hairpinFlag = split[9].trim();//发卡标志
         String  accountStatement = split[10].trim();//对账单日
         String  repayDate = split[11].trim();//还款日
-
-
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderId), VALID_STATUS);
+        Preconditions.checkNotNull(loanOrderDO,"订单不存在");
         bankFileListRecordDO.setAreaId(areaId);
         bankFileListRecordDO.setPlatNo(platNo);
         bankFileListRecordDO.setGuarantyUnit(guarantyUnit);
         bankFileListRecordDO.setOrderId(Long.valueOf(orderId));
         bankFileListRecordDO.setOpencardDate(DateUtil.getDate(openCardDate));
-        bankFileListRecordDO.setCardNumber(Integer.parseInt(cardNumber));
+        bankFileListRecordDO.setCardNumber(cardNumber);
         bankFileListRecordDO.setName(name);
         bankFileListRecordDO.setCardType(cardType);
         bankFileListRecordDO.setCredentialNo(credentialNo);
         bankFileListRecordDO.setHairpinFlag(hairpinFlag);
         bankFileListRecordDO.setAccountStatement(accountStatement);
         bankFileListRecordDO.setRepayDate(repayDate);
+        bankFileListRecordDO.setCustomerId(loanOrderDO.getLoanCustomerId());
 
         return bankFileListRecordDO;
     }

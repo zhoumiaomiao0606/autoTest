@@ -3,6 +3,7 @@ package com.yunche.loan.config.task;
 import com.github.pagehelper.util.StringUtil;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.MaterialDownHisDO;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
@@ -28,59 +29,61 @@ public class MaterialTask {
 
     @Autowired
     BankOpenCardService bankOpenCardService;
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void filedownload(){
         List<MaterialDownHisDO> all = Lists.newArrayList();
         List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.PRE_TRANSACTION);
         List<MaterialDownHisDO> materialDownHisFAIL = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.FAIL);
         all.addAll(materialDownHisSUCC);
         all.addAll(materialDownHisFAIL);
-        if(!CollectionUtils.isEmpty(all)){
-            all.parallelStream().forEach(e->{
-                LOG.info(e.getFileName()+"文件下载开始");
-                //先锁定记录为处理中
-                e.setStatus(IDict.K_JYZT.PROCESS);
-                materialDownHisDOMapper.updateByPrimaryKeySelective(e);
-                //文件下载
-                String  key=null;
-                if(StringUtil.isEmpty(e.getFileKey())){
+
+            if(!CollectionUtils.isEmpty(all)){
+                all.parallelStream().forEach(e->{
                     try{
-                        key = bankSolutionProcessService.fileDownload(e.getFileName());
-                    }catch(Exception e2){
-                        e2.printStackTrace();
-                        modifyFail(e);
-                        return;
-                    }
-
-                    if(StringUtil.isEmpty(key)){
-                        modifyFail(e);
-                        return;
-                    }
-                }else{
-                    key = e.getFileKey();
-                }
-
-                LOG.info(e.getFileName()+":文件下载完成");
-                LOG.info(e.getFileName()+":文件导入开始");
-                switch(e.getFileType()){
-                    case IDict.K_WJLX.WJLX_0:
-                        boolean b = bankOpenCardService.importFile(key);
-                        if(b){
-                            modifyFail(e);
-                        }else {
-                            modifySucc(e);
+                        LOG.info(e.getFileName()+"文件下载开始");
+                        //先锁定记录为处理中
+                        e.setStatus(IDict.K_JYZT.PROCESS);
+                        materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+                        //文件下载
+                        String  key=null;
+                        if(StringUtil.isEmpty(e.getFileKey())){
+                            key = bankSolutionProcessService.fileDownload(e.getFileName());
+                            if(StringUtil.isEmpty(key)){
+                               throw new BizException("文件下载失败");
+                            }else{
+                                e.setFileKey(key);
+                                materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+                            }
+                        }else{
+                            key = e.getFileKey();
                         }
-                        break;
-                    case IDict.K_WJLX.WJLX_1:
 
-                        break;
-                    case IDict.K_WJLX.WJLX_2:break;
-                    case IDict.K_WJLX.WJLX_3:break;
-                    default:
-                       break;
-                }
-            });
-        }
+                        LOG.info(e.getFileName()+":文件下载完成");
+                        LOG.info(e.getFileName()+":文件导入开始");
+                        switch(e.getFileType()){
+                            case IDict.K_WJLX.WJLX_0:
+                                boolean b = bankOpenCardService.importFile(key);
+                                if(!b){
+                                    modifyFail(e);
+                                }else {
+                                    modifySucc(e);
+                                }
+                                break;
+                            case IDict.K_WJLX.WJLX_1:
+
+                                break;
+                            case IDict.K_WJLX.WJLX_2:break;
+                            case IDict.K_WJLX.WJLX_3:break;
+                            default:
+                                break;
+                        }
+                    }catch(Exception e2){
+                        LOG.info(e2.getMessage());
+                        modifyFail(e);
+                    }
+                });
+            }
+
     }
 
     public void afterAction(){
