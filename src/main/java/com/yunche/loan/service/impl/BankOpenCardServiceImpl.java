@@ -209,7 +209,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         });
         Preconditions.checkArgument(keys.size()>0,"专项额度核定申请表,不存在");
         String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
-        asyncUpload.upload(picName,"",IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY,keys);
+        String serNo = GeneratorIDUtil.execute();
+        asyncUpload.upload(serNo,IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY,picName,keys);
         String mergerFilePath1 = ImageUtil.mergeImage2Pic(keys);//合成图片本地路径
         Preconditions.checkNotNull(mergerFilePath1,"图片合成失败");
 
@@ -218,9 +219,6 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         ICBCApiRequest.Picture picture1 = new ICBCApiRequest.Picture();
         picture1.setPicid(IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY);
         picture1.setPicname(fileName);
-
-
-
 
         //开卡】开卡申请表(和身份证正反面合并成一张图片)
         List<String> openCardTypesStr = Lists.newArrayList();
@@ -233,17 +231,20 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         String fileName2 =  GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
 //        asyncUpload.upload(fileName2,openCardTypesStr);
         asyncUpload.upload("",IDict.K_PIC_ID.OPEN_CARD_DATA,picName,keys);
-
-
         ICBCApiRequest.Picture picture2 = new ICBCApiRequest.Picture();
         picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
         picture2.setPicname(fileName2);
 
         bankOpenCardParam.getPictures().add(picture1);
         bankOpenCardParam.getPictures().add(picture2);
-
+        bankOpenCardParam.setCmpseq(serNo);
+        bankOpenCardParam.setFileNum(String.valueOf(2));
     }
 
+    /**
+     * 废弃
+     * @param list
+     */
     private void asyncPush(List<String> list){
         executorService.execute(new Runnable() {
             @Override
