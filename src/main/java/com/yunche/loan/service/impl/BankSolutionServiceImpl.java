@@ -13,6 +13,7 @@ import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
 import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
 import com.yunche.loan.config.feign.request.group.NewValidated;
 import com.yunche.loan.config.feign.request.group.SecondValidated;
+import com.yunche.loan.config.feign.response.ApplyCreditResponse;
 import com.yunche.loan.config.feign.response.ApplyDiviGeneralResponse;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
@@ -458,13 +459,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         violationUtil.violation(applyDiviGeneral,ApplyDiviGeneralValidated.class);
         ApplyDiviGeneralResponse response = icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
         //只有接口请求成功才会调用上传.防止请求过多造成内存溢出
-        
-        if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
-            for(ICBCApiRequest.PicQueue picQueue :queue){
-                asyncUpload.upload(serNo,picQueue.getPicId(),picQueue.getPicName(),picQueue.getUrl());
+        if(response!=null){
+            if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
+                for(ICBCApiRequest.PicQueue picQueue :queue){
+                    asyncUpload.upload(serNo,picQueue.getPicId(),picQueue.getPicName(),picQueue.getUrl());
+                }
             }
         }
-
     }
 
 
@@ -575,12 +576,14 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyCredit.setPictures(pictures);
         //走你
         violationUtil.violation(applyCredit, ApplyCreditValidated.class);
-        icbcFeignClient.applyCredit(applyCredit);
+        ApplyCreditResponse response = icbcFeignClient.applyCredit(applyCredit);
         //上传
-
-        asyncUpload.upload(serNo,"0004",picName,authSignPic.getUrls());
-        asyncUpload.upload(serNo,"0005",docName,mergeImages);
-
+        if(response!=null) {
+            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
+                asyncUpload.upload(serNo,"0004",picName,authSignPic.getUrls());
+                asyncUpload.upload(serNo,"0005",docName,mergeImages);
+            }
+        }
     }
 
 
