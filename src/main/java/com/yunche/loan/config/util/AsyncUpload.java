@@ -24,7 +24,7 @@ public class AsyncUpload {
         String picPath = null;
         Byte error = null;
         try {
-            picPath = null;
+            picPath = ImageUtil.getSingleFile(name,urls);
             if(StringUtils.isBlank(picPath)){
                 error = new Byte("1");
                 throw new RuntimeException("文件下载出错");
