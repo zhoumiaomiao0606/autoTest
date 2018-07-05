@@ -20,4 +20,11 @@ public class ViolationUtil {
             throw new ConstraintViolationException(violations);
         }
     }
+
+    public  <T>void  violation(T object){
+        Set<ConstraintViolation<T>> violations = validator.validate(object);
+        if(violations.size() > 0){
+            throw new ConstraintViolationException(violations);
+        }
+    }
 }

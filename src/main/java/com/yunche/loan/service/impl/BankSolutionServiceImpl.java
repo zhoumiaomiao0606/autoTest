@@ -13,6 +13,7 @@ import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
 import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
 import com.yunche.loan.config.feign.request.group.NewValidated;
 import com.yunche.loan.config.feign.request.group.SecondValidated;
+import com.yunche.loan.config.feign.response.ApplyDiviGeneralResponse;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
@@ -358,6 +359,40 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         ICBCApiRequest.ApplyDiviGeneralDivi divi = new ICBCApiRequest.ApplyDiviGeneralDivi();
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
         //start 封装
+        List<ICBCApiRequest.PicQueue> queue = Lists.newLinkedList();
+
+        for (TermFileEnum e : TermFileEnum.values()) {
+            UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,e.getKey());
+            if(authSignPic != null){
+                if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
+                    String picName = GeneratorIDUtil.execute();
+                    if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(e.getKey().toString())){
+                        //zip
+                        picName = picName +ImageUtil.ZIP_SUFFIX;
+                    }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(e.getKey().toString())){
+                        //mp4
+                        picName = picName +ImageUtil.MP4_SUFFIX;
+                    }else{
+                        //jpg
+                        picName = picName+ImageUtil.PIC_SUFFIX;
+                    }
+
+                    ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+                    picture.setPicid(e.getValue());
+                    picture.setPicname(picName);
+                    picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
+                    pictures.add(picture);
+
+                    ICBCApiRequest.PicQueue picQueue = new ICBCApiRequest.PicQueue();
+                    picQueue.setPicId(e.getValue());
+                    picQueue.setPicName(picName);
+                    picQueue.setUrl(authSignPic.getUrls().get(0));
+                    queue.add(picQueue);
+                }
+            }
+
+        }
+
         String serNo = GeneratorIDUtil.execute();
         //pub
         applyDiviGeneral.setPlatno(sysConfig.getPlatno());
@@ -369,6 +404,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
         applyDiviGeneral.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
         applyDiviGeneral.setBusitype(busitype);
+        applyDiviGeneral.setFileNum(String.valueOf(pictures.size()));
         //customer
         customer.setCustName(loanCustomerDO.getName());
         customer.setIdType(IDict.K_JJLX.IDCARD);
@@ -401,11 +437,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);
         divi.setTiexiRate("0");
 
-        //封装文件
 
-        for (TermFileEnum e : TermFileEnum.values()) {
-            setPicture(pictures,serNo,loanCustomerDO.getId(),e.getKey(),e.getValue(),LoanFileEnum.getNameByCode(e.getKey()));
-        }
 
         //封装完毕
         //针对新 - 二手车进行校验
@@ -424,37 +456,18 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCustomer(customer);
         applyDiviGeneral.setPictures(pictures);
         violationUtil.violation(applyDiviGeneral,ApplyDiviGeneralValidated.class);
-        icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
-
-    }
-
-    private void setPicture(List<ICBCApiRequest.Picture> pictures,String serialNo, Long customerId,Byte key,String picId,String picNote){
-
-        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,key);
-        if(authSignPic != null){
-            if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-                String picName = GeneratorIDUtil.execute();
-                if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(key.toString())){
-                    //zip
-                    picName = picName +ImageUtil.ZIP_SUFFIX;
-                }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(key.toString())){
-                    //mp4
-                    picName = picName +ImageUtil.MP4_SUFFIX;
-                }else{
-                    //jpg
-                    picName = picName+ImageUtil.PIC_SUFFIX;
-                }
-
-                ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
-                picture.setPicid(picId);
-                picture.setPicname(picName);
-                picture.setPicnote(picNote);
-                pictures.add(picture);
-                asyncUpload.upload(serialNo,picId,picName,authSignPic.getUrls().get(0));
+        ApplyDiviGeneralResponse response = icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
+        //只有接口请求成功才会调用上传.防止请求过多造成内存溢出
+        
+        if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
+            for(ICBCApiRequest.PicQueue picQueue :queue){
+                asyncUpload.upload(serNo,picQueue.getPicId(),picQueue.getPicName(),picQueue.getUrl());
             }
         }
 
     }
+
+
 
 
     private void ICBCBankCreditProcess(Long orderId,String phybrno,List<LoanCustomerDO> customers){
@@ -509,6 +522,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(uniqueTypes), loanCustomerDO.getName()+"附件合成失败");
         Preconditions.checkArgument(uniqueTypes.size() == 4, loanCustomerDO.getName()+"附件合成失败");
 
+        List fileNumList = Lists.newArrayList();
+        fileNumList.add(mergeImages);
+        fileNumList.add(authSignPic.getUrls());
 
         //上传图片和doc
         String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
@@ -530,6 +546,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyCredit.setAssurerno(sysConfig.getAssurerno());
         applyCredit.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
         applyCredit.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
+        applyCredit.setFileNum((String.valueOf(fileNumList.size())));
         //customer
         customer.setMastername(loanCustomerDO.getName());
         customer.setCustname(loanCustomerDO.getName());

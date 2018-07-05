@@ -74,9 +74,16 @@ public class FeignConfig {
                 if(StringUtils.isBlank(cmpseq.toString())){
                     throw new BizException("cmpseq 参数为空");
                 }
-
+                Object fileNum = reqMap.get("fileNum");
+                if(fileNum == null){
+                    throw new BizException("fileNum 参数为空");
+                }
+                if(StringUtils.isBlank(fileNum.toString())){
+                    throw new BizException("fileNum 参数为空");
+                }
 
                 String transCode = template.url().substring(template.url().lastIndexOf("/")+1,template.url().length());
+                template.header("fileNum",fileNum.toString());
                 template.header("transCode",transCode);
                 template.header("customerId",customerId.toString());
                 template.header("serialNo",cmpseq.toString());
@@ -95,6 +102,7 @@ public class FeignConfig {
                     Object transCode = response.request().headers().get("transCode");
                     Object customerId = response.request().headers().get("customerId");
                     Object serialNo = response.request().headers().get("serialNo");
+                    Object fileNum = response.request().headers().get("fileNum");
 
                     if(transCode == null){
                         throw new BizException("transCode 参数为空");
@@ -105,12 +113,17 @@ public class FeignConfig {
                     if(serialNo == null){
                         throw new BizException("serialNo 参数为空");
                     }
+                    if(fileNum == null){
+                        throw new BizException("fileNum 参数为空");
+                    }
 
                     List transCodeList = (List) transCode;
 
                     List customerIdList = (List) customerId;
 
                     List serialNoList = (List) serialNo;
+
+                    List fileNumList = (List) fileNum;
 
                     if(CollectionUtils.isEmpty(transCodeList)){
                         throw new BizException("transCode 参数为空");
@@ -124,12 +137,17 @@ public class FeignConfig {
                         throw new BizException("serialNo 参数为空");
                     }
 
+                    if(CollectionUtils.isEmpty(fileNumList)){
+                        throw new BizException("fileNum 参数为空");
+                    }
+
                     BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(serialNoList.get(0).toString());
                     BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
                     DO.setSerialNo(serialNoList.get(0).toString());
                     DO.setCustomerId(Long.valueOf(customerIdList.get(0).toString()));
                     DO.setTransCode(transCodeList.get(0).toString());
                     DO.setApiStatus(response.status());
+                    DO.setFileNum(Integer.parseInt(fileNumList.get(0).toString()));
                     DO.setApiMsg(String.valueOf(response.status()));
                     if(V!=null){
                         bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
@@ -163,6 +181,7 @@ public class FeignConfig {
                 Object transCode = response.request().headers().get("transCode");
                 Object customerId = response.request().headers().get("customerId");
                 Object serialNo = response.request().headers().get("serialNo");
+                Object fileNum = response.request().headers().get("fileNum");
 
                 if(transCode == null){
                     throw new BizException("transCode 参数为空");
@@ -173,12 +192,17 @@ public class FeignConfig {
                 if(serialNo == null){
                     throw new BizException("serialNo 参数为空");
                 }
+                if(fileNum == null){
+                    throw new BizException("fileNum 参数为空");
+                }
 
                 List transCodeList = (List) transCode;
 
                 List customerIdList = (List) customerId;
 
                 List serialNoList = (List) serialNo;
+
+                List fileNumList = (List) fileNum;
 
                 if(CollectionUtils.isEmpty(transCodeList)){
                     throw new BizException("transCode 参数为空");
@@ -190,6 +214,10 @@ public class FeignConfig {
 
                 if(CollectionUtils.isEmpty(serialNoList)){
                     throw new BizException("serialNo 参数为空");
+                }
+
+                if(CollectionUtils.isEmpty(fileNumList)){
+                    throw new BizException("fileNum 参数为空");
                 }
                 Class clazz = null;
                 try {
@@ -220,6 +248,7 @@ public class FeignConfig {
                         DO.setCustomerId(Long.valueOf(customerIdList.get(0).toString()));
                         DO.setTransCode(transCodeList.get(0).toString());
                         DO.setStatus(IDict.K_JYZT.PROCESS);
+                        DO.setFileNum(Integer.parseInt(fileNumList.get(0).toString()));
                         DO.setApiStatus(200);
                         DO.setApiMsg("icbcApiRetmsg:"+icbcApiRetmsg+";"+"returnMsg:"+returnMsg);
                         if(V!=null){
@@ -233,6 +262,7 @@ public class FeignConfig {
                         DO.setCustomerId(Long.valueOf(customerIdList.get(0).toString()));
                         DO.setTransCode(transCodeList.get(0).toString());
                         DO.setStatus(IDict.K_JYZT.FAIL);
+                        DO.setFileNum(Integer.parseInt(fileNumList.get(0).toString()));
                         DO.setApiStatus(200);
                         DO.setApiMsg("icbcApiRetmsg:"+icbcApiRetmsg+"&"+"returnMsg:"+returnMsg);
                         if(V!=null){
@@ -243,9 +273,8 @@ public class FeignConfig {
                     }
                     return obj;
                 }else {
-                    return null;
+                    throw new BizException(transCode+"接口请求解析失败");
                 }
-
 
             }
         };

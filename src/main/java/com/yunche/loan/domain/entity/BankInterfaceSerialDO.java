@@ -24,8 +24,6 @@ public class BankInterfaceSerialDO {
 
     private String apiMsg;
 
-    private Boolean fileType;
-
-    private String fileName;
+    private Integer fileNum;
 
 }

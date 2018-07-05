@@ -1,6 +1,5 @@
 package com.yunche.loan.config.feign.request;
 
-import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
 import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
 import com.yunche.loan.config.feign.request.group.NewValidated;
 import com.yunche.loan.config.feign.request.group.SecondValidated;
@@ -113,17 +112,17 @@ public class ICBCApiRequest {
 
     @Data
     public static class ApplyDiviGeneralCar{
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String carType;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String Price;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String carNo1;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String carRegNo;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String shorp4s;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String carNo2;
         @NotEmpty(groups = {SecondValidated.class})
         private String AssessPrice;
@@ -137,23 +136,23 @@ public class ICBCApiRequest {
 
     @Data
     public static class  ApplyDiviGeneralDivi{
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String PaidAmt;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String Amount;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String Term;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String Interest;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String FeeMode;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String IsPawn;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String PawnGoods;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String IsAssure;
-        @NotEmpty(groups = {NewValidated.class, SecondValidated.class})
+        @NotEmpty
         private String card;
         @NotEmpty(groups = {NewValidated.class})
         private String tiexiFlag;
@@ -259,23 +258,39 @@ public class ICBCApiRequest {
     @Data
     public static class Pub {
         //----- pub -----
-        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
+        @NotEmpty
         private String platno;
-        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
+        @NotEmpty
         private String cmpseq;
-        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
+        @NotEmpty
         private String zoneno;
-        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
+        @NotEmpty
         private String phybrno;
-        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
+        @NotEmpty
         private String orderno;
-        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
+        @NotEmpty
         private String assurerno;
-        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
+        @NotEmpty
         private String cmpdate;
-        @NotEmpty(groups = {ApplyCreditValidated.class, ApplyDiviGeneralValidated.class})
+        @NotEmpty
         private String cmptime;
         @NotEmpty(groups = ApplyDiviGeneralValidated.class)
         private String busitype;
+        @NotEmpty
+        private String fileNum;
     }
-}
+
+    /**
+     * pic文件队列
+     */
+    @Data
+    public static class PicQueue {
+        private String picId;
+
+        private String picName;
+
+        private String url;
+    }
+
+
+    }
