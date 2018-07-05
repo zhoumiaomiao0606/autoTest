@@ -172,7 +172,7 @@ public class ImageUtil {
      * @param key
      * @return
      */
-    public static final String  getVideo(String name,String key) {
+    public static final String  getSingleFile(String name,String key) {
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
         OSSClient ossClient =null;
