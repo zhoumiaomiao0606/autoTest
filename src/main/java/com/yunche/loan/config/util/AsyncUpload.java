@@ -24,14 +24,23 @@ public class AsyncUpload {
         String picPath = null;
         Byte error = null;
         try {
-            picPath = ImageUtil.getSingleFile(name,urls);
-            if(StringUtils.isBlank(picPath)){
-                error = new Byte("1");
+            try {
+                picPath = ImageUtil.getSingleFile(name,urls);
+                if(StringUtils.isBlank(picPath)){
+                    error = new Byte("1");
+                    throw new RuntimeException("文件下载出错");
+                }
+            }catch (Exception e){
                 throw new RuntimeException("文件下载出错");
             }
-            boolean check = FtpUtil.icbcUpload(picPath);
-            if(!check){
-                error = new Byte("3");
+
+            try {
+                boolean check = FtpUtil.icbcUpload(picPath);
+                if(!check){
+                    error = new Byte("3");
+                    throw new RuntimeException("文件上传出错");
+                }
+            }catch (Exception e){
                 throw new RuntimeException("文件上传出错");
             }
         }catch (Exception e){
@@ -51,7 +60,6 @@ public class AsyncUpload {
             bankInterfaceFileSerialDO.setSuccess(new Byte("0"));
         }
         bankInterfaceFileSerialDOMapper.insertSelective(bankInterfaceFileSerialDO);
-
     }
 
     @Async
@@ -63,16 +71,26 @@ public class AsyncUpload {
         Byte error = null;
 
         try {
-            picPath = ImageUtil.mergeImage2Pic(name,urls);
-            if(StringUtils.isBlank(picPath)){
-                error = new Byte("2");
+            try {
+                picPath = ImageUtil.mergeImage2Pic(name,urls);
+                if(StringUtils.isBlank(picPath)){
+                    error = new Byte("2");
+                    throw new RuntimeException("文件合成出错");
+                }
+            }catch (Exception e){
                 throw new RuntimeException("文件合成出错");
             }
-            boolean check = FtpUtil.icbcUpload(picPath);
-            if(!check){
-                error = new Byte("3");
+
+            try {
+                boolean check = FtpUtil.icbcUpload(picPath);
+                if(!check){
+                    error = new Byte("3");
+                    throw new RuntimeException("文件上传出错");
+                }
+            }catch (Exception e){
                 throw new RuntimeException("文件上传出错");
             }
+
         }catch (Exception e){
             flag = false;
         }
