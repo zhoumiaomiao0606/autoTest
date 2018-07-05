@@ -209,7 +209,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         });
         Preconditions.checkArgument(keys.size()>0,"专项额度核定申请表,不存在");
         String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
-        asyncUpload.upload(picName,keys);
+        asyncUpload.upload(picName,"",IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY,keys);
         String mergerFilePath1 = ImageUtil.mergeImage2Pic(keys);//合成图片本地路径
         Preconditions.checkNotNull(mergerFilePath1,"图片合成失败");
 
@@ -231,8 +231,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         });
         Preconditions.checkArgument(openCardTypesStr.size()>0,"开卡申请表(和身份证正反面合并成一张图片)");
         String fileName2 =  GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
-        asyncUpload.upload(fileName2,openCardTypesStr);
-
+//        asyncUpload.upload(fileName2,openCardTypesStr);
+        asyncUpload.upload("",IDict.K_PIC_ID.OPEN_CARD_DATA,picName,keys);
 
 
         ICBCApiRequest.Picture picture2 = new ICBCApiRequest.Picture();
