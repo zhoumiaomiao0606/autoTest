@@ -14,6 +14,8 @@ public interface LoanBaseInfoService {
 
     ResultBean<LoanBaseInfoVO> getLoanBaseInfoById(Long loanBaseInfoId);
 
+    LoanBaseInfoDO getLoanBaseInfoByOrderId(Long orderId);
+
     ResultBean<Long> create(LoanBaseInfoDO loanBaseInfoDO);
 
     Long getBankId(Long orderId);
