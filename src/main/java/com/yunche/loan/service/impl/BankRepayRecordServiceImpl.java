@@ -2,11 +2,10 @@ package com.yunche.loan.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.POIUtil;
+import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankRepayParam;
@@ -19,10 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -97,6 +98,26 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 
     @Override
     public ResultBean importFile(String ossKey) {
+        Preconditions.checkNotNull(ossKey,"文件名不能为空");
+        List<BankRepayRecordDO> list = importOverdueRecord(ossKey);//导入
+        //更新还款计划
+        adjustBankRepayPlanRecord(list);
+        /* 更新催收记录 */
+        adjustUrgeRecord(list);
+        //催收自动分配
+        collectionService.autoDistribution();
+        return ResultBean.ofSuccess("导入成功");
+    }
+
+
+
+    /**
+     * 银行回调自动导入
+     * @param ossKey
+     * @return
+     */
+    @Override
+    public ResultBean autoImportFile(String ossKey) {
         Preconditions.checkNotNull(ossKey,"文件名不能为空");
         List<BankRepayRecordDO> list = importOverdueRecord(ossKey);//导入
         //更新还款计划
@@ -231,27 +252,17 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
         List<BankRepayRecordDO> bankRepayList = Lists.newArrayList();
         try {
 
-            returnList = POIUtil.readExcelFromOSS(0,1,ossKey);
-
+            InputStream in = OSSUnit.getOSS2InputStream(ossKey);
+            InputStreamReader inReader = new InputStreamReader(in, "UTF-8");
+            BufferedReader bufReader = new BufferedReader(inReader);
             bankRepayList = Lists.newArrayList();
-            for(String[] tmp :returnList){
-                BankRepayRecordDO bankRepayRecordDO =new BankRepayRecordDO();
-                if(tmp.length!=8){
-                    continue;
-                }
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                bankRepayRecordDO.setUserName(tmp[0].trim()); //用户姓名
-                bankRepayRecordDO.setIdCard(StringUtil.isEmpty(tmp[1].trim())?null:tmp[1].trim()); //身份证号
-                bankRepayRecordDO.setRepayCard(StringUtil.isEmpty(tmp[2].trim())?null:tmp[2].trim());//还款卡号
-                bankRepayRecordDO.setCardBalance(new BigDecimal(tmp[3].trim()));//卡余额
-                bankRepayRecordDO.setOverdueAmount(new BigDecimal(tmp[4].trim()));//逾期金额
-                bankRepayRecordDO.setOverdueTimes(Integer.parseInt(tmp[5].trim()));//连续违约次数
-                bankRepayRecordDO.setMaxOverdueTimes(Integer.parseInt(tmp[6].trim()));//最大违约次数
-                bankRepayRecordDO.setBatchDate(formatter.parse(tmp[7].trim()));//批次日期
-                bankRepayRecordDO.setGmtCreate(new Date());
-                bankRepayRecordDO.setStatus(VALID_STATUS);
-                bankRepayList.add(bankRepayRecordDO);
-            }
+            String line=null;
+//            while((line = bufReader.readLine()) != null){
+//                String[] split = line.split("\\|");
+//                BankFileListRecordDO bankFileListRecordDO = packObject(split);
+//                bankFileListRecordDO.setBankFileListId(Long.valueOf(bankFileListId));
+//                recordLists.add(bankFileListRecordDO);
+//            }
             String fileName = ossKey.split(File.separator)[ossKey.split(File.separator).length-1];
             //获取批次号
             BankRepayImpRecordDO bankRepayImpRecordDO = new BankRepayImpRecordDO();
@@ -294,6 +305,15 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
         }
 
         return bankRepayList;
+    }
+
+    /**
+     *
+     * @param split
+     * @return
+     */
+    private BankFileListRecordDO packObject(String[] split) {
+        return null;
     }
 
 
