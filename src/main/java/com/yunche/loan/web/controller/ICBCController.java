@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.constant.IDict;
@@ -19,8 +20,12 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 @CrossOrigin
 @RestController
@@ -46,44 +51,53 @@ public class ICBCController {
     private TestFeign testFeign;
     //请求接口
     @PostMapping (value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> query() {
+    public ResultBean<Long> query(@RequestBody @Valid @Validated @NotNull ICBCApiCallbackParam.ApplyCreditCallback callback) {
         //return icbcFeignClient.applyCredit(applyCredit);
         bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
         return ResultBean.ofSuccess(null);
     }
 
-
-
     //请求接口
     @PostMapping (value = "/term", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> term() {
+    public ResultBean<Long> term(@RequestBody @Valid @Validated @NotNull  ICBCApiCallbackParam.ApplyDiviGeneralCallback callback) {
         //return icbcFeignClient.applyCredit(applyCredit);
         bankSolutionService.commonBusinessApply(new Long("1805241619246179093"));
         return ResultBean.ofSuccess(null);
     }
 
-
-
+    //请求接口
+    @PostMapping (value = "/test", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> test() {
+        //return icbcFeignClient.applyCredit(applyCredit);
+        bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
+        return ResultBean.ofSuccess(null);
+    }
 
     //回调接口
-    @PostMapping (value = "/creditresult", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void creditresult(@Validated @NotNull @RequestBody ICBCApiCallbackParam.Callback callback) {
-        testFeign.query(callback);
+    @PostMapping (value = "/creditresult", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public void creditresult(@RequestParam String reqparam) throws IOException {
+        reqparam = URLDecoder.decode(reqparam,"UTF-8");
+        ObjectMapper objectMapper = new ObjectMapper();
+        testFeign.query(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyCreditCallback.class));
     }
 
+    @PostMapping (value = "/creditreturn", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public void creditreturn(@RequestParam String reqparam) throws IOException {
+        reqparam = URLDecoder.decode(reqparam,"UTF-8");
+        ObjectMapper objectMapper = new ObjectMapper();
+        testFeign.term(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyDiviGeneralCallback.class));
+    }
 
-    @PostMapping (value = "/creditreturn", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean creditreturn( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
+    @PostMapping (value = "/creditcardresult", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResultBean creditcardresult(@RequestParam String reqparam) {
         return null;
     }
 
-    @PostMapping (value = "/creditcardresult", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean creditcardresult( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
-        return null;
-    }
-
-    @PostMapping (value = "/fileNotice", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean fileNotice( ICBCApiRequest.FileNotice fileNotice) {
+    @PostMapping (value = "/fileNotice", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResultBean fileNotice( @RequestParam String reqparam) throws IOException {
+        reqparam = URLDecoder.decode(reqparam,"UTF-8");
+        ObjectMapper objectMapper = new ObjectMapper();
+        ICBCApiRequest.FileNotice fileNotice = objectMapper.readValue(reqparam,ICBCApiRequest.FileNotice.class);
         //记录回调信息
         MaterialDownHisDO materialDownHisDO = new MaterialDownHisDO();
         materialDownHisDO.setSerialNo(GeneratorIDUtil.execute());
@@ -98,4 +112,6 @@ public class ICBCController {
         return ResultBean.ofSuccess(returnMsg);
 
     }
+
+
 }
