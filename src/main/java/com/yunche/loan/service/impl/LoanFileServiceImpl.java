@@ -263,7 +263,7 @@ public class LoanFileServiceImpl implements LoanFileService {
 
         if (!CollectionUtils.isEmpty(files)) {
 
-            files.parallelStream()
+            files.stream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 

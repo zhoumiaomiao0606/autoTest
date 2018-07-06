@@ -323,7 +323,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 //            // 无节点信息
 //            String cancelTaskDefKey = loanProcessDOMapper.getCancelTaskDefKey(Long.valueOf(appTaskVO.getId()));
 //            // 弃单
-//            if (StringUtils.isNotBlank(cancelTaskDefKey)) {
+//            if (StringUtil.isNotBlank(cancelTaskDefKey)) {
 //                appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CANCEL));
 //                appTaskVO.setCurrentTask("已弃单");
 //            } else {
@@ -375,7 +375,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 //    private void fillMsg(TaskListVO taskListVO, String taskDefinitionKey) {
 //
 //        String supplementType = taskListVO.getSupplementType();
-//        if (StringUtils.isNotBlank(supplementType)) {
+//        if (StringUtil.isNotBlank(supplementType)) {
 //            taskListVO.setSupplementTypeText(SUPPLEMENT_TYPE_TEXT_MAP.get(Byte.valueOf(supplementType)));
 //        }
 //

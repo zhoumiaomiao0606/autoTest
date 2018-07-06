@@ -49,7 +49,50 @@ public enum LoanProcessEnum {
 
     BANK_LEND_RECORD("usertask_bank_lend_record", "银行放款记录"),
     BANK_CARD_RECORD("usertask_bank_card_record", "银行卡录入"),
-    CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划");
+    CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划"),
+
+
+    ////////////////////////////////////////////////--资料流转--/////////////////////////////////////////////////////////
+
+    // 合同资料
+    DATA_FLOW_CONTRACT_P2C("usertask_data_flow_contract_p2c", "资料流转（合同资料 - 合伙人->公司）"),
+    DATA_FLOW_CONTRACT_P2C_REVIEW("usertask_data_flow_contract_p2c_review", "资料流转确认（合同资料 - 合伙人->公司）"),
+
+    DATA_FLOW_CONTRACT_C2B("usertask_data_flow_contract_c2b", "资料流转（合同资料 - 公司->银行）"),
+    DATA_FLOW_CONTRACT_C2B_REVIEW("usertask_data_flow_contract_c2b_review", "资料流转确认（合同资料 - 公司->银行）"),
+
+
+    // 抵押资料
+    START_DATA_FLOW_MORTGAGE("startevent_data_flow_mortgage", "资料流转流程启动（抵押资料）"),
+
+    DATA_FLOW_MORTGAGE_P2C_NEW("usertask_data_flow_mortgage_p2c_new", "资料流转（抵押资料 - 合伙人->公司）"),
+    DATA_FLOW_MORTGAGE_P2C_NEW_REVIEW("usertask_data_flow_mortgage_p2c_new_review", "资料流转确认（抵押资料 - 合伙人->公司）"),
+
+    DATA_FLOW_MORTGAGE_C2B_NEW("usertask_data_flow_mortgage_c2b_new", "资料流转（抵押资料 - 公司->银行）"),
+    DATA_FLOW_MORTGAGE_C2B_NEW_REVIEW("usertask_data_flow_mortgage_c2b_new_review", "资料流转（抵押资料 - 公司->银行）"),
+
+
+    DATA_FLOW_MORTGAGE_B2C("usertask_data_flow_mortgage_b2c", "资料流转（抵押资料 - 银行->公司）"),
+    DATA_FLOW_MORTGAGE_B2C_REVIEW("usertask_data_flow_mortgage_b2c_review", "资料流转确认（抵押资料 - 银行->公司）"),
+
+    DATA_FLOW_MORTGAGE_C2P("usertask_data_flow_mortgage_c2p", "资料流转（抵押资料 - 公司->合伙人）"),
+    DATA_FLOW_MORTGAGE_C2P_REVIEW("usertask_data_flow_mortgage_c2p_review", "资料流转确认（抵押资料 - 公司->合伙人）"),
+
+    DATA_FLOW_MORTGAGE_P2C("usertask_data_flow_mortgage_p2c", "资料流转确认（抵押资料 - 合伙人->公司）"),
+    DATA_FLOW_MORTGAGE_P2C_REVIEW("usertask_data_flow_mortgage_p2c_review", "资料流转确认（抵押资料 - 合伙人->公司）"),
+
+    DATA_FLOW_MORTGAGE_C2B("usertask_data_flow_mortgage_c2b", "资料流转（抵押资料 - 公司 ->银行）"),
+    DATA_FLOW_MORTGAGE_C2B_REVIEW("usertask_data_flow_mortgage_c2b_review", "资料流转确认（抵押资料 - 公司->银行）"),
+
+
+    // 登记证书
+    DATA_FLOW_REGISTER_P2C("usertask_data_flow_register_p2c", "资料流转（登记证书 - 合伙人->公司）"),
+    DATA_FLOW_REGISTER_P2C_REVIEW("usertask_data_flow_register_p2c_review", "资料流转确认（登记证书 - 合伙人->公司）"),
+
+    DATA_FLOW_REGISTER_C2B("usertask_data_flow_register_c2b", "资料流转（登记证书 - 公司->银行）"),
+    DATA_FLOW_REGISTER_C2B_REVIEW("usertask_data_flow_register_c2b_review", "资料流转确认（登记证书 - 公司->银行）");
+
+    ////////////////////////////////////////////////--资料流转--/////////////////////////////////////////////////////////
 
 
     private String code;
@@ -98,4 +141,5 @@ public enum LoanProcessEnum {
         }
         return false;
     }
+
 }

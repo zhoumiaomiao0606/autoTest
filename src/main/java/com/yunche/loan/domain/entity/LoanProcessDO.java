@@ -66,4 +66,49 @@ public class LoanProcessDO {
      * 当前订单状态(1:进行中;2:已完结;3:已弃单;)
      */
     private Byte orderStatus;
+
+
+    //////////////////// 资料流转 /////////////////////
+
+    private Byte dataFlowContractP2c;
+
+    private Byte dataFlowContractP2cReview;
+
+    private Byte dataFlowContractC2b;
+
+    private Byte dataFlowContractC2bReview;
+
+    private Byte dataFlowMortgageP2cNew;
+
+    private Byte dataFlowMortgageP2cNewReview;
+
+    private Byte dataFlowMortgageC2bNew;
+
+    private Byte dataFlowMortgageC2bNewReview;
+
+    private Byte dataFlowMortgageB2c;
+
+    private Byte dataFlowMortgageB2cReview;
+
+    private Byte dataFlowMortgageC2p;
+
+    private Byte dataFlowMortgageC2pReview;
+
+    private Byte dataFlowMortgageP2c;
+
+    private Byte dataFlowMortgageP2cReview;
+
+    private Byte dataFlowMortgageC2b;
+
+    private Byte dataFlowMortgageC2bReview;
+
+    private Byte dataFlowRegisterP2c;
+
+    private Byte dataFlowRegisterP2cReview;
+
+    private Byte dataFlowRegisterC2b;
+
+    private Byte dataFlowRegisterC2bReview;
+
+    //////////////////// 资料流转 /////////////////////
 }

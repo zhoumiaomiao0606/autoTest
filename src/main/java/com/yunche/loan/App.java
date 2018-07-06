@@ -48,7 +48,7 @@ public class App {
                 // 部署
                 repositoryService.createDeployment()
                         .name("消费贷流程")
-                        .addClasspathResource("processes/loan_process.bpmn")
+                        .addClasspathResource("processes/loan_process_df.bpmn")
                         .deploy();
 
                 // 刷新activiti缓存数据

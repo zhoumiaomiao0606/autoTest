@@ -83,6 +83,13 @@
         </if>
     </sql>
 
+    <!--setMachineIdForNull-->
+    <update id="setMachineIdForNull" parameterType="java.lang.Long">
+        update employee
+        SET machine_id  = NULL
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
     <!--  count -->
     <select id="count" parameterType="com.yunche.loan.domain.query.EmployeeQuery"
             resultType="java.lang.Integer">

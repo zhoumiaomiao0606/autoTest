@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LoanDataFlowDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanDataFlowDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="flow_out_dept_id" property="flowOutDeptId" jdbcType="BIGINT"/>
+        <result column="flow_out_dept_name" property="flowOutDeptName" jdbcType="VARCHAR"/>
+        <result column="flow_in_dept_id" property="flowInDeptId" jdbcType="BIGINT"/>
+        <result column="flow_in_dept_name" property="flowInDeptName" jdbcType="VARCHAR"/>
+        <result column="express_com" property="expressCom" jdbcType="TINYINT"/>
+        <result column="express_num" property="expressNum" jdbcType="VARCHAR"/>
+        <result column="express_send_date" property="expressSendDate" jdbcType="TIMESTAMP"/>
+        <result column="express_receive_date" property="expressReceiveDate" jdbcType="TIMESTAMP"/>
+        <result column="express_receive_man" property="expressReceiveMan" jdbcType="VARCHAR"/>
+        <result column="has_mortgage_contract" property="hasMortgageContract" jdbcType="TINYINT"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="task_key" property="taskKey" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, order_id, flow_out_dept_id, flow_out_dept_name, flow_in_dept_id, flow_in_dept_name, 
+    express_com, express_num, express_send_date, express_receive_date, express_receive_man, 
+    has_mortgage_contract, type, status, info, task_key, gmt_create, gmt_modify
+  </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_data_flow
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from loan_data_flow
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
+    insert into loan_data_flow (id, order_id, flow_out_dept_id, 
+      flow_out_dept_name, flow_in_dept_id, flow_in_dept_name, 
+      express_com, express_num, express_send_date, 
+      express_receive_date, express_receive_man, 
+      has_mortgage_contract, type, status, 
+      info, task_key, gmt_create, 
+      gmt_modify)
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{flowOutDeptId,jdbcType=BIGINT}, 
+      #{flowOutDeptName,jdbcType=VARCHAR}, #{flowInDeptId,jdbcType=BIGINT}, #{flowInDeptName,jdbcType=VARCHAR}, 
+      #{expressCom,jdbcType=TINYINT}, #{expressNum,jdbcType=VARCHAR}, #{expressSendDate,jdbcType=TIMESTAMP}, 
+      #{expressReceiveDate,jdbcType=TIMESTAMP}, #{expressReceiveMan,jdbcType=VARCHAR}, 
+      #{hasMortgageContract,jdbcType=TINYINT}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
+      #{info,jdbcType=VARCHAR}, #{taskKey,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
+        insert into loan_data_flow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="flowOutDeptId != null">
+                flow_out_dept_id,
+            </if>
+            <if test="flowOutDeptName != null">
+                flow_out_dept_name,
+            </if>
+            <if test="flowInDeptId != null">
+                flow_in_dept_id,
+            </if>
+            <if test="flowInDeptName != null">
+                flow_in_dept_name,
+            </if>
+            <if test="expressCom != null">
+                express_com,
+            </if>
+            <if test="expressNum != null">
+                express_num,
+            </if>
+            <if test="expressSendDate != null">
+                express_send_date,
+            </if>
+            <if test="expressReceiveDate != null">
+                express_receive_date,
+            </if>
+            <if test="expressReceiveMan != null">
+                express_receive_man,
+            </if>
+            <if test="hasMortgageContract != null">
+                has_mortgage_contract,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="info != null">
+                info,
+            </if>
+            <if test="taskKey != null">
+                task_key,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="flowOutDeptId != null">
+                #{flowOutDeptId,jdbcType=BIGINT},
+            </if>
+            <if test="flowOutDeptName != null">
+                #{flowOutDeptName,jdbcType=VARCHAR},
+            </if>
+            <if test="flowInDeptId != null">
+                #{flowInDeptId,jdbcType=BIGINT},
+            </if>
+            <if test="flowInDeptName != null">
+                #{flowInDeptName,jdbcType=VARCHAR},
+            </if>
+            <if test="expressCom != null">
+                #{expressCom,jdbcType=TINYINT},
+            </if>
+            <if test="expressNum != null">
+                #{expressNum,jdbcType=VARCHAR},
+            </if>
+            <if test="expressSendDate != null">
+                #{expressSendDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expressReceiveDate != null">
+                #{expressReceiveDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expressReceiveMan != null">
+                #{expressReceiveMan,jdbcType=VARCHAR},
+            </if>
+            <if test="hasMortgageContract != null">
+                #{hasMortgageContract,jdbcType=TINYINT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="info != null">
+                #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="taskKey != null">
+                #{taskKey,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
+        update loan_data_flow
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="flowOutDeptId != null">
+                flow_out_dept_id = #{flowOutDeptId,jdbcType=BIGINT},
+            </if>
+            <if test="flowOutDeptName != null">
+                flow_out_dept_name = #{flowOutDeptName,jdbcType=VARCHAR},
+            </if>
+            <if test="flowInDeptId != null">
+                flow_in_dept_id = #{flowInDeptId,jdbcType=BIGINT},
+            </if>
+            <if test="flowInDeptName != null">
+                flow_in_dept_name = #{flowInDeptName,jdbcType=VARCHAR},
+            </if>
+            <if test="expressCom != null">
+                express_com = #{expressCom,jdbcType=TINYINT},
+            </if>
+            <if test="expressNum != null">
+                express_num = #{expressNum,jdbcType=VARCHAR},
+            </if>
+            <if test="expressSendDate != null">
+                express_send_date = #{expressSendDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expressReceiveDate != null">
+                express_receive_date = #{expressReceiveDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expressReceiveMan != null">
+                express_receive_man = #{expressReceiveMan,jdbcType=VARCHAR},
+            </if>
+            <if test="hasMortgageContract != null">
+                has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="taskKey != null">
+                task_key = #{taskKey,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
+    update loan_data_flow
+    set order_id = #{orderId,jdbcType=BIGINT},
+      flow_out_dept_id = #{flowOutDeptId,jdbcType=BIGINT},
+      flow_out_dept_name = #{flowOutDeptName,jdbcType=VARCHAR},
+      flow_in_dept_id = #{flowInDeptId,jdbcType=BIGINT},
+      flow_in_dept_name = #{flowInDeptName,jdbcType=VARCHAR},
+      express_com = #{expressCom,jdbcType=TINYINT},
+      express_num = #{expressNum,jdbcType=VARCHAR},
+      express_send_date = #{expressSendDate,jdbcType=TIMESTAMP},
+      express_receive_date = #{expressReceiveDate,jdbcType=TIMESTAMP},
+      express_receive_man = #{expressReceiveMan,jdbcType=VARCHAR},
+      has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT},
+      type = #{type,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      info = #{info,jdbcType=VARCHAR},
+      task_key = #{taskKey,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

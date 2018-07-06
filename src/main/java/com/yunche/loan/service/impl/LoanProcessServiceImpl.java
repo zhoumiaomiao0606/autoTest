@@ -7,6 +7,7 @@ import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.LoanProcessLogVO;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
@@ -166,7 +168,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 【资料增补单】
         if (isInfoSupplementTask(approval)) {
-            return execInfoSupplementTask(approval,loanProcessDO);
+            return execInfoSupplementTask(approval, loanProcessDO);
         }
 
         // 【金融方案修改申请】
@@ -332,7 +334,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             retryNum = 0;
         }
         //资料增补、电审、录入提车资料后，都会出发异步打包操作
-         if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)
+        if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)
                 || INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)
                 || LOAN_APPLY.getCode().equals(taskDefinitionKey)
                 || VISIT_VERIFY.getCode().equals(taskDefinitionKey)) {
@@ -1064,21 +1066,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @return
      */
-    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanProcessDO loanProcessDO ) {
+    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
 
         // 【发起】资料增补单
         if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
             // 创建增补单
             startInfoSupplement(approval);
-            return ResultBean.ofSuccess(null, "资料增补发起成功");
+            return ResultBean.ofSuccess(null, "[资料增补]发起成功");
         }
 
         // 【提交】资料增补单
         else if (INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
             // 提交增补单
             endInfoSupplement(approval);
+            // 异步打包文件
             asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
-            return ResultBean.ofSuccess(null, "资料增补提交成功");
+            return ResultBean.ofSuccess(null, "[资料增补]提交成功");
         }
 
         return ResultBean.ofError("action参数有误");
@@ -1136,7 +1139,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     title = taskName + result;
 
                     if (loanCustomerDO != null) {
-                        prompt = "主贷人:[" + loanCustomerDO.getName() + "]" + "-" + title;
+                        prompt = "主贷人:[" + loanCustomerDO.getName() + "]-" + title;
                     }
                     msg = StringUtils.isBlank(approval.getInfo()) ? "无" : "null".equals(approval.getInfo()) ? "无" : approval.getInfo();
 
@@ -1350,54 +1353,44 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return;
         }
 
-        if (CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setCreditApply(taskProcessStatus);
-        } else if (BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setBankCreditRecord(taskProcessStatus);
-        } else if (SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setSocialCreditRecord(taskProcessStatus);
-        } else if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setLoanApply(taskProcessStatus);
-        } else if (VISIT_VERIFY.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setVisitVerify(taskProcessStatus);
-        } else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setTelephoneVerify(taskProcessStatus);
-        } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setBusinessReview(taskProcessStatus);
-        } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setLoanReview(taskProcessStatus);
-        } else if (REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setRemitReview(taskProcessStatus);
-        } else if (CAR_INSURANCE.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setCarInsurance(taskProcessStatus);
-        } else if (APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setApplyLicensePlateDepositInfo(taskProcessStatus);
-        } else if (INSTALL_GPS.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setInstallGps(taskProcessStatus);
-        } else if (COMMIT_KEY.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setCommitKey(taskProcessStatus);
-        } else if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setVehicleInformation(taskProcessStatus);
-        } else if (BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setBusinessReview(taskProcessStatus);
-        } else if (LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setLoanReview(taskProcessStatus);
-        } else if (REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setRemitReview(taskProcessStatus);
-        } else if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setMaterialReview(taskProcessStatus);
-        } else if (MATERIAL_PRINT_REVIEW.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setMaterialPrintReview(taskProcessStatus);
-        } else if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setBankCardRecord(taskProcessStatus);
-        } else if (FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setFinancialScheme(taskProcessStatus);
-        } else if (BANK_LEND_RECORD.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setBankLendRecord(taskProcessStatus);
-        } else if (CUSTOMER_REPAY_PLAN.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setCustomerRepayPlan(taskProcessStatus);
-        } else if (BUSINESS_PAY.getCode().equals(taskDefinitionKey)) {
-            loanProcessDO.setBusinessPay(taskProcessStatus);
+        if (taskDefinitionKey.startsWith("filter")) {
+            return;
+        }
+
+        // 方法名拼接   setXXX
+        String methodBody = null;
+        for (LoanProcessEnum e : LoanProcessEnum.values()) {
+
+            if (e.getCode().equals(taskDefinitionKey)) {
+
+                String[] keyArr = null;
+
+                if (taskDefinitionKey.startsWith("servicetask")) {
+                    keyArr = taskDefinitionKey.split("servicetask");
+                } else if (taskDefinitionKey.startsWith("usertask")) {
+                    keyArr = taskDefinitionKey.split("usertask");
+                }
+
+                // 下划线转驼峰
+                methodBody = StringUtil.underline2Camel(keyArr[1]);
+                break;
+            }
+        }
+
+        // setXXX
+        String methodName = "set" + methodBody;
+
+        // 反射执行
+        try {
+
+            // 获取反射对象
+            Class<? extends LoanProcessDO> loanProcessDOClass = loanProcessDO.getClass();
+            // 获取对应method
+            Method method = loanProcessDOClass.getMethod(methodName, Byte.class);
+            // 执行method
+            Object result = method.invoke(loanProcessDO, taskProcessStatus);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -2150,7 +2143,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private String getRejectInfo(Byte action, String info) {
 
         if (ACTION_REJECT_MANUAL.equals(action)) {
-            return "  " + "理由：" + info;
+            return "    理由：" + (StringUtils.isBlank(info) ? "" : info);
         }
 
         return "";
@@ -2398,6 +2391,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 //            } else {
 //                TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply());
 //            }
+        }
+
+        // [资料流转确认（合同资料 - 公司->银行）]
+        else if (DATA_FLOW_CONTRACT_C2B_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // 资料流转（抵押资料 - 合伙人-> 公司）
+            Byte dataFlowMortgageP2cNewTaskStatus = loanProcessDO.getDataFlowMortgageP2cNew();
+            // 是否走了另一条线
+            boolean otherFlow = TASK_PROCESS_TODO.equals(dataFlowMortgageP2cNewTaskStatus)
+                    || TASK_PROCESS_DONE.equals(dataFlowMortgageP2cNewTaskStatus)
+                    || TASK_PROCESS_REJECT.equals(dataFlowMortgageP2cNewTaskStatus);
+
+            if (otherFlow) {
+                variables.put(PROCESS_VARIABLE_TARGET, BANK_LEND_RECORD.getCode());
+            } else {
+                // nothing
+                variables.put(PROCESS_VARIABLE_TARGET, null);
+            }
         }
     }
 
