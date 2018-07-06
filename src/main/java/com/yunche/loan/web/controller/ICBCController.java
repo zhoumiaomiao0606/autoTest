@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
+import com.yunche.loan.config.feign.client.TestFeign;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.GeneratorIDUtil;
@@ -40,6 +41,9 @@ public class ICBCController {
 
     @Autowired
     private MaterialDownHisDOMapper materialDownHisDOMapper;
+
+    @Autowired
+    private TestFeign testFeign;
     //请求接口
     @PostMapping (value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> query() {
@@ -47,6 +51,8 @@ public class ICBCController {
         bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
         return ResultBean.ofSuccess(null);
     }
+
+
 
     //请求接口
     @PostMapping (value = "/term", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -61,8 +67,8 @@ public class ICBCController {
 
     //回调接口
     @PostMapping (value = "/creditresult", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean creditresult(@Validated @NotNull @RequestBody ICBCApiCallbackParam.Callback callback) {
-        return null;
+    public void creditresult(@Validated @NotNull @RequestBody ICBCApiCallbackParam.Callback callback) {
+        testFeign.query(callback);
     }
 
 
