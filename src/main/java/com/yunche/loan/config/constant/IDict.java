@@ -194,6 +194,10 @@ public class IDict {
          * 【开卡】开卡申请表(和身份证正反面合并成一张图片)
          */
         public  static final String OPEN_CARD_DATA = "1002";
+        /**
+         * 【分期】视频面签文件
+         */
+        public static final String VIDEO_INTERVIEW="0902";
     }
 
 

@@ -2,6 +2,7 @@ package com.yunche.loan.config.util;
 
 import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -172,14 +173,21 @@ public class ImageUtil {
      * @param key
      * @return
      */
-    public static final String  getSingleFile(String name,String key) {
+    public static final String  getSingleFile(String name,String key,String fileType) {
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
         OSSClient ossClient =null;
         String returnKey=downLoadBasepath+File.separator+name;
+        InputStream oss2InputStream =null;
         try {
+
             ossClient = OSSUnit.getOSSClient();
-            in = new BufferedInputStream(OSSUnit.getOSS2InputStream(ossClient,videoBucketName,key));
+            if(fileType.equals(IDict.K_PIC_ID.VIDEO_INTERVIEW)){
+                oss2InputStream = OSSUnit.getOSS2InputStream(ossClient, videoBucketName, key);
+            }else{
+                oss2InputStream = OSSUnit.getOSS2InputStream(key);
+            }
+            in = new BufferedInputStream(oss2InputStream);
             out = new BufferedOutputStream(new FileOutputStream(returnKey));
             int len ;
             while ((len = in.read()) != -1) {

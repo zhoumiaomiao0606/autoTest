@@ -1,6 +1,5 @@
 package com.yunche.loan.config.util;
 
-import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.domain.entity.BankInterfaceFileSerialDO;
 import com.yunche.loan.mapper.BankInterfaceFileSerialDOMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +24,7 @@ public class AsyncUpload {
         Byte error = null;
         try {
             try {
-                picPath = ImageUtil.getSingleFile(name,urls);
+                picPath = ImageUtil.getSingleFile(name,urls,fileType);
                 if(StringUtils.isBlank(picPath)){
                     error = new Byte("1");
                     throw new RuntimeException("文件下载出错");
