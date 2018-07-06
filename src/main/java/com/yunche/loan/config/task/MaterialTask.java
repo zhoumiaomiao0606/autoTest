@@ -8,6 +8,7 @@ import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.MaterialDownHisDO;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.BankOpenCardService;
+import com.yunche.loan.service.BankRepayRecordService;
 import com.yunche.loan.service.BankSolutionProcessService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -29,7 +30,10 @@ public class MaterialTask {
 
     @Autowired
     BankOpenCardService bankOpenCardService;
-    @Scheduled(cron = "0/10 * * * * ?")
+
+    @Autowired
+    BankRepayRecordService bankRepayRecordService;
+    @Scheduled(cron = "0/50 * * * * ?")
     public void filedownload(){
         List<MaterialDownHisDO> all = Lists.newArrayList();
         List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.PRE_TRANSACTION);
@@ -38,7 +42,7 @@ public class MaterialTask {
         all.addAll(materialDownHisFAIL);
 
             if(!CollectionUtils.isEmpty(all)){
-                all.parallelStream().forEach(e->{
+                all.stream().forEach(e->{
                     try{
                         LOG.info(e.getFileName()+"文件下载开始");
                         //先锁定记录为处理中
@@ -63,14 +67,11 @@ public class MaterialTask {
                         switch(e.getFileType()){
                             case IDict.K_WJLX.WJLX_0:
                                 boolean b = bankOpenCardService.importFile(key);
-                                if(!b){
-                                    modifyFail(e);
-                                }else {
-                                    modifySucc(e);
-                                }
+                                afterAction(b,e);
                                 break;
                             case IDict.K_WJLX.WJLX_1:
-
+                                boolean b2 = bankRepayRecordService.autoImportFile(key);
+                                afterAction(b2,e);
                                 break;
                             case IDict.K_WJLX.WJLX_2:break;
                             case IDict.K_WJLX.WJLX_3:break;
@@ -83,12 +84,17 @@ public class MaterialTask {
                     }
                 });
             }
+    }
+
+    public void afterAction(boolean b,MaterialDownHisDO e){
+        if(b){
+            modifySucc(e);
+        }else{
+            modifyFail(e);
+        }
 
     }
 
-    public void afterAction(){
-
-    }
 
     public void modifySucc(MaterialDownHisDO e){
         e.setStatus(IDict.K_JYZT.SUCCESS);
@@ -97,7 +103,7 @@ public class MaterialTask {
         LOG.info(e.getFileName()+":文件处理完成,key:"+e.getFileKey());
     }
     public void modifyFail(MaterialDownHisDO e){
-        e.setStatus(IDict.K_JYZT.FAIL);
+        e.setStatus((byte)6);
         e.setInfo("文件处理失败");
         materialDownHisDOMapper.updateByPrimaryKeySelective(e);
         LOG.info(e.getFileName()+":文件处理失败,key:"+e.getFileKey());
