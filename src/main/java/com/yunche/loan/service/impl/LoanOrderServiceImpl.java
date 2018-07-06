@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -257,6 +258,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // 权限校验
         permissionService.checkTaskPermission(LoanProcessEnum.CREDIT_APPLY.getCode());
 
+        // 是否已经禁用该银行
+        checkDisableBank(param.getLoanBaseInfo());
+
         // 创建贷款基本信息
         Long baseInfoId = createLoanBaseInfo(param.getLoanBaseInfo());
 
@@ -267,6 +271,25 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long orderId = createLoanOrder(baseInfoId, customerId);
 
         return ResultBean.ofSuccess(String.valueOf(orderId));
+    }
+
+    private void checkDisableBank(LoanBaseInfoParam loanBaseInfo) {
+        Preconditions.checkArgument(null != loanBaseInfo && StringUtils.isNotBlank(loanBaseInfo.getBank()),
+                "贷款银行不能为空");
+
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfo.getPartnerId(), VALID_STATUS);
+        Preconditions.checkNotNull(partnerDO, "合伙人不存在");
+
+        String loanBank = loanBaseInfo.getBank();
+
+        // 禁止查征信银行 校验
+        String disableBankList = partnerDO.getDisableBankList();
+        if (StringUtils.isNotBlank(disableBankList)) {
+            String[] disableBankListArr = disableBankList.split("\\,");
+
+            Preconditions.checkArgument(Arrays.asList(disableBankListArr).contains(loanBank), "您当前[征信查询]银行已被禁，请联系管理员！");
+        }
+
     }
 
     @Override

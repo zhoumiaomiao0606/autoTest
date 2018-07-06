@@ -46,4 +46,8 @@ public class PartnerDO {
     private Byte status;
 
     private String feature;
+    /**
+     * 禁用银行列表 (征信申请)
+     */
+    private String disableBankList;
 }
