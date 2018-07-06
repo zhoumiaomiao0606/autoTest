@@ -153,6 +153,19 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
         return ResultBean.ofSuccess(loanBaseInfoVO);
     }
 
+    @Override
+    public LoanBaseInfoDO getLoanBaseInfoByOrderId(Long orderId) {
+        Preconditions.checkNotNull(orderId, "订单号不能为空");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        Preconditions.checkNotNull(loanBaseInfoDO, "订单基本信息不存在");
+
+        return loanBaseInfoDO;
+    }
+
     /**
      * 获取订单的贷款银行
      *
