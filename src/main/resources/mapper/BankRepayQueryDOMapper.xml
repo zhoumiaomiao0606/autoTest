@@ -64,16 +64,16 @@
 
     </select>
 
-    <select id="selectBankRepayImpRecord" resultType="com.yunche.loan.domain.entity.BankRepayImpRecordDO">
+    <select id="selectBankRepayImpRecord" resultType="com.yunche.loan.domain.entity.BankFileListDO">
         select
             id,
-            bank_file_mark AS bankFileMark,
+            file_name AS fileName,
             gmt_create AS gmtCreate,
-            operator
+            operator   AS operator
         from
-            bank_repay_imp_record
+            bank_file_list
         where
-            1=1
+            file_type="1"
         <if test="fileName != null and fileName != '' ">
             AND bank_file_mark LIKE CONCAT('%',#{fileName},'%')
         </if>
@@ -88,27 +88,27 @@
     </select>
     <select id="selectBankRepayRecordDetail" resultType="com.yunche.loan.domain.vo.BankRepayRecordVO">
         select
-            user_name         AS userName ,
-            id_card           AS idCard,
-            repay_card        AS repayCard,
-            card_balance      AS cardBalance,
-            overdue_amount    AS overdueAmount,
-            overdue_times     AS overdueTimes,
-            max_overdue_times AS maxOverdueTimes,
-            is_customer       AS isCustomer
-        from bank_repay_record
+            name                                AS name,
+            credential_no  						AS credentialNo,
+            card_number    						AS cardNumber,
+            card_balance   						AS cardBalance,
+            optimal_return 						AS optimalReturn,
+            consecutive_breach_number           AS consecutiveBreachNumber,
+            cumulative_breach_number            AS cumulativeBreachNumber,
+            is_customer       				    AS isCustomer
+        from
+            bank_file_list_record
         where
-            bank_repay_imp_record_id=#{bankRepayImpRecordId}
+            bank_file_list_id=#{bankRepayImpRecordId}
             <if test="userName != null and userName != '' ">
-                AND user_name LIKE CONCAT('%',#{userName},'%')
+                AND name LIKE CONCAT('%',#{userName},'%')
             </if>
             <if test="idCard != null">
-                AND id_card=#{idCard}
+                AND credential_no=#{idCard}
             </if>
             <if test="isCustomer !=null">
                 AND is_customer=#{isCustomer}
             </if>
-
     </select>
 
     <select id="selectRepayPlanByNper" resultType="com.yunche.loan.domain.entity.LoanRepayPlanDO">

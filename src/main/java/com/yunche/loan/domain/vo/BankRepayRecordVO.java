@@ -7,12 +7,12 @@ import java.math.BigDecimal;
 @Data
 public class BankRepayRecordVO {
 
-    private String  userName ;
-    private String  idCard;
-    private String  repayCard;
+    private String  name ;
+    private String  credentialNo;
+    private String  cardNumber;
     private BigDecimal cardBalance;
-    private BigDecimal  overdueAmount;
-    private Integer      overdueTimes;
-    private Integer maxOverdueTimes;
+    private BigDecimal  optimalReturn;
+    private Integer      consecutiveBreachNumber;
+    private Integer cumulativeBreachNumber;
     private Byte isCustomer;
 }
