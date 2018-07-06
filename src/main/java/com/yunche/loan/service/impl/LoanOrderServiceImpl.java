@@ -287,7 +287,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         if (StringUtils.isNotBlank(disableBankList)) {
             String[] disableBankListArr = disableBankList.split("\\,");
 
-            Preconditions.checkArgument(Arrays.asList(disableBankListArr).contains(loanBank), "您当前[征信查询]银行已被禁，请联系管理员！");
+            Preconditions.checkArgument(!Arrays.asList(disableBankListArr).contains(loanBank), "您当前[征信查询]银行已被禁，请联系管理员！");
         }
 
     }
