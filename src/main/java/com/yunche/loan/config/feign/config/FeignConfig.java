@@ -256,6 +256,7 @@ public class FeignConfig {
                         }else {
                             bankInterfaceSerialDOMapper.insertSelective(DO);
                         }
+                        return obj;
                     }else {
                         BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
                         DO.setSerialNo(serialNoList.get(0).toString());
@@ -270,8 +271,9 @@ public class FeignConfig {
                         }else {
                             bankInterfaceSerialDOMapper.insertSelective(DO);
                         }
+                        throw new BizException(returnMsg);
                     }
-                    return obj;
+
                 }else {
                     throw new BizException(transCode+"接口请求解析失败");
                 }

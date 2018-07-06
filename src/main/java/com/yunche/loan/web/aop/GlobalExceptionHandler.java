@@ -3,6 +3,7 @@ package com.yunche.loan.web.aop;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
+import feign.codec.DecodeException;
 import org.activiti.engine.ActivitiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,9 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof MethodArgumentNotValidException) {
             return ResultBean.ofError("必入参数未填写");
-        } else if (e instanceof ConstraintViolationException) {
+        } else if (e instanceof DecodeException) {
+            return ResultBean.ofError(e.getMessage());
+        }else if (e instanceof ConstraintViolationException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof IllegalArgumentException) {
             return ResultBean.ofError(e.getMessage());

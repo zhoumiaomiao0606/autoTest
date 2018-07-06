@@ -398,7 +398,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //pub
         applyDiviGeneral.setPlatno(sysConfig.getPlatno());
         applyDiviGeneral.setCmpseq(serNo);
-        applyDiviGeneral.setZoneno("1202");
+        applyDiviGeneral.setZoneno("3301");
         applyDiviGeneral.setPhybrno(phybrno);
         applyDiviGeneral.setOrderno(orderId.toString());
         applyDiviGeneral.setAssurerno(sysConfig.getAssurerno());
