@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull;
 @FeignClient(name = "testFeign" ,url = "http://wwzkdci.hk1.mofasuidao.cn/")
 public interface TestFeign {
     @PostMapping(value = "/api/v1/loanorder/icbc/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String query(@Validated @NotNull @RequestBody ICBCApiCallbackParam.Callback callback);
+    public String query(@Validated @NotNull @RequestBody ICBCApiCallbackParam.ApplyCreditCallback callback);
 
 
 
     @PostMapping(value = "/api/v1/loanorder/icbc/term", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String term(@Validated @NotNull @RequestBody ICBCApiCallbackParam.Callback callback);
+    public String term(@Validated @NotNull @RequestBody ICBCApiCallbackParam.ApplyDiviGeneralCallback callback);
 }

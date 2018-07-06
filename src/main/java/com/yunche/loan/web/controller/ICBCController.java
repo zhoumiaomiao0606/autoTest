@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Type;
 
@@ -46,17 +47,16 @@ public class ICBCController {
     private TestFeign testFeign;
     //请求接口
     @PostMapping (value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> query() {
+    public ResultBean<Long> query(@RequestBody @Valid @Validated @NotNull ICBCApiCallbackParam.ApplyCreditCallback callback) {
         //return icbcFeignClient.applyCredit(applyCredit);
         bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
         return ResultBean.ofSuccess(null);
     }
 
 
-
     //请求接口
     @PostMapping (value = "/term", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> term() {
+    public ResultBean<Long> term(@RequestBody @Valid @Validated @NotNull  ICBCApiCallbackParam.ApplyDiviGeneralCallback callback) {
         //return icbcFeignClient.applyCredit(applyCredit);
         bankSolutionService.commonBusinessApply(new Long("1805241619246179093"));
         return ResultBean.ofSuccess(null);
@@ -67,14 +67,14 @@ public class ICBCController {
 
     //回调接口
     @PostMapping (value = "/creditresult", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void creditresult(@Validated @NotNull @RequestBody ICBCApiCallbackParam.Callback callback) {
+    public void creditresult(@Validated @NotNull @RequestBody ICBCApiCallbackParam.ApplyCreditCallback callback) {
         testFeign.query(callback);
     }
 
 
     @PostMapping (value = "/creditreturn", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean creditreturn( @RequestBody ICBCApiRequest.ApplyCredit applyCredit) {
-        return null;
+    public void creditreturn( @RequestBody ICBCApiCallbackParam.ApplyDiviGeneralCallback callback) {
+        testFeign.term(callback);
     }
 
     @PostMapping (value = "/creditcardresult", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

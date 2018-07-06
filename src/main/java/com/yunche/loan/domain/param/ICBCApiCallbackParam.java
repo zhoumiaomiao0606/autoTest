@@ -1,19 +1,25 @@
 package com.yunche.loan.domain.param;
 
 import lombok.Data;
-
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.List;
 @Data
 public class ICBCApiCallbackParam implements Serializable {
 
     @Data
-    public static class Callback {
+    public static class ApplyCreditCallback {
         @NotNull
         private Pub pub;
         @NotNull
-        private Req req;
+        private ApplyCreditReq req;
+    }
+
+    @Data
+    public static class ApplyDiviGeneralCallback {
+        @NotNull
+        private Pub pub;
+        @NotNull
+        private ApplyDiviGeneralReq req;
     }
 
     @Data
@@ -30,8 +36,7 @@ public class ICBCApiCallbackParam implements Serializable {
     }
 
     @Data
-    public static class Req {
-        //----- pub -----
+    public static class ApplyCreditReq {
         private String custname;
         private String idno;
         private String relation;
@@ -43,5 +48,9 @@ public class ICBCApiCallbackParam implements Serializable {
         private String note;
     }
 
+    @Data
+    public static class ApplyDiviGeneralReq {
+        private String backnote;
+    }
 
 }
