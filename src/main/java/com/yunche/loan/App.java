@@ -47,7 +47,7 @@ public class App {
             public void run(String... args) throws Exception {
                 // 部署
                 repositoryService.createDeployment()
-                        .name("消费贷流程")
+                        .name("消费贷流程-data_flow")
                         .addClasspathResource("processes/loan_process_df.bpmn")
                         .deploy();
 

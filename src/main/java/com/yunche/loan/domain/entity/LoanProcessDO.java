@@ -39,6 +39,8 @@ public class LoanProcessDO {
 
     private Byte materialPrintReview;
 
+    private Byte materialManage;
+
     private Byte businessReview;
 
     private Byte loanReview;

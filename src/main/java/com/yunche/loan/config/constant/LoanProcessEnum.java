@@ -15,6 +15,7 @@ public enum LoanProcessEnum {
     BANK_SOCIAL_CREDIT_RECORD_FILTER("filter_bank_social_credit_record", "征信记录拦截任务"),
     LOAN_APPLY_VISIT_VERIFY_FILTER("filter_loan_apply_visit_verify", "业务申请&上门调查拦截任务"),
     REMIT_REVIEW_FILTER("filter_remit_review", "打款确认拦截任务"),
+    DATA_FLOW_MORTGAGE_P2C_NEW_FILTER("filter_data_flow_mortgage_p2c_new", "资料流转（抵押资料 - 合伙人->公司）拦截任务"),
 
     LOAN_APPLY("usertask_loan_apply", "业务申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),
@@ -41,6 +42,7 @@ public enum LoanProcessEnum {
 
     MATERIAL_REVIEW("usertask_material_review", "资料审核"),
     MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),
+    MATERIAL_MANAGE("usertask_material_manage", "合同归档"),
 
     BUSINESS_PAY("usertask_business_pay", "业务付款申请"),
     BUSINESS_REVIEW("usertask_business_review", "业务审批"),
@@ -63,8 +65,6 @@ public enum LoanProcessEnum {
 
 
     // 抵押资料
-    START_DATA_FLOW_MORTGAGE("startevent_data_flow_mortgage", "资料流转流程启动（抵押资料）"),
-
     DATA_FLOW_MORTGAGE_P2C_NEW("usertask_data_flow_mortgage_p2c_new", "资料流转（抵押资料 - 合伙人->公司）"),
     DATA_FLOW_MORTGAGE_P2C_NEW_REVIEW("usertask_data_flow_mortgage_p2c_new_review", "资料流转确认（抵押资料 - 合伙人->公司）"),
 

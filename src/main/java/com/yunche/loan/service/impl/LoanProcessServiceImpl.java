@@ -163,8 +163,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 日志
         log(approval);
 
+
+        ////////////////////////////////////////// ↓↓↓↓↓ 特殊处理  ↓↓↓↓↓ ////////////////////////////////////////////////
+
         // 【征信增补】
-        execCreditSupplementTask(approval, loanOrderDO.getProcessInstId(), loanProcessDO);
+        if (isCreditSupplementTask(approval.getTaskDefinitionKey(), approval.getAction())) {
+            execCreditSupplementTask(approval, loanOrderDO.getProcessInstId(), loanProcessDO);
+        }
+
+        // 【资料流转（抵押资料 - 合伙人->公司）】
+        if (isDataFlowMortgageP2cNewTask(approval.getTaskDefinitionKey(), approval.getAction())) {
+            execDataFlowMortgageP2cNewFilterTask(approval);
+        }
 
         // 【资料增补单】
         if (isInfoSupplementTask(approval)) {
@@ -180,6 +190,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (isRefundApplyTask(approval.getTaskDefinitionKey())) {
             return execRefundApplyTask(approval, loanProcessDO);
         }
+
+        ////////////////////////////////////////// ↑↑↑↑↑ 特殊处理  ↑↑↑↑↑ ////////////////////////////////////////////////
+
 
         // 获取当前执行任务（activiti中）
         Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
@@ -388,6 +401,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         boolean isRefundApplyTask = REFUND_APPLY.getCode().equals(taskDefinitionKey)
                 || REFUND_APPLY_REVIEW.getCode().equals(taskDefinitionKey);
         return isRefundApplyTask;
+    }
+
+    /**
+     * 【资料流转（抵押资料 - 合伙人->公司）】任务
+     *
+     * @param taskDefinitionKey
+     * @param action
+     * @return
+     */
+    private boolean isDataFlowMortgageP2cNewTask(String taskDefinitionKey, Byte action) {
+        // 新建【资料流转（抵押资料 - 合伙人->公司）】单据
+        boolean isDataFlowMortgageP2cNewTask = DATA_FLOW_MORTGAGE_P2C_NEW.getCode().equals(taskDefinitionKey)
+                && ACTION_NEW_TASK.equals(action);
+        return isDataFlowMortgageP2cNewTask;
     }
 
     /**
@@ -910,6 +937,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         }
 
+        // [资料流转（抵押资料 - 合伙人->公司]
+        else if (isDataFlowMortgageP2cNewTask(taskDefinitionKey, action)) {
+            Byte dataFlowMortgageP2cNewStatus = loanProcessDO.getDataFlowMortgageP2cNew();
+            Preconditions.checkArgument(TASK_PROCESS_INIT.equals(dataFlowMortgageP2cNewStatus), "已新建过[资料流转（抵押资料 - 合伙人->公司]单据");
+        }
+
         // 已经在create中做了校验
 //        // 【金融方案修改申请】
 //        else if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
@@ -982,11 +1015,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanProcessDO
      */
     private void execCreditSupplementTask(ApprovalParam approval, String processInstanceId, LoanProcessDO loanProcessDO) {
-        // 是否【征信增补】
-        boolean isCreditSupplementTask = isCreditSupplementTask(approval.getTaskDefinitionKey(), approval.getAction());
-        if (!isCreditSupplementTask) {
-            return;
-        }
 
         // finish   ==》 open 【银行征信】/【社会征信】
         finishTask_(approval);
@@ -1031,6 +1059,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     }
 
                 });
+    }
+
+    /**
+     * 执行【资料流转（抵押资料 - 合伙人->公司）】任务
+     *
+     * @param approval
+     */
+    private void execDataFlowMortgageP2cNewFilterTask(ApprovalParam approval) {
+        // 通过 前置隐藏拦截任务     PASS -> Filter-Task
+        approval.setTaskDefinitionKey(DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode());
+        approval.setAction(ACTION_PASS);
+        approval.setNeedPush(false);
     }
 
     /**
@@ -2086,7 +2126,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
-                        // 王希  于 2017-12-29 13:07:00  创建 xx业务信息
+                        // Spike  于  2017-12-29 13:07:00  通过  xx业务
                         String history = e.getUserName()
                                 + " 于 "
                                 + convertApprovalDate(e.getCreateTime())
@@ -2170,6 +2210,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 break;
             case 3:
                 actionText = "资料增补";
+                break;
+            case 4:
+                actionText = "新建";
+                break;
+            case 5:
+                actionText = "中止支线";
                 break;
             default:
                 actionText = "-";
@@ -2307,7 +2353,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanOrderDO);
 
         // 填充其他的流程变量
-        fillOtherVariables(variables, approval, loanProcessDO);
+        fillOtherVariables(variables, approval, loanProcessDO, loanOrderDO.getProcessInstId());
 
         return variables;
     }
@@ -2318,8 +2364,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param variables
      * @param approval
      * @param loanProcessDO
+     * @param processInstId
      */
-    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO) {
+    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO, String processInstId) {
         // 【业务申请】
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
 
@@ -2393,21 +2440,40 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 //            }
         }
 
+        // [合同套打]
+        else if (MATERIAL_PRINT_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // [合同归档]是否已存在
+            Byte materialManageStatus = loanProcessDO.getMaterialManage();
+            // 是否走了另一条线
+            boolean hasMaterialManage = TASK_PROCESS_TODO.equals(materialManageStatus)
+                    || TASK_PROCESS_DONE.equals(materialManageStatus)
+                    || TASK_PROCESS_REJECT.equals(materialManageStatus);
+
+            if (hasMaterialManage) {
+                variables.put(PROCESS_VARIABLE_TARGET, DATA_FLOW_CONTRACT_C2B.getCode());
+            } else {
+                // nothing
+                variables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
+            }
+        }
+
         // [资料流转确认（合同资料 - 公司->银行）]
         else if (DATA_FLOW_CONTRACT_C2B_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
-            // 资料流转（抵押资料 - 合伙人-> 公司）
-            Byte dataFlowMortgageP2cNewTaskStatus = loanProcessDO.getDataFlowMortgageP2cNew();
-            // 是否走了另一条线
-            boolean otherFlow = TASK_PROCESS_TODO.equals(dataFlowMortgageP2cNewTaskStatus)
-                    || TASK_PROCESS_DONE.equals(dataFlowMortgageP2cNewTaskStatus)
-                    || TASK_PROCESS_REJECT.equals(dataFlowMortgageP2cNewTaskStatus);
+            // [资料流转（抵押资料 - 合伙人->公司）]是否已存在
+            Byte dataFlowMortgageP2cNewStatus = loanProcessDO.getDataFlowMortgageP2cNew();
+            // 是否走了另一条线    -> 新建
+            boolean hasDataFlowMortgageP2cNew = TASK_PROCESS_TODO.equals(dataFlowMortgageP2cNewStatus)
+                    || TASK_PROCESS_DONE.equals(dataFlowMortgageP2cNewStatus)
+                    || TASK_PROCESS_REJECT.equals(dataFlowMortgageP2cNewStatus);
 
-            if (otherFlow) {
+            // 是否走了另一条线
+            if (hasDataFlowMortgageP2cNew) {
                 variables.put(PROCESS_VARIABLE_TARGET, BANK_LEND_RECORD.getCode());
             } else {
                 // nothing
-                variables.put(PROCESS_VARIABLE_TARGET, null);
+                variables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
             }
         }
     }

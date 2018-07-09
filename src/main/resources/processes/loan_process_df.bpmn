@@ -201,7 +201,9 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <endEvent id="endevent29" name="End"></endEvent>
-    <sequenceFlow id="flow174" sourceRef="parallelgateway8" targetRef="endevent29"></sequenceFlow>
+    <sequenceFlow id="flow174" sourceRef="parallelgateway8" targetRef="endevent29">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <userTask id="usertask_customer_repay_plan" name="客户还款计划" activiti:candidateGroups="管理员,总经理,培训经理,电催主管,电催专员,电话催收组"></userTask>
     <sequenceFlow id="flow175" name="提交" sourceRef="usertask_bank_card_record" targetRef="usertask_customer_repay_plan">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
@@ -261,20 +263,22 @@
     </sequenceFlow>
     <parallelGateway id="parallelgateway9" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow194" sourceRef="exclusivegateway14" targetRef="parallelgateway9">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == ''}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway26" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow195" sourceRef="usertask_data_flow_contract_c2b_review" targetRef="exclusivegateway26"></sequenceFlow>
-    <userTask id="usertask5" name="合同归档"></userTask>
-    <sequenceFlow id="flow196" sourceRef="parallelgateway9" targetRef="usertask5"></sequenceFlow>
+    <userTask id="usertask_material_manage" name="合同归档"></userTask>
+    <sequenceFlow id="flow196" sourceRef="parallelgateway9" targetRef="usertask_material_manage"></sequenceFlow>
     <parallelGateway id="parallelgateway10" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow197" sourceRef="exclusivegateway26" targetRef="parallelgateway10">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${target == ''  &&  action == 1}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == ''}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_data_flow_mortgage_b2c" name="资料流转（抵押资料 - 银行-&gt; 公司）"></userTask>
     <sequenceFlow id="flow198" sourceRef="parallelgateway10" targetRef="usertask_data_flow_mortgage_b2c"></sequenceFlow>
     <userTask id="usertask_data_flow_mortgage_b2c_review" name="资料流转确认（抵押资料 - 银行-&gt; 公司）"></userTask>
-    <sequenceFlow id="flow199" sourceRef="usertask_data_flow_mortgage_b2c" targetRef="usertask_data_flow_mortgage_b2c_review"></sequenceFlow>
+    <sequenceFlow id="flow199" sourceRef="usertask_data_flow_mortgage_b2c" targetRef="usertask_data_flow_mortgage_b2c_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <sequenceFlow id="flow200" name="打回" sourceRef="exclusivegateway27" targetRef="usertask_data_flow_mortgage_b2c">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
@@ -285,7 +289,9 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_data_flow_mortgage_c2p_review" name="资料流转确认（抵押资料 - 公司-&gt; 合伙人）"></userTask>
-    <sequenceFlow id="flow203" sourceRef="usertask_data_flow_mortgage_c2p" targetRef="usertask_data_flow_mortgage_c2p_review"></sequenceFlow>
+    <sequenceFlow id="flow203" sourceRef="usertask_data_flow_mortgage_c2p" targetRef="usertask_data_flow_mortgage_c2p_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <exclusiveGateway id="exclusivegateway28" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow204" sourceRef="usertask_data_flow_mortgage_c2p_review" targetRef="exclusivegateway28"></sequenceFlow>
     <sequenceFlow id="flow205" name="打回" sourceRef="exclusivegateway28" targetRef="usertask_data_flow_mortgage_c2p">
@@ -296,7 +302,9 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_data_flow_mortgage_p2c_review" name="资料流转确认（抵押资料 - 合伙人-&gt; 公司）"></userTask>
-    <sequenceFlow id="flow207" sourceRef="usertask_data_flow_mortgage_p2c" targetRef="usertask_data_flow_mortgage_p2c_review"></sequenceFlow>
+    <sequenceFlow id="flow207" sourceRef="usertask_data_flow_mortgage_p2c" targetRef="usertask_data_flow_mortgage_p2c_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <exclusiveGateway id="exclusivegateway29" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow208" sourceRef="usertask_data_flow_mortgage_p2c_review" targetRef="exclusivegateway29"></sequenceFlow>
     <sequenceFlow id="flow209" name="打回" sourceRef="exclusivegateway29" targetRef="usertask_data_flow_mortgage_p2c">
@@ -307,7 +315,9 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_data_flow_mortgage_c2b_review" name="资料流转确认（抵押资料 - 公司 -&gt; 银行）"></userTask>
-    <sequenceFlow id="flow211" sourceRef="usertask_data_flow_mortgage_c2b" targetRef="usertask_data_flow_mortgage_c2b_review"></sequenceFlow>
+    <sequenceFlow id="flow211" sourceRef="usertask_data_flow_mortgage_c2b" targetRef="usertask_data_flow_mortgage_c2b_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <exclusiveGateway id="exclusivegateway30" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow212" sourceRef="usertask_data_flow_mortgage_c2b_review" targetRef="exclusivegateway30"></sequenceFlow>
     <endEvent id="endevent31" name="End"></endEvent>
@@ -315,7 +325,7 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <endEvent id="endevent32" name="End"></endEvent>
-    <sequenceFlow id="flow215" sourceRef="usertask5" targetRef="endevent32">
+    <sequenceFlow id="flow215" sourceRef="usertask_material_manage" targetRef="endevent32">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_data_flow_mortgage_p2c_new" name="资料流转（抵押资料 - 合伙人-&gt; 公司）"></userTask>
@@ -329,9 +339,13 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_data_flow_register_p2c" name="资料流转（登记证书 - 合伙人-&gt;公司）"></userTask>
-    <sequenceFlow id="flow222" sourceRef="usertask_apply_license_plate_deposit_info" targetRef="usertask_data_flow_register_p2c"></sequenceFlow>
+    <sequenceFlow id="flow222" sourceRef="usertask_apply_license_plate_deposit_info" targetRef="usertask_data_flow_register_p2c">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <userTask id="usertask_data_flow_register_p2c_review" name="资料流转确认（登记证书 - 合伙人-&gt;公司）"></userTask>
-    <sequenceFlow id="flow223" sourceRef="usertask_data_flow_register_p2c" targetRef="usertask_data_flow_register_p2c_review"></sequenceFlow>
+    <sequenceFlow id="flow223" sourceRef="usertask_data_flow_register_p2c" targetRef="usertask_data_flow_register_p2c_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <exclusiveGateway id="exclusivegateway33" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow224" sourceRef="usertask_data_flow_register_p2c_review" targetRef="exclusivegateway33"></sequenceFlow>
     <sequenceFlow id="flow225" name="打回" sourceRef="exclusivegateway33" targetRef="usertask_data_flow_register_p2c">
@@ -342,7 +356,9 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_data_flow_register_c2b_review" name="资料流转确认（登记证书 - 公司-&gt;银行）"></userTask>
-    <sequenceFlow id="flow227" sourceRef="usertask_data_flow_register_c2b" targetRef="usertask_data_flow_register_c2b_review"></sequenceFlow>
+    <sequenceFlow id="flow227" sourceRef="usertask_data_flow_register_c2b" targetRef="usertask_data_flow_register_c2b_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <exclusiveGateway id="exclusivegateway34" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow228" sourceRef="usertask_data_flow_register_c2b_review" targetRef="exclusivegateway34"></sequenceFlow>
     <endEvent id="endevent33" name="End"></endEvent>
@@ -356,9 +372,11 @@
     <exclusiveGateway id="exclusivegateway35" name="Exclusive Gateway"></exclusiveGateway>
     <exclusiveGateway id="exclusivegateway36" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow235" sourceRef="exclusivegateway14" targetRef="usertask_data_flow_contract_c2b">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 11}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == 'usertask_data_flow_contract_c2b'}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow240" sourceRef="usertask_data_flow_contract_p2c" targetRef="usertask_data_flow_contract_p2c_review"></sequenceFlow>
+    <sequenceFlow id="flow240" sourceRef="usertask_data_flow_contract_p2c" targetRef="usertask_data_flow_contract_p2c_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <sequenceFlow id="flow241" sourceRef="usertask_data_flow_contract_p2c_review" targetRef="exclusivegateway35"></sequenceFlow>
     <sequenceFlow id="flow242" sourceRef="usertask_data_flow_contract_c2b" targetRef="exclusivegateway36"></sequenceFlow>
     <userTask id="usertask_data_flow_mortgage_c2b_new" name="资料流转（抵押资料 - 公司-&gt;银行）"></userTask>
@@ -366,27 +384,33 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_data_flow_mortgage_c2b_new_review" name="资料流转确认（抵押资料 - 公司-&gt;银行）"></userTask>
-    <sequenceFlow id="flow244" sourceRef="usertask_data_flow_mortgage_c2b_new" targetRef="usertask_data_flow_mortgage_c2b_new_review"></sequenceFlow>
+    <sequenceFlow id="flow244" sourceRef="usertask_data_flow_mortgage_c2b_new" targetRef="usertask_data_flow_mortgage_c2b_new_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <exclusiveGateway id="exclusivegateway37" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow245" sourceRef="usertask_data_flow_mortgage_c2b_new_review" targetRef="exclusivegateway37"></sequenceFlow>
     <sequenceFlow id="flow246" name="打回" sourceRef="exclusivegateway37" targetRef="usertask_data_flow_mortgage_c2b_new">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow248" sourceRef="exclusivegateway38" targetRef="usertask_data_flow_mortgage_p2c_new_review">
+    <sequenceFlow id="flow248" sourceRef="usertask_data_flow_mortgage_p2c_new" targetRef="usertask_data_flow_mortgage_p2c_new_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow249" name="打回" sourceRef="exclusivegateway32" targetRef="usertask_data_flow_mortgage_p2c_new">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow250" name="走了另一条线" sourceRef="exclusivegateway26" targetRef="usertask_bank_lend_record">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ target == 'usertask_bank_lend_record'  &&  action == 1 }]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == 'usertask_bank_lend_record'}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow251" sourceRef="parallelgateway3" targetRef="usertask_data_flow_mortgage_p2c_new"></sequenceFlow>
+    <sequenceFlow id="flow251" sourceRef="parallelgateway3" targetRef="filter_data_flow_mortgage_p2c_new"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway38" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="flow252" sourceRef="usertask_data_flow_mortgage_p2c_new" targetRef="exclusivegateway38"></sequenceFlow>
+    <sequenceFlow id="flow252" sourceRef="filter_data_flow_mortgage_p2c_new" targetRef="exclusivegateway38"></sequenceFlow>
     <endEvent id="endevent34" name="End"></endEvent>
     <sequenceFlow id="flow253" name="中止该支线" sourceRef="exclusivegateway38" targetRef="endevent34">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 4}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 5}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="filter_data_flow_mortgage_p2c_new" name="拦截"></userTask>
+    <sequenceFlow id="flow254" sourceRef="exclusivegateway38" targetRef="usertask_data_flow_mortgage_p2c_new">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
@@ -610,7 +634,7 @@
       <bpmndi:BPMNShape bpmnElement="exclusivegateway26" id="BPMNShape_exclusivegateway26">
         <omgdc:Bounds height="40.0" width="40.0" x="5479.0" y="958.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask5" id="BPMNShape_usertask5">
+      <bpmndi:BPMNShape bpmnElement="usertask_material_manage" id="BPMNShape_usertask_material_manage">
         <omgdc:Bounds height="55.0" width="105.0" x="5010.0" y="650.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="parallelgateway10" id="BPMNShape_parallelgateway10">
@@ -662,7 +686,7 @@
         <omgdc:Bounds height="55.0" width="105.0" x="4210.0" y="1289.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="usertask_data_flow_mortgage_p2c_new_review" id="BPMNShape_usertask_data_flow_mortgage_p2c_new_review">
-        <omgdc:Bounds height="55.0" width="105.0" x="4572.0" y="1290.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="4510.0" y="1289.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway32" id="BPMNShape_exclusivegateway32">
         <omgdc:Bounds height="40.0" width="40.0" x="4831.0" y="1298.0"></omgdc:Bounds>
@@ -704,10 +728,13 @@
         <omgdc:Bounds height="40.0" width="40.0" x="5470.0" y="1297.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway38" id="BPMNShape_exclusivegateway38">
-        <omgdc:Bounds height="40.0" width="40.0" x="4402.0" y="1296.0"></omgdc:Bounds>
+        <omgdc:Bounds height="40.0" width="40.0" x="3975.0" y="1296.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent34" id="BPMNShape_endevent34">
-        <omgdc:Bounds height="35.0" width="35.0" x="4405.0" y="1410.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="3976.0" y="1404.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="filter_data_flow_mortgage_p2c_new" id="BPMNShape_filter_data_flow_mortgage_p2c_new">
+        <omgdc:Bounds height="55.0" width="105.0" x="3640.0" y="1289.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="36.0" y="1100.0"></omgdi:waypoint>
@@ -901,7 +928,7 @@
         <omgdi:waypoint x="4068.0" y="720.0"></omgdi:waypoint>
         <omgdi:waypoint x="4067.0" y="771.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="22.0" x="4721.0" y="703.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="4720.0" y="709.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow95" id="BPMNEdge_flow95">
@@ -1226,7 +1253,7 @@
         <omgdi:waypoint x="4580.0" y="882.0"></omgdi:waypoint>
         <omgdi:waypoint x="4580.0" y="825.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="22.0" x="4876.0" y="869.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="4921.0" y="877.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow194" id="BPMNEdge_flow194">
@@ -1330,7 +1357,7 @@
         <omgdi:waypoint x="5238.0" y="677.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow218" id="BPMNEdge_flow218">
-        <omgdi:waypoint x="4677.0" y="1317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4615.0" y="1316.0"></omgdi:waypoint>
         <omgdi:waypoint x="4831.0" y="1318.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow220" id="BPMNEdge_flow220">
@@ -1437,8 +1464,8 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow248" id="BPMNEdge_flow248">
-        <omgdi:waypoint x="4442.0" y="1316.0"></omgdi:waypoint>
-        <omgdi:waypoint x="4572.0" y="1317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4315.0" y="1316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4510.0" y="1316.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow249" id="BPMNEdge_flow249">
         <omgdi:waypoint x="4851.0" y="1298.0"></omgdi:waypoint>
@@ -1454,24 +1481,28 @@
         <omgdi:waypoint x="5499.0" y="791.0"></omgdi:waypoint>
         <omgdi:waypoint x="5710.0" y="791.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="5490.0" y="778.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="66.0" x="5490.0" y="778.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow251" id="BPMNEdge_flow251">
         <omgdi:waypoint x="3322.0" y="1096.0"></omgdi:waypoint>
         <omgdi:waypoint x="3322.0" y="1318.0"></omgdi:waypoint>
-        <omgdi:waypoint x="4210.0" y="1316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3640.0" y="1316.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow252" id="BPMNEdge_flow252">
-        <omgdi:waypoint x="4315.0" y="1316.0"></omgdi:waypoint>
-        <omgdi:waypoint x="4402.0" y="1316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3745.0" y="1316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3975.0" y="1316.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow253" id="BPMNEdge_flow253">
-        <omgdi:waypoint x="4422.0" y="1336.0"></omgdi:waypoint>
-        <omgdi:waypoint x="4422.0" y="1410.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3995.0" y="1336.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3993.0" y="1404.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="4393.0" y="1363.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="100.0" x="3966.0" y="1363.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow254" id="BPMNEdge_flow254">
+        <omgdi:waypoint x="4015.0" y="1316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4210.0" y="1316.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
