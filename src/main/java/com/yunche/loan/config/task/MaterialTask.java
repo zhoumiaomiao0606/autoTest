@@ -10,6 +10,7 @@ import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.BankOpenCardService;
 import com.yunche.loan.service.BankRepayRecordService;
 import com.yunche.loan.service.BankSolutionProcessService;
+import com.yunche.loan.service.UnsecuredService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,9 @@ public class MaterialTask {
 
     @Autowired
     BankRepayRecordService bankRepayRecordService;
+
+    @Autowired
+    UnsecuredService unsecuredService;
     @Scheduled(cron = "0/10 * * * * ?")
     public void filedownload(){
         List<MaterialDownHisDO> all = Lists.newArrayList();
@@ -66,14 +70,17 @@ public class MaterialTask {
                         LOG.info(e.getFileName()+":文件导入开始");
                         switch(e.getFileType()){
                             case IDict.K_WJLX.WJLX_0:
-                                boolean b = bankOpenCardService.importFile(key);
-                                afterAction(b,e);
+                                boolean b0 = bankOpenCardService.importFile(key);
+                                afterAction(b0,e);
                                 break;
                             case IDict.K_WJLX.WJLX_1:
-                                boolean b2 = bankRepayRecordService.autoImportFile(key);
+                                boolean b1 = bankRepayRecordService.autoImportFile(key);
+                                afterAction(b1,e);
+                                break;
+                            case IDict.K_WJLX.WJLX_2:
+                                boolean b2 = unsecuredService.autoUnsecuredImp(key);
                                 afterAction(b2,e);
                                 break;
-                            case IDict.K_WJLX.WJLX_2:break;
                             case IDict.K_WJLX.WJLX_3:break;
                             default:
                                 break;

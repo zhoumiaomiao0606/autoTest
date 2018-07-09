@@ -200,7 +200,6 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 int count = bankFileListRecordDOMapper.insertBatch(recordLists);
                 Preconditions.checkArgument(count == recordLists.size(), "批量插入失败");
             }
-            adjustBankRepayPlanRecord(recordLists);
         } catch (Exception e) {
            throw new BizException(e.getMessage());
         }
@@ -223,7 +222,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
         bankFileListDO.setFileKey(ossKey);
         bankFileListDO.setFileType(IDict.K_WJLX.WJLX_1);
         bankFileListDO.setGmtCreate(new Date());
-        bankFileListDO.setOperator("admin");
+        bankFileListDO.setOperator("auto");
         int count = bankFileListDOMapper.insertSelective(bankFileListDO);
         Preconditions.checkArgument(count>0,"插入失败");
         int bankFileListId =  bankFileListDO.getId().intValue();

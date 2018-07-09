@@ -26,8 +26,6 @@ public class Test extends BaseTest {
 
     @org.junit.Test
     public void test() throws IOException {
-
-
         //bankSolutionService.commonBusinessApply(new Long("1806291133480804371"));
         bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
     }

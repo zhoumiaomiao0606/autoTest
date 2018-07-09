@@ -116,7 +116,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             bankFileListDO.setFileKey(ossKey);
             bankFileListDO.setFileType(IDict.K_WJLX.WJLX_0);
             bankFileListDO.setGmtCreate(new Date());
-            bankFileListDO.setOperator(SessionUtils.getLoginUser().getName());
+            bankFileListDO.setOperator("auto");
             int bankFileListId = bankFileListDOMapper.insertSelective(bankFileListDO);
 
             String line="";
@@ -230,7 +230,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Preconditions.checkArgument(openCardTypesStr.size()>0,"开卡申请表(和身份证正反面合并成一张图片)");
         String fileName2 =  GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
 //        asyncUpload.upload(fileName2,openCardTypesStr);
-        asyncUpload.upload("",IDict.K_PIC_ID.OPEN_CARD_DATA,picName,keys);
+        asyncUpload.upload(serNo,IDict.K_PIC_ID.OPEN_CARD_DATA,picName,keys);
         ICBCApiRequest.Picture picture2 = new ICBCApiRequest.Picture();
         picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
         picture2.setPicname(fileName2);
