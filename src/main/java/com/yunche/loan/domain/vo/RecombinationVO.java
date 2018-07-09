@@ -48,6 +48,8 @@ public class RecombinationVO<T> {
 
         private BankInterfaceSerialDO bankSerial;
 
+        private LoanBaseInfoVO loanBaseInfo;
+
         private List<UniversalLoanRepaymentPlan>repayments = new ArrayList<UniversalLoanRepaymentPlan>();
 
         private List<UniversalCollectionRecord> collections = new ArrayList<UniversalCollectionRecord>();

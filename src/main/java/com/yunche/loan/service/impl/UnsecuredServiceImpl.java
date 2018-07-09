@@ -11,6 +11,7 @@ import com.yunche.loan.mapper.BankFileListDOMapper;
 import com.yunche.loan.mapper.BankFileListRecordDOMapper;
 import com.yunche.loan.service.UnsecuredService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.BufferedReader;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+@Service
 public class UnsecuredServiceImpl implements UnsecuredService{
 
     @Autowired

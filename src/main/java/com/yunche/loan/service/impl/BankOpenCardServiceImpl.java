@@ -10,11 +10,14 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
+import com.yunche.loan.domain.vo.FinancialSchemeVO;
+import com.yunche.loan.domain.vo.LoanBaseInfoVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankOpenCardService;
 import com.yunche.loan.service.BankSolutionService;
+import com.yunche.loan.service.LoanBaseInfoService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +63,11 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     AsyncUpload asyncUpload;
 
+    @Autowired
+    LoanBaseInfoService loanBaseInfoService;
+
+    @Autowired
+    LoanQueryDOMapper loanQueryDOMapper;
 
 
     /**
@@ -74,7 +82,12 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Long customerId = loanOrderDO.getLoanCustomerId();
         UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryService.universalCustomerDetail(customerId);
         BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_API.CREDITCARDAPPLY);
+        ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
+        //贷款信息
+        FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
+        recombinationVO.setFinancial(financialSchemeVO);
+        recombinationVO.setLoanBaseInfo(loanBaseInfoVOResultBean.getData());
         recombinationVO.setInfo(universalCustomerDetailVO);
         recombinationVO.setBankSerial(serialDO);
 

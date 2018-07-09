@@ -27,5 +27,5 @@ public class FinancialSchemeVO {
     private String first_month_repay;//首月还款
     private String each_month_repay;//本月还款
     private String financial_bank_staging_ratio;
-
+    private String bank_base_rate;//银行基准利率
 }
