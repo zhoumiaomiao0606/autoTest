@@ -54,7 +54,7 @@ public class ICBCController {
         try {
             reqparam = URLDecoder.decode(reqparam,"UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
-            testFeign.query(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyCreditCallback.class));
+            bankSolutionProcessService.applyCreditCallback(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyCreditCallback.class));
             return returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG);
         }catch (Exception e){
             return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
@@ -66,7 +66,7 @@ public class ICBCController {
         try {
             reqparam = URLDecoder.decode(reqparam,"UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
-            testFeign.term(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyDiviGeneralCallback.class));
+            bankSolutionProcessService.applyDiviGeneralCallback(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyDiviGeneralCallback.class));
             return returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG);
         }catch (Exception e){
             return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
@@ -78,7 +78,7 @@ public class ICBCController {
         try {
             reqparam = URLDecoder.decode(reqparam,"UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
-            testFeign.mu(objectMapper.readValue(reqparam,ICBCApiCallbackParam.MultimediaUploadCallback.class));
+            bankSolutionProcessService.multimediaUploadCallback(objectMapper.readValue(reqparam,ICBCApiCallbackParam.MultimediaUploadCallback.class));
             return returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG);
         }catch (Exception e){
             return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
