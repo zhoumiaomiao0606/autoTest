@@ -50,7 +50,7 @@ public class App {
     }
 
 
-    @Bean
+/*    @Bean
     public CommandLineRunner init(final RepositoryService repositoryService,
                                   final RuntimeService runtimeService,
                                   final TaskService taskService,
@@ -79,6 +79,6 @@ public class App {
             }
         };
 
-    }
+    }*/
 }
 
