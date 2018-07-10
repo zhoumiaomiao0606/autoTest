@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class FinancialSchemeVO {
 
@@ -28,4 +30,6 @@ public class FinancialSchemeVO {
     private String each_month_repay;//本月还款
     private String financial_bank_staging_ratio;
     private String bank_base_rate;//银行基准利率
+
+    private BigDecimal applayQuota;//申请本币额度
 }

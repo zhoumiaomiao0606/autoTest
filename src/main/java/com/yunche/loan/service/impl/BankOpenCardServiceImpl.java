@@ -103,14 +103,16 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Long customerId = loanOrderDO.getLoanCustomerId();
         UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryService.universalCustomerDetail(customerId);
         BankInterfaceSerialVO bankInterfaceSerialVO = new BankInterfaceSerialVO();
-        BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_API.CREDITCARDAPPLY);
-        BeanUtils.copyProperties(serialDO,bankInterfaceSerialVO);
-        BankInterfaceFileSerialDO bankInterfaceFileSerialDO = bankInterfaceFileSerialDOMapper.selectByPrimaryKey(serialDO.getSerialNo());
-        if(bankInterfaceFileSerialDO!=null){
-            if(bankInterfaceFileSerialDO.getSuccess().equals(IDict.K_YORN.K_YORN_NO) && bankInterfaceFileSerialDO.getError().equals((byte)2)){
-                bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_NO));
-            }else{
-                bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_YES));
+        BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+        if(serialDO!=null){
+            BeanUtils.copyProperties(serialDO,bankInterfaceSerialVO);
+            BankInterfaceFileSerialDO bankInterfaceFileSerialDO = bankInterfaceFileSerialDOMapper.selectByPrimaryKey(serialDO.getSerialNo());
+            if(bankInterfaceFileSerialDO!=null){
+                if(bankInterfaceFileSerialDO.getSuccess().equals(IDict.K_YORN.K_YORN_NO) && bankInterfaceFileSerialDO.getError().equals((byte)2)){
+                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_NO));
+                }else{
+                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_YES));
+                }
             }
         }
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
