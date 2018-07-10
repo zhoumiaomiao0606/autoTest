@@ -8,6 +8,7 @@ import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
+import com.yunche.loan.config.feign.client.ICBCFeignNormal;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
 import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
@@ -15,7 +16,12 @@ import com.yunche.loan.config.feign.request.group.NewValidated;
 import com.yunche.loan.config.feign.request.group.SecondValidated;
 import com.yunche.loan.config.feign.response.ApplyCreditResponse;
 import com.yunche.loan.config.feign.response.ApplyDiviGeneralResponse;
-import com.yunche.loan.config.util.*;
+import com.yunche.loan.config.feign.response.ApplyStatusResponse;
+import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
+import com.yunche.loan.config.util.AsyncUpload;
+import com.yunche.loan.config.util.GeneratorIDUtil;
+import com.yunche.loan.config.util.ImageUtil;
+import com.yunche.loan.config.util.ViolationUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
@@ -25,12 +31,11 @@ import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -91,6 +96,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Resource
     private AsyncUpload asyncUpload;
+
+    @Autowired
+    ICBCFeignNormal icbcFeignNormal;
 
 
     //征信自动提交
@@ -622,13 +630,22 @@ public class BankSolutionServiceImpl implements BankSolutionService {
      * 银行开卡
      * @param bankOpenCardParam
      */
-    public void creditcardapply(BankOpenCardParam bankOpenCardParam) {
+    public CreditCardApplyResponse creditcardapply(BankOpenCardParam bankOpenCardParam) {
         //数据准备
         bankOpenCardParam.setCmpseq(GeneratorIDUtil.execute());
         ICBCApiRequest.ApplyBankOpenCard  applyBankOpenCard= new ICBCApiRequest.ApplyBankOpenCard();
         BeanUtils.copyProperties(applyBankOpenCard,bankOpenCardParam);
         //发送银行接口
-        icbcFeignClient.creditcardapply(applyBankOpenCard);
+        CreditCardApplyResponse creditcardapply = icbcFeignClient.creditcardapply(applyBankOpenCard);
+        return creditcardapply;
+    }
+
+    @Override
+    public ApplyStatusResponse applystatus(ICBCApiRequest.Applystatus applystatus) {
+
+        ApplyStatusResponse applyStatusResponse = icbcFeignNormal.applyStatus(applystatus);
+        return applyStatusResponse;
+        
     }
 
 

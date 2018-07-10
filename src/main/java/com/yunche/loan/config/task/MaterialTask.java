@@ -37,7 +37,7 @@ public class MaterialTask {
 
     @Autowired
     UnsecuredService unsecuredService;
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "* 0/5 * * * ?")
     public void filedownload(){
         List<MaterialDownHisDO> all = Lists.newArrayList();
         List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.PRE_TRANSACTION);

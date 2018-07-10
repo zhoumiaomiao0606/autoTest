@@ -82,4 +82,9 @@ public class UniversalCustomerDetailVO {
     private String customer_balance_change_remind;//
     private String customer_open_email;//
     private String customer_email;//
+    private String customer_issuing_department;
+    private String customer_master_card_tel;
+    private String customer_bell_tel;
+    private String customer_balance_change_tel;
+
 }

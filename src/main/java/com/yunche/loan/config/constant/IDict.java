@@ -261,4 +261,29 @@ public class IDict {
          */
         public  static final String WJLX_3="3";
     }
+
+    public static abstract interface K_BANK{
+        /**
+         * 中国工商银行杭州城站支行
+         */
+        public  static final String ICBC_HZCZ="1";
+        /**
+         * 中国工商银行哈尔滨顾乡支行
+         */
+        public  static final String ICBC_HEBGX="2";
+        /**
+         * 中国工商银行台州路桥支行
+         */
+        public  static final String ICBC_TZLQ="3";
+        /**
+         * 中国工商银行南京江宁支行
+         */
+        public  static final String ICBC_NJJN="4";
+
+    }
+    public static abstract interface K_YORN{
+        public  static final Byte K_YORN_NO =0;
+        public  static final Byte K_YORN_YES =1;
+
+    }
 }

@@ -12,4 +12,9 @@ public interface BankOpenCardService {
     ResultBean openCard(BankOpenCardParam bankOpenCardParam);
 
     boolean importFile(String ossKey);
+
+    ResultBean save(BankOpenCardParam bankOpenCardParam);
+
+    ResultBean taskschedule(Long order);
+
 }

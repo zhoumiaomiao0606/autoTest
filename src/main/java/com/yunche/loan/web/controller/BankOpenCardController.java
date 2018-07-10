@@ -12,19 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/loanorder/opencard")
 public class BankOpenCardController {
-    /**
-     * 1.贷款申请+上门调查之后 生成银行开卡代办
-     * 2、调银行开发接口
-     * 3、银行流水表记录流水
-     * 4、等待银行回调，更新
-     *    异常流水
-     *
-     *
-     *
-     *
-     *
-     *
-     */
 
     @Autowired
     BankOpenCardService bankOpenCardService;
@@ -43,7 +30,15 @@ public class BankOpenCardController {
     public ResultBean open(@RequestBody BankOpenCardParam bankOpenCardParam){
         return bankOpenCardService.openCard(bankOpenCardParam);
     }
+    @PostMapping(value = "/save")
+    public ResultBean save(@RequestBody BankOpenCardParam bankOpenCardParam){
+        return bankOpenCardService.save(bankOpenCardParam);
+    }
 
+    @GetMapping(value = "/taskStatus")
+    public ResultBean taskschedule(@RequestParam("orderId") Long orderId){
+        return  bankOpenCardService.taskschedule(orderId);
+    }
 //    @GetMapping(value = "/importFile")
 //    public ResultBean importFile(){
 //        return bankOpenCardService.importFile();

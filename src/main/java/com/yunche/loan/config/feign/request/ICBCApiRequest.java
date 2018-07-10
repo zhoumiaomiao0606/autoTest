@@ -80,6 +80,15 @@ public class ICBCApiRequest {
         private FileNoticeReq req;
 
     }
+
+    /**
+     * 查询申请进度
+     */
+    @Data
+    public static class Applystatus extends Pub{
+
+    }
+
     @Data
     public static class ReturnMsg{
         ReturnPub pub;
