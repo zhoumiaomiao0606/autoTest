@@ -94,6 +94,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Autowired
     ICBCFeignNormal icbcFeignNormal;
 
+    @Resource
+    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
     //征信自动提交
     @Override
@@ -411,7 +413,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setFileNum(String.valueOf(pictures.size()));
 
         //resultsum
-        info.setResubmit("0");
+        boolean check = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
+        info.setResubmit(check == true?"1":"0");
         info.setNote(loanCustomerDO.getName()+"申请分期");
 
         //customer
@@ -550,7 +553,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //pub
         applyCredit.setPlatno(sysConfig.getPlatno());
         applyCredit.setCmpseq(serNo);
-        applyCredit.setZoneno("1202");
+        applyCredit.setZoneno("3301");
         applyCredit.setPhybrno(phybrno);
         applyCredit.setOrderno(orderId.toString());
         applyCredit.setAssurerno(sysConfig.getAssurerno());

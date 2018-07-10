@@ -27,8 +27,8 @@ public class Test extends BaseTest {
 
     @org.junit.Test
     public void test() throws IOException {
-        ApplyStatusResponse applyStatusResponse = bankSolutionService.applystatus(new Long("1806291133480804371"));
-        System.out.println(new ObjectMapper().writeValueAsString(applyStatusResponse));
+        //ApplyStatusResponse applyStatusResponse = bankSolutionService.applystatus(new Long("1806291133480804371"));
+        //System.out.println(new ObjectMapper().writeValueAsString(applyStatusResponse));
 
         bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
         bankSolutionService.commonBusinessApply(new Long("1806291133480804371"));

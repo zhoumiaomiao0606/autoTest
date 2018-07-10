@@ -134,4 +134,8 @@
     where customer_id = #{customerId,jdbcType=BIGINT}
     and trans_code=#{transCode,jdbcType=VARCHAR}
   </select>
+  <select id="checkRequestBussIsSucessByTransCodeOrderId" resultType="java.lang.Boolean">
+      select count(1) from bank_interface_serial where api_status = 200 and (status = 2 or status = 1)
+      and trans_code = #{transCode,jdbcType=VARCHAR} and customer_id = #{customerId,jdbcType=BIGINT}
+  </select>
 </mapper>
