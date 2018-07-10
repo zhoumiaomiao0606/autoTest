@@ -155,6 +155,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             throw new BizException("缺少流水号");
         }
         BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(cmpseq);
+        if(V == null){
+            return false;
+        }
         if(V.getApiStatus() == null){
             return false;
         }
