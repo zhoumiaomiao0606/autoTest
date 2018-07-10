@@ -45,7 +45,7 @@ public class ICBCApiRequest {
 
         @NotNull
         @Valid
-        private ApplyDiviGeneralResubmit resubmit;
+        private ApplyDiviGeneralInfo info;
 
         @NotNull
         @Valid
@@ -54,10 +54,14 @@ public class ICBCApiRequest {
     }
 
     @Data
-    public static class ApplyDiviGeneralResubmit{
+    public static class ApplyDiviGeneralInfo{
         @NotEmpty
         @Valid
         private String resubmit;
+
+        @NotEmpty
+        @Valid
+        private String info;
     }
 
 
