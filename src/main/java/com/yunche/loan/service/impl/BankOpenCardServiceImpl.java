@@ -4,23 +4,24 @@ import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
+import com.yunche.loan.config.feign.response.ApplyStatusResponse;
+import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
-import com.yunche.loan.domain.vo.FinancialSchemeVO;
-import com.yunche.loan.domain.vo.LoanBaseInfoVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankOpenCardService;
 import com.yunche.loan.service.BankSolutionService;
 import com.yunche.loan.service.LoanBaseInfoService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -75,6 +76,21 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     LoanCustomerDOMapper loanCustomerDOMapper;
 
+    @Autowired
+    SysConfig sysConfig;
+
+    @Autowired
+    LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    BankDOMapper bankDOMapper;
+
+    @Autowired
+    BankInterfaceFileSerialDOMapper bankInterfaceFileSerialDOMapper;
+
+    @Autowired
+    LoanProcessDOMapper loanProcessDOMapper;
+
     /**
      * 银行开卡详情页
      * @param orderId
@@ -86,7 +102,33 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
         Long customerId = loanOrderDO.getLoanCustomerId();
         UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryService.universalCustomerDetail(customerId);
+        BankInterfaceSerialVO bankInterfaceSerialVO = new BankInterfaceSerialVO();
         BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_API.CREDITCARDAPPLY);
+        BeanUtils.copyProperties(serialDO,bankInterfaceSerialVO);
+        BankInterfaceFileSerialDO bankInterfaceFileSerialDO = bankInterfaceFileSerialDOMapper.selectByPrimaryKey(serialDO.getSerialNo());
+        if(bankInterfaceFileSerialDO!=null){
+            if(bankInterfaceFileSerialDO.getSuccess().equals(IDict.K_YORN.K_YORN_NO) && bankInterfaceFileSerialDO.getError().equals((byte)2)){
+                bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_NO));
+            }else{
+                bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_YES));
+            }
+        }
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO,"流程不存在");
+        Byte telephoneVerify = loanProcessDO.getTelephoneVerify();
+        switch (telephoneVerify){
+            case 0:
+                bankInterfaceSerialVO.setElectricResults("未执行到此节点");break;
+            case 1:
+                bankInterfaceSerialVO.setElectricResults("已处理");break;
+            case 2:
+                bankInterfaceSerialVO.setElectricResults("未处理");break;
+            case 3:
+                bankInterfaceSerialVO.setElectricResults("打回修改");break;
+                default:
+                    bankInterfaceSerialVO.setElectricResults("未知");
+        }
+
         ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
         //贷款信息
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
@@ -95,9 +137,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setLoanBaseInfo(loanBaseInfoVOResultBean.getData());
         recombinationVO.setInfo(universalCustomerDetailVO);
-        recombinationVO.setBankSerial(serialDO);
+        recombinationVO.setBankSerial(bankInterfaceSerialVO);
         recombinationVO.setEmergencyContacts(emergencyContact);
-
         return ResultBean.ofSuccess(recombinationVO);
     }
 
@@ -109,8 +150,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Override
     public ResultBean openCard(BankOpenCardParam bankOpenCardParam) {
         mergeUpload(bankOpenCardParam);
-        bankSolutionService.creditcardapply(bankOpenCardParam);
-        return ResultBean.ofSuccess(null);
+        CreditCardApplyResponse creditcardapply = bankSolutionService.creditcardapply(bankOpenCardParam);
+        return ResultBean.ofSuccess(creditcardapply);
     }
 
     /**
@@ -162,6 +203,60 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             throw new BizException("导入文件失败");
         }
         return true;
+    }
+
+    /**
+     * 暂存开卡信息
+     * @param bankOpenCardParam
+     * @return
+     */
+    @Override
+    public ResultBean save(BankOpenCardParam bankOpenCardParam) {
+
+        LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
+        BeanUtils.copyProperties(bankOpenCardParam,loanCustomerDO);
+
+        Preconditions.checkNotNull(loanCustomerDO.getId(),"客户信息不存在");
+        int count = loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
+        Preconditions.checkArgument(count>0,"客户信息更新失败");
+        return ResultBean.ofSuccess("保存成功");
+    }
+
+    @Override
+    public ResultBean taskschedule(Long orderId) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
+        if(loanOrderDO == null){
+            throw new BizException("此订单不存在");
+        }
+
+        Long baseId = loanOrderDO.getLoanBaseInfoId();
+        if(baseId == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        if(loanBaseInfoDO == null){
+            throw new BizException("征信信息不存在");
+        }
+        //征信银行
+        Long bankId  =  bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
+        if(bankId == null){
+            throw new BizException("贷款银行不存在");
+        }
+        ICBCApiRequest.Applystatus applystatus =new ICBCApiRequest.Applystatus();
+        applystatus.setPlatno(sysConfig.getPlatno());
+        applystatus.setZoneno("3301");
+        if(IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))){
+            applystatus.setPhybrno(sysConfig.getHzphybrno());
+        }else if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
+            applystatus.setPhybrno(sysConfig.getTzphybrno());
+        }
+        applystatus.setOrderno(String.valueOf(loanOrderDO.getId()));
+        applystatus.setAssurerno(sysConfig.getAssurerno());
+        applystatus.setCmpdate(DateUtil.getDate());
+        applystatus.setCmptime(DateUtil.getTime());
+        ApplyStatusResponse response = bankSolutionService.applystatus(applystatus);
+        return ResultBean.ofSuccess(response);
     }
 
     /**

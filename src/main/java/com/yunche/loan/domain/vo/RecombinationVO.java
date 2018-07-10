@@ -1,7 +1,6 @@
 package com.yunche.loan.domain.vo;
 
 import com.google.common.collect.Lists;
-import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
@@ -48,7 +47,7 @@ public class RecombinationVO<T> {
 
         private UniversalOverdueInfo overdue;
 
-        private BankInterfaceSerialDO bankSerial;
+        private BankInterfaceSerialVO bankSerial;
 
         private LoanBaseInfoVO loanBaseInfo;
 

@@ -150,4 +150,14 @@ public class LoanCustomerDO {
     private String occupation;
 
     private String issuingDepartment;
+
+    private String masterCardTel;
+
+    private String bellTel;
+
+    private String balanceChangeTel;
+
+    private String openCardStatus;
+
+    private String repayCardNumber;
 }

@@ -1,13 +1,9 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.config.feign.request.ICBCApiRequest;
+import com.yunche.loan.config.feign.response.ApplyStatusResponse;
+import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
 import com.yunche.loan.domain.param.BankOpenCardParam;
-import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 public interface BankSolutionService {
      //自动征信
@@ -20,5 +16,10 @@ public interface BankSolutionService {
       * @param bankOpenCardParam
       * @return
       */
-     public  void creditcardapply(BankOpenCardParam bankOpenCardParam);
+     public CreditCardApplyResponse creditcardapply(BankOpenCardParam bankOpenCardParam);
+
+     /**
+      * 查询申请进度
+      */
+     public ApplyStatusResponse applystatus(ICBCApiRequest.Applystatus applystatus);
 }

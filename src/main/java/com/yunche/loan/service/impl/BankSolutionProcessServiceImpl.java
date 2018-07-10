@@ -6,7 +6,7 @@ import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
-import com.yunche.loan.config.feign.client.ICBCFeignFileDownLoad;
+import com.yunche.loan.config.feign.client.ICBCFeignNormal;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.ViolationUtil;
@@ -37,7 +37,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     ICBCFeignClient icbcFeignClient;
 
     @Autowired
-    ICBCFeignFileDownLoad icbcFeignFileDownLoad;
+    ICBCFeignNormal icbcFeignFileDownLoad;
 
     @Autowired
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;

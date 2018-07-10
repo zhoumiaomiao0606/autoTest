@@ -32,4 +32,6 @@ public interface ICBCFeignClient {
 
     @RequestMapping(value = "/api/v1/test/icbc/apply/filedownload",method = RequestMethod.GET)
     public boolean filedownload(@RequestParam(value = "filesrc") String  filesrc);
+
+
 }
