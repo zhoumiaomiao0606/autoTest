@@ -23,6 +23,20 @@ public class ICBCApiCallbackParam implements Serializable {
     }
 
     @Data
+    public static class Response {
+        @NotNull
+        private ResponsePub pub;
+    }
+
+    @Data
+    public static class ResponsePub{
+        private String retcode;
+
+        private String retmsg;
+    }
+
+
+    @Data
     public static class Pub {
         //----- pub -----
         private String platno;

@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.IConstant;
@@ -66,24 +67,33 @@ public class ICBCController {
     //请求接口
     @PostMapping (value = "/test", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> test() {
-        //return icbcFeignClient.applyCredit(applyCredit);
         bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
         return ResultBean.ofSuccess(null);
     }
 
     //回调接口
     @PostMapping (value = "/creditresult", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public void creditresult(@RequestParam String reqparam) throws IOException {
-        reqparam = URLDecoder.decode(reqparam,"UTF-8");
-        ObjectMapper objectMapper = new ObjectMapper();
-        testFeign.query(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyCreditCallback.class));
+    public String creditresult(@RequestParam String reqparam) throws IOException {
+        try {
+            reqparam = URLDecoder.decode(reqparam,"UTF-8");
+            ObjectMapper objectMapper = new ObjectMapper();
+            testFeign.query(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyCreditCallback.class));
+            return returnResponse("0000","成功");
+        }catch (Exception e){
+            return returnResponse("2000","程序出错");
+        }
     }
 
     @PostMapping (value = "/creditreturn", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public void creditreturn(@RequestParam String reqparam) throws IOException {
-        reqparam = URLDecoder.decode(reqparam,"UTF-8");
-        ObjectMapper objectMapper = new ObjectMapper();
-        testFeign.term(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyDiviGeneralCallback.class));
+    public String creditreturn(@RequestParam String reqparam) throws IOException {
+        try {
+            reqparam = URLDecoder.decode(reqparam,"UTF-8");
+            ObjectMapper objectMapper = new ObjectMapper();
+            testFeign.term(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyDiviGeneralCallback.class));
+            return returnResponse("0000","成功");
+        }catch (Exception e){
+            return returnResponse("2000","程序出错");
+        }
     }
 
     @PostMapping (value = "/creditcardresult", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -109,6 +119,28 @@ public class ICBCController {
         returnMsg.getPub().setRetmsg("成功");
         return ResultBean.ofSuccess(returnMsg);
 
+    }
+
+
+    public String returnResponse(String code,String msg){
+        /*00000– 成功
+        1****-参数上送错误(修改参数后可直接重复提交)
+        2****-程序处理错误(含业务规则控制不符等)
+        3****-系统错误(出现此错误先通知我们之后可以重新提交*/
+        ICBCApiCallbackParam.Response response = new ICBCApiCallbackParam.Response();
+        ICBCApiCallbackParam.ResponsePub responsePub = new ICBCApiCallbackParam.ResponsePub();
+        responsePub.setRetcode(code);
+        responsePub.setRetmsg(msg);
+        response.setPub(responsePub);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(response);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return new String("{\"pub\": {\"retcode\": \"2000\",\"retmsg\": \"错误\"}}") ;
     }
 
 

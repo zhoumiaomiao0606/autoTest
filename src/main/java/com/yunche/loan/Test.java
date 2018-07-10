@@ -67,7 +67,7 @@ public class Test {
         System.out.println("reqparam--"+reqparam);
         String result =
                 sendPost("http://wwzkdci.hk1.mofasuidao.cn/api/v1/loanorder/icbc/creditresult",
-                        "reqparam="+ URLEncoder.encode(reqparam, "UTF-8"));
+                        "reqparam="+ URLEncoder.encode("{\"req\":{\"result\":\"099\",\"note\":\"-\",\"leftNum\":\"-\",\"cardCrdt\":\"-\",\"loanCrdt\":\"-\",\"leftAmount\":\"-\",\"idno\":\"430981198204075412\",\"custname\":\"朱小东测试\",\"relation\":\"本人\"},\"pub\":{\"assurerno\":\"502\",\"zoneno\":\"1202\",\"orderno\":\"1806291133480804371\",\"cmpdate\":\"20180710\",\"cmptime\":\"103111\",\"phybrno\":\"12070151\",\"cmpseq\":\"20180710103111958859\",\"platno\":\"zsqc\"}}", "UTF-8"));
         System.out.println("result--"+result);
     }
 
