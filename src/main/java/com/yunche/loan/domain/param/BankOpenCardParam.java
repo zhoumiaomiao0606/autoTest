@@ -40,4 +40,8 @@ public class BankOpenCardParam  extends ICBCApiRequest.ApplyBankOpenCard{
 
         private String repayCardNumber;
 
+        private String education;
+
+        private String companyNature;
+
 }

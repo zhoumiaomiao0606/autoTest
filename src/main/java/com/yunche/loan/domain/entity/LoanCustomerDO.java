@@ -160,4 +160,6 @@ public class LoanCustomerDO {
     private String openCardStatus;
 
     private String repayCardNumber;
+
+    private String openCardCurrStatus;
 }
