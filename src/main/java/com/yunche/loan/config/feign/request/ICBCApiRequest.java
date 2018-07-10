@@ -61,7 +61,7 @@ public class ICBCApiRequest {
 
         @NotEmpty
         @Valid
-        private String info;
+        private String note;
     }
 
 

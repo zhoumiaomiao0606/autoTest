@@ -415,7 +415,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         //resultsum
         info.setResubmit("0");
-        info.setInfo(loanCustomerDO.getName()+"申请分期");
+        info.setNote(loanCustomerDO.getName()+"申请分期");
 
         //customer
         customer.setCustName(loanCustomerDO.getName());
