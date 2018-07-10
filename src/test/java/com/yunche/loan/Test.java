@@ -3,6 +3,7 @@ package com.yunche.loan;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.feign.response.ApplyStatusResponse;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.service.BankSolutionService;
@@ -26,6 +27,9 @@ public class Test extends BaseTest {
 
     @org.junit.Test
     public void test() throws IOException {
+        ApplyStatusResponse applyStatusResponse = bankSolutionService.applystatus(new Long("1806291133480804371"));
+        System.out.println(new ObjectMapper().writeValueAsString(applyStatusResponse));
+
         bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
         bankSolutionService.commonBusinessApply(new Long("1806291133480804371"));
     }
