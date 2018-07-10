@@ -64,9 +64,6 @@ public class ICBCApiRequest {
         private String note;
     }
 
-
-
-
     @Data
     public static class MultimediaUpload extends Pub {
         @NotNull

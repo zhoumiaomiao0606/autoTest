@@ -319,7 +319,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
 
         BigDecimal dawnPaymentMoney = new BigDecimal("0");
-        if(loanFinancialPlanDO.getDownPaymentMoney() != null ){
+        if(vehicleInformationDO.getInvoice_down_payment() != null ){
             dawnPaymentMoney = vehicleInformationDO.getInvoice_down_payment();
         }
 
