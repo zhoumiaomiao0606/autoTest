@@ -740,6 +740,7 @@
           customer.balance_change_remind                 AS customer_balance_change_remind,
           customer.open_email                            AS customer_open_email,
           customer.email                                 AS customer_email,
+          customer.occupation                            AS customer_occupation,
           bank.info			      	                     AS bank_info,
           bank.result		          			         AS bank_result,
           process_bank.credit_result         	         AS process_bank_credit_result,
@@ -1100,7 +1101,8 @@
              f.first_month_repay                  AS first_month_repay,
              f.each_month_repay                   AS each_month_repay,
              useCalculateStagingRatio(product.formula_id,f.loan_amount,f.sign_rate,useGetBankRate(f.financial_product_id,f.loan_time),f.car_price)
-                                                  AS financial_bank_staging_ratio
+                                                  AS financial_bank_staging_ratio,
+             p.bank_rate                          AS bank_base_rate
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -1125,6 +1127,8 @@
     left join loan_home_visit v on o.loan_home_visit_id = v.id
 
     left join financial_product product on f.financial_product_id = product.prod_id
+
+    left join product_rate p on (p.prod_id = f.financial_product_id  and p.loan_time = f.loan_time)
 
 
 

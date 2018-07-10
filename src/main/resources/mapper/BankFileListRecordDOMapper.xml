@@ -28,23 +28,21 @@
     <result column="sum_number" jdbcType="INTEGER" property="sumNumber" />
     <result column="sum_amount" jdbcType="DECIMAL" property="sumAmount" />
     <result column="reminders" jdbcType="VARCHAR" property="reminders" />
+    <result column="is_customer" jdbcType="TINYINT" property="isCustomer" />
+    <result column="batch_date" jdbcType="TIMESTAMP" property="batchDate" />
   </resultMap>
   <sql id="Base_Column_List">
     bank_file_list_id, customer_id, order_id, area_id, plat_no, guaranty_unit, opencard_date, 
     card_number, name, card_type, credential_no, hairpin_flag, account_statement, repay_date, 
     gmt_greate, status, card_balance, optimal_return, cumulative_breach_number, consecutive_breach_number, 
-    run_bank, instalment_types, instalment_amount, sum_number, sum_amount, reminders
+    run_bank, instalment_types, instalment_amount, sum_number, sum_amount, reminders, 
+    is_customer, batch_date
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from bank_file_list_record
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
-  </select>
-  <select id="selectNewestByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from bank_file_list_record where order_id = #{orderId,jdbcType=BIGINT} and customer_id =  (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) ORDER BY bank_file_list_id desc limit 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from bank_file_list_record
@@ -59,8 +57,8 @@
       status, card_balance, optimal_return, 
       cumulative_breach_number, consecutive_breach_number, 
       run_bank, instalment_types, instalment_amount, 
-      sum_number, sum_amount, reminders
-      )
+      sum_number, sum_amount, reminders, 
+      is_customer, batch_date)
     values (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
       #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR}, 
       #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
@@ -69,8 +67,8 @@
       #{status,jdbcType=TINYINT}, #{cardBalance,jdbcType=DECIMAL}, #{optimalReturn,jdbcType=DECIMAL}, 
       #{cumulativeBreachNumber,jdbcType=INTEGER}, #{consecutiveBreachNumber,jdbcType=INTEGER}, 
       #{runBank,jdbcType=VARCHAR}, #{instalmentTypes,jdbcType=VARCHAR}, #{instalmentAmount,jdbcType=DECIMAL}, 
-      #{sumNumber,jdbcType=INTEGER}, #{sumAmount,jdbcType=DECIMAL}, #{reminders,jdbcType=VARCHAR}
-      )
+      #{sumNumber,jdbcType=INTEGER}, #{sumAmount,jdbcType=DECIMAL}, #{reminders,jdbcType=VARCHAR}, 
+      #{isCustomer,jdbcType=TINYINT}, #{batchDate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDO">
     insert into bank_file_list_record
@@ -153,6 +151,12 @@
       <if test="reminders != null">
         reminders,
       </if>
+      <if test="isCustomer != null">
+        is_customer,
+      </if>
+      <if test="batchDate != null">
+        batch_date,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="bankFileListId != null">
@@ -232,6 +236,12 @@
       </if>
       <if test="reminders != null">
         #{reminders,jdbcType=VARCHAR},
+      </if>
+      <if test="isCustomer != null">
+        #{isCustomer,jdbcType=TINYINT},
+      </if>
+      <if test="batchDate != null">
+        #{batchDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -313,6 +323,12 @@
       <if test="reminders != null">
         reminders = #{reminders,jdbcType=VARCHAR},
       </if>
+      <if test="isCustomer != null">
+        is_customer = #{isCustomer,jdbcType=TINYINT},
+      </if>
+      <if test="batchDate != null">
+        batch_date = #{batchDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
   </update>
@@ -342,30 +358,33 @@
       instalment_amount = #{instalmentAmount,jdbcType=DECIMAL},
       sum_number = #{sumNumber,jdbcType=INTEGER},
       sum_amount = #{sumAmount,jdbcType=DECIMAL},
-      reminders = #{reminders,jdbcType=VARCHAR}
+      reminders = #{reminders,jdbcType=VARCHAR},
+      is_customer = #{isCustomer,jdbcType=TINYINT},
+      batch_date = #{batchDate,jdbcType=TIMESTAMP}
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
   </update>
   <insert id="insertBatch" parameterType="java.util.List">
-      INSERT INTO bank_file_list_record(bank_file_list_id, customer_id, order_id,
-          area_id, plat_no, guaranty_unit,
-          opencard_date, card_number, name,
-          card_type, credential_no, hairpin_flag,
-          account_statement, repay_date, gmt_greate,
-          status, card_balance, optimal_return,
-          cumulative_breach_number, consecutive_breach_number,
-          run_bank, instalment_types, instalment_amount,
-          sum_number, sum_amount, reminders
-      )VALUES
-        <foreach collection="list" item="item" index="index" separator=",">
-          (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT},
-          #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR},
-          #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
-          #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR},
-          #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP},
-          #{status,jdbcType=TINYINT}, #{cardBalance,jdbcType=DECIMAL}, #{optimalReturn,jdbcType=DECIMAL},
-          #{cumulativeBreachNumber,jdbcType=INTEGER}, #{consecutiveBreachNumber,jdbcType=INTEGER},
-          #{runBank,jdbcType=VARCHAR}, #{instalmentTypes,jdbcType=VARCHAR}, #{instalmentAmount,jdbcType=DECIMAL},
-          #{sumNumber,jdbcType=INTEGER}, #{sumAmount,jdbcType=DECIMAL}, #{reminders,jdbcType=VARCHAR} )
-        </foreach >
+    INSERT INTO bank_file_list_record(bank_file_list_id, customer_id, order_id,
+    area_id, plat_no, guaranty_unit,
+    opencard_date, card_number, name,
+    card_type, credential_no, hairpin_flag,
+    account_statement, repay_date, gmt_greate,
+    status, card_balance, optimal_return,
+    cumulative_breach_number, consecutive_breach_number,
+    run_bank, instalment_types, instalment_amount,
+    sum_number, sum_amount, reminders, is_customer, batch_date)
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT},
+      #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR},
+      #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+      #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR},
+      #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP},
+      #{status,jdbcType=TINYINT}, #{cardBalance,jdbcType=DECIMAL}, #{optimalReturn,jdbcType=DECIMAL},
+      #{cumulativeBreachNumber,jdbcType=INTEGER}, #{consecutiveBreachNumber,jdbcType=INTEGER},
+      #{runBank,jdbcType=VARCHAR}, #{instalmentTypes,jdbcType=VARCHAR}, #{instalmentAmount,jdbcType=DECIMAL},
+      #{sumNumber,jdbcType=INTEGER}, #{sumAmount,jdbcType=DECIMAL}, #{reminders,jdbcType=VARCHAR},
+      #{isCustomer,jdbcType=TINYINT}, #{batchDate,jdbcType=TIMESTAMP})
+    </foreach >
   </insert>
 </mapper>

@@ -31,10 +31,10 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 
     @Override
     public String  fileDownload(String filesrc) {
-        boolean filedownload = icbcFeignFileDownLoad.filedownload(filesrc);
-//        boolean filedownload = icbcFeignClient.filedownload(filesrc);
+
         String returnKey=null;
         try {
+            boolean filedownload = icbcFeignFileDownLoad.filedownload(filesrc);
             String fileAndPath = FtpUtil.icbcDownload(sysConfig.getFileServerpath() + filesrc);
             OSSClient ossClient = OSSUnit.getOSSClient();
             String diskName = ossConfig.getDownLoadDiskName();

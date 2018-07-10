@@ -19,7 +19,7 @@ public interface BankRepayRecordService {
     ResultBean<Void> importFile(String key);
 
 
-    ResultBean  autoImportFile(String key);
+    boolean  autoImportFile(String key);
 
 
 

@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
@@ -10,11 +11,14 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
+import com.yunche.loan.domain.vo.FinancialSchemeVO;
+import com.yunche.loan.domain.vo.LoanBaseInfoVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankOpenCardService;
 import com.yunche.loan.service.BankSolutionService;
+import com.yunche.loan.service.LoanBaseInfoService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +29,10 @@ import java.io.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanCustomerConst.EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 
@@ -60,7 +66,14 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     AsyncUpload asyncUpload;
 
+    @Autowired
+    LoanBaseInfoService loanBaseInfoService;
 
+    @Autowired
+    LoanQueryDOMapper loanQueryDOMapper;
+
+    @Autowired
+    LoanCustomerDOMapper loanCustomerDOMapper;
 
     /**
      * 银行开卡详情页
@@ -74,9 +87,16 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Long customerId = loanOrderDO.getLoanCustomerId();
         UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryService.universalCustomerDetail(customerId);
         BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_API.CREDITCARDAPPLY);
-
+        ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
+        //贷款信息
+        FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
+        Set<Byte> bytes = Sets.newHashSet(EMERGENCY_CONTACT);
+        List<LoanCustomerDO> emergencyContact = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(orderId, bytes);
+        recombinationVO.setFinancial(financialSchemeVO);
+        recombinationVO.setLoanBaseInfo(loanBaseInfoVOResultBean.getData());
         recombinationVO.setInfo(universalCustomerDetailVO);
         recombinationVO.setBankSerial(serialDO);
+        recombinationVO.setEmergencyContacts(emergencyContact);
 
         return ResultBean.ofSuccess(recombinationVO);
     }
@@ -116,7 +136,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             bankFileListDO.setFileKey(ossKey);
             bankFileListDO.setFileType(IDict.K_WJLX.WJLX_0);
             bankFileListDO.setGmtCreate(new Date());
-            bankFileListDO.setOperator(SessionUtils.getLoginUser().getName());
+            bankFileListDO.setOperator("auto");
             int bankFileListId = bankFileListDOMapper.insertSelective(bankFileListDO);
 
             String line="";
@@ -230,7 +250,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Preconditions.checkArgument(openCardTypesStr.size()>0,"开卡申请表(和身份证正反面合并成一张图片)");
         String fileName2 =  GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
 //        asyncUpload.upload(fileName2,openCardTypesStr);
-        asyncUpload.upload("",IDict.K_PIC_ID.OPEN_CARD_DATA,picName,keys);
+        asyncUpload.upload(serNo,IDict.K_PIC_ID.OPEN_CARD_DATA,picName,keys);
         ICBCApiRequest.Picture picture2 = new ICBCApiRequest.Picture();
         picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
         picture2.setPicname(fileName2);

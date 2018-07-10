@@ -58,4 +58,8 @@ public class BankFileListRecordDO {
     private BigDecimal sumAmount;
 
     private String reminders;
+
+    private Byte isCustomer;
+
+    private Date batchDate;
 }

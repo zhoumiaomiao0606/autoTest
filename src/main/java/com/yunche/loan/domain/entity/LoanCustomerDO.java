@@ -146,4 +146,8 @@ public class LoanCustomerDO {
     private String openEmail;
 
     private String email;
+
+    private String occupation;
+
+    private String issuingDepartment;
 }
