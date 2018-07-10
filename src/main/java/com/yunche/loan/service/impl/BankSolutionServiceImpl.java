@@ -11,10 +11,7 @@ import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.client.ICBCFeignNormal;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.request.group.*;
-import com.yunche.loan.config.feign.response.ApplyCreditResponse;
-import com.yunche.loan.config.feign.response.ApplyDiviGeneralResponse;
-import com.yunche.loan.config.feign.response.ApplyStatusResponse;
-import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
+import com.yunche.loan.config.feign.response.*;
 import com.yunche.loan.config.util.AsyncUpload;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.ImageUtil;
@@ -647,9 +644,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Override
     public ApplyStatusResponse applystatus(ICBCApiRequest.Applystatus applystatus) {
 
-        ApplyStatusResponse applyStatusResponse = icbcFeignNormal.applyStatus(applystatus);
+        ApplyStatusResponse applyStatusResponse = icbcFeignClient.applyStatus(applystatus);
         return applyStatusResponse;
         
+    }
+
+    @Override
+    public ApplycreditstatusResponse applycreditstatus(ICBCApiRequest.Applycreditstatus applycreditstatus) {
+        ApplycreditstatusResponse response = icbcFeignClient.applycreditstatus(applycreditstatus);
+        return response;
     }
 
 

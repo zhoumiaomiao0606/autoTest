@@ -116,6 +116,12 @@ public class ICBCApiRequest {
 
     }
 
+    /**
+     *查询专项卡开卡进度
+     */
+    public static class Applycreditstatus extends  Pub{
+
+    }
     @Data
     public static class ReturnMsg{
         ReturnPub pub;

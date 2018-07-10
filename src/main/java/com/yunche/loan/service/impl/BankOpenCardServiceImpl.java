@@ -8,7 +8,7 @@ import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
-import com.yunche.loan.config.feign.response.ApplyStatusResponse;
+import com.yunche.loan.config.feign.response.ApplycreditstatusResponse;
 import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
@@ -115,6 +115,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
                 }
             }
         }
+
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO,"流程不存在");
         Byte telephoneVerify = loanProcessDO.getTelephoneVerify();
@@ -245,19 +246,20 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         if(bankId == null){
             throw new BizException("贷款银行不存在");
         }
-        ICBCApiRequest.Applystatus applystatus =new ICBCApiRequest.Applystatus();
-        applystatus.setPlatno(sysConfig.getPlatno());
-        applystatus.setZoneno("3301");
+        ICBCApiRequest.Applycreditstatus applycreditstatus =new ICBCApiRequest.Applycreditstatus();
+        applycreditstatus.setPlatno(sysConfig.getPlatno());
+        applycreditstatus.setZoneno("3301");
         if(IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))){
-            applystatus.setPhybrno(sysConfig.getHzphybrno());
+            applycreditstatus.setPhybrno(sysConfig.getHzphybrno());
         }else if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
-            applystatus.setPhybrno(sysConfig.getTzphybrno());
+            applycreditstatus.setPhybrno(sysConfig.getTzphybrno());
         }
-        applystatus.setOrderno(String.valueOf(loanOrderDO.getId()));
-        applystatus.setAssurerno(sysConfig.getAssurerno());
-        applystatus.setCmpdate(DateUtil.getDate());
-        applystatus.setCmptime(DateUtil.getTime());
-        ApplyStatusResponse response = bankSolutionService.applystatus(applystatus);
+        applycreditstatus.setOrderno(String.valueOf(loanOrderDO.getId()));
+        applycreditstatus.setAssurerno(sysConfig.getAssurerno());
+        applycreditstatus.setCmpdate(DateUtil.getDate());
+        applycreditstatus.setCmptime(DateUtil.getTime());
+
+        ApplycreditstatusResponse response = bankSolutionService.applycreditstatus(applycreditstatus);
         return ResultBean.ofSuccess(response);
     }
 

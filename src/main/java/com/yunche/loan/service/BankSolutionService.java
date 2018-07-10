@@ -2,6 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.response.ApplyStatusResponse;
+import com.yunche.loan.config.feign.response.ApplycreditstatusResponse;
 import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 
@@ -22,4 +23,6 @@ public interface BankSolutionService {
       * 查询申请进度
       */
      public ApplyStatusResponse applystatus(ICBCApiRequest.Applystatus applystatus);
+
+     public ApplycreditstatusResponse applycreditstatus(ICBCApiRequest.Applycreditstatus applycreditstatus);
 }

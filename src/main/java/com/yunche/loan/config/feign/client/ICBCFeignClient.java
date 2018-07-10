@@ -2,12 +2,12 @@ package com.yunche.loan.config.feign.client;
 
 import com.yunche.loan.config.feign.config.FeignConfig;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
-import com.yunche.loan.config.feign.response.ApplyCreditResponse;
-import com.yunche.loan.config.feign.response.ApplyDiviGeneralResponse;
-import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
+import com.yunche.loan.config.feign.response.*;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "icbcFeignClient" ,url = "http://122.225.203.102:18090/",configuration = FeignConfig.class)
 //@FeignClient(name = "iCBCFeignClient" ,url = "http://localhost:18090/")
@@ -32,6 +32,15 @@ public interface ICBCFeignClient {
 
     @RequestMapping(value = "/api/v1/test/icbc/apply/filedownload",method = RequestMethod.GET)
     public boolean filedownload(@RequestParam(value = "filesrc") String  filesrc);
+
+    //查询申请进度
+    @RequestMapping(value = "/api/v1/icbc/apply/applystatus",method = RequestMethod.POST)
+    public ApplyStatusResponse applyStatus(@RequestBody ICBCApiRequest.Applystatus applystatus);
+
+
+    //查询专项卡开卡进度
+    @RequestMapping(value = "/api/v1/icbc/apply/applycreditstatus",method = RequestMethod.POST)
+    public ApplycreditstatusResponse applycreditstatus(@RequestBody ICBCApiRequest.Applycreditstatus applycreditstatus);
 
 
 }
