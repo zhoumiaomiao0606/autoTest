@@ -163,7 +163,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         }
 
         //只有处理中和超时状态才能进行后续处理
-        if(!IDict.K_JYZT.PROCESS.equals(V.getStatus()) && !IDict.K_JYZT.TIMEOUT.equals(V.getStatus())){
+        if(!IDict.K_JYZT.PROCESS.equals(V.getStatus()) && !IDict.K_JYZT.TIMEOUT.equals(V.getStatus()) && !IDict.K_JYZT.FAIL.equals(V.getStatus())){
             return false;
         }
 
