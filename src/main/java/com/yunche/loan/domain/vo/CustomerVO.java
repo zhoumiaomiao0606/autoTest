@@ -138,5 +138,23 @@ public class CustomerVO {
 
     private String guaranteeRela;//担保人关系
 
+    private String namePinyin;
+
+    private Date checkInDate;
+
+    private Date enrollmentDate;
+
+    private String cardReceiveMode;
+
+    private String cardSendAddrType;
+
+    private String balanceChangeRemind;
+
+    private String openEmail;
+
+    private String email;
+
+    private String occupation;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

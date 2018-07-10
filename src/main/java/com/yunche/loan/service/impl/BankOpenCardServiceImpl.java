@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
@@ -28,8 +29,10 @@ import java.io.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanCustomerConst.EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 
@@ -69,6 +72,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     LoanQueryDOMapper loanQueryDOMapper;
 
+    @Autowired
+    LoanCustomerDOMapper loanCustomerDOMapper;
 
     /**
      * 银行开卡详情页
@@ -85,11 +90,13 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
         //贷款信息
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
-
+        Set<Byte> bytes = Sets.newHashSet(EMERGENCY_CONTACT);
+        List<LoanCustomerDO> emergencyContact = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(orderId, bytes);
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setLoanBaseInfo(loanBaseInfoVOResultBean.getData());
         recombinationVO.setInfo(universalCustomerDetailVO);
         recombinationVO.setBankSerial(serialDO);
+        recombinationVO.setEmergencyContacts(emergencyContact);
 
         return ResultBean.ofSuccess(recombinationVO);
     }

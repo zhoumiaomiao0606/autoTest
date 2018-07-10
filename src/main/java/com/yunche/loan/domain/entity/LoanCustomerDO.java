@@ -148,4 +148,6 @@ public class LoanCustomerDO {
     private String email;
 
     private String occupation;
+
+    private String issuingDepartment;
 }

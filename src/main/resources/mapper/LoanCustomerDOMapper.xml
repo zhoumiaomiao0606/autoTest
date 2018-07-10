@@ -73,6 +73,7 @@
     <result column="open_email" jdbcType="VARCHAR" property="openEmail" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="occupation" jdbcType="VARCHAR" property="occupation" />
+    <result column="issuing_department" jdbcType="VARCHAR" property="issuingDepartment" />
   </resultMap>
   <sql id="Base_Column_List">
     id, name, nation, birth, identity_validity, lend_card, id_card, mobile, age, sex, 
@@ -86,7 +87,7 @@
     house_certificate_type, bank_card_transmit_address_type, company_postcode, elementary_school, 
     professional, family_person_num, debt_ratio, guarantee_type, residence_address, padding_company, 
     play_company, guarantee_rela, name_pinyin, check_in_date, enrollment_date, card_receive_mode, 
-    card_send_addr_type, balance_change_remind, open_email, email, occupation
+    card_send_addr_type, balance_change_remind, open_email, email, occupation, issuing_department
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -123,7 +124,7 @@
       guarantee_rela, name_pinyin, check_in_date, 
       enrollment_date, card_receive_mode, card_send_addr_type, 
       balance_change_remind, open_email, email, 
-      occupation)
+      occupation, issuing_department)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR}, 
       #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR}, 
       #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT}, 
@@ -148,7 +149,7 @@
       #{guaranteeRela,jdbcType=VARCHAR}, #{namePinyin,jdbcType=VARCHAR}, #{checkInDate,jdbcType=TIMESTAMP}, 
       #{enrollmentDate,jdbcType=TIMESTAMP}, #{cardReceiveMode,jdbcType=VARCHAR}, #{cardSendAddrType,jdbcType=VARCHAR}, 
       #{balanceChangeRemind,jdbcType=VARCHAR}, #{openEmail,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
-      #{occupation,jdbcType=VARCHAR})
+      #{occupation,jdbcType=VARCHAR}, #{issuingDepartment,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
     insert into loan_customer
@@ -366,6 +367,9 @@
       <if test="occupation != null">
         occupation,
       </if>
+      <if test="issuingDepartment != null">
+        issuing_department,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -580,6 +584,9 @@
       </if>
       <if test="occupation != null">
         #{occupation,jdbcType=VARCHAR},
+      </if>
+      <if test="issuingDepartment != null">
+        #{issuingDepartment,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -796,6 +803,9 @@
       <if test="occupation != null">
         occupation = #{occupation,jdbcType=VARCHAR},
       </if>
+      <if test="issuingDepartment != null">
+        issuing_department = #{issuingDepartment,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -870,7 +880,55 @@
       balance_change_remind = #{balanceChangeRemind,jdbcType=VARCHAR},
       open_email = #{openEmail,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},
-      occupation = #{occupation,jdbcType=VARCHAR}
+      occupation = #{occupation,jdbcType=VARCHAR},
+      issuing_department = #{issuingDepartment,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectSelfAndRelevanceCustomersByCustTypes" resultMap="BaseResultMap">
+    select *
+    from
+    loan_customer where principal_cust_id = (select loan_customer_id from loan_order where id = #{orderId})
+    <if test="types != null">
+      and cust_type in
+      <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+
+  </select>
+  <!--listPrincipalCustIdByIdCard-->
+  <select id="listPrincipalCustIdByIdCard" resultType="java.lang.Long">
+    SELECT id
+    FROM loan_customer
+    WHERE id_card = #{idCard,jdbcType=CHAR}
+  </select>
+
+  <!--listByPrincipalCustIdAndType-->
+  <select id="listByPrincipalCustIdAndType" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM loan_customer
+    WHERE principal_cust_id = #{principalCustId,jdbcType=BIGINT}
+    <if test="custType != null">
+      AND cust_type = #{custType}
+    </if>
+    <if test="status != null">
+      AND status = #{status}
+    </if>
+  </select>
+
+  <!--getFilesById-->
+  <select id="getFilesById" parameterType="java.lang.Long" resultType="java.lang.String">
+    SELECT files
+    FROM loan_customer
+    WHERE id = #{principalLenderId,jdbcType=BIGINT}
+  </select>
+
+  <!--updatePrincipalCustId-->
+  <update id="updatePrincipalCustId">
+    UPDATE loan_customer
+    SET principal_cust_id = #{newPrincipalLenderId,jdbcType=BIGINT}
+    WHERE principal_cust_id = #{oldPrincipalLenderId,jdbcType=BIGINT}
   </update>
 </mapper>

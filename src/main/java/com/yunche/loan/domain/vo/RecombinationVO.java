@@ -1,6 +1,8 @@
 package com.yunche.loan.domain.vo;
 
+import com.google.common.collect.Lists;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
 
@@ -61,5 +63,7 @@ public class RecombinationVO<T> {
         private List<UniversalCustomerVO> customers = new ArrayList<UniversalCustomerVO>();
 
         private List<UniversalMaterialRecordVO> materials = new ArrayList<UniversalMaterialRecordVO>();
+
+        List<LoanCustomerDO> emergencyContacts = Lists.newArrayList();
 
 }
