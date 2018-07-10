@@ -239,6 +239,14 @@ public class IDict {
          * 超时
          */
         public  static final Byte TIMEOUT = 4;
+        /**
+         * 请求成功
+         */
+        public  static final Byte REQ_SUCC = 5;
+        /**
+         * 请求失败
+         */
+        public  static final Byte FAIL = 6;
 
         /**
          * 交易处理前
