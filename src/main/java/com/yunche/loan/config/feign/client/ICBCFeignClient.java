@@ -6,6 +6,7 @@ import com.yunche.loan.config.feign.response.ApplyCreditResponse;
 import com.yunche.loan.config.feign.response.ApplyDiviGeneralResponse;
 import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
 import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "icbcFeignClient" ,url = "http://122.225.203.102:18090/",configuration = FeignConfig.class)
@@ -20,6 +21,10 @@ public interface ICBCFeignClient {
     //通用申请接口
     @RequestMapping(value = "/api/v1/icbc/apply/applydivigeneral",method = RequestMethod.POST)
     public ApplyDiviGeneralResponse applyDiviGeneral(@RequestBody ICBCApiRequest.ApplyDiviGeneral applyDiviGeneral);
+
+    //通用资料补偿申请接口
+    @RequestMapping(value = "/api/v1/icbc/apply/multimediaUpload",method = RequestMethod.POST)
+    public ApplyDiviGeneralResponse multimediaUpload(@RequestBody ICBCApiRequest.MultimediaUpload multimediaUpload);
 
     //zhengdu
     @RequestMapping(value = "/api/v1/icbc/test/apply/creditcardapply",method = RequestMethod.POST)

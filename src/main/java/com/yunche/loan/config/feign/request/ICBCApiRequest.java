@@ -1,6 +1,7 @@
 package com.yunche.loan.config.feign.request;
 
 import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
+import com.yunche.loan.config.feign.request.group.MultimediaUploadValidated;
 import com.yunche.loan.config.feign.request.group.NewValidated;
 import com.yunche.loan.config.feign.request.group.SecondValidated;
 import lombok.Data;
@@ -45,6 +46,13 @@ public class ICBCApiRequest {
         @Valid
         private List<Picture> pictures;//客户照片资料
 
+    }
+
+    @Data
+    public static class MultimediaUpload extends Pub {
+        @NotNull
+        @Valid
+        private List<Picture> pictures;//客户照片资料
     }
 
     @Data
@@ -260,6 +268,8 @@ public class ICBCApiRequest {
         //----- pub -----
         @NotEmpty
         private String platno;
+        @NotEmpty(groups = MultimediaUploadValidated.class)
+        private String guestPlatno;
         @NotEmpty
         private String cmpseq;
         @NotEmpty

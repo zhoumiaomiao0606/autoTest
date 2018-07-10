@@ -6,7 +6,6 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
-import com.yunche.loan.config.feign.client.TestFeign;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.GeneratorIDUtil;
@@ -18,11 +17,8 @@ import com.yunche.loan.service.BankSolutionProcessService;
 import com.yunche.loan.service.BankSolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.net.URLDecoder;
 
@@ -31,6 +27,11 @@ import java.net.URLDecoder;
 @RequestMapping("/api/v1/loanorder/icbc")
 public class ICBCController {
 
+    private static final String SUCCESS_RETCODR="00000";
+    private static final String ERROR_RETCODR="20000";
+
+    private static final String SUCCESS_RETMSG="成功";
+    private static final String ERROR_RETMSG="程序出错";
     @Autowired
     private ICBCFeignClient icbcFeignClient;
 
@@ -46,30 +47,6 @@ public class ICBCController {
     @Autowired
     private MaterialDownHisDOMapper materialDownHisDOMapper;
 
-    @Autowired
-    private TestFeign testFeign;
-    //请求接口
-    @PostMapping (value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> query(@RequestBody @Valid @Validated @NotNull ICBCApiCallbackParam.ApplyCreditCallback callback) {
-        //return icbcFeignClient.applyCredit(applyCredit);
-        bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
-        return ResultBean.ofSuccess(null);
-    }
-
-    //请求接口
-    @PostMapping (value = "/term", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> term(@RequestBody @Valid @Validated @NotNull  ICBCApiCallbackParam.ApplyDiviGeneralCallback callback) {
-        //return icbcFeignClient.applyCredit(applyCredit);
-        bankSolutionService.commonBusinessApply(new Long("1805241619246179093"));
-        return ResultBean.ofSuccess(null);
-    }
-
-    //请求接口
-    @PostMapping (value = "/test", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> test() {
-        bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
-        return ResultBean.ofSuccess(null);
-    }
 
     //回调接口
     @PostMapping (value = "/creditresult", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -78,9 +55,9 @@ public class ICBCController {
             reqparam = URLDecoder.decode(reqparam,"UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
             testFeign.query(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyCreditCallback.class));
-            return returnResponse("0000","成功");
+            return returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG);
         }catch (Exception e){
-            return returnResponse("2000","程序出错");
+            return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
         }
     }
 
@@ -90,11 +67,24 @@ public class ICBCController {
             reqparam = URLDecoder.decode(reqparam,"UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
             testFeign.term(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ApplyDiviGeneralCallback.class));
-            return returnResponse("0000","成功");
+            return returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG);
         }catch (Exception e){
-            return returnResponse("2000","程序出错");
+            return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
         }
     }
+
+    @PostMapping (value = "/multimediaUploadreturn", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String multimediaUploadreturn(@RequestParam String reqparam) throws IOException {
+        try {
+            reqparam = URLDecoder.decode(reqparam,"UTF-8");
+            ObjectMapper objectMapper = new ObjectMapper();
+            testFeign.mu(objectMapper.readValue(reqparam,ICBCApiCallbackParam.MultimediaUploadCallback.class));
+            return returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG);
+        }catch (Exception e){
+            return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
+        }
+    }
+
 
     @PostMapping (value = "/creditcardresult", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResultBean creditcardresult(@RequestParam String reqparam) {
@@ -139,8 +129,8 @@ public class ICBCController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
-        return new String("{\"pub\": {\"retcode\": \"2000\",\"retmsg\": \"错误\"}}") ;
+        String str = new String("{\"pub\": {\"retcode\": \""+ERROR_RETCODR+"\",\"retmsg\": \""+ERROR_RETMSG+"\"}}") ;
+        return str;
     }
 
 

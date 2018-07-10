@@ -1,5 +1,9 @@
 package com.yunche.loan.config.util;
 
+import com.yunche.loan.config.common.SysConfig;
+import com.yunche.loan.config.feign.client.ICBCFeignClient;
+import com.yunche.loan.config.feign.request.ICBCApiRequest;
+import com.yunche.loan.config.feign.request.group.MultimediaUploadValidated;
 import com.yunche.loan.domain.entity.BankInterfaceFileSerialDO;
 import com.yunche.loan.mapper.BankInterfaceFileSerialDOMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +11,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -14,6 +20,33 @@ public class AsyncUpload {
 
     @Resource
     private BankInterfaceFileSerialDOMapper bankInterfaceFileSerialDOMapper;
+
+    @Resource
+    private ViolationUtil violationUtil;
+
+    @Resource
+    private SysConfig sysConfig;
+
+    @Resource
+    private ICBCFeignClient icbcFeignClient;
+    @Async
+    public void multimediaUpload(String phybrno,String zoneno,String orderId,List<ICBCApiRequest.Picture> pictures){
+        //多媒体补偿接口
+        ICBCApiRequest.MultimediaUpload multimediaUpload = new ICBCApiRequest.MultimediaUpload();
+        multimediaUpload.setPlatno(sysConfig.getPlatno());
+        multimediaUpload.setGuestPlatno(sysConfig.getPlatno());
+        multimediaUpload.setCmpseq(GeneratorIDUtil.execute());
+        multimediaUpload.setZoneno(zoneno);
+        multimediaUpload.setPhybrno(phybrno);
+        multimediaUpload.setOrderno(orderId);
+        multimediaUpload.setAssurerno(sysConfig.getAssurerno());
+        multimediaUpload.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        multimediaUpload.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
+        multimediaUpload.setFileNum(String.valueOf(pictures.size()));
+        multimediaUpload.setPictures(pictures);
+        violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
+        icbcFeignClient.multimediaUpload(multimediaUpload);
+    }
 
     @Async
     public void upload(String serialNo,String fileType, String name, String urls){

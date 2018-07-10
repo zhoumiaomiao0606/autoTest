@@ -23,6 +23,13 @@ public class ICBCApiCallbackParam implements Serializable {
     }
 
     @Data
+    public static class MultimediaUploadCallback {
+        @NotNull
+        private Pub pub;
+        @NotNull
+        private MultimediaUploadReq req;
+    }
+    @Data
     public static class Response {
         @NotNull
         private ResponsePub pub;
@@ -66,5 +73,8 @@ public class ICBCApiCallbackParam implements Serializable {
     public static class ApplyDiviGeneralReq {
         private String backnote;
     }
-
+    @Data
+    public static class MultimediaUploadReq {
+        private String backnote;
+    }
 }

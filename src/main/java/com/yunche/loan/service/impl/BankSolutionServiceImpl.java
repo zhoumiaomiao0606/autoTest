@@ -9,10 +9,7 @@ import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
-import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
-import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
-import com.yunche.loan.config.feign.request.group.NewValidated;
-import com.yunche.loan.config.feign.request.group.SecondValidated;
+import com.yunche.loan.config.feign.request.group.*;
 import com.yunche.loan.config.feign.response.ApplyCreditResponse;
 import com.yunche.loan.config.feign.response.ApplyDiviGeneralResponse;
 import com.yunche.loan.config.util.*;
@@ -461,6 +458,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //只有接口请求成功才会调用上传.防止请求过多造成内存溢出
         if(response!=null){
             if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
+                asyncUpload.multimediaUpload(phybrno,"3301",orderId.toString(),pictures);
                 for(ICBCApiRequest.PicQueue picQueue :queue){
                     asyncUpload.upload(serNo,picQueue.getPicId(),picQueue.getPicName(),picQueue.getUrl());
                 }

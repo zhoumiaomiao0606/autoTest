@@ -68,6 +68,20 @@ public class IDict {
 
 
     /**
+     * 关系
+     */
+    public static abstract interface K_RESULT{
+        /*
+        001:通过；
+        003:不通过；
+        099:退回，由于资料不全等原因退回
+        */
+        public  static final String PASS="001";
+        public  static final String NOPASS="003";
+        public  static final String BACK ="099";
+    }
+
+    /**
      * K_JJSTS
      */
     public static abstract interface K_JJSTS{
@@ -113,6 +127,10 @@ public class IDict {
          * 查询申请进度
          */
         public  static final String APPLYSTATUS="applystatus";
+        /**
+         * 多媒体补偿接口
+         */
+        public  static final String MULTIMEDIAUPLOAD ="multimediaUpload";
         /**
          * 专项卡申请信息上送接口
          */
@@ -221,14 +239,7 @@ public class IDict {
          * 超时
          */
         public  static final Byte TIMEOUT = 4;
-        /**
-         * 请求成功
-         */
-        public  static final Byte REQ_SUCC = 5;
-        /**
-         * 请求失败
-         */
-        public  static final Byte FAIL = 6;
+
         /**
          * 交易处理前
          */
