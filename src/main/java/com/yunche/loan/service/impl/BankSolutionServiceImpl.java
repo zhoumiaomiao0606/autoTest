@@ -414,7 +414,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setFileNum(String.valueOf(pictures.size()));
 
         //resultsum
-        applyDiviGeneralResubmit.setResubmit("0");
+        resubmit.setResubmit("0");
 
         //customer
         customer.setCustName(loanCustomerDO.getName());
