@@ -415,7 +415,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         //resultsum
         info.setResubmit("0");
-        info.setInfo("分期申请");
+        info.setInfo(loanCustomerDO.getName()+"申请分期");
 
         //customer
         customer.setCustName(loanCustomerDO.getName());
@@ -424,7 +424,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setMobile(loanCustomerDO.getMobile());
         customer.setAddress(loanCustomerDO.getAddress());
         customer.setUnit(loanCustomerDO.getIncomeCertificateCompanyName());
-        customer.setNote(loanCustomerDO.getName()+"申请分期");
         //busi
         //car
         car.setCarType(carFullName);

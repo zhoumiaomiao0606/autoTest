@@ -210,8 +210,6 @@ public class ICBCApiRequest {
         private String Address;
         @NotEmpty
         private String Unit;
-        @NotEmpty
-        private String Note;
     }
 
     @Data
