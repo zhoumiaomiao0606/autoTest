@@ -42,11 +42,26 @@ public class ICBCApiRequest {
         @Valid
         private ApplyDiviGeneralBusi busi;
 
+
+        @NotNull
+        @Valid
+        private ApplyDiviGeneralResubmit resubmit;
+
         @NotNull
         @Valid
         private List<Picture> pictures;//客户照片资料
 
     }
+
+    @Data
+    public static class ApplyDiviGeneralResubmit{
+        @NotEmpty
+        @Valid
+        private String resubmit;
+    }
+
+
+
 
     @Data
     public static class MultimediaUpload extends Pub {

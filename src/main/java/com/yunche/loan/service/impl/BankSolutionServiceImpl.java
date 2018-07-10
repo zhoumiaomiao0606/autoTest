@@ -359,6 +359,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         //封装数据
         ICBCApiRequest.ApplyDiviGeneral applyDiviGeneral = new ICBCApiRequest.ApplyDiviGeneral();
+        ICBCApiRequest.ApplyDiviGeneralResubmit resubmit = new ICBCApiRequest.ApplyDiviGeneralResubmit();
         ICBCApiRequest.ApplyDiviGeneralCustomer customer = new ICBCApiRequest.ApplyDiviGeneralCustomer();
         ICBCApiRequest.ApplyDiviGeneralBusi busi = new ICBCApiRequest.ApplyDiviGeneralBusi();
         ICBCApiRequest.ApplyDiviGeneralCar car = new ICBCApiRequest.ApplyDiviGeneralCar();
@@ -411,6 +412,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
         applyDiviGeneral.setBusitype(busitype);
         applyDiviGeneral.setFileNum(String.valueOf(pictures.size()));
+
+        //resultsum
+        applyDiviGeneralResubmit.setResubmit("0");
+
         //customer
         customer.setCustName(loanCustomerDO.getName());
         customer.setIdType(IDict.K_JJLX.IDCARD);
@@ -458,6 +463,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
         busi.setCar(car);
         busi.setDivi(divi);
+        applyDiviGeneral.setResubmit(resubmit);
         applyDiviGeneral.setBusi(busi);
         applyDiviGeneral.setCustomer(customer);
         applyDiviGeneral.setPictures(pictures);
