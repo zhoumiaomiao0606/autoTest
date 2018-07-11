@@ -48,6 +48,13 @@ public class ICBCController {
     private MaterialDownHisDOMapper materialDownHisDOMapper;
 
 
+    //请求接口
+    @PostMapping (value = "/test", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Long> test() {
+        bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
+        return ResultBean.ofSuccess(null);
+    }
+
     //回调接口
     @PostMapping (value = "/creditresult", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String creditresult(@RequestParam String reqparam) throws IOException {

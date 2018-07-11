@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.yunche.loan.config.feign.response.ApplyStatusResponse;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
+import com.yunche.loan.service.BankSolutionProcessService;
 import com.yunche.loan.service.BankSolutionService;
 import com.yunche.loan.service.CollectionService;
 
@@ -25,11 +26,13 @@ public class Test extends BaseTest {
     @Resource
     private LoanCustomerDOMapper loanCustomerDOMapper;
 
+    @Resource
+    private BankSolutionProcessService bankSolutionProcessService;
+
     @org.junit.Test
     public void test() throws IOException {
 
 
-        
         //bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
 
 
