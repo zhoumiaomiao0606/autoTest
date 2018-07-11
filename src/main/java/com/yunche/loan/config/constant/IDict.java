@@ -85,6 +85,7 @@ public class IDict {
      * K_JJSTS
      */
     public static abstract interface K_JJSTS{
+        public  static final String SUCCESS_ERROR = "0";
         public  static final String SUCCESS = "1";
         public  static final String PROCESS = "2";
         public  static final String BACK = "3";
@@ -223,6 +224,11 @@ public class IDict {
      * 交易状态
      */
     public static abstract interface  K_JYZT{
+
+        /**
+         * 处理失败
+         */
+        public  static final Byte SUCCESS_ERROR = 0;
         /**
          * 处理成功
          */
