@@ -359,7 +359,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Preconditions.checkArgument(openCardTypesStr.size()>0,"开卡申请表(和身份证正反面合并成一张图片)");
         String fileName2 =  GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
 //        asyncUpload.upload(fileName2,openCardTypesStr);
-        asyncUpload.upload(serNo,IDict.K_PIC_ID.OPEN_CARD_DATA,picName,keys);
+        asyncUpload.upload(serNo,IDict.K_PIC_ID.OPEN_CARD_DATA,fileName2,keys);
         ICBCApiRequest.Picture picture2 = new ICBCApiRequest.Picture();
         picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
         picture2.setPicname(fileName2);

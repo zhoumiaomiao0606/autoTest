@@ -22,7 +22,7 @@ public class CascadeAreaVO {
 
     private List<City> cityList = Collections.EMPTY_LIST;
 
-    private List<City> countyList = Collections.EMPTY_LIST;
+    private List<County> countyList = Collections.EMPTY_LIST;
 
 
 
@@ -45,5 +45,16 @@ public class CascadeAreaVO {
         private String name;
 
         private Byte level;
+
+    }
+
+    @Data
+    public static class County {
+        private Long id;
+
+        private String name;
+
+        private Byte level;
+
     }
 }

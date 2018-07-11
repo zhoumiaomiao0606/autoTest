@@ -3,7 +3,6 @@ package com.yunche.loan.web.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
@@ -99,22 +98,26 @@ public class ICBCController {
     }
 
     @PostMapping (value = "/fileNotice", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResultBean fileNotice( @RequestParam String reqparam) throws IOException {
-        reqparam = URLDecoder.decode(reqparam,"UTF-8");
-        ObjectMapper objectMapper = new ObjectMapper();
-        ICBCApiRequest.FileNotice fileNotice = objectMapper.readValue(reqparam,ICBCApiRequest.FileNotice.class);
-        //记录回调信息
-        MaterialDownHisDO materialDownHisDO = new MaterialDownHisDO();
-        materialDownHisDO.setSerialNo(GeneratorIDUtil.execute());
-        materialDownHisDO.setFileType(fileNotice.getReq().getFiletype());
-        materialDownHisDO.setFileName(fileNotice.getReq().getFilesrc());
-        materialDownHisDO.setStatus(IDict.K_JYZT.PRE_TRANSACTION);
-        int count = materialDownHisDOMapper.insertSelective(materialDownHisDO);
-        Preconditions.checkArgument(count>0,"插入文件清单流水异常");
-        ICBCApiRequest.ReturnMsg returnMsg = new ICBCApiRequest.ReturnMsg();
-        returnMsg.getPub().setRetcode(IConstant.SUCCESS);
-        returnMsg.getPub().setRetmsg("成功");
-        return ResultBean.ofSuccess(returnMsg);
+    public String fileNotice( @RequestParam String reqparam) {
+        try{
+            reqparam = URLDecoder.decode(reqparam,"UTF-8");
+            ObjectMapper objectMapper = new ObjectMapper();
+            ICBCApiRequest.FileNotice fileNotice = objectMapper.readValue(reqparam,ICBCApiRequest.FileNotice.class);
+            //记录回调信息
+            MaterialDownHisDO materialDownHisDO = new MaterialDownHisDO();
+            materialDownHisDO.setSerialNo(GeneratorIDUtil.execute());
+            materialDownHisDO.setFileType(fileNotice.getReq().getFiletype());
+            materialDownHisDO.setFileName(fileNotice.getReq().getFilesrc());
+            materialDownHisDO.setStatus(IDict.K_JYZT.PRE_TRANSACTION);
+            int count = materialDownHisDOMapper.insertSelective(materialDownHisDO);
+            Preconditions.checkArgument(count>0,"插入文件清单流水异常");
+//            ICBCApiRequest.ReturnMsg returnMsg = new ICBCApiRequest.ReturnMsg();
+//            returnMsg.getPub().setRetcode(IConstant.SUCCESS);
+//            returnMsg.getPub().setRetmsg("成功");
+            return  returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG);
+        }catch (Exception e){
+            return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
+        }
 
     }
 
