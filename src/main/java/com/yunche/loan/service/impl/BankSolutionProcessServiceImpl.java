@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Transactional
 public class BankSolutionProcessServiceImpl implements BankSolutionProcessService{
     private static final Logger logger = LoggerFactory.getLogger(BankSolutionProcessServiceImpl.class);
     @Autowired
@@ -101,11 +103,11 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             return;
         }
 
-        if(sysConfig.getAssurerno().equals(applyCreditCallback.getPub().getAssurerno())){
+        if(!sysConfig.getAssurerno().equals(applyCreditCallback.getPub().getAssurerno())){
             throw new BizException("保单号错误");
         }
 
-        if(sysConfig.getPlatno().equals(applyCreditCallback.getPub().getPlatno())){
+        if(!sysConfig.getPlatno().equals(applyCreditCallback.getPub().getPlatno())){
             throw new BizException("平台编号错误");
         }
 
@@ -236,11 +238,11 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         }
 
 
-        if(sysConfig.getAssurerno().equals(applyDiviGeneralCallback.getPub().getAssurerno())){
+        if(!sysConfig.getAssurerno().equals(applyDiviGeneralCallback.getPub().getAssurerno())){
             throw new BizException("保单号错误");
         }
 
-        if(sysConfig.getPlatno().equals(applyDiviGeneralCallback.getPub().getPlatno())){
+        if(!sysConfig.getPlatno().equals(applyDiviGeneralCallback.getPub().getPlatno())){
             throw new BizException("平台编号错误");
         }
 
@@ -259,11 +261,11 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             return;
         }
 
-        if(sysConfig.getAssurerno().equals(multimediaUploadCallback.getPub().getAssurerno())){
+        if(!sysConfig.getAssurerno().equals(multimediaUploadCallback.getPub().getAssurerno())){
             throw new BizException("保单号错误");
         }
 
-        if(sysConfig.getPlatno().equals(multimediaUploadCallback.getPub().getPlatno())){
+        if(!sysConfig.getPlatno().equals(multimediaUploadCallback.getPub().getPlatno())){
             throw new BizException("平台编号错误");
         }
 
@@ -275,6 +277,12 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     }
 
     private boolean checkStatus(String cmpseq){
+
+        BankInterfaceSerialDO D = bankInterfaceSerialDOMapper.selectByPrimaryKey(cmpseq);
+        if(D == null){
+            return false;
+        }
+
         if(StringUtils.isBlank(cmpseq)){
             throw new BizException("缺少流水号");
         }
@@ -285,7 +293,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         if(V.getApiStatus() == null){
             return false;
         }
-        if(V.getApiStatus().intValue() == 200){
+        if(V.getApiStatus().intValue() != 200){
             return false;
         }
 

@@ -4,6 +4,7 @@ package com.yunche.loan;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.feign.response.ApplyStatusResponse;
+import com.yunche.loan.domain.param.ICBCApiCallbackParam;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.service.BankSolutionProcessService;
@@ -31,6 +32,10 @@ public class Test extends BaseTest {
 
     @org.junit.Test
     public void test() throws IOException {
+        String json = "{\"pub\":{\"platno\":\"zsqc\",\"cmpseq\":\"20180711181225739571\",\"zoneno\":\"3301\",\"phybrno\":\"12070151\",\"orderno\":\"1806291133480804371\",\"assurerno\":\"502\",\"cmpdate\":\"20180711\",\"cmptime\":\"181225\"},\"req\":{\"custname\":\"王小健测试\",\"idno\":\"450121198711214265\",\"relation\":\"本人\",\"result\":\"099\",\"loanCrdt\":\"-\",\"cardCrdt\":\"-\",\"leftNum\":\"-\",\"leftAmount\":\"-\",\"note\":\"图片下载失败，请检查后再提交!\"}}";
+        ObjectMapper objectMapper = new ObjectMapper();
+        ICBCApiCallbackParam.ApplyCreditCallback applyCreditCallback  = objectMapper.readValue(json, ICBCApiCallbackParam.ApplyCreditCallback.class);
+        bankSolutionProcessService.applyCreditCallback(applyCreditCallback);
 
 
         //bankSolutionService.creditAutomaticCommit(new Long("1806291133480804371"));
