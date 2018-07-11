@@ -14,5 +14,7 @@ public interface BankInterfaceSerialDOMapper {
 
     int updateByPrimaryKeySelective(BankInterfaceSerialDO record);
 
+    boolean checkRequestBussIsSucessByTransCodeOrderId(@Param("customerId") Long customerId, @Param("transCode") String transCode);
+
     BankInterfaceSerialDO selectByCustomerIdAndTransCode(@Param("customerId") Long customerId, @Param("transCode") String transCode);
 }

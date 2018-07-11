@@ -1,9 +1,10 @@
 package com.yunche.loan.config.feign.response;
 
+import com.yunche.loan.config.feign.response.base.BasicResponse;
 import lombok.Data;
 
 @Data
-public class ApplyStatusResponse {
+public class ApplyStatusResponse extends BasicResponse {
     private String  retcode;
     private String  retmsg;
     private String  custname;

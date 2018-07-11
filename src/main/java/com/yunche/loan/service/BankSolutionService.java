@@ -22,7 +22,7 @@ public interface BankSolutionService {
      /**
       * 查询申请进度
       */
-     public ApplyStatusResponse applystatus(ICBCApiRequest.Applystatus applystatus);
+     public ApplyStatusResponse applystatus(Long orderId);
 
      public ApplycreditstatusResponse applycreditstatus(ICBCApiRequest.Applycreditstatus applycreditstatus);
 }

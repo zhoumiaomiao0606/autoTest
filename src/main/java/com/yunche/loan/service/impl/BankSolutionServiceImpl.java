@@ -94,6 +94,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Autowired
     ICBCFeignNormal icbcFeignNormal;
 
+    @Resource
+    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
     //征信自动提交
     @Override
@@ -411,7 +413,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setFileNum(String.valueOf(pictures.size()));
 
         //resultsum
-        info.setResubmit("0");
+        boolean check = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
+        info.setResubmit(check == true?"1":"0");
         info.setNote(loanCustomerDO.getName()+"申请分期");
 
         //customer
@@ -550,7 +553,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //pub
         applyCredit.setPlatno(sysConfig.getPlatno());
         applyCredit.setCmpseq(serNo);
-        applyCredit.setZoneno("1202");
+        applyCredit.setZoneno("3301");
         applyCredit.setPhybrno(phybrno);
         applyCredit.setOrderno(orderId.toString());
         applyCredit.setAssurerno(sysConfig.getAssurerno());
@@ -642,11 +645,76 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     @Override
-    public ApplyStatusResponse applystatus(ICBCApiRequest.Applystatus applystatus) {
+    public ApplyStatusResponse applystatus(Long orderId) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        if(loanOrderDO == null){
+            throw new BizException("此订单不存在");
+        }
 
+        Long planId  = loanOrderDO.getLoanFinancialPlanId();
+        if(planId == null){
+            throw new BizException("此订单金融方案不存在");
+        }
+
+        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(planId);
+        if(loanFinancialPlanDO == null){
+            throw new BizException("此订单金融方案不存在");
+        }
+        //贷款银行
+        Long bankId  =  bankDOMapper.selectIdByName(loanFinancialPlanDO.getBank());
+        if(bankId == null){
+            throw new BizException("贷款银行不存在");
+        }
+
+        int value = bankId.intValue();
+        switch (value) {
+            case 1:
+                //判断当前客户贷款银行是否为杭州工行，如为杭州工行：
+                return applystatusProcess(orderId,sysConfig.getHzphybrno());
+            case 3:
+                //判断当前客户贷款银行是否为台州工行，如为台州工行：
+                return applystatusProcess(orderId,sysConfig.getHzphybrno());
+            default:
+                throw new BizException("贷款银行不支持申请查询");
+        }
+
+    }
+
+    private ApplyStatusResponse applystatusProcess(Long orderId,String phybrno){
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        //获取数据源
+        Long baseId = loanOrderDO.getLoanBaseInfoId();
+        if(baseId == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        if(loanBaseInfoDO == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        Long customerId = loanOrderDO.getLoanCustomerId();
+        if(customerId == null){
+            throw new BizException("贷款人不存在");
+        }
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(customerId,new Byte("0"));
+        if(loanCustomerDO == null){
+            throw new BizException("贷款人不存在");
+        }
+
+        ICBCApiRequest.Applystatus applystatus = new ICBCApiRequest.Applystatus();
+        applystatus.setPlatno(sysConfig.getPlatno());
+        applystatus.setCmpseq(GeneratorIDUtil.execute());
+        applystatus.setZoneno("3301");
+        applystatus.setPhybrno(phybrno);
+        applystatus.setOrderno(orderId.toString());
+        applystatus.setAssurerno(sysConfig.getAssurerno());
+        applystatus.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        applystatus.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
+        applystatus.setFileNum("0");
+        violationUtil.violation(applystatus);
         ApplyStatusResponse applyStatusResponse = icbcFeignClient.applyStatus(applystatus);
         return applyStatusResponse;
-        
     }
 
     @Override
