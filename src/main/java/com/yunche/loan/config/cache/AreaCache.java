@@ -94,6 +94,8 @@ public class AreaCache {
         fillProv(allArea, provCityMap);
         // 市
         fillCity(allArea, provCityMap);
+        //区、县
+//        fillCounty(allArea,provCityMap);
 
         // 中文排序,并返回结果
         List<CascadeAreaVO> cascadeAreaVOList = sortAndGet(provCityMap);
@@ -101,6 +103,29 @@ public class AreaCache {
         // 刷新缓存
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CASCADE_CACHE_AREA_KEY);
         boundValueOps.set(JSON.toJSONString(cascadeAreaVOList));
+    }
+
+    /**
+     * 解析并填充区/县
+     * @param allArea
+     * @param provCityMap
+     */
+    private void fillCounty(List<BaseAreaDO> allArea, ConcurrentMap<Long, CascadeAreaVO> provCityMap) {
+        allArea.parallelStream()
+                .filter(e -> null != e && null != e.getAreaId() && LEVEL_COUNTY.equals(e.getLevel()))
+                .forEach(e -> {
+
+                    if (provCityMap.containsKey(e.getParentAreaId())) {
+
+                        CascadeAreaVO.City city = new CascadeAreaVO.City();
+                        city.setId(e.getAreaId());
+                        city.setName(e.getAreaName());
+                        city.setLevel(e.getLevel());
+
+                        provCityMap.get(e.getParentAreaId()).getCountyList().add(city);
+                    }
+
+                });
     }
 
     /**
@@ -261,7 +286,6 @@ public class AreaCache {
                         cascadeAreaVO.setName(e.getAreaName());
                         cascadeAreaVO.setLevel(e.getLevel());
                         cascadeAreaVO.setCityList(Lists.newArrayList());
-
                         provCityMap.put(e.getAreaId(), cascadeAreaVO);
                     }
 
@@ -280,12 +304,10 @@ public class AreaCache {
                 .forEach(e -> {
 
                     if (provCityMap.containsKey(e.getParentAreaId())) {
-
                         CascadeAreaVO.City city = new CascadeAreaVO.City();
                         city.setId(e.getAreaId());
                         city.setName(e.getAreaName());
                         city.setLevel(e.getLevel());
-
                         provCityMap.get(e.getParentAreaId()).getCityList().add(city);
                     }
 

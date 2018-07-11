@@ -27,7 +27,7 @@ public interface ICBCFeignClient {
     public ApplyDiviGeneralResponse multimediaUpload(@RequestBody ICBCApiRequest.MultimediaUpload multimediaUpload);
 
     //zhengdu
-    @RequestMapping(value = "/api/v1/icbc/test/apply/creditcardapply",method = RequestMethod.POST)
+    @RequestMapping(value = "/api/v1/icbc/apply/creditcardapply",method = RequestMethod.POST)
     public CreditCardApplyResponse creditcardapply(@RequestBody ICBCApiRequest.ApplyBankOpenCard applyBankOpenCard);
 
     @RequestMapping(value = "/api/v1/test/icbc/apply/filedownload",method = RequestMethod.GET)

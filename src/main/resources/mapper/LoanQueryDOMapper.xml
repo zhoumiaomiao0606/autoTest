@@ -748,6 +748,8 @@
           customer.open_card_status                      AS customer_open_card_status,
           customer.repay_card_number                     AS customer_repay_card_number,
           customer.open_card_curr_status                 AS customer_open_card_curr_status,
+          customer.bill_send_type                        AS customer_bill_send_type,
+          customer.occupation                            AS customer_occupation,
           bank.info			      	                     AS bank_info,
           bank.result		          			         AS bank_result,
           process_bank.credit_result         	         AS process_bank_credit_result,

@@ -87,5 +87,9 @@ public class UniversalCustomerDetailVO {
     private String customer_bell_tel;
     private String customer_balance_change_tel;
     private String customer_open_card_curr_status;
+    private String customer_open_card_status;
+    private String customer_repay_card_number;
+    private String customer_occupation;
+    private String customer_bill_send_type;
 
 }

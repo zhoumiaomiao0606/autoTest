@@ -22,6 +22,10 @@ public class CascadeAreaVO {
 
     private List<City> cityList = Collections.EMPTY_LIST;
 
+    private List<City> countyList = Collections.EMPTY_LIST;
+
+
+
     @Data
     public static class Prov {
 
@@ -36,7 +40,6 @@ public class CascadeAreaVO {
 
     @Data
     public static class City {
-
         private Long id;
 
         private String name;

@@ -639,7 +639,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //数据准备
         bankOpenCardParam.setCmpseq(GeneratorIDUtil.execute());
         ICBCApiRequest.ApplyBankOpenCard  applyBankOpenCard= new ICBCApiRequest.ApplyBankOpenCard();
-        BeanUtils.copyProperties(applyBankOpenCard,bankOpenCardParam);
+        BeanUtils.copyProperties(bankOpenCardParam,applyBankOpenCard);
         //发送银行接口
         CreditCardApplyResponse creditcardapply = icbcFeignClient.creditcardapply(applyBankOpenCard);
         return creditcardapply;

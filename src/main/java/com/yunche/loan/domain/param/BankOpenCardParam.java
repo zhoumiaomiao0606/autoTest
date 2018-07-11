@@ -2,12 +2,16 @@ package com.yunche.loan.domain.param;
 
 
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
+import com.yunche.loan.domain.vo.FileVO;
 import lombok.Data;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class BankOpenCardParam  extends ICBCApiRequest.ApplyBankOpenCard{
+        private  Long orderId;
         private Long customerId;
 
         private String namePinyin;
@@ -40,8 +44,12 @@ public class BankOpenCardParam  extends ICBCApiRequest.ApplyBankOpenCard{
 
         private String repayCardNumber;
 
-        private String education;
+        private Byte education;
 
-        private String companyNature;
+        private Byte companyNature;
+
+        private String billSendType;
+
+        private List<FileVO> files = Collections.EMPTY_LIST;
 
 }
