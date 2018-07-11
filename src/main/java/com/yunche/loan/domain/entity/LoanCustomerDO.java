@@ -162,4 +162,6 @@ public class LoanCustomerDO {
     private String repayCardNumber;
 
     private String openCardCurrStatus;
+
+    private String billSendType;
 }

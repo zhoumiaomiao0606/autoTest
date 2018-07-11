@@ -16,10 +16,7 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.BankOpenCardService;
-import com.yunche.loan.service.BankSolutionService;
-import com.yunche.loan.service.LoanBaseInfoService;
-import com.yunche.loan.service.LoanQueryService;
+import com.yunche.loan.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +31,7 @@ import java.util.Set;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanCustomerConst.EMERGENCY_CONTACT;
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 
@@ -91,6 +89,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Autowired
     LoanProcessDOMapper loanProcessDOMapper;
 
+    @Autowired
+    LoanFileService loanFileService;
+
     /**
      * 银行开卡详情页
      * @param orderId
@@ -136,11 +137,19 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
         Set<Byte> bytes = Sets.newHashSet(EMERGENCY_CONTACT);
         List<LoanCustomerDO> emergencyContact = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(orderId, bytes);
+
+
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setLoanBaseInfo(loanBaseInfoVOResultBean.getData());
         recombinationVO.setInfo(universalCustomerDetailVO);
         recombinationVO.setBankSerial(bankInterfaceSerialVO);
         recombinationVO.setEmergencyContacts(emergencyContact);
+        recombinationVO.setCustomers(customers);
         return ResultBean.ofSuccess(recombinationVO);
     }
 
@@ -217,10 +226,12 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         BeanUtils.copyProperties(bankOpenCardParam,loanCustomerDO);
-
+        loanCustomerDO.setId(bankOpenCardParam.getCustomerId());
         Preconditions.checkNotNull(loanCustomerDO.getId(),"客户信息不存在");
         int count = loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
         Preconditions.checkArgument(count>0,"客户信息更新失败");
+        ResultBean<Void> updateFileResult = loanFileService.updateOrInsertByCustomerIdAndUploadType(bankOpenCardParam.getCustomerId(), bankOpenCardParam.getFiles(), UPLOAD_TYPE_NORMAL);
+
         return ResultBean.ofSuccess("保存成功");
     }
 
@@ -257,6 +268,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         applycreditstatus.setAssurerno(sysConfig.getAssurerno());
         applycreditstatus.setCmpdate(DateUtil.getDate());
         applycreditstatus.setCmptime(DateUtil.getTime());
+        applycreditstatus.setCmpseq(GeneratorIDUtil.execute());
+        applycreditstatus.setFileNum(String.valueOf(0));
 
         ApplycreditstatusResponse response = bankSolutionService.applycreditstatus(applycreditstatus);
         return ResultBean.ofSuccess(response);
@@ -329,10 +342,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
         String serNo = GeneratorIDUtil.execute();
         asyncUpload.upload(serNo,IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY,picName,keys);
-        String mergerFilePath1 = ImageUtil.mergeImage2Pic(keys);//合成图片本地路径
-        Preconditions.checkNotNull(mergerFilePath1,"图片合成失败");
 
-        String fileName = mergerFilePath1.substring(mergerFilePath1.lastIndexOf(File.separator) + 1);
+        String fileName = picName;
 
         ICBCApiRequest.Picture picture1 = new ICBCApiRequest.Picture();
         picture1.setPicid(IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY);

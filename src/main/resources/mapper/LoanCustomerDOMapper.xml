@@ -80,6 +80,7 @@
     <result column="open_card_status" jdbcType="VARCHAR" property="openCardStatus" />
     <result column="repay_card_number" jdbcType="VARCHAR" property="repayCardNumber" />
     <result column="open_card_curr_status" jdbcType="VARCHAR" property="openCardCurrStatus" />
+    <result column="bill_send_type" jdbcType="VARCHAR" property="billSendType" />
   </resultMap>
   <sql id="Base_Column_List">
     id, name, nation, birth, identity_validity, lend_card, id_card, mobile, age, sex, 
@@ -95,7 +96,7 @@
     play_company, guarantee_rela, name_pinyin, check_in_date, enrollment_date, card_receive_mode, 
     card_send_addr_type, balance_change_remind, open_email, email, occupation, issuing_department, 
     master_card_tel, bell_tel, balance_change_tel, open_card_status, repay_card_number, 
-    open_card_curr_status
+    open_card_curr_status, bill_send_type
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -108,6 +109,10 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into loan_customer (id, name, nation, 
       birth, identity_validity, lend_card, 
       id_card, mobile, age, sex, 
@@ -134,7 +139,8 @@
       balance_change_remind, open_email, email, 
       occupation, issuing_department, master_card_tel, 
       bell_tel, balance_change_tel, open_card_status, 
-      repay_card_number, open_card_curr_status)
+      repay_card_number, open_card_curr_status, bill_send_type
+      )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR}, 
       #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR}, 
       #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT}, 
@@ -161,9 +167,14 @@
       #{balanceChangeRemind,jdbcType=VARCHAR}, #{openEmail,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
       #{occupation,jdbcType=VARCHAR}, #{issuingDepartment,jdbcType=VARCHAR}, #{masterCardTel,jdbcType=VARCHAR}, 
       #{bellTel,jdbcType=VARCHAR}, #{balanceChangeTel,jdbcType=VARCHAR}, #{openCardStatus,jdbcType=VARCHAR}, 
-      #{repayCardNumber,jdbcType=VARCHAR}, #{openCardCurrStatus,jdbcType=VARCHAR})
+      #{repayCardNumber,jdbcType=VARCHAR}, #{openCardCurrStatus,jdbcType=VARCHAR}, #{billSendType,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into loan_customer
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -399,6 +410,9 @@
       </if>
       <if test="openCardCurrStatus != null">
         open_card_curr_status,
+      </if>
+      <if test="billSendType != null">
+        bill_send_type,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -636,6 +650,9 @@
       <if test="openCardCurrStatus != null">
         #{openCardCurrStatus,jdbcType=VARCHAR},
       </if>
+      <if test="billSendType != null">
+        #{billSendType,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
@@ -872,6 +889,9 @@
       <if test="openCardCurrStatus != null">
         open_card_curr_status = #{openCardCurrStatus,jdbcType=VARCHAR},
       </if>
+      <if test="billSendType != null">
+        bill_send_type = #{billSendType,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -953,10 +973,10 @@
       balance_change_tel = #{balanceChangeTel,jdbcType=VARCHAR},
       open_card_status = #{openCardStatus,jdbcType=VARCHAR},
       repay_card_number = #{repayCardNumber,jdbcType=VARCHAR},
-      open_card_curr_status = #{openCardCurrStatus,jdbcType=VARCHAR}
+      open_card_curr_status = #{openCardCurrStatus,jdbcType=VARCHAR},
+      bill_send_type = #{billSendType,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
-
   <select id="selectSelfAndRelevanceCustomersByCustTypes" resultMap="BaseResultMap">
     select *
     from

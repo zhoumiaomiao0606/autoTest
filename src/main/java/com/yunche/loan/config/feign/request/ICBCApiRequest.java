@@ -1,5 +1,6 @@
 package com.yunche.loan.config.feign.request;
 
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
 import com.yunche.loan.config.feign.request.group.MultimediaUploadValidated;
 import com.yunche.loan.config.feign.request.group.NewValidated;
@@ -90,7 +91,7 @@ public class ICBCApiRequest {
 
         private ApplyBankOpenCardCustomer customer;
 
-        private List<Picture> pictures;//客户照片资料
+        private List<Picture> pictures= Lists.newArrayList();//客户照片资料
 
     }
 

@@ -17,6 +17,11 @@ public class AreaConst {
      * 市
      */
     public static final Byte LEVEL_CITY = 2;
+
+    /**
+     * 区、县
+     */
+    public static final Byte LEVEL_COUNTY = 3;
     /**
      * 全国
      */
