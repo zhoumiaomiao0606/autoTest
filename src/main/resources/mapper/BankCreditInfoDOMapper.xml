@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.BankCreditInfoDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankCreditInfoDO" >
+    <id column="serial_no" property="serialNo" jdbcType="VARCHAR" />
+    <result column="customer_id" property="customerId" jdbcType="BIGINT" />
+    <result column="custname" property="custname" jdbcType="VARCHAR" />
+    <result column="idno" property="idno" jdbcType="VARCHAR" />
+    <result column="relation" property="relation" jdbcType="VARCHAR" />
+    <result column="result" property="result" jdbcType="VARCHAR" />
+    <result column="loanCrdt" property="loancrdt" jdbcType="VARCHAR" />
+    <result column="cardCrdt" property="cardcrdt" jdbcType="VARCHAR" />
+    <result column="leftNum" property="leftnum" jdbcType="VARCHAR" />
+    <result column="leftAmount" property="leftamount" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    serial_no, customer_id, custname, idno, relation, result, loanCrdt, cardCrdt, leftNum, 
+    leftAmount, note, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from bank_credit_info
+    where serial_no = #{serialNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bank_credit_info
+    where serial_no = #{serialNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankCreditInfoDO" >
+    insert into bank_credit_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        serial_no,
+      </if>
+      <if test="customerId != null" >
+        customer_id,
+      </if>
+      <if test="custname != null" >
+        custname,
+      </if>
+      <if test="idno != null" >
+        idno,
+      </if>
+      <if test="relation != null" >
+        relation,
+      </if>
+      <if test="result != null" >
+        result,
+      </if>
+      <if test="loancrdt != null" >
+        loanCrdt,
+      </if>
+      <if test="cardcrdt != null" >
+        cardCrdt,
+      </if>
+      <if test="leftnum != null" >
+        leftNum,
+      </if>
+      <if test="leftamount != null" >
+        leftAmount,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null" >
+        #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="custname != null" >
+        #{custname,jdbcType=VARCHAR},
+      </if>
+      <if test="idno != null" >
+        #{idno,jdbcType=VARCHAR},
+      </if>
+      <if test="relation != null" >
+        #{relation,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="loancrdt != null" >
+        #{loancrdt,jdbcType=VARCHAR},
+      </if>
+      <if test="cardcrdt != null" >
+        #{cardcrdt,jdbcType=VARCHAR},
+      </if>
+      <if test="leftnum != null" >
+        #{leftnum,jdbcType=VARCHAR},
+      </if>
+      <if test="leftamount != null" >
+        #{leftamount,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankCreditInfoDO" >
+    update bank_credit_info
+    <set >
+      <if test="customerId != null" >
+        customer_id = #{customerId,jdbcType=BIGINT},
+      </if>
+      <if test="custname != null" >
+        custname = #{custname,jdbcType=VARCHAR},
+      </if>
+      <if test="idno != null" >
+        idno = #{idno,jdbcType=VARCHAR},
+      </if>
+      <if test="relation != null" >
+        relation = #{relation,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        result = #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="loancrdt != null" >
+        loanCrdt = #{loancrdt,jdbcType=VARCHAR},
+      </if>
+      <if test="cardcrdt != null" >
+        cardCrdt = #{cardcrdt,jdbcType=VARCHAR},
+      </if>
+      <if test="leftnum != null" >
+        leftNum = #{leftnum,jdbcType=VARCHAR},
+      </if>
+      <if test="leftamount != null" >
+        leftAmount = #{leftamount,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where serial_no = #{serialNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

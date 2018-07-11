@@ -320,7 +320,7 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>-->
 
-        <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
+        <table tableName="bank_credit_info" domainObjectName="BankCreditInfoDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

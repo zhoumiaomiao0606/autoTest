@@ -154,17 +154,18 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("此订单不存在");
         }
 
-        Long planId  = loanOrderDO.getLoanFinancialPlanId();
-        if(planId == null){
-            throw new BizException("此订单金融方案不存在");
+        Long baseId  = loanOrderDO.getLoanBaseInfoId();
+        if(baseId == null){
+            throw new BizException("征信信息不存在");
         }
 
-        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(planId);
-        if(loanFinancialPlanDO == null){
-            throw new BizException("此订单金融方案不存在");
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        if(loanBaseInfoDO == null){
+            throw new BizException("征信信息不存在");
         }
-        //贷款银行
-        Long bankId  =  bankDOMapper.selectIdByName(loanFinancialPlanDO.getBank());
+
+        //征信银行
+        Long bankId  =  bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
         if(bankId == null){
             throw new BizException("贷款银行不存在");
         }
@@ -211,7 +212,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
         if(result != null) {
-            if (IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) || IDict.K_JJSTS.PROCESS.equals(result.getStatus())) {
+            if (IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) || IDict.K_JJSTS.PROCESS.equals(result.getStatus()) || IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus())) {
                 throw new BizException("已经申请过分期");
             }
         }
@@ -491,7 +492,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                     //之前提交过
                     //只有调用接口成功才算
                     //非处理中 并且 非查询成功的可以进行推送
-                    if(!IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) && !IDict.K_JJSTS.PROCESS.equals(result.getStatus())) {
+                    if(!IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) && !IDict.K_JJSTS.PROCESS.equals(result.getStatus()) && !IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus()) ) {
                         bankCreditProcess(orderId,phybrno,loanCustomerDO);
                     }
                 }else{
