@@ -111,18 +111,18 @@ public class AreaCache {
      * @param provCityMap
      */
     private void fillCounty(List<BaseAreaDO> allArea, ConcurrentMap<Long, CascadeAreaVO> provCityMap) {
+
         allArea.parallelStream()
                 .filter(e -> null != e && null != e.getAreaId() && LEVEL_COUNTY.equals(e.getLevel()))
                 .forEach(e -> {
 
                     if (provCityMap.containsKey(e.getParentAreaId())) {
 
-                        CascadeAreaVO.City city = new CascadeAreaVO.City();
-                        city.setId(e.getAreaId());
-                        city.setName(e.getAreaName());
-                        city.setLevel(e.getLevel());
-
-                        provCityMap.get(e.getParentAreaId()).getCountyList().add(city);
+                        CascadeAreaVO.County county = new CascadeAreaVO.County();
+                        county.setId(e.getAreaId());
+                        county.setName(e.getAreaName());
+                        county.setLevel(e.getLevel());
+                        provCityMap.get(e.getParentAreaId()).getCountyList().add(county);
                     }
 
                 });
@@ -286,6 +286,7 @@ public class AreaCache {
                         cascadeAreaVO.setName(e.getAreaName());
                         cascadeAreaVO.setLevel(e.getLevel());
                         cascadeAreaVO.setCityList(Lists.newArrayList());
+                        cascadeAreaVO.setCountyList(Lists.newArrayList());
                         provCityMap.put(e.getAreaId(), cascadeAreaVO);
                     }
 
