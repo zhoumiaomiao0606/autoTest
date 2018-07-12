@@ -313,12 +313,15 @@
                                                                AS paymentGtCreate,
                   <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
+                          join_serial.status                      AS serialStatus,
                           deputy.credit_apply                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
+                          join_serial.status                      AS serialStatus,
                           deputy.bank_credit_record               AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_social_credit_record'">
+
                           deputy.social_credit_record             AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_loan_apply'">
@@ -432,6 +435,18 @@
               left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
+              <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
+              left join
+                  (
+                    select serial.* from bank_interface_serial serial
+                    inner join
+                    (
+                    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                            as serial_no
+                    from bank_interface_serial GROUP BY trans_code,customer_id
+                    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+                  ) join_serial on join_serial.customer_id = main.loan_customer_id
+              </if>
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
@@ -693,7 +708,22 @@
                       AND tab.isRepayment = #{isRepayment}
                   </if>
               </if>
-              ) task
+            <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
+                <if test="serialStatus != null">
+                    AND tab.serialStatus = #{serialStatus}
+                </if>
+            </if>
+            <if test="relevanceCustomerName != null">
+                AND
+                tab.id in
+                (
+                  (select id from loan_order where loan_customer_id
+                    in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+                  and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+                  )
+                )
+            </if>
+            ) task
             left join
             (
             select * from task_distribution

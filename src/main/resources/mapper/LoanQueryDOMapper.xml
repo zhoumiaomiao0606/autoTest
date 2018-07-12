@@ -1012,9 +1012,6 @@
             DATE_FORMAT(callback_time,'%Y-%m-%d %H:%i:%S') as callbackTime
         from bank_interface_serial where customer_id = #{customerId} and trans_code = #{transCode} order by request_time desc limit 1
     </select>
-
-
-
     <!--=============================================end===================================================-->
 
 
