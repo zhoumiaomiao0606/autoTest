@@ -1,4 +1,4 @@
-package com.yunche.loan.domain.entity;
+package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
@@ -6,7 +6,12 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class BankFileListRecordDO extends BankFileListRecordDOKey {
+public class BankRecordVO {
+
+    private Long bankFileListId;
+
+    private Long customerId;
+
     private Long orderId;
 
     private String areaId;
@@ -58,6 +63,4 @@ public class BankFileListRecordDO extends BankFileListRecordDOKey {
     private Byte isCustomer;
 
     private Date batchDate;
-
-
 }

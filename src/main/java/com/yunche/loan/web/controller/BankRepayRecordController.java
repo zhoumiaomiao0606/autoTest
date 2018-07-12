@@ -22,10 +22,11 @@ public class BankRepayRecordController {
 
     @GetMapping(value = "/list")
     public ResultBean query(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize,
+                            @RequestParam(value = "fileType",required = false) String fileType,
                             @RequestParam(value = "fileName",required = false) String fileName,
                             @RequestParam(value = "startDate",required = false)String startDate,
                             @RequestParam(value = "endDate",required = false)String endDate) {
-       return bankRepayRecordService.batchFileList(pageIndex,pageSize,fileName,startDate,endDate);
+       return bankRepayRecordService.batchFileList(pageIndex,pageSize,fileName,startDate,endDate,fileType);
     }
 
     @GetMapping(value = "/imp")
@@ -37,18 +38,18 @@ public class BankRepayRecordController {
     @GetMapping(value = "/detail")
     public ResultBean detail(@RequestParam("pageIndex") Integer pageIndex,
                              @RequestParam("pageSize") Integer pageSizes,
-                             @RequestParam("bankRepayImpRecordId") Long bankRepayImpRecordId,
+                             @RequestParam("listId") Long listId,
                              @RequestParam(value = "userName",required = false) String userName,
                              @RequestParam(value = "idCard",required = false) String idCard,
                              @RequestParam(value = "isCustomer",required = false) Byte isCustomer) {
-        Preconditions.checkNotNull(bankRepayImpRecordId,"批次号不能为空");
-        return bankRepayRecordService.detail(pageIndex,pageSizes,bankRepayImpRecordId,userName,idCard,isCustomer);
+        Preconditions.checkNotNull(listId,"批次号不能为空");
+        return bankRepayRecordService.detail(pageIndex,pageSizes,listId,userName,idCard,isCustomer);
     }
 
     @GetMapping(value = "/download")
-    public ResultBean download(@RequestParam("bankRepayImpRecordId")Long bankRepayImpRecordId){
-        Preconditions.checkNotNull(bankRepayImpRecordId,"批次号不能为空");
-        BankRepayImpRecordDO impRecordDO = bankRepayImpRecordDOMapper.selectByPrimaryKey(bankRepayImpRecordId);
+    public ResultBean download(@RequestParam("listId")Long listId){
+        Preconditions.checkNotNull(listId,"批次号不能为空");
+        BankRepayImpRecordDO impRecordDO = bankRepayImpRecordDOMapper.selectByPrimaryKey(listId);
         return ResultBean.ofSuccess(impRecordDO);
     }
 

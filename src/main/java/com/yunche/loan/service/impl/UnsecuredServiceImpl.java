@@ -42,7 +42,7 @@ public class UnsecuredServiceImpl implements UnsecuredService{
 
                 BufferedReader bufReader = new BufferedReader(inReader);
                 int bankFileListId = recordImportBatch(ossKey); //记录导入记录
-                bankFileListRecordDOMapper.deleteByPrimaryKey(Long.valueOf(bankFileListId));
+                bankFileListRecordDOMapper.deleteBylistId(Long.valueOf(bankFileListId));
                 String line="";
                 while((line = bufReader.readLine()) != null){
                     String[] split = line.split("\\|");

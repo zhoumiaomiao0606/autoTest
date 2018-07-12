@@ -14,7 +14,6 @@ import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankRepayParam;
-import com.yunche.loan.domain.vo.BankRepayRecordVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankRepayRecordService;
 import com.yunche.loan.service.CollectionService;
@@ -25,7 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
@@ -49,7 +51,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
     BankRepayImpRecordDOMapper bankRepayImpRecordDOMapper;
 
     @Autowired
-    BankRepayQueryDOMapper bankRepayQueryDOMapper;
+    BankRecordQueryDOMapper bankRecordQueryDOMapper;
 
     @Autowired
     LoanQueryDOMapper loanQueryDOMapper;
@@ -98,10 +100,10 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
      * @return
      */
     @Override
-    public ResultBean batchFileList(Integer pageIndex, Integer pageSize,String fileName,String startDate,String endDate) {
+    public ResultBean batchFileList(Integer pageIndex, Integer pageSize,String fileName,String startDate,String endDate,String fileType) {
 
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<BankFileListDO> list = bankRepayQueryDOMapper.selectBankRepayImpRecord(fileName,startDate,endDate);
+        List<BankFileListDO> list = bankRecordQueryDOMapper.selectBankImpRecord(fileName,startDate,endDate,fileType);
         PageInfo<BankFileListDO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
@@ -110,17 +112,17 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
      *
      * @param pageIndex
      * @param pageSize
-     * @param bankRepayImpRecordId
+     * @param listId
      * @param userName
      * @param idCard
      * @param isCustomer
      * @return
      */
-    public ResultBean detail(Integer pageIndex, Integer pageSize,Long bankRepayImpRecordId,String userName,String idCard, Byte isCustomer) {
+    public ResultBean detail(Integer pageIndex, Integer pageSize,Long listId,String userName,String idCard, Byte isCustomer) {
         //查询客户详细信息
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<BankRepayRecordVO> bankRepayRecordVOList = bankRepayQueryDOMapper.selectBankRepayRecordDetail(bankRepayImpRecordId,userName,idCard,isCustomer);
-        PageInfo<BankRepayRecordVO> pageInfo = new PageInfo<>(bankRepayRecordVOList);
+        List<BankFileListRecordDO> bankRepayRecordVOList = bankRecordQueryDOMapper.selectBankRecordDetail(listId,userName,idCard,isCustomer);
+        PageInfo<BankFileListRecordDO> pageInfo = new PageInfo<>(bankRepayRecordVOList);
         return ResultBean.ofSuccess(bankRepayRecordVOList, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
 
     }
@@ -177,6 +179,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
      */
     private List<BankFileListRecordDO> autoImportOverdueRecord(String ossKey) {
         List<BankFileListRecordDO> recordLists = Lists.newArrayList();
+        Long bankFileListId=0l;
         try {
             InputStream in = OSSUnit.getOSS2InputStream(ossKey);
             InputStreamReader inReader = null;
@@ -184,8 +187,8 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 
 
             BufferedReader bufReader = new BufferedReader(inReader);
-            int bankFileListId = recordImportBatch(ossKey); //记录导入记录
-            bankFileListRecordDOMapper.deleteByPrimaryKey(Long.valueOf(bankFileListId));
+            bankFileListId = recordImportBatch(ossKey); //记录导入记录
+            bankFileListRecordDOMapper.deleteBylistId(Long.valueOf(bankFileListId));
             /**
              * 数据日期(yyyymmdd)、地区号、平台编号、担保单位编号、订单号、卡号、姓名、证件类型、
              * 证件号码、卡余额、最优还款额、累计违约次数、连续违约次数、经办支行、分期业务种类
@@ -193,7 +196,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
             String line="";
             while((line = bufReader.readLine()) != null){
                 String[] split = line.split("\\|");
-                BankFileListRecordDO bankFileListRecordDO = packObject(bankFileListId,split);
+                BankFileListRecordDO bankFileListRecordDO = packObject(bankFileListId.intValue(),split);
                 recordLists.add(bankFileListRecordDO);
             }
             if (!CollectionUtils.isEmpty(recordLists)) {
@@ -201,6 +204,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 Preconditions.checkArgument(count == recordLists.size(), "批量插入失败");
             }
         } catch (Exception e) {
+            bankFileListDOMapper.deleteByPrimaryKey(bankFileListId);
            throw new BizException(e.getMessage());
         }
         return recordLists;
@@ -211,7 +215,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
      * @param ossKey
      * @return
      */
-    private int recordImportBatch(String ossKey) {
+    private Long recordImportBatch(String ossKey) {
         BankFileListDO bankFileListDO = new BankFileListDO();
         String[] split1 = ossKey.split(File.separator);
         String fileName =ossKey;
@@ -225,7 +229,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
         bankFileListDO.setOperator("auto");
         int count = bankFileListDOMapper.insertSelective(bankFileListDO);
         Preconditions.checkArgument(count>0,"插入失败");
-        int bankFileListId =  bankFileListDO.getId().intValue();
+        Long bankFileListId =  bankFileListDO.getId();
         return bankFileListId;
     }
 
@@ -288,8 +292,8 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 BigDecimal ableRepay = loanFinancialPlanDO.getEachMonthRepay();//每月还款
                 Double  tmpTimes = Math.ceil(e.getOptimalReturn().divide(ableRepay,10,RoundingMode.HALF_UP).doubleValue());
                 int overdueTimes = tmpTimes.intValue();
-                List<LoanRepayPlanDO> lastRepayPlanLists = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), 1);
-                List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), overdueTimes);
+                List<LoanRepayPlanDO> lastRepayPlanLists = bankRecordQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), 1);
+                List<LoanRepayPlanDO> overdueRepayPlanList = bankRecordQueryDOMapper.selectOverdueRepayPlanList(orderId, e.getBatchDate(), overdueTimes);
                 //如果逾期多期先将逾期记录中的逾期金额全部更新成应还金额
                if(overdueTimes>1){
                    overdueRepayPlanList.stream().filter(Objects::nonNull).forEach(r->{
@@ -304,7 +308,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                     Integer nper = lastRepayPlanLists.get(0).getNper();
                     Long lastOrderId = lastRepayPlanLists.get(0).getOrderId();
                     int num = nper-overdueTimes+1;
-                    LoanRepayPlanDO loanRepayPlanDO = bankRepayQueryDOMapper.selectRepayPlanByNper(lastOrderId, num);
+                    LoanRepayPlanDO loanRepayPlanDO = bankRecordQueryDOMapper.selectRepayPlanByNper(lastOrderId, num);
                     if(loanRepayPlanDO!=null){
                         BigDecimal actual = loanRepayPlanDO
                                 .getPayableAmount().multiply(new BigDecimal(overdueTimes)).subtract(e.getOptimalReturn());
@@ -321,9 +325,9 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 
                 }
                 if(lastRepayPlanLists!=null){
-                    LoanRepayPlanDO loanRepayPlanDO = bankRepayQueryDOMapper.selectRepayPlanByNper(e.getOrderId(), lastRepayPlanLists.get(0).getNper() - overdueTimes);
+                    LoanRepayPlanDO loanRepayPlanDO = bankRecordQueryDOMapper.selectRepayPlanByNper(e.getOrderId(), lastRepayPlanLists.get(0).getNper() - overdueTimes);
                     if(loanRepayPlanDO!=null){
-                        List<LoanRepayPlanDO> loanRepayPlanDOS = bankRepayQueryDOMapper.selectOverdueRepayPlanList(e.getOrderId(), loanRepayPlanDO.getRepayDate(), null);
+                        List<LoanRepayPlanDO> loanRepayPlanDOS = bankRecordQueryDOMapper.selectOverdueRepayPlanList(e.getOrderId(), loanRepayPlanDO.getRepayDate(), null);
                         loanRepayPlanDOS.stream().filter(old-> old.getIsOverdue().equals(K_YORN_YES)).forEach(old->{
                             old.setActualRepayAmount(old.getPayableAmount());
                             old.setIsOverdue(K_YORN_NO);
@@ -335,7 +339,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 
                 }
             }else{
-                List<LoanRepayPlanDO> overdueRepayPlanList = bankRepayQueryDOMapper.selectOverdueRepayPlanList(e.getOrderId(), e.getBatchDate(), null);
+                List<LoanRepayPlanDO> overdueRepayPlanList = bankRecordQueryDOMapper.selectOverdueRepayPlanList(e.getOrderId(), e.getBatchDate(), null);
                 overdueRepayPlanList.stream().filter(noOverdue-> noOverdue.getIsOverdue().equals(K_YORN_NO)).forEach(noOverdue->{
                     noOverdue.setIsOverdue(K_YORN_NO);
                     noOverdue.setActualRepayAmount(noOverdue.getPayableAmount());
@@ -408,22 +412,22 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 bankFileListRecordDO.setStatus(VALID_STATUS);
                 bankRepayList.add(bankFileListRecordDO);
             }
-            int batchId = recordImportBatch(ossKey);
+            Long batchId = recordImportBatch(ossKey);
             //获取批次号
             List bankRepayList2 =  bankRepayList.stream().filter(f-> (f.getCredentialNo()!=null || f.getCardNumber()!=null)).map(e->{
-                BankRepayParam bankRepayParam = bankRepayQueryDOMapper.selectByIdCardOrRepayCard(e.getCredentialNo(), e.getCardNumber());
+                BankRepayParam bankRepayParam = bankRecordQueryDOMapper.selectByIdCardOrRepayCard(e.getCredentialNo(), e.getCardNumber());
                 if(bankRepayParam!=null){
                     e.setOrderId(bankRepayParam.getOrderId());
                     e.setCardNumber(bankRepayParam.getRepayCard());
                     e.setCredentialNo(bankRepayParam.getIdCard());
                     e.setIsCustomer(K_YORN_YES);
-                    e.setBankFileListId(Long.valueOf(batchId));
+                    e.setBankFileListId(batchId);
                     e.setStatus(VALID_STATUS);
                 }else{
                     e.setIsCustomer(K_YORN_NO);
                     e.setCredentialNo(e.getCredentialNo()==null?"-1":e.getCredentialNo());
                     e.setCardNumber(e.getCardNumber()==null?"-1":e.getCardNumber());
-                    e.setBankFileListId(Long.valueOf(batchId));
+                    e.setBankFileListId(batchId);
                     e.setOrderId((long)-1);//不存在的记录
                     e.setStatus(INVALID_STATUS);
                 }

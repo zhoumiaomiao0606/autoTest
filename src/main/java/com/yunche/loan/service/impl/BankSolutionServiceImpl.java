@@ -681,8 +681,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
 
         applyBankOpenCard.setAssurerno(sysConfig.getAssurerno());
-        //TODO 业务发生地
-        applyBankOpenCard.setZoneno("3301");
+        applyBankOpenCard.setZoneno(String.valueOf(loanBaseInfoDO.getAreaId()).substring(0,4));
         applyBankOpenCard.setOrderno(bankOpenCardParam.getOrderno());
         applyBankOpenCard.setCmpdate(DateUtil.getDate());
         applyBankOpenCard.setCmptime(DateUtil.getTime());
@@ -693,6 +692,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
         applyBankOpenCard.setCmpseq(bankOpenCardParam.getCmpseq());
         applyBankOpenCard.setPlatno(sysConfig.getPlatno());
+
         // customer
         customer.setEngname(loanCustomerDO.getNamePinyin());//
         customer.setFcurrtyp(IDict.K_BZ.K_RMB);
@@ -720,7 +720,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setHprovince(loanCustomerDO.getHprovince());//hprovince	住宅地址省份
 
         customer.setDrawaddr(loanCustomerDO.getCardSendAddrType());
-        //TODO
         String identityValidity = loanCustomerDO.getIdentityValidity();
         String[] split = identityValidity.split("-");
         String endDate=null;

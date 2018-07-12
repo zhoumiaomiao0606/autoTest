@@ -198,7 +198,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             int bankFileListId = bankFileListDOMapper.insertSelective(bankFileListDO);
 
             String line="";
-            bankFileListRecordDOMapper.deleteByPrimaryKey(Long.valueOf(bankFileListId));
+            BankFileListRecordDOKey bankFileListRecordDOKey = new BankFileListRecordDOKey();
+
+            bankFileListRecordDOMapper.deleteBylistId(Long.valueOf(bankFileListId));
             /**
              * 地区号、平台编号、担保单位编号、订单号、开卡日期、卡号、姓名、证件类型、
              * 证件号码、发卡标志[0：开卡失败 1：开卡成功]、对账单日、还款日

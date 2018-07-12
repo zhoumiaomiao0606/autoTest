@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.BankRepayQueryDOMapper" >
+<mapper namespace="com.yunche.loan.mapper.BankRecordQueryDOMapper" >
+
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankFileListRecordDO">
+        <id column="bank_file_list_id" jdbcType="BIGINT" property="bankFileListId" />
+        <result column="customer_id" jdbcType="BIGINT" property="customerId" />
+        <result column="order_id" jdbcType="BIGINT" property="orderId" />
+        <result column="area_id" jdbcType="VARCHAR" property="areaId" />
+        <result column="plat_no" jdbcType="VARCHAR" property="platNo" />
+        <result column="guaranty_unit" jdbcType="VARCHAR" property="guarantyUnit" />
+        <result column="opencard_date" jdbcType="TIMESTAMP" property="opencardDate" />
+        <result column="card_number" jdbcType="VARCHAR" property="cardNumber" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="card_type" jdbcType="VARCHAR" property="cardType" />
+        <result column="credential_no" jdbcType="VARCHAR" property="credentialNo" />
+        <result column="hairpin_flag" jdbcType="VARCHAR" property="hairpinFlag" />
+        <result column="account_statement" jdbcType="VARCHAR" property="accountStatement" />
+        <result column="repay_date" jdbcType="VARCHAR" property="repayDate" />
+        <result column="gmt_greate" jdbcType="TIMESTAMP" property="gmtGreate" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="card_balance" jdbcType="DECIMAL" property="cardBalance" />
+        <result column="optimal_return" jdbcType="DECIMAL" property="optimalReturn" />
+        <result column="cumulative_breach_number" jdbcType="INTEGER" property="cumulativeBreachNumber" />
+        <result column="consecutive_breach_number" jdbcType="INTEGER" property="consecutiveBreachNumber" />
+        <result column="run_bank" jdbcType="VARCHAR" property="runBank" />
+        <result column="instalment_types" jdbcType="VARCHAR" property="instalmentTypes" />
+        <result column="instalment_amount" jdbcType="DECIMAL" property="instalmentAmount" />
+        <result column="sum_number" jdbcType="INTEGER" property="sumNumber" />
+        <result column="sum_amount" jdbcType="DECIMAL" property="sumAmount" />
+        <result column="reminders" jdbcType="VARCHAR" property="reminders" />
+        <result column="is_customer" jdbcType="TINYINT" property="isCustomer" />
+        <result column="batch_date" jdbcType="TIMESTAMP" property="batchDate" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        bank_file_list_id, customer_id, order_id, area_id, plat_no, guaranty_unit, opencard_date,
+        card_number, name, card_type, credential_no, hairpin_flag, account_statement, repay_date,
+        gmt_greate, status, card_balance, optimal_return, cumulative_breach_number, consecutive_breach_number,
+        run_bank, instalment_types, instalment_amount, sum_number, sum_amount, reminders,
+        is_customer, batch_date
+    </sql>
 
     <select id="selectByIdCardOrRepayCard" resultType="com.yunche.loan.domain.param.BankRepayParam">
         SELECT
@@ -64,16 +103,17 @@
 
     </select>
 
-    <select id="selectBankRepayImpRecord" resultType="com.yunche.loan.domain.entity.BankFileListDO">
+    <select id="selectBankImpRecord" resultType="com.yunche.loan.domain.entity.BankFileListDO">
         select
             id,
             file_name AS fileName,
             gmt_create AS gmtCreate,
-            operator   AS operator
+            operator   AS operator,
+            file_type  AS fileType
         from
             bank_file_list
         where
-            file_type="1"
+            file_type=#{fileType}
         <if test="fileName != null and fileName != '' ">
             AND bank_file_mark LIKE CONCAT('%',#{fileName},'%')
         </if>
@@ -86,20 +126,13 @@
         ORDER BY
             id DESC
     </select>
-    <select id="selectBankRepayRecordDetail" resultType="com.yunche.loan.domain.vo.BankRepayRecordVO">
+    <select id="selectBankRecordDetail" resultMap="BaseResultMap">
         select
-            name                                AS name,
-            credential_no  						AS credentialNo,
-            card_number    						AS cardNumber,
-            card_balance   						AS cardBalance,
-            optimal_return 						AS optimalReturn,
-            consecutive_breach_number           AS consecutiveBreachNumber,
-            cumulative_breach_number            AS cumulativeBreachNumber,
-            is_customer       				    AS isCustomer
+        <include refid="Base_Column_List" />
         from
             bank_file_list_record
         where
-            bank_file_list_id=#{bankRepayImpRecordId}
+            bank_file_list_id=#{listId}
             <if test="userName != null and userName != '' ">
                 AND name LIKE CONCAT('%',#{userName},'%')
             </if>
