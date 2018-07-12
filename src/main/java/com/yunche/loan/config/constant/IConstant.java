@@ -11,5 +11,14 @@ public class IConstant {
     public static final String RETURN_CODE="returnCode";
     public static final String RETURN_MSG="returnMsg";
 
+
+    /**
+     * 数据字典映射 ID 定义
+     */
     public static final String MARITAL_STATUS="MARITAL_STATUS";//婚姻状况
+    public static final String EDU_LEVEL="EDU_LEVEL";//教育程度
+    public static final String COMPANY_NATURE="COMPANY_NATURE";//modelcode单位性质
+
+    public static final String RELT_SHIP="RELT_SHIP";//关系
+
 }

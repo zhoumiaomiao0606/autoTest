@@ -164,4 +164,16 @@ public class LoanCustomerDO {
     private String openCardCurrStatus;
 
     private String billSendType;
+
+    private String cprovince;
+
+    private String ccity;
+
+    private String ccounty;
+
+    private String hprovince;
+
+    private String hcity;
+
+    private String hcounty;
 }

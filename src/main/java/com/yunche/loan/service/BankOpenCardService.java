@@ -9,7 +9,7 @@ public interface BankOpenCardService {
 
     ResultBean<RecombinationVO> detail(Long orderId);
 
-    ResultBean openCard(BankOpenCardParam bankOpenCardParam);
+    ResultBean openCard(Long  orderId);
 
     boolean importFile(String ossKey);
 

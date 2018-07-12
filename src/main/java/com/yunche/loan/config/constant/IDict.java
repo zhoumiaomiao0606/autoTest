@@ -320,13 +320,9 @@ public class IDict {
      * 婚姻转台
      */
     public static abstract interface K_HYZT{
-        public  static final String K_HYZT_0 ="1";
+
+        public  static final String K_HYZT_0 ="0";
         public  static final String K_HYZT_1 ="1";
-        public  static final String K_HYZT_2 ="1";
-        public  static final String K_HYZT_3 ="1";
-        public  static final String K_HYZT_4 ="1";
-        public  static final String K_HYZT_5 ="1";
-        public  static final String K_HYZT_6 ="1";
 
     }
 

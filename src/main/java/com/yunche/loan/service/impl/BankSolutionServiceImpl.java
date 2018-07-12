@@ -101,6 +101,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
 
 
+
+
     @Resource
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
@@ -701,12 +703,18 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         customer.setLoanratio(String.valueOf(loanratio));//贷款成数
         customer.setCarprice(String.valueOf(loanFinancialPlanDO.getCarPrice()));
-        // TODO
-        customer.setFeeratio(String.valueOf(loanFinancialPlanDO.getSignRate()));
+
+        ProductRateDOKey productRateDOKey = new ProductRateDOKey();
+        productRateDOKey.setProdId(loanFinancialPlanDO.getFinancialProductId());
+        productRateDOKey.setLoanTime(loanFinancialPlanDO.getLoanTime());
+        ProductRateDO productRateDO = productRateDOMapper.selectByPrimaryKey(productRateDOKey);
+
+        customer.setFeeratio(String.valueOf(productRateDO.getBankRate()));// 银行费率
         //TODO
         customer.setCprovince("");
         customer.setCcounty("");//单位地址县
         customer.setCcity("");//ccity	单位地址市
+
         customer.setHcity("");//住宅地址市
         customer.setHcounty("");//hcounty	住宅地址县
         customer.setHprovince("");//hprovince	住宅地址省份

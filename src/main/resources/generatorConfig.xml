@@ -320,7 +320,7 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>-->
 
-        <table tableName="dict_map" domainObjectName="DictMapDO"
+        <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
