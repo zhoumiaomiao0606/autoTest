@@ -73,11 +73,15 @@ public class PartnerVO {
      * 风险承担比例
      */
     private BigDecimal riskBearRate;
+    /**
+     * 禁用银行列表 (征信申请)
+     */
+    private String disableBankList;
 
     /**
      * 财务合作信息列表
      */
     private List<PartnerBankAccountDO> bankAccountList = Collections.EMPTY_LIST;
 
-    private List<BaseAreaDO> hasApplyLicensePlateArea =Collections.EMPTY_LIST;
+    private List<BaseAreaDO> hasApplyLicensePlateArea = Collections.EMPTY_LIST;
 }

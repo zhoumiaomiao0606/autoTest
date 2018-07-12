@@ -49,7 +49,7 @@ public class PermissionServiceImpl implements PermissionService {
             return;
         }
 
-        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.get();
+        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.getNodeRolesMap();
 
         List<String> currentTaskCandidateGroups = taskDefinitionKeyCandidateGroupsMap.get(taskDefinitionKey);
 

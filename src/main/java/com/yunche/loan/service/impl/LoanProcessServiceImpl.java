@@ -81,9 +81,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
 
     @Autowired
-    private UserGroupDOMapper userGroupDOMapper;
-
-    @Autowired
     private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
 
     @Autowired
@@ -130,6 +127,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private TaskDistributionService taskDistributionService;
+
+    @Autowired
+    private LoanDataFlowService loanDataFlowService;
+
+    @Autowired
+    private DictService dictService;
 
 
     @Override
@@ -412,7 +415,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private boolean isDataFlowMortgageP2cNewTask(String taskDefinitionKey, Byte action) {
         // 新建【资料流转（抵押资料 - 合伙人->公司）】单据
-        boolean isDataFlowMortgageP2cNewTask = DATA_FLOW_MORTGAGE_P2C_NEW.getCode().equals(taskDefinitionKey)
+        boolean isDataFlowMortgageP2cNewTask = DATA_FLOW_MORTGAGE_P2C.getCode().equals(taskDefinitionKey)
                 && ACTION_NEW_TASK.equals(action);
         return isDataFlowMortgageP2cNewTask;
     }
@@ -1397,6 +1400,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return;
         }
 
+        // 资料流转 -待办节点
+        if (TASK_PROCESS_TODO.equals(taskProcessStatus) && taskDefinitionKey.startsWith("usertask_data_flow")) {
+            // preRecord
+            preRecordDataFlowOrderAndType(loanProcessDO.getOrderId(), taskDefinitionKey);
+        }
+
         // 方法名拼接   setXXX
         String methodBody = null;
         for (LoanProcessEnum e : LoanProcessEnum.values()) {
@@ -1417,7 +1426,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         }
 
-        // setXXX
+        // setXX
         String methodName = "set" + methodBody;
 
         // 反射执行
@@ -1434,6 +1443,26 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
     }
 
+    /**
+     * 资料流转-待办节点-预处理：插入一条待处理的节点记录 -> orderId、type
+     *
+     * @param orderId
+     * @param taskDefinitionKey
+     */
+    private void preRecordDataFlowOrderAndType(Long orderId, String taskDefinitionKey) {
+
+        LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+
+        // taskKey -> type
+        String k = dictService.getKeyByCodeOfLoanDataFlowTypes(taskDefinitionKey);
+        Preconditions.checkArgument(StringUtils.isNotBlank(k), "资料流转-taskDefinitionKey异常");
+
+        loanDataFlowDO.setOrderId(orderId);
+        loanDataFlowDO.setType(Byte.valueOf(k));
+
+        ResultBean result = loanDataFlowService.create(loanDataFlowDO);
+        Preconditions.checkArgument(result.getSuccess(), result.getMsg());
+    }
 
     /**
      * 创建增补单
@@ -1902,7 +1931,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     .filter(Objects::nonNull)
                     .filter(task -> !BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(task.getTaskDefinitionKey())
                             && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                            && !REMIT_REVIEW_FILTER.getCode().equals(task.getTaskDefinitionKey()))
+                            && !REMIT_REVIEW_FILTER.getCode().equals(task.getTaskDefinitionKey())
+                            && !DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode().equals(task.getTaskDefinitionKey())
+                    )
                     .map(task -> {
 
                         TaskStateVO taskStateVO = new TaskStateVO();
@@ -2462,18 +2493,36 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         else if (DATA_FLOW_CONTRACT_C2B_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
             // [资料流转（抵押资料 - 合伙人->公司）]是否已存在
-            Byte dataFlowMortgageP2cNewStatus = loanProcessDO.getDataFlowMortgageP2cNew();
+            Byte dataFlowMortgageP2cStatus = loanProcessDO.getDataFlowMortgageP2c();
             // 是否走了另一条线    -> 新建
-            boolean hasDataFlowMortgageP2cNew = TASK_PROCESS_TODO.equals(dataFlowMortgageP2cNewStatus)
-                    || TASK_PROCESS_DONE.equals(dataFlowMortgageP2cNewStatus)
-                    || TASK_PROCESS_REJECT.equals(dataFlowMortgageP2cNewStatus);
+            boolean otherFlow = TASK_PROCESS_TODO.equals(dataFlowMortgageP2cStatus)
+                    || TASK_PROCESS_DONE.equals(dataFlowMortgageP2cStatus)
+                    || TASK_PROCESS_REJECT.equals(dataFlowMortgageP2cStatus);
 
             // 是否走了另一条线
-            if (hasDataFlowMortgageP2cNew) {
+            if (otherFlow) {
                 variables.put(PROCESS_VARIABLE_TARGET, BANK_LEND_RECORD.getCode());
             } else {
                 // nothing
                 variables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
+            }
+        }
+
+        // [资料流转确认（抵押资料 - 公司->银行）]
+        else if (DATA_FLOW_MORTGAGE_C2B_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            // 是否从前面的流程节点走过来的：  No.1 -> [资料流转（抵押资料 - 银行->公司）]
+            Byte dataFlowMortgageB2cStatus = loanProcessDO.getDataFlowMortgageB2c();
+
+            // 是否走了另一条线    -> 新建
+            boolean notOtherFlow = TASK_PROCESS_DONE.equals(dataFlowMortgageB2cStatus);
+
+            // 是否走了另一条线
+            if (notOtherFlow) {
+                // 否
+                variables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
+            } else {
+                // 是
+                variables.put(PROCESS_VARIABLE_TARGET, DATA_FLOW_MORTGAGE_B2C.getCode());
             }
         }
     }

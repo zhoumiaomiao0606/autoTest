@@ -15,13 +15,14 @@ public class TaskListVO {
     // 已加
     private String id;
     private String salesmanId;
+    private String salesman;
     private String partnerId;
+    private String partner;
     private String customerId;
     private String customer;
     private String orderGmtCreate;
     private String idCard;
     private String mobile;
-    private String salesman;
     private String creditGmtCreate;
     private String remitGmtCreate;
     private String bank;
@@ -32,7 +33,6 @@ public class TaskListVO {
     private String loanGmtCreate;
     private String carType;
     private String licensePlateNumber;
-    private String partner;
     private String loanTime;
     private String downPaymentMoney;
     private String overdueNum;
@@ -63,6 +63,11 @@ public class TaskListVO {
     private String creditMan;
     private String creditDate;
     private String paymentGtCreate;
+
+    private String dataFlowId;
+    private String dataFlowType;
+    private String dataFlowTypeText;
+
 
     // 未加
 

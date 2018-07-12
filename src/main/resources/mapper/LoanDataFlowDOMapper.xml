@@ -41,23 +41,29 @@
   </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
-    insert into loan_data_flow (id, order_id, flow_out_dept_id, 
-      flow_out_dept_name, flow_in_dept_id, flow_in_dept_name, 
-      express_com, express_num, express_send_date, 
-      express_receive_date, express_receive_man, 
-      has_mortgage_contract, type, status, 
-      info, task_key, gmt_create, 
-      gmt_modify)
-    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{flowOutDeptId,jdbcType=BIGINT}, 
-      #{flowOutDeptName,jdbcType=VARCHAR}, #{flowInDeptId,jdbcType=BIGINT}, #{flowInDeptName,jdbcType=VARCHAR}, 
-      #{expressCom,jdbcType=TINYINT}, #{expressNum,jdbcType=VARCHAR}, #{expressSendDate,jdbcType=TIMESTAMP}, 
-      #{expressReceiveDate,jdbcType=TIMESTAMP}, #{expressReceiveMan,jdbcType=VARCHAR}, 
-      #{hasMortgageContract,jdbcType=TINYINT}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
-      #{info,jdbcType=VARCHAR}, #{taskKey,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
-      #{gmtModify,jdbcType=TIMESTAMP})
-  </insert>
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into loan_data_flow (id, order_id, flow_out_dept_id,
+        flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
+        express_com, express_num, express_send_date,
+        express_receive_date, express_receive_man,
+        has_mortgage_contract, type, status,
+        info, task_key, gmt_create,
+        gmt_modify)
+        values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{flowOutDeptId,jdbcType=BIGINT},
+        #{flowOutDeptName,jdbcType=VARCHAR}, #{flowInDeptId,jdbcType=BIGINT}, #{flowInDeptName,jdbcType=VARCHAR},
+        #{expressCom,jdbcType=TINYINT}, #{expressNum,jdbcType=VARCHAR}, #{expressSendDate,jdbcType=TIMESTAMP},
+        #{expressReceiveDate,jdbcType=TIMESTAMP}, #{expressReceiveMan,jdbcType=VARCHAR},
+        #{hasMortgageContract,jdbcType=TINYINT}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT},
+        #{info,jdbcType=VARCHAR}, #{taskKey,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP})
+    </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into loan_data_flow
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

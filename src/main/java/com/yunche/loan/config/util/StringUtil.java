@@ -16,7 +16,7 @@ public class StringUtil {
     private static final Pattern pattern = Pattern.compile("[A-Z]");
 
     /**
-     * 下划线转驼峰
+     * 下划线 -> 驼峰
      *
      * @param underlineStr
      * @return
@@ -45,12 +45,12 @@ public class StringUtil {
     }
 
     /**
-     * 驼峰转下划线
+     * 驼峰 -> 下划线
      *
      * @param str
      * @return
      */
-    public static String underline(String str) {
+    public static String camel2Underline(String str) {
 
         Matcher matcher = pattern.matcher(str);
 
@@ -67,7 +67,27 @@ public class StringUtil {
             return sb.toString();
         }
 
-        return underline(sb.toString());
+        return camel2Underline(sb.toString());
     }
 
+    /**
+     * 首字母 -> 大写
+     *
+     * @param str
+     * @return
+     */
+    public static String firstLetter2UpperCase(String str) {
+
+        if (StringUtils.isBlank(str)) {
+            return null;
+        }
+
+        char startChar = str.charAt(0);
+
+        String endStr = str.substring(1, str.length());
+
+        String firstUpperStr = Character.toUpperCase(startChar) + endStr;
+
+        return firstUpperStr;
+    }
 }

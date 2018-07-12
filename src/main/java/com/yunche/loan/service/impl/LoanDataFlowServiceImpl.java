@@ -1,19 +1,27 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.cache.DictCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
+import com.yunche.loan.domain.vo.DataDictionaryVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.domain.vo.UniversalInfoVO;
+import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
+import com.yunche.loan.mapper.ConfDictDOMapper;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.service.ActivitiVersionService;
+import com.yunche.loan.service.CommonService;
 import com.yunche.loan.service.LoanDataFlowService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.*;
+
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
  * @author liuzhe
@@ -28,17 +36,28 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
 
+    @Autowired
+    private ActivitiVersionService activitiVersionService;
+
+    @Autowired
+    private ConfDictDOMapper confDictDOMapper;
+
+    @Autowired
+    private CommonService commonService;
+
+    @Autowired
+    private DictCache dictCache;
+
 
     @Override
-    public ResultBean<RecombinationVO> detail(Long orderId, String taskKey) {
+    public ResultBean<RecombinationVO> detail(Long orderId, Byte type) {
         Preconditions.checkNotNull(orderId, "orderId不能为空");
-        Preconditions.checkArgument(StringUtils.isNotBlank(taskKey), "taskKey不能为空");
+        Preconditions.checkNotNull(type, "type不能为空");
 
-        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
-
+        UniversalDataFlowDetailVO universalDataFlowDetailVO = loanQueryDOMapper.selectUniversalDataFlowDetail(orderId, type);
 
         RecombinationVO recombinationVO = new RecombinationVO();
-
+        recombinationVO.setDataFlow(universalDataFlowDetailVO);
 
         return ResultBean.ofSuccess(recombinationVO);
     }
@@ -48,6 +67,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     public ResultBean create(LoanDataFlowDO loanDataFlowDO) {
         Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getType(), "type不能为空");
 
+        loanDataFlowDO.setStatus(VALID_STATUS);
         loanDataFlowDO.setGmtCreate(new Date());
         loanDataFlowDO.setGmtModify(new Date());
         int count = loanDataFlowDOMapper.insertSelective(loanDataFlowDO);
@@ -69,17 +89,68 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     }
 
     @Override
-    public ResultBean contract_c2b_detail(Long orderId) {
-        return null;
+    public ResultBean<Object> key() {
+
+        Set<String> loginUserOwnDataFlowNodes = activitiVersionService.getLoginUserOwnDataFlowNodes();
+
+        return ResultBean.ofSuccess(loginUserOwnDataFlowNodes);
     }
 
     @Override
-    public ResultBean contract_c2b_create(LoanDataFlowDO loanDataFlowDO) {
-        return null;
+    public ResultBean<Object> key_get_type(String key) {
+
+        DataDictionaryVO dataDictionaryVO = dictCache.get();
+
+        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowTypes();
+
+        JSONArray attr = loanDataFlowTypes.getAttr();
+
+        final String[] val = {null};
+
+        attr.stream()
+                .forEach(e -> {
+
+                    JSONObject jsonObj = (JSONObject) e;
+
+                    String k = jsonObj.getString("k");
+                    String v = jsonObj.getString("v");
+                    String code = jsonObj.getString("code");
+
+                    if (key.equals(code)) {
+                        val[0] = v;
+                    }
+
+                });
+
+        return ResultBean.ofSuccess(val[0]);
     }
 
     @Override
-    public ResultBean contract_c2b_update(LoanDataFlowDO loanDataFlowDO) {
-        return null;
+    public ResultBean<Object> type_get_key(String type) {
+
+        DataDictionaryVO dataDictionaryVO = dictCache.get();
+
+        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowTypes();
+
+        JSONArray attr = loanDataFlowTypes.getAttr();
+
+        final String[] val = {null};
+
+        attr.stream()
+                .forEach(e -> {
+
+                    JSONObject jsonObj = (JSONObject) e;
+
+                    String k = jsonObj.getString("k");
+                    String v = jsonObj.getString("v");
+                    String code = jsonObj.getString("code");
+
+                    if (type.equals(k)) {
+                        val[0] = code;
+                    }
+
+                });
+
+        return ResultBean.ofSuccess(val[0]);
     }
 }

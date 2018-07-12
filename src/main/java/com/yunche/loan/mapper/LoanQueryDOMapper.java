@@ -81,6 +81,15 @@ public interface LoanQueryDOMapper {
 
     List<UniversalUndistributedCollection> selectUniversalUndistributedCollection();
 
+    /**
+     * 资料流转
+     *
+     * @param orderId
+     * @param type
+     * @return
+     */
+    UniversalDataFlowDetailVO selectUniversalDataFlowDetail(@Param("orderId") Long orderId, @Param("type") Byte type);
+
     //=======================================================================
 
     List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);

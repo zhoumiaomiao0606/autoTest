@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 
-
 @Data
 public class TaskListQuery {
     /**
@@ -52,9 +51,8 @@ public class TaskListQuery {
     //查询条件
     private boolean fuse = false;
 
-
-
     private boolean pull = true;
+
 
     private String orderId;//业务编号
 
@@ -102,6 +100,13 @@ public class TaskListQuery {
 
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
     private List<String> bankList = Lists.newArrayList();//银行ID列表
+
+    // 资料流转-节点类型
+    private Byte dataFlowType;
+    // 资料流转-类型列表
+    private List<String> dataFlowTypeList = Lists.newArrayList();
+    // 资料流转-节点列表
+    private Set<String> dataFlowNodeSet = Sets.newHashSet();
 
     public String getIsStraighten() {
         if (StringUtils.isBlank(isStraighten)) {

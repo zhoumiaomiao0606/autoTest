@@ -29,9 +29,7 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AuthConst.OPERATION;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_SOCIAL_CREDIT_RECORD_FILTER;
-import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_APPLY_VISIT_VERIFY_FILTER;
-import static com.yunche.loan.config.constant.LoanProcessEnum.REMIT_REVIEW_FILTER;
+import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 
 /**
  * @author liuzhe
@@ -184,7 +182,7 @@ public class AuthServiceImpl implements AuthService {
 
         Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
 
-        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.get();
+        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.getNodeRolesMap();
 
         if (!CollectionUtils.isEmpty(taskDefinitionKeyCandidateGroupsMap)) {
 
@@ -212,7 +210,8 @@ public class AuthServiceImpl implements AuthService {
 
                 } else if (!BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(k)
                         && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(k)
-                        && !REMIT_REVIEW_FILTER.getCode().equals(k)) {
+                        && !REMIT_REVIEW_FILTER.getCode().equals(k)
+                        && !DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode().equals(k)) {
 
                     taskMap.put(k, true);
                 }

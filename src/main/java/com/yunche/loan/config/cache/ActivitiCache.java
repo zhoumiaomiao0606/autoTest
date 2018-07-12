@@ -1,7 +1,9 @@
 package com.yunche.loan.config.cache;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.Process;
@@ -18,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author liuzhe
@@ -27,9 +30,19 @@ import java.util.*;
 public class ActivitiCache {
 
     /**
-     * activiti节点-候选组-缓存KEY
+     * activiti节点-用户组-缓存KEY
      */
     private static final String CANDIDATE_GROUP_CACHE_KEY = "activiti:candidate:group";
+
+    /**
+     * data_flow：role-nodes  映射cache-key
+     */
+    private static final String GROUP_CANDIDATE_DATA_FLOW_CACHE_KEY = "activiti:group:candidate:data-flow";
+
+    /**
+     * 资料流转-节点KEY前缀
+     */
+    private static final String DATA_FLOW_NODE_KEY_PREFIX = "usertask_data_flow";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -38,7 +51,12 @@ public class ActivitiCache {
     private RepositoryService repositoryService;
 
 
-    public Map<String, List<String>> get() {
+    /**
+     * all：node-roles 映射关系
+     *
+     * @return
+     */
+    public Map<String, List<String>> getNodeRolesMap() {
         // get
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CANDIDATE_GROUP_CACHE_KEY);
         String result = boundValueOps.get();
@@ -46,8 +64,32 @@ public class ActivitiCache {
             return JSON.parseObject(result, Map.class);
         }
 
-        // 刷新缓存
-        refresh();
+        // 刷新cache
+        refreshNodeRolesCache();
+
+        // get
+        result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            return JSON.parseObject(result, Map.class);
+        }
+        return null;
+    }
+
+    /**
+     * data_flow：role-nodes  映射关系
+     *
+     * @return
+     */
+    public Map<String, List<String>> getDataFlowRoleNodesMap() {
+        // get
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(GROUP_CANDIDATE_DATA_FLOW_CACHE_KEY);
+        String result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            return JSON.parseObject(result, Map.class);
+        }
+
+        // 刷新cache
+        refreshDataFlowRoleNodesCache();
 
         // get
         result = boundValueOps.get();
@@ -62,12 +104,64 @@ public class ActivitiCache {
      */
     @PostConstruct
     public void refresh() {
+        // node-roles  映射cache
+        refreshNodeRolesCache();
+        // data_flow：role-nodes  映射cache
+        refreshDataFlowRoleNodesCache();
+    }
 
+    /**
+     * node - roles 映射cache
+     */
+    private void refreshNodeRolesCache() {
         Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = getTaskDefinitionKeyCandidateGroupsMap();
 
         if (!CollectionUtils.isEmpty(taskDefinitionKeyCandidateGroupsMap)) {
             BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CANDIDATE_GROUP_CACHE_KEY);
             boundValueOps.set(JSON.toJSONString(taskDefinitionKeyCandidateGroupsMap));
+        }
+    }
+
+    /**
+     * data_flow：role-nodes 映射cache
+     */
+    private void refreshDataFlowRoleNodesCache() {
+        // all：node-roles 映射关系
+        Map<String, List<String>> nodeRolesMap = getNodeRolesMap();
+
+        Map<String, Set<String>> roleNodesMap = Maps.newHashMap();
+
+        if (!CollectionUtils.isEmpty(nodeRolesMap)) {
+
+            nodeRolesMap.forEach((node, roles) -> {
+
+                // 过滤data_flow节点key
+                if (node.startsWith(DATA_FLOW_NODE_KEY_PREFIX)) {
+
+                    if (!CollectionUtils.isEmpty(roles)) {
+
+                        roles.stream()
+                                .filter(Objects::nonNull)
+                                .forEach(role -> {
+
+                                    if (!roleNodesMap.containsKey(role)) {
+                                        roleNodesMap.put(role, Sets.newHashSet(node));
+                                    } else {
+                                        Set<String> nodes = roleNodesMap.get(role);
+                                        nodes.add(node);
+                                    }
+
+                                });
+                    }
+                }
+
+            });
+        }
+
+        // set cache
+        if (!CollectionUtils.isEmpty(roleNodesMap)) {
+            BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(GROUP_CANDIDATE_DATA_FLOW_CACHE_KEY);
+            boundValueOps.set(JSON.toJSONString(roleNodesMap));
         }
     }
 
@@ -140,5 +234,28 @@ public class ActivitiCache {
             return list.get(0);
         }
         return null;
+    }
+
+    /**
+     * Map<String, JSONArray>   ->   Map<String, Set<String>>
+     *
+     * @param map
+     * @return
+     */
+    private Map<String, Set<String>> convertValJSONArray2Set(Map<String, JSONArray> map) {
+
+        Map<String, Set<String>> dataFlowRoleNodesMap = Maps.newHashMap();
+
+        map.forEach((k, v) -> {
+
+            // JsonArray -> Set
+            Set<String> vSet = v.stream().map(e -> {
+                return (String) e;
+            }).collect(Collectors.toSet());
+
+            dataFlowRoleNodesMap.put(k, vSet);
+        });
+
+        return dataFlowRoleNodesMap;
     }
 }

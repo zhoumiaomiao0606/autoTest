@@ -52,6 +52,8 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("邮件发送失败");
         } else if (e instanceof ActivitiException) {
             return ResultBean.ofError("流程审核参数有误");
+        } else if (e instanceof NumberFormatException) {
+            return ResultBean.ofError("参数类型转换异常");
         } else if (e instanceof JsonParseException) {
             return ResultBean.ofError("参数类型转换异常");
         } else if (e instanceof JSONPathException) {

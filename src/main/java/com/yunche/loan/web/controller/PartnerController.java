@@ -178,6 +178,5 @@ public class PartnerController {
     @PostMapping(value = "/updatearea")
     public ResultBean modifyPartnerArea(@RequestBody PartnerParam partnerParam) {
         return partnerService.updatePartnerArea(partnerParam);
-
     }
 }

@@ -334,7 +334,7 @@
 -->
 
 
-        <table tableName="loan_process" domainObjectName="LoanProcessDO"
+        <table tableName="conf_dict" domainObjectName="ConfDictDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

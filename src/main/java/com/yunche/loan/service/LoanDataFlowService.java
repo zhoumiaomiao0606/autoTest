@@ -10,16 +10,15 @@ import com.yunche.loan.domain.vo.RecombinationVO;
  */
 public interface LoanDataFlowService {
 
-    ResultBean<RecombinationVO> detail(Long orderId, String taskKey);
+    ResultBean<RecombinationVO> detail(Long orderId, Byte type);
 
     ResultBean create(LoanDataFlowDO loanDataFlowDO);
 
     ResultBean update(LoanDataFlowDO loanDataFlowDO);
 
-    ResultBean contract_c2b_detail(Long orderId);
+    ResultBean<Object> key();
 
-    ResultBean contract_c2b_create(LoanDataFlowDO loanDataFlowDO);
+    ResultBean<Object> key_get_type(String key);
 
-    ResultBean contract_c2b_update(LoanDataFlowDO loanDataFlowDO);
-
+    ResultBean<Object> type_get_key(String type);
 }
