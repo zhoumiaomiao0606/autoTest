@@ -22,9 +22,12 @@ import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
 import com.yunche.loan.service.BankSolutionProcessService;
 import com.yunche.loan.service.LoanProcessService;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.annotation.Validated;
@@ -35,8 +38,9 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Transactional
 public class BankSolutionProcessServiceImpl implements BankSolutionProcessService{
-
+    private static final Logger logger = LoggerFactory.getLogger(BankSolutionProcessServiceImpl.class);
     @Autowired
     SysConfig sysConfig;
 
@@ -86,6 +90,8 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 
     @Override
     public void applyCreditCallback(ICBCApiCallbackParam.ApplyCreditCallback applyCreditCallback) {
+
+        logger.info("征信查询回调===============================================================");
         violationUtil.violation(applyCreditCallback);
         //只有在非成功状态和退回的流水可以进行更新
         if(!checkStatus(applyCreditCallback.getPub().getCmpseq())){
@@ -97,11 +103,11 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             return;
         }
 
-        if(sysConfig.getAssurerno().equals(applyCreditCallback.getPub().getAssurerno())){
+        if(!sysConfig.getAssurerno().equals(applyCreditCallback.getPub().getAssurerno())){
             throw new BizException("保单号错误");
         }
 
-        if(sysConfig.getPlatno().equals(applyCreditCallback.getPub().getPlatno())){
+        if(!sysConfig.getPlatno().equals(applyCreditCallback.getPub().getPlatno())){
             throw new BizException("平台编号错误");
         }
 
@@ -111,6 +117,8 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         003:不通过；
         099:退回，由于资料不全等原因退回
         */
+
+        logger.info("征信查询回调 状态 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
         BankInterfaceSerialDO bankInterfaceSerialDO = new BankInterfaceSerialDO();
         bankInterfaceSerialDO.setSerialNo(applyCreditCallback.getPub().getCmpseq());
         if(IDict.K_RESULT.PASS.equals(applyCreditCallback.getReq().getResult())){
@@ -182,6 +190,8 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 up.setGmtModify(new Date());
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
+            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
+
             ApprovalParam approvalParam = new ApprovalParam();
             approvalParam.setAction(new Byte("0"));
             approvalParam.setInfo(applyCreditCallback.getReq().getNote());
@@ -189,10 +199,13 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
 
             loanProcessService.approval(approvalParam);
+
+            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
         }else{
             throw new BizException("未知错误");
         }
         bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        logger.info("存储数据 开始 ===============================================================");
 
         BankCreditInfoDO DO = bankCreditInfoDOMapper.selectByPrimaryKey(applyCreditCallback.getPub().getCmpseq());
         BankCreditInfoDO V = new BankCreditInfoDO();
@@ -214,6 +227,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             bankCreditInfoDOMapper.updateByPrimaryKeySelective(V);
         }
 
+        logger.info("存储数据 结束  ===============================================================");
     }
 
     @Override
@@ -224,11 +238,11 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         }
 
 
-        if(sysConfig.getAssurerno().equals(applyDiviGeneralCallback.getPub().getAssurerno())){
+        if(!sysConfig.getAssurerno().equals(applyDiviGeneralCallback.getPub().getAssurerno())){
             throw new BizException("保单号错误");
         }
 
-        if(sysConfig.getPlatno().equals(applyDiviGeneralCallback.getPub().getPlatno())){
+        if(!sysConfig.getPlatno().equals(applyDiviGeneralCallback.getPub().getPlatno())){
             throw new BizException("平台编号错误");
         }
 
@@ -247,11 +261,11 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             return;
         }
 
-        if(sysConfig.getAssurerno().equals(multimediaUploadCallback.getPub().getAssurerno())){
+        if(!sysConfig.getAssurerno().equals(multimediaUploadCallback.getPub().getAssurerno())){
             throw new BizException("保单号错误");
         }
 
-        if(sysConfig.getPlatno().equals(multimediaUploadCallback.getPub().getPlatno())){
+        if(!sysConfig.getPlatno().equals(multimediaUploadCallback.getPub().getPlatno())){
             throw new BizException("平台编号错误");
         }
 
@@ -263,6 +277,12 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     }
 
     private boolean checkStatus(String cmpseq){
+
+        BankInterfaceSerialDO D = bankInterfaceSerialDOMapper.selectByPrimaryKey(cmpseq);
+        if(D == null){
+            return false;
+        }
+
         if(StringUtils.isBlank(cmpseq)){
             throw new BizException("缺少流水号");
         }
@@ -273,7 +293,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         if(V.getApiStatus() == null){
             return false;
         }
-        if(V.getApiStatus().intValue() == 200){
+        if(V.getApiStatus().intValue() != 200){
             return false;
         }
 

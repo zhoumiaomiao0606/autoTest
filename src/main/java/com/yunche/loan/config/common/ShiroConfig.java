@@ -81,8 +81,7 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/loadqr/query", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditresult", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditreturn", "anon");
-            filterChainDefinitionMap.put("/api/v1/loanorder/icbc/query", "anon");
-            filterChainDefinitionMap.put("/api/v1/loanorder/icbc/term", "anon");
+            filterChainDefinitionMap.put("/api/v1/loanorder/icbc/multimediaUploadreturn", "anon");
             //        filterChainDefinitionMap.put("/**", "authc,perms");
             filterChainDefinitionMap.put("/**", "authc");
         }
