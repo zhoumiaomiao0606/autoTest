@@ -34,6 +34,7 @@ public class CreditRecordVO {
      */
     private List<CustomerCreditRecord> emergencyContactList = Collections.EMPTY_LIST;
 
+
     @Data
     public static class CustomerCreditRecord {
         /**

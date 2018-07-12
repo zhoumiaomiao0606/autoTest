@@ -9,6 +9,7 @@ import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.domain.entity.MaterialDownHisDO;
+import com.yunche.loan.domain.param.CreditAutomaticCommitParam;
 import com.yunche.loan.domain.param.ICBCApiCallbackParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
@@ -16,8 +17,10 @@ import com.yunche.loan.service.BankSolutionProcessService;
 import com.yunche.loan.service.BankSolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLDecoder;
 
@@ -46,6 +49,12 @@ public class ICBCController {
     @Autowired
     private MaterialDownHisDOMapper materialDownHisDOMapper;
 
+    //请求接口
+    @PostMapping (value = "/creditAutomaticCommit", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean creditAutomaticCommit(@RequestBody @Valid @Validated CreditAutomaticCommitParam param) {
+        bankSolutionService.creditAutomaticCommit(Long.parseLong(param.getOrderId()));
+        return ResultBean.ofSuccess(null);
+    }
 
     //请求接口
     @PostMapping (value = "/test", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

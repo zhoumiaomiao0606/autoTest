@@ -1278,6 +1278,15 @@
 		) b
     </select>
 
-
+    <select id="selectBankInterfaceSerialNote" resultType="java.lang.String">
+		  select serial.reject_reason from bank_interface_serial serial
+		  inner join
+		  (
+		  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+		  				as serial_no
+		  from (select * from bank_interface_serial where status = 3) t GROUP BY trans_code,customer_id
+		  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+		  and serial.customer_id = #{customerId}
+    </select>
 
 </mapper>

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,9 @@ import static com.yunche.loan.config.constant.MultipartTypeConst.MULTIPART_TYPE_
  */
 @Service
 public class LoanOrderServiceImpl implements LoanOrderService {
+
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
 
     @Autowired
     private LoanCustomerService loanCustomerService;
@@ -125,9 +129,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private HistoryService historyService;
-
-    @Autowired
-    private LoanQueryDOMapper loanQueryDOMapper;
 
     @Autowired
     private VehicleInformationService vehicleInformationService;

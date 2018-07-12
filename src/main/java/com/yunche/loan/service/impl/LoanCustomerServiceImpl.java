@@ -13,10 +13,7 @@ import com.yunche.loan.domain.vo.CustDetailVO;
 import com.yunche.loan.domain.vo.CustomerVO;
 import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.domain.vo.LoanRepeatVO;
-import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
-import com.yunche.loan.mapper.LoanCustomerDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanProcessDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanFileService;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +57,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     @Autowired
     LoanProcessDOMapper loanProcessDOMapper;
+
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
 
 
     @Override
@@ -310,7 +311,6 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         // fillCredit
                         fillCredit(principalLender, e.getId());
-
                         custDetailVO.setPrincipalLender(principalLender);
                     }
 
@@ -379,6 +379,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         if (CREDIT_TYPE_BANK.equals(e.getType())) {
                             principalLender.setBankCreditResult(e.getResult());
                             principalLender.setBankCreditInfo(e.getInfo());
+                            principalLender.setCreditNote(loanQueryDOMapper.selectBankInterfaceSerialNote(e.getId()));
                         } else if (CREDIT_TYPE_SOCIAL.equals(e.getType())) {
                             principalLender.setSocialCreditResult(e.getResult());
                             principalLender.setSocialCreditInfo(e.getInfo());
