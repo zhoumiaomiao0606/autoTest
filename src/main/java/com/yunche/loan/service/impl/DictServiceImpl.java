@@ -28,12 +28,12 @@ public class DictServiceImpl implements DictService {
 
 
     @Override
-    public String getCodeByKeyOfLoanDataFlowTypes(String key) {
+    public String getCodeByKeyOfLoanDataFlowType(String key) {
         Preconditions.checkArgument(StringUtils.isNotBlank(key), "key不能为空");
 
         DataDictionaryVO dataDictionaryVO = dictCache.get();
 
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowTypes();
+        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
 
         final String[] code = {null};
 
@@ -60,12 +60,12 @@ public class DictServiceImpl implements DictService {
     }
 
     @Override
-    public String getKeyByCodeOfLoanDataFlowTypes(String code) {
+    public String getKeyByCodeOfLoanDataFlowType(String code) {
         Preconditions.checkArgument(StringUtils.isNotBlank(code), "code不能为空");
 
         DataDictionaryVO dataDictionaryVO = dictCache.get();
 
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowTypes();
+        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
 
         final String[] key = {null};
 
@@ -92,22 +92,22 @@ public class DictServiceImpl implements DictService {
     }
 
     @Override
-    public Map<String, String> getKVMapOfLoanDataFlowTypes() {
+    public Map<String, String> getKVMapOfLoanDataFlowType() {
 
-        Map<String, String> kvMap = getKVMapOfDictField("loanDataFlowTypes");
+        Map<String, String> kvMap = getKVMapOfDictField("loanDataFlowType");
 
         return kvMap;
     }
 
     @Override
-    public Map<String, String> getCodeKMapOfLoanDataFlowTypes() {
+    public Map<String, String> getCodeKMapOfLoanDataFlowType() {
 
         Map<String, String> codeKMap = Maps.newHashMap();
 
         // getAll
         DataDictionaryVO dataDictionaryVO = dictCache.get();
 
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowTypes();
+        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
 
         if (null != loanDataFlowTypes) {
 

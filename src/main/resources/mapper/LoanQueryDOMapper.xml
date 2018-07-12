@@ -1311,8 +1311,7 @@
       LEFT JOIN partner         p     ON  p.id = b.partner_id
       LEFT JOIN department      d     ON  d.id = p.department_id
 
-      WHERE a.id = #{orderId}
-      AND f.type = #{type}
+      WHERE f.id = #{dataFlowId}
     </select>
 
 </mapper>

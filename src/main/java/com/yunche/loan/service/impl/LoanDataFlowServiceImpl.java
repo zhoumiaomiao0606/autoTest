@@ -7,13 +7,10 @@ import com.yunche.loan.config.cache.DictCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
 import com.yunche.loan.domain.vo.DataDictionaryVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
-import com.yunche.loan.mapper.ConfDictDOMapper;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.ActivitiVersionService;
-import com.yunche.loan.service.CommonService;
 import com.yunche.loan.service.LoanDataFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,26 +37,16 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     private ActivitiVersionService activitiVersionService;
 
     @Autowired
-    private ConfDictDOMapper confDictDOMapper;
-
-    @Autowired
-    private CommonService commonService;
-
-    @Autowired
     private DictCache dictCache;
 
 
     @Override
-    public ResultBean<RecombinationVO> detail(Long orderId, Byte type) {
-        Preconditions.checkNotNull(orderId, "orderId不能为空");
-        Preconditions.checkNotNull(type, "type不能为空");
+    public ResultBean<UniversalDataFlowDetailVO> detail(Long id) {
+        Preconditions.checkNotNull(id, "资料流转单ID不能为空");
 
-        UniversalDataFlowDetailVO universalDataFlowDetailVO = loanQueryDOMapper.selectUniversalDataFlowDetail(orderId, type);
+        UniversalDataFlowDetailVO universalDataFlowDetailVO = loanQueryDOMapper.selectUniversalDataFlowDetail(id);
 
-        RecombinationVO recombinationVO = new RecombinationVO();
-        recombinationVO.setDataFlow(universalDataFlowDetailVO);
-
-        return ResultBean.ofSuccess(recombinationVO);
+        return ResultBean.ofSuccess(universalDataFlowDetailVO);
     }
 
     @Override
@@ -101,7 +88,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
         DataDictionaryVO dataDictionaryVO = dictCache.get();
 
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowTypes();
+        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
 
         JSONArray attr = loanDataFlowTypes.getAttr();
 
@@ -130,7 +117,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
         DataDictionaryVO dataDictionaryVO = dictCache.get();
 
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowTypes();
+        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
 
         JSONArray attr = loanDataFlowTypes.getAttr();
 

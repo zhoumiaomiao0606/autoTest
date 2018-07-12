@@ -20,11 +20,11 @@ public class DataDictionaryVO {
      * 字段
      * 资料流转-类型
      */
-    private Detail loanDataFlowTypes;
+    private Detail loanDataFlowType;
     /**
-     * 资料流转-角色对应的节点列表
+     * 资料流转-快递公司
      */
-    private Detail roleDataFlowNodeList;
+    private Detail loanDataFlowExpressCom;
 
 
     /**

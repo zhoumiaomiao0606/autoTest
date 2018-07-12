@@ -2,7 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
-import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
 import com.yunche.loan.service.LoanDataFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanDataFlow")
+@RequestMapping(value = {"/api/v1/loanDataFlow", "/api/v1/app/loanDataFlow"})
 public class LoanDataFlowController {
 
     @Autowired
@@ -22,15 +22,14 @@ public class LoanDataFlowController {
 
 
     @GetMapping(value = "/detail")
-    public ResultBean<RecombinationVO> detail(@RequestParam Long orderId,
-                                              @RequestParam Byte type) {
-        return loanDataFlowService.detail(orderId, type);
+    public ResultBean<UniversalDataFlowDetailVO> detail(@RequestParam Long id) {
+        return loanDataFlowService.detail(id);
     }
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean create(@RequestBody LoanDataFlowDO loanDataFlowDO) {
-        return loanDataFlowService.create(loanDataFlowDO);
-    }
+//    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    public ResultBean create(@RequestBody LoanDataFlowDO loanDataFlowDO) {
+//        return loanDataFlowService.create(loanDataFlowDO);
+//    }
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody LoanDataFlowDO loanDataFlowDO) {

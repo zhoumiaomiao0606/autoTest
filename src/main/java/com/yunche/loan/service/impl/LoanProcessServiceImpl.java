@@ -1454,7 +1454,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
 
         // taskKey -> type
-        String k = dictService.getKeyByCodeOfLoanDataFlowTypes(taskDefinitionKey);
+        String k = dictService.getKeyByCodeOfLoanDataFlowType(taskDefinitionKey);
         Preconditions.checkArgument(StringUtils.isNotBlank(k), "资料流转-taskDefinitionKey异常");
 
         loanDataFlowDO.setOrderId(orderId);

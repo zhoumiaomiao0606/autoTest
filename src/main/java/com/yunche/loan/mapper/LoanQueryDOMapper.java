@@ -84,11 +84,10 @@ public interface LoanQueryDOMapper {
     /**
      * 资料流转
      *
-     * @param orderId
-     * @param type
+     * @param dataFlowId 资料流转单ID
      * @return
      */
-    UniversalDataFlowDetailVO selectUniversalDataFlowDetail(@Param("orderId") Long orderId, @Param("type") Byte type);
+    UniversalDataFlowDetailVO selectUniversalDataFlowDetail(Long dataFlowId);
 
     //=======================================================================
 

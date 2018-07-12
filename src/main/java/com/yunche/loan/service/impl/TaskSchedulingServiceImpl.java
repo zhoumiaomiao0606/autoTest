@@ -6,7 +6,6 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.yunche.loan.config.cache.ActivitiCache;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
@@ -71,9 +70,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Autowired
     private BankCache bankCache;
-
-    @Autowired
-    private ActivitiCache activitiCache;
 
     @Autowired
     private ActivitiVersionService activitiVersionService;
@@ -291,7 +287,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         if (null != dataFlowType) {
 
             // type -> node
-            String node = dictService.getCodeByKeyOfLoanDataFlowTypes(String.valueOf(dataFlowType));
+            String node = dictService.getCodeByKeyOfLoanDataFlowType(String.valueOf(dataFlowType));
 
             // node存在
             if (StringUtils.isNotBlank(node)) {
@@ -317,7 +313,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             taskListQuery.setDataFlowNodeSet(loginUserOwnDataFlowNodes);
 
             // codeKMap
-            Map<String, String> codeKMap = dictService.getCodeKMapOfLoanDataFlowTypes();
+            Map<String, String> codeKMap = dictService.getCodeKMapOfLoanDataFlowType();
 
             // taskKey -> type
             List<String> typeList = loginUserOwnDataFlowNodes.stream()
@@ -344,7 +340,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
         // kvMap
-        Map<String, String> kvMap = dictService.getKVMapOfLoanDataFlowTypes();
+        Map<String, String> kvMap = dictService.getKVMapOfLoanDataFlowType();
 
         // 补充
         convert(list, kvMap);

@@ -2,7 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
-import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
 
 /**
  * @author liuzhe
@@ -10,7 +10,7 @@ import com.yunche.loan.domain.vo.RecombinationVO;
  */
 public interface LoanDataFlowService {
 
-    ResultBean<RecombinationVO> detail(Long orderId, Byte type);
+    ResultBean<UniversalDataFlowDetailVO> detail(Long id);
 
     ResultBean create(LoanDataFlowDO loanDataFlowDO);
 

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

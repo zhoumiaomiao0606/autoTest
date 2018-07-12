@@ -15,7 +15,7 @@ public interface DictService {
      * @param key
      * @return
      */
-    String getCodeByKeyOfLoanDataFlowTypes(String key);
+    String getCodeByKeyOfLoanDataFlowType(String key);
 
     /**
      * 资料流转
@@ -24,7 +24,7 @@ public interface DictService {
      * @param code
      * @return
      */
-    String getKeyByCodeOfLoanDataFlowTypes(String code);
+    String getKeyByCodeOfLoanDataFlowType(String code);
 
     /**
      * 资料流转
@@ -32,7 +32,7 @@ public interface DictService {
      *
      * @return
      */
-    Map<String, String> getKVMapOfLoanDataFlowTypes();
+    Map<String, String> getKVMapOfLoanDataFlowType();
 
     /**
      * 资料流转
@@ -40,5 +40,5 @@ public interface DictService {
      *
      * @return
      */
-    Map<String, String> getCodeKMapOfLoanDataFlowTypes();
+    Map<String, String> getCodeKMapOfLoanDataFlowType();
 }
