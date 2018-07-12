@@ -1048,7 +1048,6 @@
       hcounty = #{hcounty,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
-
   <select id="selectSelfAndRelevanceCustomersByCustTypes" resultMap="BaseResultMap">
     select *
     from

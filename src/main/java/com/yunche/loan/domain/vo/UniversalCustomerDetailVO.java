@@ -92,4 +92,11 @@ public class UniversalCustomerDetailVO {
     private String customer_occupation;
     private String customer_bill_send_type;
 
+    private String customer_cprovince;
+    private String customer_ccity;
+    private String customer_ccounty;
+    private String customer_hprovince;
+    private String customer_hcity;
+    private String customer_hcounty;
+
 }

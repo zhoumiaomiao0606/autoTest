@@ -150,6 +150,17 @@ public class CustomerParam {
     private String openEmail;//是否开通邮件通知
 
     private String email;//邮件地址
+    private String cprovince;
+
+    private String ccity;
+
+    private String ccounty;
+
+    private String hprovince;
+
+    private String hcity;
+
+    private String hcounty;
 
     private List<FileVO> files = Collections.EMPTY_LIST;
 
