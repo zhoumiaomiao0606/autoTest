@@ -169,5 +169,5 @@ public class CustomerVO {
     private String hcounty;
     private List<FileVO> files = Collections.EMPTY_LIST;
 
-    private String creditNote;
+    private String bankCreditNote;
 }
