@@ -10,7 +10,7 @@ public interface BankRepayRecordService {
 
     ResultBean<List<RepaymentRecordVO>> query();
 
-    ResultBean batchFileList(Integer pageIndex, Integer pageSize, String fileName, String startDate,String endDate);
+    ResultBean batchFileList(Integer pageIndex, Integer pageSize, String fileName, String startDate,String endDate,String fileType);
 
 
     ResultBean detail(Integer pageIndex, Integer pageSize,Long orderId,String userName,String idCard, Byte isCustomer);

@@ -3,7 +3,7 @@
 <mapper namespace="com.yunche.loan.mapper.BankFileListRecordDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankFileListRecordDO">
     <id column="bank_file_list_id" jdbcType="BIGINT" property="bankFileListId" />
-    <result column="customer_id" jdbcType="BIGINT" property="customerId" />
+    <id column="customer_id" jdbcType="BIGINT" property="customerId" />
     <result column="order_id" jdbcType="BIGINT" property="orderId" />
     <result column="area_id" jdbcType="VARCHAR" property="areaId" />
     <result column="plat_no" jdbcType="VARCHAR" property="platNo" />
@@ -38,18 +38,19 @@
     run_bank, instalment_types, instalment_amount, sum_number, sum_amount, reminders, 
     is_customer, batch_date
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDOKey" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from bank_file_list_record
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
+      and customer_id = #{customerId,jdbcType=BIGINT}
   </select>
-  <select id="selectNewestByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from bank_file_list_record where order_id = #{orderId,jdbcType=BIGINT} and customer_id =  (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) ORDER BY bank_file_list_id desc limit 1
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDOKey">
+    delete from bank_file_list_record
+    where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
+      and customer_id = #{customerId,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteBylistId" parameterType="java.lang.Long">
     delete from bank_file_list_record
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
   </delete>
@@ -253,9 +254,6 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDO">
     update bank_file_list_record
     <set>
-      <if test="customerId != null">
-        customer_id = #{customerId,jdbcType=BIGINT},
-      </if>
       <if test="orderId != null">
         order_id = #{orderId,jdbcType=BIGINT},
       </if>
@@ -336,11 +334,11 @@
       </if>
     </set>
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
+      and customer_id = #{customerId,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankFileListRecordDO">
     update bank_file_list_record
-    set customer_id = #{customerId,jdbcType=BIGINT},
-      order_id = #{orderId,jdbcType=BIGINT},
+    set order_id = #{orderId,jdbcType=BIGINT},
       area_id = #{areaId,jdbcType=VARCHAR},
       plat_no = #{platNo,jdbcType=VARCHAR},
       guaranty_unit = #{guarantyUnit,jdbcType=VARCHAR},
@@ -367,7 +365,9 @@
       is_customer = #{isCustomer,jdbcType=TINYINT},
       batch_date = #{batchDate,jdbcType=TIMESTAMP}
     where bank_file_list_id = #{bankFileListId,jdbcType=BIGINT}
+      and customer_id = #{customerId,jdbcType=BIGINT}
   </update>
+
   <insert id="insertBatch" parameterType="java.util.List">
     INSERT INTO bank_file_list_record(bank_file_list_id, customer_id, order_id,
     area_id, plat_no, guaranty_unit,
@@ -392,4 +392,9 @@
       #{isCustomer,jdbcType=TINYINT}, #{batchDate,jdbcType=TIMESTAMP})
     </foreach >
   </insert>
+  <select id="selectNewestByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from bank_file_list_record where order_id = #{orderId,jdbcType=BIGINT} and customer_id =  (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) ORDER BY bank_file_list_id desc limit 1
+  </select>
 </mapper>
