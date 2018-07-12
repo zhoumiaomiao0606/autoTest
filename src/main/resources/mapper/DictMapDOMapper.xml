@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.DictMapDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.DictMapDO">
+    <result column="item_key" jdbcType="VARCHAR" property="itemKey" />
+    <result column="dir" jdbcType="VARCHAR" property="dir" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="target" jdbcType="VARCHAR" property="target" />
+  </resultMap>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.DictMapDO">
+    insert into dict_map (item_key, dir, source, 
+      target)
+    values (#{itemKey,jdbcType=VARCHAR}, #{dir,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, 
+      #{target,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.DictMapDO">
+    insert into dict_map
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="itemKey != null">
+        item_key,
+      </if>
+      <if test="dir != null">
+        dir,
+      </if>
+      <if test="source != null">
+        source,
+      </if>
+      <if test="target != null">
+        target,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="itemKey != null">
+        #{itemKey,jdbcType=VARCHAR},
+      </if>
+      <if test="dir != null">
+        #{dir,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="target != null">
+        #{target,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!--getAll-->
+  <select id="getAll" resultMap="BaseResultMap">
+    select
+    item_key, dir, source,
+    target
+    from dict_map
+  </select>
+</mapper>

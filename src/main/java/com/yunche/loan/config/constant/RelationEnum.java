@@ -22,6 +22,7 @@ public enum  RelationEnum {
 
 
 
+
     @Getter
     @Setter
     private Byte key;

@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.vo;
 
+import com.google.common.collect.Lists;
 import lombok.Data;
 
 import java.util.Collections;
@@ -22,7 +23,7 @@ public class CascadeAreaVO {
 
     private List<City> cityList = Collections.EMPTY_LIST;
 
-    private List<County> countyList = Collections.EMPTY_LIST;
+
 
 
 
@@ -36,6 +37,8 @@ public class CascadeAreaVO {
         private Byte level;
 
         private City city;
+
+
     }
 
     @Data
@@ -45,6 +48,7 @@ public class CascadeAreaVO {
         private String name;
 
         private Byte level;
+        private List<County> countyList = Lists.newArrayList();
 
     }
 

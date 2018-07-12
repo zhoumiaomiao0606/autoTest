@@ -311,4 +311,25 @@ public class IDict {
         public  static final Byte K_YORN_YES =1;
 
     }
+
+    public static abstract interface K_BZ{
+        public  static final String K_RMB ="001";
+    }
+
+    /**
+     * 婚姻转台
+     */
+    public static abstract interface K_HYZT{
+        public  static final String K_HYZT_0 ="1";
+        public  static final String K_HYZT_1 ="1";
+        public  static final String K_HYZT_2 ="1";
+        public  static final String K_HYZT_3 ="1";
+        public  static final String K_HYZT_4 ="1";
+        public  static final String K_HYZT_5 ="1";
+        public  static final String K_HYZT_6 ="1";
+
+    }
+
+
+
 }

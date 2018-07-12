@@ -1,21 +1,23 @@
 package com.yunche.loan.service.impl;
 
+import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.CarCache;
+import com.yunche.loan.config.cache.DictMapCache;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.client.ICBCFeignNormal;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
-import com.yunche.loan.config.feign.request.group.*;
+import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
+import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
+import com.yunche.loan.config.feign.request.group.NewValidated;
+import com.yunche.loan.config.feign.request.group.SecondValidated;
 import com.yunche.loan.config.feign.response.*;
-import com.yunche.loan.config.util.AsyncUpload;
-import com.yunche.loan.config.util.GeneratorIDUtil;
-import com.yunche.loan.config.util.ImageUtil;
-import com.yunche.loan.config.util.ViolationUtil;
+import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
@@ -24,19 +26,19 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.yunche.loan.config.constant.LoanCustomerEnum.GUARANTOR;
-import static com.yunche.loan.config.constant.LoanCustomerEnum.PRINCIPAL_LENDER;
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 
 
 @Service
@@ -93,6 +95,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Autowired
     ICBCFeignNormal icbcFeignNormal;
+
+    @Autowired
+    DictMapCache dictMapCache;
+
+
 
     @Resource
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
@@ -637,9 +644,129 @@ public class BankSolutionServiceImpl implements BankSolutionService {
      */
     public CreditCardApplyResponse creditcardapply(BankOpenCardParam bankOpenCardParam) {
         //数据准备
-        bankOpenCardParam.setCmpseq(GeneratorIDUtil.execute());
         ICBCApiRequest.ApplyBankOpenCard  applyBankOpenCard= new ICBCApiRequest.ApplyBankOpenCard();
-        BeanUtils.copyProperties(bankOpenCardParam,applyBankOpenCard);
+
+        ICBCApiRequest.ApplyBankOpenCardCustomer customer =new ICBCApiRequest.ApplyBankOpenCardCustomer();
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId(),VALID_STATUS);
+        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+        if(loanOrderDO == null){
+            throw new BizException("此订单不存在");
+        }
+
+        Long baseId = loanOrderDO.getLoanBaseInfoId();
+        if(baseId == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        if(loanBaseInfoDO == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        //征信银行
+        Long bankId  =  bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
+        if(bankId == null){
+            throw new BizException("贷款银行不存在");
+        }
+        // 客户信息
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankOpenCardParam.getCustomerId(), VALID_STATUS);
+        Set types = Sets.newHashSet(EMERGENCY_CONTACT);
+        List<LoanCustomerDO> emergencys = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(bankOpenCardParam.getOrderId(), types);
+
+
+
+
+
+
+        applyBankOpenCard.setAssurerno(sysConfig.getAssurerno());
+        //TODO 业务发生地
+        applyBankOpenCard.setZoneno("3301");
+        applyBankOpenCard.setOrderno(bankOpenCardParam.getOrderno());
+        applyBankOpenCard.setCmpdate(DateUtil.getDate());
+        applyBankOpenCard.setCmptime(DateUtil.getTime());
+        if(String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)){
+            applyBankOpenCard.setPhybrno(sysConfig.getHzphybrno());
+        }else if(String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ)){
+            applyBankOpenCard.setPhybrno(sysConfig.getTzphybrno());
+        }
+        applyBankOpenCard.setCmpseq(bankOpenCardParam.getCmpseq());
+        applyBankOpenCard.setPlatno(sysConfig.getPlatno());
+        // customer
+        customer.setEngname(loanCustomerDO.getNamePinyin());//
+        customer.setFcurrtyp(IDict.K_BZ.K_RMB);
+        customer.setBirthdate(DateUtil.getDateTo8(loanCustomerDO.getBirth()));
+        customer.setFeeamount(String.valueOf(loanFinancialPlanDO.getBankFee()));
+        customer.setLoanamount(String.valueOf(loanFinancialPlanDO.getLoanAmount()));
+        customer.setTerm(String.valueOf(loanFinancialPlanDO.getLoanTime()));
+        BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        customer.setLoanratio(String.valueOf(loanratio));//贷款成数
+        customer.setCarprice(String.valueOf(loanFinancialPlanDO.getCarPrice()));
+        // TODO
+        customer.setFeeratio(String.valueOf(loanFinancialPlanDO.getSignRate()));
+        //TODO
+        customer.setCprovince("");
+        customer.setCcounty("");//单位地址县
+        customer.setCcity("");//ccity	单位地址市
+        customer.setHcity("");//住宅地址市
+        customer.setHcounty("");//hcounty	住宅地址县
+        customer.setHprovince("");//hprovince	住宅地址省份
+        //
+        customer.setDrawaddr(loanCustomerDO.getCardSendAddrType());
+        //TODO
+        customer.setStatdate("");//证件有效期
+        customer.setUnitname(loanCustomerDO.getCompanyName());//工作单位
+        customer.setAccgetm(loanCustomerDO.getBillSendType());//对帐单寄送方式
+        customer.setMvblno(loanCustomerDO.getMobile());//手机号码
+        customer.setCaddress(loanCustomerDO.getCompanyAddress());
+        customer.setAuthref(loanCustomerDO.getIssuingDepartment());//发证机关
+        customer.setHaddress(loanCustomerDO.getFamilyAddress());//住宅地址
+        customer.setMachgf(loanCustomerDO.getBalanceChangeRemind()); //主卡开通余额变动提醒
+        customer.setMachgmobile(loanCustomerDO.getBalanceChangeTel());//主卡余额提醒发送手机号码
+        customer.setJoindate(DateUtil.getDateTo8(loanCustomerDO.getEnrollmentDate()));//进入单位时间
+        customer.setDrawmode(loanCustomerDO.getCardReceiveMode());//卡片领取方式
+        customer.setChnsname(loanCustomerDO.getName());//姓名
+        // TODO
+        String marry = dictMapCache.getValue(IConstant.MARITAL_STATUS, String.valueOf(loanCustomerDO.getMarry()));
+        customer.setMrtlstat(marry);//婚姻状况
+        //TODO
+        customer.setModelcode("");//modelcode
+        customer.setIndate(DateUtil.getDateTo8(loanCustomerDO.getCheckInDate()));
+        customer.setCadrchoic("3");//单位地址选择 1-预查询，2-修改，3-新增。默认送3
+        customer.setHphoneno("0");//住宅电话号码
+        customer.setHomezip(loanCustomerDO.getPostcode());//homezip	住宅邮编
+        customer.setMamobile(loanCustomerDO.getMasterCardTel());//mamobile	主卡发送移动电话
+        customer.setCustsort(IDict.K_JJLX.IDCARD);//custsort	证件类型
+        customer.setCophoneno("0");//cophoneno	单位电话号码
+        customer.setCorpzip(loanCustomerDO.getCompanyPostcode());//corpzip	单位邮编
+        customer.setCustcode(loanCustomerDO.getIdCard());//custcode	证件号码
+        customer.setMblchoic("3");//mblchoic	手机选择1-预查询，2-修改，3-新增。默认送3
+        customer.setCophozono("0");//cophozono	单位电话区号
+        customer.setCophonext("0");//cophonext	单位电话分机
+        //TODO
+
+        customer.setSex("");//性别
+        customer.setHadrchoic("3");//hadrchoic	住宅地址选择1-预查询，2-修改，3-新增。默认送3
+        customer.setOccptn(loanCustomerDO.getOccupation());//occptn	职业
+        customer.setSmsphone(loanCustomerDO.getBellTel());//smsphone	发送短信帐单手机号码
+        customer.setEmladdrf(loanCustomerDO.getOpenEmail());//emladdrf	开通email对账单
+
+        //紧急联系人
+        //联系人一
+        customer.setReltname1(emergencys.get(0).getName());//姓名
+        customer.setReltsex1(String.valueOf(emergencys.get(0).getSex()));//性别
+        customer.setReltship1(String.valueOf(emergencys.get(0).getCustRelation()));//与主卡申请关系
+        customer.setReltmobl1(StringUtil.isEmpty(emergencys.get(0).getMobile())?"0":emergencys.get(0).getMobile());//联系人一手机
+        customer.setReltmobl1(StringUtil.isEmpty(emergencys.get(0).getMobile())?"0":emergencys.get(0).getMobile());//联系人一手机
+        customer.setRelaphone1(StringUtil.isEmpty(emergencys.get(0).getMobile())?"0":emergencys.get(0).getMobile());//联系人一联系电话号
+        //联系人二
+        customer.setReltname2(emergencys.get(1).getName());//姓名
+        customer.setReltsex2(String.valueOf(emergencys.get(1).getSex()));//性别
+        customer.setReltship2(String.valueOf(emergencys.get(1).getCustRelation()));//与主卡申请关系
+        customer.setReltmobl2(StringUtil.isEmpty(emergencys.get(1).getMobile())?"0":emergencys.get(0).getMobile());//联系人二手机
+        customer.setRtcophon2(StringUtil.isEmpty(emergencys.get(1).getMobile())?"0":emergencys.get(0).getMobile());//联系人二联系电话号
+
+        applyBankOpenCard.setCustomer(customer);
+        applyBankOpenCard.setPictures(bankOpenCardParam.getPictures());
         //发送银行接口
         CreditCardApplyResponse creditcardapply = icbcFeignClient.creditcardapply(applyBankOpenCard);
         return creditcardapply;

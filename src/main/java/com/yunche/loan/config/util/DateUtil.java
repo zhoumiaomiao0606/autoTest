@@ -45,4 +45,10 @@ public class DateUtil {
         }
         return date;
     }
+
+    public static String getDateTo8(Date date){
+        SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMdd");
+        String dateString = dataFormat.format(date);
+        return dateString;
+    }
 }

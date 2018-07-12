@@ -10,4 +10,6 @@ public class IConstant {
     public static final String ICBC_API_TIMESTAMP="icbcApiTimestamp";
     public static final String RETURN_CODE="returnCode";
     public static final String RETURN_MSG="returnMsg";
+
+    public static final String MARITAL_STATUS="MARITAL_STATUS";//婚姻状况
 }

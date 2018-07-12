@@ -3,9 +3,9 @@ package com.yunche.loan.config.cache;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yunche.loan.mapper.BaseAreaDOMapper;
 import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.vo.CascadeAreaVO;
+import com.yunche.loan.mapper.BaseAreaDOMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundValueOperations;
@@ -92,11 +92,8 @@ public class AreaCache {
 
         // 省（全国）
         fillProv(allArea, provCityMap);
-        // 市
+        // 市(包含区、县)
         fillCity(allArea, provCityMap);
-        //区、县
-//        fillCounty(allArea,provCityMap);
-
         // 中文排序,并返回结果
         List<CascadeAreaVO> cascadeAreaVOList = sortAndGet(provCityMap);
 
@@ -105,28 +102,7 @@ public class AreaCache {
         boundValueOps.set(JSON.toJSONString(cascadeAreaVOList));
     }
 
-    /**
-     * 解析并填充区/县
-     * @param allArea
-     * @param provCityMap
-     */
-    private void fillCounty(List<BaseAreaDO> allArea, ConcurrentMap<Long, CascadeAreaVO> provCityMap) {
 
-        allArea.parallelStream()
-                .filter(e -> null != e && null != e.getAreaId() && LEVEL_COUNTY.equals(e.getLevel()))
-                .forEach(e -> {
-
-                    if (provCityMap.containsKey(e.getParentAreaId())) {
-
-                        CascadeAreaVO.County county = new CascadeAreaVO.County();
-                        county.setId(e.getAreaId());
-                        county.setName(e.getAreaName());
-                        county.setLevel(e.getLevel());
-                        provCityMap.get(e.getParentAreaId()).getCountyList().add(county);
-                    }
-
-                });
-    }
 
     /**
      * 获取ALL_AREA缓存
@@ -286,7 +262,6 @@ public class AreaCache {
                         cascadeAreaVO.setName(e.getAreaName());
                         cascadeAreaVO.setLevel(e.getLevel());
                         cascadeAreaVO.setCityList(Lists.newArrayList());
-                        cascadeAreaVO.setCountyList(Lists.newArrayList());
                         provCityMap.put(e.getAreaId(), cascadeAreaVO);
                     }
 
@@ -300,6 +275,8 @@ public class AreaCache {
      * @param provCityMap
      */
     private void fillCity(List<BaseAreaDO> allArea, ConcurrentMap<Long, CascadeAreaVO> provCityMap) {
+
+
         allArea.parallelStream()
                 .filter(e -> null != e && null != e.getAreaId() && LEVEL_CITY.equals(e.getLevel()))
                 .forEach(e -> {
@@ -309,6 +286,16 @@ public class AreaCache {
                         city.setId(e.getAreaId());
                         city.setName(e.getAreaName());
                         city.setLevel(e.getLevel());
+                        allArea.parallelStream()
+                                .filter(c -> null != c && null != c.getParentAreaId() && c.getParentAreaId().equals(city.getId()))
+                                .forEach(c -> {
+                                    CascadeAreaVO.County county = new CascadeAreaVO.County();
+                                        county.setId(c.getAreaId());
+                                        county.setName(c.getAreaName());
+                                        county.setLevel(c.getLevel());
+                                        city.getCountyList().add(county);
+
+                                });
                         provCityMap.get(e.getParentAreaId()).getCityList().add(city);
                     }
 
