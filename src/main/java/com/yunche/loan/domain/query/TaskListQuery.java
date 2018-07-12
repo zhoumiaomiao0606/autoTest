@@ -96,12 +96,18 @@ public class TaskListQuery {
 
     private String endLoanGmtCreate;//贷款时间
 
+    private String serialStatus;
+
+    private String relevanceCustomerName;
+
     private String isStraighten;
     private String sendee;
     private String isRepayment;
 
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
     private List<String> bankList = Lists.newArrayList();//银行ID列表
+
+
 
     public String getIsStraighten() {
         if (StringUtils.isBlank(isStraighten)) {

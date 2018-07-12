@@ -38,6 +38,7 @@ public class TaskListVO {
     private String overdueNum;
     private String telephoneVerifyStatus;
     // 未加
+    private String serialStatus;
     private String taskStatus;
     private String supplementOrderId;
     private String supplementType;
