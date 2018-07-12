@@ -746,7 +746,6 @@
           customer.bell_tel                              AS customer_bell_tel,
           customer.balance_change_tel                    AS customer_balance_change_tel,
           customer.open_card_status                      AS customer_open_card_status,
-          customer.repay_card_number                     AS customer_repay_card_number,
           customer.open_card_curr_status                 AS customer_open_card_curr_status,
           customer.bill_send_type                        AS customer_bill_send_type,
           customer.occupation                            AS customer_occupation,

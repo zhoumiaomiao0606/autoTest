@@ -672,7 +672,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
         // 客户信息
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankOpenCardParam.getCustomerId(), VALID_STATUS);
-        Set types = Sets.newHashSet(EMERGENCY_CONTACT);
+        Set types = Sets.newHashSet(EMERGENCY_CONTACT.getType());
         List<LoanCustomerDO> emergencys = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(bankOpenCardParam.getOrderId(), types);
 
 
