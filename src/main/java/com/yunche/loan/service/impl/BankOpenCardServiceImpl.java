@@ -155,11 +155,17 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     /**
      * 银行开卡
-     * @param bankOpenCardParam
+     * @param orderId
      * @return
      */
     @Override
-    public ResultBean openCard(BankOpenCardParam bankOpenCardParam) {
+    public ResultBean openCard(Long  orderId) {
+        BankOpenCardParam bankOpenCardParam =new BankOpenCardParam();
+        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
+        Preconditions.checkNotNull(orderDO,"订单不存在");
+        bankOpenCardParam.setCustomerId(orderDO.getLoanCustomerId());
+        bankOpenCardParam.setOrderId(orderId);
+        // 文件合并上传
         mergeUpload(bankOpenCardParam);
         CreditCardApplyResponse creditcardapply = bankSolutionService.creditcardapply(bankOpenCardParam);
         return ResultBean.ofSuccess(creditcardapply);

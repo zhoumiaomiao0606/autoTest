@@ -26,9 +26,9 @@ public class BankOpenCardController {
         Preconditions.checkNotNull(orderId,"业务单号不能为空");
         return bankOpenCardService.detail(orderId);
     }
-    @PostMapping(value = "/openCard")
-    public ResultBean open(@RequestBody BankOpenCardParam bankOpenCardParam){
-        return bankOpenCardService.openCard(bankOpenCardParam);
+    @GetMapping(value = "/openCard")
+    public ResultBean open(@RequestParam("orderId") Long orderId){
+        return bankOpenCardService.openCard(orderId);
     }
     @PostMapping(value = "/save")
     public ResultBean save(@RequestBody BankOpenCardParam bankOpenCardParam){

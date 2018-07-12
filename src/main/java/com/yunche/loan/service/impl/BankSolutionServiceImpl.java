@@ -101,6 +101,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
 
 
+
+
     @Resource
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
@@ -670,7 +672,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
         // 客户信息
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankOpenCardParam.getCustomerId(), VALID_STATUS);
-        Set types = Sets.newHashSet(EMERGENCY_CONTACT);
+        Set types = Sets.newHashSet(EMERGENCY_CONTACT.getType());
         List<LoanCustomerDO> emergencys = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(bankOpenCardParam.getOrderId(), types);
 
 
@@ -701,19 +703,33 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         customer.setLoanratio(String.valueOf(loanratio));//贷款成数
         customer.setCarprice(String.valueOf(loanFinancialPlanDO.getCarPrice()));
-        // TODO
-        customer.setFeeratio(String.valueOf(loanFinancialPlanDO.getSignRate()));
-        //TODO
-        customer.setCprovince("");
-        customer.setCcounty("");//单位地址县
-        customer.setCcity("");//ccity	单位地址市
-        customer.setHcity("");//住宅地址市
-        customer.setHcounty("");//hcounty	住宅地址县
-        customer.setHprovince("");//hprovince	住宅地址省份
-        //
+
+        ProductRateDOKey productRateDOKey = new ProductRateDOKey();
+        productRateDOKey.setProdId(loanFinancialPlanDO.getFinancialProductId());
+        productRateDOKey.setLoanTime(loanFinancialPlanDO.getLoanTime());
+        ProductRateDO productRateDO = productRateDOMapper.selectByPrimaryKey(productRateDOKey);
+
+        customer.setFeeratio(String.valueOf(productRateDO.getBankRate()));// 银行费率
+
+        customer.setCprovince(loanCustomerDO.getCprovince());
+        customer.setCcounty(loanCustomerDO.getCcounty());//单位地址县
+        customer.setCcity(loanCustomerDO.getCcity());//ccity	单位地址市
+
+        customer.setHcity(loanCustomerDO.getHcity());//住宅地址市
+        customer.setHcounty(loanCustomerDO.getHcounty());//hcounty	住宅地址县
+        customer.setHprovince(loanCustomerDO.getHprovince());//hprovince	住宅地址省份
+
         customer.setDrawaddr(loanCustomerDO.getCardSendAddrType());
         //TODO
-        customer.setStatdate("");//证件有效期
+        String identityValidity = loanCustomerDO.getIdentityValidity();
+        String[] split = identityValidity.split("-");
+        String endDate=null;
+        if(split.length == 2){
+            endDate = DateUtil.getDateTo8(split[1]);
+        }else{
+            throw new BizException("身份证有效期格式错误[YYYY.MM.DD-YYYY.MM.DD]");
+        }
+        customer.setStatdate(endDate);//证件有效期
         customer.setUnitname(loanCustomerDO.getCompanyName());//工作单位
         customer.setAccgetm(loanCustomerDO.getBillSendType());//对帐单寄送方式
         customer.setMvblno(loanCustomerDO.getMobile());//手机号码
@@ -725,11 +741,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setJoindate(DateUtil.getDateTo8(loanCustomerDO.getEnrollmentDate()));//进入单位时间
         customer.setDrawmode(loanCustomerDO.getCardReceiveMode());//卡片领取方式
         customer.setChnsname(loanCustomerDO.getName());//姓名
-        // TODO
-        String marry = dictMapCache.getValue(IConstant.MARITAL_STATUS, String.valueOf(loanCustomerDO.getMarry()));
-        customer.setMrtlstat(marry);//婚姻状况
-        //TODO
-        customer.setModelcode("");//modelcode
+        customer.setMrtlstat(dictMapCache.getValue(IConstant.MARITAL_STATUS, String.valueOf(loanCustomerDO.getMarry())));//婚姻状况
+        customer.setModelcode(dictMapCache.getValue(IConstant.COMPANY_NATURE, String.valueOf(loanCustomerDO.getCompanyNature())));//modelcode
+
         customer.setIndate(DateUtil.getDateTo8(loanCustomerDO.getCheckInDate()));
         customer.setCadrchoic("3");//单位地址选择 1-预查询，2-修改，3-新增。默认送3
         customer.setHphoneno("0");//住宅电话号码
@@ -742,9 +756,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setMblchoic("3");//mblchoic	手机选择1-预查询，2-修改，3-新增。默认送3
         customer.setCophozono("0");//cophozono	单位电话区号
         customer.setCophonext("0");//cophonext	单位电话分机
-        //TODO
-
-        customer.setSex("");//性别
+        customer.setSex(String.valueOf(loanCustomerDO.getSex()));//性别
         customer.setHadrchoic("3");//hadrchoic	住宅地址选择1-预查询，2-修改，3-新增。默认送3
         customer.setOccptn(loanCustomerDO.getOccupation());//occptn	职业
         customer.setSmsphone(loanCustomerDO.getBellTel());//smsphone	发送短信帐单手机号码

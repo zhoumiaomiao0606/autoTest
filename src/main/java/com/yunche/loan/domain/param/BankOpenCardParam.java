@@ -42,13 +42,26 @@ public class BankOpenCardParam  extends ICBCApiRequest.ApplyBankOpenCard{
 
         private String openCardStatus;
 
-        private String repayCardNumber;
+        private String lendCard;
 
         private Byte education;
 
         private Byte companyNature;
 
         private String billSendType;
+
+
+        private String cprovince;
+
+        private String ccity;
+
+        private String ccounty;
+
+        private String hprovince;
+
+        private String hcity;
+
+        private String hcounty;
 
         private List<FileVO> files = Collections.EMPTY_LIST;
 
