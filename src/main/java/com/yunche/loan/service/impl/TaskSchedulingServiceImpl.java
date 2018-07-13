@@ -225,10 +225,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery) {
 
-        if (11 == appTaskListQuery.getMultipartType()) {
-            return queryDataFlowAppTaskList(appTaskListQuery);
-        }
-
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -261,13 +257,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         return ResultBean.ofSuccess(appTaskVOList, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
-    private ResultBean<List<AppTaskVO>> queryDataFlowAppTaskList(AppTaskListQuery appTaskListQuery) {
-
-//        ResultBean<List<TaskListVO>> list = queryDataFlowTaskList(appTaskListQuery);
-
-
-        return ResultBean.ofSuccess(null);
-    }
 
     @Override
     public ResultBean<List<TaskListVO>> queryDataFlowTaskList(TaskListQuery taskListQuery) {
