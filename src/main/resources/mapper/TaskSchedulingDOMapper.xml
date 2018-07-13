@@ -436,9 +436,9 @@
               <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
               left join
                   (
-                    select DISTINCT id from loan_order where loan_customer_id =
+                    select DISTINCT id from loan_order where loan_customer_id in
                       (
-                      select DISTINCT id  from loan_customer where principal_cust_id =
+                      select DISTINCT id  from loan_customer where principal_cust_id in
                         (
                           select serial.customer_id from bank_interface_serial serial
                           inner join
