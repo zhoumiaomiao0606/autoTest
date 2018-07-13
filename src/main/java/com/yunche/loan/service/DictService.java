@@ -36,9 +36,18 @@ public interface DictService {
 
     /**
      * 资料流转
-     * code-K  map
+     * K-CODE  map
+     *
+     * @return
+     */
+    Map<String, String> getKCodeMapOfLoanDataFlowType();
+
+    /**
+     * 资料流转
+     * CODE-K  map
      *
      * @return
      */
     Map<String, String> getCodeKMapOfLoanDataFlowType();
+
 }

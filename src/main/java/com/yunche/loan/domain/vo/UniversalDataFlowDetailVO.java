@@ -24,6 +24,10 @@ public class UniversalDataFlowDetailVO {
      */
     private String idCard;
     /**
+     * 手机号
+     */
+    private String mobile;
+    /**
      * 业务员
      */
     private String salesmanName;
@@ -65,11 +69,16 @@ public class UniversalDataFlowDetailVO {
 
     private Byte type;
 
+    private String typeText;
+
     private Byte status;
 
     private String info;
 
     private String taskKey;
+
+    // 打回原因
+    private String rejectReason;
 
     private Date gmtCreate;
 

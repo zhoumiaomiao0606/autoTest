@@ -13,7 +13,9 @@ import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.ActivitiVersionService;
+import com.yunche.loan.service.DictService;
 import com.yunche.loan.service.LoanDataFlowService;
+import com.yunche.loan.service.LoanRejectLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,12 +46,24 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     @Autowired
     private DepartmentCache departmentCache;
 
+    @Autowired
+    private LoanRejectLogService loanRejectLogService;
+
+    @Autowired
+    private DictService dictService;
+
 
     @Override
     public ResultBean<UniversalDataFlowDetailVO> detail(Long id) {
         Preconditions.checkNotNull(id, "资料流转单ID不能为空");
 
         UniversalDataFlowDetailVO universalDataFlowDetailVO = loanQueryDOMapper.selectUniversalDataFlowDetail(id);
+
+        // kvMap
+        Map<String, String> kvMap = dictService.getKVMapOfLoanDataFlowType();
+        // type -> typeText
+        String typeText = kvMap.get(String.valueOf(universalDataFlowDetailVO.getType()));
+        universalDataFlowDetailVO.setTypeText(typeText);
 
         return ResultBean.ofSuccess(universalDataFlowDetailVO);
     }
