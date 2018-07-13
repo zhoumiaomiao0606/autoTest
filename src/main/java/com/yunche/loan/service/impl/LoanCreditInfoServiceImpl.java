@@ -11,6 +11,7 @@ import com.yunche.loan.domain.vo.LoanCreditInfoVO;
 import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanFileService;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +37,10 @@ import static com.yunche.loan.config.constant.CustomerConst.*;
 @Service
 @Transactional
 public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
+
+
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
 
 
     @Autowired
@@ -194,7 +200,6 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         fillFiles(emergencyContact, emergencyContact.getCustomerId());
                         // 征信结果
                         fillCreditMsg(emergencyContact, creditType);
-
                         emergencyContactList.add(emergencyContact);
                     }
                 });

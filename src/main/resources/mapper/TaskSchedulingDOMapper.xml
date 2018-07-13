@@ -313,10 +313,14 @@
                                                                AS paymentGtCreate,
                   <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
+                          join_serial.serial_no                   AS serialNo,
+                          join_serial.api_status                  AS serialApiStatus,
                           join_serial.status                      AS serialStatus,
                           deputy.credit_apply                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
+                          join_serial.serial_no                   AS serialNo,
+                          join_serial.api_status                  AS serialApiStatus,
                           join_serial.status                      AS serialStatus,
                           deputy.bank_credit_record               AS taskStatus
                       </when>
@@ -710,7 +714,25 @@
               </if>
             <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
                 <if test="serialStatus != null">
-                    AND tab.serialStatus = #{serialStatus}
+                    <choose>
+                        <when test="serialStatus != 'exception'">
+                            AND tab.serialStatus = #{serialStatus}
+                        </when>
+                        <otherwise>
+                            AND
+                            case when
+                                    serialNo is null then false
+                                 else
+                                  case when
+                                    tab.serialApiStatus != 200
+                                  then
+                                    true
+                                  else
+                                    tab.serialStatus not in (0,1,2,3)
+                                  end
+                                end
+                        </otherwise>
+                    </choose>
                 </if>
             </if>
             <if test="relevanceCustomerName != null">
