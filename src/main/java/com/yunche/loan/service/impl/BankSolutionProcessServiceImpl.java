@@ -177,7 +177,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 LoanCreditInfoDO up = new LoanCreditInfoDO();
                 up.setCustomerId(D.getCustomerId());
                 up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                up.setInfo(applyCreditCallback.getReq().getNote());
                 up.setType(new Byte("1"));
                 up.setStatus(new Byte("0"));
                 up.setGmtCreate(new Date());
@@ -186,7 +185,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
                 up.setCustomerId(D.getCustomerId());
                 up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                up.setInfo(applyCreditCallback.getReq().getNote());
                 up.setGmtModify(new Date());
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
@@ -194,10 +192,10 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 
             ApprovalParam approvalParam = new ApprovalParam();
             approvalParam.setAction(new Byte("0"));
-            approvalParam.setInfo(applyCreditCallback.getReq().getNote());
             approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
             approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
-
+            approvalParam.setNeedLog(false);
+            approvalParam.setCheckPermission(false);
             loanProcessService.approval(approvalParam);
 
             logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
