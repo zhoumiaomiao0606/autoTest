@@ -74,5 +74,7 @@ public class CreditRecordVO {
         private List<Long> relevanceOrderlist;
 
         private String  guaranteeRela;//担保关系
+
+        private String bankCreditStatus;
     }
 }
