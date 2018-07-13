@@ -27,7 +27,7 @@ public class CommonController {
      * @return
      */
     @GetMapping(value = "/dict")
-    public ResultBean<DataDictionaryVO> dictionary() throws Exception {
-        return commonService.dictionary();
+    public ResultBean<DataDictionaryVO> dictionary(@RequestParam(required = false) String field) {
+        return commonService.dictionary(field);
     }
 }

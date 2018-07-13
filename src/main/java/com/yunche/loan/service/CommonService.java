@@ -9,5 +9,5 @@ import com.yunche.loan.domain.vo.DataDictionaryVO;
  */
 public interface CommonService {
 
-    ResultBean<DataDictionaryVO> dictionary() throws Exception;
+    ResultBean<DataDictionaryVO> dictionary(String field);
 }

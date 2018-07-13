@@ -47,14 +47,14 @@ public class StringUtil {
     /**
      * 驼峰 -> 下划线
      *
-     * @param str
+     * @param camelStr
      * @return
      */
-    public static String camel2Underline(String str) {
+    public static String camel2Underline(String camelStr) {
 
-        Matcher matcher = pattern.matcher(str);
+        Matcher matcher = pattern.matcher(camelStr);
 
-        StringBuffer sb = new StringBuffer(str);
+        StringBuffer sb = new StringBuffer(camelStr);
 
         if (matcher.find()) {
             sb = new StringBuffer();
