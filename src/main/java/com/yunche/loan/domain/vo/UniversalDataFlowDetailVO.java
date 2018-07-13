@@ -77,9 +77,6 @@ public class UniversalDataFlowDetailVO {
 
     private String taskKey;
 
-    // 打回原因
-    private String rejectReason;
-
     private Date gmtCreate;
 
     private Date gmtModify;
