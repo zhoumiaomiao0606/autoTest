@@ -102,6 +102,16 @@
         limit #{startRow}, #{pageSize}
     </select>
 
+    <!--getAll-->
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from partner
+        <if test="status != null">
+            WHERE status = #{status}
+        </if>
+    </select>
+
     <!--getAllName-->
     <select id="getAllName" resultType="java.lang.String">
         select name

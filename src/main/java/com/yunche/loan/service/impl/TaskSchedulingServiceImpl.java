@@ -15,6 +15,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.entity.LoanRejectLogDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
@@ -77,6 +78,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Autowired
     private DictService dictService;
+
+    @Autowired
+    private LoanRejectLogService loanRejectLogService;
 
 
     @Override
@@ -393,6 +397,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             return;
         }
 
+        // kCodeMap
+        Map<String, String> kCodeMap = dictService.getKCodeMapOfLoanDataFlowType();
+        if (CollectionUtils.isEmpty(kvMap)) {
+            return;
+        }
+
         list.parallelStream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
@@ -403,7 +413,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     // dataFlowTypeText
                     e.setDataFlowTypeText(v);
 
-                    // 2
+                    // 2   - 任务状态Text
                     if (TASK_STATUS_2_TODO.equals(Integer.valueOf(e.getTaskStatus()))) {
                         if (v.endsWith("-确认接收")) {
                             e.setTaskType(String.valueOf(TASK_STATUS_22_OF_DATA_FLOW_TO_BE_RECEIVED));
@@ -411,6 +421,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                         } else {
                             e.setTaskType(String.valueOf(TASK_STATUS_21_OF_DATA_FLOW_TO_BE_SEND));
                             e.setTaskTypeText("待邮寄");
+                        }
+                    }
+
+                    // 3   - 打回原因
+                    else if (TASK_STATUS_3_REJECT.equals(Integer.valueOf(e.getTaskStatus()))) {
+
+                        String code = kCodeMap.get(e.getDataFlowType());
+                        LoanRejectLogDO loanRejectLogDO = loanRejectLogService.rejectLog(Long.valueOf(e.getId()), code);
+
+                        if (null != loanRejectLogDO) {
+                            e.setRejectReason(loanRejectLogDO.getReason());
                         }
                     }
 

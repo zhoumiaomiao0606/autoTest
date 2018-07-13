@@ -100,6 +100,35 @@ public class DictServiceImpl implements DictService {
     }
 
     @Override
+    public Map<String, String> getKCodeMapOfLoanDataFlowType() {
+        Map<String, String> kCodeMap = Maps.newHashMap();
+
+        // getAll
+        DataDictionaryVO dataDictionaryVO = dictCache.get();
+
+        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
+
+        if (null != loanDataFlowTypes) {
+
+            JSONArray attr = loanDataFlowTypes.getAttr();
+
+            attr.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        JSONObject eJObj = (JSONObject) e;
+
+                        String k = eJObj.getString("k");
+                        String code = eJObj.getString("code");
+
+                        kCodeMap.put(k, code);
+                    });
+        }
+
+        return kCodeMap;
+    }
+
+    @Override
     public Map<String, String> getCodeKMapOfLoanDataFlowType() {
 
         Map<String, String> codeKMap = Maps.newHashMap();

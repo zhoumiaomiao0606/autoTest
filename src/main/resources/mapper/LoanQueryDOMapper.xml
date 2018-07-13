@@ -1281,6 +1281,7 @@
                 c.id_card                         AS idCard,
                 c.name                            AS customerName,
                 c.name                            AS salesmanName,
+                c.mobile                          AS mobile,
                 d.name                            AS departmentName,
                 p.name                            AS partnerName,
                 b.bank                            AS bankName,

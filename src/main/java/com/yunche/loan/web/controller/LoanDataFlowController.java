@@ -2,11 +2,14 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
 import com.yunche.loan.service.LoanDataFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -34,6 +37,11 @@ public class LoanDataFlowController {
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody LoanDataFlowDO loanDataFlowDO) {
         return loanDataFlowService.update(loanDataFlowDO);
+    }
+
+    @GetMapping(value = "/flowDept")
+    public ResultBean<List<BaseVO>> flowOutDept() {
+        return loanDataFlowService.flowDept();
     }
 
     @GetMapping(value = "/key")
