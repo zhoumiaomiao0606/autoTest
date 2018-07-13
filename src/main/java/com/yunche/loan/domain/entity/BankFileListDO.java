@@ -21,4 +21,4 @@ public class BankFileListDO {
     private Date gmtCreate;
 
 
-}l
+}
