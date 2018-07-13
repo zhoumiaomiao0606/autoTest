@@ -92,8 +92,12 @@ public enum LoanFileEnum {
     //0901【分期】其他图片(zip包的格式)
     OTHER_ZIP((byte)53,"其他图片"),
     //0902【分期】视频面签视频资料
-    VIDEO_INTERVIEW((byte)54,"视频面签视频资料");
+    VIDEO_INTERVIEW((byte)54,"视频面签视频资料"),
 
+    SIGNATURE_VIDEO((byte)55,"签字视频"),
+    INTERROGATION_VIDEO((byte)56,"问话视频"),
+    CUSHION_INFORMATION((byte)57,"垫款资料"),
+    ASSET_PACKAGING((byte)58,"资产包");
     @Getter
     @Setter
     private Byte type;

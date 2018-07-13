@@ -3,7 +3,8 @@ package com.yunche.loan.web.controller;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.BankRepayImpRecordDO;
+import com.yunche.loan.domain.entity.BankFileListDO;
+import com.yunche.loan.mapper.BankFileListDOMapper;
 import com.yunche.loan.mapper.BankRepayImpRecordDOMapper;
 import com.yunche.loan.service.BankRepayRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class BankRepayRecordController {
 
     @Autowired
     BankRepayImpRecordDOMapper bankRepayImpRecordDOMapper;
+
+    @Autowired
+    BankFileListDOMapper bankFileListDOMapper;
 
     @GetMapping(value = "/list")
     public ResultBean query(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize,
@@ -49,8 +53,8 @@ public class BankRepayRecordController {
     @GetMapping(value = "/download")
     public ResultBean download(@RequestParam("listId")Long listId){
         Preconditions.checkNotNull(listId,"批次号不能为空");
-        BankRepayImpRecordDO impRecordDO = bankRepayImpRecordDOMapper.selectByPrimaryKey(listId);
-        return ResultBean.ofSuccess(impRecordDO);
+        BankFileListDO bankFileListDO = bankFileListDOMapper.selectByPrimaryKey(listId);
+        return ResultBean.ofSuccess(bankFileListDO);
     }
 
 

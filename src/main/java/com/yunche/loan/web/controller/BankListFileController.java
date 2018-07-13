@@ -3,6 +3,8 @@ package com.yunche.loan.web.controller;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BankFileListDO;
+import com.yunche.loan.mapper.BankFileListDOMapper;
 import com.yunche.loan.service.BankListFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,9 @@ public class BankListFileController {
 
     @Autowired
     BankListFileService bankListFileService;
+
+    @Autowired
+    BankFileListDOMapper bankFileListDOMapper;
     @GetMapping(value = "/list")
     public ResultBean query(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize,
                             @RequestParam(value = "fileType",required = false)String fileType,
@@ -34,5 +39,13 @@ public class BankListFileController {
         return bankListFileService.detail(pageIndex,pageSizes,listId,userName,idCard,isCustomer);
     }
 
+    @GetMapping(value = "/download")
+    public ResultBean download(@RequestParam("listId")Long listId){
+        Preconditions.checkNotNull(listId,"批次号不能为空");
+        BankFileListDO bankFileListDO = bankFileListDOMapper.selectByPrimaryKey(listId);
+        Preconditions.checkNotNull(bankFileListDO,"文件不存在");
+        Preconditions.checkArgument(bankFileListDO.getFileKey()!=null,"文件不存在");
+        return ResultBean.ofSuccess(bankFileListDO);
+    }
 
 }
