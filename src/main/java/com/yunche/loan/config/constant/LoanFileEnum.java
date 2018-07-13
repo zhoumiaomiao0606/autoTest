@@ -39,7 +39,11 @@ public enum LoanFileEnum {
     DRIVING_LICENSE((byte)23,"行驶证"),
     ASSESSMENT_DATA((byte)24,"评估资料"),
     PAYMENT_VOUCHER((byte)25,"打款凭证"),
-    ZIP_PACK((byte)26,"zip包");
+    ZIP_PACK((byte)26,"zip包"),
+    SIGNATURE_VIDEO((byte)55,"签字视频"),
+    INTERROGATION_VIDEO((byte)56,"问话视频"),
+    CUSHION_INFORMATION((byte)57,"垫款资料"),
+    ASSET_PACKAGING((byte)58,"资产包");
 
     @Getter
     @Setter

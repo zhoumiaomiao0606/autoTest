@@ -122,7 +122,7 @@ public class AppCustomerInfoVO {
         /**
          * 房屋面积
          */
-        private Long floorSpace;
+        private BigDecimal floorSpace;
         /**
          *户口性质
          */

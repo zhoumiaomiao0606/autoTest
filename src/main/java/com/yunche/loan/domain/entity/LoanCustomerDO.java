@@ -99,7 +99,7 @@ public class LoanCustomerDO {
 
     private Long feedingNum;
 
-    private Long floorSpace;
+    private BigDecimal floorSpace;
 
     private Byte houseOwnerRelation;
 
