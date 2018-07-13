@@ -420,6 +420,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
         applyDiviGeneral.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
         applyDiviGeneral.setBusitype(busitype);
+        applyDiviGeneral.setCustomerId(customerId.toString());
         applyDiviGeneral.setFileNum(String.valueOf(pictures.size()));
 
         //resultsum
@@ -569,6 +570,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyCredit.setAssurerno(sysConfig.getAssurerno());
         applyCredit.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
         applyCredit.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
+        applyCredit.setCustomerId(loanCustomerDO.getId().toString());
         applyCredit.setFileNum((String.valueOf(fileNumList.size())));
         //customer
         customer.setMastername(loanCustomerDO.getName());
@@ -671,7 +673,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款银行不存在");
         }
         // 客户信息
-        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankOpenCardParam.getCustomerId(), VALID_STATUS);
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(Long.parseLong(bankOpenCardParam.getCustomerId()), VALID_STATUS);
         Set types = Sets.newHashSet(EMERGENCY_CONTACT.getType());
         List<LoanCustomerDO> emergencys = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(bankOpenCardParam.getOrderId(), types);
 

@@ -163,7 +163,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         BankOpenCardParam bankOpenCardParam =new BankOpenCardParam();
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
         Preconditions.checkNotNull(orderDO,"订单不存在");
-        bankOpenCardParam.setCustomerId(orderDO.getLoanCustomerId());
+        bankOpenCardParam.setCustomerId(orderDO.getLoanCustomerId().toString());
         bankOpenCardParam.setOrderId(orderId);
         // 文件合并上传
         mergeUpload(bankOpenCardParam);
@@ -234,11 +234,11 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         BeanUtils.copyProperties(bankOpenCardParam,loanCustomerDO);
-        loanCustomerDO.setId(bankOpenCardParam.getCustomerId());
+        loanCustomerDO.setId(Long.parseLong(bankOpenCardParam.getCustomerId()));
         Preconditions.checkNotNull(loanCustomerDO.getId(),"客户信息不存在");
         int count = loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
         Preconditions.checkArgument(count>0,"客户信息更新失败");
-        ResultBean<Void> updateFileResult = loanFileService.updateOrInsertByCustomerIdAndUploadType(bankOpenCardParam.getCustomerId(), bankOpenCardParam.getFiles(), UPLOAD_TYPE_NORMAL);
+        ResultBean<Void> updateFileResult = loanFileService.updateOrInsertByCustomerIdAndUploadType(Long.parseLong(bankOpenCardParam.getCustomerId()), bankOpenCardParam.getFiles(), UPLOAD_TYPE_NORMAL);
 
         return ResultBean.ofSuccess("保存成功");
     }
@@ -329,10 +329,10 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
      */
     private void mergeUpload(BankOpenCardParam bankOpenCardParam) {
 
-        List<LoanFileDO> idCardFront = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_FRONT.getType(), (byte) 1);
-        List<LoanFileDO> idCardback = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), ID_CARD_BACK.getType(), (byte) 1);
-        List<LoanFileDO> specialQuotaApply = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), SPECIAL_QUOTA_APPLY.getType(), (byte) 1);
-        List<LoanFileDO> openCardData = loanFileDOMapper.listByCustomerIdAndType(bankOpenCardParam.getCustomerId(), OPEN_CARD_DATA.getType(), (byte) 1);
+        List<LoanFileDO> idCardFront = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), ID_CARD_FRONT.getType(), (byte) 1);
+        List<LoanFileDO> idCardback = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), ID_CARD_BACK.getType(), (byte) 1);
+        List<LoanFileDO> specialQuotaApply = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), SPECIAL_QUOTA_APPLY.getType(), (byte) 1);
+        List<LoanFileDO> openCardData = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), OPEN_CARD_DATA.getType(), (byte) 1);
 
         List<LoanFileDO> openCardTypes = Lists.newArrayList();
         openCardTypes.addAll(idCardFront);
