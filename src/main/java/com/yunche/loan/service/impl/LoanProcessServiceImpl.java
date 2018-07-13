@@ -2199,6 +2199,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanRejectLogDO loanRejectLogDO = loanRejectLogService.rejectLog(orderId, taskDefinitionKey);
         if (null != loanRejectLogDO) {
             BeanUtils.copyProperties(loanRejectLogDO, loanRejectLogVO);
+            loanRejectLogVO.setOrderId(String.valueOf(loanRejectLogDO.getOrderId()));
         }
 
         return ResultBean.ofSuccess(loanRejectLogVO);

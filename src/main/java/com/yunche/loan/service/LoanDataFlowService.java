@@ -2,7 +2,10 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
+
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -15,6 +18,8 @@ public interface LoanDataFlowService {
     ResultBean create(LoanDataFlowDO loanDataFlowDO);
 
     ResultBean update(LoanDataFlowDO loanDataFlowDO);
+
+    ResultBean<List<BaseVO>> flowDept();
 
     ResultBean<Object> key();
 

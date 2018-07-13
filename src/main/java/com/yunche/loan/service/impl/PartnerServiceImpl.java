@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.cache.DepartmentCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.domain.entity.*;
@@ -83,6 +84,9 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private DepartmentCache departmentCache;
+
 
     @Override
     @Transactional
@@ -114,6 +118,9 @@ public class PartnerServiceImpl implements PartnerService {
 
         // 绑定业务产品列表
         bindBizModel(partnerId, partnerParam.getAreaId(), partnerParam.getBizModelIdList());
+
+        // refreshFlowDept
+        departmentCache.refresh();
 
         return ResultBean.ofSuccess(partnerId, "创建成功");
     }
@@ -256,6 +263,9 @@ public class PartnerServiceImpl implements PartnerService {
         // 编辑绑定业务产品的限制区域
         updateRelaBizModelArea(partnerParam.getId(), partnerParam.getAreaId());
 
+        // refreshFlowDept
+        departmentCache.refresh();
+
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
@@ -318,6 +328,9 @@ public class PartnerServiceImpl implements PartnerService {
 
         // 清空账户信息
         partnerBankAccountDOMapper.deleteByPartnerId(id);
+
+        // refreshFlowDept
+        departmentCache.refresh();
 
         return ResultBean.ofSuccess(null, "删除成功");
     }

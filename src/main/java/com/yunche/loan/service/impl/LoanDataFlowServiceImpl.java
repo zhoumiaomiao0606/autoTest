@@ -3,9 +3,11 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.cache.DepartmentCache;
 import com.yunche.loan.config.cache.DictCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.DataDictionaryVO;
 import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
@@ -38,6 +40,9 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Autowired
     private DictCache dictCache;
+
+    @Autowired
+    private DepartmentCache departmentCache;
 
 
     @Override
@@ -73,6 +78,14 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         Preconditions.checkArgument(count > 0, "编辑失败");
 
         return ResultBean.ofSuccess(null, "编辑成功");
+    }
+
+    @Override
+    public ResultBean<List<BaseVO>> flowDept() {
+
+        List<BaseVO> flowDept = departmentCache.getFlowDept();
+
+        return ResultBean.ofSuccess(flowDept);
     }
 
     @Override
@@ -140,4 +153,5 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
         return ResultBean.ofSuccess(val[0]);
     }
+
 }
