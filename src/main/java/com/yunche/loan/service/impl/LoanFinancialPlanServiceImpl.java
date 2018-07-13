@@ -51,6 +51,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
 
     @Autowired
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+    @Autowired
     private LoanBaseInfoService loanBaseInfoService;
 
 
