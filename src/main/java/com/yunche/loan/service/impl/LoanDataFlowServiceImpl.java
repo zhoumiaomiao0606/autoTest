@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanDataFlowConst.FLOW_END_NO;
 
 /**
  * @author liuzhe
@@ -47,11 +47,17 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     private DepartmentCache departmentCache;
 
     @Autowired
-    private LoanRejectLogService loanRejectLogService;
-
-    @Autowired
     private DictService dictService;
 
+
+    @Override
+    public LoanDataFlowDO getLastByOrderIdAndType(Long orderId, Byte type) {
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+        Preconditions.checkNotNull(type, "type不能为空");
+
+        LoanDataFlowDO loanDataFlowDO = loanDataFlowDOMapper.getLastByOrderIdAndType(orderId, type);
+        return loanDataFlowDO;
+    }
 
     @Override
     public ResultBean<UniversalDataFlowDetailVO> detail(Long id) {
@@ -73,7 +79,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     public ResultBean create(LoanDataFlowDO loanDataFlowDO) {
         Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getType(), "type不能为空");
 
-        loanDataFlowDO.setStatus(VALID_STATUS);
+        loanDataFlowDO.setStatus(FLOW_END_NO);
         loanDataFlowDO.setGmtCreate(new Date());
         loanDataFlowDO.setGmtModify(new Date());
         int count = loanDataFlowDOMapper.insertSelective(loanDataFlowDO);

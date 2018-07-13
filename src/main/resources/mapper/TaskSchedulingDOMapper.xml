@@ -1146,7 +1146,7 @@
 
         SELECT
                     tmp.*,
-                    tmp.taskStatus                     AS taskType,
+                    tmp.taskStatus                      AS taskType,
 
                     CASE
                         WHEN tmp.taskStatus = 1  THEN

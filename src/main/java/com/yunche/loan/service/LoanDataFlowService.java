@@ -13,6 +13,8 @@ import java.util.List;
  */
 public interface LoanDataFlowService {
 
+    LoanDataFlowDO getLastByOrderIdAndType(Long orderId, Byte oldType);
+
     ResultBean<UniversalDataFlowDetailVO> detail(Long id);
 
     ResultBean create(LoanDataFlowDO loanDataFlowDO);

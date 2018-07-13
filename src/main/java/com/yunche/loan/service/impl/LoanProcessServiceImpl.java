@@ -943,7 +943,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // [资料流转（抵押资料 - 合伙人->公司]
         else if (isDataFlowMortgageP2cNewTask(taskDefinitionKey, action)) {
             Byte dataFlowMortgageP2cNewStatus = loanProcessDO.getDataFlowMortgageP2cNew();
-            Preconditions.checkArgument(TASK_PROCESS_INIT.equals(dataFlowMortgageP2cNewStatus), "已新建过[资料流转（抵押资料 - 合伙人->公司]单据");
+            Preconditions.checkArgument(TASK_PROCESS_INIT.equals(dataFlowMortgageP2cNewStatus), "已新建过[抵押资料合伙人至公司]单据");
         }
 
         // 已经在create中做了校验
@@ -1400,10 +1400,50 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return;
         }
 
-        // 资料流转 -待办节点
-        if (TASK_PROCESS_TODO.equals(taskProcessStatus) && taskDefinitionKey.startsWith("usertask_data_flow")) {
-            // preRecord
-            preRecordDataFlowOrderAndType(loanProcessDO.getOrderId(), taskDefinitionKey);
+        // 资料流转 -TODO待办节点   -> 来自于newTask
+        if (taskDefinitionKey.startsWith("usertask_data_flow")) {
+
+            String[] taskKeyArr = taskDefinitionKey.split("_review");
+
+            // send
+            if (taskKeyArr.length == 1) {
+
+                // taskKey -> type
+                String sendType = dictService.getKeyByCodeOfLoanDataFlowType(taskDefinitionKey);
+                Preconditions.checkArgument(StringUtils.isNotBlank(sendType), "资料流转-taskDefinitionKey异常");
+
+                // get
+                LoanDataFlowDO loanDataFlowDO = loanDataFlowService.getLastByOrderIdAndType(loanProcessDO.getOrderId(), Byte.valueOf(sendType));
+
+                if (null == loanDataFlowDO) {
+
+                    // create
+                    preRecordDataFlowOrderAndType(loanProcessDO.getOrderId(), taskDefinitionKey);
+
+                } else {
+
+                    // SEND只存在：2、3两种状态
+
+                    if (TASK_PROCESS_TODO.equals(taskProcessStatus)) {
+
+                        // create
+                        preRecordDataFlowOrderAndType(loanProcessDO.getOrderId(), taskDefinitionKey);
+
+                    } else if (TASK_PROCESS_REJECT.equals(taskProcessStatus)) {
+
+                        // update
+                        updateDataFlowType(loanProcessDO.getOrderId(), taskDefinitionKey + "_review", taskDefinitionKey);
+                    }
+                }
+
+            }
+
+            // received
+            else if (taskKeyArr.length == 2) {
+
+                // update
+                updateDataFlowType(loanProcessDO.getOrderId(), taskKeyArr[0], taskDefinitionKey);
+            }
         }
 
         // 方法名拼接   setXXX
@@ -1443,8 +1483,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
     }
 
+
     /**
-     * 资料流转-待办节点-预处理：插入一条待处理的节点记录 -> orderId、type
+     * 资料流转-SEND-TODO待办节点-预处理：插入一条待处理的节点记录 -> orderId、type
      *
      * @param orderId
      * @param taskDefinitionKey
@@ -1461,6 +1502,29 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanDataFlowDO.setType(Byte.valueOf(k));
 
         ResultBean result = loanDataFlowService.create(loanDataFlowDO);
+        Preconditions.checkArgument(result.getSuccess(), result.getMsg());
+    }
+
+    /**
+     * 资料流转-RECEIVED-TODO待办节点-预处理：更新其对应SEND记录的 -> type
+     *
+     * @param orderId
+     * @param originTaskKey
+     * @param toTaskKey
+     */
+    private void updateDataFlowType(Long orderId, String originTaskKey, String toTaskKey) {
+
+        // record
+        String originType = dictService.getKeyByCodeOfLoanDataFlowType(originTaskKey);
+        LoanDataFlowDO loanDataFlowDO = loanDataFlowService.getLastByOrderIdAndType(orderId, Byte.valueOf(originType));
+
+        // taskKey -> type
+        String toType = dictService.getKeyByCodeOfLoanDataFlowType(toTaskKey);
+        Preconditions.checkArgument(StringUtils.isNotBlank(toType), "资料流转-taskDefinitionKey异常");
+
+        loanDataFlowDO.setType(Byte.valueOf(toType));
+
+        ResultBean result = loanDataFlowService.update(loanDataFlowDO);
         Preconditions.checkArgument(result.getSuccess(), result.getMsg());
     }
 
@@ -2459,17 +2523,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
             }
 
-//            List<Task> loanApplyVisitVerifyTaskList = currentTaskList.stream()
-//                    .filter(Objects::nonNull)
-//                    .filter(e -> VISIT_VERIFY.getCode().equals(e.getTaskDefinitionKey())
-//                            || LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(e.getTaskDefinitionKey()))
-//                    .collect(Collectors.toList());
-//
-//            if (!CollectionUtils.isEmpty(loanApplyVisitVerifyTaskList)) {
-//                variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
-//            } else {
-//                TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply());
-//            }
         }
 
         // [合同套打]

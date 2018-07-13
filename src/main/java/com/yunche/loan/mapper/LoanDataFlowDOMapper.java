@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
+import org.apache.ibatis.annotations.Param;
 
 public interface LoanDataFlowDOMapper {
 
@@ -15,4 +16,13 @@ public interface LoanDataFlowDOMapper {
     int updateByPrimaryKeySelective(LoanDataFlowDO record);
 
     int updateByPrimaryKey(LoanDataFlowDO record);
+
+    /**
+     * 根据orderId、type获取最后一条记录
+     *
+     * @param orderId
+     * @param type
+     * @return
+     */
+    LoanDataFlowDO getLastByOrderIdAndType(@Param("orderId") Long orderId, @Param("type") Byte type);
 }
