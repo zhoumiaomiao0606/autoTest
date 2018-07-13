@@ -129,6 +129,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private TaskDistributionService taskDistributionService;
 
+    @Autowired
+    private BankSolutionService bankSolutionService;
+
 
     @Override
     @Transactional
@@ -166,7 +169,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 【资料增补单】
         if (isInfoSupplementTask(approval)) {
-            return execInfoSupplementTask(approval,loanProcessDO);
+            return execInfoSupplementTask(approval, loanProcessDO);
         }
 
         // 【金融方案修改申请】
@@ -203,11 +206,29 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // [领取]完成
         finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
+        // 通过银行接口  ->  自动查询征信
+        creditAutomaticCommit(approval);
+
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
+
+
+    /**
+     * 通过银行接口  ->  自动查询征信
+     *
+     * @param approval
+     */
+    private void creditAutomaticCommit(ApprovalParam approval) {
+
+        // 征信申请 && PASS
+        if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            bankSolutionService.creditAutomaticCommit(approval.getOrderId());
+        }
+    }
+
 
     /**
      * [领取]完成
@@ -332,7 +353,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             retryNum = 0;
         }
         //资料增补、电审、录入提车资料后，都会出发异步打包操作
-         if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)
+        if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)
                 || INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)
                 || LOAN_APPLY.getCode().equals(taskDefinitionKey)
                 || VISIT_VERIFY.getCode().equals(taskDefinitionKey)) {
@@ -1064,7 +1085,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @return
      */
-    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanProcessDO loanProcessDO ) {
+    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
 
         // 【发起】资料增补单
         if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
