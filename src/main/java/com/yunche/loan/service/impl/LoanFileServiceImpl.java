@@ -5,12 +5,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.vo.FileVO;
+import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.service.LoanFileService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +27,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanFileConst.TYPE_NAME_MAP;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
+import static com.yunche.loan.config.thread.ThreadPool.executorService;
 
 /**
  * @author liuzhe
@@ -31,8 +36,13 @@ import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEME
 @Service
 public class LoanFileServiceImpl implements LoanFileService {
 
+    private static final Logger logger = LoggerFactory.getLogger(LoanFileServiceImpl.class);
+
     @Autowired
     private LoanFileDOMapper loanFileDOMapper;
+
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
 
 
     @Override
@@ -47,6 +57,9 @@ public class LoanFileServiceImpl implements LoanFileService {
         int count = loanFileDOMapper.insertSelective(loanFileDO);
         Preconditions.checkArgument(count > 0, "编辑图片信息失败");
 
+        // 异步打包
+//        asyncPackZipFile(loanFileDO.getCustomerId(), null, 2);
+
         return ResultBean.ofSuccess(loanFileDO.getId(), "文件信息保存成功");
     }
 
@@ -59,7 +72,92 @@ public class LoanFileServiceImpl implements LoanFileService {
         int count = loanFileDOMapper.updateByPrimaryKeySelective(loanFileDO);
         Preconditions.checkArgument(count > 0, "编辑图片信息失败");
 
+        // 异步打包
+//        asyncPackZipFile(loanFileDO.getCustomerId(), null, 2);
+
         return ResultBean.ofSuccess(null, "图片信息编辑成功");
+    }
+
+    @Override
+    public void asyncPackZipFile(Long customerId, List<Byte> fileTypes, Integer retryNum) {
+
+        if (null == retryNum) {
+            retryNum = 0;
+        } else if (retryNum < 0) {
+            return;
+        }
+        retryNum--;
+
+        int finalRetryNum = retryNum;
+        executorService.execute(() ->
+                {
+
+                    boolean result = true;
+                    try {
+                        // 打包，并上传至OSS
+                        zipFile2OSS(customerId, fileTypes);
+                    } catch (Exception e) {
+                        logger.error("zipFile2OSS error", e);
+
+                        asyncPackZipFile(customerId, fileTypes, finalRetryNum);
+                    } finally {
+                        // 失败，重试
+                        if (!result) {
+                            asyncPackZipFile(customerId, fileTypes, finalRetryNum);
+                        }
+                    }
+                }
+        );
+
+    }
+
+    private boolean zipFile2OSS(Long customerId, List<Byte> fileTypes) {
+
+        ResultBean<List<FileVO>> listResultBean = listByCustomerId(customerId, null);
+        Preconditions.checkArgument(listResultBean.getSuccess(), listResultBean.getMsg());
+
+        List<FileVO> fileVOList = listResultBean.getData();
+
+        if (!CollectionUtils.isEmpty(fileVOList)) {
+            List<FileVO> zipFileVOList = fileVOList;
+            String separator = "_";
+
+            // 过滤
+            if (!CollectionUtils.isEmpty(fileTypes)) {
+                zipFileVOList = fileVOList.stream()
+                        .filter(Objects::nonNull)
+                        .filter(e -> fileTypes.contains(e.getType()))
+                        .collect(Collectors.toList());
+
+                separator = "__";
+            }
+
+            LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(customerId, null);
+            Preconditions.checkNotNull(loanCustomerDO, "客户不存在");
+
+            String fileName = loanCustomerDO.getName() + separator + loanCustomerDO.getIdCard();
+
+            // 异步打包文件
+            zipFile(zipFileVOList, fileName);
+        }
+
+        return true;
+    }
+
+    /**
+     * 异步打包文件
+     *
+     * @param zipFileVOList 需要打包的文件列表
+     * @param fileName
+     */
+    private void zipFile(List<FileVO> zipFileVOList, String fileName) {
+
+        if (CollectionUtils.isEmpty(zipFileVOList)) {
+            return;
+        }
+
+        // TODO 打包，并上传至OSS
+//        downloadFiles2OSS(zipFileVOList, fileName);
     }
 
     @Override
@@ -93,11 +191,11 @@ public class LoanFileServiceImpl implements LoanFileService {
                         } else {
                             FileVO fileVO = typeFilesMap.get(type);
                             List<String> urls = JSON.parseArray(e.getPath(), String.class);
-                            if(!CollectionUtils.isEmpty(fileVO.getUrls())){
+                            if (!CollectionUtils.isEmpty(fileVO.getUrls())) {
                                 List<String> urls1 = fileVO.getUrls();
                                 urls1.addAll(urls);
                                 fileVO.setUrls(urls1);
-                            }else{
+                            } else {
                                 fileVO.setUrls(urls);
                             }
 

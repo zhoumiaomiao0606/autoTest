@@ -27,6 +27,9 @@ import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
 
     @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
 
     @Autowired
@@ -40,8 +43,10 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
 
     @Autowired
     private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
+
     @Autowired
     private DepartmentDOMapper departmentDOMapper;
+
     @Override
     public ResultBean<Long> create(LoanBaseInfoDO loanBaseInfoDO) {
 //        Preconditions.checkNotNull(loanBaseInfoDO.getPartnerId(), "合伙人不能为空");
@@ -146,5 +151,38 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
         loanBaseInfoVO.setCascadeAreaId(cascadeAreaId);
 
         return ResultBean.ofSuccess(loanBaseInfoVO);
+    }
+
+    @Override
+    public LoanBaseInfoDO getLoanBaseInfoByOrderId(Long orderId) {
+        Preconditions.checkNotNull(orderId, "订单号不能为空");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        Preconditions.checkNotNull(loanBaseInfoDO, "订单基本信息不存在");
+
+        return loanBaseInfoDO;
+    }
+
+    /**
+     * 获取订单的贷款银行
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Long getBankId(Long orderId) {
+        Preconditions.checkNotNull(orderId, "订单号不能为空");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        Preconditions.checkNotNull(loanBaseInfoDO, "订单基本信息不存在");
+
+        Long bankId = loanBaseInfoDO.getBankId();
+        return bankId;
     }
 }

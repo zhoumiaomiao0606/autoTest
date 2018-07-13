@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -70,6 +71,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Autowired
+    private BankCache bankCache;
+
 
     @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
@@ -130,7 +134,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setBankList(getUserHaveBank(loginUser.getId()));
         PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
-        PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<ScheduleTaskVO>(list);
+        PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
@@ -260,9 +264,15 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
                     // 面签客户查询时，才需要车型
                     if (null == multipartType) {
+                        // carName
                         if (StringUtils.isNotBlank(appTaskVO.getCarDetailId())) {
                             appTaskVO.setCarName(carService.getFullName(Long.valueOf(appTaskVO.getCarDetailId()), CAR_DETAIL));
                         }
+                    }
+
+                    // bankId  convert
+                    if (StringUtils.isNotBlank(appTaskVO.getBankName())) {
+                        appTaskVO.setBankId(String.valueOf(bankCache.getIdByName(e.getBank())));
                     }
 
                     fillTaskStatus(appTaskVO);

@@ -5,6 +5,8 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.messaging.simp.SimpAttributes;
+import org.springframework.messaging.simp.SimpAttributesContextHolder;
 
 /**
  * @author liuzhe
@@ -27,5 +29,16 @@ public class SessionUtils {
             BeanUtils.copyProperties(principal, loginUser);
             return loginUser;
         }
+    }
+
+    /**
+     * 获取WebSocket 会话ID
+     *
+     * @return
+     */
+    public static String getWebSocketSessionId() {
+        SimpAttributes simpAttributes = SimpAttributesContextHolder.currentAttributes();
+        String sessionId = simpAttributes.getSessionId();
+        return sessionId;
     }
 }

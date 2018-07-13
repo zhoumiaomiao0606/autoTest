@@ -53,4 +53,9 @@ public class EmployeeDO implements Serializable {
     private String feature;
 
     private String machineId;
+
+    /**
+     * 视频面签 对应权限的银行ID
+     */
+    private Long bankId;
 }

@@ -1,30 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.EmployeeDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.EmployeeDO">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="name" jdbcType="VARCHAR" property="name"/>
-        <result column="password" jdbcType="VARCHAR" property="password"/>
-        <result column="id_card" jdbcType="CHAR" property="idCard"/>
-        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
-        <result column="email" jdbcType="VARCHAR" property="email"/>
-        <result column="ding_ding" jdbcType="VARCHAR" property="dingDing"/>
-        <result column="department_id" jdbcType="BIGINT" property="departmentId"/>
-        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
-        <result column="title" jdbcType="VARCHAR" property="title"/>
-        <result column="entry_date" jdbcType="TIMESTAMP" property="entryDate"/>
-        <result column="level" jdbcType="INTEGER" property="level"/>
-        <result column="type" jdbcType="TINYINT" property="type"/>
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-        <result column="feature" jdbcType="VARCHAR" property="feature"/>
-        <result column="status" jdbcType="TINYINT" property="status"/>
-        <result column="machine_id" jdbcType="VARCHAR" property="machineId"/>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="CHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="ding_ding" property="dingDing" jdbcType="VARCHAR"/>
+        <result column="department_id" property="departmentId" jdbcType="BIGINT"/>
+        <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="entry_date" property="entryDate" jdbcType="TIMESTAMP"/>
+        <result column="level" property="level" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="BIT"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+        <result column="feature" property="feature" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+        <result column="machine_id" property="machineId" jdbcType="VARCHAR"/>
+        <result column="bank_id" property="bankId" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id, name, password, id_card, mobile, email, ding_ding, department_id, parent_id,
-        title, entry_date, level, type, gmt_create, gmt_modify, feature, status,machine_id
+        title, entry_date, level, type, gmt_create, gmt_modify, feature, status, machine_id,
+        bank_id
     </sql>
 
     <sql id="Base_Query_List">
@@ -292,13 +294,15 @@
         ding_ding, department_id, parent_id,
         title, entry_date, level,
         type, gmt_create, gmt_modify,
-        feature, status)
+        feature, status, machine_id,
+        bank_id)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
         #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
         #{dingDing,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT},
         #{title,jdbcType=VARCHAR}, #{entryDate,jdbcType=TIMESTAMP}, #{level,jdbcType=INTEGER},
-        #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{feature,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
+        #{type,jdbcType=BIT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{feature,jdbcType=VARCHAR}, #{status,jdbcType=BIT}, #{machineId,jdbcType=VARCHAR},
+        #{bankId,jdbcType=BIGINT})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.EmployeeDO">
@@ -359,6 +363,12 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="machineId != null">
+                machine_id,
+            </if>
+            <if test="bankId != null">
+                bank_id,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -398,7 +408,7 @@
                 #{level,jdbcType=INTEGER},
             </if>
             <if test="type != null">
-                #{type,jdbcType=TINYINT},
+                #{type,jdbcType=BIT},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -410,7 +420,13 @@
                 #{feature,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
-                #{status,jdbcType=TINYINT},
+                #{status,jdbcType=BIT},
+            </if>
+            <if test="machineId != null">
+                #{machineId,jdbcType=VARCHAR},
+            </if>
+            <if test="bankId != null">
+                #{bankId,jdbcType=BIGINT},
             </if>
         </trim>
     </insert>
@@ -452,7 +468,7 @@
                 level = #{level,jdbcType=INTEGER},
             </if>
             <if test="type != null">
-                type = #{type,jdbcType=TINYINT},
+                type = #{type,jdbcType=BIT},
             </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
@@ -464,10 +480,13 @@
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
-                status = #{status,jdbcType=TINYINT},
+                status = #{status,jdbcType=BIT},
             </if>
             <if test="machineId != null">
                 machine_id = #{machineId,jdbcType=VARCHAR},
+            </if>
+            <if test="bankId != null">
+                bank_id = #{bankId,jdbcType=BIGINT},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
@@ -486,19 +505,14 @@
         title = #{title,jdbcType=VARCHAR},
         entry_date = #{entryDate,jdbcType=TIMESTAMP},
         level = #{level,jdbcType=INTEGER},
-        type = #{type,jdbcType=TINYINT},
+        type = #{type,jdbcType=BIT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         feature = #{feature,jdbcType=VARCHAR},
-        status = #{status,jdbcType=TINYINT}
+        status = #{status,jdbcType=BIT},
+        machine_id = #{machineId,jdbcType=VARCHAR},
+        bank_id = #{bankId,jdbcType=BIGINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
-
-    <update id="setMachineIdForNull" parameterType="java.lang.Long">
-        update employee
-        set machine_id = null
-        where id = #{id,jdbcType=BIGINT}
-    </update>
-
 
 </mapper>

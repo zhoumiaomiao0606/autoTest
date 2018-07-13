@@ -16,6 +16,15 @@ public interface LoanFileService {
 
     ResultBean<Void> update(LoanFileDO loanFileDO);
 
+    /**
+     * 文件打包
+     *
+     * @param customerId
+     * @param fileTypes
+     * @param retryNum   重试次数
+     */
+    void asyncPackZipFile(Long customerId, List<Byte> fileTypes, Integer retryNum);
+
     ResultBean<List<FileVO>> listByCustomerId(Long customerId, Byte fileUploadType);
 
     /**

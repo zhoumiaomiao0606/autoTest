@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8"/>
+<head>
+    <title>Home</title>
+
+    <script th:src="@{sockjs.min.js}"></script>
+    <script th:src="@{stomp.min.js}"></script>
+    <script th:src="@{jquery.js}"></script>
+
+</head>
+<body>
+<p>
+    聊天室
+</p>
+
+<form id="wiselyForm">
+    bankId：<textarea rows="2" cols="15" name="bankId"></textarea>
+    bankName：<textarea rows="2" cols="30" name="bankName"></textarea>
+    userId：<textarea rows="2" cols="15" name="userId"></textarea>
+    type：<textarea rows="2" cols="15" name="type"></textarea>
+    anyChatUserId：<textarea rows="2" cols="15" name="anyChatUserId"></textarea>
+    bankPeriodPrincipal：<textarea rows="2" cols="15" name="bankPeriodPrincipal"></textarea>
+    orderId：<textarea rows="2" cols="15" name="orderId"></textarea>
+
+    <input type="submit" value="加入排队"/>
+</form>
+
+<form id="wiselyForm_">
+    bankId：<textarea rows="2" cols="15" name="bankId"></textarea>
+    bankName：<textarea rows="2" cols="30" name="bankName"></textarea>
+    userId：<textarea rows="2" cols="15" name="userId"></textarea>
+    type：<textarea rows="2" cols="15" name="type"></textarea>
+    anyChatUserId：<textarea rows="2" cols="15" name="anyChatUserId"></textarea>
+    bankPeriodPrincipal：<textarea rows="2" cols="15" name="bankPeriodPrincipal"></textarea>
+    orderId：<textarea rows="2" cols="15" name="orderId"></textarea>
+
+    <input type="submit" value="退出排队"/>
+</form>
+
+
+<form id="latlon">
+    bankId：<textarea rows="2" cols="15" name="bankId"></textarea>
+    pcAnyChatUserId：<textarea rows="2" cols="15" name="pcAnyChatUserId"></textarea>
+    latlon：<textarea rows="2" cols="15" name="latlon"></textarea>
+    address：<textarea rows="2" cols="15" name="address"></textarea>
+    <input type="submit" value="latlon"/>
+</form>
+
+<script th:inline="javascript">
+
+    $('#wiselyForm').submit(function (e) {
+        e.preventDefault();
+        var bankId = $('#wiselyForm').find('textarea[name="bankId"]').val();
+        var bankName = $('#wiselyForm').find('textarea[name="bankName"]').val();
+        var userId = $('#wiselyForm').find('textarea[name="userId"]').val();
+        var type = $('#wiselyForm').find('textarea[name="type"]').val();
+        var anyChatUserId = $('#wiselyForm').find('textarea[name="anyChatUserId"]').val();
+        var bankPeriodPrincipal = $('#wiselyForm').find('textarea[name="bankPeriodPrincipal"]').val();
+        var orderId = $('#wiselyForm').find('textarea[name="orderId"]').val();
+        wait(bankId, bankName, userId, type, anyChatUserId, bankPeriodPrincipal, orderId);
+    })
+    ;
+
+    $('#wiselyForm_').submit(function (e) {
+        e.preventDefault();
+        var bankId = $('#wiselyForm_').find('textarea[name="bankId"]').val();
+        var bankName = $('#wiselyForm_').find('textarea[name="bankName"]').val();
+        var userId = $('#wiselyForm_').find('textarea[name="userId"]').val();
+        var type = $('#wiselyForm_').find('textarea[name="type"]').val();
+        var anyChatUserId = $('#wiselyForm_').find('textarea[name="anyChatUserId"]').val();
+        var bankPeriodPrincipal = $('#wiselyForm_').find('textarea[name="bankPeriodPrincipal"]').val();
+        var orderId = $('#wiselyForm_').find('textarea[name="orderId"]').val();
+        exit(bankId, bankName, userId, type, anyChatUserId, bankPeriodPrincipal, orderId);
+    })
+    ;
+
+    $('#latlon').submit(function (e) {
+        e.preventDefault();
+        var bankId = $('#latlon').find('textarea[name="bankId"]').val();
+        var pcAnyChatUserId = $('#latlon').find('textarea[name="pcAnyChatUserId"]').val();
+        var latlon = $('#latlon').find('textarea[name="latlon"]').val();
+        var address = $('#latlon').find('textarea[name="address"]').val();
+        sendLatlon(bankId, pcAnyChatUserId, latlon, address);
+    })
+    ;
+    //链接endpoint名称为 "/endpointChat" 的endpoint。
+    //    var sock = new SockJS("/endpointChat");
+    //    var sock = new SockJS("http://localhost:8001" + "/videoFace");
+    //    var sock = new SockJS("http://www.yunchejinrong.com:8090" + "/api/v1/videoFace");
+    //    var sock = new SockJS("http://192.168.0.145:8001" + "/api/v1/videoFace");
+    var sock = new SockJS("/api/v1/videoFace");
+    var stomp = Stomp.over(sock);
+    stomp.connect('guest', 'guest', function (frame) {
+
+        /**  订阅了/user/queue/notifications 发送的消息,这里雨在控制器的 convertAndSendToUser 定义的地址保持一致, 
+         *  这里多用了一个/user,并且这个user 是必须的,使用user 才会发送消息到指定的用户。 
+         *  */
+//        stomp.subscribe("/user/queue/wait/pc", handleNotification);
+        stomp.subscribe("/user/queue/team/info/app", handleNotification);
+        stomp.subscribe("/user/queue/team/info/pc", handleNotification);
+        stomp.subscribe("/user/queue/latlon/pc", handleNotification);
+    });
+
+
+    function handleNotification(message) {
+        $('#output').append("<b>Received: " + message.body + "</b><br/>")
+    };
+
+    function sendSpittle(bankId, bankName, userId, type, anyChatUserId) {
+        stomp.send("/api/v1/ws/team/wait", {}, JSON.stringify({
+            'bankId': bankId,
+            'bankName': bankName,
+            'userId': userId,
+            'type': type,
+            'anyChatUserId': anyChatUserId
+        }));//3
+    };
+
+    function wait(bankId, bankName, userId, type, anyChatUserId, bankPeriodPrincipal, orderId) {
+        stomp.send("/api/v1/ws/team/wait", {}, JSON.stringify({
+            'bankId': bankId,
+            'bankName': bankName,
+            'userId': userId,
+            'type': type,
+            'anyChatUserId': anyChatUserId,
+            'bankPeriodPrincipal': bankPeriodPrincipal,
+            'orderId': orderId
+        }));//3
+    };
+
+    function exit(bankId, bankName, userId, type, anyChatUserId, bankPeriodPrincipal, orderId) {
+        stomp.send("/api/v1/ws/team/exit", {}, JSON.stringify({
+            'bankId': bankId,
+            'bankName': bankName,
+            'userId': userId,
+            'type': type,
+            'anyChatUserId': anyChatUserId,
+            'bankPeriodPrincipal': bankPeriodPrincipal,
+            'orderId': orderId
+        }));//3
+    };
+
+    function sendLatlon(bankId, pcAnyChatUserId, latlon, address) {
+        stomp.send("/api/v1/ws/latlon", {}, JSON.stringify({
+            'bankId': bankId,
+            'pcAnyChatUserId': pcAnyChatUserId,
+            'latlon': latlon,
+            'address': address
+        }));//3
+    };
+
+    $('#stop').click(function () {
+        sock.close()
+    });
+</script>
+
+<div id="output"></div>
+</body>
+</html>

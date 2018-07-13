@@ -128,6 +128,17 @@ public class EmployeeController {
         return employeeService.login(request, response, employeeParam);
     }
 
+    @GetMapping(value = "/login_")
+    public ResultBean<LoginVO> login_(HttpServletRequest request,
+                                      HttpServletResponse response,
+                                      @RequestParam String username,
+                                      @RequestParam String password) {
+        EmployeeParam employeeParam = new EmployeeParam();
+        employeeParam.setUsername(username);
+        employeeParam.setPassword(password);
+        return employeeService.login(request, response, employeeParam);
+    }
+
     /**
      * 用户登出
      *

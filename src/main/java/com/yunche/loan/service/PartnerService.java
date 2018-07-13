@@ -44,8 +44,7 @@ public interface PartnerService {
 
     ResultBean<PartnerAccountVO> listAccount(Long employeeId);
 
-    ResultBean<Set<String>> listBank(Long employeeId);
-
+    ResultBean<Set<String>> listBank(Long employeeId, Long partnerId);
 
     ResultBean updatePartnerArea(PartnerParam partnerParam);
 }

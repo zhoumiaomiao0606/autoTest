@@ -5,29 +5,40 @@ import com.yunche.loan.service.ActivitiVersionService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement
 @EnableFeignClients
 @EnableScheduling
+@MapperScan(basePackages = "com.yunche.loan.mapper")
 public class App {
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
 
+    @Bean
+    @Primary
+    public TaskExecutor primaryTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        return executor;
+    }
 
     @Bean
     public CommandLineRunner init(final RepositoryService repositoryService,
-                                  final RuntimeService runtimeService,
-                                  final TaskService taskService,
+//                                  final RuntimeService runtimeService,
+//                                  final TaskService taskService,
                                   final ActivitiCache activitiCache,
                                   final ActivitiVersionService activitiVersionService) {
 

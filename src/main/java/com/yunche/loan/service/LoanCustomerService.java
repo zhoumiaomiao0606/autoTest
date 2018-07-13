@@ -23,7 +23,7 @@ public interface LoanCustomerService {
 
     ResultBean<Void> update(LoanCustomerDO loanCustomerDO);
 
-    ResultBean<CustomerVO> getById(Long id);
+    CustomerVO getById(Long id);
 
     ResultBean<LoanRepeatVO> checkRepeat(String idCard, Long orderId);
 

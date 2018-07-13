@@ -23,9 +23,9 @@ public enum LoanProcessEnum {
 
     INFO_SUPPLEMENT("usertask_info_supplement", "资料增补"),
     CREDIT_SUPPLEMENT("usertask_credit_supplement", "征信增补"),
-    FINANCIAL_SCHEME_MODIFY_APPLY("usertask_financial_scheme_modify_apply", "金融方案修改申请"),
+    FINANCIAL_SCHEME_MODIFY_APPLY("usertask_financial_scheme_modify_apply", "金融方案修改"),
     REFUND_APPLY("usertask_refund_apply", "退款申请"),
-    FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW("usertask_financial_scheme_modify_apply_review", "金融方案修改申请审核"),
+    FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW("usertask_financial_scheme_modify_apply_review", "金融方案审核"),
     REFUND_APPLY_REVIEW("usertask_refund_apply_review", "退款申请审核"),
     CUSTOMER_REPAY_PLAN_RECORD("usertask_customer_repay_plan_record", "银行还款计划记录"),
     COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),

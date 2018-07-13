@@ -5,13 +5,13 @@
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="bank_id" jdbcType="BIGINT" property="bankId"/>
         <result column="question" jdbcType="VARCHAR" property="question"/>
-        <result column="require" jdbcType="TINYINT" property="require"/>
+        <result column="required" jdbcType="TINYINT" property="required"/>
         <result column="type" jdbcType="TINYINT" property="type"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, bank_id, question, require, type, gmt_create, gmt_modify
+    id, bank_id, question, required, type, gmt_create, gmt_modify
   </sql>
 
     <!--deleteAllByBankId-->
@@ -49,10 +49,10 @@
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankRelaQuestionDO">
     insert into bank_rela_question (id, bank_id, question, 
-      require, type, gmt_create, 
+      required, type, gmt_create, 
       gmt_modify)
     values (#{id,jdbcType=BIGINT}, #{bankId,jdbcType=BIGINT}, #{question,jdbcType=VARCHAR}, 
-      #{require,jdbcType=TINYINT}, #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{required,jdbcType=TINYINT}, #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
       #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankRelaQuestionDO">
@@ -67,8 +67,8 @@
             <if test="question != null">
                 question,
             </if>
-            <if test="require != null">
-                require,
+            <if test="required != null">
+                required,
             </if>
             <if test="type != null">
                 type,
@@ -90,8 +90,8 @@
             <if test="question != null">
                 #{question,jdbcType=VARCHAR},
             </if>
-            <if test="require != null">
-                #{require,jdbcType=TINYINT},
+            <if test="required != null">
+                #{required,jdbcType=TINYINT},
             </if>
             <if test="type != null">
                 #{type,jdbcType=TINYINT},
@@ -113,8 +113,8 @@
             <if test="question != null">
                 question = #{question,jdbcType=VARCHAR},
             </if>
-            <if test="require != null">
-                require = #{require,jdbcType=TINYINT},
+            <if test="required != null">
+                required = #{required,jdbcType=TINYINT},
             </if>
             <if test="type != null">
                 type = #{type,jdbcType=TINYINT},
@@ -132,7 +132,7 @@
     update bank_rela_question
     set bank_id = #{bankId,jdbcType=BIGINT},
       question = #{question,jdbcType=VARCHAR},
-      require = #{require,jdbcType=TINYINT},
+      required = #{required,jdbcType=TINYINT},
       type = #{type,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}

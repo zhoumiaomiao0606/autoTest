@@ -16,7 +16,14 @@ public class LoanBaseInfoDO {
 
     private Byte carType;
 
+    /**
+     * 银行名称
+     */
     private String bank;
+    /**
+     * 银行ID
+     */
+    private Long bankId;
 
     /**
      * 贷款额度档次：1 - 13W以下; 2 - 13至20W; 3 - 20W以上;
