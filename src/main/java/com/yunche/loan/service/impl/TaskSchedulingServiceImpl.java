@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
+import static com.yunche.loan.config.constant.ListQueryTaskStatusConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW;
 
@@ -261,12 +262,72 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean<List<TaskListVO>> queryDataFlowTaskList(TaskListQuery taskListQuery) {
 
+        // 获取并设置 资料流转node-key
+        getAndSettDataFlowNodeSet(taskListQuery);
+
+        // 空node    则直接返回EMPTY
+        if (CollectionUtils.isEmpty(taskListQuery.getDataFlowNodeSet())) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
+
+        // 分页
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
+
+        // query
+        List<TaskListVO> list = taskSchedulingDOMapper.selectDataFlowTaskList(taskListQuery);
+
+        // 取分页信息
+        PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+
+        // 补充
+        convert(list);
+
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    /**
+     * 获取并设置 资料流转node-key
+     *
+     * @param taskListQuery
+     */
+    private void getAndSettDataFlowNodeSet(TaskListQuery taskListQuery) {
+
+        // 禁止外部传入
+        if (!CollectionUtils.isEmpty(taskListQuery.getDataFlowNodeSet())) {
+            taskListQuery.setDataFlowNodeSet(null);
+        }
+
         // 有权访问的nodes
         Set<String> loginUserOwnDataFlowNodes = activitiVersionService.getLoginUserOwnDataFlowNodes();
 
         // 无权访问
         if (CollectionUtils.isEmpty(loginUserOwnDataFlowNodes)) {
-            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+            return;
+        }
+
+        // nodes
+        Set<String> dataFlowNodes = loginUserOwnDataFlowNodes;
+
+        // 21-待邮寄(资料流转)
+        if (TASK_STATUS_21_OF_DATA_FLOW_TO_BE_SEND.equals(taskListQuery.getTaskStatus())) {
+
+            Set<String> toBeSendDataFlowNodes = loginUserOwnDataFlowNodes.stream()
+                    .filter(node -> StringUtils.isNotBlank(node) && !node.endsWith("_review"))
+                    .collect(Collectors.toSet());
+
+            dataFlowNodes = toBeSendDataFlowNodes;
+            // 21 ===还原为===> 2
+            taskListQuery.setTaskStatus(TASK_STATUS_2_TODO);
+        }
+        // 22-待接收(资料流转)
+        else if (TASK_STATUS_22_OF_DATA_FLOW_TO_BE_RECEIVED.equals(taskListQuery.getTaskStatus())) {
+            Set<String> toBeReceivedDataFlowNodes = loginUserOwnDataFlowNodes.stream()
+                    .filter(node -> StringUtils.isNotBlank(node) && node.endsWith("_review"))
+                    .collect(Collectors.toSet());
+
+            dataFlowNodes = toBeReceivedDataFlowNodes;
+            // 22 ===还原为===> 2
+            taskListQuery.setTaskStatus(TASK_STATUS_2_TODO);
         }
 
         // 限制的node类型
@@ -282,30 +343,30 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             if (StringUtils.isNotBlank(node)) {
 
                 // 有权访问
-                if (loginUserOwnDataFlowNodes.contains(node)) {
+                if (dataFlowNodes.contains(node)) {
                     // codeKMap
                     taskListQuery.setDataFlowNodeSet(Sets.newHashSet(node));
                     taskListQuery.setDataFlowTypeList(Lists.newArrayList(String.valueOf(dataFlowType)));
                 } else {
                     // 无权访问
-                    return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+                    return;
                 }
 
             } else {
                 // node不存在
-                return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+                return;
             }
 
         } else {
 
             // 未限制node
-            taskListQuery.setDataFlowNodeSet(loginUserOwnDataFlowNodes);
+            taskListQuery.setDataFlowNodeSet(dataFlowNodes);
 
             // codeKMap
             Map<String, String> codeKMap = dictService.getCodeKMapOfLoanDataFlowType();
 
             // taskKey -> type
-            List<String> typeList = loginUserOwnDataFlowNodes.stream()
+            List<String> typeList = dataFlowNodes.stream()
                     .filter(Objects::nonNull)
                     .map(code -> {
 
@@ -318,37 +379,40 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             // typeList
             taskListQuery.setDataFlowTypeList(typeList);
         }
-
-        // 分页
-        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
-
-        // query
-        List<TaskListVO> list = taskSchedulingDOMapper.selectDataFlowTaskList(taskListQuery);
-
-        // 取分页信息
-        PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
-
-        // kvMap
-        Map<String, String> kvMap = dictService.getKVMapOfLoanDataFlowType();
-
-        // 补充
-        convert(list, kvMap);
-
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), taskListQuery.getPageIndex(), taskListQuery.getPageSize());
     }
 
-    private void convert(List<TaskListVO> list, Map<String, String> kvMap) {
+    private void convert(List<TaskListVO> list) {
 
-        if (CollectionUtils.isEmpty(list) || CollectionUtils.isEmpty(kvMap)) {
+        if (CollectionUtils.isEmpty(list)) {
             return;
         }
 
-        list.stream()
+        // kvMap
+        Map<String, String> kvMap = dictService.getKVMapOfLoanDataFlowType();
+        if (CollectionUtils.isEmpty(kvMap)) {
+            return;
+        }
+
+        list.parallelStream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
+                    // v
+                    String v = kvMap.get(e.getDataFlowType());
+
                     // dataFlowTypeText
-                    e.setDataFlowTypeText(kvMap.get(e.getDataFlowType()));
+                    e.setDataFlowTypeText(v);
+
+                    // 2
+                    if (TASK_STATUS_2_TODO.equals(Integer.valueOf(e.getTaskStatus()))) {
+                        if (v.endsWith("-确认接收")) {
+                            e.setTaskType(String.valueOf(TASK_STATUS_22_OF_DATA_FLOW_TO_BE_RECEIVED));
+                            e.setTaskTypeText("待接收");
+                        } else {
+                            e.setTaskType(String.valueOf(TASK_STATUS_21_OF_DATA_FLOW_TO_BE_SEND));
+                            e.setTaskTypeText("待邮寄");
+                        }
+                    }
 
                 });
     }

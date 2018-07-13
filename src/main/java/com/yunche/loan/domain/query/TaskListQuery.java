@@ -44,8 +44,22 @@ public class TaskListQuery {
     @NotBlank
     private String taskDefinitionKey;
 
+    /**
+     * ----------------------------------------------------------------------------------
+     * 正常：
+     * 1-已提交;  2-未提交;  3-已打回;     0-全部;
+     * ----------------------------------------------------------------------------------
+     * <p>
+     * <p>
+     * <p>
+     * ----------------------------------------------------------------------------------
+     * 资料流转：
+     * 1-已提交;  [2-未提交 ===拆分为===>（21-待邮寄;  22-待接收;）]   3-已打回;     0-全部;
+     * ----------------------------------------------------------------------------------
+     */
     @NotNull
     private Integer taskStatus;
+    private Integer taskStatus_;
 
 
     //查询条件
@@ -134,5 +148,13 @@ public class TaskListQuery {
             return null;
         }
         return customer;
+    }
+
+    public Integer getTaskStatus_() {
+        if (null != taskStatus_) {
+            return taskStatus_;
+        }
+        this.taskStatus_ = taskStatus;
+        return taskStatus_;
     }
 }

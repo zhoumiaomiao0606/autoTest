@@ -49,8 +49,10 @@ public class CommonServiceImpl implements CommonService {
 
             return ResultBean.ofSuccess(dataDictionaryVO_);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            return ResultBean.ofError("字段不存在：" + field);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
 
     }

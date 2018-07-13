@@ -1146,16 +1146,20 @@
 
         SELECT
                     tmp.*,
-                    tmp.taskStatus                      AS taskType,
+                    tmp.taskStatus                     AS taskType,
 
                     CASE
-                        WHEN tmp.taskStatus = 1 THEN
+                        WHEN tmp.taskStatus = 1  THEN
                         "已提交"
-                        WHEN tmp.taskStatus = 2 THEN
-                        "待提交"
-                        WHEN tmp.taskStatus = 3 THEN
+                        WHEN tmp.taskStatus = 2  THEN
+                        "未提交"
+                        WHEN tmp.taskStatus = 21 THEN
+                        "待邮寄"
+                        WHEN tmp.taskStatus = 22 THEN
+                        "待接收"
+                        WHEN tmp.taskStatus = 3  THEN
                         "已打回"
-                        WHEN tmp.taskStatus = 0 THEN
+                        WHEN tmp.taskStatus = 0  THEN
                         "未执行到此"
                         ELSE
                         "状态异常"
@@ -1168,8 +1172,8 @@
                 SELECT
                                         CASE
 
-                                            WHEN #{taskStatus} != 0 THEN
-                                            #{taskStatus}
+                                            WHEN #{taskStatus_} != 0 THEN
+                                            #{taskStatus_}
 
                                             WHEN df.type = 1 THEN
                                             pc.data_flow_contract_p2c

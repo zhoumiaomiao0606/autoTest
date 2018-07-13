@@ -6,13 +6,11 @@ import com.yunche.loan.domain.query.TaskListQuery;
 
 import com.yunche.loan.domain.vo.ScheduleTaskVO;
 import com.yunche.loan.domain.vo.TaskListVO;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.validation.annotation.Validated;
 
 
 import java.util.List;
 
-@Mapper
 public interface TaskSchedulingDOMapper {
 
     List<ScheduleTaskVO> selectScheduleTaskList(@Validated ScheduleTaskQuery param);
