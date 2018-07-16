@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanCustomerConst.EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
@@ -303,7 +304,10 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         String  accountStatement = split[10].trim();//对账单日
         String  repayDate = split[11].trim();//还款日
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderId), VALID_STATUS);
-        Preconditions.checkNotNull(loanOrderDO,"订单不存在");
+        if(loanOrderDO == null){
+            bankFileListRecordDO.setIsCustomer(K_YORN_NO);
+        }
+
         bankFileListRecordDO.setAreaId(areaId);
         bankFileListRecordDO.setPlatNo(platNo);
         bankFileListRecordDO.setGuarantyUnit(guarantyUnit);
