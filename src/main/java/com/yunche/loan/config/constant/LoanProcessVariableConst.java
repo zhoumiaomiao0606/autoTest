@@ -7,6 +7,8 @@ package com.yunche.loan.config.constant;
  * @date 2018/3/15
  */
 public class LoanProcessVariableConst {
+
+
     /**
      * 审核结果
      */
@@ -65,5 +67,10 @@ public class LoanProcessVariableConst {
      * 增补源头任务节点：从哪个节点发起的增补
      */
     public static final String PROCESS_VARIABLE_INFO_SUPPLEMENT_ORIGIN_TASK = "info_supplement_origin_task";
+
+    /**
+     * 贷款银行
+     */
+    public static final String PROCESS_VARIABLE_LOAN_BANK = "loan_bank";
 
 }
