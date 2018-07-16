@@ -11,19 +11,17 @@ public class ImageTest extends BaseTest{
     public void fun1(){
         //img/2018/201805/20180504/k6FY5XC2J5.jpg
         //["img/2018/201805/20180504/WNf4THHX8M.jpg"]
-        ArrayList<String> fileKey = Lists.newArrayList();
-        fileKey.add("img/2018/201805/20180504/k6FY5XC2J5.jpg");
-        fileKey.add("img/2018/201805/20180504/WNf4THHX8M.jpg");
-        fileKey.add("img/2018/201805/20180504/WPNwyYZpsi.png");
-
-        ImageUtil.mergeImage2Pic(fileKey);
+//        ArrayList<String> fileKey = Lists.newArrayList();
+//        fileKey.add("img/2018/201805/20180504/k6FY5XC2J5.jpg");
+//        fileKey.add("img/2018/201805/20180504/WNf4THHX8M.jpg");
+//        fileKey.add("img/2018/201805/20180504/WPNwyYZpsi.png");
+//
+//        ImageUtil.mergeImage2Pic(fileKey);
 //        ImageUtil.mergeImage2Doc(fileKey);
         ArrayList<String> image = Lists.newArrayList();
-        image.add("/Users/zhengdu/Downloads/picture/1.jpg");
-        image.add("/Users/zhengdu/Downloads/picture/2.jpg");
-        image.add("/Users/zhengdu/Downloads/picture/3.jpg");
-        image.add("/Users/zhengdu/Downloads/picture/4.jpg");
-        image.add("/Users/zhengdu/Downloads/picture/5.jpg");
+        image.add("img/2018/201807/20180716/3D5rCiMtZB.jpg");
+        image.add("img/2018/201807/20180716/ANd6tRAxFe.jpg");
+        image.add("img/2018/201807/20180716/xhmYjt8tbe.jpg");
         ImageUtil.mergeImage2Doc(image);
     }
 }

@@ -38,7 +38,7 @@ public class ImageUtil {
         videoBucketName = bundle.containsKey("videoBucketName") == false ? "" : bundle.getString("videoBucketName");
     }
     public static final String  mergeImage2Doc(List<String> imageList) {
-        return mergeImage2Pic(generateName()+DOC_SUFFIX,imageList);
+        return mergeImage2Doc(generateName()+DOC_SUFFIX,imageList);
     }
 
     public static final  String  mergeImage2Pic(List<String> imageList) {
