@@ -435,6 +435,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                         }
                     }
 
+                    // type -> taskKey
+                    String taskKey = kCodeMap.get(e.getTaskStatus());
+                    e.setTaskKey(taskKey);
+
                 });
     }
 
