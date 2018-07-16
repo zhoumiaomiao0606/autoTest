@@ -43,6 +43,7 @@ public enum LoanProcessEnum {
     MATERIAL_REVIEW("usertask_material_review", "资料审核"),
     MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),
     MATERIAL_MANAGE("usertask_material_manage", "合同归档"),
+    BANK_CARD_SEND("usertask_bank_card_send", "银行卡寄送"),
 
     BUSINESS_PAY("usertask_business_pay", "业务付款申请"),
     BUSINESS_REVIEW("usertask_business_review", "业务审批"),
