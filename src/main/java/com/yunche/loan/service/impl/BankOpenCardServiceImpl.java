@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.constant.LoanOrderProcessConst;
 import com.yunche.loan.config.constant.LoanProcessConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
@@ -230,13 +231,19 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             }
 
             list.parallelStream().filter(Objects::nonNull).forEach(e->{
-                ApprovalParam approvalParam =  new ApprovalParam();
-                approvalParam.setOrderId(e.getOrderId());
-                // TODO 定义key
-                approvalParam.setTaskDefinitionKey("");
-                approvalParam.setAction(LoanProcessConst.ACTION_PASS);
-                ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
-                LOG.info(e.getOrderId()+approvalResultBean.getMsg());
+
+                LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
+                // TODO 如果之前单子已提交过则不再提交
+                Byte openCard=null;
+                if(!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)){
+                    ApprovalParam approvalParam =  new ApprovalParam();
+                    approvalParam.setOrderId(e.getOrderId());
+                    // TODO 定义key
+                    approvalParam.setTaskDefinitionKey("");
+                    approvalParam.setAction(LoanProcessConst.ACTION_PASS);
+                    ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                    LOG.info(e.getOrderId()+approvalResultBean.getMsg());
+                }
             });
         } catch (UnsupportedEncodingException e) {
             throw new BizException("导入文件失败");

@@ -598,7 +598,7 @@
 
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
-    left join loan_customer customer on main_order.loan_customer_id = customer.principal_cust_id
+    left join loan_customer customer on (main_order.loan_customer_id = customer.principal_cust_id and customer.status != 1)
     left join loan_credit_info bank on customer.id = bank.customer_id and bank.type = 1
     left join loan_credit_info society on customer.id = society.customer_id and society.type = 2
     left join (select * from loan_process_log  where order_id =  #{orderId,jdbcType=BIGINT} and task_definition_key = 'usertask_bank_credit_record' order by create_time LIMIT 1) process_bank on process_bank.order_id = main_order.id
