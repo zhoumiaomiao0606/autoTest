@@ -771,7 +771,7 @@
                             )
                         </when>
                         <when test="serialStatus == 'process'">
-                            AND tab.id in <!--  有一个退回就判定单子为退回 -->
+                            AND tab.id in <!--  全部处理中才算处理中 -->
                             (
                               (
                                 select DISTINCT serial.order_id from bank_interface_serial serial
