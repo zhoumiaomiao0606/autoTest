@@ -334,7 +334,12 @@
 -->
 
 
-        <table tableName="conf_dict" domainObjectName="ConfDictDO"
+        <table tableName="loan_bank_card_send" domainObjectName="LoanBankCardSendDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+        <table tableName="loan_material_manage" domainObjectName="LoanMaterialManageDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

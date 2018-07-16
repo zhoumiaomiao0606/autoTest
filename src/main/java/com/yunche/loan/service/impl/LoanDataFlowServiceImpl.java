@@ -15,7 +15,6 @@ import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.ActivitiVersionService;
 import com.yunche.loan.service.DictService;
 import com.yunche.loan.service.LoanDataFlowService;
-import com.yunche.loan.service.LoanRejectLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,11 +64,13 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
         UniversalDataFlowDetailVO universalDataFlowDetailVO = loanQueryDOMapper.selectUniversalDataFlowDetail(id);
 
-        // kvMap
-        Map<String, String> kvMap = dictService.getKVMapOfLoanDataFlowType();
-        // type -> typeText
-        String typeText = kvMap.get(String.valueOf(universalDataFlowDetailVO.getType()));
-        universalDataFlowDetailVO.setTypeText(typeText);
+        // tyoe - kvMap
+        Map<String, String> loanDataFlowTypeKVMap = dictService.getKVMap("loanDataFlowType");
+        universalDataFlowDetailVO.setTypeText(loanDataFlowTypeKVMap.get(String.valueOf(universalDataFlowDetailVO.getType())));
+
+        // expressCom - kvMap
+        Map<String, String> loanDataFlowExpressComKVMap = dictService.getKVMap("loanDataFlowExpressCom");
+        universalDataFlowDetailVO.setExpressComText(loanDataFlowExpressComKVMap.get(String.valueOf(universalDataFlowDetailVO.getExpressCom())));
 
         return ResultBean.ofSuccess(universalDataFlowDetailVO);
     }

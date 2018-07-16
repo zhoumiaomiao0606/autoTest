@@ -28,143 +28,8 @@ public class DictServiceImpl implements DictService {
 
 
     @Override
-    public String getCodeByKeyOfLoanDataFlowType(String key) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(key), "key不能为空");
-
-        DataDictionaryVO dataDictionaryVO = dictCache.get();
-
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
-
-        final String[] code = {null};
-
-        if (null != loanDataFlowTypes) {
-
-            JSONArray attr = loanDataFlowTypes.getAttr();
-
-            attr.stream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
-
-                        JSONObject eJObj = (JSONObject) e;
-
-                        String k = eJObj.getString("k");
-                        String code_ = eJObj.getString("code");
-
-                        if (key.equals(k)) {
-                            code[0] = code_;
-                        }
-                    });
-        }
-
-        return code[0];
-    }
-
-    @Override
-    public String getKeyByCodeOfLoanDataFlowType(String code) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(code), "code不能为空");
-
-        DataDictionaryVO dataDictionaryVO = dictCache.get();
-
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
-
-        final String[] key = {null};
-
-        if (null != loanDataFlowTypes) {
-
-            JSONArray attr = loanDataFlowTypes.getAttr();
-
-            attr.stream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
-
-                        JSONObject eJObj = (JSONObject) e;
-
-                        String k = eJObj.getString("k");
-                        String code_ = eJObj.getString("code");
-
-                        if (code.equals(code_)) {
-                            key[0] = k;
-                        }
-                    });
-        }
-
-        return key[0];
-    }
-
-    @Override
-    public Map<String, String> getKVMapOfLoanDataFlowType() {
-
-        Map<String, String> kvMap = getKVMapOfDictField("loanDataFlowType");
-
-        return kvMap;
-    }
-
-    @Override
-    public Map<String, String> getKCodeMapOfLoanDataFlowType() {
-        Map<String, String> kCodeMap = Maps.newHashMap();
-
-        // getAll
-        DataDictionaryVO dataDictionaryVO = dictCache.get();
-
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
-
-        if (null != loanDataFlowTypes) {
-
-            JSONArray attr = loanDataFlowTypes.getAttr();
-
-            attr.stream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
-
-                        JSONObject eJObj = (JSONObject) e;
-
-                        String k = eJObj.getString("k");
-                        String code = eJObj.getString("code");
-
-                        kCodeMap.put(k, code);
-                    });
-        }
-
-        return kCodeMap;
-    }
-
-    @Override
-    public Map<String, String> getCodeKMapOfLoanDataFlowType() {
-
-        Map<String, String> codeKMap = Maps.newHashMap();
-
-        // getAll
-        DataDictionaryVO dataDictionaryVO = dictCache.get();
-
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
-
-        if (null != loanDataFlowTypes) {
-
-            JSONArray attr = loanDataFlowTypes.getAttr();
-
-            attr.stream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
-
-                        JSONObject eJObj = (JSONObject) e;
-
-                        String k = eJObj.getString("k");
-                        String code = eJObj.getString("code");
-
-                        codeKMap.put(code, k);
-                    });
-        }
-
-        return codeKMap;
-    }
-
-    /**
-     * 反射获取  K/V map
-     *
-     * @param field
-     * @return
-     */
-    private Map<String, String> getKVMapOfDictField(String field) {
+    public Map<String, String> getKVMap(String field) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(field), "field不能为空");
 
         Map<String, String> kvMap = Maps.newHashMap();
 
@@ -204,5 +69,110 @@ public class DictServiceImpl implements DictService {
         }
 
         return kvMap;
+    }
+
+    @Override
+    public Map<String, String> getKCodeMap(String field) {
+
+        Map<String, String> kCodeMap = Maps.newHashMap();
+
+        DataDictionaryVO.Detail fieldDetail = getFieldDetail(field);
+
+        if (null != fieldDetail) {
+
+            JSONArray attr = fieldDetail.getAttr();
+
+            attr.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        JSONObject eJObj = (JSONObject) e;
+
+                        String k = eJObj.getString("k");
+                        String code = eJObj.getString("code");
+
+                        kCodeMap.put(k, code);
+                    });
+        }
+
+        return kCodeMap;
+    }
+
+    @Override
+    public Map<String, String> getCodeKMap(String field) {
+
+        Map<String, String> codeKMap = Maps.newHashMap();
+
+        DataDictionaryVO.Detail fieldDetail = getFieldDetail(field);
+
+        if (null != fieldDetail) {
+
+            JSONArray attr = fieldDetail.getAttr();
+
+            attr.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        JSONObject eJObj = (JSONObject) e;
+
+                        String k = eJObj.getString("k");
+                        String code = eJObj.getString("code");
+
+                        codeKMap.put(code, k);
+                    });
+        }
+
+        return codeKMap;
+    }
+
+
+    @Override
+    public String getCodeByKey(String field, String key) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(field), "field不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(key), "code不能为空");
+
+        Map<String, String> kCodeMap = getKCodeMap(field);
+
+        String code = kCodeMap.get(key);
+
+        return code;
+    }
+
+    @Override
+    public String getKeyByCode(String field, String code) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(field), "field不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(code), "code不能为空");
+
+        Map<String, String> codeKMap = getCodeKMap(field);
+
+        String key = codeKMap.get(code);
+
+        return key;
+    }
+
+    @Override
+    public String getKeyByCodeOfLoanDataFlowType(String code) {
+        return getKeyByCode("loanDataFlowType", code);
+    }
+
+    private DataDictionaryVO.Detail getFieldDetail(String field) {
+        // getAll
+        DataDictionaryVO dataDictionaryVO = dictCache.get();
+
+        Class<? extends DataDictionaryVO> clazz = dataDictionaryVO.getClass();
+
+        String methodName = "get" + StringUtil.firstLetter2UpperCase(field);
+
+        try {
+            Method method = clazz.getMethod(methodName);
+
+            DataDictionaryVO.Detail fieldDetail = (DataDictionaryVO.Detail) method.invoke(clazz);
+
+            return fieldDetail;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

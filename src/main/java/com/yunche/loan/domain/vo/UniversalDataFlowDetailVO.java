@@ -57,6 +57,8 @@ public class UniversalDataFlowDetailVO {
 
     private Byte expressCom;
 
+    private String expressComText;
+
     private String expressNum;
 
     private Date expressSendDate;

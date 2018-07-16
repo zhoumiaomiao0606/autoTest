@@ -9,13 +9,47 @@ import java.util.Map;
 public interface DictService {
 
     /**
-     * 资料流转
-     * k -> code
+     * K-V  map
      *
+     * @param field 字典filed
+     * @return
+     */
+    Map<String, String> getKVMap(String field);
+
+    /**
+     * K-CODE  map
+     *
+     * @param field 字典filed
+     * @return
+     */
+    Map<String, String> getKCodeMap(String field);
+
+    /***
+     * CODE-K  map
+     *
+     * @param field 字典filed
+     * @return
+     */
+    Map<String, String> getCodeKMap(String field);
+
+
+    /**
+     * K -> CODE
+     *
+     * @param field
+     * @param code
+     * @return
+     */
+    String getKeyByCode(String field, String code);
+
+    /**
+     * CODE -> K
+     *
+     * @param field
      * @param key
      * @return
      */
-    String getCodeByKeyOfLoanDataFlowType(String key);
+    String getCodeByKey(String field, String key);
 
     /**
      * 资料流转
@@ -25,29 +59,4 @@ public interface DictService {
      * @return
      */
     String getKeyByCodeOfLoanDataFlowType(String code);
-
-    /**
-     * 资料流转
-     * K-V  map
-     *
-     * @return
-     */
-    Map<String, String> getKVMapOfLoanDataFlowType();
-
-    /**
-     * 资料流转
-     * K-CODE  map
-     *
-     * @return
-     */
-    Map<String, String> getKCodeMapOfLoanDataFlowType();
-
-    /**
-     * 资料流转
-     * CODE-K  map
-     *
-     * @return
-     */
-    Map<String, String> getCodeKMapOfLoanDataFlowType();
-
 }

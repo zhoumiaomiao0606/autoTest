@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LoanBankCardSendDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanBankCardSendDO">
+        <id column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="cardholder_name" property="cardholderName" jdbcType="VARCHAR"/>
+        <result column="cardholder_phone" property="cardholderPhone" jdbcType="VARCHAR"/>
+        <result column="cardholder_address" property="cardholderAddress" jdbcType="VARCHAR"/>
+        <result column="repay_card_num" property="repayCardNum" jdbcType="VARCHAR"/>
+        <result column="express_send_address" property="expressSendAddress" jdbcType="VARCHAR"/>
+        <result column="express_send_num" property="expressSendNum" jdbcType="VARCHAR"/>
+        <result column="express_send_date" property="expressSendDate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    order_id, cardholder_name, cardholder_phone, cardholder_address, repay_card_num, 
+    express_send_address, express_send_num, express_send_date, gmt_create, gmt_modify
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_bank_card_send
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from loan_bank_card_send
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanBankCardSendDO">
+    insert into loan_bank_card_send (order_id, cardholder_name, cardholder_phone, 
+      cardholder_address, repay_card_num, express_send_address, 
+      express_send_num, express_send_date, gmt_create, 
+      gmt_modify)
+    values (#{orderId,jdbcType=BIGINT}, #{cardholderName,jdbcType=VARCHAR}, #{cardholderPhone,jdbcType=VARCHAR}, 
+      #{cardholderAddress,jdbcType=VARCHAR}, #{repayCardNum,jdbcType=VARCHAR}, #{expressSendAddress,jdbcType=VARCHAR}, 
+      #{expressSendNum,jdbcType=VARCHAR}, #{expressSendDate,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanBankCardSendDO">
+        insert into loan_bank_card_send
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="cardholderName != null">
+                cardholder_name,
+            </if>
+            <if test="cardholderPhone != null">
+                cardholder_phone,
+            </if>
+            <if test="cardholderAddress != null">
+                cardholder_address,
+            </if>
+            <if test="repayCardNum != null">
+                repay_card_num,
+            </if>
+            <if test="expressSendAddress != null">
+                express_send_address,
+            </if>
+            <if test="expressSendNum != null">
+                express_send_num,
+            </if>
+            <if test="expressSendDate != null">
+                express_send_date,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="cardholderName != null">
+                #{cardholderName,jdbcType=VARCHAR},
+            </if>
+            <if test="cardholderPhone != null">
+                #{cardholderPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="cardholderAddress != null">
+                #{cardholderAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="repayCardNum != null">
+                #{repayCardNum,jdbcType=VARCHAR},
+            </if>
+            <if test="expressSendAddress != null">
+                #{expressSendAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="expressSendNum != null">
+                #{expressSendNum,jdbcType=VARCHAR},
+            </if>
+            <if test="expressSendDate != null">
+                #{expressSendDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanBankCardSendDO">
+        update loan_bank_card_send
+        <set>
+            <if test="cardholderName != null">
+                cardholder_name = #{cardholderName,jdbcType=VARCHAR},
+            </if>
+            <if test="cardholderPhone != null">
+                cardholder_phone = #{cardholderPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="cardholderAddress != null">
+                cardholder_address = #{cardholderAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="repayCardNum != null">
+                repay_card_num = #{repayCardNum,jdbcType=VARCHAR},
+            </if>
+            <if test="expressSendAddress != null">
+                express_send_address = #{expressSendAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="expressSendNum != null">
+                express_send_num = #{expressSendNum,jdbcType=VARCHAR},
+            </if>
+            <if test="expressSendDate != null">
+                express_send_date = #{expressSendDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanBankCardSendDO">
+    update loan_bank_card_send
+    set cardholder_name = #{cardholderName,jdbcType=VARCHAR},
+      cardholder_phone = #{cardholderPhone,jdbcType=VARCHAR},
+      cardholder_address = #{cardholderAddress,jdbcType=VARCHAR},
+      repay_card_num = #{repayCardNum,jdbcType=VARCHAR},
+      express_send_address = #{expressSendAddress,jdbcType=VARCHAR},
+      express_send_num = #{expressSendNum,jdbcType=VARCHAR},
+      express_send_date = #{expressSendDate,jdbcType=TIMESTAMP},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+</mapper>

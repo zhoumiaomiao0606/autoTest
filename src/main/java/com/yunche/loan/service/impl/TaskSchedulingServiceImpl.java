@@ -341,7 +341,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         if (null != dataFlowType) {
 
             // type -> node
-            String node = dictService.getCodeByKeyOfLoanDataFlowType(String.valueOf(dataFlowType));
+            String node = dictService.getCodeByKey("loanDataFlowType", String.valueOf(dataFlowType));
 
             // node存在
             if (StringUtils.isNotBlank(node)) {
@@ -367,7 +367,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             taskListQuery.setDataFlowNodeSet(dataFlowNodes);
 
             // codeKMap
-            Map<String, String> codeKMap = dictService.getCodeKMapOfLoanDataFlowType();
+            Map<String, String> codeKMap = dictService.getCodeKMap("loanDataFlowType");
 
             // taskKey -> type
             List<String> typeList = dataFlowNodes.stream()
@@ -392,13 +392,13 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         }
 
         // kvMap
-        Map<String, String> kvMap = dictService.getKVMapOfLoanDataFlowType();
+        Map<String, String> kvMap = dictService.getKVMap("loanDataFlowType");
         if (CollectionUtils.isEmpty(kvMap)) {
             return;
         }
 
         // kCodeMap
-        Map<String, String> kCodeMap = dictService.getKCodeMapOfLoanDataFlowType();
+        Map<String, String> kCodeMap = dictService.getKCodeMap("loanDataFlowType");
         if (CollectionUtils.isEmpty(kvMap)) {
             return;
         }
