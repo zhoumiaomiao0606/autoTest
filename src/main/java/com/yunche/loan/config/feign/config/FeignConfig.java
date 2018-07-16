@@ -90,6 +90,7 @@ public class FeignConfig {
                 template.header("transCode",transCode);
                 template.header("customerId",customerId.toString());
                 template.header("serialNo",cmpseq.toString());
+                template.header("orderId",orderno.toString());
 
             }
         };
@@ -106,6 +107,7 @@ public class FeignConfig {
                     Object customerId = response.request().headers().get("customerId");
                     Object serialNo = response.request().headers().get("serialNo");
                     Object fileNum = response.request().headers().get("fileNum");
+                    Object orderId = response.request().headers().get("orderId");
 
                     if(transCode == null){
                         throw new BizException("transCode 参数为空");
@@ -119,6 +121,9 @@ public class FeignConfig {
                     if(fileNum == null){
                         throw new BizException("fileNum 参数为空");
                     }
+                    if(orderId == null){
+                        throw new BizException("orderId 参数为空");
+                    }
 
                     List transCodeList = (List) transCode;
 
@@ -127,6 +132,8 @@ public class FeignConfig {
                     List serialNoList = (List) serialNo;
 
                     List fileNumList = (List) fileNum;
+
+                    List orderIdList = (List) orderId;
 
                     if(CollectionUtils.isEmpty(transCodeList)){
                         throw new BizException("transCode 参数为空");
@@ -144,9 +151,14 @@ public class FeignConfig {
                         throw new BizException("fileNum 参数为空");
                     }
 
+                    if(CollectionUtils.isEmpty(orderIdList)){
+                        throw new BizException("orderId 参数为空");
+                    }
+
                     BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(serialNoList.get(0).toString());
                     BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
                     DO.setSerialNo(serialNoList.get(0).toString());
+                    DO.setOrderId(Long.valueOf(orderIdList.get(0).toString()));
                     DO.setCustomerId(Long.valueOf(customerIdList.get(0).toString()));
                     DO.setTransCode(transCodeList.get(0).toString());
                     DO.setApiStatus(response.status());
@@ -185,6 +197,7 @@ public class FeignConfig {
                 Object customerId = response.request().headers().get("customerId");
                 Object serialNo = response.request().headers().get("serialNo");
                 Object fileNum = response.request().headers().get("fileNum");
+                Object orderId = response.request().headers().get("orderId");
 
                 if(transCode == null){
                     throw new BizException("transCode 参数为空");
@@ -198,6 +211,9 @@ public class FeignConfig {
                 if(fileNum == null){
                     throw new BizException("fileNum 参数为空");
                 }
+                if(orderId == null){
+                    throw new BizException("orderId 参数为空");
+                }
 
                 List transCodeList = (List) transCode;
 
@@ -206,6 +222,8 @@ public class FeignConfig {
                 List serialNoList = (List) serialNo;
 
                 List fileNumList = (List) fileNum;
+
+                List orderIdList = (List) orderId;
 
                 if(CollectionUtils.isEmpty(transCodeList)){
                     throw new BizException("transCode 参数为空");
@@ -222,6 +240,11 @@ public class FeignConfig {
                 if(CollectionUtils.isEmpty(fileNumList)){
                     throw new BizException("fileNum 参数为空");
                 }
+
+                if(CollectionUtils.isEmpty(orderIdList)){
+                    throw new BizException("orderId 参数为空");
+                }
+
                 Class clazz = null;
                 try {
                     clazz = Class.forName(type.getTypeName());
@@ -248,6 +271,7 @@ public class FeignConfig {
                     if(IConstant.API_SUCCESS.equals(icbcApiRetcode) && IConstant.SUCCESS.equals(returnCode)){
                         BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
                         DO.setSerialNo(serialNoList.get(0).toString());
+                        DO.setOrderId(Long.valueOf(orderIdList.get(0).toString()));
                         DO.setCustomerId(Long.valueOf(customerIdList.get(0).toString()));
                         DO.setTransCode(transCodeList.get(0).toString());
                         DO.setStatus(IDict.K_JYZT.PROCESS);
@@ -263,6 +287,7 @@ public class FeignConfig {
                     }else {
                         BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
                         DO.setSerialNo(serialNoList.get(0).toString());
+                        DO.setOrderId(Long.valueOf(orderIdList.get(0).toString()));
                         DO.setCustomerId(Long.valueOf(customerIdList.get(0).toString()));
                         DO.setTransCode(transCodeList.get(0).toString());
                         DO.setStatus(IDict.K_JYZT.FAIL);

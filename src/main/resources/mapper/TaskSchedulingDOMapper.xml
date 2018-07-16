@@ -433,24 +433,6 @@
               left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
-              <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
-              left join
-                  (
-                    select DISTINCT id from loan_order where loan_customer_id in
-                      (
-                      select DISTINCT id  from loan_customer where principal_cust_id in
-                        (
-                          select serial.customer_id from bank_interface_serial serial
-                          inner join
-                          (
-                            select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                            as serial_no
-                              from bank_interface_serial GROUP BY trans_code,customer_id
-                          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
-                        )
-                      )
-                  ) join_serial on join_serial.id = main.id
-              </if>
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
@@ -716,88 +698,108 @@
                 <if test="serialStatus != null">
                     <choose>
                         <when test="serialStatus == 'except'">
-                            AND tab.id not in
+                            AND tab.id not in  <!--  出现一次就判定为除外 -->
                             (
                               (
-                                select DISTINCT id from loan_order where loan_customer_id in
-                                (
-                                    select DISTINCT id  from loan_customer where principal_cust_id in
-                                      (
-                                        select serial.customer_id from bank_interface_serial serial
-                                        inner join
-                                        (
-                                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                                          as serial_no
-                                          from bank_interface_serial GROUP BY trans_code,customer_id
-                                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
-                                      )
-                                )
+                                select DISTINCT serial.order_id from bank_interface_serial serial
+                                  inner join
+                                  (
+                                    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                                    as serial_no
+                                    from bank_interface_serial GROUP BY trans_code,customer_id
+                                  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
                               )
                             )
                         </when>
+
                         <when test="serialStatus == 'exception'">
-                            AND tab.id in
+                            AND tab.id in  <!--  有一个异常,就判定为这个单子异常 -->
                             (
                               (
-                                select DISTINCT id from loan_order where loan_customer_id in
-                                  (
-                                    select DISTINCT id  from loan_customer where principal_cust_id in
-                                    (
-                                      select serial.customer_id from bank_interface_serial serial
-                                      inner join
-                                      (
-                                      select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                                      as serial_no
-                                      from bank_interface_serial GROUP BY trans_code,customer_id
-                                    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
-                                      and (serial.api_status != 200 or serial.status not in (0,1,2,3))
-                                  )
-                                )
+                                select  DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                                  as serial_no
+                                  from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+                                where serial.api_status !=200 or serial.status not in (0,1,2,3)
                               )
                             )
                         </when>
                         <when test="serialStatus == 'pending'">
-                            AND tab.id in
+                            AND tab.id in <!--  全部成功才算成功 -->
                             (
                               (
-                                select DISTINCT id from loan_order where loan_customer_id in
+                                select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                                  ','),',',1)
+                                  as serial_no
+                                  from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+                                where serial.api_status = 200 and serial.status in (0,1) and serial.order_id not in
+                                (
+                                  select DISTINCT serial.order_id from bank_interface_serial serial
+                                  inner join
                                   (
-                                    select DISTINCT id  from loan_customer where principal_cust_id in
-                                    (
-                                      select serial.customer_id from bank_interface_serial serial
-                                      inner join
-                                      (
-                                      select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                                      as serial_no
-                                      from bank_interface_serial GROUP BY trans_code,customer_id
-                                      ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
-                                    and serial.api_status = 200 and serial.status in (0,1)
-                                  )
+                                    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                                    ','),',',1)
+                                    as serial_no
+                                    from bank_interface_serial GROUP BY trans_code,customer_id
+                                  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+                                  where serial.api_status != 200 or serial.status not in (0,1)
+                                )
+                              )
+                            )
+                        </when>
+                        <when test="serialStatus == 'back'">
+                            AND tab.id in <!--  有一个退回就判定单子为退回 -->
+                            (
+                              (
+                                select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                                  ','),',',1)
+                                  as serial_no
+                                  from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+                                where serial.api_status = 200 and serial.status = 3
+                              )
+                            )
+                        </when>
+                        <when test="serialStatus == 'process'">
+                            AND tab.id in <!--  有一个退回就判定单子为退回 -->
+                            (
+                              (
+                                select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                                  ','),',',1)
+                                  as serial_no
+                                  from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+                                where serial.api_status = 200 and serial.status = 2 and  serial.order_id not in
+                                (
+                                  select DISTINCT serial.order_id from bank_interface_serial serial
+                                  inner join
+                                  (
+                                    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                                    ','),',',1)
+                                    as serial_no
+                                    from bank_interface_serial GROUP BY trans_code,customer_id
+                                  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+                                  where serial.api_status != 200 or serial.status != 2
                                 )
                               )
                             )
                         </when>
 
                         <otherwise>
-                            AND tab.id in
-                            (
-                              (
-                                select DISTINCT id from loan_order where loan_customer_id in
-                                (
-                                  select DISTINCT id  from loan_customer where principal_cust_id in
-                                  (
-                                    select serial.customer_id from bank_interface_serial serial
-                                    inner join
-                                    (
-                                    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                                    as serial_no
-                                    from bank_interface_serial GROUP BY trans_code,customer_id
-                                    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
-                                    and serial.status =  #{serialStatus}
-                                  )
-                                )
-                              )
-                            )
+                            AND 1=2
                         </otherwise>
                     </choose>
                 </if>
