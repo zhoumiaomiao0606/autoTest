@@ -792,7 +792,7 @@
                                     as serial_no
                                     from bank_interface_serial GROUP BY trans_code,customer_id
                                   ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
-                                  where serial.api_status != 200 or serial.status != 2
+                                  where serial.api_status = 200 and serial.status in (0,1,2,3)
                                 )
                               )
                             )
