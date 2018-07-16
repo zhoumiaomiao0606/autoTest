@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.constant.LoanProcessConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.response.ApplycreditstatusResponse;
@@ -13,11 +14,14 @@ import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,9 +32,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerConst.EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
@@ -38,6 +42,9 @@ import static com.yunche.loan.config.thread.ThreadPool.executorService;
 
 @Service
 public class BankOpenCardServiceImpl implements BankOpenCardService{
+
+    private static final Logger LOG = LoggerFactory.getLogger(BankOpenCardService.class);
+
 
     @Autowired
     LoanQueryService loanQueryService;
@@ -92,6 +99,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     @Autowired
     LoanFileService loanFileService;
+
+    @Autowired
+    LoanProcessService loanProcessService;
 
     /**
      * 银行开卡详情页
@@ -213,10 +223,21 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
                 bankFileListRecordDO.setBankFileListId(Long.valueOf(bankFileListId));
                 recordLists.add(bankFileListRecordDO);
             }
-            if (!CollectionUtils.isEmpty(recordLists)) {
-                int count = bankFileListRecordDOMapper.insertBatch(recordLists);
-                Preconditions.checkArgument(count == recordLists.size(), "批量插入失败");
+            List<BankFileListRecordDO> list = recordLists.parallelStream().filter(e-> e.getIsCustomer().equals(K_YORN_YES)).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(list)) {
+                int count = bankFileListRecordDOMapper.insertBatch(list);
+                Preconditions.checkArgument(count == list.size(), "批量插入失败");
             }
+
+            list.parallelStream().filter(Objects::nonNull).forEach(e->{
+                ApprovalParam approvalParam =  new ApprovalParam();
+                approvalParam.setOrderId(e.getOrderId());
+                // TODO 定义key
+                approvalParam.setTaskDefinitionKey("");
+                approvalParam.setAction(LoanProcessConst.ACTION_PASS);
+                ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                LOG.info(e.getOrderId()+approvalResultBean.getMsg());
+            });
         } catch (UnsupportedEncodingException e) {
             throw new BizException("导入文件失败");
         } catch (IOException e) {
@@ -267,7 +288,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         }
         ICBCApiRequest.Applycreditstatus applycreditstatus =new ICBCApiRequest.Applycreditstatus();
         applycreditstatus.setPlatno(sysConfig.getPlatno());
-        applycreditstatus.setZoneno("3301");
+        applycreditstatus.setZoneno(String.valueOf(loanBaseInfoDO.getAreaId()).substring(0,4));
         if(IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))){
             applycreditstatus.setPhybrno(sysConfig.getHzphybrno());
         }else if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
@@ -306,6 +327,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderId), VALID_STATUS);
         if(loanOrderDO == null){
             bankFileListRecordDO.setIsCustomer(K_YORN_NO);
+            return bankFileListRecordDO;
+        }else{
+            bankFileListRecordDO.setCustomerId(loanOrderDO.getLoanCustomerId());
         }
 
         bankFileListRecordDO.setAreaId(areaId);
@@ -320,7 +344,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         bankFileListRecordDO.setHairpinFlag(hairpinFlag);
         bankFileListRecordDO.setAccountStatement(accountStatement);
         bankFileListRecordDO.setRepayDate(repayDate);
-        bankFileListRecordDO.setCustomerId(loanOrderDO.getLoanCustomerId());
+
 
         return bankFileListRecordDO;
     }
