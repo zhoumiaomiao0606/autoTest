@@ -7,57 +7,57 @@ import java.util.Date;
 
 @Data
 public class BankFileListRecordDO extends BankFileListRecordDOKey {
-    private Long orderId;
+    private Long orderId;//点单编号
 
-    private String areaId;
+    private String areaId;//地区号
 
-    private String platNo;
+    private String platNo;//平台编号
 
-    private String guarantyUnit;
+    private String guarantyUnit;//担保单位编号
 
-    private Date opencardDate;
+    private Date opencardDate;//开卡日期
 
-    private String cardNumber;
+    private String cardNumber;//卡号
 
-    private String name;
+    private String name;//姓名
 
-    private String cardType;
+    private String cardType;//证件类型
 
-    private String credentialNo;
+    private String credentialNo;//证件号码
 
-    private String hairpinFlag;
+    private String hairpinFlag;//发卡标志
 
-    private String accountStatement;
+    private String accountStatement;//对账单日
 
-    private String repayDate;
+    private String repayDate;//还款日
 
-    private Date gmtGreate;
+    private Date gmtGreate;//创建时间
 
     private Byte status;
 
-    private BigDecimal cardBalance;
+    private BigDecimal cardBalance;//卡余额
 
-    private BigDecimal optimalReturn;
+    private BigDecimal optimalReturn;//最优还款额
 
-    private Integer cumulativeBreachNumber;
+    private Integer cumulativeBreachNumber;//累计违约次数
 
-    private Integer consecutiveBreachNumber;
+    private Integer consecutiveBreachNumber;//连续违约次数
 
-    private String runBank;
+    private String runBank;//经办支行
 
-    private String instalmentTypes;
+    private String instalmentTypes;//分期业务种类
 
-    private BigDecimal instalmentAmount;
+    private BigDecimal instalmentAmount;//分期金额
 
-    private Integer sumNumber;
+    private Integer sumNumber;//汇总笔数
 
-    private BigDecimal sumAmount;
+    private BigDecimal sumAmount;//汇总金额
 
-    private String reminders;
+    private String reminders;//催缴情况
 
-    private Byte isCustomer;
+    private Byte isCustomer;//是否系统客户
 
-    private Date batchDate;
+    private Date batchDate;//文件批次日期
 
 
 }

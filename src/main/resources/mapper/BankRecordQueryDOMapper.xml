@@ -115,7 +115,7 @@
         where
             file_type=#{fileType}
         <if test="fileName != null and fileName != '' ">
-            AND bank_file_mark LIKE CONCAT('%',#{fileName},'%')
+            AND file_name LIKE CONCAT('%',#{fileName},'%')
         </if>
         <if test="startDate != null">
             AND TO_DAYS(gmt_create) &gt;= TO_DAYS(#{startDate})

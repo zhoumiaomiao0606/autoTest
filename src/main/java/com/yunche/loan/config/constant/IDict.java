@@ -306,12 +306,19 @@ public class IDict {
         public  static final String ICBC_NJJN="4";
 
     }
+
+    /**
+     * 是/否
+     */
     public static abstract interface K_YORN{
         public  static final Byte K_YORN_NO =0;
         public  static final Byte K_YORN_YES =1;
 
     }
 
+    /**
+     * 币种
+     */
     public static abstract interface K_BZ{
         public  static final String K_RMB ="001";
     }

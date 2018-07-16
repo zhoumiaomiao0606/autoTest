@@ -90,7 +90,7 @@ public class OSSUnit {
             metadata.setHeader("Pragma", "no-cache");
             metadata.setContentEncoding("utf-8");
             metadata.setContentType(getContentType(fileName));
-            metadata.setContentDisposition("filename/filesize=" + fileName + "/" + fileSize + "Byte.");
+            metadata.setContentDisposition("attachment;filename/filesize=" + fileName + "/" + fileSize + "Byte.");
             //上传文件
             PutObjectResult putResult = client.putObject(bucketName, diskName + fileName, is, metadata);
             //解析结果
