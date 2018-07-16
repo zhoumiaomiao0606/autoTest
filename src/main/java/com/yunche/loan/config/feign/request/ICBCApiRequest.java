@@ -319,6 +319,8 @@ public class ICBCApiRequest {
         private String busitype;
         @NotEmpty
         private String fileNum;
+        @NotEmpty
+        private String customerId;
     }
 
     /**

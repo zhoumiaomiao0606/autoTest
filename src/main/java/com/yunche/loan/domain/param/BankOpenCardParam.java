@@ -12,7 +12,6 @@ import java.util.List;
 @Data
 public class BankOpenCardParam  extends ICBCApiRequest.ApplyBankOpenCard{
         private  Long orderId;
-        private Long customerId;
 
         private String namePinyin;
 

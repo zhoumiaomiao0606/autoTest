@@ -170,4 +170,5 @@ public class CustomerVO {
     private List<FileVO> files = Collections.EMPTY_LIST;
 
     private String bankCreditNote;
+
 }

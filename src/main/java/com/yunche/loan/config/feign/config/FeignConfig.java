@@ -62,8 +62,11 @@ public class FeignConfig {
                 if(loanOrderDO == null){
                     throw new BizException("此订单不存在");
                 }
-                Long customerId = loanOrderDO.getLoanCustomerId();
+                Object customerId  =  reqMap.get("customerId");
                 if(customerId == null){
+                    throw new BizException("此客户id不存在");
+                }
+                if(StringUtils.isBlank(customerId.toString())){
                     throw new BizException("此客户id不存在");
                 }
 
