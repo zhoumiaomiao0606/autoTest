@@ -166,7 +166,7 @@ public class DictServiceImpl implements DictService {
         try {
             Method method = clazz.getMethod(methodName);
 
-            DataDictionaryVO.Detail fieldDetail = (DataDictionaryVO.Detail) method.invoke(clazz);
+            DataDictionaryVO.Detail fieldDetail = (DataDictionaryVO.Detail) method.invoke(dataDictionaryVO);
 
             return fieldDetail;
 
