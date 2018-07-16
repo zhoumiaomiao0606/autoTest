@@ -85,6 +85,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -94,6 +95,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+
         ScheduleTaskQuery query = new ScheduleTaskQuery();
         query.setJuniorIds(juniorIds);
         query.setEmployeeId(loginUser.getId());
@@ -108,14 +110,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
+
         PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
+
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -125,6 +130,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+
         ScheduleTaskQuery query = new ScheduleTaskQuery();
         query.setJuniorIds(juniorIds);
         query.setKey(key);
@@ -140,9 +146,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
+
         PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
+
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
@@ -157,8 +165,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
         }
+
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -168,6 +178,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+
         taskListQuery.setJuniorIds(juniorIds);
         taskListQuery.setEmployeeId(loginUser.getId());
         taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
@@ -181,9 +192,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
@@ -193,8 +206,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
         }
+
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -204,6 +219,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+
         taskListQuery.setJuniorIds(juniorIds);
         taskListQuery.setEmployeeId(loginUser.getId());
         taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
@@ -217,12 +233,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
-        long count = PageHelper.count(new ISelect() {
-            @Override
-            public void doSelect() {
-                taskSchedulingDOMapper.selectTaskList(taskListQuery);
-            }
+
+        long count = PageHelper.count(() -> {
+            taskSchedulingDOMapper.selectTaskList(taskListQuery);
         });
+
         return ResultBean.ofSuccess(count);
     }
 
@@ -267,7 +282,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     public ResultBean<List<TaskListVO>> queryDataFlowTaskList(TaskListQuery taskListQuery) {
 
         // 获取并设置 资料流转node-key
-        getAndSettDataFlowNodeSet(taskListQuery);
+        getAndSetDataFlowNodeSet(taskListQuery);
 
         // 空node    则直接返回EMPTY
         if (CollectionUtils.isEmpty(taskListQuery.getDataFlowNodeSet())) {
@@ -294,7 +309,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
      *
      * @param taskListQuery
      */
-    private void getAndSettDataFlowNodeSet(TaskListQuery taskListQuery) {
+    private void getAndSetDataFlowNodeSet(TaskListQuery taskListQuery) {
 
         // 禁止外部传入
         if (!CollectionUtils.isEmpty(taskListQuery.getDataFlowNodeSet())) {
