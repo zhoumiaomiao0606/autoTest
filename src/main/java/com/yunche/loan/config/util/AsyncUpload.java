@@ -1,5 +1,6 @@
 package com.yunche.loan.config.util;
 
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
@@ -14,9 +15,14 @@ import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class AsyncUpload {
+
+    private static final Set<String> PIC_SUFFIX = Sets.newHashSet("jpg", "png");
+
+    private static final Set<String> DOCX_SUFFIX = Sets.newHashSet("docx");
 
     @Resource
     private BankInterfaceFileSerialDOMapper bankInterfaceFileSerialDOMapper;
@@ -104,7 +110,15 @@ public class AsyncUpload {
 
         try {
             try {
-                picPath = ImageUtil.mergeImage2Pic(name,urls);
+                String suffix = name.split(".")[1].trim();
+                if(PIC_SUFFIX.contains(suffix)){
+                    picPath = ImageUtil.mergeImage2Pic(name,urls);
+                }else if(DOCX_SUFFIX.contains(suffix)){
+                    picPath = ImageUtil.mergeImage2Doc(name,urls);
+                }else{
+                    throw new RuntimeException("文件后缀有误");
+                }
+
                 if(StringUtils.isBlank(picPath)){
                     error = new Byte("2");
                     throw new RuntimeException("文件合成出错");

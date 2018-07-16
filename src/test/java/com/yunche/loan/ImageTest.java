@@ -18,12 +18,12 @@ public class ImageTest extends BaseTest{
 
         ImageUtil.mergeImage2Pic(fileKey);
 //        ImageUtil.mergeImage2Doc(fileKey);
-//        ArrayList<String> image = Lists.newArrayList();
-//        image.add("/Users/zhengdu/Downloads/picture/1.jpg");
-//        image.add("/Users/zhengdu/Downloads/picture/2.jpg");
-//        image.add("/Users/zhengdu/Downloads/picture/3.jpg");
-//        image.add("/Users/zhengdu/Downloads/picture/4.jpg");
-//        image.add("/Users/zhengdu/Downloads/picture/5.jpg");
-//        ImageUtil.mergeImage2Doc(image);
+        ArrayList<String> image = Lists.newArrayList();
+        image.add("/Users/zhengdu/Downloads/picture/1.jpg");
+        image.add("/Users/zhengdu/Downloads/picture/2.jpg");
+        image.add("/Users/zhengdu/Downloads/picture/3.jpg");
+        image.add("/Users/zhengdu/Downloads/picture/4.jpg");
+        image.add("/Users/zhengdu/Downloads/picture/5.jpg");
+        ImageUtil.mergeImage2Doc(image);
     }
 }
