@@ -2,7 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanBankCardSendDO;
-import com.yunche.loan.domain.vo.LoanBankCardSendVO;
+import com.yunche.loan.domain.vo.UniversalBankCardSendVO;
 
 /**
  * @author liuzhe
@@ -12,5 +12,5 @@ public interface LoanBankCardSendService {
 
     ResultBean<Void> save(LoanBankCardSendDO loanBankCardSendDO);
 
-    ResultBean<LoanBankCardSendVO> detail(Long orderId);
+    ResultBean<UniversalBankCardSendVO> detail(Long orderId);
 }

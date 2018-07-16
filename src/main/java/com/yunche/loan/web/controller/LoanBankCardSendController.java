@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanBankCardSendDO;
 import com.yunche.loan.domain.vo.LoanBankCardSendVO;
+import com.yunche.loan.domain.vo.UniversalBankCardSendVO;
 import com.yunche.loan.service.LoanBankCardSendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,7 +28,7 @@ public class LoanBankCardSendController {
     }
 
     @GetMapping(value = "/detail")
-    public ResultBean<LoanBankCardSendVO> detail(@RequestParam Long orderId) {
+    public ResultBean<UniversalBankCardSendVO> detail(@RequestParam Long orderId) {
         return loanBankCardSendService.detail(orderId);
     }
 }

@@ -89,6 +89,22 @@ public interface LoanQueryDOMapper {
      */
     UniversalDataFlowDetailVO selectUniversalDataFlowDetail(Long dataFlowId);
 
+    /**
+     * 合同归档
+     *
+     * @param orderId
+     * @return
+     */
+    UniversalMaterialManageVO selectUniversalMaterialManage(Long orderId);
+
+    /**
+     * 银行卡寄送单
+     *
+     * @param orderId
+     * @return
+     */
+    UniversalBankCardSendVO selectUniversalBankCardSend(Long orderId);
+
     //=======================================================================
 
     List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
@@ -108,4 +124,5 @@ public interface LoanQueryDOMapper {
     Long selectOrderIdByIDCard(String idCard);
 
     BankCardRecordVO selectBankCardRecordDetail(Long orderId);
+
 }

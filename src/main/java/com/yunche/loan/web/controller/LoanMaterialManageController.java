@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanMaterialManageDO;
 import com.yunche.loan.domain.vo.LoanMaterialManageVO;
+import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.service.LoanMaterialManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,7 +28,7 @@ public class LoanMaterialManageController {
     }
 
     @GetMapping(value = "/detail")
-    public ResultBean<LoanMaterialManageVO> detail(@RequestParam Long orderId) {
+    public ResultBean<RecombinationVO> detail(@RequestParam Long orderId) {
         return loanMaterialManageService.detail(orderId);
     }
 }

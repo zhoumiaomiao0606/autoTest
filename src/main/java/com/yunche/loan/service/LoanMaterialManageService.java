@@ -2,7 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanMaterialManageDO;
-import com.yunche.loan.domain.vo.LoanMaterialManageVO;
+import com.yunche.loan.domain.vo.RecombinationVO;
 
 /**
  * @author liuzhe
@@ -12,5 +12,5 @@ public interface LoanMaterialManageService {
 
     ResultBean<Void> save(LoanMaterialManageDO loanMaterialManageDO);
 
-    ResultBean<LoanMaterialManageVO> detail(Long orderId);
+    ResultBean<RecombinationVO> detail(Long orderId);
 }

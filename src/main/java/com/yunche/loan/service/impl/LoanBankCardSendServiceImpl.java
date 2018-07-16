@@ -3,12 +3,10 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanBankCardSendDO;
-import com.yunche.loan.domain.entity.LoanMaterialManageDO;
-import com.yunche.loan.domain.vo.LoanBankCardSendVO;
-import com.yunche.loan.domain.vo.LoanMaterialManageVO;
+import com.yunche.loan.domain.vo.UniversalBankCardSendVO;
 import com.yunche.loan.mapper.LoanBankCardSendDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanBankCardSendService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +21,9 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
 
     @Autowired
     private LoanBankCardSendDOMapper loanBankCardSendDOMapper;
+
+    @Autowired
+    private LoanQueryDOMapper loanQueryDOMapper;
 
 
     @Override
@@ -48,18 +49,11 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
     }
 
     @Override
-    public ResultBean<LoanBankCardSendVO> detail(Long orderId) {
-
+    public ResultBean<UniversalBankCardSendVO> detail(Long orderId) {
         Preconditions.checkNotNull(orderId, "订单号不能为空");
 
-        LoanBankCardSendDO loanBankCardSendDO = loanBankCardSendDOMapper.selectByPrimaryKey(orderId);
+        UniversalBankCardSendVO universalBankCardSendVO = loanQueryDOMapper.selectUniversalBankCardSend(orderId);
 
-        LoanBankCardSendVO loanBankCardSendVO = new LoanBankCardSendVO();
-        if (null != loanBankCardSendDO) {
-            BeanUtils.copyProperties(loanBankCardSendDO, loanBankCardSendVO);
-            loanBankCardSendVO.setOrderId(String.valueOf(loanBankCardSendDO.getOrderId()));
-        }
-
-        return ResultBean.ofSuccess(loanBankCardSendVO);
+        return ResultBean.ofSuccess(universalBankCardSendVO);
     }
 }

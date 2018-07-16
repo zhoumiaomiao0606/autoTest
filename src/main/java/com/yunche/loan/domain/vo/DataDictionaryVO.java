@@ -18,9 +18,15 @@ public class DataDictionaryVO {
 
     /**
      * 字段
-     * 资料流转-类型
+     * 资料流转-类型  -all
      */
     private Detail loanDataFlowType;
+
+    /**
+     * 资料流转-类型  -send:：仅包含邮寄KEY
+     */
+    private Detail loanDataFlowSendType;
+
     /**
      * 资料流转-快递公司
      */

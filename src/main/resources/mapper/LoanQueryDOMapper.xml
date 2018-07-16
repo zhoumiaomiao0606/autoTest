@@ -1275,7 +1275,9 @@
         a.id =#{orderId}
     </select>
 
-    <select id="selectUniversalDataFlowDetail" resultType="com.yunche.loan.domain.vo.UniversalDataFlowDetailVO">
+    <select id="selectUniversalDataFlowDetail" resultType="com.yunche.loan.domain.vo.UniversalDataFlowDetailVO"
+            parameterType="java.lang.Long">
+
       SELECT
                 a.id                              AS orderId,
                 c.id_card                         AS idCard,
@@ -1305,14 +1307,77 @@
 
       FROM
                 loan_order      a
+      LEFT JOIN loan_data_flow  f     ON  a.id = f.order_id
       LEFT JOIN loan_base_info  b     ON  b.id = a.loan_base_info_id
       LEFT JOIN loan_customer   c     ON  c.id = a.loan_customer_id
       LEFT JOIN employee        e     ON  e.id = b.salesman_id
-      LEFT JOIN loan_data_flow  f     ON  f.order_id = a.id
       LEFT JOIN partner         p     ON  p.id = b.partner_id
       LEFT JOIN department      d     ON  d.id = p.department_id
 
       WHERE f.id = #{dataFlowId}
     </select>
 
+    <select id="selectUniversalMaterialManage" resultType="com.yunche.loan.domain.vo.UniversalMaterialManageVO"
+            parameterType="java.lang.Long">
+
+      SELECT
+                a.id                              AS orderId,
+                c.id_card                         AS idCard,
+                c.name                            AS customerName,
+                c.name                            AS salesmanName,
+                c.mobile                          AS mobile,
+                d.name                            AS departmentName,
+                p.name                            AS partnerName,
+                b.bank                            AS bankName,
+                m.material_num                    AS materialNum,
+                m.complete_date                   AS completeDate,
+                m.info                            AS info,
+                m.gmt_create                      AS gmtCreate,
+                m.gmt_modify                      AS gmtModify
+
+      FROM
+                  loan_order              a
+      LEFT JOIN   loan_material_manage    m        ON  a.id = m.order_id
+      LEFT JOIN   loan_base_info          b        ON  b.id = a.loan_base_info_id
+      LEFT JOIN   loan_customer           c        ON  c.id = a.loan_customer_id
+      LEFT JOIN   employee                e        ON  e.id = b.salesman_id
+      LEFT JOIN   partner                 p        ON  p.id = b.partner_id
+      LEFT JOIN   department              d        ON  d.id = p.department_id
+
+      WHERE a.id = #{orderId}
+    </select>
+
+    <select id="selectUniversalBankCardSend" resultType="com.yunche.loan.domain.vo.UniversalBankCardSendVO"
+            parameterType="java.lang.Long">
+
+        SELECT
+                  a.id                              AS orderId,
+                  c.id_card                         AS idCard,
+                  c.name                            AS customerName,
+                  c.name                            AS salesmanName,
+                  c.mobile                          AS mobile,
+                  d.name                            AS departmentName,
+                  p.name                            AS partnerName,
+                  b.bank                            AS bankName,
+                  s.cardholder_name                 AS cardholderName,
+                  s.cardholder_phone                AS cardholderPhone,
+                  s.cardholder_address              AS cardholderAddress,
+                  s.repay_card_num                  AS repayCardNum,
+                  s.express_send_address            AS expressSendAddress,
+                  s.express_send_num                AS expressSendNum,
+                  s.express_send_date               AS expressSendDate,
+                  s.gmt_create                      AS gmtCreate,
+                  s.gmt_modify                      AS gmtModify
+
+      FROM
+                  loan_order              a
+      LEFT JOIN   loan_bank_card_send     s        ON  a.id = s.order_id
+      LEFT JOIN   loan_base_info          b        ON  b.id = a.loan_base_info_id
+      LEFT JOIN   loan_customer           c        ON  c.id = a.loan_customer_id
+      LEFT JOIN   employee                e        ON  e.id = b.salesman_id
+      LEFT JOIN   partner                 p        ON  p.id = b.partner_id
+      LEFT JOIN   department              d        ON  d.id = p.department_id
+
+      WHERE a.id = #{orderId}
+    </select>
 </mapper>

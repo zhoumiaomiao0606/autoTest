@@ -45,7 +45,15 @@ public class RecombinationVO<T> {
 
     private UniversalOverdueInfo overdue;
 
+    /**
+     * 资料流转
+     */
     private UniversalDataFlowDetailVO dataFlow;
+
+    /**
+     * 合同归档
+     */
+    private UniversalMaterialManageVO materialManage;
 
     private List<UniversalLoanRepaymentPlan> repayments = Lists.newArrayList();
 

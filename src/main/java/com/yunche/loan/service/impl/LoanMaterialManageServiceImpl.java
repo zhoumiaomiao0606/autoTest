@@ -3,10 +3,10 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanMaterialManageDO;
-import com.yunche.loan.domain.vo.LoanMaterialManageVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanMaterialManageDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanMaterialManageService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +21,9 @@ public class LoanMaterialManageServiceImpl implements LoanMaterialManageService 
 
     @Autowired
     private LoanMaterialManageDOMapper loanMaterialManageDOMapper;
+
+    @Autowired
+    private LoanQueryDOMapper loanQueryDOMapper;
 
 
     @Override
@@ -46,17 +49,15 @@ public class LoanMaterialManageServiceImpl implements LoanMaterialManageService 
     }
 
     @Override
-    public ResultBean<LoanMaterialManageVO> detail(Long orderId) {
+    public ResultBean<RecombinationVO> detail(Long orderId) {
         Preconditions.checkNotNull(orderId, "订单号不能为空");
 
-        LoanMaterialManageDO loanMaterialManageDO = loanMaterialManageDOMapper.selectByPrimaryKey(orderId);
+        RecombinationVO recombinationVO = new RecombinationVO();
+        recombinationVO.setMaterialManage(loanQueryDOMapper.selectUniversalMaterialManage(orderId));
+        recombinationVO.setCustomers(loanQueryDOMapper.selectUniversalCustomer(orderId));
+        recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
+        recombinationVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));
 
-        LoanMaterialManageVO loanMaterialManageVO = new LoanMaterialManageVO();
-        if (null != loanMaterialManageDO) {
-            BeanUtils.copyProperties(loanMaterialManageDO, loanMaterialManageVO);
-            loanMaterialManageVO.setOrderId(String.valueOf(loanMaterialManageDO.getOrderId()));
-        }
-
-        return ResultBean.ofSuccess(loanMaterialManageVO);
+        return ResultBean.ofSuccess(recombinationVO);
     }
 }
