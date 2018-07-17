@@ -49,6 +49,7 @@ public class BankOpenCardParam  extends ICBCApiRequest.ApplyBankOpenCard{
 
         private String billSendType;
 
+        private String billSendAddr;
 
         private String cprovince;
 

@@ -122,6 +122,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             if(loanCustomerId !=null){
                 if(StringUtils.isNotBlank(param.getOpenCardOrder())){
                     LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
+                    loanCustomerDO.setId(loanCustomerId);
                     loanCustomerDO.setOpenCardOrder(param.getOpenCardOrder());
                     loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
                 }

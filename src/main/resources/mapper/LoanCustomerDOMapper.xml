@@ -80,6 +80,7 @@
     <result column="open_card_status" jdbcType="VARCHAR" property="openCardStatus" />
     <result column="open_card_curr_status" jdbcType="VARCHAR" property="openCardCurrStatus" />
     <result column="bill_send_type" jdbcType="VARCHAR" property="billSendType" />
+    <result column="bill_send_addr" jdbcType="VARCHAR" property="billSendAddr" />
     <result column="cprovince" jdbcType="VARCHAR" property="cprovince" />
     <result column="ccity" jdbcType="VARCHAR" property="ccity" />
     <result column="ccounty" jdbcType="VARCHAR" property="ccounty" />
@@ -102,7 +103,8 @@
     play_company, guarantee_rela, name_pinyin, check_in_date, enrollment_date, card_receive_mode, 
     card_send_addr_type, balance_change_remind, open_email, email, occupation, issuing_department, 
     master_card_tel, bell_tel, balance_change_tel, open_card_status, open_card_curr_status, 
-    bill_send_type, cprovince, ccity, ccounty, hprovince, hcity, hcounty, open_card_order
+    bill_send_type, bill_send_addr, cprovince, ccity, ccounty, hprovince, hcity, hcounty, 
+    open_card_order
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -145,10 +147,10 @@
       balance_change_remind, open_email, email, 
       occupation, issuing_department, master_card_tel, 
       bell_tel, balance_change_tel, open_card_status, 
-      open_card_curr_status, bill_send_type, cprovince, 
-      ccity, ccounty, hprovince, 
-      hcity, hcounty, open_card_order
-      )
+      open_card_curr_status, bill_send_type, bill_send_addr, 
+      cprovince, ccity, ccounty, 
+      hprovince, hcity, hcounty, 
+      open_card_order)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR}, 
       #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR}, 
       #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT}, 
@@ -175,10 +177,10 @@
       #{balanceChangeRemind,jdbcType=VARCHAR}, #{openEmail,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
       #{occupation,jdbcType=VARCHAR}, #{issuingDepartment,jdbcType=VARCHAR}, #{masterCardTel,jdbcType=VARCHAR}, 
       #{bellTel,jdbcType=VARCHAR}, #{balanceChangeTel,jdbcType=VARCHAR}, #{openCardStatus,jdbcType=VARCHAR}, 
-      #{openCardCurrStatus,jdbcType=VARCHAR}, #{billSendType,jdbcType=VARCHAR}, #{cprovince,jdbcType=VARCHAR}, 
-      #{ccity,jdbcType=VARCHAR}, #{ccounty,jdbcType=VARCHAR}, #{hprovince,jdbcType=VARCHAR}, 
-      #{hcity,jdbcType=VARCHAR}, #{hcounty,jdbcType=VARCHAR}, #{openCardOrder,jdbcType=VARCHAR}
-      )
+      #{openCardCurrStatus,jdbcType=VARCHAR}, #{billSendType,jdbcType=VARCHAR}, #{billSendAddr,jdbcType=VARCHAR}, 
+      #{cprovince,jdbcType=VARCHAR}, #{ccity,jdbcType=VARCHAR}, #{ccounty,jdbcType=VARCHAR}, 
+      #{hprovince,jdbcType=VARCHAR}, #{hcity,jdbcType=VARCHAR}, #{hcounty,jdbcType=VARCHAR}, 
+      #{openCardOrder,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
     <selectKey resultType="java.lang.Long" keyProperty="id"
@@ -420,6 +422,9 @@
       </if>
       <if test="billSendType != null">
         bill_send_type,
+      </if>
+      <if test="billSendAddr != null">
+        bill_send_addr,
       </if>
       <if test="cprovince != null">
         cprovince,
@@ -678,6 +683,9 @@
       <if test="billSendType != null">
         #{billSendType,jdbcType=VARCHAR},
       </if>
+      <if test="billSendAddr != null">
+        #{billSendAddr,jdbcType=VARCHAR},
+      </if>
       <if test="cprovince != null">
         #{cprovince,jdbcType=VARCHAR},
       </if>
@@ -935,6 +943,9 @@
       <if test="billSendType != null">
         bill_send_type = #{billSendType,jdbcType=VARCHAR},
       </if>
+      <if test="billSendAddr != null">
+        bill_send_addr = #{billSendAddr,jdbcType=VARCHAR},
+      </if>
       <if test="cprovince != null">
         cprovince = #{cprovince,jdbcType=VARCHAR},
       </if>
@@ -1038,6 +1049,7 @@
       open_card_status = #{openCardStatus,jdbcType=VARCHAR},
       open_card_curr_status = #{openCardCurrStatus,jdbcType=VARCHAR},
       bill_send_type = #{billSendType,jdbcType=VARCHAR},
+      bill_send_addr = #{billSendAddr,jdbcType=VARCHAR},
       cprovince = #{cprovince,jdbcType=VARCHAR},
       ccity = #{ccity,jdbcType=VARCHAR},
       ccounty = #{ccounty,jdbcType=VARCHAR},
@@ -1047,7 +1059,6 @@
       open_card_order = #{openCardOrder,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
-
   <select id="selectSelfAndRelevanceCustomersByCustTypes" resultMap="BaseResultMap">
     select *
     from

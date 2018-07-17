@@ -163,6 +163,8 @@ public class LoanCustomerDO {
 
     private String billSendType;
 
+    private String billSendAddr;
+
     private String cprovince;
 
     private String ccity;
