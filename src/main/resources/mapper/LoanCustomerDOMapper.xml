@@ -86,6 +86,7 @@
     <result column="hprovince" jdbcType="VARCHAR" property="hprovince" />
     <result column="hcity" jdbcType="VARCHAR" property="hcity" />
     <result column="hcounty" jdbcType="VARCHAR" property="hcounty" />
+    <result column="open_card_order" jdbcType="VARCHAR" property="openCardOrder" />
   </resultMap>
   <sql id="Base_Column_List">
     id, name, nation, birth, identity_validity, lend_card, id_card, mobile, age, sex, 
@@ -101,7 +102,7 @@
     play_company, guarantee_rela, name_pinyin, check_in_date, enrollment_date, card_receive_mode, 
     card_send_addr_type, balance_change_remind, open_email, email, occupation, issuing_department, 
     master_card_tel, bell_tel, balance_change_tel, open_card_status, open_card_curr_status, 
-    bill_send_type, cprovince, ccity, ccounty, hprovince, hcity, hcounty
+    bill_send_type, cprovince, ccity, ccounty, hprovince, hcity, hcounty, open_card_order
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -146,7 +147,8 @@
       bell_tel, balance_change_tel, open_card_status, 
       open_card_curr_status, bill_send_type, cprovince, 
       ccity, ccounty, hprovince, 
-      hcity, hcounty)
+      hcity, hcounty, open_card_order
+      )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR}, 
       #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR}, 
       #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT}, 
@@ -175,7 +177,8 @@
       #{bellTel,jdbcType=VARCHAR}, #{balanceChangeTel,jdbcType=VARCHAR}, #{openCardStatus,jdbcType=VARCHAR}, 
       #{openCardCurrStatus,jdbcType=VARCHAR}, #{billSendType,jdbcType=VARCHAR}, #{cprovince,jdbcType=VARCHAR}, 
       #{ccity,jdbcType=VARCHAR}, #{ccounty,jdbcType=VARCHAR}, #{hprovince,jdbcType=VARCHAR}, 
-      #{hcity,jdbcType=VARCHAR}, #{hcounty,jdbcType=VARCHAR})
+      #{hcity,jdbcType=VARCHAR}, #{hcounty,jdbcType=VARCHAR}, #{openCardOrder,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
     <selectKey resultType="java.lang.Long" keyProperty="id"
@@ -436,6 +439,9 @@
       <if test="hcounty != null">
         hcounty,
       </if>
+      <if test="openCardOrder != null">
+        open_card_order,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -689,6 +695,9 @@
       </if>
       <if test="hcounty != null">
         #{hcounty,jdbcType=VARCHAR},
+      </if>
+      <if test="openCardOrder != null">
+        #{openCardOrder,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -944,6 +953,9 @@
       <if test="hcounty != null">
         hcounty = #{hcounty,jdbcType=VARCHAR},
       </if>
+      <if test="openCardOrder != null">
+        open_card_order = #{openCardOrder,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -1031,7 +1043,8 @@
       ccounty = #{ccounty,jdbcType=VARCHAR},
       hprovince = #{hprovince,jdbcType=VARCHAR},
       hcity = #{hcity,jdbcType=VARCHAR},
-      hcounty = #{hcounty,jdbcType=VARCHAR}
+      hcounty = #{hcounty,jdbcType=VARCHAR},
+      open_card_order = #{openCardOrder,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 

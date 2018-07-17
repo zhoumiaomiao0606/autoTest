@@ -174,4 +174,6 @@ public class LoanCustomerDO {
     private String hcity;
 
     private String hcounty;
+
+    private String openCardOrder;
 }
