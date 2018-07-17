@@ -528,7 +528,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         types.add(new Byte("2"));
         types.add(new Byte("3"));
         types.add(new Byte("4"));
-//        types.add(new Byte("5"));
+        types.add(new Byte("5"));
         List<UniversalMaterialRecordVO> list = loanQueryDOMapper.selectUniversalCustomerFiles(loanCustomerDO.getId(),types);
         list.sort(new Comparator<UniversalMaterialRecordVO>() {
             @Override
