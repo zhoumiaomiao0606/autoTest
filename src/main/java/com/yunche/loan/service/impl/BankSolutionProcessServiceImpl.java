@@ -129,7 +129,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 LoanCreditInfoDO up = new LoanCreditInfoDO();
                 up.setCustomerId(D.getCustomerId());
                 up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                up.setInfo(applyCreditCallback.getReq().getNote());
                 up.setType(new Byte("1"));
                 up.setStatus(new Byte("0"));
                 up.setGmtCreate(new Date());
@@ -138,13 +137,11 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
                 up.setCustomerId(D.getCustomerId());
                 up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                up.setInfo(applyCreditCallback.getReq().getNote());
                 up.setGmtModify(new Date());
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
         }else if(IDict.K_RESULT.NOPASS.equals(applyCreditCallback.getReq().getResult())){
             bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.SUCCESS_ERROR));
-            bankInterfaceSerialDO.setRejectReason(applyCreditCallback.getReq().getNote());
 
             List<LoanCreditInfoDO>  loanCreditInfoDOS =  loanCreditInfoDOMapper.getByCustomerIdAndType(D.getCustomerId(),new Byte("1"));
 
@@ -152,7 +149,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 LoanCreditInfoDO up = new LoanCreditInfoDO();
                 up.setCustomerId(D.getCustomerId());
                 up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                up.setInfo(applyCreditCallback.getReq().getNote());
                 up.setType(new Byte("1"));
                 up.setStatus(new Byte("0"));
                 up.setGmtCreate(new Date());
@@ -161,7 +157,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
                 up.setCustomerId(D.getCustomerId());
                 up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                up.setInfo(applyCreditCallback.getReq().getNote());
                 up.setGmtModify(new Date());
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
