@@ -267,6 +267,7 @@ public class FeignConfig {
                     String icbcApiRetmsg = ((BasicResponse) obj).getIcbcApiRetmsg();
                     String returnCode = ((BasicResponse) obj).getReturnCode();
                     String returnMsg = ((BasicResponse) obj).getReturnMsg();
+                    String apiMsg = ((BasicResponse) obj).getApiMsg();
                     BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(serialNoList.get(0).toString());
                     if(IConstant.API_SUCCESS.equals(icbcApiRetcode) && IConstant.SUCCESS.equals(returnCode)){
                         BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
@@ -277,7 +278,7 @@ public class FeignConfig {
                         DO.setStatus(IDict.K_JYZT.PROCESS);
                         DO.setFileNum(Integer.parseInt(fileNumList.get(0).toString()));
                         DO.setApiStatus(200);
-                        DO.setApiMsg("icbcApiRetmsg:"+icbcApiRetmsg+";"+"returnMsg:"+returnMsg);
+                        DO.setApiMsg(apiMsg);
                         if(V!=null){
                             bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
                         }else {
@@ -293,7 +294,7 @@ public class FeignConfig {
                         DO.setStatus(IDict.K_JYZT.FAIL);
                         DO.setFileNum(Integer.parseInt(fileNumList.get(0).toString()));
                         DO.setApiStatus(200);
-                        DO.setApiMsg("icbcApiRetmsg:"+icbcApiRetmsg+"&"+"returnMsg:"+returnMsg);
+                        DO.setApiMsg(apiMsg);
                         if(V!=null){
                             bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
                         }else {

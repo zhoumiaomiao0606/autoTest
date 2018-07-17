@@ -9,4 +9,5 @@ public class BasicResponse {
     private String icbcApiTimestamp;
     private String returnCode;
     private String returnMsg;
+    private String apiMsg;
 }
