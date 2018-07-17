@@ -13,4 +13,6 @@ public interface LoanMaterialManageService {
     ResultBean<Void> save(LoanMaterialManageDO loanMaterialManageDO);
 
     ResultBean<RecombinationVO> detail(Long orderId);
+
+    ResultBean<Integer> imp(String ossKey);
 }

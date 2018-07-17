@@ -3,6 +3,8 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface LoanDataFlowDOMapper {
 
     int deleteByPrimaryKey(Long id);
@@ -25,4 +27,12 @@ public interface LoanDataFlowDOMapper {
      * @return
      */
     LoanDataFlowDO getLastByOrderIdAndType(@Param("orderId") Long orderId, @Param("type") Byte type);
+
+    /**
+     * 批量插入
+     *
+     * @param loanDataFlowDOList
+     * @return
+     */
+    int batchInsert(List<LoanDataFlowDO> loanDataFlowDOList);
 }

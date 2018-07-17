@@ -2,7 +2,6 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanMaterialManageDO;
-import com.yunche.loan.domain.vo.LoanMaterialManageVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.service.LoanMaterialManageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +29,10 @@ public class LoanMaterialManageController {
     @GetMapping(value = "/detail")
     public ResultBean<RecombinationVO> detail(@RequestParam Long orderId) {
         return loanMaterialManageService.detail(orderId);
+    }
+
+    @GetMapping(value = "/imp")
+    public ResultBean<Integer> imp(@RequestParam(value = "key") String ossKey) {
+        return loanMaterialManageService.imp(ossKey);
     }
 }

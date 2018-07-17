@@ -1315,6 +1315,7 @@
       LEFT JOIN department      d     ON  d.id = p.department_id
 
       WHERE f.id = #{dataFlowId}
+
     </select>
 
     <select id="selectUniversalMaterialManage" resultType="com.yunche.loan.domain.vo.UniversalMaterialManageVO"
@@ -1324,8 +1325,8 @@
                 a.id                              AS orderId,
                 c.id_card                         AS idCard,
                 c.name                            AS customerName,
-                c.name                            AS salesmanName,
                 c.mobile                          AS mobile,
+                e.name                            AS salesmanName,
                 d.name                            AS departmentName,
                 p.name                            AS partnerName,
                 b.bank                            AS bankName,
@@ -1345,6 +1346,7 @@
       LEFT JOIN   department              d        ON  d.id = p.department_id
 
       WHERE a.id = #{orderId}
+
     </select>
 
     <select id="selectUniversalBankCardSend" resultType="com.yunche.loan.domain.vo.UniversalBankCardSendVO"
@@ -1354,8 +1356,8 @@
                   a.id                              AS orderId,
                   c.id_card                         AS idCard,
                   c.name                            AS customerName,
-                  c.name                            AS salesmanName,
                   c.mobile                          AS mobile,
+                  e.name                            AS salesmanName,
                   d.name                            AS departmentName,
                   p.name                            AS partnerName,
                   b.bank                            AS bankName,
@@ -1379,5 +1381,102 @@
       LEFT JOIN   department              d        ON  d.id = p.department_id
 
       WHERE a.id = #{orderId}
+
     </select>
+
+
+    <select id="selectUniversalDataFlowCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
+
+        SELECT
+                  a.id                              AS order_id,
+                  DATE_FORMAT(a.gmt_create ,'%Y-%m-%d %H:%i:%S')
+                                                    AS order_gmt_create,
+                  c.id_card                         AS customer_id_card,
+                  c.id                              AS customer_id,
+                  c.name                            AS customer_name,
+                  c.mobile                          AS customer_mobile,
+                  e.id                              AS salesman_id,
+                  e.name                            AS salesman_name,
+                  d.id                              AS department_id,
+                  d.name                            AS department_name,
+                  p.id                              AS partner_id,
+                  p.name                            AS partner_name,
+                  b.bank                            AS bank_name
+
+      FROM
+                  loan_order              a
+      LEFT JOIN   loan_process            pc       ON  a.id = pc.order_id
+      LEFT JOIN   loan_base_info          b        ON  b.id = a.loan_base_info_id
+      LEFT JOIN   loan_customer           c        ON  c.id = a.loan_customer_id
+      LEFT JOIN   employee                e        ON  e.id = b.salesman_id
+      LEFT JOIN   partner                 p        ON  p.id = b.partner_id
+      LEFT JOIN   department              d        ON  d.id = p.department_id
+
+      WHERE
+               pc.telephone_verify = 1
+
+	      AND  pc.data_flow_mortgage_b2c = 0
+
+	  <if test="name != null and name != '' ">
+          AND  c.name LIKE CONCAT('%', #{name} ,'%')
+      </if>
+
+        <!--loginUser只能查询到 自己及下级 的单子 -->
+        having
+        case when
+        (3) in
+        (
+        SELECT level FROM user_group g
+        INNER JOIN
+        (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) then 1=1
+        when
+        (2) in
+        (
+        SELECT level FROM user_group g
+        INNER JOIN
+        (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) then 1=1
+        when
+        (1) in
+        (
+        SELECT level FROM user_group g
+        INNER JOIN
+        (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) then
+        order_id in (
+        SELECT o.id FROM loan_order o
+        INNER JOIN
+        (
+        SELECT id FROM loan_base_info WHERE salesman_id IN
+        (
+        select
+        DISTINCT
+        case
+        when
+        #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
+        then
+        case
+        when
+        #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+        then
+        employee_id
+        else
+        #{employeeId,jdbcType=BIGINT}
+        end
+        else
+        null
+        end AS employee_id
+        from partner_rela_employee where partner_id in
+        (select partner_id from partner_rela_employee where employee_id = #{employeeId,jdbcType=BIGINT})
+        having employee_id is not null
+        )
+        ) b on o.loan_base_info_id = b.id)
+        else 1=2 end
+
+    </select>
+
 </mapper>

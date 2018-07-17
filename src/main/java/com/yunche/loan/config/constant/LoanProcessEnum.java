@@ -43,7 +43,6 @@ public enum LoanProcessEnum {
     MATERIAL_REVIEW("usertask_material_review", "资料审核"),
     MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),
     MATERIAL_MANAGE("usertask_material_manage", "合同归档"),
-    BANK_CARD_SEND("usertask_bank_card_send", "银行卡寄送"),
 
     BUSINESS_PAY("usertask_business_pay", "业务付款申请"),
     BUSINESS_REVIEW("usertask_business_review", "业务审批"),
@@ -51,7 +50,8 @@ public enum LoanProcessEnum {
     REMIT_REVIEW("usertask_remit_review", "打款确认"),
 
     BANK_LEND_RECORD("usertask_bank_lend_record", "银行放款记录"),
-    BANK_CARD_RECORD("usertask_bank_card_record", "银行卡录入"),
+    BANK_CARD_RECORD("usertask_bank_card_record", "银行卡接收"),
+    BANK_CARD_SEND("usertask_bank_card_send", "银行卡寄送"),
     CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划"),
 
 

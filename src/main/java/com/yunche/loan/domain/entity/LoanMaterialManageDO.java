@@ -9,7 +9,7 @@ public class LoanMaterialManageDO {
 
     private Long orderId;
 
-    private Long materialNum;
+    private String materialNum;
 
     private Date completeDate;
 

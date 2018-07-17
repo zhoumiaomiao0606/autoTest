@@ -13,20 +13,42 @@
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
+
     <sql id="Base_Column_List">
     order_id, cardholder_name, cardholder_phone, cardholder_address, repay_card_num, 
     express_send_address, express_send_num, express_send_date, gmt_create, gmt_modify
   </sql>
+
+    <!--batchInsert-->
+    <insert id="batchInsert">
+        INSERT INTO loan_bank_card_send (order_id, cardholder_name, cardholder_phone,
+        cardholder_address, repay_card_num, express_send_address,
+        express_send_num, express_send_date, gmt_create,
+        gmt_modify)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderId,jdbcType=BIGINT}, #{item.cardholderName,jdbcType=VARCHAR},
+            #{item.cardholderPhone,jdbcType=VARCHAR},
+            #{item.cardholderAddress,jdbcType=VARCHAR}, #{item.repayCardNum,jdbcType=VARCHAR},
+            #{item.expressSendAddress,jdbcType=VARCHAR},
+            #{item.expressSendNum,jdbcType=VARCHAR}, #{item.expressSendDate,jdbcType=TIMESTAMP},
+            #{item.gmtCreate,jdbcType=TIMESTAMP},
+            #{item.gmtModify,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
         from loan_bank_card_send
         where order_id = #{orderId,jdbcType=BIGINT}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from loan_bank_card_send
     where order_id = #{orderId,jdbcType=BIGINT}
   </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanBankCardSendDO">
     insert into loan_bank_card_send (order_id, cardholder_name, cardholder_phone, 
       cardholder_address, repay_card_num, express_send_address, 
@@ -37,6 +59,7 @@
       #{expressSendNum,jdbcType=VARCHAR}, #{expressSendDate,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP}, 
       #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
+
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanBankCardSendDO">
         insert into loan_bank_card_send
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -104,6 +127,7 @@
             </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanBankCardSendDO">
         update loan_bank_card_send
         <set>
@@ -137,6 +161,7 @@
         </set>
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanBankCardSendDO">
     update loan_bank_card_send
     set cardholder_name = #{cardholderName,jdbcType=VARCHAR},
@@ -150,4 +175,5 @@
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where order_id = #{orderId,jdbcType=BIGINT}
   </update>
+
 </mapper>

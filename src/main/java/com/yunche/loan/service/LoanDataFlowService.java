@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
 import com.yunche.loan.domain.vo.BaseVO;
+import com.yunche.loan.domain.vo.UniversalCustomerOrderVO;
 import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
 
 import java.util.List;
@@ -23,9 +24,7 @@ public interface LoanDataFlowService {
 
     ResultBean<List<BaseVO>> flowDept();
 
-    ResultBean<Object> key();
+    ResultBean<List<UniversalCustomerOrderVO>> queryDataFlowCustomerOrder(String customerName);
 
-    ResultBean<Object> key_get_type(String key);
-
-    ResultBean<Object> type_get_key(String type);
+    ResultBean<Integer> imp(String ossKey);
 }

@@ -13,4 +13,6 @@ public interface LoanBankCardSendService {
     ResultBean<Void> save(LoanBankCardSendDO loanBankCardSendDO);
 
     ResultBean<UniversalBankCardSendVO> detail(Long orderId);
+
+    ResultBean<Integer> imp(String ossKey);
 }

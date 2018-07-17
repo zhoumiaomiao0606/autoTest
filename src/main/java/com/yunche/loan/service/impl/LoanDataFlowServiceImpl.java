@@ -1,27 +1,33 @@
 package com.yunche.loan.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.DepartmentCache;
 import com.yunche.loan.config.cache.DictCache;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.DateTimeFormatUtils;
+import com.yunche.loan.config.util.POIUtil;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
 import com.yunche.loan.domain.vo.BaseVO;
-import com.yunche.loan.domain.vo.DataDictionaryVO;
+import com.yunche.loan.domain.vo.UniversalCustomerOrderVO;
 import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.ActivitiVersionService;
 import com.yunche.loan.service.DictService;
 import com.yunche.loan.service.LoanDataFlowService;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.*;
 
-import static com.yunche.loan.config.constant.LoanDataFlowConst.FLOW_END_NO;
+import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd;
 
 /**
  * @author liuzhe
@@ -80,7 +86,6 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     public ResultBean create(LoanDataFlowDO loanDataFlowDO) {
         Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getType(), "type不能为空");
 
-        loanDataFlowDO.setStatus(FLOW_END_NO);
         loanDataFlowDO.setGmtCreate(new Date());
         loanDataFlowDO.setGmtModify(new Date());
         int count = loanDataFlowDOMapper.insertSelective(loanDataFlowDO);
@@ -103,76 +108,93 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Override
     public ResultBean<List<BaseVO>> flowDept() {
-
         List<BaseVO> flowDept = departmentCache.getFlowDept();
-
         return ResultBean.ofSuccess(flowDept);
     }
 
     @Override
-    public ResultBean<Object> key() {
+    public ResultBean<List<UniversalCustomerOrderVO>> queryDataFlowCustomerOrder(String customerName) {
 
-        Set<String> loginUserOwnDataFlowNodes = activitiVersionService.getLoginUserOwnDataFlowNodes();
+        // telephone_verify = 1  &&   data_flow_mortgage_b2c = 0
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalDataFlowCustomerOrder(loginUserId, customerName);
 
-        return ResultBean.ofSuccess(loginUserOwnDataFlowNodes);
+        return ResultBean.ofSuccess(universalCustomerOrderVOS);
     }
 
     @Override
-    public ResultBean<Object> key_get_type(String key) {
+    public ResultBean<Integer> imp(String ossKey) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(ossKey), "ossKey不能为空");
 
-        DataDictionaryVO dataDictionaryVO = dictCache.get();
+        // 收集数据
+        List<LoanDataFlowDO> loanDataFlowDOList = Lists.newArrayList();
 
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
+        try {
+            // readFile
+            List<String[]> rowList = POIUtil.readExcelFromOSS(0, 1, ossKey);
 
-        JSONArray attr = loanDataFlowTypes.getAttr();
+            if (!CollectionUtils.isEmpty(rowList)) {
+                // parse
+                rowList.stream()
+                        .filter(ArrayUtils::isNotEmpty)
+                        .forEach(row -> {
 
-        final String[] val = {null};
+                            LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
 
-        attr.stream()
-                .forEach(e -> {
+                            loanDataFlowDO.setOrderId(Long.valueOf(row[0]));
+                            loanDataFlowDO.setType(Byte.valueOf(row[1]));
+                            loanDataFlowDO.setExpressCom(Byte.valueOf(row[2]));
+                            loanDataFlowDO.setExpressNum(row[3]);
+                            loanDataFlowDO.setExpressSendDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(row[4]));
+                            loanDataFlowDO.setExpressReceiveDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(row[5]));
+                            loanDataFlowDO.setExpressReceiveMan(row[6]);
+                            loanDataFlowDO.setHasMortgageContract(convertHasMortgageContract(row[7]));
+                            loanDataFlowDO.setFlowOutDeptName(row[8]);
+                            loanDataFlowDO.setFlowInDeptName(row[9]);
 
-                    JSONObject jsonObj = (JSONObject) e;
+                            loanDataFlowDO.setGmtCreate(new Date());
+                            loanDataFlowDO.setGmtModify(new Date());
 
-                    String k = jsonObj.getString("k");
-                    String v = jsonObj.getString("v");
-                    String code = jsonObj.getString("code");
+                            loanDataFlowDOList.add(loanDataFlowDO);
+                        });
+            }
 
-                    if (key.equals(code)) {
-                        val[0] = v;
-                    }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-                });
+        // batchInsert
+        int count = batchInsert(loanDataFlowDOList);
 
-        return ResultBean.ofSuccess(val[0]);
+        return ResultBean.ofSuccess(count, "导入成功");
     }
 
-    @Override
-    public ResultBean<Object> type_get_key(String type) {
+    /**
+     * 批量导入
+     *
+     * @param loanDataFlowDOList
+     * @return
+     */
+    private int batchInsert(List<LoanDataFlowDO> loanDataFlowDOList) {
 
-        DataDictionaryVO dataDictionaryVO = dictCache.get();
+        if (CollectionUtils.isEmpty(loanDataFlowDOList)) {
+            return 0;
+        }
 
-        DataDictionaryVO.Detail loanDataFlowTypes = dataDictionaryVO.getLoanDataFlowType();
+        // batchInsert
+        int count = loanDataFlowDOMapper.batchInsert(loanDataFlowDOList);
+        return count;
+    }
 
-        JSONArray attr = loanDataFlowTypes.getAttr();
+    private Byte convertHasMortgageContract(String field) {
 
-        final String[] val = {null};
+        if ("否".equals(field)) {
+            return 0;
+        } else if ("是".equals(field)) {
+            return 1;
+        }
 
-        attr.stream()
-                .forEach(e -> {
-
-                    JSONObject jsonObj = (JSONObject) e;
-
-                    String k = jsonObj.getString("k");
-                    String v = jsonObj.getString("v");
-                    String code = jsonObj.getString("code");
-
-                    if (type.equals(k)) {
-                        val[0] = code;
-                    }
-
-                });
-
-        return ResultBean.ofSuccess(val[0]);
+        return null;
     }
 
 }

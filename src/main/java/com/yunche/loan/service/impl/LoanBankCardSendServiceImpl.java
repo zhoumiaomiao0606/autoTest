@@ -1,16 +1,24 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.DateTimeFormatUtils;
+import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.LoanBankCardSendDO;
 import com.yunche.loan.domain.vo.UniversalBankCardSendVO;
 import com.yunche.loan.mapper.LoanBankCardSendDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanBankCardSendService;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -55,5 +63,67 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
         UniversalBankCardSendVO universalBankCardSendVO = loanQueryDOMapper.selectUniversalBankCardSend(orderId);
 
         return ResultBean.ofSuccess(universalBankCardSendVO);
+    }
+
+    @Override
+    public ResultBean<Integer> imp(String ossKey) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(ossKey), "ossKey不能为空");
+
+        // 收集数据
+        List<LoanBankCardSendDO> loanBankCardSendDOList = Lists.newArrayList();
+
+        try {
+            // readFile
+            List<String[]> rowList = POIUtil.readExcelFromOSS(0, 1, ossKey);
+
+            if (!CollectionUtils.isEmpty(rowList)) {
+                // parse
+                rowList.stream()
+                        .filter(ArrayUtils::isNotEmpty)
+                        .forEach(row -> {
+
+                            LoanBankCardSendDO loanBankCardSendDO = new LoanBankCardSendDO();
+
+                            loanBankCardSendDO.setOrderId(Long.valueOf(row[0]));
+                            loanBankCardSendDO.setCardholderName(row[1]);
+                            loanBankCardSendDO.setCardholderPhone(row[2]);
+                            loanBankCardSendDO.setCardholderAddress(row[3]);
+                            loanBankCardSendDO.setRepayCardNum(row[4]);
+                            loanBankCardSendDO.setExpressSendAddress(row[5]);
+                            loanBankCardSendDO.setExpressSendNum(row[6]);
+                            loanBankCardSendDO.setExpressSendDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(row[7]));
+
+                            loanBankCardSendDO.setGmtCreate(new Date());
+                            loanBankCardSendDO.setGmtModify(new Date());
+
+                            loanBankCardSendDOList.add(loanBankCardSendDO);
+                        });
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // batchInsert
+        int count = batchInsert(loanBankCardSendDOList);
+
+        return ResultBean.ofSuccess(count, "导入成功");
+    }
+
+    /**
+     * 批量导入
+     *
+     * @param loanBankCardSendDOList
+     * @return
+     */
+    private int batchInsert(List<LoanBankCardSendDO> loanBankCardSendDOList) {
+
+        if (CollectionUtils.isEmpty(loanBankCardSendDOList)) {
+            return 0;
+        }
+
+        // batchInsert
+        int count = loanBankCardSendDOMapper.batchInsert(loanBankCardSendDOList);
+        return count;
     }
 }

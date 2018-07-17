@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
 import com.yunche.loan.domain.vo.BaseVO;
+import com.yunche.loan.domain.vo.UniversalCustomerOrderVO;
 import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
 import com.yunche.loan.service.LoanDataFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,10 @@ public class LoanDataFlowController {
         return loanDataFlowService.detail(id);
     }
 
-//    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-//    public ResultBean create(@RequestBody LoanDataFlowDO loanDataFlowDO) {
-//        return loanDataFlowService.create(loanDataFlowDO);
-//    }
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean create(@RequestBody LoanDataFlowDO loanDataFlowDO) {
+        return loanDataFlowService.create(loanDataFlowDO);
+    }
 
     @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody LoanDataFlowDO loanDataFlowDO) {
@@ -44,18 +45,13 @@ public class LoanDataFlowController {
         return loanDataFlowService.flowDept();
     }
 
-    @GetMapping(value = "/key")
-    public ResultBean<Object> key() {
-        return loanDataFlowService.key();
+    @GetMapping("/queryDataFlowCustomerOrder")
+    public ResultBean<List<UniversalCustomerOrderVO>> queryDataFlowCustomerOrder(@RequestParam(required = false) String name) {
+        return loanDataFlowService.queryDataFlowCustomerOrder(name);
     }
 
-    @GetMapping(value = "/key-get-type")
-    public ResultBean<Object> key_get_type(@RequestParam String key) {
-        return loanDataFlowService.key_get_type(key);
-    }
-
-    @GetMapping(value = "/type-get-key")
-    public ResultBean<Object> type_get_key(@RequestParam String type) {
-        return loanDataFlowService.type_get_key(type);
+    @GetMapping(value = "/imp")
+    public ResultBean<Integer> imp(@RequestParam(value = "key") String ossKey) {
+        return loanDataFlowService.imp(ossKey);
     }
 }

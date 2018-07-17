@@ -2,7 +2,6 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -644,9 +643,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
                     // 12-合影照片;13-家访视频; 16-家访照片; 17-车辆照片;18-其他资料;
                     files.stream()
-                            .filter(e -> "12".equals(e.getType()) || "13".equals(e.getType())
-                                    || "16".equals(e.getType()) || "17".equals(e.getType())
-                                    || "18".equals(e.getType()))
+//                            .filter(e -> "12".equals(e.getType()) || "13".equals(e.getType())
+//                                    || "16".equals(e.getType()) || "17".equals(e.getType())
+//                                    || "18".equals(e.getType()))
                             // 非空
                             .filter(e -> !CollectionUtils.isEmpty(e.getUrls()))
                             .forEach(e -> {

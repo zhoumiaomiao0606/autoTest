@@ -172,7 +172,7 @@
     <sequenceFlow id="flow159" name="&lt;13W 手动OR自动打回修改" sourceRef="exclusivegateway3" targetRef="usertask_credit_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount == 1 && (action == -1 || action == 0) }]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_card_record" name="银行卡录入" activiti:candidateGroups="管理员,总经理,培训经理,财务经理,客服,银行驻点,南京江宁支行驻点,杭州城站支行驻点,台州路桥支行驻点,哈尔滨启卡放款组"></userTask>
+    <userTask id="usertask_bank_card_record" name="银行卡接收" activiti:candidateGroups="管理员,总经理,培训经理,财务经理,客服,银行驻点,南京江宁支行驻点,杭州城站支行驻点,台州路桥支行驻点,哈尔滨启卡放款组"></userTask>
     <parallelGateway id="parallelgateway8" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow160" name="提交" sourceRef="usertask_bank_lend_record" targetRef="usertask_bank_card_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
@@ -205,9 +205,7 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_customer_repay_plan" name="客户还款计划" activiti:candidateGroups="管理员,总经理,培训经理,电催主管,电催专员,电话催收组"></userTask>
-    <sequenceFlow id="flow175" name="提交" sourceRef="usertask_bank_card_record" targetRef="usertask_customer_repay_plan">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
-    </sequenceFlow>
+    <sequenceFlow id="flow175" sourceRef="parallelgateway11" targetRef="usertask_customer_repay_plan"></sequenceFlow>
     <userTask id="usertask_info_supplement" name="资料增补" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
     <userTask id="usertask_customer_repay_plan_record" name="银行还款计划记录" activiti:candidateGroups="管理员,总经理,培训经理,电催主管,电催专员,电话催收组"></userTask>
     <userTask id="usertask_collection_workbench" name="催收工作台" activiti:candidateGroups="管理员,总经理,培训经理,电催主管,电催专员,电话催收组"></userTask>
@@ -389,6 +387,16 @@
     <sequenceFlow id="flow256" sourceRef="exclusivegateway30" targetRef="usertask_data_flow_mortgage_b2c">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == 'usertask_data_flow_mortgage_b2c'}]]></conditionExpression>
     </sequenceFlow>
+    <parallelGateway id="parallelgateway11" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow257" name="提交" sourceRef="usertask_bank_card_record" targetRef="parallelgateway11">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="usertask_bank_card_send" name="银行卡寄送"></userTask>
+    <sequenceFlow id="flow258" sourceRef="parallelgateway11" targetRef="usertask_bank_card_send"></sequenceFlow>
+    <endEvent id="endevent35" name="End"></endEvent>
+    <sequenceFlow id="flow259" name="提交" sourceRef="usertask_bank_card_send" targetRef="endevent35">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -543,7 +551,7 @@
         <omgdc:Bounds height="55.0" width="105.0" x="3400.0" y="1430.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent28" id="BPMNShape_endevent28">
-        <omgdc:Bounds height="35.0" width="35.0" x="6336.0" y="774.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="6434.0" y="848.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="usertask_financial_scheme_modify_apply" id="BPMNShape_usertask_financial_scheme_modify_apply">
         <omgdc:Bounds height="55.0" width="105.0" x="2231.0" y="121.0"></omgdc:Bounds>
@@ -567,7 +575,7 @@
         <omgdc:Bounds height="35.0" width="35.0" x="5970.0" y="588.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="usertask_customer_repay_plan" id="BPMNShape_usertask_customer_repay_plan">
-        <omgdc:Bounds height="55.0" width="105.0" x="6146.0" y="764.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="6222.0" y="838.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="usertask_info_supplement" id="BPMNShape_usertask_info_supplement">
         <omgdc:Bounds height="55.0" width="105.0" x="2231.0" y="1.0"></omgdc:Bounds>
@@ -694,6 +702,15 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="filter_data_flow_mortgage_p2c_new" id="BPMNShape_filter_data_flow_mortgage_p2c_new">
         <omgdc:Bounds height="55.0" width="105.0" x="3640.0" y="1289.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway11" id="BPMNShape_parallelgateway11">
+        <omgdc:Bounds height="40.0" width="40.0" x="6110.0" y="771.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_bank_card_send" id="BPMNShape_usertask_bank_card_send">
+        <omgdc:Bounds height="55.0" width="105.0" x="6222.0" y="688.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent35" id="BPMNShape_endevent35">
+        <omgdc:Bounds height="35.0" width="35.0" x="6421.0" y="698.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="36.0" y="1100.0"></omgdi:waypoint>
@@ -1068,10 +1085,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow164" id="BPMNEdge_flow164">
-        <omgdi:waypoint x="6251.0" y="791.0"></omgdi:waypoint>
-        <omgdi:waypoint x="6336.0" y="791.0"></omgdi:waypoint>
+        <omgdi:waypoint x="6327.0" y="865.0"></omgdi:waypoint>
+        <omgdi:waypoint x="6434.0" y="865.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="22.0" x="6251.0" y="791.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="6327.0" y="865.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow171" id="BPMNEdge_flow171">
@@ -1097,11 +1114,9 @@
         <omgdi:waypoint x="5970.0" y="605.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow175" id="BPMNEdge_flow175">
-        <omgdi:waypoint x="6039.0" y="791.0"></omgdi:waypoint>
-        <omgdi:waypoint x="6146.0" y="791.0"></omgdi:waypoint>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="22.0" x="6039.0" y="791.0"></omgdc:Bounds>
-        </bpmndi:BPMNLabel>
+        <omgdi:waypoint x="6130.0" y="811.0"></omgdi:waypoint>
+        <omgdi:waypoint x="6128.0" y="864.0"></omgdi:waypoint>
+        <omgdi:waypoint x="6222.0" y="865.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow176" id="BPMNEdge_flow176">
         <omgdi:waypoint x="2054.0" y="798.0"></omgdi:waypoint>
@@ -1429,6 +1444,25 @@
         <omgdi:waypoint x="6480.0" y="1236.0"></omgdi:waypoint>
         <omgdi:waypoint x="5780.0" y="1236.0"></omgdi:waypoint>
         <omgdi:waypoint x="5781.0" y="1167.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow257" id="BPMNEdge_flow257">
+        <omgdi:waypoint x="6039.0" y="791.0"></omgdi:waypoint>
+        <omgdi:waypoint x="6110.0" y="791.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="100.0" x="6039.0" y="791.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow258" id="BPMNEdge_flow258">
+        <omgdi:waypoint x="6130.0" y="771.0"></omgdi:waypoint>
+        <omgdi:waypoint x="6128.0" y="713.0"></omgdi:waypoint>
+        <omgdi:waypoint x="6222.0" y="715.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow259" id="BPMNEdge_flow259">
+        <omgdi:waypoint x="6327.0" y="715.0"></omgdi:waypoint>
+        <omgdi:waypoint x="6421.0" y="715.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="100.0" x="6327.0" y="715.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

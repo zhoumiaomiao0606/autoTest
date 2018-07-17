@@ -38,6 +38,30 @@
         GROUP BY gmt_create DESC LIMIT 1
     </select>
 
+    <!--batchInsert-->
+    <insert id="batchInsert">
+        INSERT INTO loan_data_flow (id, order_id, flow_out_dept_id,
+        flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
+        express_com, express_num, express_send_date,
+        express_receive_date, express_receive_man,
+        has_mortgage_contract, type, status,
+        info, task_key, gmt_create,
+        gmt_modify)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id,jdbcType=BIGINT}, #{item.orderId,jdbcType=BIGINT}, #{item.flowOutDeptId,jdbcType=BIGINT},
+            #{item.flowOutDeptName,jdbcType=VARCHAR}, #{item.flowInDeptId,jdbcType=BIGINT},
+            #{item.flowInDeptName,jdbcType=VARCHAR},
+            #{item.expressCom,jdbcType=TINYINT}, #{item.expressNum,jdbcType=VARCHAR},
+            #{item.expressSendDate,jdbcType=TIMESTAMP},
+            #{item.expressReceiveDate,jdbcType=TIMESTAMP}, #{item.expressReceiveMan,jdbcType=VARCHAR},
+            #{item.hasMortgageContract,jdbcType=TINYINT}, #{item.type,jdbcType=TINYINT},
+            #{item.status,jdbcType=TINYINT},
+            #{item.info,jdbcType=VARCHAR}, #{item.taskKey,jdbcType=VARCHAR}, #{item.gmtCreate,jdbcType=TIMESTAMP},
+            #{item.gmtModify,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>

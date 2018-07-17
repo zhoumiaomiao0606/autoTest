@@ -1,102 +1,120 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.LoanMaterialManageDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanMaterialManageDO" >
-    <id column="order_id" property="orderId" jdbcType="BIGINT" />
-    <result column="material_num" property="materialNum" jdbcType="BIGINT" />
-    <result column="complete_date" property="completeDate" jdbcType="TIMESTAMP" />
-    <result column="info" property="info" jdbcType="VARCHAR" />
-    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
-    <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.yunche.loan.mapper.LoanMaterialManageDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanMaterialManageDO">
+        <id column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="material_num" property="materialNum" jdbcType="VARCHAR"/>
+        <result column="complete_date" property="completeDate" jdbcType="TIMESTAMP"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
     order_id, material_num, complete_date, info, gmt_create, gmt_modify
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    from loan_material_manage
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+
+    <insert id="batchInsert">
+        INSERT INTO loan_material_manage (order_id, material_num, complete_date,
+        info, gmt_create, gmt_modify
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderId,jdbcType=BIGINT}, #{item.materialNum,jdbcType=VARCHAR},
+            #{item.completeDate,jdbcType=TIMESTAMP},
+            #{item.info,jdbcType=VARCHAR}, #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_material_manage
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from loan_material_manage
     where order_id = #{orderId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO" >
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO">
     insert into loan_material_manage (order_id, material_num, complete_date, 
       info, gmt_create, gmt_modify
       )
-    values (#{orderId,jdbcType=BIGINT}, #{materialNum,jdbcType=BIGINT}, #{completeDate,jdbcType=TIMESTAMP}, 
+    values (#{orderId,jdbcType=BIGINT}, #{materialNum,jdbcType=VARCHAR}, #{completeDate,jdbcType=TIMESTAMP},
       #{info,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO" >
-    insert into loan_material_manage
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="orderId != null" >
-        order_id,
-      </if>
-      <if test="materialNum != null" >
-        material_num,
-      </if>
-      <if test="completeDate != null" >
-        complete_date,
-      </if>
-      <if test="info != null" >
-        info,
-      </if>
-      <if test="gmtCreate != null" >
-        gmt_create,
-      </if>
-      <if test="gmtModify != null" >
-        gmt_modify,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="orderId != null" >
-        #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="materialNum != null" >
-        #{materialNum,jdbcType=BIGINT},
-      </if>
-      <if test="completeDate != null" >
-        #{completeDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="info != null" >
-        #{info,jdbcType=VARCHAR},
-      </if>
-      <if test="gmtCreate != null" >
-        #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null" >
-        #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO" >
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO">
+        insert into loan_material_manage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="materialNum != null">
+                material_num,
+            </if>
+            <if test="completeDate != null">
+                complete_date,
+            </if>
+            <if test="info != null">
+                info,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="materialNum != null">
+                #{materialNum,jdbcType=VARCHAR},
+            </if>
+            <if test="completeDate != null">
+                #{completeDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="info != null">
+                #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO">
+        update loan_material_manage
+        <set>
+            <if test="materialNum != null">
+                material_num = #{materialNum,jdbcType=VARCHAR},
+            </if>
+            <if test="completeDate != null">
+                complete_date = #{completeDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO">
     update loan_material_manage
-    <set >
-      <if test="materialNum != null" >
-        material_num = #{materialNum,jdbcType=BIGINT},
-      </if>
-      <if test="completeDate != null" >
-        complete_date = #{completeDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="info != null" >
-        info = #{info,jdbcType=VARCHAR},
-      </if>
-      <if test="gmtCreate != null" >
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null" >
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO" >
-    update loan_material_manage
-    set material_num = #{materialNum,jdbcType=BIGINT},
+    set material_num = #{materialNum,jdbcType=VARCHAR},
       complete_date = #{completeDate,jdbcType=TIMESTAMP},
       info = #{info,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},

@@ -1,5 +1,6 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.domain.entity.LoanMaterialManageDO;
 import com.yunche.loan.domain.vo.*;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -18,6 +19,15 @@ public interface LoanQueryDOMapper {
     List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
 
     List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
+
+    /**
+     * 资料流转-新增 客户列表
+     *
+     * @param employeeId
+     * @param name
+     * @return
+     */
+    List<UniversalCustomerOrderVO> selectUniversalDataFlowCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
 
     VehicleInformationVO selectVehicleInformation(Long orderId);
 
@@ -124,5 +134,4 @@ public interface LoanQueryDOMapper {
     Long selectOrderIdByIDCard(String idCard);
 
     BankCardRecordVO selectBankCardRecordDetail(Long orderId);
-
 }

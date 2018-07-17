@@ -1,16 +1,24 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.DateTimeFormatUtils;
+import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.LoanMaterialManageDO;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanMaterialManageDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanMaterialManageService;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -59,5 +67,64 @@ public class LoanMaterialManageServiceImpl implements LoanMaterialManageService 
         recombinationVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));
 
         return ResultBean.ofSuccess(recombinationVO);
+    }
+
+    @Override
+    public ResultBean<Integer> imp(String ossKey) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(ossKey), "ossKey不能为空");
+
+        // 收集数据
+        List<LoanMaterialManageDO> loanMaterialManageDOList = Lists.newArrayList();
+
+        try {
+            // readFile
+            List<String[]> rowList = POIUtil.readExcelFromOSS(0, 1, ossKey);
+
+            if (!CollectionUtils.isEmpty(rowList)) {
+                // parse
+                rowList.stream()
+                        .filter(ArrayUtils::isNotEmpty)
+                        .forEach(row -> {
+
+                            LoanMaterialManageDO loanMaterialManageDO = new LoanMaterialManageDO();
+
+                            loanMaterialManageDO.setOrderId(Long.valueOf(row[0]));
+                            loanMaterialManageDO.setMaterialNum(row[1]);
+                            loanMaterialManageDO.setCompleteDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(row[2]));
+                            loanMaterialManageDO.setInfo(row[3]);
+
+                            loanMaterialManageDO.setGmtCreate(new Date());
+                            loanMaterialManageDO.setGmtModify(new Date());
+
+                            loanMaterialManageDOList.add(loanMaterialManageDO);
+                        });
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // batchInsert
+        int count = batchInsert(loanMaterialManageDOList);
+
+        return ResultBean.ofSuccess(count, "导入成功");
+    }
+
+    /**
+     * 批量导入
+     *
+     * @param loanMaterialManageDOList
+     * @return
+     */
+    private int batchInsert(List<LoanMaterialManageDO> loanMaterialManageDOList) {
+
+        if (CollectionUtils.isEmpty(loanMaterialManageDOList)) {
+            return 0;
+        }
+
+        // batchInsert
+        int count = loanMaterialManageDOMapper.batchInsert(loanMaterialManageDOList);
+
+        return count;
     }
 }
