@@ -7,6 +7,7 @@ import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.TelephoneVerifyParam;
@@ -60,6 +61,9 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
     @Autowired
     private LoanFileDOMapper loanFileDOMapper;
 
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
+
     @Override
     public RecombinationVO detail(Long orderId) {
 
@@ -96,6 +100,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
         Long loanCarInfoId = loanOrderDO.getLoanCarInfoId();
         Long loanFinancialPlanId = loanOrderDO.getLoanFinancialPlanId();
+        Long loanCustomerId = loanOrderDO.getLoanCustomerId();
 
         if(loanOrderDO!=null){
             if(loanCarInfoId!=null){
@@ -112,6 +117,13 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                     loanFinancialPlanDO.setCashDeposit(StringUtils.isBlank(param.getFinancial_cash_deposit()) ? null : new BigDecimal(param.getFinancial_cash_deposit()));
                     loanFinancialPlanDO.setExtraFee(StringUtils.isBlank(param.getFinancial_extra_fee()) ? null : new BigDecimal(param.getFinancial_extra_fee()));
                     loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
+                }
+            }
+            if(loanCustomerId !=null){
+                if(StringUtils.isNotBlank(param.getOpenCardOrder())){
+                    LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
+                    loanCustomerDO.setOpenCardOrder(param.getOpenCardOrder());
+                    loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
                 }
             }
         }

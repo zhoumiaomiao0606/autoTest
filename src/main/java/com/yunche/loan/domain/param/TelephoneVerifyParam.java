@@ -31,5 +31,7 @@ public class TelephoneVerifyParam {
     private  String startDate;
     private  String endDate;
 
+    private  String openCardOrder;
+
 
 }

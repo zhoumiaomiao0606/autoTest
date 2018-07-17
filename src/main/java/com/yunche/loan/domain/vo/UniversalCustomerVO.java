@@ -33,6 +33,10 @@ public class UniversalCustomerVO {
     private String age;//年龄
     private String guarantee_rela;
 
+    private String open_card_order;//银行开卡顺序 （0：电审后  1：电审前）
+
+    private String open_card_status;//银行开卡状态 (0:否，1：是)
+
     private List<UniversalCustomerFileVO> files = new ArrayList<UniversalCustomerFileVO>();
 
 }
