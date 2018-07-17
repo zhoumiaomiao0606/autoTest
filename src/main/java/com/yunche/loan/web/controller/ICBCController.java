@@ -59,7 +59,7 @@ public class ICBCController {
     //请求接口
     @PostMapping (value = "/test", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> test() {
-        bankSolutionService.creditAutomaticCommit(new Long("1807171134134698396"));
+        bankSolutionService.creditAutomaticCommit(new Long("1807161151425056327"));
         return ResultBean.ofSuccess(null);
     }
 

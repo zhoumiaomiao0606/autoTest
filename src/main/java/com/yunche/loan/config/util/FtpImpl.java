@@ -171,6 +171,7 @@ public class FtpImpl implements Ftp {
         try {
             BufferedInputStream  input = new BufferedInputStream(new FileInputStream(fileName));
             iStream = new FileInputStream(fileName);
+            this.ftpClient.enterLocalPassiveMode();
             flag = this.ftpClient.storeFile(newName, input);
         }catch (IOException e){
             flag = false;
