@@ -15,16 +15,33 @@
   </sql>
 
     <insert id="batchInsert">
-        INSERT INTO loan_material_manage (order_id, material_num, complete_date,
-        info, gmt_create, gmt_modify
-        )
+
+        INSERT INTO
+
+            loan_material_manage
+
+            (
+                order_id, material_num, complete_date,
+                info, gmt_create, gmt_modify
+            )
+
         VALUES
+
         <foreach collection="list" item="item" separator=",">
             (#{item.orderId,jdbcType=BIGINT}, #{item.materialNum,jdbcType=VARCHAR},
             #{item.completeDate,jdbcType=TIMESTAMP},
             #{item.info,jdbcType=VARCHAR}, #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP}
             )
         </foreach>
+
+        ON DUPLICATE KEY UPDATE
+
+        order_id        =   VALUES(order_id),
+        material_num    =   VALUES(material_num),
+        complete_date   =   VALUES(complete_date),
+        info            =   VALUES(info),
+        gmt_modify      =   VALUES(gmt_modify)
+
     </insert>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
