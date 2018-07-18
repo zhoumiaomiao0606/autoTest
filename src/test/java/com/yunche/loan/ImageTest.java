@@ -14,7 +14,7 @@ public class ImageTest extends BaseTest{
         ArrayList<String> fileKey = Lists.newArrayList();
         fileKey.add("IMG/2018/201807/20180713/null/1531466823334.jpg");
         fileKey.add("img/2018/201807/20180716/ANd6tRAxFe.jpg");
-        fileKey.add("img/2018/201807/20180717/1531818966365.jpg");
+        fileKey.add("img/2018/201807/20180718/brGBD2zs4K.jpg");
 
         ImageUtil.mergeImage2Pic(fileKey);
 //        ImageUtil.mergeImage2Doc(fileKey);

@@ -745,11 +745,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setIndate(DateUtil.getDateTo8(loanCustomerDO.getCheckInDate()));
 
         customer.setCadrchoic("3");//单位地址选择 1-预查询，2-修改，3-新增。默认送3
-        customer.setHphoneno("0");//住宅电话号码
+        customer.setHphoneno(loanCustomerDO.getMobile());//住宅电话号码
         customer.setHomezip(loanCustomerDO.getPostcode());//homezip	住宅邮编
         customer.setMamobile(loanCustomerDO.getMasterCardTel());//mamobile	主卡发送移动电话
         customer.setCustsort(IDict.K_JJLX.IDCARD);//custsort	证件类型
-        customer.setCophoneno("0");//cophoneno	单位电话号码
+        customer.setCophoneno(loanCustomerDO.getCompanyPhone());//cophoneno	单位电话号码
         customer.setCorpzip(loanCustomerDO.getCompanyPostcode());//corpzip	单位邮编
         customer.setCustcode(loanCustomerDO.getIdCard());//custcode	证件号码
         customer.setMblchoic("3");//mblchoic	手机选择1-预查询，2-修改，3-新增。默认送3
