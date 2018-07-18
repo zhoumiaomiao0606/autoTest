@@ -53,16 +53,6 @@ public class VideoFaceConst {
     public static final Long BANK_ID_ICBC_NanJing_JiangNing_Branch = 4L;
 
     /**
-     * 面签记录 diskName
-     */
-    public static final String OSS_DISK_NAME_VIDEO_FACE_LOG = "log/";
-
-    /**
-     * 视频面签 bucket
-     */
-    public static final String BUCKET_NAME_VIDEO_FACE = "yunche-videosign";
-
-    /**
      * 担保公司  写死
      */
     public static final Long GUARANTEE_COMPANY_ID = 1L;

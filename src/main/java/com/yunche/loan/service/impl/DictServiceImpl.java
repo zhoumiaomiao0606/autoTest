@@ -72,6 +72,50 @@ public class DictServiceImpl implements DictService {
     }
 
     @Override
+    public Map<String, String> getVKMap(String field) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(field), "field不能为空");
+
+        Map<String, String> vkMap = Maps.newHashMap();
+
+        // getAll
+        DataDictionaryVO dataDictionaryVO = dictCache.get();
+
+        // 反射获取
+        Class<? extends DataDictionaryVO> clazz = dataDictionaryVO.getClass();
+
+        // getXX
+        String methodName = "get" + StringUtil.firstLetter2UpperCase(field);
+
+        try {
+            Method method = clazz.getMethod(methodName);
+
+            DataDictionaryVO.Detail result = (DataDictionaryVO.Detail) method.invoke(dataDictionaryVO);
+
+            if (null != result) {
+
+                JSONArray attr = result.getAttr();
+
+                attr.stream()
+                        .filter(Objects::nonNull)
+                        .forEach(e -> {
+
+                            JSONObject eJObj = (JSONObject) e;
+
+                            String k = eJObj.getString("k");
+                            String v = eJObj.getString("v");
+
+                            vkMap.put(v, k);
+                        });
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return vkMap;
+    }
+
+    @Override
     public Map<String, String> getKCodeMap(String field) {
 
         Map<String, String> kCodeMap = Maps.newHashMap();

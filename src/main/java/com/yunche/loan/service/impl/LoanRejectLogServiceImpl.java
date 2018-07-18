@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.LoanFinancialPlanTempHisDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REJECT;
@@ -28,6 +30,20 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.*;
  */
 @Service
 public class LoanRejectLogServiceImpl implements LoanRejectLogService {
+
+    /**
+     * 流程外的节点
+     */
+    public static final List<String> OUTSIDE_LOAN_PROCESS_NODE_LIST = Lists.newArrayList(
+            INFO_SUPPLEMENT.getCode(),
+            CREDIT_SUPPLEMENT.getCode(),
+            FINANCIAL_SCHEME_MODIFY_APPLY.getCode(),
+            FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode(),
+            REFUND_APPLY.getCode(),
+            REFUND_APPLY_REVIEW.getCode(),
+            CUSTOMER_REPAY_PLAN_RECORD.getCode(),
+            COLLECTION_WORKBENCH.getCode());
+
 
     @Autowired
     private LoanProcessDOMapper loanProcessDOMapper;
@@ -88,6 +104,11 @@ public class LoanRejectLogServiceImpl implements LoanRejectLogService {
      */
     public static Byte getTaskStatus(LoanProcessDO loanProcessDO, String taskDefinitionKey) {
 
+        // 流程外的节点 除外
+        if (OUTSIDE_LOAN_PROCESS_NODE_LIST.contains(taskDefinitionKey)) {
+            return null;
+        }
+
         Class<? extends LoanProcessDO> clazz = loanProcessDO.getClass();
 
         String[] keyArr = null;
@@ -115,4 +136,5 @@ public class LoanRejectLogServiceImpl implements LoanRejectLogService {
             throw new RuntimeException(e);
         }
     }
+
 }

@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import static com.yunche.loan.config.constant.CarConst.CAR_BRAND;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
+import static com.yunche.loan.config.constant.ExportExcelConst.*;
 import static com.yunche.loan.config.constant.VideoFaceConst.*;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;
 
@@ -229,15 +230,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         // 自动调整列宽
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-        sheet.autoSizeColumn(5);
-        sheet.autoSizeColumn(6);
-        sheet.autoSizeColumn(7);
-        sheet.autoSizeColumn(8);
+        autoSizeColumn(sheet, cellTitle.length);
 
         // file
         File file = new File("/tmp/" + exportFileName);
@@ -268,9 +261,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         // 上传到OSS
-        OSSUnit.uploadObject2OSS(OSSUnit.getOSSClient(), file, BUCKET_NAME_VIDEO_FACE, OSS_DISK_NAME_VIDEO_FACE_LOG);
+        OSSUnit.uploadObject2OSS(OSSUnit.getOSSClient(), file, BUCKET_NAME_VIDEO_FACE, OSS_DISK_NAME_VIDEO_FACE);
 
-        return ResultBean.ofSuccess(OSS_DISK_NAME_VIDEO_FACE_LOG + exportFileName);
+        return ResultBean.ofSuccess(OSS_DISK_NAME_VIDEO_FACE + exportFileName);
     }
 
     @Override
@@ -446,6 +439,18 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         String redText = "<font color='red'>" + text + "</font>";
         return redText;
+    }
+
+    /**
+     * 自动调整列宽
+     *
+     * @param sheet
+     * @param length
+     */
+    public static void autoSizeColumn(XSSFSheet sheet, int length) {
+        for (int i = 0; i < length; i++) {
+            sheet.autoSizeColumn(i, true);
+        }
     }
 
 }

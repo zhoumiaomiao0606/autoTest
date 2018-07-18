@@ -17,6 +17,14 @@ public interface DictService {
     Map<String, String> getKVMap(String field);
 
     /**
+     * V-K  map
+     *
+     * @param field 字典filed
+     * @return
+     */
+    Map<String, String> getVKMap(String field);
+
+    /**
      * K-CODE  map
      *
      * @param field 字典filed

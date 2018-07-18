@@ -2,12 +2,14 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
+import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.UniversalCustomerOrderVO;
 import com.yunche.loan.domain.vo.UniversalDataFlowDetailVO;
 import com.yunche.loan.service.LoanDataFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,5 +55,10 @@ public class LoanDataFlowController {
     @GetMapping(value = "/imp")
     public ResultBean<Integer> imp(@RequestParam(value = "key") String ossKey) {
         return loanDataFlowService.imp(ossKey);
+    }
+
+    @PostMapping(value = "/exp")
+    public ResultBean<String> export(@RequestBody @Validated TaskListQuery taskListQuery) {
+        return loanDataFlowService.export(taskListQuery);
     }
 }

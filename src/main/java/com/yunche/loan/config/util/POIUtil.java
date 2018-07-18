@@ -78,7 +78,7 @@ public class POIUtil {
      * 读取EXCEL
      *
      * @param sheetNum
-     * @param headLineNum
+     * @param headLineNum 开始行
      * @param key
      * @return
      * @throws IOException
