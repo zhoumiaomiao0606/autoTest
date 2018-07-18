@@ -1163,6 +1163,7 @@
 
         SELECT
                     tmp.*,
+                    tmp.id                              AS order_id,
                     tmp.taskStatus                      AS taskType,
 
                     CASE
@@ -1422,6 +1423,91 @@
 
         AS tmp
 
+        <!--loginUser只能查询到 自己及下级 的单子 -->
+        <include refid="loginUserGetSelfAndSub"/>
+
     </select>
+
+
+    <!--loginUser只能查询到 自己及下级 的单子 -->
+    <sql id="loginUserGetSelfAndSub">
+
+        HAVING
+        CASE
+
+        WHEN ( 3 ) IN (
+        SELECT LEVEL
+        FROM
+        user_group g
+        INNER JOIN (
+        SELECT
+        user_group_id
+        FROM
+        employee_rela_user_group
+        WHERE
+        employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) THEN
+        1 = 1
+        WHEN ( 2 ) IN (
+        SELECT LEVEL
+        FROM
+        user_group g
+        INNER JOIN (
+        SELECT
+        user_group_id
+        FROM
+        employee_rela_user_group
+        WHERE
+        employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) THEN
+        1 = 1
+        WHEN ( 1 ) IN (
+        SELECT LEVEL
+        FROM
+        user_group g
+        INNER JOIN (
+        SELECT
+        user_group_id
+        FROM
+        employee_rela_user_group
+        WHERE
+        employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) THEN
+        order_id IN (
+        SELECT
+        o.id
+        FROM
+        loan_order o
+        INNER JOIN
+        (
+        SELECT id FROM loan_base_info WHERE salesman_id IN
+        (
+        select
+        DISTINCT
+        case
+        when
+        #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
+        then
+        case
+        when
+        #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+        then
+        employee_id
+        else
+        #{employeeId,jdbcType=BIGINT}
+        end
+        else
+        null
+        end AS employee_id
+        from partner_rela_employee where partner_id in
+        (select partner_id from partner_rela_employee where employee_id = #{employeeId,jdbcType=BIGINT})
+        having employee_id is not null
+        )
+        ) b on o.loan_base_info_id = b.id)
+        else 1=2 end
+    </sql>
 
 </mapper>

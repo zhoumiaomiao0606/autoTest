@@ -280,6 +280,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean<List<TaskListVO>> queryDataFlowTaskList(TaskListQuery taskListQuery) {
 
+        // loginUserId      -> loginUser只能查询到 自己及下级 的单子
+        taskListQuery.setEmployeeId(SessionUtils.getLoginUser().getId());
+
         // 获取并设置 资料流转node-key
         getAndSetDataFlowNodeSet(taskListQuery);
 
@@ -315,7 +318,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             taskListQuery.setDataFlowNodeSet(null);
         }
 
-        // 有权访问的nodes
+        // loginUser 有权访问的nodes
         Set<String> loginUserOwnDataFlowNodes = activitiVersionService.getLoginUserOwnDataFlowNodes();
 
         // 无权访问

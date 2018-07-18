@@ -265,7 +265,7 @@
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway26" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow195" sourceRef="usertask_data_flow_contract_c2b_review" targetRef="exclusivegateway26"></sequenceFlow>
-    <userTask id="usertask_material_manage" name="合同归档" activiti:candidateGroups="总经理,培训经理,资料归档专员"></userTask>
+    <userTask id="usertask_material_manage" name="合同归档" activiti:candidateGroups="总经理,培训经理,哈尔滨资料归档专员,杭州城站资料归档专员,台州资料归档专员,南京资料归档专员"></userTask>
     <sequenceFlow id="flow196" sourceRef="parallelgateway9" targetRef="usertask_material_manage"></sequenceFlow>
     <parallelGateway id="parallelgateway10" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow197" sourceRef="exclusivegateway26" targetRef="parallelgateway10">
@@ -1449,7 +1449,7 @@
         <omgdi:waypoint x="6039.0" y="791.0"></omgdi:waypoint>
         <omgdi:waypoint x="6110.0" y="791.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="6039.0" y="791.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="6039.0" y="791.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow258" id="BPMNEdge_flow258">
@@ -1461,7 +1461,7 @@
         <omgdi:waypoint x="6327.0" y="715.0"></omgdi:waypoint>
         <omgdi:waypoint x="6421.0" y="715.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="6327.0" y="715.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="6327.0" y="715.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
