@@ -43,5 +43,4 @@ public class BankOpenCardController {
 //    public ResultBean importFile(){
 //        return bankOpenCardService.importFile();
 //    }
-
 }

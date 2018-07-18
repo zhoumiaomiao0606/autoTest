@@ -71,6 +71,12 @@ public class DateUtil {
         return dateString;
     }
 
+    public static String getDateTo6(Date date){
+        SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMM");
+        String dateString = dataFormat.format(date);
+        return dateString;
+    }
+
     /**
      * 日期
      * 例如 2035.09.18   -》 20350918
@@ -78,7 +84,7 @@ public class DateUtil {
      * @return
      */
     public static String getDateTo8(String date){
-        String[] split = date.split(".");
+        String[] split = date.split("\\.");
         if(date.length()==10 || split.length==3){
              return split[0].trim()+split[1].trim()+split[2].trim();
         }else{

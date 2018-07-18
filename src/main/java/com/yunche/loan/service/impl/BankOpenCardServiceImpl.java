@@ -263,11 +263,14 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         BeanUtils.copyProperties(bankOpenCardParam,loanCustomerDO);
-        loanCustomerDO.setId(Long.parseLong(bankOpenCardParam.getCustomerId()));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId(), VALID_STATUS);
+        Preconditions.checkNotNull(loanOrderDO,"订单不存在");
+        Long loanCustomerId = loanOrderDO.getLoanCustomerId();
+        loanCustomerDO.setId(loanCustomerId);
         Preconditions.checkNotNull(loanCustomerDO.getId(),"客户信息不存在");
         int count = loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
         Preconditions.checkArgument(count>0,"客户信息更新失败");
-        ResultBean<Void> updateFileResult = loanFileService.updateOrInsertByCustomerIdAndUploadType(Long.parseLong(bankOpenCardParam.getCustomerId()), bankOpenCardParam.getFiles(), UPLOAD_TYPE_NORMAL);
+        ResultBean<Void> updateFileResult = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanCustomerId, bankOpenCardParam.getFiles(), UPLOAD_TYPE_NORMAL);
 
         return ResultBean.ofSuccess("保存成功");
     }
@@ -402,7 +405,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Preconditions.checkArgument(openCardTypesStr.size()>0,"开卡申请表(和身份证正反面合并成一张图片)");
         String fileName2 =  GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
 //        asyncUpload.upload(fileName2,openCardTypesStr);
-        asyncUpload.upload(serNo,IDict.K_PIC_ID.OPEN_CARD_DATA,fileName2,keys);
+        asyncUpload.upload(serNo,IDict.K_PIC_ID.OPEN_CARD_DATA,fileName2,openCardTypesStr);
         ICBCApiRequest.Picture picture2 = new ICBCApiRequest.Picture();
         picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
         picture2.setPicname(fileName2);

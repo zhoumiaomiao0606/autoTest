@@ -649,6 +649,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     public CreditCardApplyResponse creditcardapply(BankOpenCardParam bankOpenCardParam) {
         //数据准备
         ICBCApiRequest.ApplyBankOpenCard  applyBankOpenCard= new ICBCApiRequest.ApplyBankOpenCard();
+        applyBankOpenCard.setOrderno(String.valueOf(bankOpenCardParam.getOrderId()));
+        applyBankOpenCard.setFileNum(bankOpenCardParam.getFileNum());
+        applyBankOpenCard.setCustomerId(bankOpenCardParam.getCustomerId());
 
         ICBCApiRequest.ApplyBankOpenCardCustomer customer =new ICBCApiRequest.ApplyBankOpenCardCustomer();
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId(),VALID_STATUS);
@@ -684,7 +687,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         applyBankOpenCard.setAssurerno(sysConfig.getAssurerno());
         applyBankOpenCard.setZoneno(String.valueOf(loanBaseInfoDO.getAreaId()).substring(0,4));
-        applyBankOpenCard.setOrderno(bankOpenCardParam.getOrderno());
         applyBankOpenCard.setCmpdate(DateUtil.getDate());
         applyBankOpenCard.setCmptime(DateUtil.getTime());
         if(String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)){
@@ -713,15 +715,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         customer.setFeeratio(String.valueOf(productRateDO.getBankRate()));// 银行费率
 
-        customer.setCprovince(loanCustomerDO.getCprovince());
-        customer.setCcounty(loanCustomerDO.getCcounty());//单位地址县
-        customer.setCcity(loanCustomerDO.getCcity());//ccity	单位地址市
-
-        customer.setHcity(loanCustomerDO.getHcity());//住宅地址市
-        customer.setHcounty(loanCustomerDO.getHcounty());//hcounty	住宅地址县
-        customer.setHprovince(loanCustomerDO.getHprovince());//hprovince	住宅地址省份
-
-        customer.setDrawaddr(loanCustomerDO.getCardSendAddrType());
+//        customer.setCprovince(loanCustomerDO.getCprovince());
+//        customer.setCcounty(loanCustomerDO.getCcounty());//单位地址县
+//        customer.setCcity(loanCustomerDO.getCcity());//ccity	单位地址市
+//
+//        customer.setHcity(loanCustomerDO.getHcity());//住宅地址市
+//        customer.setHcounty(loanCustomerDO.getHcounty());//hcounty	住宅地址县
+//        customer.setHprovince(loanCustomerDO.getHprovince());//hprovince	住宅地址省份
+//        customer.setAccaddrf(loanCustomerDO.getBillSendAddr());
+//        customer.setDrawaddr(loanCustomerDO.getCardSendAddrType());
         String identityValidity = loanCustomerDO.getIdentityValidity();
         String[] split = identityValidity.split("-");
         String endDate=null;
@@ -736,16 +738,17 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setMvblno(loanCustomerDO.getMobile());//手机号码
         customer.setCaddress(loanCustomerDO.getCompanyAddress());
         customer.setAuthref(loanCustomerDO.getIssuingDepartment());//发证机关
-        customer.setHaddress(loanCustomerDO.getFamilyAddress());//住宅地址
+        customer.setHaddress(loanCustomerDO.getAddress());//住宅地址
         customer.setMachgf(loanCustomerDO.getBalanceChangeRemind()); //主卡开通余额变动提醒
         customer.setMachgmobile(loanCustomerDO.getBalanceChangeTel());//主卡余额提醒发送手机号码
-        customer.setJoindate(DateUtil.getDateTo8(loanCustomerDO.getEnrollmentDate()));//进入单位时间
+        customer.setJoindate(DateUtil.getDateTo6(loanCustomerDO.getEnrollmentDate()));//进入单位时间
         customer.setDrawmode(loanCustomerDO.getCardReceiveMode());//卡片领取方式
         customer.setChnsname(loanCustomerDO.getName());//姓名
         customer.setMrtlstat(dictMapCache.getValue(IConstant.MARITAL_STATUS, String.valueOf(loanCustomerDO.getMarry())));//婚姻状况
         customer.setModelcode(dictMapCache.getValue(IConstant.COMPANY_NATURE, String.valueOf(loanCustomerDO.getCompanyNature())));//modelcode
 
         customer.setIndate(DateUtil.getDateTo8(loanCustomerDO.getCheckInDate()));
+
         customer.setCadrchoic("3");//单位地址选择 1-预查询，2-修改，3-新增。默认送3
         customer.setHphoneno("0");//住宅电话号码
         customer.setHomezip(loanCustomerDO.getPostcode());//homezip	住宅邮编

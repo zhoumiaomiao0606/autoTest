@@ -290,6 +290,7 @@ public class ICBCApiRequest {
         private String  reltsex1;
         private String  emladdrf;
         private String  fcurrtyp;
+        private String  accaddrf;
     }
 
     //pub
