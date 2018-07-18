@@ -22,6 +22,7 @@ public class ICBCApiCallbackParam implements Serializable {
         private ApplyDiviGeneralReq req;
     }
 
+
     @Data
     public static class MultimediaUploadCallback {
         @NotNull
@@ -29,6 +30,17 @@ public class ICBCApiCallbackParam implements Serializable {
         @NotNull
         private MultimediaUploadReq req;
     }
+
+    @Data
+    public static class CreditCardApplyCallback {
+        @NotNull
+        private Pub pub;
+
+        @NotNull
+        private CreditCardApplyReq req;
+    }
+
+
     @Data
     public static class Response {
         @NotNull
@@ -75,6 +87,12 @@ public class ICBCApiCallbackParam implements Serializable {
     }
     @Data
     public static class MultimediaUploadReq {
+        private String backnote;
+    }
+
+
+    @Data
+    public static class CreditCardApplyReq {
         private String backnote;
     }
 }

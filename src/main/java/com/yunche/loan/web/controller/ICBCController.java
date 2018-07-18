@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 
@@ -102,8 +103,15 @@ public class ICBCController {
 
 
     @PostMapping (value = "/creditcardresult", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResultBean creditcardresult(@RequestParam String reqparam) {
-        return null;
+    public String creditcardresult(@RequestParam String reqparam) {
+        try {
+            reqparam = URLDecoder.decode(reqparam,"UTF-8");
+            ObjectMapper objectMapper = new ObjectMapper();
+            bankSolutionProcessService.creditCardApplyCallback(objectMapper.readValue(reqparam,ICBCApiCallbackParam.CreditCardApplyCallback.class));
+            return returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG);
+        }catch (Exception e){
+            return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
+        }
     }
 
     @PostMapping (value = "/fileNotice", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)

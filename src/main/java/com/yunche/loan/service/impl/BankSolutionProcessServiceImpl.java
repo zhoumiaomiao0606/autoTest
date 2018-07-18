@@ -225,6 +225,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 
     @Override
     public void applyDiviGeneralCallback(ICBCApiCallbackParam.ApplyDiviGeneralCallback applyDiviGeneralCallback) {
+        logger.info("分期退回回调开始===============================================================");
         violationUtil.violation(applyDiviGeneralCallback);
         if(!checkStatus(applyDiviGeneralCallback.getPub().getCmpseq())){
             return;
@@ -245,10 +246,12 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.BACK));
         bankInterfaceSerialDO.setRejectReason(applyDiviGeneralCallback.getReq().getBacknote());
         bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        logger.info("分期退回回调结束===============================================================");
     }
 
     @Override
     public void multimediaUploadCallback(ICBCApiCallbackParam.MultimediaUploadCallback multimediaUploadCallback) {
+        logger.info("多媒体退回回调开始===============================================================");
         violationUtil.violation(multimediaUploadCallback);
         if(!checkStatus(multimediaUploadCallback.getPub().getCmpseq())){
             return;
@@ -267,6 +270,38 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.BACK));
         bankInterfaceSerialDO.setRejectReason(multimediaUploadCallback.getReq().getBacknote());
         bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        logger.info("多媒体退回回调结束===============================================================");
+    }
+
+    @Override
+    public void creditCardApplyCallback(ICBCApiCallbackParam.CreditCardApplyCallback creditCardApplyCallback) {
+
+        logger.info("开卡退回回调开始===============================================================");
+        violationUtil.violation(creditCardApplyCallback);
+        //只有在非成功状态和退回的流水可以进行更新
+        if(!checkStatus(creditCardApplyCallback.getPub().getCmpseq())){
+            return;
+        }
+
+        BankInterfaceSerialDO D = bankInterfaceSerialDOMapper.selectByPrimaryKey(creditCardApplyCallback.getPub().getCmpseq());
+        if(D == null){
+            return;
+        }
+
+        if(!sysConfig.getAssurerno().equals(creditCardApplyCallback.getPub().getAssurerno())){
+            throw new BizException("保单号错误");
+        }
+
+        if(!sysConfig.getPlatno().equals(creditCardApplyCallback.getPub().getPlatno())){
+            throw new BizException("平台编号错误");
+        }
+
+        BankInterfaceSerialDO bankInterfaceSerialDO = new BankInterfaceSerialDO();
+        bankInterfaceSerialDO.setSerialNo(creditCardApplyCallback.getPub().getCmpseq());
+        bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.BACK));
+        bankInterfaceSerialDO.setRejectReason(creditCardApplyCallback.getReq().getBacknote());
+        bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        logger.info("开卡退回回调结束===============================================================");
     }
 
     private boolean checkStatus(String cmpseq){
