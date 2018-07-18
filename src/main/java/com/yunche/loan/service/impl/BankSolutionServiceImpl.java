@@ -680,11 +680,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         Set types = Sets.newHashSet(EMERGENCY_CONTACT.getType());
         List<LoanCustomerDO> emergencys = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(bankOpenCardParam.getOrderId(), types);
 
-
-
-
-
-
         applyBankOpenCard.setAssurerno(sysConfig.getAssurerno());
         applyBankOpenCard.setZoneno(String.valueOf(loanBaseInfoDO.getAreaId()).substring(0,4));
         applyBankOpenCard.setCmpdate(DateUtil.getDate());
@@ -715,15 +710,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         customer.setFeeratio(String.valueOf(productRateDO.getBankRate()));// 银行费率
 
-//        customer.setCprovince(loanCustomerDO.getCprovince());
-//        customer.setCcounty(loanCustomerDO.getCcounty());//单位地址县
-//        customer.setCcity(loanCustomerDO.getCcity());//ccity	单位地址市
-//
-//        customer.setHcity(loanCustomerDO.getHcity());//住宅地址市
-//        customer.setHcounty(loanCustomerDO.getHcounty());//hcounty	住宅地址县
-//        customer.setHprovince(loanCustomerDO.getHprovince());//hprovince	住宅地址省份
-//        customer.setAccaddrf(loanCustomerDO.getBillSendAddr());
-//        customer.setDrawaddr(loanCustomerDO.getCardSendAddrType());
+        customer.setCprovince(loanCustomerDO.getCprovince());
+        customer.setCcounty(loanCustomerDO.getCcounty());//单位地址县
+        customer.setCcity(loanCustomerDO.getCcity());//ccity	单位地址市
+
+        customer.setHcity(loanCustomerDO.getHcity());//住宅地址市
+        customer.setHcounty(loanCustomerDO.getHcounty());//hcounty	住宅地址县
+        customer.setHprovince(loanCustomerDO.getHprovince());//hprovince	住宅地址省份
+        customer.setAccaddrf(loanCustomerDO.getBillSendAddr());
+        customer.setDrawaddr(loanCustomerDO.getCardSendAddrType());
         String identityValidity = loanCustomerDO.getIdentityValidity();
         String[] split = identityValidity.split("-");
         String endDate=null;
