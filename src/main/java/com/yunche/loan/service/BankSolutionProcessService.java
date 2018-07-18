@@ -12,4 +12,6 @@ public interface BankSolutionProcessService {
 
     public void multimediaUploadCallback(ICBCApiCallbackParam.MultimediaUploadCallback multimediaUploadCallback);
 
+    public void creditCardApplyCallback(ICBCApiCallbackParam.CreditCardApplyCallback creditCardApplyCallback);
+
 }

@@ -1,6 +1,7 @@
 package com.yunche.loan.config.common;
 
 import com.yunche.loan.config.filter.BizFormAuthenticationFilter;
+import com.yunche.loan.config.filter.BizPermissionsAuthorizationFilter;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -81,7 +82,6 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditresult", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditreturn", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/multimediaUploadreturn", "anon");
-            filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditcardresult", "anon");
             //        filterChainDefinitionMap.put("/**", "authc,perms");
             filterChainDefinitionMap.put("/**", "authc");
         }
