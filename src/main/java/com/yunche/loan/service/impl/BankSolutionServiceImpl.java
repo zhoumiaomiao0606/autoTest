@@ -696,19 +696,20 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setEngname(loanCustomerDO.getNamePinyin());//
         customer.setFcurrtyp(IDict.K_BZ.K_RMB);
         customer.setBirthdate(DateUtil.getDateTo8(loanCustomerDO.getBirth()));
-        customer.setFeeamount(String.valueOf(loanFinancialPlanDO.getBankFee()));
-        customer.setLoanamount(String.valueOf(loanFinancialPlanDO.getLoanAmount()));
+        customer.setFeeamount(BigDecimalUtil.format(loanFinancialPlanDO.getBankFee(),0));
+        customer.setLoanamount(BigDecimalUtil.format(loanFinancialPlanDO.getLoanAmount(),0));
         customer.setTerm(String.valueOf(loanFinancialPlanDO.getLoanTime()));
-        BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-        customer.setLoanratio(String.valueOf(loanratio));//贷款成数
-        customer.setCarprice(String.valueOf(loanFinancialPlanDO.getCarPrice()));
+//        BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(),3, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        customer.setLoanratio(BigDecimalUtil.format(loanratio, 1));//贷款成数
+        customer.setCarprice(BigDecimalUtil.format(loanFinancialPlanDO.getCarPrice(),0));
 
         ProductRateDOKey productRateDOKey = new ProductRateDOKey();
         productRateDOKey.setProdId(loanFinancialPlanDO.getFinancialProductId());
         productRateDOKey.setLoanTime(loanFinancialPlanDO.getLoanTime());
         ProductRateDO productRateDO = productRateDOMapper.selectByPrimaryKey(productRateDOKey);
 
-        customer.setFeeratio(String.valueOf(productRateDO.getBankRate()));// 银行费率
+        customer.setFeeratio(BigDecimalUtil.format(productRateDO.getBankRate(),6));// 银行费率
 
         customer.setCprovince(loanCustomerDO.getCprovince());
         customer.setCcounty(loanCustomerDO.getCcounty());//单位地址县
@@ -753,7 +754,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setCorpzip(loanCustomerDO.getCompanyPostcode());//corpzip	单位邮编
         customer.setCustcode(loanCustomerDO.getIdCard());//custcode	证件号码
         customer.setMblchoic("3");//mblchoic	手机选择1-预查询，2-修改，3-新增。默认送3
-        customer.setCophozono("0");//cophozono	单位电话区号
+        customer.setCophozono("0571");//cophozono	单位电话区号
         customer.setCophonext("0");//cophonext	单位电话分机
         customer.setSex(String.valueOf(loanCustomerDO.getSex()));//性别
         customer.setHadrchoic("3");//hadrchoic	住宅地址选择1-预查询，2-修改，3-新增。默认送3

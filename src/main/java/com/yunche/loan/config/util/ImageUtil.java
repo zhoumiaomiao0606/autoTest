@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 public class ImageUtil {
 
+    private static final int DEFAULT_WIDTH=5000;
     private static final Logger LOG = LoggerFactory.getLogger(ImageUtil.class);
     private  static String downLoadBasepath="/tmp";
     private  static  String videoBucketName;
@@ -78,19 +79,26 @@ public class ImageUtil {
             for(int i=0;i<images.size();i++){
 
                 int width = images.get(i).getWidth(null);
+
                 int height = images.get(i).getHeight(null);
+
+                Double rate = (double) DEFAULT_WIDTH / (double)width;
+                if(rate.intValue()<=0){
+                    rate =1.0;
+                }
+                int rateHeight = rate.intValue()*height;
                 if(width>maxWidth){
                     maxWidth = width;
                 }
                 if(height>maxHeight){
                     maxHeight = height;
                 }
-                totalHeight += height;
+                totalHeight += rateHeight;
             }
 
 
             //构造一个类型为预定义图像类型之一的 BufferedImage。 高度为各个图片高度之和
-            BufferedImage tag = new BufferedImage(maxWidth, maxHeight*images.size(), BufferedImage.TYPE_INT_RGB);
+            BufferedImage tag = new BufferedImage(DEFAULT_WIDTH, totalHeight, BufferedImage.TYPE_INT_RGB);
             //创建输出流
 
             fileName = downLoadBasepath+File.separator+generateName;
@@ -101,10 +109,15 @@ public class ImageUtil {
             int tmpHeight=0;
             for(int i=0;i<images.size();i++){
                 Image image = images.get(i);
-                Image scaledInstance = image.getScaledInstance(maxWidth, maxHeight, Image.SCALE_SMOOTH);
-                graphics.drawImage(scaledInstance, 0, tmpHeight, maxWidth, maxHeight, null);
+                Double rate = (double) DEFAULT_WIDTH / (double)image.getWidth(null);
+                if(rate.intValue()<=0){
+                    rate =1.0;
+                }
+                int rateHeight = rate.intValue()*image.getHeight(null);
+                Image scaledInstance = image.getScaledInstance(DEFAULT_WIDTH, rateHeight, Image.SCALE_SMOOTH);
+                graphics.drawImage(scaledInstance, 0, tmpHeight, DEFAULT_WIDTH, rateHeight, null);
 //                graphics.drawImage(scaledInstance, 0, tmpHeight, null);
-                tmpHeight+=maxWidth;
+                tmpHeight+=rateHeight;
             }
             // 释放此图形的上下文以及它使用的所有系统资源。
             graphics.dispose();
@@ -297,7 +310,7 @@ public class ImageUtil {
         try {
             byte[] bytes = FileUtils.readFileToByteArray(new File(sources));
 
-            byte[] xes = ImageUtil.compressPicForScale(bytes, 800, targetName);
+            byte[] xes = ImageUtil.compressPicForScale(bytes, 300, targetName);
 
             FileUtils.writeByteArrayToFile(new File(targetName), xes);
 //            FileUtils.forceDelete(new File(sources));
