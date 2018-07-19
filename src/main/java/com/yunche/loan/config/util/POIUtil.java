@@ -2,10 +2,8 @@ package com.yunche.loan.config.util;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
@@ -233,6 +231,45 @@ public class POIUtil {
                 break;
         }
         return cellValue;
+    }
+
+    /**
+     * 自动调整列宽
+     *
+     * @param sheet
+     * @param columnLength
+     */
+    public static void autoSizeColumn(XSSFSheet sheet, int columnLength) {
+        for (int i = 0; i < columnLength; i++) {
+            sheet.autoSizeColumn(i, true);
+        }
+    }
+
+    /**
+     * 单元格格式：文本
+     *
+     * @param workBook
+     * @param sheet
+     * @param columnLength
+     */
+    public static void textStyle(XSSFWorkbook workBook, XSSFSheet sheet, int columnLength) {
+
+        // 样式
+        CellStyle cellStyle = workBook.createCellStyle();
+
+//        // 水平居中
+//        cellStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
+//        // 垂直居中
+//        cellStyle.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
+
+        // 单元格格式
+        DataFormat format = workBook.createDataFormat();
+        // 设置文本格式
+        cellStyle.setDataFormat(format.getFormat("@"));
+
+        for (int i = 0; i < columnLength; i++) {
+            sheet.setDefaultColumnStyle(i, cellStyle);
+        }
     }
 
 //    /**

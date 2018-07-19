@@ -1,5 +1,7 @@
 package com.yunche.loan.config.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -72,6 +74,10 @@ public class DateTimeFormatUtils {
      * @return
      */
     public static Date convertStrToDate(String dateStr, DateTimeFormatter df) {
+
+        if (StringUtils.isBlank(dateStr)) {
+            return null;
+        }
 
         Instant instant = null;
 

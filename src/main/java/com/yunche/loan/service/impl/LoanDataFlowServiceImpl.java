@@ -38,7 +38,6 @@ import java.util.*;
 
 import static com.yunche.loan.config.constant.ExportExcelConst.*;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;
-import static com.yunche.loan.service.impl.VideoFaceServiceImpl.autoSizeColumn;
 
 /**
  * @author liuzhe
@@ -152,9 +151,9 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
         // 文件名
         String exportFileName = "资料流转_" + now + ".xlsx";
-        String[] cellTitle = {"业务编号", "姓名", "身份证号码", "业务团队", "资料流转类型",
-                "寄送公司", "寄送单号", "寄送日期（格式：2018-08-08 ）", "接收日期（格式：2018-08-08 ）", "接收人",
-                "含抵押资料（是/否）", "流出部门", "流入部门"};
+        String[] cellTitle = {"流转编号（勿动）", "业务编号（勿动）", "姓名", "身份证号码", "业务团队",
+                "资料流转类型（勿动）", "寄送公司（必填）", "寄送单号（必填）", "含抵押资料（格式：是/否，必填）", "寄送日期（格式：2018-08-08 ，必填）",
+                "接收日期（格式：2018-08-08 ）", "接收人", "流出部门", "流入部门"};
 
         // 声明一个工作薄
         XSSFWorkbook workBook = new XSSFWorkbook();
@@ -182,15 +181,19 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
             TaskListVO taskListVO = data.get(i);
 
             // 列
-            row.createCell(0).setCellValue(taskListVO.getId());
-            row.createCell(1).setCellValue(taskListVO.getCustomer());
-            row.createCell(2).setCellValue(taskListVO.getIdCard());
-            row.createCell(3).setCellValue(taskListVO.getPartner());
-            row.createCell(4).setCellValue(taskListVO.getDataFlowTypeText());
+            row.createCell(0).setCellValue(taskListVO.getDataFlowId());
+            row.createCell(1).setCellValue(taskListVO.getId());
+            row.createCell(2).setCellValue(taskListVO.getCustomer());
+            row.createCell(3).setCellValue(taskListVO.getIdCard());
+            row.createCell(4).setCellValue(taskListVO.getPartner());
+            row.createCell(5).setCellValue(taskListVO.getDataFlowTypeText());
         }
 
         // 自动调整列宽
-        autoSizeColumn(sheet, cellTitle.length);
+        POIUtil.autoSizeColumn(sheet, cellTitle.length);
+
+        // 单元格格式：文本
+        POIUtil.textStyle(workBook, sheet, cellTitle.length);
 
         // file
         File file = new File("/tmp/" + exportFileName);
@@ -239,6 +242,9 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
             if (!CollectionUtils.isEmpty(rowList)) {
 
+                // 导入数量限制
+                Preconditions.checkArgument(rowList.size() <= 2001, "最大支持导入2000条数据，当前条数：" + rowList.size());
+
                 // 标题行
                 String[] titleRow = rowList.get(0);
 
@@ -266,7 +272,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
                         // 扩容
                         row = Arrays.copyOf(row, titleRow.length);
-
+                        // 补""
                         for (int k = len; k < titleRow.length; k++) {
                             row[k] = "";
                         }
@@ -275,46 +281,41 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
                     LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
 
                     try {
-                        loanDataFlowDO.setOrderId(Long.valueOf(row[0]));
+                        // 资料流转ID
+                        loanDataFlowDO.setId(Long.valueOf(row[0]));
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第1列格式有误：" + row[0]);
                     }
 
                     try {
-                        String row_4 = row[4].trim();
-                        Preconditions.checkArgument(StringUtils.isNotBlank(row_4), "第" + rowNum + "行，第5列格式有误：[" + titleRow[4] + "]不能为空");
+                        loanDataFlowDO.setOrderId(Long.valueOf(row[1]));
+                    } catch (Exception e) {
+                        throw new BizException("第" + rowNum + "行，第2列格式有误：" + row[1]);
+                    }
 
-                        String type = type_VKMap.get(row_4);
-                        Preconditions.checkArgument(StringUtils.isNotBlank(type), "第" + rowNum + "行，第5列格式有误！无对应[资料流转类型]：" + row_4);
+                    try {
+                        String row_5 = row[5].trim();
+                        Preconditions.checkArgument(StringUtils.isNotBlank(row_5), "第" + rowNum + "行，第6列格式有误：[" + titleRow[5] + "]不能为空");
+
+                        String type = type_VKMap.get(row_5);
+                        Preconditions.checkArgument(StringUtils.isNotBlank(type), "第" + rowNum + "行，第6列格式有误！无对应[资料流转类型]：" + row_5);
 
                         loanDataFlowDO.setType(Byte.valueOf(type));
 
                     } catch (IllegalArgumentException e) {
                         throw e;
                     } catch (Exception e) {
-                        throw new BizException("第" + rowNum + "行，第5列格式有误：" + row[4]);
-                    }
-
-                    try {
-                        String row_5 = row[5].trim();
-                        Preconditions.checkArgument(StringUtils.isNotBlank(row_5), "第" + rowNum + "行，第5列格式有误：[" + titleRow[5] + "]不能为空");
-
-                        String expressCom = expressCom_VKMap.get(row_5);
-                        Preconditions.checkArgument(StringUtils.isNotBlank(expressCom), "第" + rowNum + "行，第6列格式有误！无对应[寄送公司]：" + row_5);
-
-                        loanDataFlowDO.setExpressCom(Byte.valueOf(expressCom));
-
-                    } catch (IllegalArgumentException e) {
-                        throw e;
-                    } catch (Exception e) {
-                        throw new BizException("第" + rowNum + "行，第6列格式有误：" + row[5]);
+                        throw new BizException("第" + rowNum + "行，第5列格式有误：" + row[5]);
                     }
 
                     try {
                         String row_6 = row[6].trim();
                         Preconditions.checkArgument(StringUtils.isNotBlank(row_6), "第" + rowNum + "行，第7列格式有误：[" + titleRow[6] + "]不能为空");
 
-                        loanDataFlowDO.setExpressNum(row_6);
+                        String expressCom = expressCom_VKMap.get(row_6);
+                        Preconditions.checkArgument(StringUtils.isNotBlank(expressCom), "第" + rowNum + "行，第7列格式有误！无对应[寄送公司]：" + row_6);
+
+                        loanDataFlowDO.setExpressCom(Byte.valueOf(expressCom));
 
                     } catch (IllegalArgumentException e) {
                         throw e;
@@ -326,47 +327,61 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
                         String row_7 = row[7].trim();
                         Preconditions.checkArgument(StringUtils.isNotBlank(row_7), "第" + rowNum + "行，第8列格式有误：[" + titleRow[7] + "]不能为空");
 
-                        loanDataFlowDO.setExpressSendDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(row_7));
+                        loanDataFlowDO.setExpressNum(row_7);
 
+                    } catch (IllegalArgumentException e) {
+                        throw e;
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第8列格式有误：" + row[7]);
                     }
 
                     try {
-                        loanDataFlowDO.setExpressReceiveDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(row[8]));
+                        // 含抵押资料（是/否）
+                        String row_8 = row[8].trim();
+                        Preconditions.checkArgument(StringUtils.isNotBlank(row_8), "第" + rowNum + "行，第9列格式有误：[" + titleRow[8] + "]不能为空");
+
+                        loanDataFlowDO.setHasMortgageContract(convertHasMortgageContract(row_8));
+
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第9列格式有误：" + row[8]);
                     }
 
                     try {
-                        loanDataFlowDO.setExpressReceiveMan(row[9]);
+                        // 寄送日期（格式：2018-08-08 ）
+                        String row_9 = row[9].trim();
+                        Preconditions.checkArgument(StringUtils.isNotBlank(row_9), "第" + rowNum + "行，第10列格式有误：[" + titleRow[9] + "]不能为空");
+
+                        loanDataFlowDO.setExpressSendDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(row_9));
+
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第10列格式有误：" + row[9]);
                     }
 
                     try {
-                        String row_10 = row[10].trim();
-                        Preconditions.checkArgument(StringUtils.isNotBlank(row_10), "第" + rowNum + "行，第11列格式有误：[" + titleRow[10] + "]不能为空");
-
-                        loanDataFlowDO.setHasMortgageContract(convertHasMortgageContract(row_10));
-
+                        // 接收日期（格式：2018-08-08 ）
+                        loanDataFlowDO.setExpressReceiveDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(row[10]));
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第11列格式有误：" + row[10]);
                     }
 
                     try {
-                        loanDataFlowDO.setFlowOutDeptName(row[11]);
+                        loanDataFlowDO.setExpressReceiveMan(row[11]);
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第12列格式有误：" + row[11]);
                     }
 
                     try {
-                        loanDataFlowDO.setFlowInDeptName(row[12]);
+                        loanDataFlowDO.setFlowOutDeptName(row[12]);
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第13列格式有误：" + row[12]);
                     }
 
-                    loanDataFlowDO.setGmtCreate(new Date());
+                    try {
+                        loanDataFlowDO.setFlowInDeptName(row[13]);
+                    } catch (Exception e) {
+                        throw new BizException("第" + rowNum + "行，第14列格式有误：" + row[13]);
+                    }
+
                     loanDataFlowDO.setGmtModify(new Date());
 
                     loanDataFlowDOList.add(loanDataFlowDO);

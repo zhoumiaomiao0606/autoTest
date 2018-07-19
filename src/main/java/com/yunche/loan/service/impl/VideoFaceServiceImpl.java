@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
+import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
@@ -188,13 +189,6 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         // 声明一个工作薄
         XSSFWorkbook workBook = new XSSFWorkbook();
 
-//        // 样式
-//        XSSFCellStyle cellStyle = workBook.createCellStyle();
-//        // 水平居中
-//        cellStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
-//        // 垂直居中
-//        cellStyle.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
-
         // 生成一个表格
         XSSFSheet sheet = workBook.createSheet();
 
@@ -230,7 +224,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         // 自动调整列宽
-        autoSizeColumn(sheet, cellTitle.length);
+        POIUtil.autoSizeColumn(sheet, cellTitle.length);
 
         // file
         File file = new File("/tmp/" + exportFileName);
@@ -441,16 +435,5 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         return redText;
     }
 
-    /**
-     * 自动调整列宽
-     *
-     * @param sheet
-     * @param length
-     */
-    public static void autoSizeColumn(XSSFSheet sheet, int length) {
-        for (int i = 0; i < length; i++) {
-            sheet.autoSizeColumn(i, true);
-        }
-    }
 
 }

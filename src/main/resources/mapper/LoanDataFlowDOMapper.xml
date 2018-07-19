@@ -46,7 +46,7 @@
             loan_data_flow
 
             (
-                order_id, flow_out_dept_id,
+                id, order_id, flow_out_dept_id,
                 flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
                 express_com, express_num, express_send_date,
                 express_receive_date, express_receive_man,
@@ -58,7 +58,7 @@
         VALUES
 
         <foreach collection="list" item="item" separator=",">
-            (#{item.orderId,jdbcType=BIGINT}, #{item.flowOutDeptId,jdbcType=BIGINT},
+            (#{item.id,jdbcType=BIGINT}, #{item.orderId,jdbcType=BIGINT}, #{item.flowOutDeptId,jdbcType=BIGINT},
             #{item.flowOutDeptName,jdbcType=VARCHAR}, #{item.flowInDeptId,jdbcType=BIGINT},
             #{item.flowInDeptName,jdbcType=VARCHAR},
             #{item.expressCom,jdbcType=TINYINT}, #{item.expressNum,jdbcType=VARCHAR},
@@ -72,7 +72,7 @@
 
         ON DUPLICATE KEY UPDATE
 
-        order_id                  = VALUES(order_id),
+        /*order_id                  = VALUES(order_id),*/
         flow_out_dept_id          = VALUES(flow_out_dept_id),
         flow_out_dept_name        = VALUES(flow_out_dept_name),
         flow_in_dept_id           = VALUES(flow_in_dept_id),
@@ -83,7 +83,7 @@
         express_receive_date      = VALUES(express_receive_date),
         express_receive_man       = VALUES(express_receive_man),
         has_mortgage_contract     = VALUES(has_mortgage_contract),
-        type                      = VALUES(type),
+        /*type                      = VALUES(type),*/
         status                    = VALUES(status),
         info                      = VALUES(info),
         task_key                  = VALUES(task_key),
