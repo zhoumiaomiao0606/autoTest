@@ -108,6 +108,7 @@
             </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO">
         update loan_material_manage
         <set>
@@ -129,6 +130,7 @@
         </set>
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
+
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanMaterialManageDO">
     update loan_material_manage
     set material_num = #{materialNum,jdbcType=VARCHAR},
@@ -138,4 +140,5 @@
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where order_id = #{orderId,jdbcType=BIGINT}
   </update>
+
 </mapper>

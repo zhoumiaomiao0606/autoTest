@@ -1,6 +1,5 @@
 package com.yunche.loan.mapper;
 
-import com.yunche.loan.domain.entity.LoanMaterialManageDO;
 import com.yunche.loan.domain.vo.*;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -9,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import java.util.Set;
 
-@Mapper
 public interface LoanQueryDOMapper {
 
     String selectTelephoneVerifyLevel(@Param("loginUserId") Long loginUserId);

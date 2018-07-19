@@ -6,11 +6,14 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import org.activiti.engine.ActivitiException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.mail.MailException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -43,7 +46,14 @@ public class GlobalExceptionHandler {
         } else if (e instanceof MissingServletRequestParameterException) {
             return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof MethodArgumentNotValidException) {
-            return ResultBean.ofError("必入参数未填写");
+
+            BindingResult bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
+            FieldError fieldError = bindingResult.getFieldError();
+            String field = fieldError.getField();
+            String defaultMessage = fieldError.getDefaultMessage();
+
+            return ResultBean.ofError(field + defaultMessage);
+
         } else if (e instanceof IllegalArgumentException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof NullPointerException) {
@@ -66,7 +76,7 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("服务器异常,请联系管理员!");
         } else {
             String errorMsg = e.toString() == null ? e.getMessage() : e.toString();
-            return ResultBean.ofError(errorMsg == null || errorMsg.equals("") ? "未知错误" : e.toString());
+            return ResultBean.ofError(StringUtils.isBlank(errorMsg) ? "未知错误" : errorMsg);
         }
     }
 

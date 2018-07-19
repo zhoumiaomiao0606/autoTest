@@ -21,7 +21,7 @@ public interface LoanDataFlowService {
 
     ResultBean create(LoanDataFlowDO loanDataFlowDO);
 
-    ResultBean update(LoanDataFlowDO loanDataFlowDO);
+    ResultBean<Integer> update(LoanDataFlowDO loanDataFlowDO);
 
     ResultBean<List<BaseVO>> flowDept();
 

@@ -17,16 +17,15 @@
         <result column="type" property="type" jdbcType="TINYINT"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
         <result column="info" property="info" jdbcType="VARCHAR"/>
-        <result column="task_key" property="taskKey" jdbcType="VARCHAR"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, order_id, flow_out_dept_id, flow_out_dept_name, flow_in_dept_id, flow_in_dept_name, 
-    express_com, express_num, express_send_date, express_receive_date, express_receive_man, 
-    has_mortgage_contract, type, status, info, task_key, gmt_create, gmt_modify
-  </sql>
+        id, order_id, flow_out_dept_id, flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
+        express_com, express_num, express_send_date, express_receive_date, express_receive_man,
+        has_mortgage_contract, type, status, info, gmt_create, gmt_modify
+    </sql>
 
     <!-- getLastByOrderIdAndType -->
     <select id="getLastByOrderIdAndType" resultMap="BaseResultMap">
@@ -45,15 +44,14 @@
 
             loan_data_flow
 
-            (
-                id, order_id, flow_out_dept_id,
-                flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
-                express_com, express_num, express_send_date,
-                express_receive_date, express_receive_man,
-                has_mortgage_contract, type, status,
-                info, task_key, gmt_create,
-                gmt_modify
-            )
+                (
+                    id, order_id, flow_out_dept_id,
+                    flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
+                    express_com, express_num, express_send_date,
+                    express_receive_date, express_receive_man,
+                    has_mortgage_contract, type, status,
+                    info, gmt_create, gmt_modify
+                )
 
         VALUES
 
@@ -66,7 +64,7 @@
             #{item.expressReceiveDate,jdbcType=TIMESTAMP}, #{item.expressReceiveMan,jdbcType=VARCHAR},
             #{item.hasMortgageContract,jdbcType=TINYINT}, #{item.type,jdbcType=TINYINT},
             #{item.status,jdbcType=TINYINT},
-            #{item.info,jdbcType=VARCHAR}, #{item.taskKey,jdbcType=VARCHAR}, #{item.gmtCreate,jdbcType=TIMESTAMP},
+            #{item.info,jdbcType=VARCHAR}, #{item.gmtCreate,jdbcType=TIMESTAMP},
             #{item.gmtModify,jdbcType=TIMESTAMP})
         </foreach>
 
@@ -99,28 +97,26 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from loan_data_flow
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+        delete from loan_data_flow
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
+
         insert into loan_data_flow (id, order_id, flow_out_dept_id,
         flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
         express_com, express_num, express_send_date,
         express_receive_date, express_receive_man,
         has_mortgage_contract, type, status,
-        info, task_key, gmt_create,
-        gmt_modify)
+        info, gmt_create, gmt_modify
+        )
         values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{flowOutDeptId,jdbcType=BIGINT},
         #{flowOutDeptName,jdbcType=VARCHAR}, #{flowInDeptId,jdbcType=BIGINT}, #{flowInDeptName,jdbcType=VARCHAR},
         #{expressCom,jdbcType=TINYINT}, #{expressNum,jdbcType=VARCHAR}, #{expressSendDate,jdbcType=TIMESTAMP},
         #{expressReceiveDate,jdbcType=TIMESTAMP}, #{expressReceiveMan,jdbcType=VARCHAR},
         #{hasMortgageContract,jdbcType=TINYINT}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT},
-        #{info,jdbcType=VARCHAR}, #{taskKey,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP})
+        #{info,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
+        )
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
@@ -174,9 +170,6 @@
             <if test="info != null">
                 info,
             </if>
-            <if test="taskKey != null">
-                task_key,
-            </if>
             <if test="gmtCreate != null">
                 gmt_create,
             </if>
@@ -229,9 +222,6 @@
             </if>
             <if test="info != null">
                 #{info,jdbcType=VARCHAR},
-            </if>
-            <if test="taskKey != null">
-                #{taskKey,jdbcType=VARCHAR},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -287,9 +277,6 @@
             <if test="info != null">
                 info = #{info,jdbcType=VARCHAR},
             </if>
-            <if test="taskKey != null">
-                task_key = #{taskKey,jdbcType=VARCHAR},
-            </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -316,7 +303,6 @@
       type = #{type,jdbcType=TINYINT},
       status = #{status,jdbcType=TINYINT},
       info = #{info,jdbcType=VARCHAR},
-      task_key = #{taskKey,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

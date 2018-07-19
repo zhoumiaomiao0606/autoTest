@@ -1,7 +1,9 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.config.util.DateTimeFormatUtils;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -43,6 +45,10 @@ public class UniversalBankCardSendVO {
      * 贷款银行
      */
     private String bankName;
+    /**
+     * 银行卡寄送地址
+     */
+    private String bankCardTransmitAddress;
 
 
     private String cardholderName;
@@ -62,4 +68,25 @@ public class UniversalBankCardSendVO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    public String getCardholderName() {
+        if (null == cardholderName) {
+            return customerName;
+        }
+        return cardholderName;
+    }
+
+    public String getCardholderPhone() {
+        if (null == cardholderPhone) {
+            return mobile;
+        }
+        return cardholderPhone;
+    }
+
+    public String getCardholderAddress() {
+        if (null == cardholderAddress) {
+            return bankCardTransmitAddress;
+        }
+        return cardholderAddress;
+    }
 }

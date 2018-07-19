@@ -10,13 +10,18 @@ import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.DictService;
 import com.yunche.loan.service.LoanDataFlowService;
 import com.yunche.loan.service.TaskSchedulingService;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -37,7 +42,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.ExportExcelConst.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C;
+import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C_NEW_FILTER;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;
+
 
 /**
  * @author liuzhe
@@ -62,6 +70,12 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Autowired
     private DictService dictService;
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
 
 
     @Override
@@ -94,6 +108,20 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     @Transactional
     public ResultBean create(LoanDataFlowDO loanDataFlowDO) {
         Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getType(), "type不能为空");
+        Preconditions.checkNotNull(loanDataFlowDO.getOrderId(), "orderId不能为空");
+
+        // taskKey
+        String taskKey = dictService.getCodeByKey("loanDataFlowType", String.valueOf(loanDataFlowDO.getType()));
+        // 005-抵押资料合伙人至公司
+        if (DATA_FLOW_MORTGAGE_P2C.getCode().equals(taskKey)) {
+
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanDataFlowDO.getOrderId(), null);
+            Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+            Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
+
+            Task task = getTask(loanOrderDO.getProcessInstId(), DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode());
+            Preconditions.checkNotNull(task, "已新建过[抵押资料合伙人至公司]单据");
+        }
 
         loanDataFlowDO.setGmtCreate(new Date());
         loanDataFlowDO.setGmtModify(new Date());
@@ -105,14 +133,14 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Override
     @Transactional
-    public ResultBean update(LoanDataFlowDO loanDataFlowDO) {
+    public ResultBean<Integer> update(LoanDataFlowDO loanDataFlowDO) {
         Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getId(), "id不能为空");
 
         loanDataFlowDO.setGmtModify(new Date());
         int count = loanDataFlowDOMapper.updateByPrimaryKeySelective(loanDataFlowDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 
-        return ResultBean.ofSuccess(null, "编辑成功");
+        return ResultBean.ofSuccess(count, "编辑成功");
     }
 
     @Override
@@ -133,8 +161,8 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Override
     public ResultBean<String> export(TaskListQuery taskListQuery) {
-        Preconditions.checkNotNull(taskListQuery.getTaskDefinitionKey(), "taskKey不能为空");
-        Preconditions.checkNotNull(taskListQuery.getDataFlowType(), "资料流转类型不能为空");
+        Preconditions.checkNotNull(taskListQuery.getTaskDefinitionKey(), "taskDefinitionKey不能为空");
+        Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
 
         // 最大导出量：2000条
         taskListQuery.setPageIndex(1);
@@ -426,6 +454,23 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         }
 
         return null;
+    }
+
+    /**
+     * 获取当前流程task
+     *
+     * @param processInstId
+     * @param taskDefinitionKey
+     * @return
+     */
+    private Task getTask(String processInstId, String taskDefinitionKey) {
+        // 获取当前流程task
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(processInstId)
+                .taskDefinitionKey(taskDefinitionKey)
+                .singleResult();
+
+        return task;
     }
 
 }

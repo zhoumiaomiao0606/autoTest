@@ -38,7 +38,7 @@ public class LoanDataFlowController {
     }
 
     @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean update(@RequestBody LoanDataFlowDO loanDataFlowDO) {
+    public ResultBean<Integer> update(@RequestBody LoanDataFlowDO loanDataFlowDO) {
         return loanDataFlowService.update(loanDataFlowDO);
     }
 

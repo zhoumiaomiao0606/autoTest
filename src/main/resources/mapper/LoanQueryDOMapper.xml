@@ -1135,7 +1135,7 @@
                 a.id                              AS orderId,
                 c.id_card                         AS idCard,
                 c.name                            AS customerName,
-                c.name                            AS salesmanName,
+                e.name                            AS salesmanName,
                 c.mobile                          AS mobile,
                 d.name                            AS departmentName,
                 p.name                            AS partnerName,
@@ -1154,7 +1154,6 @@
                 f.type                            AS type,
                 f.status                          AS status,
                 f.info                            AS info,
-                f.task_key                        AS taskKey,
                 f.gmt_create                      AS gmtCreate,
                 f.gmt_modify                      AS gmtModify
 
@@ -1210,6 +1209,8 @@
                   c.id_card                         AS idCard,
                   c.name                            AS customerName,
                   c.mobile                          AS mobile,
+                  r.repay_card_id                   AS repayCardNum,
+                  c.bank_card_transmit_address      AS bankCardTransmitAddress,
                   e.name                            AS salesmanName,
                   d.name                            AS departmentName,
                   p.name                            AS partnerName,
@@ -1217,7 +1218,6 @@
                   s.cardholder_name                 AS cardholderName,
                   s.cardholder_phone                AS cardholderPhone,
                   s.cardholder_address              AS cardholderAddress,
-                  s.repay_card_num                  AS repayCardNum,
                   s.express_send_address            AS expressSendAddress,
                   s.express_send_num                AS expressSendNum,
                   s.express_send_date               AS expressSendDate,
@@ -1227,6 +1227,7 @@
       FROM
                   loan_order              a
       LEFT JOIN   loan_bank_card_send     s        ON  a.id = s.order_id
+      LEFT JOIN   bank_card_record        r        ON  a.id = r.order_id
       LEFT JOIN   loan_base_info          b        ON  b.id = a.loan_base_info_id
       LEFT JOIN   loan_customer           c        ON  c.id = a.loan_customer_id
       LEFT JOIN   employee                e        ON  e.id = b.salesman_id

@@ -65,11 +65,11 @@ public enum LoanProcessEnum {
     DATA_FLOW("usertask_data_flow", "资料流转汇总KEY"),
 
     // 合同资料
-    DATA_FLOW_CONTRACT_P2C("usertask_data_flow_contract_p2c", "合同资料合伙人至公司"),
-    DATA_FLOW_CONTRACT_P2C_REVIEW("usertask_data_flow_contract_p2c_review", "合同资料合伙人至公司-确认接收"),
+    DATA_FLOW_CONTRACT_P2C("usertask_data_flow_contract_p2c", "001-合同资料合伙人至公司"),
+    DATA_FLOW_CONTRACT_P2C_REVIEW("usertask_data_flow_contract_p2c_review", "002-合同资料合伙人至公司-确认接收"),
 
-    DATA_FLOW_CONTRACT_C2B("usertask_data_flow_contract_c2b", "合同资料公司至银行"),
-    DATA_FLOW_CONTRACT_C2B_REVIEW("usertask_data_flow_contract_c2b_review", "合同资料公司至银行-确认接收"),
+    DATA_FLOW_CONTRACT_C2B("usertask_data_flow_contract_c2b", "003-合同资料公司至银行"),
+    DATA_FLOW_CONTRACT_C2B_REVIEW("usertask_data_flow_contract_c2b_review", "004-合同资料公司至银行-确认接收"),
 
 
     // 抵押资料
@@ -79,25 +79,25 @@ public enum LoanProcessEnum {
 //    DATA_FLOW_MORTGAGE_C2B_NEW("usertask_data_flow_mortgage_c2b_new", "资料流转（抵押资料 - 公司->银行）"),
 //    DATA_FLOW_MORTGAGE_C2B_NEW_REVIEW("usertask_data_flow_mortgage_c2b_new_review", "资料流转（抵押资料 - 公司->银行）"),
 
-    DATA_FLOW_MORTGAGE_P2C("usertask_data_flow_mortgage_p2c", "抵押资料合伙人至公司"),
-    DATA_FLOW_MORTGAGE_P2C_REVIEW("usertask_data_flow_mortgage_p2c_review", "抵押资料合伙人至公司-确认接收"),
+    DATA_FLOW_MORTGAGE_P2C("usertask_data_flow_mortgage_p2c", "005-抵押资料合伙人至公司"),
+    DATA_FLOW_MORTGAGE_P2C_REVIEW("usertask_data_flow_mortgage_p2c_review", "006-抵押资料合伙人至公司-确认接收"),
 
-    DATA_FLOW_MORTGAGE_C2B("usertask_data_flow_mortgage_c2b", "抵押资料公司至银行"),
-    DATA_FLOW_MORTGAGE_C2B_REVIEW("usertask_data_flow_mortgage_c2b_review", "抵押资料公司至银行-确认接收"),
+    DATA_FLOW_MORTGAGE_C2B("usertask_data_flow_mortgage_c2b", "007-抵押资料公司至银行"),
+    DATA_FLOW_MORTGAGE_C2B_REVIEW("usertask_data_flow_mortgage_c2b_review", "008-抵押资料公司至银行-确认接收"),
 
-    DATA_FLOW_MORTGAGE_B2C("usertask_data_flow_mortgage_b2c", "抵押资料银行至公司"),
-    DATA_FLOW_MORTGAGE_B2C_REVIEW("usertask_data_flow_mortgage_b2c_review", "抵押资料银行至公司-确认接收"),
+    DATA_FLOW_MORTGAGE_B2C("usertask_data_flow_mortgage_b2c", "009-抵押资料银行至公司"),
+    DATA_FLOW_MORTGAGE_B2C_REVIEW("usertask_data_flow_mortgage_b2c_review", "010-抵押资料银行至公司-确认接收"),
 
-    DATA_FLOW_MORTGAGE_C2P("usertask_data_flow_mortgage_c2p", "抵押资料公司至合伙人"),
-    DATA_FLOW_MORTGAGE_C2P_REVIEW("usertask_data_flow_mortgage_c2p_review", "抵押资料公司至合伙人-确认接收"),
+    DATA_FLOW_MORTGAGE_C2P("usertask_data_flow_mortgage_c2p", "011-抵押资料公司至合伙人"),
+    DATA_FLOW_MORTGAGE_C2P_REVIEW("usertask_data_flow_mortgage_c2p_review", "012-抵押资料公司至合伙人-确认接收"),
 
 
     // 登记证书
-    DATA_FLOW_REGISTER_P2C("usertask_data_flow_register_p2c", "登记证书合伙人至公司"),
-    DATA_FLOW_REGISTER_P2C_REVIEW("usertask_data_flow_register_p2c_review", "登记证书合伙人至公司-确认接收"),
+    DATA_FLOW_REGISTER_P2C("usertask_data_flow_register_p2c", "013-登记证书合伙人至公司"),
+    DATA_FLOW_REGISTER_P2C_REVIEW("usertask_data_flow_register_p2c_review", "014-登记证书合伙人至公司-确认接收"),
 
-    DATA_FLOW_REGISTER_C2B("usertask_data_flow_register_c2b", "登记证书公司至银行"),
-    DATA_FLOW_REGISTER_C2B_REVIEW("usertask_data_flow_register_c2b_review", "登记证书公司至银行-确认接收");
+    DATA_FLOW_REGISTER_C2B("usertask_data_flow_register_c2b", "015-登记证书公司至银行"),
+    DATA_FLOW_REGISTER_C2B_REVIEW("usertask_data_flow_register_c2b_review", "016-登记证书公司至银行-确认接收");
 
     ////////////////////////////////////////////////--资料流转--/////////////////////////////////////////////////////////
 

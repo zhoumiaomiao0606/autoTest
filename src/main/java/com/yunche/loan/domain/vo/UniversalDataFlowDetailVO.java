@@ -77,8 +77,6 @@ public class UniversalDataFlowDetailVO {
 
     private String info;
 
-    private String taskKey;
-
     private Date gmtCreate;
 
     private Date gmtModify;

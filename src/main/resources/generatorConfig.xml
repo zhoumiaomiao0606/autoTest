@@ -326,11 +326,6 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-        <table tableName="loan_data_flow" domainObjectName="LoanDataFlowDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
-
 
         <table tableName="loan_bank_card_send" domainObjectName="LoanBankCardSendDO"
                enableCountByExample="false" enableUpdateByExample="false"
@@ -342,10 +337,15 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
--->
-
 
         <table tableName="loan_process" domainObjectName="LoanProcessDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+-->
+
+        <table tableName="loan_data_flow" domainObjectName="LoanDataFlowDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

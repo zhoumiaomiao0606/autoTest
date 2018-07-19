@@ -161,6 +161,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             return queryDataFlowTaskList(taskListQuery);
         }
 
+        // 节点校验
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
         }
@@ -424,15 +425,15 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
-                    // v
-                    String v = kvMap.get(e.getDataFlowType());
+                    // dataFlowTypeText
+                    String dataFlowTypeText = kvMap.get(e.getDataFlowType());
 
                     // dataFlowTypeText
-                    e.setDataFlowTypeText(v);
+                    e.setDataFlowTypeText(dataFlowTypeText);
 
                     // 2   - 任务状态Text
                     if (TASK_STATUS_2_TODO.equals(Integer.valueOf(e.getTaskStatus()))) {
-                        if (v.endsWith("-确认接收")) {
+                        if (dataFlowTypeText.endsWith("-确认接收")) {
                             e.setTaskType(String.valueOf(TASK_STATUS_22_OF_DATA_FLOW_TO_BE_RECEIVED));
                             e.setTaskTypeText("待接收");
                         } else {
@@ -453,7 +454,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     }
 
                     // type -> taskKey
-                    String taskKey = kCodeMap.get(e.getTaskStatus());
+                    String taskKey = kCodeMap.get(e.getDataFlowType());
                     e.setTaskKey(taskKey);
 
                 });

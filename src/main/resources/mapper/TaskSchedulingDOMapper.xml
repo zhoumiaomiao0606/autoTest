@@ -1162,266 +1162,282 @@
             resultType="com.yunche.loan.domain.vo.TaskListVO">
 
         SELECT
-                    tmp.*,
-                    tmp.id                              AS order_id,
-                    tmp.taskStatus                      AS taskType,
 
-                    CASE
-                        WHEN tmp.taskStatus = 1  THEN
-                        "已提交"
-                        WHEN tmp.taskStatus = 2  THEN
-                        "未提交"
-                        WHEN tmp.taskStatus = 21 THEN
-                        "待邮寄"
-                        WHEN tmp.taskStatus = 22 THEN
-                        "待接收"
-                        WHEN tmp.taskStatus = 3  THEN
-                        "已打回"
-                        WHEN tmp.taskStatus = 0  THEN
-                        "未执行到此"
-                        ELSE
-                        "状态异常"
-                    END                                 AS taskTypeText
+                            tmp2.*,
+                            tmp2.id                              AS order_id,
+                            tmp2.taskStatus                      AS taskType,
+
+                            CASE
+                                WHEN tmp2.taskStatus = 1  THEN
+                                "已提交"
+                                WHEN tmp2.taskStatus = 2  THEN
+                                "未提交"
+                                WHEN tmp2.taskStatus = 21 THEN
+                                "待邮寄"
+                                WHEN tmp2.taskStatus = 22 THEN
+                                "待接收"
+                                WHEN tmp2.taskStatus = 3  THEN
+                                "已打回"
+                                WHEN tmp2.taskStatus = 0  THEN
+                                "未执行到此"
+                                ELSE
+                                "状态异常"
+                            END                                 AS taskTypeText
 
         FROM
 
             (
 
                 SELECT
-                                        CASE
+                            tmp.*,
 
-                                            WHEN #{taskStatus_} != 0 THEN
-                                            #{taskStatus_}
+                            CASE
+                                WHEN #{taskStatus_} != 0 THEN
+                                #{taskStatus_}
+                                ELSE
+                                tmp.taskStatus_1
+                            END                                 AS  taskStatus
 
-                                            WHEN df.type = 1 THEN
-                                            pc.data_flow_contract_p2c
+                FROM
 
-                                            WHEN df.type = 2 THEN
-                                            pc.data_flow_contract_p2c_review
+                    (
 
-                                            WHEN df.type = 3 THEN
-                                            pc.data_flow_contract_c2b
+                        SELECT
+                                                CASE
 
-                                            WHEN df.type = 4 THEN
-                                            pc.data_flow_contract_c2b_review
+                                                    WHEN df.type = 1 THEN
+                                                    pc.data_flow_contract_p2c
 
-                                            WHEN df.type = 5 THEN
-                                            pc.data_flow_mortgage_p2c
+                                                    WHEN df.type = 2 THEN
+                                                    pc.data_flow_contract_p2c_review
 
-                                            WHEN df.type = 6 THEN
-                                            pc.data_flow_mortgage_p2c_review
+                                                    WHEN df.type = 3 THEN
+                                                    pc.data_flow_contract_c2b
 
-                                            WHEN df.type = 7 THEN
-                                            pc.data_flow_mortgage_c2b
+                                                    WHEN df.type = 4 THEN
+                                                    pc.data_flow_contract_c2b_review
 
-                                            WHEN df.type = 8 THEN
-                                            pc.data_flow_mortgage_c2b_review
+                                                    WHEN df.type = 5 THEN
+                                                    pc.data_flow_mortgage_p2c
 
-                                            WHEN df.type = 9 THEN
-                                            pc.data_flow_mortgage_b2c
+                                                    WHEN df.type = 6 THEN
+                                                    pc.data_flow_mortgage_p2c_review
 
-                                            WHEN df.type = 10 THEN
-                                            pc.data_flow_mortgage_b2c_review
+                                                    WHEN df.type = 7 THEN
+                                                    pc.data_flow_mortgage_c2b
 
-                                            WHEN df.type = 11 THEN
-                                            pc.data_flow_mortgage_c2p
+                                                    WHEN df.type = 8 THEN
+                                                    pc.data_flow_mortgage_c2b_review
 
-                                            WHEN df.type = 12 THEN
-                                            pc.data_flow_mortgage_c2p_review
+                                                    WHEN df.type = 9 THEN
+                                                    pc.data_flow_mortgage_b2c
 
-                                            WHEN df.type = 13 THEN
-                                            pc.data_flow_register_p2c
+                                                    WHEN df.type = 10 THEN
+                                                    pc.data_flow_mortgage_b2c_review
 
-                                            WHEN df.type = 14 THEN
-                                            pc.data_flow_register_p2c_review
+                                                    WHEN df.type = 11 THEN
+                                                    pc.data_flow_mortgage_c2p
 
-                                            WHEN df.type = 15 THEN
-                                            pc.data_flow_register_c2b
+                                                    WHEN df.type = 12 THEN
+                                                    pc.data_flow_mortgage_c2p_review
 
-                                            WHEN df.type = 16 THEN
-                                            pc.data_flow_register_c2b_review
+                                                    WHEN df.type = 13 THEN
+                                                    pc.data_flow_register_p2c
 
-                                            ELSE
-                                            0
+                                                    WHEN df.type = 14 THEN
+                                                    pc.data_flow_register_p2c_review
 
-                                        END                                 AS taskStatus,
+                                                    WHEN df.type = 15 THEN
+                                                    pc.data_flow_register_c2b
 
-                                        a.id               					AS  id,
-                                        c.name    				  			AS  customer,
-                                        c.id_card   						AS  idCard,
-                                        c.mobile   							AS  mobile,
-                                        b.bank								AS  bank,
-                                        b.salesman_id     				    AS  salesmanId,
-                                        e.name             					AS  salesman,
-                                        b.partner_id      					AS  partnerId,
-                                        p.name             					AS  partner,
-                                        d.name             					AS  departmentName,
-                                        df.id              					AS  dataFlowId,
-                                        df.type            					AS  dataFlowType
+                                                    WHEN df.type = 16 THEN
+                                                    pc.data_flow_register_c2b_review
 
-                FROM                    loan_order           				AS a
-                            LEFT JOIN   loan_process         				AS pc    ON   a.id = pc.order_id
-                            LEFT JOIN   loan_data_flow       				AS df    ON   a.id = df.order_id
-                            LEFT JOIN   loan_customer        				AS c     ON   c.id = a.loan_customer_id
-                            LEFT JOIN   loan_base_info      				AS b     ON   b.id = a.loan_base_info_id
-                            LEFT JOIN   employee             				AS e     ON   e.id = b.salesman_id
-                            LEFT JOIN   department           				AS d     ON	  d.id = e.department_id
-                            LEFT JOIN   partner             				AS p     ON   p.id = b.partner_id
+                                                    ELSE
+                                                    0
 
-                <where>
-                    <if test="orderId != null and orderId != '' ">
-                        AND a.id = #{orderId}
+                                                END                                 AS taskStatus_1,
+
+                                                a.id               					AS  id,
+                                                c.name    				  			AS  customer,
+                                                c.id_card   						AS  idCard,
+                                                c.mobile   							AS  mobile,
+                                                b.bank								AS  bank,
+                                                b.salesman_id     				    AS  salesmanId,
+                                                e.name             					AS  salesman,
+                                                b.partner_id      					AS  partnerId,
+                                                p.name             					AS  partner,
+                                                d.name             					AS  departmentName,
+                                                df.id              					AS  dataFlowId,
+                                                df.type            					AS  dataFlowType
+
+                        FROM                    loan_order           				AS a
+                                    LEFT JOIN   loan_process         				AS pc    ON   a.id = pc.order_id
+                                    LEFT JOIN   loan_data_flow       				AS df    ON   a.id = df.order_id
+                                    LEFT JOIN   loan_customer        				AS c     ON   c.id = a.loan_customer_id
+                                    LEFT JOIN   loan_base_info      				AS b     ON   b.id = a.loan_base_info_id
+                                    LEFT JOIN   employee             				AS e     ON   e.id = b.salesman_id
+                                    LEFT JOIN   department           				AS d     ON	  d.id = e.department_id
+                                    LEFT JOIN   partner             				AS p     ON   p.id = b.partner_id
+
+                        <where>
+                            <if test="orderId != null and orderId != '' ">
+                                AND a.id = #{orderId}
+                            </if>
+                            <if test="customer != null and customer != '' ">
+                                AND	c.name LIKE CONCAT('%', #{customer}, '%')
+                            </if>
+                            <if test="idCard != null and idCard != '' ">
+                                AND c.id_card = #{idCard}
+                            </if>
+                            <if test="loanBank != null and loanBank != '' ">
+                                AND b.bank = #{loanBank}
+                            </if>
+                            <if test="partnerId != null">
+                                AND p.id = #{partnerId}
+                            </if>
+                            <if test="dataFlowTypeList != null and dataFlowTypeList.size() > 0">
+                                AND  df.type IN
+                                <foreach item="item" collection="dataFlowTypeList" open="(" close=")" separator=",">
+                                    #{item}
+                                </foreach>
+                            </if>
+
+                            AND
+
+                            CASE WHEN #{taskStatus} = 0 THEN
+
+                            <choose>
+                                <when test="dataFlowNodeSet != null and dataFlowNodeSet.size() > 0">
+                                    <foreach item="item" collection="dataFlowNodeSet" separator="OR">
+                                        <choose>
+                                            <when test="item == 'usertask_data_flow_contract_p2c'">
+                                                pc.data_flow_contract_p2c != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_p2c_review'">
+                                                pc.data_flow_contract_p2c_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_c2b'">
+                                                pc.data_flow_contract_c2b != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_c2b_review'">
+                                                pc.data_flow_contract_c2b_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_p2c'">
+                                                pc.data_flow_mortgage_p2c != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_p2c_review'">
+                                                pc.data_flow_mortgage_p2c_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2b'">
+                                                pc.data_flow_mortgage_c2b != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2b_review'">
+                                                pc.data_flow_mortgage_c2b_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_b2c'">
+                                                pc.data_flow_mortgage_b2c != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_b2c_review'">
+                                                pc.data_flow_mortgage_b2c_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2p'">
+                                                pc.data_flow_mortgage_c2p != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2p_review'">
+                                                pc.data_flow_mortgage_c2p_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_p2c'">
+                                                pc.data_flow_register_p2c != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_p2c_review'">
+                                                pc.data_flow_register_p2c_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_c2b'">
+                                                pc.data_flow_register_c2b != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_c2b_review'">
+                                                pc.data_flow_register_c2b_review != #{taskStatus}
+                                            </when>
+                                        </choose>
+                                    </foreach>
+                                </when>
+                                <otherwise>
+                                    1=2
+                                </otherwise>
+                            </choose>
+
+                            ELSE
+
+                            <choose>
+                                <when test="dataFlowNodeSet != null and dataFlowNodeSet.size() > 0">
+                                    <foreach item="item" collection="dataFlowNodeSet" separator="OR">
+                                        <choose>
+                                            <when test="item == 'usertask_data_flow_contract_p2c'">
+                                                pc.data_flow_contract_p2c = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_p2c_review'">
+                                                pc.data_flow_contract_p2c_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_c2b'">
+                                                pc.data_flow_contract_c2b = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_c2b_review'">
+                                                pc.data_flow_contract_c2b_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_p2c'">
+                                                pc.data_flow_mortgage_p2c = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_p2c_review'">
+                                                pc.data_flow_mortgage_p2c_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2b'">
+                                                pc.data_flow_mortgage_c2b = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2b_review'">
+                                                pc.data_flow_mortgage_c2b_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_b2c'">
+                                                pc.data_flow_mortgage_b2c = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_b2c_review'">
+                                                pc.data_flow_mortgage_b2c_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2p'">
+                                                pc.data_flow_mortgage_c2p = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2p_review'">
+                                                pc.data_flow_mortgage_c2p_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_p2c'">
+                                                pc.data_flow_register_p2c = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_p2c_review'">
+                                                pc.data_flow_register_p2c_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_c2b'">
+                                                pc.data_flow_register_c2b = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_c2b_review'">
+                                                pc.data_flow_register_c2b_review = #{taskStatus}
+                                            </when>
+                                        </choose>
+                                    </foreach>
+                                </when>
+                                <otherwise>
+                                    1=2
+                                </otherwise>
+                            </choose>
+                            END
+                        </where>
+
+                    )   AS tmp
+
+                    <if test="taskStatus != 0">
+                        WHERE tmp.taskStatus_1 = #{taskStatus}
                     </if>
-                    <if test="customer != null and customer != '' ">
-                        AND	c.name LIKE CONCAT('%', #{customer}, '%')
-                    </if>
-                    <if test="idCard != null and idCard != '' ">
-                        AND c.id_card = #{idCard}
-                    </if>
-                    <if test="loanBank != null and loanBank != '' ">
-                        AND b.bank = #{loanBank}
-                    </if>
-                    <if test="partnerId != null">
-                        AND p.id = #{partnerId}
-                    </if>
-                    <if test="dataFlowTypeList != null and dataFlowTypeList.size() > 0">
-                        AND  df.type IN
-                        <foreach item="item" collection="dataFlowTypeList" open="(" close=")" separator=",">
-                            #{item}
-                        </foreach>
-                    </if>
 
-                    AND
-
-                    CASE WHEN #{taskStatus} = 0 THEN
-
-                    <choose>
-                        <when test="dataFlowNodeSet != null and dataFlowNodeSet.size() > 0">
-                            <foreach item="item" collection="dataFlowNodeSet" separator="OR">
-                                <choose>
-                                    <when test="item == 'usertask_data_flow_contract_p2c'">
-                                        pc.data_flow_contract_p2c != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_contract_p2c_review'">
-                                        pc.data_flow_contract_p2c_review != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_contract_c2b'">
-                                        pc.data_flow_contract_c2b != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_contract_c2b_review'">
-                                        pc.data_flow_contract_c2b_review != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_p2c'">
-                                        pc.data_flow_mortgage_p2c != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_p2c_review'">
-                                        pc.data_flow_mortgage_p2c_review != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_c2b'">
-                                        pc.data_flow_mortgage_c2b != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_c2b_review'">
-                                        pc.data_flow_mortgage_c2b_review != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_b2c'">
-                                        pc.data_flow_mortgage_b2c != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_b2c_review'">
-                                        pc.data_flow_mortgage_b2c_review != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_c2p'">
-                                        pc.data_flow_mortgage_c2p != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_c2p_review'">
-                                        pc.data_flow_mortgage_c2p_review != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_register_p2c'">
-                                        pc.data_flow_register_p2c != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_register_p2c_review'">
-                                        pc.data_flow_register_p2c_review != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_register_c2b'">
-                                        pc.data_flow_register_c2b != #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_register_c2b_review'">
-                                        pc.data_flow_register_c2b_review != #{taskStatus}
-                                    </when>
-                                </choose>
-                            </foreach>
-                        </when>
-                        <otherwise>
-                            1=2
-                        </otherwise>
-                    </choose>
-
-                    ELSE
-
-                    <choose>
-                        <when test="dataFlowNodeSet != null and dataFlowNodeSet.size() > 0">
-                            <foreach item="item" collection="dataFlowNodeSet" separator="OR">
-                                <choose>
-                                    <when test="item == 'usertask_data_flow_contract_p2c'">
-                                        pc.data_flow_contract_p2c = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_contract_p2c_review'">
-                                        pc.data_flow_contract_p2c_review = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_contract_c2b'">
-                                        pc.data_flow_contract_c2b = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_contract_c2b_review'">
-                                        pc.data_flow_contract_c2b_review = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_p2c'">
-                                        pc.data_flow_mortgage_p2c = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_p2c_review'">
-                                        pc.data_flow_mortgage_p2c_review = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_c2b'">
-                                        pc.data_flow_mortgage_c2b = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_c2b_review'">
-                                        pc.data_flow_mortgage_c2b_review = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_b2c'">
-                                        pc.data_flow_mortgage_b2c = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_b2c_review'">
-                                        pc.data_flow_mortgage_b2c_review = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_c2p'">
-                                        pc.data_flow_mortgage_c2p = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_mortgage_c2p_review'">
-                                        pc.data_flow_mortgage_c2p_review = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_register_p2c'">
-                                        pc.data_flow_register_p2c = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_register_p2c_review'">
-                                        pc.data_flow_register_p2c_review = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_register_c2b'">
-                                        pc.data_flow_register_c2b = #{taskStatus}
-                                    </when>
-                                    <when test="item == 'usertask_data_flow_register_c2b_review'">
-                                        pc.data_flow_register_c2b_review = #{taskStatus}
-                                    </when>
-                                </choose>
-                            </foreach>
-                        </when>
-                        <otherwise>
-                            1=2
-                        </otherwise>
-                    </choose>
-                    END
-                </where>
-
-            )
-
-        AS tmp
+            ) AS tmp2
 
         <!--loginUser只能查询到 自己及下级 的单子 -->
         <include refid="loginUserGetSelfAndSub"/>

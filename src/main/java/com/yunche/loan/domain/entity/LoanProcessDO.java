@@ -82,14 +82,6 @@ public class LoanProcessDO {
 
     private Byte dataFlowContractC2bReview;
 
-    private Byte dataFlowMortgageP2cNew;
-
-    private Byte dataFlowMortgageP2cNewReview;
-
-    private Byte dataFlowMortgageC2bNew;
-
-    private Byte dataFlowMortgageC2bNewReview;
-
     private Byte dataFlowMortgageB2c;
 
     private Byte dataFlowMortgageB2cReview;
