@@ -296,6 +296,7 @@ public class ImageUtil {
             byte[] xes = ImageUtil.compressPicForScale(bytes, 500, targetName);
 
             FileUtils.writeByteArrayToFile(new File(targetName), xes);
+//            FileUtils.forceDelete(new File(sources));
         } catch (IOException e) {
            throw  new BizException("图片压缩失败了...");
         }
