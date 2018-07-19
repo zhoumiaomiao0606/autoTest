@@ -72,6 +72,7 @@ public class ImageUtil {
             }).collect(Collectors.toList());
             //获取待合并图片中最大宽度 & 图片总高度之和
             int maxWidth = 0;
+            int maxHeight = 0;
             int totalHeight = 0;
 
             for(int i=0;i<images.size();i++){
@@ -81,12 +82,15 @@ public class ImageUtil {
                 if(width>maxWidth){
                     maxWidth = width;
                 }
+                if(height>maxHeight){
+                    maxHeight = height;
+                }
                 totalHeight += height;
             }
 
 
             //构造一个类型为预定义图像类型之一的 BufferedImage。 高度为各个图片高度之和
-            BufferedImage tag = new BufferedImage(maxWidth, totalHeight, BufferedImage.TYPE_INT_RGB);
+            BufferedImage tag = new BufferedImage(maxWidth, maxHeight*images.size(), BufferedImage.TYPE_INT_RGB);
             //创建输出流
 
             fileName = downLoadBasepath+File.separator+generateName;
@@ -97,10 +101,10 @@ public class ImageUtil {
             int tmpHeight=0;
             for(int i=0;i<images.size();i++){
                 Image image = images.get(i);
-                Image scaledInstance = image.getScaledInstance(maxWidth, image.getHeight(null), Image.SCALE_SMOOTH);
-                graphics.drawImage(scaledInstance, 0, tmpHeight, image.getWidth(null), image.getHeight(null), null);
+                Image scaledInstance = image.getScaledInstance(maxWidth, maxHeight, Image.SCALE_SMOOTH);
+                graphics.drawImage(scaledInstance, 0, tmpHeight, maxWidth, maxHeight, null);
 //                graphics.drawImage(scaledInstance, 0, tmpHeight, null);
-                tmpHeight+=image.getHeight(null);
+                tmpHeight+=maxWidth;
             }
             // 释放此图形的上下文以及它使用的所有系统资源。
             graphics.dispose();
@@ -293,7 +297,7 @@ public class ImageUtil {
         try {
             byte[] bytes = FileUtils.readFileToByteArray(new File(sources));
 
-            byte[] xes = ImageUtil.compressPicForScale(bytes, 500, targetName);
+            byte[] xes = ImageUtil.compressPicForScale(bytes, 800, targetName);
 
             FileUtils.writeByteArrayToFile(new File(targetName), xes);
 //            FileUtils.forceDelete(new File(sources));
