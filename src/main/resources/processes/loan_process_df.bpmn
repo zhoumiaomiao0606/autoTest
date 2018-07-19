@@ -67,7 +67,7 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_business_review" name="业务审批" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,放款专员,哈尔滨放款专员"></userTask>
-    <userTask id="usertask_material_review" name="资料审核" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,纸审,哈尔滨纸审,台州纸审,杭州城站纸审,南京纸审"></userTask>
+    <userTask id="usertask_material_review" name="资料审核" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,纸审,哈尔滨纸审,台州纸审,杭州城站纸审,南京纸审,合伙人纸审"></userTask>
     <userTask id="usertask_apply_license_plate_deposit_info" name="车辆抵押" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,哈尔滨抵押专员,台州抵押专员,杭州城站抵押专员,南京抵押专员"></userTask>
     <userTask id="usertask_car_insurance" name="车辆保险" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,哈尔滨保险专员"></userTask>
     <sequenceFlow id="flow63" sourceRef="parallelgateway3" targetRef="usertask_car_insurance"></sequenceFlow>
@@ -84,7 +84,7 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <parallelGateway id="parallelgateway3" name="Parallel Gateway"></parallelGateway>
-    <userTask id="usertask_material_print_review" name="合同套打" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,抄单,哈尔滨抄单,台州抄单,杭州城站抄单,南京抄单"></userTask>
+    <userTask id="usertask_material_print_review" name="合同套打" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,抄单,哈尔滨抄单,台州抄单,杭州城站抄单,南京抄单,合伙人抄单"></userTask>
     <sequenceFlow id="flow80" name="提交" sourceRef="exclusivegateway15" targetRef="usertask_material_print_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -391,7 +391,7 @@
     <sequenceFlow id="flow257" name="提交" sourceRef="usertask_bank_card_record" targetRef="parallelgateway11">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_card_send" name="银行卡寄送"></userTask>
+    <userTask id="usertask_bank_card_send" name="银行卡寄送" activiti:candidateGroups="总经理,培训经理,哈尔滨工行寄卡,南京工行寄卡,台州工行寄卡,杭州城站工行寄卡"></userTask>
     <sequenceFlow id="flow258" sourceRef="parallelgateway11" targetRef="usertask_bank_card_send"></sequenceFlow>
     <endEvent id="endevent35" name="End"></endEvent>
     <sequenceFlow id="flow259" name="提交" sourceRef="usertask_bank_card_send" targetRef="endevent35">
