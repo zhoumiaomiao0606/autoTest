@@ -48,6 +48,7 @@ public class TaskListQuery {
     @NotNull
     private Integer taskStatus;
 
+    private String transCode;
 
     //查询条件
     private boolean fuse = false;
