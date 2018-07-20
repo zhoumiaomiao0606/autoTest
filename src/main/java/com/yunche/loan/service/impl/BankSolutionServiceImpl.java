@@ -103,6 +103,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Autowired
     private AreaCache areaCache;
 
+    @Resource
+    private CarBrandDOMapper carBrandDOMapper;
+
+    @Resource
+    private CarModelDOMapper carModelDOMapper;
+
+    @Resource
+    private CarDetailDOMapper carDetailDOMapper;
+
 
 
 
@@ -249,17 +258,17 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(carDetailId == null){
             throw new BizException("贷款车辆不存在");
         }
-        CarDetailDO carDetailDO = carCache.getCarDetail(carDetailId);
+        CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(carDetailId,null);
         if(carDetailDO == null){
             throw new BizException("贷款车辆不存在");
         }
 
-        CarModelDO carModelDO = carCache.getCarModel(carDetailDO.getModelId());
+        CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(carDetailDO.getModelId(),null);
         if(carModelDO == null){
             throw new BizException("贷款车辆不存在");
         }
 
-        CarBrandDO carBrandDO = carCache.getCarBrand(carModelDO.getBrandId());
+        CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carModelDO.getBrandId(),null);
         if(carBrandDO == null){
             throw new BizException("贷款车辆不存在");
         }

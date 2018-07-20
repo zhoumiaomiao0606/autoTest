@@ -31,8 +31,8 @@ public class ImageUtil {
 
     private  static String downLoadBasepath="/tmp";
 
-    private static final String PIC_SUFFIX=".jpg";
-    private static final String DOC_SUFFIX=".docx";
+    public static final String PIC_SUFFIX=".jpg";
+    public static final String DOC_SUFFIX=".docx";
 
     private static final int DEFAULT_WIDTH=5000;
     private static final Logger LOG = LoggerFactory.getLogger(ImageUtil.class);
