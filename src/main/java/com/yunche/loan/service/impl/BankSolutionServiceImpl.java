@@ -4,6 +4,7 @@ import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.CarCache;
 import com.yunche.loan.config.cache.DictMapCache;
 import com.yunche.loan.config.common.SysConfig;
@@ -94,10 +95,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private AsyncUpload asyncUpload;
 
     @Autowired
-    ICBCFeignNormal icbcFeignNormal;
+    private ICBCFeignNormal icbcFeignNormal;
 
     @Autowired
-    DictMapCache dictMapCache;
+    private DictMapCache dictMapCache;
+
+    @Autowired
+    private AreaCache areaCache;
 
 
 
@@ -710,13 +714,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         customer.setFeeratio(BigDecimalUtil.format(productRateDO.getBankRate(),6));// 银行费率
 
-        customer.setCprovince(loanCustomerDO.getCprovince());
-        customer.setCcounty(loanCustomerDO.getCcounty());//单位地址县
-        customer.setCcity(loanCustomerDO.getCcity());//ccity	单位地址市
+        customer.setCprovince(areaCache.getAreaName(loanCustomerDO.getCprovince()));
+        customer.setCcounty(areaCache.getAreaName(loanCustomerDO.getCcounty()));//单位地址县
+        customer.setCcity(areaCache.getAreaName(loanCustomerDO.getCcity()));//ccity	单位地址市
 
-        customer.setHcity(loanCustomerDO.getHcity());//住宅地址市
-        customer.setHcounty(loanCustomerDO.getHcounty());//hcounty	住宅地址县
-        customer.setHprovince(loanCustomerDO.getHprovince());//hprovince	住宅地址省份
+        customer.setHcity(areaCache.getAreaName(loanCustomerDO.getHcity()));//住宅地址市
+        customer.setHcounty(areaCache.getAreaName(loanCustomerDO.getHcounty()));//hcounty	住宅地址县
+        customer.setHprovince(areaCache.getAreaName(loanCustomerDO.getHprovince()));//hprovince	住宅地址省份
         customer.setAccaddrf(loanCustomerDO.getBillSendAddr());
         customer.setDrawaddr(loanCustomerDO.getCardSendAddrType());
         String identityValidity = loanCustomerDO.getIdentityValidity();
@@ -780,8 +784,17 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyBankOpenCard.setCustomer(customer);
         applyBankOpenCard.setPictures(bankOpenCardParam.getPictures());
         //发送银行接口
-        CreditCardApplyResponse creditcardapply = icbcFeignClient.creditcardapply(applyBankOpenCard);
-        return creditcardapply;
+        CreditCardApplyResponse response = icbcFeignClient.creditcardapply(applyBankOpenCard);
+
+        if(response!=null) {
+            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
+                List<ICBCApiRequest.Picture> pictures = bankOpenCardParam.getPictures();
+                for (ICBCApiRequest.Picture tmp:pictures) {
+                    asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicid(),tmp.getPicname(),tmp.getPicKeyList());
+                }
+            }
+        }
+        return response;
     }
 
     @Override

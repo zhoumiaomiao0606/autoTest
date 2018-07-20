@@ -16,10 +16,9 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.text.Collator;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AreaConst.*;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -43,11 +42,15 @@ public class AreaCache {
      */
     private static final String ALL_CACHE_AREA_KEY = "all:cache:area";
 
+
+    private static final String ONE_BY_ONE_CACHE_AREA_KEY = "one2one:cache:area";
+
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    
 
     /**
      * 获取CASCADE_AREA缓存
@@ -80,10 +83,17 @@ public class AreaCache {
     public void refresh() {
         // 获取所有行政区
         List<BaseAreaDO> allArea = baseAreaDOMapper.getAll(VALID_STATUS);
+
+
         if (CollectionUtils.isEmpty(allArea)) {
             return;
         }
 
+        Map<Long, String> allAreaMap = allArea.parallelStream().collect(Collectors.toMap(BaseAreaDO::getAreaId, BaseAreaDO::getAreaName));
+        HashMap<String, String> objectObjectHashMap = Maps.newHashMap();
+        allAreaMap.forEach((k,v) ->{
+            objectObjectHashMap.put(String.valueOf(k),String.valueOf(v));
+        });
         // 附带刷新所有
         refreshAll(allArea);
 
@@ -100,6 +110,7 @@ public class AreaCache {
         // 刷新缓存
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CASCADE_CACHE_AREA_KEY);
         boundValueOps.set(JSON.toJSONString(cascadeAreaVOList));
+        stringRedisTemplate.opsForHash().putAll(ONE_BY_ONE_CACHE_AREA_KEY,objectObjectHashMap);
     }
 
 
@@ -328,5 +339,18 @@ public class AreaCache {
         cascadeAreaVOList.addAll(tmpCascadeAreaVOList);
 
         return cascadeAreaVOList;
+    }
+
+    /**
+     * 获取区域名称
+     * @param areaId
+     * @return
+     */
+    public String getAreaName(String areaId){
+        try{
+            return  stringRedisTemplate.opsForHash().get(ONE_BY_ONE_CACHE_AREA_KEY,areaId.trim()).toString();
+        }catch (Exception e){
+            return "未知";
+        }
     }
 }

@@ -147,6 +147,9 @@ public class ICBCApiRequest {
         private String picname;
         @NotEmpty
         private String picnote;
+
+
+        private List picKeyList = Lists.newArrayList();
     }
     //---------------------------------------car-----------------------------------------------------
 
