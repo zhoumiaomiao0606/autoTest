@@ -967,7 +967,6 @@
     </select>
 
 
-<<<<<<< HEAD
     <select id="selectUniversalLatestBankInterfaceSerial" resultType="com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO">
         select
             serial_no                                      as serialNo,
@@ -978,8 +977,6 @@
             DATE_FORMAT(callback_time,'%Y-%m-%d %H:%i:%S') as callbackTime
         from bank_interface_serial where customer_id = #{customerId} and trans_code = #{transCode} order by request_time desc limit 1
     </select>
-=======
->>>>>>> v_1.1.4
     <!--=============================================end===================================================-->
 
 
@@ -1522,5 +1519,4 @@
         else 1=2 end
     </sql>
 
->>>>>>> v_1.1.4
 </mapper>
