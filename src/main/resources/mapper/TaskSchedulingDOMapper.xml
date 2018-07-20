@@ -317,15 +317,14 @@
                                                                AS paymentGtCreate,
                   <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
-                          case when join_serial.flag is null then 2 else join_serial.flag end AS serialFlag,
+                          case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
                           deputy.credit_apply                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
-                          case when join_serial.order_id is null then 0 else 1 end AS serialFlag,
+                          case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
                           deputy.bank_credit_record               AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_social_credit_record'">
-
                           deputy.social_credit_record             AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_loan_apply'">
@@ -439,26 +438,9 @@
               left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
-              <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
-              left join
-                (
-                  select
-                    ss.order_id,
-                      case when sum(ss.api_status) != 200*count(ss.order_id) then 1
-                           when sum(ss.status) = 0 or sum(ss.status) = count(ss.order_id) then 0
-                      else 1 end
-                      as flag
-                  from (
-                    select serial.order_id,serial.status,serial.api_status  from bank_interface_serial serial
-                    inner join
-                    (
-                      select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                      as serial_no
-                      from bank_interface_serial GROUP BY trans_code,customer_id
-                    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
-                  ) ss GROUP BY  ss.order_id
-                ) join_serial on main.id = join_serial.order_id
-              </if>
+            <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
+                left join (select DISTINCT order_id from bank_interface_serial where trans_code = #{transCode}) join_serial on main.id = join_serial.order_id
+            </if>
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>

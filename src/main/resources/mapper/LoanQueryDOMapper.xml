@@ -1339,5 +1339,20 @@
           ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
           and serial.customer_id = #{customerId}
     </select>
+    <select id="selectBankInterFaceSerialOrderStatusByOrderId" resultType="com.yunche.loan.domain.vo.BankInterFaceSerialOrderStatusVO">
+              select
+                  ss.order_id,
+                  ss.status,
+                  ss.api_status
+               from (
+                      select serial.order_id,serial.status,serial.api_status  from bank_interface_serial serial
+                      inner join
+                      (
+                      select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                      as serial_no
+                      from bank_interface_serial GROUP BY trans_code,customer_id
+                      ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+              ) ss GROUP BY  ss.order_id having order_id = #{orderId}
+    </select>
 
 </mapper>
