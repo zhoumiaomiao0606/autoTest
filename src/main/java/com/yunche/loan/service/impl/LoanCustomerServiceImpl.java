@@ -379,7 +379,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         if (CREDIT_TYPE_BANK.equals(e.getType())) {
                             principalLender.setBankCreditResult(e.getResult());
                             principalLender.setBankCreditInfo(e.getInfo());
-                            principalLender.setBankCreditNote(loanQueryDOMapper.selectBankInterfaceSerialNote(e.getCustomerId()));
+                            principalLender.setBankCreditNote(loanQueryDOMapper.selectLastBankInterfaceSerialNoteByTransCode(e.getCustomerId(),"applyCredit"));
                         } else if (CREDIT_TYPE_SOCIAL.equals(e.getType())) {
                             principalLender.setSocialCreditResult(e.getResult());
                             principalLender.setSocialCreditInfo(e.getInfo());
