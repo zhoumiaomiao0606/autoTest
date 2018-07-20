@@ -171,4 +171,5 @@ public class CustomerVO {
 
     private String bankCreditNote;
 
+    private String bankCreditStatus;
 }

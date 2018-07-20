@@ -33,7 +33,13 @@ public class TaskSchedulingController {
 
     @Resource
     private LoanQueryService loanQueryService;
-
+    /**
+     * 银行单子状态
+     */
+    @GetMapping(value = "/bankOrderStatus")
+    public ResultBean<Integer> bankOrderStatus(@RequestParam Long orderId) {
+        return ResultBean.ofSuccess(loanQueryService.selectBankInterFaceSerialOrderStatusByOrderId(orderId));
+    }
 
     /**
      * 待办任务列表-all

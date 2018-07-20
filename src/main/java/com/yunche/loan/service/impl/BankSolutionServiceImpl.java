@@ -415,7 +415,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //pub
         applyDiviGeneral.setPlatno(sysConfig.getPlatno());
         applyDiviGeneral.setCmpseq(serNo);
-        applyDiviGeneral.setZoneno("3301");
+        applyDiviGeneral.setZoneno(loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4));
         applyDiviGeneral.setPhybrno(phybrno);
         applyDiviGeneral.setOrderno(orderId.toString());
         applyDiviGeneral.setAssurerno(sysConfig.getAssurerno());
@@ -517,6 +517,17 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     private void bankCreditProcess(Long orderId,String phybrno,LoanCustomerDO loanCustomerDO){
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        //获取数据源
+        Long baseId = loanOrderDO.getLoanBaseInfoId();
+        if(baseId == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        if(loanBaseInfoDO == null){
+            throw new BizException("征信信息不存在");
+        }
         //获取用户授权书签字照
         UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(loanCustomerDO.getId(),new Byte("5"));
         if(authSignPic == null){
@@ -569,7 +580,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //pub
         applyCredit.setPlatno(sysConfig.getPlatno());
         applyCredit.setCmpseq(serNo);
-        applyCredit.setZoneno("3301");
+        applyCredit.setZoneno(loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4));
         applyCredit.setPhybrno(phybrno);
         applyCredit.setOrderno(orderId.toString());
         applyCredit.setAssurerno(sysConfig.getAssurerno());

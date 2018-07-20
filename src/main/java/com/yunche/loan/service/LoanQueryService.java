@@ -10,4 +10,6 @@ public interface LoanQueryService {
 
     String selectTelephoneVerifyLevel();
 
+    Integer selectBankInterFaceSerialOrderStatusByOrderId(Long orderId);
+
 }
