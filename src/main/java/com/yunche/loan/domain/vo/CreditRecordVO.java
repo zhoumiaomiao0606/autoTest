@@ -76,5 +76,7 @@ public class CreditRecordVO {
         private String  guaranteeRela;//担保关系
 
         private String bankCreditStatus;
+
+        private String bankCreditNote;
     }
 }

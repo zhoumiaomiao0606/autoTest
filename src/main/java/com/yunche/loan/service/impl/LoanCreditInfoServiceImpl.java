@@ -240,6 +240,8 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
             customerCreditRecord.setCustomerId(loanCustomerDO.getId());
             customerCreditRecord.setCustomerName(loanCustomerDO.getName());
             customerCreditRecord.setGuaranteeType(loanCustomerDO.getGuaranteeType());
+            customerCreditRecord.setBankCreditNote(loanQueryDOMapper.selectLastBankInterfaceSerialNoteByTransCode(loanCustomerDO.getId(),"applyCredit"));
+
         }
     }
 
