@@ -256,8 +256,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     private void fillPartner(EmployeeVO employeeVO) {
         if (TYPE_WB.equals(employeeVO.getType())) {
             Long employeeId = employeeVO.getId();
-            Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
-            employeeVO.setPartnerId(partnerId);
+            PartnerDO partnerDO = partnerRelaEmployeeDOMapper.getPartnerByEmployeeId(employeeId);
+            if (null != partnerDO) {
+                employeeVO.setPartnerId(partnerDO.getId());
+                employeeVO.setPartnerName(partnerDO.getName());
+            }
         }
     }
 
@@ -280,6 +283,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                             fillParent(e.getParentId(), employeeVO);
                             // 填充所属部门信息
                             fillDepartment(e.getDepartmentId(), employeeVO);
+                            // 填充所属合伙人
+                            fillPartner(employeeVO);
 
                             return employeeVO;
                         })

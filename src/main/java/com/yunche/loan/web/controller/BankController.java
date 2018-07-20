@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.yunche.loan.config.constant.BankConst.BANK_LIST;
-
 /**
  * @author liuzhe
  * @date 2018/3/8
@@ -27,6 +25,16 @@ public class BankController {
     private BankService bankService;
 
 
+//    /**
+//     * 获取银行列表
+//     *
+//     * @return
+//     */
+//    @GetMapping(value = "/list")
+//    public ResultBean<List<String>> listAll() {
+//        return ResultBean.ofSuccess(BANK_LIST);
+//    }
+
     /**
      * 获取银行列表
      *
@@ -34,11 +42,6 @@ public class BankController {
      */
     @GetMapping(value = "/list")
     public ResultBean<List<String>> listAll() {
-        return ResultBean.ofSuccess(BANK_LIST);
-    }
-
-    @GetMapping(value = "/list_")
-    public ResultBean<List<String>> listAll_() {
         return bankService.listAll();
     }
 

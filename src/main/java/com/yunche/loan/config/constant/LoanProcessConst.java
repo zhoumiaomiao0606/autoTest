@@ -35,9 +35,18 @@ public class LoanProcessConst {
      */
     public static final Byte ACTION_INFO_SUPPLEMENT = 3;
     /**
+     * 新建xx任务单
+     */
+    public static final Byte ACTION_NEW_TASK = 4;
+    /**
+     * 停止一条支线流程
+     */
+    public static final Byte ACTION_STOP_ONE_FLOW = 5;
+
+    /**
      * 发起任务申请
      */
-//    public static final Byte ACTION_LAUNCH_TASK_APPLY = 4;
+//    public static final Byte ACTION_LAUNCH_TASK_APPLY = 5;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

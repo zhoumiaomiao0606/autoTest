@@ -1,10 +1,11 @@
 package com.yunche.loan.service.impl;
 
-import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -13,13 +14,11 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.entity.LoanRejectLogDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
-import com.yunche.loan.domain.vo.AppTaskVO;
-import com.yunche.loan.domain.vo.ScheduleTaskVO;
-import com.yunche.loan.domain.vo.TaskListVO;
-import com.yunche.loan.domain.vo.TaskStateVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.apache.commons.lang3.StringUtils;
@@ -29,13 +28,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
+import static com.yunche.loan.config.constant.ListQueryTaskStatusConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW;
 
 @Service
 public class TaskSchedulingServiceImpl implements TaskSchedulingService {
@@ -70,9 +69,22 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Autowired
+    private BankCache bankCache;
+
+    @Autowired
+    private ActivitiVersionService activitiVersionService;
+
+    @Autowired
+    private DictService dictService;
+
+    @Autowired
+    private LoanRejectLogService loanRejectLogService;
+
 
     @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -82,6 +94,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+
         ScheduleTaskQuery query = new ScheduleTaskQuery();
         query.setJuniorIds(juniorIds);
         query.setEmployeeId(loginUser.getId());
@@ -96,14 +109,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
+
         PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
+
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -113,6 +129,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+
         ScheduleTaskQuery query = new ScheduleTaskQuery();
         query.setJuniorIds(juniorIds);
         query.setKey(key);
@@ -128,20 +145,30 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
+
         PageHelper.startPage(pageIndex, pageSize, true);
         List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
-        PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<ScheduleTaskVO>(list);
+        PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
+
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     @Override
     public ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery) {
 
+        // 资料流转
+        if (DATA_FLOW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+            return queryDataFlowTaskList(taskListQuery);
+        }
+
+        // 节点校验
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
         }
+
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -151,6 +178,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+
         taskListQuery.setJuniorIds(juniorIds);
         taskListQuery.setEmployeeId(loginUser.getId());
         taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
@@ -164,9 +192,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
@@ -176,8 +206,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
         }
+
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -187,6 +219,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+
         taskListQuery.setJuniorIds(juniorIds);
         taskListQuery.setEmployeeId(loginUser.getId());
         taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
@@ -200,12 +233,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
-        long count = PageHelper.count(new ISelect() {
-            @Override
-            public void doSelect() {
-                taskSchedulingDOMapper.selectTaskList(taskListQuery);
-            }
+
+        long count = PageHelper.count(() -> {
+            taskSchedulingDOMapper.selectTaskList(taskListQuery);
         });
+
         return ResultBean.ofSuccess(count);
     }
 
@@ -246,6 +278,188 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
 
+    @Override
+    public ResultBean<List<TaskListVO>> queryDataFlowTaskList(TaskListQuery taskListQuery) {
+
+        // loginUserId      -> loginUser只能查询到 自己及下级 的单子
+        taskListQuery.setEmployeeId(SessionUtils.getLoginUser().getId());
+
+        // 获取并设置 资料流转node-key
+        getAndSetDataFlowNodeSet(taskListQuery);
+
+        // 空node    则直接返回EMPTY
+        if (CollectionUtils.isEmpty(taskListQuery.getDataFlowNodeSet())) {
+            return ResultBean.ofSuccess(Collections.EMPTY_LIST);
+        }
+
+        // 分页
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
+
+        // query
+        List<TaskListVO> list = taskSchedulingDOMapper.selectDataFlowTaskList(taskListQuery);
+
+        // 取分页信息
+        PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+
+        // 补充
+        convert(list);
+
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    /**
+     * 获取并设置 资料流转node-key
+     *
+     * @param taskListQuery
+     */
+    private void getAndSetDataFlowNodeSet(TaskListQuery taskListQuery) {
+
+        // 禁止外部传入
+        if (!CollectionUtils.isEmpty(taskListQuery.getDataFlowNodeSet())) {
+            taskListQuery.setDataFlowNodeSet(null);
+        }
+
+        // loginUser 有权访问的nodes
+        Set<String> loginUserOwnDataFlowNodes = activitiVersionService.getLoginUserOwnDataFlowNodes();
+
+        // 无权访问
+        if (CollectionUtils.isEmpty(loginUserOwnDataFlowNodes)) {
+            return;
+        }
+
+        // nodes
+        Set<String> dataFlowNodes = loginUserOwnDataFlowNodes;
+
+        // 21-待邮寄(资料流转)
+        if (TASK_STATUS_21_OF_DATA_FLOW_TO_BE_SEND.equals(taskListQuery.getTaskStatus())) {
+
+            Set<String> toBeSendDataFlowNodes = loginUserOwnDataFlowNodes.stream()
+                    .filter(node -> StringUtils.isNotBlank(node) && !node.endsWith("_review"))
+                    .collect(Collectors.toSet());
+
+            dataFlowNodes = toBeSendDataFlowNodes;
+            // 21 ===还原为===> 2
+            taskListQuery.setTaskStatus(TASK_STATUS_2_TODO);
+        }
+        // 22-待接收(资料流转)
+        else if (TASK_STATUS_22_OF_DATA_FLOW_TO_BE_RECEIVED.equals(taskListQuery.getTaskStatus())) {
+            Set<String> toBeReceivedDataFlowNodes = loginUserOwnDataFlowNodes.stream()
+                    .filter(node -> StringUtils.isNotBlank(node) && node.endsWith("_review"))
+                    .collect(Collectors.toSet());
+
+            dataFlowNodes = toBeReceivedDataFlowNodes;
+            // 22 ===还原为===> 2
+            taskListQuery.setTaskStatus(TASK_STATUS_2_TODO);
+        }
+
+        // 限制的node类型
+        Byte dataFlowType = taskListQuery.getDataFlowType();
+
+        // 限制了node
+        if (null != dataFlowType) {
+
+            // type -> node
+            String node = dictService.getCodeByKey("loanDataFlowType", String.valueOf(dataFlowType));
+
+            // node存在
+            if (StringUtils.isNotBlank(node)) {
+
+                // 有权访问
+                if (dataFlowNodes.contains(node)) {
+                    // codeKMap
+                    taskListQuery.setDataFlowNodeSet(Sets.newHashSet(node));
+                    taskListQuery.setDataFlowTypeList(Lists.newArrayList(String.valueOf(dataFlowType)));
+                } else {
+                    // 无权访问
+                    return;
+                }
+
+            } else {
+                // node不存在
+                return;
+            }
+
+        } else {
+
+            // 未限制node
+            taskListQuery.setDataFlowNodeSet(dataFlowNodes);
+
+            // codeKMap
+            Map<String, String> codeKMap = dictService.getCodeKMap("loanDataFlowType");
+
+            // taskKey -> type
+            List<String> typeList = dataFlowNodes.stream()
+                    .filter(Objects::nonNull)
+                    .map(code -> {
+
+                        String type = codeKMap.get(code);
+                        return type;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            // typeList
+            taskListQuery.setDataFlowTypeList(typeList);
+        }
+    }
+
+    private void convert(List<TaskListVO> list) {
+
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+
+        // kvMap
+        Map<String, String> kvMap = dictService.getKVMap("loanDataFlowType");
+        if (CollectionUtils.isEmpty(kvMap)) {
+            return;
+        }
+
+        // kCodeMap
+        Map<String, String> kCodeMap = dictService.getKCodeMap("loanDataFlowType");
+        if (CollectionUtils.isEmpty(kvMap)) {
+            return;
+        }
+
+        list.parallelStream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    // dataFlowTypeText
+                    String dataFlowTypeText = kvMap.get(e.getDataFlowType());
+
+                    // dataFlowTypeText
+                    e.setDataFlowTypeText(dataFlowTypeText);
+
+                    // 2   - 任务状态Text
+                    if (TASK_STATUS_2_TODO.equals(Integer.valueOf(e.getTaskStatus()))) {
+                        if (dataFlowTypeText.endsWith("-确认接收")) {
+                            e.setTaskType(String.valueOf(TASK_STATUS_22_OF_DATA_FLOW_TO_BE_RECEIVED));
+                            e.setTaskTypeText("待接收");
+                        } else {
+                            e.setTaskType(String.valueOf(TASK_STATUS_21_OF_DATA_FLOW_TO_BE_SEND));
+                            e.setTaskTypeText("待邮寄");
+                        }
+                    }
+
+                    // 3   - 打回原因
+                    else if (TASK_STATUS_3_REJECT.equals(Integer.valueOf(e.getTaskStatus()))) {
+
+                        String code = kCodeMap.get(e.getDataFlowType());
+                        LoanRejectLogDO loanRejectLogDO = loanRejectLogService.rejectLog(Long.valueOf(e.getId()), code);
+
+                        if (null != loanRejectLogDO) {
+                            e.setRejectReason(loanRejectLogDO.getReason());
+                        }
+                    }
+
+                    // type -> taskKey
+                    String taskKey = kCodeMap.get(e.getDataFlowType());
+                    e.setTaskKey(taskKey);
+
+                });
+    }
+
     private List<AppTaskVO> convert(List<TaskListVO> list, Integer multipartType) {
 
         List<AppTaskVO> appTaskListVO = list.parallelStream()
@@ -258,15 +472,24 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     appTaskVO.setCarPrice(e.getCar_price());
                     appTaskVO.setCarDetailId(e.getCar_detail_id());
 
+                    // bankId  convert
+                    if (StringUtils.isNotBlank(appTaskVO.getBankName())) {
+                        appTaskVO.setBankId(String.valueOf(bankCache.getIdByName(e.getBank())));
+                    }
+
+                    // taskStatus
+                    fillTaskStatus(appTaskVO);
+
+                    // canXX
+                    canCreditSupplementAndCanVideoFace(Long.valueOf(e.getId()), appTaskVO);
+
                     // 面签客户查询时，才需要车型
                     if (null == multipartType) {
+                        // carName
                         if (StringUtils.isNotBlank(appTaskVO.getCarDetailId())) {
                             appTaskVO.setCarName(carService.getFullName(Long.valueOf(appTaskVO.getCarDetailId()), CAR_DETAIL));
                         }
                     }
-
-                    fillTaskStatus(appTaskVO);
-                    canCreditSupplementAndCanVideoFace(Long.valueOf(e.getId()), appTaskVO);
 
                     return appTaskVO;
                 })
@@ -309,17 +532,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         List<TaskStateVO> taskStateVOS = taskStateVOResult.getData();
 
         if (CollectionUtils.isEmpty(taskStateVOS)) {
-            // TODO 待删除
-//            // 无节点信息
-//            String cancelTaskDefKey = loanProcessDOMapper.getCancelTaskDefKey(Long.valueOf(appTaskVO.getId()));
-//            // 弃单
-//            if (StringUtils.isNotBlank(cancelTaskDefKey)) {
-//                appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CANCEL));
-//                appTaskVO.setCurrentTask("已弃单");
-//            } else {
-//                appTaskVO.setTaskStatus(String.valueOf(TASK_PROCESS_CLOSED));
-//                appTaskVO.setCurrentTask("已结单");
-//            }
 
             LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(Long.valueOf(appTaskVO.getId()));
             Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
@@ -353,32 +565,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             }
         }
     }
-
-
-//    private void fillMsg(List<TaskListVO> list, String taskDefinitionKey) {
-//        list.parallelStream()
-//                .forEach(e -> {
-//                    fillMsg(e, taskDefinitionKey);
-//                });
-//    }
-//
-//    private void fillMsg(TaskListVO taskListVO, String taskDefinitionKey) {
-//
-//        String supplementType = taskListVO.getSupplementType();
-//        if (StringUtils.isNotBlank(supplementType)) {
-//            taskListVO.setSupplementTypeText(SUPPLEMENT_TYPE_TEXT_MAP.get(Byte.valueOf(supplementType)));
-//        }
-//
-//        String taskStatus = taskListVO.getTaskStatus();
-//
-//        // 1-已提交;  2-未提交;  3-打回;
-//        taskListVO.setTaskType(taskStatus);
-//        // 文本值
-//        String taskTypeText = getTaskStatusText(taskStatus);
-//        taskListVO.setTaskTypeText(taskTypeText);
-//
-//        taskListVO.setCurrentTask(LoanProcessEnum.getNameByCode(taskDefinitionKey));
-//    }
 
     public static String getTaskStatusText(String taskStatus) {
 
@@ -466,7 +652,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                 });
             }
         });
-        return userAreaList.parallelStream().distinct().collect(Collectors.toList());
 
+        return userAreaList.parallelStream().distinct().collect(Collectors.toList());
     }
+
 }

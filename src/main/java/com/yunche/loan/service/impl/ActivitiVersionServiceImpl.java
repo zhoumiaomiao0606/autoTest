@@ -1,12 +1,20 @@
 package com.yunche.loan.service.impl;
 
+import com.google.common.collect.Sets;
+import com.yunche.loan.config.cache.ActivitiCache;
 import com.yunche.loan.mapper.ActivitiDeploymentMapper;
 import com.yunche.loan.service.ActivitiVersionService;
+import com.yunche.loan.service.PermissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.yunche.loan.service.impl.LoanProcessServiceImpl.NEW_LINE;
 
@@ -21,6 +29,12 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
 
     @Autowired
     private ActivitiDeploymentMapper activitiDeploymentMapper;
+
+    @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
+    private ActivitiCache activitiCache;
 
 
     /**
@@ -57,5 +71,27 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
                     + NEW_LINE
                     + "lastVersionDeploymentId : {}", lastVersionDeploymentId);
         }
+    }
+
+    @Override
+    public Set<String> getLoginUserOwnDataFlowNodes() {
+
+        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+
+        Set<String> userOwnDataFlowNodes = Sets.newHashSet();
+
+        Map<String, List<String>> dataFlowRoleNodesMap = activitiCache.getDataFlowRoleNodesMap();
+
+        if (!CollectionUtils.isEmpty(dataFlowRoleNodesMap)) {
+
+            dataFlowRoleNodesMap.forEach((role, nodes) -> {
+
+                if (userGroupNameSet.contains(role)) {
+                    userOwnDataFlowNodes.addAll(nodes);
+                }
+            });
+        }
+
+        return userOwnDataFlowNodes;
     }
 }

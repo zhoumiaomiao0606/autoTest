@@ -2,13 +2,12 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.entity.PartnerDO;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
 public interface PartnerDOMapper {
+
     int deleteByPrimaryKey(Long id);
 
     int insert(PartnerDO record);
@@ -28,4 +27,6 @@ public interface PartnerDOMapper {
     int count(PartnerQuery query);
 
     List<PartnerDO> query(PartnerQuery query);
+
+    List<PartnerDO> getAll(@Param("status") Byte status);
 }

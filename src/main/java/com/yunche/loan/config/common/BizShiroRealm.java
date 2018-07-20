@@ -1,5 +1,6 @@
 package com.yunche.loan.config.common;
 
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.AuthCache;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.mapper.EmployeeDOMapper;
@@ -20,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AuthConst.*;
 import static com.yunche.loan.config.constant.BaseConst.*;
@@ -114,8 +116,10 @@ public class BizShiroRealm extends AuthorizingRealm {
 
         // 获取用户的角色列表
         List<Long> userGroupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(employeeDO.getId());
-        if (CollectionUtils.isEmpty(userGroupIdList)) {
-            return info;
+        if (!CollectionUtils.isEmpty(userGroupIdList)) {
+            info.setRoles(userGroupIdList.stream().map(e -> {
+                return e.toString();
+            }).collect(Collectors.toSet()));
         }
 
         // 获取角色列表所绑定的所有权限列表

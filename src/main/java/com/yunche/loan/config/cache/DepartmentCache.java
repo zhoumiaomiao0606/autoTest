@@ -3,9 +3,12 @@ package com.yunche.loan.config.cache;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.domain.entity.PartnerDO;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.mapper.DepartmentDOMapper;
 import com.yunche.loan.domain.entity.DepartmentDO;
 import com.yunche.loan.domain.vo.CascadeVO;
+import com.yunche.loan.mapper.PartnerDOMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundValueOperations;
@@ -34,12 +37,23 @@ public class DepartmentCache {
 
     private static final String DEPARTMENT_CASCADE_CACHE_KEY = "cascade:cache:department";
 
+    private static final String DATA_FLOW_FOLW_DEPT_CACHE_KEY = "data-flow:cache:flow-dept";
+
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
     @Autowired
     private DepartmentDOMapper departmentDOMapper;
 
+    @Autowired
+    private PartnerDOMapper partnerDOMapper;
 
+
+    /**
+     * 级联部门列表
+     *
+     * @return
+     */
     public List<CascadeVO> get() {
         // get
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DEPARTMENT_CASCADE_CACHE_KEY);
@@ -49,7 +63,7 @@ public class DepartmentCache {
         }
 
         // 刷新缓存
-        refresh();
+        refreshCascadeDept();
 
         // get
         result = boundValueOps.get();
@@ -59,8 +73,37 @@ public class DepartmentCache {
         return Collections.EMPTY_LIST;
     }
 
+    /**
+     * 资料流转 -流进/出部门(含合伙人)
+     *
+     * @return
+     */
+    public List<BaseVO> getFlowDept() {
+        // get
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DATA_FLOW_FOLW_DEPT_CACHE_KEY);
+        String result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            return JSON.parseArray(result, BaseVO.class);
+        }
+
+        // 刷新缓存
+        refreshFlowDept();
+
+        // get
+        result = boundValueOps.get();
+        if (StringUtils.isNotBlank(result)) {
+            return JSON.parseArray(result, BaseVO.class);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
     @PostConstruct
     public void refresh() {
+        refreshCascadeDept();
+        refreshFlowDept();
+    }
+
+    private void refreshCascadeDept() {
         // getAll
         List<DepartmentDO> departmentDOS = departmentDOMapper.getAll(VALID_STATUS);
 
@@ -73,6 +116,47 @@ public class DepartmentCache {
         // 刷新缓存
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DEPARTMENT_CASCADE_CACHE_KEY);
         boundValueOps.set(JSON.toJSONString(topLevelList));
+    }
+
+    private void refreshFlowDept() {
+        // 部门
+        List<DepartmentDO> departmentDOS = departmentDOMapper.getAll(VALID_STATUS);
+
+        List<BaseVO> deptList = departmentDOS.stream()
+                .filter(Objects::nonNull)
+                .map(e -> {
+
+                    BaseVO baseVO = new BaseVO();
+
+                    baseVO.setId(e.getId());
+                    baseVO.setName(e.getName());
+
+                    return baseVO;
+                })
+                .collect(Collectors.toList());
+
+        // 合伙人
+        List<PartnerDO> partnerDOS = partnerDOMapper.getAll(VALID_STATUS);
+
+        List<BaseVO> partnerList = partnerDOS.stream()
+                .filter(Objects::nonNull)
+                .map(e -> {
+
+                    BaseVO baseVO = new BaseVO();
+
+                    baseVO.setId(e.getId());
+                    baseVO.setName(e.getName());
+
+                    return baseVO;
+                })
+                .collect(Collectors.toList());
+
+        deptList.addAll(partnerList);
+        deptList.removeAll(Collections.singleton(null));
+
+        // 刷新缓存
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DATA_FLOW_FOLW_DEPT_CACHE_KEY);
+        boundValueOps.set(JSON.toJSONString(deptList));
     }
 
     /**

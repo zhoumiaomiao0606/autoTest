@@ -1,10 +1,12 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.VideoFaceLogDO;
-import org.apache.ibatis.annotations.Mapper;
+import com.yunche.loan.domain.query.VideoFaceQuery;
 
-@Mapper
+import java.util.List;
+
 public interface VideoFaceLogDOMapper {
+
     int deleteByPrimaryKey(Long id);
 
     int insert(VideoFaceLogDO record);
@@ -16,4 +18,6 @@ public interface VideoFaceLogDOMapper {
     int updateByPrimaryKeySelective(VideoFaceLogDO record);
 
     int updateByPrimaryKey(VideoFaceLogDO record);
+
+    List<VideoFaceLogDO> query(VideoFaceQuery videoFaceQuery);
 }

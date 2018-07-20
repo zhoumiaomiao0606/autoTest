@@ -96,6 +96,13 @@
         </dependency>
         <!-- web -->
 
+        <!-- websocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <!-- websocket -->
+
         <!-- log4j2 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -306,38 +313,12 @@
             <version>3.2.0</version>
         </dependency>
 
-        <!-- anychat-sdk-java -->
+        <!-- thymeleaf -->
         <dependency>
-            <groupId>com.bairuitech.anychat</groupId>
-            <artifactId>anychat-sdk-java</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/anychat-sdk-java.jar</systemPath>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.bairuitech.anychat</groupId>
-            <artifactId>anychatbusinessserver</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/anychatbusinessserver.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.bairuitech.anychat</groupId>
-            <artifactId>anychatcallcenterserver</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/anychatcallcenterserver.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.bairuitech.anychat</groupId>
-            <artifactId>anychatsampleserver</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/anychatsampleserver.jar</systemPath>
-        </dependency>
-        <!-- anychat-sdk-java -->
-
+        <!-- thymeleaf -->
 
         <dependency>
             <groupId>com.icbc.api</groupId>

@@ -53,4 +53,8 @@ public class EmployeeVO {
      * 合伙人ID
      */
     private Long partnerId;
+    /**
+     * 合伙人名称
+     */
+    private String partnerName;
 }

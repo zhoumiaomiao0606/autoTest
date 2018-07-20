@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.TaskSchedulingDOMapper" >
+<mapper namespace="com.yunche.loan.mapper.TaskSchedulingDOMapper">
 
 
     <select id="selectTelephoneVerifyLevel" resultType="java.lang.Long" parameterType="java.lang.Long">
@@ -55,130 +55,131 @@
     <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO">
         select complex.* from
         (
-            select tab.* from
-            (
-            select
-            main.id AS id,
-            join_e.id AS salesmanId,
-            join_p.id AS partnerId,
-            join_b.area_id AS bizAreaId,
-            join_c.id AS customerId,
-            join_c.name AS customer,
-            DATE_FORMAT(main.gmt_create,'%Y-%m-%d %H:%i:%S') AS orderGmtCreate,
-            join_c.id_card AS idCard,
-            join_c.mobile AS mobile,
-            join_e.name AS salesman,
-            (select
-            case when
-            END_TIME_ = null
-            then null
-            else
-            DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
-            end
-            from act_hi_taskinst
-            where PROC_INST_ID_ = main.process_inst_id
-            and TASK_DEF_KEY_ = 'usertask_credit_apply'
-            order by START_TIME_
-            desc limit 1) AS creditGmtCreate,
-            join_b.bank AS bank,
-            join_d.name AS departmentName,
-            join_f.loan_amount AS loanAmount,
-            join_f.bank_period_principal AS bankPeriodPrincipal,
-            join_f.sign_rate AS signRate,
-            (select
-            case when
-            END_TIME_ = null
-            then null
-            else
-            DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
-            end
-            from act_hi_taskinst
-            where PROC_INST_ID_ = main.process_inst_id
-            and TASK_DEF_KEY_ = 'usertask_loan_apply'
-            order by START_TIME_
-            desc limit 1) AS loanGmtCreate,
-            join_i.car_type AS carType,
-            join_h.license_plate_number AS licensePlateNumber,
-            join_p.name AS partner,
-            join_f.loan_time AS loanTime,
-            join_f.down_payment_money AS downPaymentMoney,
-            join_car.car_detail_id,
-            join_f.car_price
-            from loan_order main
-            inner join loan_process deputy on main.id = deputy.order_id
-            left join loan_customer join_c on join_c.id = main.loan_customer_id
-            left join loan_base_info join_b on join_b.id = main.loan_base_info_id
-            left join loan_financial_plan join_f on join_f.id = main.loan_financial_plan_id
-            left join loan_car_info  join_car on join_car.id = main.loan_car_info_id
-            left join loan_car_info join_i on join_i.id = main.loan_car_info_id
-            left join partner join_p on join_p.id = join_b.partner_id
-            left join employee join_e on join_e.id = join_b.salesman_id
-            left join department join_d on join_d.id = join_p.department_id
-            left join vehicle_information join_h on join_h.id = main.vehicle_information_id
-            where 1=1 and deputy.order_status = 1
-            /**
-            *   多节点查询类型：
-            *   1-征信申请列表【未查询：   [提交征信申请单后  ,   贷款业务申请单)        】;
-            *   2-征信申请列表【已查询：   [贷款业务申请单    ,   end]                 】;
-            *   3-贷款申请列表【待审核：   [提交贷款申请单后  ,   电审通过)             】;
-            *   4-贷款申请列表【已审核：   [电审通过后       ,    end]                】;
-            *   5-客户查询列表【在贷客户： [提交征信申请单后  ,    未放款)              】;
-            *   6-客户查询列表【已贷客户： [已放款           ,    end]                】;
-            */
-            <choose>
-                <when test="multipartType == 1">
-                    AND case
-                            when join_b.loan_amount >  1 then
-                          deputy.bank_credit_record = 2 OR deputy.social_credit_record = 2
-                        else
-                          deputy.bank_credit_record = 2
-                        end
-                </when>
-                <when test="multipartType == 2">
-                    AND case when join_b.loan_amount >  1 then
-                       deputy.bank_credit_record = 1 AND deputy.social_credit_record = 1
-                            else
-                       deputy.bank_credit_record = 1
-                    end
-                </when>
-                <when test="multipartType == 3">
-                    AND (deputy.loan_apply = 1) AND ((deputy.telephone_verify != 0 and deputy.telephone_verify != 1) OR  deputy.visit_verify = 2  OR  deputy.visit_verify = 3 )
-                </when>
-                <when test="multipartType == 4">
-                    AND deputy.telephone_verify = 1
-                </when>
-                <when test="multipartType == 5">
-                    AND deputy.credit_apply = 1 AND deputy.remit_review != 1
-                </when>
-                <when test="multipartType == 6">
-                    AND deputy.remit_review = 1
-                </when>
-                <otherwise>
-                    AND 1=1
-                </otherwise>
-            </choose>
-            ) tab
-            where 1=1
-              AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
-                       when #{maxGroupLevel}  = 1 then
-                      tab.salesmanId in
-                        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-                            #{item}
-                        </foreach>
-                      else true end
-            <if test="customer != null and customer != '' ">
-                AND tab.customer = #{customer}
-            </if>
-            <if test="bankName !=null and bankName != '' ">
-                AND tab.bank = #{bankName}
-            </if>
-            <if test="idCard !=null and idCard != '' ">
-                AND tab.idCard = #{idCard}
-            </if>
+        select tab.* from
+        (
+        select
+        main.id AS id,
+        join_e.id AS salesmanId,
+        join_p.id AS partnerId,
+        join_b.area_id AS bizAreaId,
+        join_c.id AS customerId,
+        join_c.name AS customer,
+        DATE_FORMAT(main.gmt_create,'%Y-%m-%d %H:%i:%S') AS orderGmtCreate,
+        join_c.id_card AS idCard,
+        join_c.mobile AS mobile,
+        join_e.name AS salesman,
+        (select
+        case when
+        END_TIME_ = null
+        then null
+        else
+        DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
+        end
+        from act_hi_taskinst
+        where PROC_INST_ID_ = main.process_inst_id
+        and TASK_DEF_KEY_ = 'usertask_credit_apply'
+        order by START_TIME_
+        desc limit 1) AS creditGmtCreate,
+        join_b.bank AS bank,
+        join_d.name AS departmentName,
+        join_f.loan_amount AS loanAmount,
+        join_f.bank_period_principal AS bankPeriodPrincipal,
+        join_f.sign_rate AS signRate,
+        (select
+        case when
+        END_TIME_ = null
+        then null
+        else
+        DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
+        end
+        from act_hi_taskinst
+        where PROC_INST_ID_ = main.process_inst_id
+        and TASK_DEF_KEY_ = 'usertask_loan_apply'
+        order by START_TIME_
+        desc limit 1) AS loanGmtCreate,
+        join_i.car_type AS carType,
+        join_h.license_plate_number AS licensePlateNumber,
+        join_p.name AS partner,
+        join_f.loan_time AS loanTime,
+        join_f.down_payment_money AS downPaymentMoney,
+        join_car.car_detail_id,
+        join_f.car_price
+        from loan_order main
+        inner join loan_process deputy on main.id = deputy.order_id
+        left join loan_customer join_c on join_c.id = main.loan_customer_id
+        left join loan_base_info join_b on join_b.id = main.loan_base_info_id
+        left join loan_financial_plan join_f on join_f.id = main.loan_financial_plan_id
+        left join loan_car_info join_car on join_car.id = main.loan_car_info_id
+        left join loan_car_info join_i on join_i.id = main.loan_car_info_id
+        left join partner join_p on join_p.id = join_b.partner_id
+        left join employee join_e on join_e.id = join_b.salesman_id
+        left join department join_d on join_d.id = join_p.department_id
+        left join vehicle_information join_h on join_h.id = main.vehicle_information_id
+        where 1=1 and deputy.order_status = 1
+        /**
+        * 多节点查询类型：
+        * 1-征信申请列表【未查询： [提交征信申请单后 , 贷款业务申请单) 】;
+        * 2-征信申请列表【已查询： [贷款业务申请单 , end] 】;
+        * 3-贷款申请列表【待审核： [提交贷款申请单后 , 电审通过) 】;
+        * 4-贷款申请列表【已审核： [电审通过后 , end] 】;
+        * 5-客户查询列表【在贷客户： [提交征信申请单后 , 未放款) 】;
+        * 6-客户查询列表【已贷客户： [已放款 , end] 】;
+        */
+        <choose>
+            <when test="multipartType == 1">
+                AND case
+                when join_b.loan_amount > 1 then
+                deputy.bank_credit_record = 2 OR deputy.social_credit_record = 2
+                else
+                deputy.bank_credit_record = 2
+                end
+            </when>
+            <when test="multipartType == 2">
+                AND case when join_b.loan_amount > 1 then
+                deputy.bank_credit_record = 1 AND deputy.social_credit_record = 1
+                else
+                deputy.bank_credit_record = 1
+                end
+            </when>
+            <when test="multipartType == 3">
+                AND (deputy.loan_apply = 1) AND ((deputy.telephone_verify != 0 and deputy.telephone_verify != 1) OR
+                deputy.visit_verify = 2 OR deputy.visit_verify = 3 )
+            </when>
+            <when test="multipartType == 4">
+                AND deputy.telephone_verify = 1
+            </when>
+            <when test="multipartType == 5">
+                AND deputy.credit_apply = 1 AND deputy.remit_review != 1
+            </when>
+            <when test="multipartType == 6">
+                AND deputy.remit_review = 1
+            </when>
+            <otherwise>
+                AND 1=1
+            </otherwise>
+        </choose>
+        ) tab
+        where 1=1
+        AND CASE WHEN #{maxGroupLevel} = 0 THEN false
+        when #{maxGroupLevel} = 1 then
+        tab.salesmanId in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        else true end
+        <if test="customer != null and customer != '' ">
+            AND tab.customer = #{customer}
+        </if>
+        <if test="bankName !=null and bankName != '' ">
+            AND tab.bank = #{bankName}
+        </if>
+        <if test="idCard !=null and idCard != '' ">
+            AND tab.idCard = #{idCard}
+        </if>
         ) complex
         where 1=1
-          and
-        case when #{maxGroupLevel}  = 3 then 1=1
+        and
+        case when #{maxGroupLevel} = 3 then 1=1
         else 1=1
         <if test="areaIdList != null and areaIdList.size() > 0">
             and
@@ -231,7 +232,7 @@
             from
             (
             select
-            <choose>
+                  <choose>
                         <when test="taskDefinitionKey == 'usertask_info_supplement'">
                             join_s.id                                      AS taskId,
                         </when>
@@ -832,44 +833,46 @@
             <if test="taskStatus != 0">
                 <choose>
                     <when test="pull == false">
-                        where task.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key = #{taskDefinitionKey} ) )
+                        where task.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                        #{taskDefinitionKey} ) )
                     </when>
                     <otherwise>
-                            having
-                            case when #{maxGroupLevel}  = 3 then 1=1
-                            when receiveManId is not null then
-                              case when receiveManId = #{employeeId} then 1=1 else 1=2 end
-                            else 1=1 end
-                            <if test="(taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review' or taskDefinitionKey == 'usertask_telephone_verify') and taskStatus == 2">
-                                and
-                                case when #{maxGroupLevel}  = 3 then 1=1
-                                else
-                                task.taskId IN ( ( SELECT distinct task_id FROM task_distribution where task_key = #{taskDefinitionKey} ) )
-                                end
-                            </if>
+                        having
+                        case when #{maxGroupLevel} = 3 then 1=1
+                        when receiveManId is not null then
+                        case when receiveManId = #{employeeId} then 1=1 else 1=2 end
+                        else 1=1 end
+                        <if test="(taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review' or taskDefinitionKey == 'usertask_telephone_verify') and taskStatus == 2">
+                            and
+                            case when #{maxGroupLevel} = 3 then 1=1
+                            else
+                            task.taskId IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                            #{taskDefinitionKey} ) )
+                            end
+                        </if>
                     </otherwise>
                 </choose>
             </if>
             ) complex
-                where 1=1
-                  and
-                case when #{maxGroupLevel}  = 3 then 1=1
-                     else 1=1
-                <if test="areaIdList != null and areaIdList.size() > 0">
-                    and
-                    complex.bizAreaId in
-                    <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </if>
-                <if test="bankList != null and bankList.size() > 0">
-                    and
-                    complex.bank in
-                    <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </if>
-                end
+            where 1=1
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="areaIdList != null and areaIdList.size() > 0">
+                and
+                complex.bizAreaId in
+                <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                complex.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
 
             <choose>
                 <when test="taskDefinitionKey == 'usertask_collection_workbench'">
@@ -894,338 +897,718 @@
         </select>
 
 
+    <select id="selectScheduleTaskList" resultType="com.yunche.loan.domain.vo.ScheduleTaskVO">
+
+        select complex.* from
+        (
+        select task.*,
+        taskdis.status as taskDisStatus,
+        taskdis.sendee as receiveManId,
+        taskdis.sendee_name as receiveManName
+        from
+        (
+        SELECT
+        jorder.id AS taskId,
+        result.PROC_INST_ID_ AS processId,
+        result.TASK_DEF_KEY_ AS taskKey,
+        DATE_FORMAT(result.CREATE_TIME_,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
+        null AS taskDescription,
+        jorder.id AS orderId,
+        jp.name AS partner,
+        je.name AS salesman,
+        jb.bank AS bank,
+        jc.name AS name,
+        jc.id_card AS idCard,
+        jc.mobile AS mobile,
+        ji.car_type AS carType,
+        useGetCarName(ji.car_detail_id) AS carName,
+        jf.down_payment_ratio AS downPaymentRatio,
+        jf.loan_time AS loanTime,
+        jf.loan_amount AS loanAmount,
+        CONCAT('待办',result.NAME_) AS taskStatusExplanation,
+        jb.partner_id AS partnerId,
+        jb.salesman_id AS salesmanId,
+        jb.area_id AS bizAreaId,
+        case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
+        case when lp.telephone_verify &lt; #{telephoneVerifyLevel} and lp.telephone_verify!=1 and lp.telephone_verify!=0
+        then 2 else 1 end
+        else 2 end AS filtration,
+        null AS supplementOrderId,
+        null AS supplementType,
+        null AS supplementTypeText,
+        null AS his_id,
+        null AS refund_id,
+        null AS sendee,
+
+        case when lp.order_status = 1 and lp.loan_apply = 3 and
+        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
+        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
+        then false else true end AS canUpdateLoanApply
+        from
+        (
+        SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
+        inner join
+        ACT_RU_IDENTITYLINK I
+        ON I.TASK_ID_ = RES.ID_
+        WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' AND
+        ( I.GROUP_ID_ IN
+        (
+        SELECT name FROM user_group g
+        INNER JOIN
+        (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id = #{employeeId}) e
+        ON e.user_group_id = g.id
+        )
+        )
+        ) result
+        INNER JOIN loan_order jorder ON jorder.process_inst_id = result.PROC_INST_ID_
+        LEFT JOIN loan_base_info jb ON jb.id = jorder.loan_base_info_id
+        LEFT JOIN partner jp ON jp.id = jb.partner_id
+        LEFT JOIN employee je ON je.id = jb.salesman_id
+        LEFT JOIN loan_customer jc ON jc.id = jorder.loan_customer_id
+        LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
+        LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
+        INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
+        having filtration = 2
+        union all
+
+        SELECT
+        supplement.id AS taskId,
+        jorder.process_inst_id AS processId,
+        ("usertask_info_supplement") AS taskKey,
+        DATE_FORMAT(supplement.start_time,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
+        null AS taskDescription,
+        jorder.id AS orderId,
+        jp.name AS partner,
+        je.name AS salesman,
+        jb.bank AS bank,
+        jc.name AS name,
+        jc.id_card AS idCard,
+        jc.mobile AS mobile,
+        ji.car_type AS carType,
+        useGetCarName(ji.car_detail_id) AS carName,
+        jf.down_payment_ratio AS downPaymentRatio,
+        jf.loan_time AS loanTime,
+        jf.loan_amount AS loanAmount,
+        ("待办资料增补") AS taskStatusExplanation,
+        jb.partner_id AS partnerId,
+        jb.salesman_id AS salesmanId,
+        jb.area_id AS bizAreaId,
+        (2) AS filtration,
+        supplement.id AS supplementOrderId,
+        supplement.type AS supplementType,
+        useSupplementTypeTxt(supplement.type) AS supplementTypeText,
+        null AS his_id,
+        null AS refund_id,
+        null AS sendee,
+        case when lp.order_status = 1 and lp.loan_apply = 3 and
+        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
+        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
+        then false else true end AS canUpdateLoanApply
+        from (select * from loan_info_supplement where status = 2 ) supplement
+        INNER JOIN loan_order jorder ON jorder.id = supplement.order_id
+        LEFT JOIN loan_base_info jb ON jb.id = jorder.loan_base_info_id
+        LEFT JOIN partner jp ON jp.id = jb.partner_id
+        LEFT JOIN employee je ON je.id = jb.salesman_id
+        LEFT JOIN loan_customer jc ON jc.id = jorder.loan_customer_id
+        LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
+        LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
+        INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
+        having filtration = 2
+        and
+        case when #{materialSupplementLevel} <![CDATA[>=]]> 1 then true else false end
+        union all
+
+        SELECT
+        his.id AS taskId,
+        jorder.process_inst_id AS processId,
+        case when his.status = 3 then 'usertask_financial_scheme_modify_apply'
+        when his.status !=1 and his.status !=3 then 'usertask_financial_scheme_modify_apply_review'
+        else null end AS taskKey,
+        DATE_FORMAT(
+        case when his.status = 3 then
+        (select gmt_create from loan_reject_log where reject_to_task = 'usertask_financial_scheme_modify_apply' order by
+        gmt_create desc limit 1 )
+        when his.status !=1 and his.status !=3 then
+        (select create_time from loan_process_log where task_definition_key = 'usertask_financial_scheme_modify_apply'
+        order by create_time desc limit 1)
+        else null end
+        ,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
+        NULL AS taskDescription,
+        jorder.id AS orderId,
+        jp.name AS partner,
+        je.name AS salesman,
+        jb.bank AS bank,
+        jc.name AS name,
+        jc.id_card AS idCard,
+        jc.mobile AS mobile,
+        ji.car_type AS carType,
+        useGetCarName(ji.car_detail_id) AS carName,
+        jf.down_payment_ratio AS downPaymentRatio,
+        jf.loan_time AS loanTime,
+        jf.loan_amount AS loanAmount,
+        case when his.status = 3 then '待办金融方案修改申请'
+        when his.status !=1 and his.status !=3 then '待办金融方案修改审核'
+        else null end AS taskStatusExplanation,
+        jb.partner_id AS partnerId,
+        jb.salesman_id AS salesmanId,
+        jb.area_id AS bizAreaId,
+        case when his.status = 3 then 2
+        when his.status !=3 and his.status &lt; #{telephoneVerifyLevel} and his.status !=1 then 2 else 1 end AS
+        filtration,
+        null AS supplementOrderId,
+        null AS supplementType,
+        null AS supplementTypeText,
+        his.id AS his_id,
+        null AS refund_id,
+        null AS sendee,
+        case when lp.order_status = 1 and lp.loan_apply = 3 and
+        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
+        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
+        then false else true end AS canUpdateLoanApply
+        from (select * from loan_financial_plan_temp_his where status = 2 or status = 3 ) his
+        INNER JOIN loan_order jorder ON jorder.id = his.order_id
+        LEFT JOIN loan_base_info jb ON jb.id = jorder.loan_base_info_id
+        LEFT JOIN partner jp ON jp.id = jb.partner_id
+        LEFT JOIN employee je ON je.id = jb.salesman_id
+        LEFT JOIN loan_customer jc ON jc.id = jorder.loan_customer_id
+        LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
+        LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
+        INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
+        having filtration = 2 and
+        case when taskKey = 'usertask_financial_scheme_modify_apply_review' then
+        case when #{telephoneVerifyLevel} <![CDATA[>=]]> 4 then true else false end
+        when taskKey = 'usertask_financial_scheme_modify_apply' then
+        case when #{financeApplyLevel} <![CDATA[>=]]> 1 then true else false end
+        else true end
+        union all
+
+        SELECT
+        refund.id AS taskId,
+        jorder.process_inst_id AS processId,
+        case when refund.status = 3 then 'usertask_refund_apply'
+        when refund.status = 2 then 'usertask_refund_apply_review'
+        else null end AS taskKey,
+        DATE_FORMAT(
+        case when refund.status = 3 then
+        (select gmt_create from loan_reject_log where reject_to_task = 'usertask_refund_apply' order by gmt_create desc
+        limit 1 )
+        when refund.status = 2 then
+        (select create_time from loan_process_log where task_definition_key = 'usertask_refund_apply' order by
+        create_time desc limit 1)
+        else null end
+        ,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
+        NULL AS taskDescription,
+        jorder.id AS orderId,
+        jp.name AS partner,
+        je.name AS salesman,
+        jb.bank AS bank,
+        jc.name AS name,
+        jc.id_card AS idCard,
+        jc.mobile AS mobile,
+        ji.car_type AS carType,
+        useGetCarName(ji.car_detail_id) AS carName,
+        jf.down_payment_ratio AS downPaymentRatio,
+        jf.loan_time AS loanTime,
+        jf.loan_amount AS loanAmount,
+        case when refund.status = 3 then '待办退款申请'
+        when refund.status = 2 then '待办退款申请审核'
+        else null end AS taskStatusExplanation,
+        jb.partner_id AS partnerId,
+        jb.salesman_id AS salesmanId,
+        jb.area_id AS bizAreaId,
+        (2) AS filtration,
+        null AS supplementOrderId,
+        null AS supplementType,
+        null AS supplementTypeText,
+        null AS his_id,
+        refund.id AS refund_id,
+        null AS sendee,
+        case when lp.order_status = 1 and lp.loan_apply = 3 and
+        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
+        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
+        then false else true end AS canUpdateLoanApply
+        from (select * from loan_refund_apply where status = 2 or status = 3 ) refund
+        INNER JOIN loan_order jorder ON jorder.id = refund.order_id
+        LEFT JOIN loan_base_info jb ON jb.id = jorder.loan_base_info_id
+        LEFT JOIN partner jp ON jp.id = jb.partner_id
+        LEFT JOIN employee je ON je.id = jb.salesman_id
+        LEFT JOIN loan_customer jc ON jc.id = jorder.loan_customer_id
+        LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
+        LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
+        INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
+        having filtration = 2 and
+        case when taskKey = 'usertask_refund_apply_review' then
+        case when #{financeLevel} <![CDATA[>=]]> 4 then true else false end
+        when taskKey = 'usertask_refund_apply' then
+        case when #{refundApplyLevel} <![CDATA[>=]]> 1 then true else false end
+        else true end
+        union all
+
+        SELECT
+        jorder.id AS taskId,
+        jorder.process_inst_id AS processId,
+        ('usertask_collection_workbench') AS taskKey,
+        DATE_FORMAT(
+        (select collection_date from collection_record where order_id = jorder.id order by collection_date,gmt_create
+        desc limit 1)
+        ,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
+        NULL AS taskDescription,
+        jorder.id AS orderId,
+        jp.name AS partner,
+        je.name AS salesman,
+        jb.bank AS bank,
+        jc.name AS name,
+        jc.id_card AS idCard,
+        jc.mobile AS mobile,
+        ji.car_type AS carType,
+        useGetCarName(ji.car_detail_id) AS carName,
+        jf.down_payment_ratio AS downPaymentRatio,
+        jf.loan_time AS loanTime,
+        jf.loan_amount AS loanAmount,
+        ('待办催收') AS taskStatusExplanation,
+        jb.partner_id AS partnerId,
+        jb.salesman_id AS salesmanId,
+        jb.area_id AS bizAreaId,
+        (2) AS filtration,
+        null AS supplementOrderId,
+        null AS supplementType,
+        null AS supplementTypeText,
+        null AS his_id,
+        null AS refund_id,
+        urge.sendee AS sendee,
+        case when lp.order_status = 1 and lp.loan_apply = 3 and
+        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
+        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
+        then false else true end AS canUpdateLoanApply
+        from (select * from bank_urge_record where urge_status = 2) urge
+        INNER JOIN loan_order jorder ON jorder.id = urge.order_id
+        LEFT JOIN loan_base_info jb ON jb.id = jorder.loan_base_info_id
+        LEFT JOIN partner jp ON jp.id = jb.partner_id
+        LEFT JOIN employee je ON je.id = jb.salesman_id
+        LEFT JOIN loan_customer jc ON jc.id = jorder.loan_customer_id
+        LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
+        LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
+        INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
+        having filtration = 2
+        AND
+        case when #{collectionLevel} = 7 then true
+        when #{collectionLevel} = 6 then sendee = #{employeeId}
+        else false end
+        )
+        task
+        left join
+        (
+        select * from task_distribution
+        )
+        taskdis
+        on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
+        having true
+        and case when #{maxGroupLevel} = 0 then false
+        when #{maxGroupLevel} = 1 then
+        task.salesmanId in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        else true end
+        and case when #{maxGroupLevel} = 3 then 1=1
+        when receiveManId is not null then
+        case when receiveManId = #{employeeId} then 1=1 else 1=2 end
+        else 1=1
+        end
+        <if test="key != null">
+            and task.taskKey = #{key,jdbcType=VARCHAR}
+        </if>
+        ) complex
+        where 1=1
+        and
+        case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="areaIdList != null and areaIdList.size() > 0">
+            and
+            complex.bizAreaId in
+            <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            complex.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        order by complex.createScheduleDate asc
+    </select>
 
 
+    <!--selectDataFlowTaskList-->
+    <select id="selectDataFlowTaskList" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
 
-         <select id="selectScheduleTaskList" resultType="com.yunche.loan.domain.vo.ScheduleTaskVO" >
+        SELECT
 
-            select complex.* from
-             (
-             select task.*,
-                    taskdis.status      as taskDisStatus,
-                    taskdis.sendee      as receiveManId,
-                    taskdis.sendee_name as receiveManName
-            from
+                            tmp2.*,
+                            tmp2.id                              AS order_id,
+                            tmp2.taskStatus                      AS taskType,
+
+                            CASE
+                                WHEN tmp2.taskStatus = 1  THEN
+                                "已提交"
+                                WHEN tmp2.taskStatus = 2  THEN
+                                "未提交"
+                                WHEN tmp2.taskStatus = 21 THEN
+                                "待邮寄"
+                                WHEN tmp2.taskStatus = 22 THEN
+                                "待接收"
+                                WHEN tmp2.taskStatus = 3  THEN
+                                "已打回"
+                                WHEN tmp2.taskStatus = 0  THEN
+                                "未执行到此"
+                                ELSE
+                                "状态异常"
+                            END                                 AS taskTypeText
+
+        FROM
+
             (
-               SELECT
-                        jorder.id                                                            AS taskId,
-                        result.PROC_INST_ID_                                                 AS processId,
-                        result.TASK_DEF_KEY_                                                 AS taskKey,
-                        DATE_FORMAT(result.CREATE_TIME_,'%Y-%m-%d %H:%i:%S')                 AS createScheduleDate,
-                        null                                                                 AS taskDescription,
-                        jorder.id                                                            AS orderId,
-                        jp.name                                                              AS partner,
-                        je.name                                                              AS salesman,
-                        jb.bank                                                              AS bank,
-                        jc.name                                                              AS name,
-                        jc.id_card                                                           AS idCard,
-                        jc.mobile                                                            AS mobile,
-                        ji.car_type                                                          AS carType,
-                        useGetCarName(ji.car_detail_id)                                      AS carName,
-                        jf.down_payment_ratio                                                AS downPaymentRatio,
-                        jf.loan_time                                                         AS loanTime,
-                        jf.loan_amount                                                       AS loanAmount,
-                        CONCAT('待办',result.NAME_)                                           AS taskStatusExplanation,
-                        jb.partner_id                                                        AS  partnerId,
-                        jb.salesman_id                                                       AS  salesmanId,
-                        jb.area_id                                                           AS bizAreaId,
-                        case when result.TASK_DEF_KEY_ = 'usertask_telephone_verify' then
-                        case when lp.telephone_verify  &lt; #{telephoneVerifyLevel} and lp.telephone_verify!=1 and lp.telephone_verify!=0 then 2 else 1 end
-                        else 2 end                                                           AS filtration,
-                        null                                                                 AS supplementOrderId,
-                        null                                                                 AS supplementType,
-                        null                                                                 AS supplementTypeText,
-                        null                                                                 AS his_id,
-                        null                                                                 AS refund_id,
-                        null                                                                 AS sendee,
 
-                        case when lp.order_status = 1 and  lp.loan_apply = 3  and
-                        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-                        then false else true end                                             AS canUpdateLoanApply
-                              from
-                              (
-                                SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
-                                 inner join
-                                       ACT_RU_IDENTITYLINK I
-                                       ON I.TASK_ID_ = RES.ID_
-                                       WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' AND
-                                       ( I.GROUP_ID_ IN
-                                          (
-                                             SELECT name FROM user_group g
-                                                INNER JOIN
-                                             (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId}) e
-                                                ON e.user_group_id = g.id
-                                          )
-                                       )
-                              ) result
-                              INNER JOIN loan_order jorder     ON jorder.process_inst_id = result.PROC_INST_ID_
-                              LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
-                              LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
-                              LEFT JOIN employee       je      ON je.id                  = jb.salesman_id
-                              LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
-                              LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
-                              LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
-                              INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
-                           having filtration = 2
-               union all
+                SELECT
+                            tmp.*,
 
-               SELECT
-                        supplement.id                                                                                AS taskId,
-                        jorder.process_inst_id                                                                       AS processId,
-                        ("usertask_info_supplement")                                                                 AS taskKey,
-                        DATE_FORMAT(supplement.start_time,'%Y-%m-%d %H:%i:%S')                                       AS createScheduleDate,
-                        null                                                                                         AS taskDescription,
-                        jorder.id                                                                                    AS orderId,
-                        jp.name                                                                                      AS partner,
-                        je.name                                                                                      AS salesman,
-                        jb.bank                                                                                      AS bank,
-                        jc.name                                                                                      AS name,
-                        jc.id_card                                                                                   AS idCard,
-                        jc.mobile                                                                                    AS mobile,
-                        ji.car_type                                                                                  AS carType,
-                        useGetCarName(ji.car_detail_id)                                                              AS carName,
-                        jf.down_payment_ratio                                                                        AS downPaymentRatio,
-                        jf.loan_time                                                                                 AS loanTime,
-                        jf.loan_amount                                                                               AS loanAmount,
-                        ("待办资料增补")                                                                               AS taskStatusExplanation,
-                        jb.partner_id                                                                                AS  partnerId,
-                        jb.salesman_id                                                                               AS  salesmanId,
-                        jb.area_id                                                                                   AS bizAreaId,
-                        (2)                                                                                          AS filtration,
-                        supplement.id                                                                                AS supplementOrderId,
-                        supplement.type                                                                              AS supplementType,
-                        useSupplementTypeTxt(supplement.type)                                                        AS supplementTypeText,
-                        null                                                                                         AS his_id,
-                        null                                                                                         AS refund_id,
-                        null                                                                                         AS sendee,
-                        case when lp.order_status = 1 and  lp.loan_apply = 3  and
-                        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-                        then false else true end                                                                     AS canUpdateLoanApply
-                  from (select * from loan_info_supplement where status = 2 ) supplement
-                              INNER JOIN loan_order jorder     ON jorder.id                   = supplement.order_id
-                              LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
-                              LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
-                              LEFT JOIN employee       je      ON je.id                  = jb.salesman_id
-                              LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
-                              LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
-                              LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
-                              INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
-                     having filtration = 2
-                     and
-                     case when #{materialSupplementLevel} <![CDATA[>=]]> 1 then true else false end
-             union all
+                            CASE
+                                WHEN #{taskStatus_} != 0 THEN
+                                #{taskStatus_}
+                                ELSE
+                                tmp.taskStatus_1
+                            END                                 AS  taskStatus
 
-               SELECT
-                        his.id                                                                                          AS taskId,
-                        jorder.process_inst_id                                                                          AS processId,
-                        case when his.status = 3 then 'usertask_financial_scheme_modify_apply'
-                        when his.status !=1 and his.status !=3 then 'usertask_financial_scheme_modify_apply_review'
-                        else null end                                                                                   AS taskKey,
-                        DATE_FORMAT(
-                        case when his.status = 3 then
-                        (select gmt_create from loan_reject_log where reject_to_task = 'usertask_financial_scheme_modify_apply' order by gmt_create desc limit 1 )
-                        when his.status !=1 and his.status !=3 then
-                        (select create_time from loan_process_log where task_definition_key = 'usertask_financial_scheme_modify_apply' order by create_time desc limit 1)
-                        else null  end
-                        ,'%Y-%m-%d %H:%i:%S')                                                                           AS createScheduleDate,
-                        NULL                                                                                            AS taskDescription,
-                        jorder.id                                                                                       AS orderId,
-                        jp.name                                                                                         AS partner,
-                        je.name                                                                                         AS salesman,
-                        jb.bank                                                                                         AS bank,
-                        jc.name                                                                                         AS name,
-                        jc.id_card                                                                                      AS idCard,
-                        jc.mobile                                                                                       AS mobile,
-                        ji.car_type                                                                                     AS carType,
-                        useGetCarName(ji.car_detail_id)                                                                 AS carName,
-                        jf.down_payment_ratio                                                                           AS downPaymentRatio,
-                        jf.loan_time                                                                                    AS loanTime,
-                        jf.loan_amount                                                                                  AS loanAmount,
-                        case when his.status = 3 then '待办金融方案修改申请'
-                        when his.status !=1 and his.status !=3  then '待办金融方案修改审核'
-                        else null end                                                                                   AS taskStatusExplanation,
-                        jb.partner_id                                                                                   AS  partnerId,
-                        jb.salesman_id                                                                                  AS  salesmanId,
-                        jb.area_id                                                                                      AS bizAreaId,
-                        case when his.status = 3 then 2
-                        when his.status !=3 and his.status  &lt; #{telephoneVerifyLevel} and his.status !=1 then 2 else 1 end             AS filtration,
-                        null                                                                                            AS supplementOrderId,
-                        null                                                                                            AS supplementType,
-                        null                                                                                            AS supplementTypeText,
-                        his.id                                                                                          AS his_id,
-                        null                                                                                            AS refund_id,
-                        null                                                                                            AS sendee,
-                        case when lp.order_status = 1 and  lp.loan_apply = 3  and
-                        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-                        then false else true end                                                                        AS canUpdateLoanApply
-                              from (select * from loan_financial_plan_temp_his where status = 2 or status = 3 ) his
-                              INNER JOIN loan_order jorder     ON jorder.id              = his.order_id
-                              LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
-                              LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
-                              LEFT JOIN employee       je      ON je.id                  = jb.salesman_id
-                              LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
-                              LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
-                              LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
-                              INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
-                     having filtration = 2 and
-                           case when taskKey = 'usertask_financial_scheme_modify_apply_review' then
-                                  case when #{telephoneVerifyLevel} <![CDATA[>=]]> 4 then true else false end
-                                when taskKey = 'usertask_financial_scheme_modify_apply' then
-                                  case when #{financeApplyLevel} <![CDATA[>=]]> 1 then true else false end
-                            else true end
-               union all
+                FROM
 
-               SELECT
-                        refund.id                                                                                    AS taskId,
-                        jorder.process_inst_id                                                                       AS processId,
-                        case when refund.status = 3 then 'usertask_refund_apply'
-                        when refund.status = 2 then 'usertask_refund_apply_review'
-                        else null end                                                                                AS taskKey,
-                        DATE_FORMAT(
-                        case when refund.status = 3 then
-                        (select gmt_create from loan_reject_log where reject_to_task = 'usertask_refund_apply' order by gmt_create desc limit 1 )
-                        when refund.status = 2 then
-                        (select create_time from loan_process_log where task_definition_key = 'usertask_refund_apply' order by create_time desc limit 1)
-                        else null  end
-                        ,'%Y-%m-%d %H:%i:%S')                                                                        AS createScheduleDate,
-                        NULL                                                                                         AS taskDescription,
-                        jorder.id                                                                                    AS orderId,
-                        jp.name                                                                                      AS partner,
-                        je.name                                                                                      AS salesman,
-                        jb.bank                                                                                      AS bank,
-                        jc.name                                                                                      AS name,
-                        jc.id_card                                                                                   AS idCard,
-                        jc.mobile                                                                                    AS mobile,
-                        ji.car_type                                                                                  AS carType,
-                        useGetCarName(ji.car_detail_id)                                                              AS carName,
-                        jf.down_payment_ratio                                                                        AS downPaymentRatio,
-                        jf.loan_time                                                                                 AS loanTime,
-                        jf.loan_amount                                                                               AS loanAmount,
-                        case when refund.status = 3 then '待办退款申请'
-                        when refund.status = 2 then '待办退款申请审核'
-                        else null end                                                                                AS taskStatusExplanation,
-                        jb.partner_id                                                                                AS  partnerId,
-                        jb.salesman_id                                                                               AS  salesmanId,
-                        jb.area_id                                                                                   AS bizAreaId,
-                        (2)                                                                                          AS filtration,
-                        null                                                                                         AS supplementOrderId,
-                        null                                                                                         AS supplementType,
-                        null                                                                                         AS supplementTypeText,
-                        null                                                                                         AS his_id,
-                        refund.id                                                                                    AS refund_id,
-                        null                                                                                         AS sendee,
-                        case when lp.order_status = 1 and  lp.loan_apply = 3  and
-                        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-                        then false else true end                                                                     AS canUpdateLoanApply
-                        from (select * from loan_refund_apply where status = 2 or status = 3 ) refund
-                              INNER JOIN loan_order jorder     ON jorder.id              = refund.order_id
-                              LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
-                              LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
-                              LEFT JOIN employee       je      ON je.id                  = jb.salesman_id
-                              LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
-                              LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
-                              LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
-                              INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
-                     having filtration = 2 and
-                           case when taskKey = 'usertask_refund_apply_review' then
-                                  case when #{financeLevel} <![CDATA[>=]]> 4 then true else false end
-                                when taskKey = 'usertask_refund_apply' then
-                                  case when #{refundApplyLevel} <![CDATA[>=]]> 1 then true else false end
-                            else true end
-             union all
+                    (
 
-             SELECT
-                      jorder.id                                                                                    AS taskId,
-                      jorder.process_inst_id                                                                       AS processId,
-                      ('usertask_collection_workbench')                                                            AS taskKey,
-                      DATE_FORMAT(
-                      (select collection_date from collection_record where order_id = jorder.id order by collection_date,gmt_create desc limit 1)
-                                  ,'%Y-%m-%d %H:%i:%S')                                                            AS createScheduleDate,
-                      NULL                                                                                         AS taskDescription,
-                      jorder.id                                                                                    AS orderId,
-                      jp.name                                                                                      AS partner,
-                      je.name                                                                                      AS salesman,
-                      jb.bank                                                                                      AS bank,
-                      jc.name                                                                                      AS name,
-                      jc.id_card                                                                                   AS idCard,
-                      jc.mobile                                                                                    AS mobile,
-                      ji.car_type                                                                                  AS carType,
-                      useGetCarName(ji.car_detail_id)                                                              AS carName,
-                      jf.down_payment_ratio                                                                        AS downPaymentRatio,
-                      jf.loan_time                                                                                 AS loanTime,
-                      jf.loan_amount                                                                               AS loanAmount,
-                      ('待办催收')                                                                                  AS taskStatusExplanation,
-                      jb.partner_id                                                                                AS partnerId,
-                      jb.salesman_id                                                                               AS salesmanId,
-                      jb.area_id                                                                                   AS bizAreaId,
-                      (2)                                                                                          AS filtration,
-                      null                                                                                         AS supplementOrderId,
-                      null                                                                                         AS supplementType,
-                      null                                                                                         AS supplementTypeText,
-                      null                                                                                         AS his_id,
-                      null                                                                                         AS refund_id,
-                      urge.sendee                                                                                  AS sendee,
-                      case when lp.order_status = 1 and  lp.loan_apply = 3  and
-                      (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task = 'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-                      then false else true end                                                                     AS canUpdateLoanApply
-                      from (select * from bank_urge_record where urge_status = 2) urge
-                      INNER JOIN loan_order jorder     ON jorder.id              = urge.order_id
-                      LEFT JOIN loan_base_info jb      ON jb.id                  = jorder.loan_base_info_id
-                      LEFT JOIN partner        jp      ON jp.id                  = jb.partner_id
-                      LEFT JOIN employee       je      ON je.id                  = jb.salesman_id
-                      LEFT JOIN loan_customer  jc      ON jc.id                  = jorder.loan_customer_id
-                      LEFT JOIN loan_car_info  ji      ON ji.id                  = jorder.loan_car_info_id
-                      LEFT JOIN loan_financial_plan jf ON jf.id                  = jorder.loan_financial_plan_id
-                      INNER JOIN loan_process lp       ON jorder.id              = lp.order_id  and lp.order_status = 1
-                       having filtration = 2
-                       AND
-                        case when #{collectionLevel}  = 7 then true
-                             when #{collectionLevel}  = 6 then sendee = #{employeeId}
-                        else false end
-            )
-            task
-             left join
-             (
-                select * from task_distribution
-             )
-             taskdis
-             on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
-             having true
-             and case when #{maxGroupLevel}  = 0 then false
-                      when  #{maxGroupLevel} = 1 then
-                      task.salesmanId in
-                          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-                              #{item}
-                          </foreach>
-                    else true end
-             and case when #{maxGroupLevel}  = 3 then 1=1
-                      when receiveManId is not null then
-                    case when receiveManId = #{employeeId} then 1=1 else 1=2 end
-                   else 1=1
-              end
-            <if test="key != null">
-                and task.taskKey = #{key,jdbcType=VARCHAR}
-            </if>
-         ) complex
-             where 1=1
-             and
-             case when #{maxGroupLevel}  = 3 then 1=1
-             else 1=1
-             <if test="areaIdList != null and areaIdList.size() > 0">
-                 and
-                 complex.bizAreaId in
-                 <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
-                     #{item}
-                 </foreach>
-             </if>
-             <if test="bankList != null and bankList.size() > 0">
-                 and
-                 complex.bank in
-                 <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
-                     #{item}
-                 </foreach>
-             </if>
-             end
-             order by complex.createScheduleDate asc
-        </select>
+                        SELECT
+                                                CASE
+
+                                                    WHEN df.type = 1 THEN
+                                                    pc.data_flow_contract_p2c
+
+                                                    WHEN df.type = 2 THEN
+                                                    pc.data_flow_contract_p2c_review
+
+                                                    WHEN df.type = 3 THEN
+                                                    pc.data_flow_contract_c2b
+
+                                                    WHEN df.type = 4 THEN
+                                                    pc.data_flow_contract_c2b_review
+
+                                                    WHEN df.type = 5 THEN
+                                                    pc.data_flow_mortgage_p2c
+
+                                                    WHEN df.type = 6 THEN
+                                                    pc.data_flow_mortgage_p2c_review
+
+                                                    WHEN df.type = 7 THEN
+                                                    pc.data_flow_mortgage_c2b
+
+                                                    WHEN df.type = 8 THEN
+                                                    pc.data_flow_mortgage_c2b_review
+
+                                                    WHEN df.type = 9 THEN
+                                                    pc.data_flow_mortgage_b2c
+
+                                                    WHEN df.type = 10 THEN
+                                                    pc.data_flow_mortgage_b2c_review
+
+                                                    WHEN df.type = 11 THEN
+                                                    pc.data_flow_mortgage_c2p
+
+                                                    WHEN df.type = 12 THEN
+                                                    pc.data_flow_mortgage_c2p_review
+
+                                                    WHEN df.type = 13 THEN
+                                                    pc.data_flow_register_p2c
+
+                                                    WHEN df.type = 14 THEN
+                                                    pc.data_flow_register_p2c_review
+
+                                                    WHEN df.type = 15 THEN
+                                                    pc.data_flow_register_c2b
+
+                                                    WHEN df.type = 16 THEN
+                                                    pc.data_flow_register_c2b_review
+
+                                                    ELSE
+                                                    0
+
+                                                END                                 AS taskStatus_1,
+
+                                                a.id               					AS  id,
+                                                c.name    				  			AS  customer,
+                                                c.id_card   						AS  idCard,
+                                                c.mobile   							AS  mobile,
+                                                b.bank								AS  bank,
+                                                b.salesman_id     				    AS  salesmanId,
+                                                e.name             					AS  salesman,
+                                                b.partner_id      					AS  partnerId,
+                                                p.name             					AS  partner,
+                                                d.name             					AS  departmentName,
+                                                df.id              					AS  dataFlowId,
+                                                df.type            					AS  dataFlowType
+
+                        FROM                    loan_order           				AS a
+                                    LEFT JOIN   loan_process         				AS pc    ON   a.id = pc.order_id
+                                    LEFT JOIN   loan_data_flow       				AS df    ON   a.id = df.order_id
+                                    LEFT JOIN   loan_customer        				AS c     ON   c.id = a.loan_customer_id
+                                    LEFT JOIN   loan_base_info      				AS b     ON   b.id = a.loan_base_info_id
+                                    LEFT JOIN   employee             				AS e     ON   e.id = b.salesman_id
+                                    LEFT JOIN   department           				AS d     ON	  d.id = e.department_id
+                                    LEFT JOIN   partner             				AS p     ON   p.id = b.partner_id
+
+                        <where>
+                            <if test="orderId != null and orderId != '' ">
+                                AND a.id = #{orderId}
+                            </if>
+                            <if test="customer != null and customer != '' ">
+                                AND	c.name LIKE CONCAT('%', #{customer}, '%')
+                            </if>
+                            <if test="idCard != null and idCard != '' ">
+                                AND c.id_card = #{idCard}
+                            </if>
+                            <if test="loanBank != null and loanBank != '' ">
+                                AND b.bank = #{loanBank}
+                            </if>
+                            <if test="partnerId != null">
+                                AND p.id = #{partnerId}
+                            </if>
+                            <if test="dataFlowTypeList != null and dataFlowTypeList.size() > 0">
+                                AND  df.type IN
+                                <foreach item="item" collection="dataFlowTypeList" open="(" close=")" separator=",">
+                                    #{item}
+                                </foreach>
+                            </if>
+
+                            AND
+
+                            CASE WHEN #{taskStatus} = 0 THEN
+
+                            <choose>
+                                <when test="dataFlowNodeSet != null and dataFlowNodeSet.size() > 0">
+                                    <foreach item="item" collection="dataFlowNodeSet" separator="OR">
+                                        <choose>
+                                            <when test="item == 'usertask_data_flow_contract_p2c'">
+                                                pc.data_flow_contract_p2c != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_p2c_review'">
+                                                pc.data_flow_contract_p2c_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_c2b'">
+                                                pc.data_flow_contract_c2b != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_c2b_review'">
+                                                pc.data_flow_contract_c2b_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_p2c'">
+                                                pc.data_flow_mortgage_p2c != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_p2c_review'">
+                                                pc.data_flow_mortgage_p2c_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2b'">
+                                                pc.data_flow_mortgage_c2b != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2b_review'">
+                                                pc.data_flow_mortgage_c2b_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_b2c'">
+                                                pc.data_flow_mortgage_b2c != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_b2c_review'">
+                                                pc.data_flow_mortgage_b2c_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2p'">
+                                                pc.data_flow_mortgage_c2p != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2p_review'">
+                                                pc.data_flow_mortgage_c2p_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_p2c'">
+                                                pc.data_flow_register_p2c != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_p2c_review'">
+                                                pc.data_flow_register_p2c_review != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_c2b'">
+                                                pc.data_flow_register_c2b != #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_c2b_review'">
+                                                pc.data_flow_register_c2b_review != #{taskStatus}
+                                            </when>
+                                        </choose>
+                                    </foreach>
+                                </when>
+                                <otherwise>
+                                    1=2
+                                </otherwise>
+                            </choose>
+
+                            ELSE
+
+                            <choose>
+                                <when test="dataFlowNodeSet != null and dataFlowNodeSet.size() > 0">
+                                    <foreach item="item" collection="dataFlowNodeSet" separator="OR">
+                                        <choose>
+                                            <when test="item == 'usertask_data_flow_contract_p2c'">
+                                                pc.data_flow_contract_p2c = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_p2c_review'">
+                                                pc.data_flow_contract_p2c_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_c2b'">
+                                                pc.data_flow_contract_c2b = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_contract_c2b_review'">
+                                                pc.data_flow_contract_c2b_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_p2c'">
+                                                pc.data_flow_mortgage_p2c = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_p2c_review'">
+                                                pc.data_flow_mortgage_p2c_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2b'">
+                                                pc.data_flow_mortgage_c2b = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2b_review'">
+                                                pc.data_flow_mortgage_c2b_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_b2c'">
+                                                pc.data_flow_mortgage_b2c = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_b2c_review'">
+                                                pc.data_flow_mortgage_b2c_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2p'">
+                                                pc.data_flow_mortgage_c2p = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_mortgage_c2p_review'">
+                                                pc.data_flow_mortgage_c2p_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_p2c'">
+                                                pc.data_flow_register_p2c = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_p2c_review'">
+                                                pc.data_flow_register_p2c_review = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_c2b'">
+                                                pc.data_flow_register_c2b = #{taskStatus}
+                                            </when>
+                                            <when test="item == 'usertask_data_flow_register_c2b_review'">
+                                                pc.data_flow_register_c2b_review = #{taskStatus}
+                                            </when>
+                                        </choose>
+                                    </foreach>
+                                </when>
+                                <otherwise>
+                                    1=2
+                                </otherwise>
+                            </choose>
+                            END
+                        </where>
+
+                    )   AS tmp
+
+                    <if test="taskStatus != 0">
+                        WHERE tmp.taskStatus_1 = #{taskStatus}
+                    </if>
+
+            ) AS tmp2
+
+        <!--loginUser只能查询到 自己及下级 的单子 -->
+        <include refid="loginUserGetSelfAndSub"/>
+
+    </select>
+
+
+    <!--loginUser只能查询到 自己及下级 的单子 -->
+    <sql id="loginUserGetSelfAndSub">
+
+        HAVING
+        CASE
+
+        WHEN ( 3 ) IN (
+        SELECT LEVEL
+        FROM
+        user_group g
+        INNER JOIN (
+        SELECT
+        user_group_id
+        FROM
+        employee_rela_user_group
+        WHERE
+        employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) THEN
+        1 = 1
+        WHEN ( 2 ) IN (
+        SELECT LEVEL
+        FROM
+        user_group g
+        INNER JOIN (
+        SELECT
+        user_group_id
+        FROM
+        employee_rela_user_group
+        WHERE
+        employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) THEN
+        1 = 1
+        WHEN ( 1 ) IN (
+        SELECT LEVEL
+        FROM
+        user_group g
+        INNER JOIN (
+        SELECT
+        user_group_id
+        FROM
+        employee_rela_user_group
+        WHERE
+        employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) THEN
+        order_id IN (
+        SELECT
+        o.id
+        FROM
+        loan_order o
+        INNER JOIN
+        (
+        SELECT id FROM loan_base_info WHERE salesman_id IN
+        (
+        select
+        DISTINCT
+        case
+        when
+        #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
+        then
+        case
+        when
+        #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+        then
+        employee_id
+        else
+        #{employeeId,jdbcType=BIGINT}
+        end
+        else
+        null
+        end AS employee_id
+        from partner_rela_employee where partner_id in
+        (select partner_id from partner_rela_employee where employee_id = #{employeeId,jdbcType=BIGINT})
+        having employee_id is not null
+        )
+        ) b on o.loan_base_info_id = b.id)
+        else 1=2 end
+    </sql>
+
 </mapper>

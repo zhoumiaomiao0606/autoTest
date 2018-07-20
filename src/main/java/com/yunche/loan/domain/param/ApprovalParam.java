@@ -91,6 +91,8 @@ public class ApprovalParam {
         if (null != taskDefinitionKey_) {
             return taskDefinitionKey_;
         }
+
+        this.taskDefinitionKey_ = taskDefinitionKey;
         return taskDefinitionKey;
     }
 }

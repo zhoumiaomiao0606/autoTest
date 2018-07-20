@@ -66,6 +66,17 @@ public class TaskSchedulingController {
     }
 
     /**
+     * 资料流转列表查询
+     *
+     * @param taskListQuery
+     * @return
+     */
+    @PostMapping(value = "/queryDataFlowTaskList")
+    public ResultBean<List<TaskListVO>> queryDataFlowTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
+        return taskSchedulingService.queryDataFlowTaskList(taskListQuery);
+    }
+
+    /**
      * 查询接口
      */
     @PostMapping(value = "/countQueryTaskList")

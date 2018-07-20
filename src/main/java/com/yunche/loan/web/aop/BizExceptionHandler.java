@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +42,7 @@ public class BizExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(BizExceptionHandler.class);
 
-    @Autowired
+//    @Autowired
     private BizSessionManager bizSessionManager;
 
 
@@ -139,6 +140,8 @@ public class BizExceptionHandler {
      * 刷新cookie
      */
     private void refreshCookie() {
+
+        Collection<Session> activeSessions = bizSessionManager.getSessionDAO().getActiveSessions();
 
         Session session = SecurityUtils.getSubject().getSession();
         Serializable sessionId = session.getId();

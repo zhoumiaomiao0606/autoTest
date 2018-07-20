@@ -29,9 +29,7 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AuthConst.OPERATION;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_SOCIAL_CREDIT_RECORD_FILTER;
-import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_APPLY_VISIT_VERIFY_FILTER;
-import static com.yunche.loan.config.constant.LoanProcessEnum.REMIT_REVIEW_FILTER;
+import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 
 /**
  * @author liuzhe
@@ -184,35 +182,53 @@ public class AuthServiceImpl implements AuthService {
 
         Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
 
-        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.get();
+        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.getNodeRolesMap();
 
         if (!CollectionUtils.isEmpty(taskDefinitionKeyCandidateGroupsMap)) {
 
+            // 遍历 节点-角色列表
             taskDefinitionKeyCandidateGroupsMap.forEach((k, v) -> {
 
                 List<String> candidateGroups = v;
+
+                // 需要权限
                 if (!CollectionUtils.isEmpty(candidateGroups)) {
 
+                    // 无任何角色
                     if (CollectionUtils.isEmpty(userGroupNameSet)) {
                         taskMap.put(k, false);
                     }
 
+                    // 有角色
                     candidateGroups.stream()
                             .filter(e -> StringUtils.isNotBlank(e))
                             .forEach(e -> {
 
+                                // 包含 -> 有权操作
                                 if (userGroupNameSet.contains(e)) {
-                                    taskMap.put(k, true);
+
+                                    // [资料流转]节点
+                                    if (k.startsWith("usertask_data_flow_")) {
+                                        taskMap.put(DATA_FLOW.getCode(), true);
+                                    } else {
+                                        // 普通节点
+                                        taskMap.put(k, true);
+                                    }
                                 }
                             });
+
 
                     if (null == taskMap.get(k)) {
                         taskMap.put(k, false);
                     }
 
-                } else if (!BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(k)
+                }
+
+                // candidateGroups为空  -> 不需要权限
+                else if (!BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(k)
                         && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(k)
-                        && !REMIT_REVIEW_FILTER.getCode().equals(k)) {
+                        && !REMIT_REVIEW_FILTER.getCode().equals(k)
+                        && !DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode().equals(k)) {
 
                     taskMap.put(k, true);
                 }

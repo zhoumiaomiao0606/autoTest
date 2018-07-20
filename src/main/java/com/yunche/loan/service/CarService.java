@@ -48,4 +48,14 @@ public interface CarService {
      * @return
      */
     String getFullName(Long carId, Byte carType);
+
+    /**
+     * 获取指定等级的车型名称
+     *
+     * @param carDetailId
+     * @param carDetail
+     * @param nameLevel   指定名称到哪一级
+     * @return
+     */
+    String getName(Long carDetailId, Byte carDetail, Byte nameLevel);
 }

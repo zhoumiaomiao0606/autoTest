@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import java.util.Set;
 
-@Mapper
 public interface LoanQueryDOMapper {
 
     List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(Long orderId);
@@ -27,77 +26,116 @@ public interface LoanQueryDOMapper {
 
     boolean checkCollectionUserRole(@Param("loginUserId") Long loginUserId);
 
-    List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId,@Param("name")  String name);
+    List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
 
-    List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId,@Param("name")  String name);
+    List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
+
+    /**
+     * 资料流转-新增 客户列表
+     *
+     * @param employeeId
+     * @param name
+     * @return
+     */
+    List<UniversalCustomerOrderVO> selectUniversalDataFlowCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
 
     VehicleInformationVO selectVehicleInformation(Long orderId);
 
-    public ApplyLicensePlateDepositInfoVO selectApplyLicensePlateDepositInfo(Long orderId);
+    ApplyLicensePlateDepositInfoVO selectApplyLicensePlateDepositInfo(Long orderId);
 
-    UniversalLoanFinancialPlanTempHisVO selectUniversalLoanFinancialPlanTempHis(@Param("orderId") Long orderId,@Param("hisId") Long hisId);
+    UniversalLoanFinancialPlanTempHisVO selectUniversalLoanFinancialPlanTempHis(@Param("orderId") Long orderId, @Param("hisId") Long hisId);
 
-    UniversalLoanRefundApplyVO selectUniversalLoanRefundApply(@Param("orderId") Long orderId,@Param("refundId") Long refundId);
+    UniversalLoanRefundApplyVO selectUniversalLoanRefundApply(@Param("orderId") Long orderId, @Param("refundId") Long refundId);
 
-    public UniversalInfoVO selectUniversalInfo(Long orderId);
+    UniversalInfoVO selectUniversalInfo(Long orderId);
 
-    public UniversalApprovalInfo selectUniversalApprovalInfo(@Param("taskDefinitionKey") String taskDefinitionKey,@Param("orderId") Long orderId);
+    UniversalApprovalInfo selectUniversalApprovalInfo(@Param("taskDefinitionKey") String taskDefinitionKey, @Param("orderId") Long orderId);
 
-    public UniversalLoanInfoVO selectUniversalLoanInfo(Long orderId);
+    UniversalLoanInfoVO selectUniversalLoanInfo(Long orderId);
 
-    public List<String> selectUniversalRelevanceOrderId(Long orderId);
+    List<String> selectUniversalRelevanceOrderId(Long orderId);
 
-    public UniversalCarInfoVO selectUniversalCarInfo(Long orderId);
+    UniversalCarInfoVO selectUniversalCarInfo(Long orderId);
 
-    public List<UniversalRelationCustomerVO> selectUniversalRelationCustomer(Long orderId);
+    List<UniversalRelationCustomerVO> selectUniversalRelationCustomer(Long orderId);
 
-    public List<String> selectUniversalRelevanceOrderIdByCustomerId(@Param("orderId") Long orderId,@Param("customerId") Long customerId);
+    List<String> selectUniversalRelevanceOrderIdByCustomerId(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
 
-    public UniversalRemitDetails selectUniversalRemitDetails(Long orderId);
+    UniversalRemitDetails selectUniversalRemitDetails(Long orderId);
 
-    public UniversalCostDetailsVO selectUniversalCostDetails(Long orderId);
+    UniversalCostDetailsVO selectUniversalCostDetails(Long orderId);
 
-    public List<UniversalCreditInfoVO> selectUniversalCreditInfo(Long orderId);
+    List<UniversalCreditInfoVO> selectUniversalCreditInfo(Long orderId);
 
-    public UniversalHomeVisitInfoVO selectUniversalHomeVisitInfo(Long orderId);
+    UniversalHomeVisitInfoVO selectUniversalHomeVisitInfo(Long orderId);
 
-    public UniversalSupplementInfoVO selectUniversalSupplementInfo(Long orderId);
+    UniversalSupplementInfoVO selectUniversalSupplementInfo(Long orderId);
 
-    public List<UniversalCustomerVO> selectUniversalCustomer(Long orderId);
+    List<UniversalCustomerVO> selectUniversalCustomer(Long orderId);
 
-    public UniversalCustomerDetailVO selectUniversalCustomerDetail(@Param("orderId") Long orderId,@Param("customerId") Long customerId);
+    UniversalCustomerDetailVO selectUniversalCustomerDetail(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
 
-    public List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId);
+    List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId);
 
-    public List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
+    /**
+     * 资料增补  文件列表（最新一次增补）
+     *
+     * @param orderId
+     * @return
+     */
+    List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
-    public List<UniversalMaterialRecordVO> selectUniversalCustomerFileByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
+    List<UniversalMaterialRecordVO> selectUniversalCustomerFileByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
 
-    public List<UniversalMaterialRecordVO> selectUniversalCustomerFiles(@Param("customerId") Long customerId, @Param("types") Set<Byte> types);
+    Long selectOrderIdbyPrincipalCustId(Long customerId);
 
-    public Long selectOrderIdbyPrincipalCustId(Long customerId);
+    UniversalOverdueInfo selectUniversalOverdueInfo(Long orderId);
 
-    public UniversalOverdueInfo selectUniversalOverdueInfo(Long orderId);
+    List<UniversalLoanRepaymentPlan> selectUniversalLoanRepaymentPlan(Long orderId);
 
-    public List<UniversalLoanRepaymentPlan> selectUniversalLoanRepaymentPlan(Long orderId);
+    List<UniversalMaterialRecordVO> selectUniversalCustomerFiles(@Param("customerId") Long customerId, @Param("types") Set<Byte> types);
 
-    public List<UniversalCollectionRecord> selectUniversalCollectionRecord(Long orderId);
+    List<UniversalCollectionRecord> selectUniversalCollectionRecord(Long orderId);
 
-    public UniversalCollectionRecordDetail selectUniversalCollectionRecordDetail(Long collectionId);
+    UniversalCollectionRecordDetail selectUniversalCollectionRecordDetail(Long collectionId);
 
-    public List<UniversalTelephoneCollectionEmployee> selectUniversalTelephoneCollectionEmployee();
+    List<UniversalTelephoneCollectionEmployee> selectUniversalTelephoneCollectionEmployee();
 
-    public List<UniversalUndistributedCollection> selectUniversalUndistributedCollection();
+    List<UniversalUndistributedCollection> selectUniversalUndistributedCollection();
+
+    /**
+     * 资料流转
+     *
+     * @param dataFlowId 资料流转单ID
+     * @return
+     */
+    UniversalDataFlowDetailVO selectUniversalDataFlowDetail(Long dataFlowId);
+
+    /**
+     * 合同归档
+     *
+     * @param orderId
+     * @return
+     */
+    UniversalMaterialManageVO selectUniversalMaterialManage(Long orderId);
+
+    /**
+     * 银行卡寄送单
+     *
+     * @param orderId
+     * @return
+     */
+    UniversalBankCardSendVO selectUniversalBankCardSend(Long orderId);
 
     //=======================================================================
 
-    public List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
+    List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
 
-    public InsuranceCustomerVO selectInsuranceCustomerNormalizeInsuranceYear(Long orderId);
+    InsuranceCustomerVO selectInsuranceCustomerNormalizeInsuranceYear(Long orderId);
 
-    public List<InsuranceRelevanceVO> selectInsuranceRelevance(Long insuranceInfoId);
+    List<InsuranceRelevanceVO> selectInsuranceRelevance(Long insuranceInfoId);
 
-    public FinancialSchemeVO selectFinancialScheme(Long orderId);
+    FinancialSchemeVO selectFinancialScheme(Long orderId);
 
     CostCalculateInfoVO selectCostCalculateInfo(Long orderId);
 
@@ -105,7 +143,7 @@ public interface LoanQueryDOMapper {
 
     BankLendRecordVO selectBankLendRecordDetail(Long orderId);
 
-    Long  selectOrderIdByIDCard(String idCard);
+    Long selectOrderIdByIDCard(String idCard);
 
     BankCardRecordVO selectBankCardRecordDetail(Long orderId);
 

@@ -42,7 +42,6 @@ public enum LoanFileEnum {
     ZIP_PACK((byte)26,"zip包"),
     SPECIAL_QUOTA_APPLY((byte)27,"专项额度核定申请表"),
     OPEN_CARD_DATA((byte)28,"开卡申请表"),
-
     //0101【分期】注册登记证1
     REGISTRATION1((byte)30,"注册登记证1"),
     //0102【分期】注册登记证2
@@ -93,11 +92,11 @@ public enum LoanFileEnum {
     OTHER_ZIP((byte)53,"其他图片"),
     //0902【分期】视频面签视频资料
     VIDEO_INTERVIEW((byte)54,"视频面签视频资料"),
-
     SIGNATURE_VIDEO((byte)55,"签字视频"),
     INTERROGATION_VIDEO((byte)56,"问话视频"),
     CUSHION_INFORMATION((byte)57,"垫款资料"),
     ASSET_PACKAGING((byte)58,"资产包");
+
     @Getter
     @Setter
     private Byte type;

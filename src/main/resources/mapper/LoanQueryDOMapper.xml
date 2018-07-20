@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.LoanQueryDOMapper" >
-    <select id="selectTelephoneVerifyLevel" resultType="java.lang.String"  parameterType="java.lang.Long">
+<mapper namespace="com.yunche.loan.mapper.LoanQueryDOMapper">
+    <select id="selectTelephoneVerifyLevel" resultType="java.lang.String" parameterType="java.lang.Long">
               SELECT
                 max( t.telephone_verify_level )
                 FROM
@@ -47,7 +47,8 @@
         left join car_detail d on car.car_detail_id = d.id
     </select>
     <!--提车资料-->
-    <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInformationVO"  parameterType="java.lang.Long">
+    <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInformationVO"
+            parameterType="java.lang.Long">
         select
 
             o.id                              AS order_id,
@@ -112,8 +113,9 @@
 
             left join car_model m on model_id = m.id
     </select>
-  <!--上牌抵押-->
-  <select id="selectApplyLicensePlateDepositInfo" resultType="com.yunche.loan.domain.vo.ApplyLicensePlateDepositInfoVO" parameterType="java.lang.Long" >
+    <!--上牌抵押-->
+    <select id="selectApplyLicensePlateDepositInfo"
+            resultType="com.yunche.loan.domain.vo.ApplyLicensePlateDepositInfoVO" parameterType="java.lang.Long">
 
     select
              o.id                               AS order_id,
@@ -152,94 +154,45 @@
 
   </select>
 
-    <select id="checkCollectionUserRole" resultType="java.lang.Boolean" parameterType="java.lang.Long" >
+    <select id="checkCollectionUserRole" resultType="java.lang.Boolean" parameterType="java.lang.Long">
         <![CDATA[
+
         SELECT
               case when max( t.collection_level ) = 7 then 1 else 0 end AS flag
               FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
+
         ]]>
     </select>
 
     <!--======================================通用=========================================================-->
     <select id="selectUniversalModifyCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
         select
-          o.id AS order_id,
-          c.name AS customer_name,
-          c.id_card AS customer_id_card
+        o.id AS order_id,
+        c.name AS customer_name,
+        c.id_card AS customer_id_card
         from loan_order o
         left join loan_customer c on c.id = o.loan_customer_id
         left join loan_process p on o.id = p.order_id
         where
         (
-            (p.telephone_verify = 1 and p.loan_review != 1)
-          or
-            p.remit_review = 21
+        (p.telephone_verify = 1 and p.loan_review != 1)
+        or
+        p.remit_review = 21
         )
         <if test="name!=null">
             and c.name like concat(concat('%',#{name}),'%')
         </if>
-        having
-        case when
-          (3) in
-          (
-          SELECT level FROM user_group g
-            INNER JOIN
-          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
-          ON e.user_group_id = g.id
-          )  then 1=1
-        when
-        (2) in
-        (
-        SELECT level FROM user_group g
-        INNER JOIN
-        (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
-        ON e.user_group_id = g.id
-        )  then 1=1
-        when
-          (1) in
-          (
-          SELECT level FROM user_group g
-            INNER JOIN
-          (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
-          ON e.user_group_id = g.id
-          )  then
-        order_id in (
-        SELECT o.id FROM loan_order o
-          INNER JOIN
-          (
-          SELECT id FROM loan_base_info WHERE salesman_id IN
-          (
-          select
-            DISTINCT
-          case
-            when
-            #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
-            then
-          case
-            when
-            #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
-            then
-            employee_id
-          else
-            #{employeeId,jdbcType=BIGINT}
-          end
-            else
-          null
-          end AS employee_id
-        from partner_rela_employee where partner_id in
-          (select partner_id from partner_rela_employee where employee_id = #{employeeId,jdbcType=BIGINT})
-          having employee_id is not null
-          )
-        ) b on o.loan_base_info_id = b.id)
-        else 1=2 end
+
+        <!--loginUser只能查询到 自己及下级 的单子 -->
+        <include refid="loginUserGetSelfAndSub"/>
     </select>
 
     <select id="selectUniversalRefundCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
         select
-          o.id AS order_id,
-          c.name AS customer_name,
-          c.id_card AS customer_id_card
+        o.id AS order_id,
+        c.name AS customer_name,
+        c.id_card AS customer_id_card
         from loan_order o
         left join loan_customer c on c.id = o.loan_customer_id
         left join loan_process p on o.id = p.order_id
@@ -250,65 +203,15 @@
         <if test="name!=null">
             and c.name like concat(concat('%',#{name}),'%')
         </if>
-        having
-          case when
-          (3) in
-          (
-            SELECT level FROM user_group g
-              INNER JOIN
-            (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
-            ON e.user_group_id = g.id
-          )  then 1=1
-            when
-            (2) in
-            (
-            SELECT level FROM user_group g
-            INNER JOIN
-            (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
-            ON e.user_group_id = g.id
-            )  then 1=1
-          when
-          (1) in
-          (
-            SELECT level FROM user_group g
-              INNER JOIN
-            (SELECT user_group_id FROM employee_rela_user_group WHERE employee_id =  #{employeeId,jdbcType=BIGINT}) e
-            ON e.user_group_id = g.id
-        )  then
-        order_id in (
-        SELECT o.id FROM loan_order o
-          INNER JOIN
-          (
-          SELECT id FROM loan_base_info WHERE salesman_id IN
-          (
-          select
-            DISTINCT
-          case
-          when
-            #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
-          then
-          case
-          when
-            #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
-          then
-            employee_id
-            else
-          #{employeeId,jdbcType=BIGINT}
-        end
-        else
-        null
-        end AS employee_id
-        from partner_rela_employee where partner_id in
-        (select partner_id from partner_rela_employee where employee_id = #{employeeId,jdbcType=BIGINT})
-        having employee_id is not null
-        )
-        ) b on o.loan_base_info_id = b.id)
-        else 1=2 end
+
+        <!--loginUser只能查询到 自己及下级 的单子 -->
+        <include refid="loginUserGetSelfAndSub"/>
+
     </select>
 
 
-
-    <select id="selectUniversalLoanFinancialPlanTempHis" resultType="com.yunche.loan.domain.vo.UniversalLoanFinancialPlanTempHisVO">
+    <select id="selectUniversalLoanFinancialPlanTempHis"
+            resultType="com.yunche.loan.domain.vo.UniversalLoanFinancialPlanTempHisVO">
           select
 					customer.id                                     AS customer_id,
 					customer.name                                   AS customer_name,
@@ -354,7 +257,8 @@
     </select>
 
     <!--通用info-->
-  <select id="selectUniversalInfo" resultType="com.yunche.loan.domain.vo.UniversalInfoVO" parameterType="java.lang.Long" >
+    <select id="selectUniversalInfo" resultType="com.yunche.loan.domain.vo.UniversalInfoVO"
+            parameterType="java.lang.Long">
     select
             main_order.id                                                                           AS order_id,
             DATE_FORMAT(material.complete_material_date,'%Y-%m-%d %H:%i:%S')                        AS material_complete_material_date,
@@ -465,7 +369,8 @@
   </select>
 
     <!--贷款信息-->
-    <select id="selectUniversalLoanInfo" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.UniversalLoanInfoVO" >
+    <select id="selectUniversalLoanInfo" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.vo.UniversalLoanInfoVO">
         select
                 main_order.id                                                                       AS order_id,
                 customer.id_card                                                                    AS customer_id_card,
@@ -507,7 +412,8 @@
     </select>
 
     <!--贷款车辆信息-->
-    <select id="selectUniversalCarInfo" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.UniversalCarInfoVO" >
+    <select id="selectUniversalCarInfo" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.vo.UniversalCarInfoVO">
         select
             detail.price                                                            AS car_assess_price,
             brand.name                                                              AS car_brand_name,
@@ -544,7 +450,8 @@
     </select>
 
     <!--共贷人信息-->
-    <select id="selectUniversalRelationCustomer" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.UniversalRelationCustomerVO">
+    <select id="selectUniversalRelationCustomer" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.vo.UniversalRelationCustomerVO">
       select
             customer.cust_type                                                      AS customer_cust_type,
             customer.cust_relation                                                  AS customer_cust_relation,
@@ -567,7 +474,8 @@
     </select>
 
     <!--打款信息-->
-    <select id="selectUniversalRemitDetails" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.UniversalRemitDetails">
+    <select id="selectUniversalRemitDetails" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.vo.UniversalRemitDetails">
       select
             remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
             remit.beneficiary_account                                                               AS remit_beneficiary_account,
@@ -585,7 +493,8 @@
     </select>
 
     <!--费用明细-->
-    <select id="selectUniversalCostDetails" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.UniversalCostDetailsVO">
+    <select id="selectUniversalCostDetails" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.vo.UniversalCostDetailsVO">
       select
              cost.service_fee                                AS cost_service_fee,
              cost.apply_license_plate_deposit_fee            AS cost_apply_license_plate_deposit_fee,
@@ -617,7 +526,8 @@
     </select>
 
     <!--征信结果-->
-  <select id="selectUniversalCreditInfo" resultType="com.yunche.loan.domain.vo.UniversalCreditInfoVO" parameterType="java.lang.Long" >
+    <select id="selectUniversalCreditInfo" resultType="com.yunche.loan.domain.vo.UniversalCreditInfoVO"
+            parameterType="java.lang.Long">
     select
         customer.id                         AS customer_id,
         customer.cust_type                	AS customer_cust_type,
@@ -645,7 +555,8 @@
   </select>
 
     <!--上门家访问报告-->
-    <select id="selectUniversalHomeVisitInfo" resultType="com.yunche.loan.domain.vo.UniversalHomeVisitInfoVO" parameterType="java.lang.Long" >
+    <select id="selectUniversalHomeVisitInfo" resultType="com.yunche.loan.domain.vo.UniversalHomeVisitInfoVO"
+            parameterType="java.lang.Long">
         select
 					salesman.name                                    AS salesman_name,
 					DATE_FORMAT(home.visit_date,'%Y-%m-%d %H:%i:%S') AS home_visit_date,
@@ -659,7 +570,8 @@
     </select>
 
     <!--资料增补-->
-    <select id="selectUniversalSupplementInfo" resultType="com.yunche.loan.domain.vo.UniversalSupplementInfoVO" parameterType="java.lang.Long">
+    <select id="selectUniversalSupplementInfo" resultType="com.yunche.loan.domain.vo.UniversalSupplementInfoVO"
+            parameterType="java.lang.Long">
 
         select
             supplement.remark						AS  supplement_remark,
@@ -673,7 +585,8 @@
     </select>
 
     <!--客户信息-->
-    <select id="selectUniversalCustomer" resultType="com.yunche.loan.domain.vo.UniversalCustomerVO" parameterType="java.lang.Long" >
+    <select id="selectUniversalCustomer" resultType="com.yunche.loan.domain.vo.UniversalCustomerVO"
+            parameterType="java.lang.Long">
     select
         o.id                      AS order_id,
         c.id                      AS customer_id,
@@ -822,7 +735,8 @@
     </select>
 
     <!--客户附件信息-->
-    <select id="selectUniversalCustomerFile" resultType="com.yunche.loan.domain.vo.UniversalCustomerFileVO" parameterType="java.lang.Long" >
+    <select id="selectUniversalCustomerFile" resultType="com.yunche.loan.domain.vo.UniversalCustomerFileVO"
+            parameterType="java.lang.Long">
     select
             path                      AS urls,
             type                      AS type,
@@ -831,9 +745,9 @@
     </select>
 
 
-
     <!--资料增补-->
-    <select id="selectUniversalMaterialRecord" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO" parameterType="java.lang.Long" >
+    <select id="selectUniversalMaterialRecord" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO"
+            parameterType="java.lang.Long">
     select
             path                      AS urls,
             type                      AS type,
@@ -843,11 +757,12 @@
 
     <!--资料增补根据type-->
     <select id="selectUniversalCustomerFileByTypes" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
-    select
-            path                      AS urls,
-            type                      AS type,
-            useFileTypeCastName(type) AS name
-    from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT})
+        select
+        path AS urls,
+        type AS type,
+        useFileTypeCastName(type) AS name
+        from loan_file where customer_id = (select loan_customer_id from loan_order where id =
+        #{orderId,jdbcType=BIGINT})
         <if test="types != null">
             and type in
             <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
@@ -1000,7 +915,8 @@
     </select>
 
     <!-- 催收详情-->
-    <select id="selectUniversalCollectionRecordDetail" resultType="com.yunche.loan.domain.vo.UniversalCollectionRecordDetail">
+    <select id="selectUniversalCollectionRecordDetail"
+            resultType="com.yunche.loan.domain.vo.UniversalCollectionRecordDetail">
           select
 	        collection.id 				                                        AS collection_id,
 	        collection.order_id 	                                            AS collection_order_id,
@@ -1019,7 +935,8 @@
     </select>
 
     <!-- 催收专员列表-->
-    <select id="selectUniversalTelephoneCollectionEmployee" resultType="com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee">
+    <select id="selectUniversalTelephoneCollectionEmployee"
+            resultType="com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee">
         select x.* from
         (
         select employee.id,employee.name,ug.name AS role,ug.collection_level
@@ -1040,7 +957,8 @@
         )
         and x.collection_level = 6
     </select>
-    <select id="selectUniversalUndistributedCollection" resultType="com.yunche.loan.domain.vo.UniversalUndistributedCollection">
+    <select id="selectUniversalUndistributedCollection"
+            resultType="com.yunche.loan.domain.vo.UniversalUndistributedCollection">
             select bu.order_id,plan.bank from bank_urge_record bu
             left join bank_repay_imp_record bi on bu.bank_repay_imp_record_id = bi.id
             left join loan_order o on bu.order_id = o.id
@@ -1062,8 +980,9 @@
     <!--=============================================end===================================================-->
 
 
-  <!--保险客户信息-->
-  <select id="selectInsuranceCustomer" resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO" parameterType="java.lang.Long" >
+    <!--保险客户信息-->
+    <select id="selectInsuranceCustomer" resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO"
+            parameterType="java.lang.Long">
       select
               o.id                              AS order_id,
               i.id                              AS insurance_info_id,
@@ -1092,7 +1011,8 @@
   </select>
 
     <!--保险客户信息-->
-    <select id="selectInsuranceCustomerNormalizeInsuranceYear" resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO" parameterType="java.lang.Long" >
+    <select id="selectInsuranceCustomerNormalizeInsuranceYear"
+            resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO" parameterType="java.lang.Long">
      select
               o.id                    AS order_id,
               i.id                    AS insurance_info_id,
@@ -1118,8 +1038,9 @@
 
   </select>
 
-  <!--保险相关信息-->
-  <select id="selectInsuranceRelevance" resultType="com.yunche.loan.domain.vo.InsuranceRelevanceVO" parameterType="java.lang.Long" >
+    <!--保险相关信息-->
+    <select id="selectInsuranceRelevance" resultType="com.yunche.loan.domain.vo.InsuranceRelevanceVO"
+            parameterType="java.lang.Long">
 
     select
              insurance_info_id      AS insurance_info_id,
@@ -1134,8 +1055,9 @@
 
   </select>
 
-  <!--金融方案-->
-  <select id="selectFinancialScheme" resultType="com.yunche.loan.domain.vo.FinancialSchemeVO" parameterType="java.lang.Long" >
+    <!--金融方案-->
+    <select id="selectFinancialScheme" resultType="com.yunche.loan.domain.vo.FinancialSchemeVO"
+            parameterType="java.lang.Long">
     select
              o.id                                 AS order_id,
              c.id                                 AS customer_id,
@@ -1194,7 +1116,8 @@
   </select>
 
     <!--计算明细的信息-->
-    <select id="selectCostCalculateInfo" resultType="com.yunche.loan.domain.vo.CostCalculateInfoVO" parameterType="java.lang.Long" >
+    <select id="selectCostCalculateInfo" resultType="com.yunche.loan.domain.vo.CostCalculateInfoVO"
+            parameterType="java.lang.Long">
         select
                 f.bank_period_principal AS bank_period_principal,
                 p.pay_month             AS pay_month
@@ -1206,7 +1129,7 @@
         left join partner p       on p.id = b.partner_id
     </select>
 
-    <select id="selectGpsByOrderId" resultType="com.yunche.loan.domain.vo.GpsVO" parameterType="java.lang.Long" >
+    <select id="selectGpsByOrderId" resultType="com.yunche.loan.domain.vo.GpsVO" parameterType="java.lang.Long">
         select
                 order_id,gps_number AS gps_number
         from install_gps
@@ -1214,8 +1137,7 @@
     </select>
 
 
-
-    <select id="selectOrderIdByIDCard" resultType="java.lang.Long" >
+    <select id="selectOrderIdByIDCard" resultType="java.lang.Long">
         SELECT
         e.orderId
         FROM
@@ -1243,7 +1165,8 @@
         ) e
     </select>
 
-    <select id="selectBankLendRecordDetail" resultType="com.yunche.loan.domain.vo.BankLendRecordVO" parameterType="java.lang.Long">
+    <select id="selectBankLendRecordDetail" resultType="com.yunche.loan.domain.vo.BankLendRecordVO"
+            parameterType="java.lang.Long">
         SELECT
         a.id AS orderId,
         b.id_card AS idCard,
@@ -1281,13 +1204,14 @@
     </select>
 
 
-    <select id="selectBankCardRecordDetail" resultType="com.yunche.loan.domain.vo.BankCardRecordVO" parameterType="java.lang.Long">
+    <select id="selectBankCardRecordDetail" resultType="com.yunche.loan.domain.vo.BankCardRecordVO"
+            parameterType="java.lang.Long">
         SELECT
         a.id AS orderId,
         b.id_card AS idCard,
         b.name AS principalLenderName,
         h.name AS salesman,
-        e.NAME AS departmentName,
+        e.name AS departmentName,
         a.loan_customer_id AS customerId,
         a.gmt_create AS gmtCreate,
         c.bank,
@@ -1320,7 +1244,7 @@
 			(
 				select customer.id_card as customer_id_card,credit.id as credit_id,credit.gmt_modify from loan_customer customer
 				left join loan_credit_info credit on customer.id = credit.customer_id
-				where customer.id_card = #{customerId} and credit.type = 1 and credit.result is not null and credit.result in (0,1,2) and UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP(credit.gmt_modify) &lt; 14*24*60*60 and customer.cust_type in (1,2,3)
+				where customer.id = #{customerId} and credit.type = 1 and credit.result is not null and credit.result in (0,1,2) and UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP(credit.gmt_modify) &lt; 14*24*60*60 and customer.cust_type in (1,2,3)
 			) tab GROUP BY tab.customer_id_card
 		) b
     </select>
@@ -1360,5 +1284,239 @@
                       ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
               ) ss GROUP BY  ss.order_id having order_id = #{orderId}
     </select>
+
+    <select id="selectUniversalDataFlowDetail" resultType="com.yunche.loan.domain.vo.UniversalDataFlowDetailVO"
+            parameterType="java.lang.Long">
+
+      SELECT
+                a.id                              AS orderId,
+                c.id_card                         AS idCard,
+                c.name                            AS customerName,
+                e.name                            AS salesmanName,
+                c.mobile                          AS mobile,
+                d.name                            AS departmentName,
+                p.name                            AS partnerName,
+                b.bank                            AS bankName,
+                f.id                              AS id,
+                f.flow_out_dept_id                AS flowOutDeptId,
+                f.flow_out_dept_name              AS flowOutDeptName,
+                f.flow_in_dept_id                 AS flowInDeptId,
+                f.flow_in_dept_name               AS flowInDeptName,
+                f.express_com                     AS expressCom,
+                f.express_num                     AS expressNum,
+                f.express_send_date               AS expressSendDate,
+                f.express_receive_date            AS expressReceiveDate,
+                f.express_receive_man             AS expressReceiveMan,
+                f.has_mortgage_contract           AS hasMortgageContract,
+                f.type                            AS type,
+                f.status                          AS status,
+                f.info                            AS info,
+                f.gmt_create                      AS gmtCreate,
+                f.gmt_modify                      AS gmtModify
+
+      FROM
+                loan_order      a
+      LEFT JOIN loan_data_flow  f     ON  a.id = f.order_id
+      LEFT JOIN loan_base_info  b     ON  b.id = a.loan_base_info_id
+      LEFT JOIN loan_customer   c     ON  c.id = a.loan_customer_id
+      LEFT JOIN employee        e     ON  e.id = b.salesman_id
+      LEFT JOIN partner         p     ON  p.id = b.partner_id
+      LEFT JOIN department      d     ON  d.id = p.department_id
+
+      WHERE f.id = #{dataFlowId}
+
+    </select>
+
+    <select id="selectUniversalMaterialManage" resultType="com.yunche.loan.domain.vo.UniversalMaterialManageVO"
+            parameterType="java.lang.Long">
+
+      SELECT
+                a.id                              AS orderId,
+                c.id_card                         AS idCard,
+                c.name                            AS customerName,
+                c.mobile                          AS mobile,
+                e.name                            AS salesmanName,
+                d.name                            AS departmentName,
+                p.name                            AS partnerName,
+                b.bank                            AS bankName,
+                m.material_num                    AS materialNum,
+                m.complete_date                   AS completeDate,
+                m.info                            AS info,
+                m.gmt_create                      AS gmtCreate,
+                m.gmt_modify                      AS gmtModify
+
+      FROM
+                  loan_order              a
+      LEFT JOIN   loan_material_manage    m        ON  a.id = m.order_id
+      LEFT JOIN   loan_base_info          b        ON  b.id = a.loan_base_info_id
+      LEFT JOIN   loan_customer           c        ON  c.id = a.loan_customer_id
+      LEFT JOIN   employee                e        ON  e.id = b.salesman_id
+      LEFT JOIN   partner                 p        ON  p.id = b.partner_id
+      LEFT JOIN   department              d        ON  d.id = p.department_id
+
+      WHERE a.id = #{orderId}
+
+    </select>
+
+    <select id="selectUniversalBankCardSend" resultType="com.yunche.loan.domain.vo.UniversalBankCardSendVO"
+            parameterType="java.lang.Long">
+
+        SELECT
+                  a.id                              AS orderId,
+                  c.id_card                         AS idCard,
+                  c.name                            AS customerName,
+                  c.mobile                          AS mobile,
+                  r.repay_card_id                   AS repayCardNum,
+                  c.bank_card_transmit_address      AS bankCardTransmitAddress,
+                  e.name                            AS salesmanName,
+                  d.name                            AS departmentName,
+                  p.name                            AS partnerName,
+                  b.bank                            AS bankName,
+                  s.cardholder_name                 AS cardholderName,
+                  s.cardholder_phone                AS cardholderPhone,
+                  s.cardholder_address              AS cardholderAddress,
+                  s.express_send_address            AS expressSendAddress,
+                  s.express_send_num                AS expressSendNum,
+                  s.express_send_date               AS expressSendDate,
+                  s.gmt_create                      AS gmtCreate,
+                  s.gmt_modify                      AS gmtModify
+
+      FROM
+                  loan_order              a
+      LEFT JOIN   loan_bank_card_send     s        ON  a.id = s.order_id
+      LEFT JOIN   bank_card_record        r        ON  a.id = r.order_id
+      LEFT JOIN   loan_base_info          b        ON  b.id = a.loan_base_info_id
+      LEFT JOIN   loan_customer           c        ON  c.id = a.loan_customer_id
+      LEFT JOIN   employee                e        ON  e.id = b.salesman_id
+      LEFT JOIN   partner                 p        ON  p.id = b.partner_id
+      LEFT JOIN   department              d        ON  d.id = p.department_id
+
+      WHERE a.id = #{orderId}
+
+    </select>
+
+
+    <select id="selectUniversalDataFlowCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
+
+        SELECT
+                  a.id                              AS order_id,
+                  DATE_FORMAT(a.gmt_create ,'%Y-%m-%d %H:%i:%S')
+                                                    AS order_gmt_create,
+                  c.id_card                         AS customer_id_card,
+                  c.id                              AS customer_id,
+                  c.name                            AS customer_name,
+                  c.mobile                          AS customer_mobile,
+                  e.id                              AS salesman_id,
+                  e.name                            AS salesman_name,
+                  d.id                              AS department_id,
+                  d.name                            AS department_name,
+                  p.id                              AS partner_id,
+                  p.name                            AS partner_name,
+                  b.bank                            AS bank_name
+
+      FROM
+                  loan_order              a
+      LEFT JOIN   loan_process            pc       ON  a.id = pc.order_id
+      LEFT JOIN   loan_base_info          b        ON  b.id = a.loan_base_info_id
+      LEFT JOIN   loan_customer           c        ON  c.id = a.loan_customer_id
+      LEFT JOIN   employee                e        ON  e.id = b.salesman_id
+      LEFT JOIN   partner                 p        ON  p.id = b.partner_id
+      LEFT JOIN   department              d        ON  d.id = p.department_id
+
+      WHERE
+               pc.telephone_verify = 1
+
+	      AND  pc.data_flow_mortgage_b2c = 0
+
+	  <if test="name != null and name != '' ">
+          AND  c.name LIKE CONCAT('%', #{name} ,'%')
+      </if>
+
+        <!--loginUser只能查询到 自己及下级 的单子 -->
+        <include refid="loginUserGetSelfAndSub"/>
+
+    </select>
+
+
+    <!--loginUser只能查询到 自己及下级 的单子 -->
+    <sql id="loginUserGetSelfAndSub">
+
+        HAVING
+        CASE
+
+        WHEN ( 3 ) IN (
+        SELECT LEVEL
+        FROM
+        user_group g
+        INNER JOIN (
+        SELECT
+        user_group_id
+        FROM
+        employee_rela_user_group
+        WHERE
+        employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) THEN
+        1 = 1
+        WHEN ( 2 ) IN (
+        SELECT LEVEL
+        FROM
+        user_group g
+        INNER JOIN (
+        SELECT
+        user_group_id
+        FROM
+        employee_rela_user_group
+        WHERE
+        employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) THEN
+        1 = 1
+        WHEN ( 1 ) IN (
+        SELECT LEVEL
+        FROM
+        user_group g
+        INNER JOIN (
+        SELECT
+        user_group_id
+        FROM
+        employee_rela_user_group
+        WHERE
+        employee_id = #{employeeId,jdbcType=BIGINT}) e
+        ON e.user_group_id = g.id
+        ) THEN
+        order_id IN (
+        SELECT
+        o.id
+        FROM
+        loan_order o
+        INNER JOIN
+        (
+        SELECT id FROM loan_base_info WHERE salesman_id IN
+        (
+        select
+        DISTINCT
+        case
+        when
+        #{employeeId,jdbcType=BIGINT} in (select employee_id from partner_rela_employee)
+        then
+        case
+        when
+        #{employeeId,jdbcType=BIGINT} IN (SELECT id FROM employee WHERE parent_id IS NULL AND type = 2)
+        then
+        employee_id
+        else
+        #{employeeId,jdbcType=BIGINT}
+        end
+        else
+        null
+        end AS employee_id
+        from partner_rela_employee where partner_id in
+        (select partner_id from partner_rela_employee where employee_id = #{employeeId,jdbcType=BIGINT})
+        having employee_id is not null
+        )
+        ) b on o.loan_base_info_id = b.id)
+        else 1=2 end
+    </sql>
 
 </mapper>

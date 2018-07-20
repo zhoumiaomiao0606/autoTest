@@ -50,6 +50,8 @@ public class CarServiceImpl implements CarService {
      */
     public static final String NEW_LINE = System.getProperty("line.separator");
 
+    public static final String SEPARATOR_SPACE = " ";
+
 
     /**
      * 阿里云车型大全API服务——HOST
@@ -218,29 +220,83 @@ public class CarServiceImpl implements CarService {
                 if (null != carModelDO && null != carModelDO.getBrandId()) {
                     CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carModelDO.getBrandId(), null);
                     if (null != carBrandDO) {
-                        carName = carName + " " + carBrandDO.getName();
+                        carName = carName + SEPARATOR_SPACE + carBrandDO.getName();
                     }
-                    carName = carName + " " + carModelDO.getName();
+                    carName = carName + SEPARATOR_SPACE + carModelDO.getName();
                 }
-                carName = carName + " " + carDetailDO.getName();
+                carName = carName + SEPARATOR_SPACE + carDetailDO.getName();
             }
         } else if (CAR_MODEL.equals(carType)) {
             CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(carId, null);
             if (null != carModelDO && null != carModelDO.getBrandId()) {
                 CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carModelDO.getBrandId(), null);
                 if (null != carBrandDO) {
-                    carName = carName + " " + carBrandDO.getName();
+                    carName = carName + SEPARATOR_SPACE + carBrandDO.getName();
                 }
-                carName = carName + " " + carModelDO.getName();
+                carName = carName + SEPARATOR_SPACE + carModelDO.getName();
             }
         } else if (CAR_BRAND.equals(carType)) {
             CarBrandDO carBrandDO = carBrandDOMapper.selectByPrimaryKey(carId, null);
             if (null != carBrandDO) {
-                carName = carName + " " + carBrandDO.getName();
+                carName = carName + SEPARATOR_SPACE + carBrandDO.getName();
             }
         }
 
         return carName.trim();
+    }
+
+    @Override
+    public String getName(Long carId, Byte carType, Byte nameLevel) {
+        Preconditions.checkNotNull(carId, "车辆ID不能为空");
+        Preconditions.checkNotNull(carType, "车辆等级不能为空");
+        Preconditions.checkNotNull(nameLevel, "名称等级不能为空");
+
+        Long carId_ = null;
+        Byte carType_ = null;
+
+        if (null == nameLevel || nameLevel >= carType) {
+
+            carType_ = carType;
+            carId_ = carId;
+
+        } else if (nameLevel < carType) {
+
+            carType_ = nameLevel;
+
+            // carId_
+            if (CAR_DETAIL.equals(carType)) {
+
+                CarDetailDO carDetail = carDetailDOMapper.selectByPrimaryKey(carId, null);
+                if (null != carDetail) {
+
+                    if (CAR_MODEL.equals(nameLevel)) {
+
+                        carId_ = carDetail.getModelId();
+
+                    } else if (CAR_BRAND.equals(nameLevel)) {
+
+                        CarModelDO carModel = carModelDOMapper.selectByPrimaryKey(carDetail.getModelId(), null);
+                        if (null != carModel) {
+                            carId_ = carModel.getBrandId();
+                        }
+                    }
+
+                }
+
+            } else if (CAR_MODEL.equals(carType)) {
+
+                CarModelDO carModel = carModelDOMapper.selectByPrimaryKey(carId, null);
+                if (null != carModel) {
+                    carId_ = carModel.getBrandId();
+                }
+
+            }
+
+        }
+
+        String fullName = getFullName(carId_, carType_);
+
+        return fullName;
     }
 
     /**
