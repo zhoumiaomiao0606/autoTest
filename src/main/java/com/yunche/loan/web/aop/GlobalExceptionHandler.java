@@ -1,15 +1,20 @@
 package com.yunche.loan.web.aop;
 
+import com.alibaba.fastjson.JSONPathException;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import feign.codec.DecodeException;
 import org.activiti.engine.ActivitiException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.mail.MailException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -44,11 +49,22 @@ public class GlobalExceptionHandler {
         } else if (e instanceof MissingServletRequestParameterException) {
             return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof MethodArgumentNotValidException) {
+<<<<<<< HEAD
             return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof DecodeException) {
             return ResultBean.ofError(e.getMessage());
         }else if (e instanceof ConstraintViolationException) {
             return ResultBean.ofError(e.getMessage());
+=======
+
+            BindingResult bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
+            FieldError fieldError = bindingResult.getFieldError();
+            String field = fieldError.getField();
+            String defaultMessage = fieldError.getDefaultMessage();
+
+            return ResultBean.ofError(field + defaultMessage);
+
+>>>>>>> v_1.1.4
         } else if (e instanceof IllegalArgumentException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof NullPointerException) {
@@ -57,6 +73,12 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("邮件发送失败");
         } else if (e instanceof ActivitiException) {
             return ResultBean.ofError("流程审核参数有误");
+        } else if (e instanceof NumberFormatException) {
+            return ResultBean.ofError("参数类型转换异常");
+        } else if (e instanceof JsonParseException) {
+            return ResultBean.ofError("参数类型转换异常");
+        } else if (e instanceof JSONPathException) {
+            return ResultBean.ofError("类型转换异常");
         } else if (e instanceof BadSqlGrammarException) {
             return ResultBean.ofError("服务器异常,请联系管理员!");
         } else if (e instanceof MySQLSyntaxErrorException) {
@@ -65,7 +87,7 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("服务器异常,请联系管理员!");
         } else {
             String errorMsg = e.toString() == null ? e.getMessage() : e.toString();
-            return ResultBean.ofError(errorMsg == null || errorMsg.equals("") ? "未知错误" : e.toString());
+            return ResultBean.ofError(StringUtils.isBlank(errorMsg) ? "未知错误" : errorMsg);
         }
     }
 

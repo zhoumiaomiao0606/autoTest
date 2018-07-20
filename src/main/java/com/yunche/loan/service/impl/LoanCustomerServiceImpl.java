@@ -177,16 +177,17 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     }
 
     @Override
-    public ResultBean<CustomerVO> getById(Long id) {
+    public CustomerVO getById(Long id) {
         Preconditions.checkNotNull(id, "客户ID不能为空");
 
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(id, null);
+        Preconditions.checkNotNull(loanCustomerDO, "客户ID有误，客户不存在");
+
         CustomerVO customerVO = new CustomerVO();
         BeanUtils.copyProperties(loanCustomerDO, customerVO);
-
         // 无files
 
-        return ResultBean.ofSuccess(customerVO);
+        return customerVO;
     }
 
     @Override

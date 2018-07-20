@@ -55,7 +55,7 @@ public class LoanProcessTest extends BaseTest {
 
     @Test
     public void test1() {
-        Map<String, List<String>> map = activitiCache.get();
+        Map<String, List<String>> map = activitiCache.getNodeRolesMap();
         System.out.println(map);
     }
 

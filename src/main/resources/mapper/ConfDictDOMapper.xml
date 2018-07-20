@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ConfDictDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ConfDictDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="field" property="field" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.ConfDictDO" extends="BaseResultMap">
+        <result column="content" property="content" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, name, field
+  </sql>
+    <sql id="Blob_Column_List">
+    content
+  </sql>
+
+    <!-- getAll -->
+    <select id="getAll" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from conf_dict
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from conf_dict
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from conf_dict
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfDictDO">
+    insert into conf_dict (id, name, field,
+    content)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{field,jdbcType=VARCHAR},
+    #{content,jdbcType=LONGVARCHAR})
+  </insert>
+
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfDictDO">
+        insert into conf_dict
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="field != null">
+                field,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="field != null">
+                #{field,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfDictDO">
+        update conf_dict
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="field != null">
+                field = #{field,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.entity.ConfDictDO">
+    update conf_dict
+    set name = #{name,jdbcType=VARCHAR},
+    field = #{field,jdbcType=VARCHAR},
+    content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfDictDO">
+    update conf_dict
+    set name = #{name,jdbcType=VARCHAR},
+      field = #{field,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

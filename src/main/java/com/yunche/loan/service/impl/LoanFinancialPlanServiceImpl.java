@@ -3,15 +3,15 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.FinancialProductDO;
+import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.LoanFinancialPlanParam;
 import com.yunche.loan.domain.vo.CalcParamVO;
 import com.yunche.loan.domain.vo.LoanFinancialPlanVO;
-import com.yunche.loan.mapper.FinancialProductDOMapper;
-import com.yunche.loan.mapper.LoanFinancialPlanDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.ComputeModeService;
+import com.yunche.loan.service.LoanBaseInfoService;
 import com.yunche.loan.service.LoanFinancialPlanService;
 import com.yunche.loan.service.LoanProcessOrderService;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Map;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanAmountConst.*;
 
 /**
  * @author liuzhe
@@ -48,6 +49,15 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
     @Autowired
     private LoanProcessOrderService loanProcessOrderService;
 
+<<<<<<< HEAD
+=======
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+    @Autowired
+    private LoanBaseInfoService loanBaseInfoService;
+
+
+>>>>>>> v_1.1.4
     @Override
     public ResultBean<Long> create(LoanFinancialPlanDO loanFinancialPlanDO) {
         Preconditions.checkNotNull(loanFinancialPlanDO, "金融方案不能为空");
@@ -156,10 +166,10 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         if (null != loanFinancialPlanDO) {
             BeanUtils.copyProperties(loanFinancialPlanDO, loanFinancialPlanVO);
         }
-        if(map!=null){
-            loanFinancialPlanVO.setCategorySuperior((String)map.get("categorySuperior"));
-            loanFinancialPlanVO.setBankRate((BigDecimal)map.get("bankRate"));
-            loanFinancialPlanVO.setStagingRatio((BigDecimal)map.get("stagingRatio"));
+        if (map != null) {
+            loanFinancialPlanVO.setCategorySuperior((String) map.get("categorySuperior"));
+            loanFinancialPlanVO.setBankRate((BigDecimal) map.get("bankRate"));
+            loanFinancialPlanVO.setStagingRatio((BigDecimal) map.get("stagingRatio"));
         }
 
         formatData(loanFinancialPlanVO);
@@ -168,18 +178,19 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
 
     /**
      * 格式化数据
+     *
      * @param loanFinancialPlanVO
      */
     private void formatData(LoanFinancialPlanVO loanFinancialPlanVO) {
-            if(loanFinancialPlanVO.getFirstMonthRepay()!=null){
-                loanFinancialPlanVO.setFirstMonthRepay(loanFinancialPlanVO.getFirstMonthRepay().setScale(2,BigDecimal.ROUND_UP));
-            }
-            if(loanFinancialPlanVO.getBankPeriodPrincipal()!=null){
-                loanFinancialPlanVO.setBankPeriodPrincipal(loanFinancialPlanVO.getBankPeriodPrincipal().setScale(2,BigDecimal.ROUND_UP));
-             }
-            if(loanFinancialPlanVO.getEachMonthRepay()!=null){
-                loanFinancialPlanVO.setEachMonthRepay(loanFinancialPlanVO.getEachMonthRepay().setScale(2,BigDecimal.ROUND_UP));
-            }
+        if (loanFinancialPlanVO.getFirstMonthRepay() != null) {
+            loanFinancialPlanVO.setFirstMonthRepay(loanFinancialPlanVO.getFirstMonthRepay().setScale(2, BigDecimal.ROUND_UP));
+        }
+        if (loanFinancialPlanVO.getBankPeriodPrincipal() != null) {
+            loanFinancialPlanVO.setBankPeriodPrincipal(loanFinancialPlanVO.getBankPeriodPrincipal().setScale(2, BigDecimal.ROUND_UP));
+        }
+        if (loanFinancialPlanVO.getEachMonthRepay() != null) {
+            loanFinancialPlanVO.setEachMonthRepay(loanFinancialPlanVO.getEachMonthRepay().setScale(2, BigDecimal.ROUND_UP));
+        }
     }
 
 
@@ -187,7 +198,9 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
     @Transactional
     public ResultBean<Long> createOrUpdateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
         Preconditions.checkNotNull(loanFinancialPlanParam, "贷款金融方案不能为空");
+
         loanFinancialPlanParam.setPlayCompany(loanFinancialPlanParam.getPaddingCompany());
+
         if (null == loanFinancialPlanParam.getId()) {
             // 创建
             return createLoanFinancialPlan(loanFinancialPlanParam);
@@ -205,7 +218,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
     private ResultBean<Long> createLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
         Preconditions.checkNotNull(loanFinancialPlanParam.getOrderId(), "业务单号不能为空");
 
-        // insert
+        // convert
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
 
@@ -220,6 +233,9 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         ResultBean<Void> updateRelaResult = loanProcessOrderService.update(loanOrderDO);
         Preconditions.checkArgument(updateRelaResult.getSuccess(), updateRelaResult.getMsg());
 
+        // 更新预计贷款
+        updateExpectLoanAmount(loanFinancialPlanParam.getOrderId(), loanFinancialPlanParam.getLoanAmount());
+
         return resultBean;
     }
 
@@ -229,6 +245,9 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
      * @param loanFinancialPlanParam
      */
     private ResultBean<Long> updateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
+        Preconditions.checkNotNull(loanFinancialPlanParam.getOrderId(), "业务单号不能为空");
+
+        // convert
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         BeanUtils.copyProperties(loanFinancialPlanParam, loanFinancialPlanDO);
         loanFinancialPlanDO.setGmtModify(new Date());
@@ -236,7 +255,40 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
         Preconditions.checkArgument(count > 0, "编辑贷款金融方案失败");
 
+        // 更新预计贷款
+        updateExpectLoanAmount(loanFinancialPlanParam.getOrderId(), loanFinancialPlanParam.getLoanAmount());
+
         return ResultBean.ofSuccess(null, "保存贷款金融方案成功");
+    }
+
+    /**
+     * 更新预计贷款
+     *
+     * @param orderId
+     * @param actualLoanAmount
+     */
+    private void updateExpectLoanAmount(Long orderId, BigDecimal actualLoanAmount) {
+        // 实际贷款额
+        Preconditions.checkNotNull(actualLoanAmount, "贷款额不能为空");
+        double actualLoanAmount_ = actualLoanAmount.doubleValue();
+
+        // 预计贷款额
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
+        Preconditions.checkNotNull(loanOrderDO.getLoanBaseInfoId(), "业务单基本信息丢失");
+
+        LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
+        loanBaseInfoDO.setId(loanOrderDO.getLoanBaseInfoId());
+        if (actualLoanAmount_ < ACTUAL_LOAN_AMOUNT_13W) {
+            loanBaseInfoDO.setLoanAmount(EXPECT_LOAN_AMOUNT_LT_13W);
+        } else if (actualLoanAmount_ >= ACTUAL_LOAN_AMOUNT_13W && actualLoanAmount_ < ACTUAL_LOAN_AMOUNT_20W) {
+            loanBaseInfoDO.setLoanAmount(EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W);
+        } else if (actualLoanAmount_ >= ACTUAL_LOAN_AMOUNT_20W) {
+            loanBaseInfoDO.setLoanAmount(EXPECT_LOAN_AMOUNT_EQT_20W);
+        }
+
+        ResultBean<Void> result = loanBaseInfoService.update(loanBaseInfoDO);
+        Preconditions.checkArgument(result.getSuccess(), result.getMsg());
     }
 }
 

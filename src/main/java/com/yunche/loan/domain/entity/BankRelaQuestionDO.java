@@ -12,7 +12,7 @@ public class BankRelaQuestionDO {
 
     private String question;
 
-    private Byte require;
+    private Byte required;
 
     private Byte type;
 

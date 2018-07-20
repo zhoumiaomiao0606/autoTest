@@ -22,8 +22,12 @@ public class FtpImpl implements Ftp {
 
     public FtpImpl() {
         this.ftpClient = new FTPClient();
+<<<<<<< HEAD
         this.ftpClient.setControlEncoding("UTF-8");
         this.ftpClient.setBufferSize(1024*1024*10);
+=======
+        this.ftpClient.setControlEncoding("GBK");
+>>>>>>> v_1.1.4
     }
 
     public void setControlEncoding(String encoding) {

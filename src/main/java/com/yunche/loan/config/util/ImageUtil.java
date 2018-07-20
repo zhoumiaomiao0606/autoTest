@@ -28,6 +28,13 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class ImageUtil {
+<<<<<<< HEAD
+=======
+    private  static String downLoadBasepath="/tmp";
+
+    private static final String PIC_SUFFIX=".jpg";
+    private static final String DOC_SUFFIX=".docx";
+>>>>>>> v_1.1.4
 
     private static final int DEFAULT_WIDTH=5000;
     private static final Logger LOG = LoggerFactory.getLogger(ImageUtil.class);
@@ -165,7 +172,7 @@ public class ImageUtil {
                 }
                 BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(wordMLPackage, bytes);
                 int docPrId = 1;
-                int cNvPrId = 1;
+                int cNvPrId = 2;
                 Inline inline = imagePart.createImageInline("AAA","BBB", docPrId, cNvPrId, false);
                 ObjectFactory factory = new ObjectFactory();
                 P paragraph = factory.createP();

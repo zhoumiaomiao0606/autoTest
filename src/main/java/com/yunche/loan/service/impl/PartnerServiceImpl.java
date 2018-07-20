@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.cache.DepartmentCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.domain.entity.*;
@@ -83,6 +84,9 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private DepartmentCache departmentCache;
+
 
     @Override
     @Transactional
@@ -114,6 +118,9 @@ public class PartnerServiceImpl implements PartnerService {
 
         // 绑定业务产品列表
         bindBizModel(partnerId, partnerParam.getAreaId(), partnerParam.getBizModelIdList());
+
+        // refreshFlowDept
+        departmentCache.refresh();
 
         return ResultBean.ofSuccess(partnerId, "创建成功");
     }
@@ -163,6 +170,9 @@ public class PartnerServiceImpl implements PartnerService {
                     PartnerBankAccountDO partnerBankAccountDO = new PartnerBankAccountDO();
                     BeanUtils.copyProperties(e, partnerBankAccountDO);
                     partnerBankAccountDO.setPartnerId(partnerId);
+
+                    partnerBankAccountDO.setGmtCreate(new Date());
+                    partnerBankAccountDO.setGmtModify(new Date());
 
                     return partnerBankAccountDO;
                 })
@@ -234,7 +244,6 @@ public class PartnerServiceImpl implements PartnerService {
     @Transactional
     public ResultBean<Void> update(PartnerParam partnerParam) {
         Preconditions.checkNotNull(partnerParam.getId(), "id不能为空");
-        Preconditions.checkNotNull(partnerParam.getLeaderId(), "团队负责人不能为空");
 
         // 编辑leader
         updateLeader(partnerParam.getId(), partnerParam.getLeaderId());
@@ -253,6 +262,9 @@ public class PartnerServiceImpl implements PartnerService {
 
         // 编辑绑定业务产品的限制区域
         updateRelaBizModelArea(partnerParam.getId(), partnerParam.getAreaId());
+
+        // refreshFlowDept
+        departmentCache.refresh();
 
         return ResultBean.ofSuccess(null, "编辑成功");
     }
@@ -316,6 +328,9 @@ public class PartnerServiceImpl implements PartnerService {
 
         // 清空账户信息
         partnerBankAccountDOMapper.deleteByPartnerId(id);
+
+        // refreshFlowDept
+        departmentCache.refresh();
 
         return ResultBean.ofSuccess(null, "删除成功");
     }
@@ -457,7 +472,7 @@ public class PartnerServiceImpl implements PartnerService {
 
         // getAreaId
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(id, VALID_STATUS);
-        Preconditions.checkNotNull(partnerDO, "id有误,合伙人不存!");
+        Preconditions.checkNotNull(partnerDO, "id有误,合伙人不存在!");
         Preconditions.checkNotNull(partnerDO.getAreaId(), "合伙人业务区域为空，请先设置业务区域");
 
         Arrays.asList(bizModelIds.split(",")).stream()
@@ -580,13 +595,25 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public ResultBean<Set<String>> listBank(Long employeeId) {
-        Preconditions.checkNotNull(employeeId, "员工ID不能为空");
+    public ResultBean<Set<String>> listBank(Long employeeId, Long partnerId) {
 
-        Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
         if (null == partnerId) {
-            return ResultBean.ofSuccess(Collections.EMPTY_SET);
+            Preconditions.checkNotNull(employeeId, "员工ID不能为空");
+
+            partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
+            if (null == partnerId) {
+                return ResultBean.ofSuccess(Collections.EMPTY_SET);
+            }
         }
+
+        return listBankByPartnerId(partnerId);
+    }
+
+    private ResultBean<Set<String>> listBankByPartnerId(Long partnerId) {
+        Preconditions.checkNotNull(partnerId, "合伙人ID不能为空");
+
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(partnerId, VALID_STATUS);
+        Preconditions.checkNotNull(partnerDO, "合伙人不存在");
 
         BizModelRelaAreaPartnersDO bizModelRelaAreaPartnersDO = new BizModelRelaAreaPartnersDO();
         bizModelRelaAreaPartnersDO.setGroupId(partnerId);
@@ -622,6 +649,13 @@ public class PartnerServiceImpl implements PartnerService {
                             }
                         }
                     });
+        }
+
+        // 排除 禁止查征信银行
+        String disableBankList = partnerDO.getDisableBankList();
+        if (StringUtils.isNotBlank(disableBankList)) {
+            String[] disableBankListArr = disableBankList.split("\\,");
+            bankSet.removeAll(Sets.newHashSet(disableBankListArr));
         }
 
         bankSet.removeAll(Collections.singleton(null));

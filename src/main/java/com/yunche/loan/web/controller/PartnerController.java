@@ -170,14 +170,13 @@ public class PartnerController {
      * @return
      */
     @GetMapping(value = "/listBank")
-    public ResultBean<Set<String>> listBank(@RequestParam("employeeId") Long employeeId) {
-        return partnerService.listBank(employeeId);
+    public ResultBean<Set<String>> listBank(@RequestParam(value = "employeeId", required = false) Long employeeId,
+                                            @RequestParam(value = "partnerId", required = false) Long partnerId) {
+        return partnerService.listBank(employeeId, partnerId);
     }
 
-
     @PostMapping(value = "/updatearea")
-    public ResultBean modifyPartnerArea(@RequestBody PartnerParam partnerParam){
+    public ResultBean modifyPartnerArea(@RequestBody PartnerParam partnerParam) {
         return partnerService.updatePartnerArea(partnerParam);
-
     }
 }

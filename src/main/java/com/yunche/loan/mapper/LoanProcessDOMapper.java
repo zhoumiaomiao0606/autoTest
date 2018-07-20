@@ -1,10 +1,11 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanProcessDO;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
-@Mapper
 public interface LoanProcessDOMapper {
+
     int deleteByPrimaryKey(Long orderId);
 
     int insert(LoanProcessDO record);
@@ -17,6 +18,13 @@ public interface LoanProcessDOMapper {
 
     int updateByPrimaryKey(LoanProcessDO record);
 
+    /**
+     * loan_apply_reject_orgin_task置为NULL
+     *
+     * @param orderId
+     * @return
+     */
+    @Update("UPDATE `loan_process`  SET `loan_apply_reject_orgin_task` = NULL WHERE `order_id` = #{orderId,jdbcType=BIGINT}")
     int updateLoanApplyRejectOrginTaskIsNull(Long orderId);
 
     /**
@@ -25,5 +33,6 @@ public interface LoanProcessDOMapper {
      * @param orderId
      * @return
      */
+    @Select("SELECT cancel_task_def_key FROM `loan_process`  WHERE `order_id` = #{orderId,jdbcType=BIGINT}")
     String getCancelTaskDefKey(Long orderId);
 }

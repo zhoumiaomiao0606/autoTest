@@ -309,7 +309,7 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
--->
+
 
 
 <!--        <table tableName="material_down_his" domainObjectName="MaterialDownHisDO"
@@ -325,7 +325,43 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
+<<<<<<< HEAD
 
+=======
+        <table tableName="bank_rela_question" domainObjectName="BankRelaQuestionDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+        <table tableName="video_face_log" domainObjectName="VideoFaceLogDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+
+        <table tableName="loan_bank_card_send" domainObjectName="LoanBankCardSendDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+        <table tableName="loan_material_manage" domainObjectName="LoanMaterialManageDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+
+        <table tableName="loan_process" domainObjectName="LoanProcessDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+-->
+
+        <table tableName="loan_data_flow" domainObjectName="LoanDataFlowDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+>>>>>>> v_1.1.4
 
 
 

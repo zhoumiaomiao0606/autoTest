@@ -16,6 +16,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/loadqr")
 public class LoadQrController {
+
     @Autowired
     LoadQrService loadQrService;
 

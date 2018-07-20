@@ -46,7 +46,7 @@ public enum BaseExceptionEnum {
 
     private String message;
 
-    private BaseExceptionEnum(String code, String message) {
+    BaseExceptionEnum(String code, String message) {
         this.code = code;
         this.message = message;
     }

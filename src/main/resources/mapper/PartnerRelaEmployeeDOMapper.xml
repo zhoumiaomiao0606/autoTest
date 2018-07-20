@@ -7,11 +7,19 @@
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
     </resultMap>
+
     <sql id="Base_Column_List">
     partner_id, employee_id, gmt_create, gmt_modify
   </sql>
 
-    <!--getPartnerIdByEmployeeId-->
+    <!-- getPartnerByEmployeeId -->
+    <select id="getPartnerByEmployeeId" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.entity.PartnerDO">
+        SELECT * FROM `partner` WHERE `id` =
+        ( SELECT partner_id  FROM `partner_rela_employee` WHERE employee_id = #{employeeId,jdbcType=BIGINT} )
+    </select>
+
+    <!-- getPartnerIdByEmployeeId -->
     <select id="getPartnerIdByEmployeeId" parameterType="java.lang.Long"
             resultType="java.lang.Long">
         select DISTINCT(partner_id)
@@ -19,6 +27,7 @@
         where employee_id = #{employeeId,jdbcType=BIGINT}
     </select>
 
+    <!-- getEmployeeIdListByPartnerId -->
     <select id="getEmployeeIdListByPartnerId" parameterType="java.lang.Long"
             resultType="java.lang.Long">
         select employee_id

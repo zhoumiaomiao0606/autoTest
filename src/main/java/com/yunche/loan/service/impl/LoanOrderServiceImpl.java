@@ -258,6 +258,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // 权限校验
         permissionService.checkTaskPermission(LoanProcessEnum.CREDIT_APPLY.getCode());
 
+        // 是否已经禁用该银行
+        checkDisableBank(param.getLoanBaseInfo());
+
         // 创建贷款基本信息
         Long baseInfoId = createLoanBaseInfo(param.getLoanBaseInfo());
 
@@ -268,6 +271,25 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long orderId = createLoanOrder(baseInfoId, customerId);
 
         return ResultBean.ofSuccess(String.valueOf(orderId));
+    }
+
+    private void checkDisableBank(LoanBaseInfoParam loanBaseInfo) {
+        Preconditions.checkArgument(null != loanBaseInfo && StringUtils.isNotBlank(loanBaseInfo.getBank()),
+                "贷款银行不能为空");
+
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfo.getPartnerId(), VALID_STATUS);
+        Preconditions.checkNotNull(partnerDO, "合伙人不存在");
+
+        String loanBank = loanBaseInfo.getBank();
+
+        // 禁止查征信银行 校验
+        String disableBankList = partnerDO.getDisableBankList();
+        if (StringUtils.isNotBlank(disableBankList)) {
+            String[] disableBankListArr = disableBankList.split("\\,");
+
+            Preconditions.checkArgument(!Arrays.asList(disableBankListArr).contains(loanBank), "您当前[征信查询]银行已被禁，请联系管理员！");
+        }
+
     }
 
     @Override
@@ -391,15 +413,15 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
-        ResultBean<CustomerVO> customerVOResultBean = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
-        Preconditions.checkArgument(customerVOResultBean.getSuccess(), customerVOResultBean.getMsg());
-        CustomerVO customerVO = customerVOResultBean.getData();
+        CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
 
         LoanSimpleInfoVO loanSimpleInfoVO = new LoanSimpleInfoVO();
-        loanSimpleInfoVO.setCustomerId(customerVO.getId());
-        loanSimpleInfoVO.setCustomerName(customerVO.getName());
-        loanSimpleInfoVO.setIdCard(customerVO.getIdCard());
-        loanSimpleInfoVO.setMobile(customerVO.getMobile());
+        if (null != customerVO) {
+            loanSimpleInfoVO.setCustomerId(customerVO.getId());
+            loanSimpleInfoVO.setCustomerName(customerVO.getName());
+            loanSimpleInfoVO.setIdCard(customerVO.getIdCard());
+            loanSimpleInfoVO.setMobile(customerVO.getMobile());
+        }
 
         ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
         Preconditions.checkArgument(loanBaseInfoVOResultBean.getSuccess(), loanBaseInfoVOResultBean.getMsg());
@@ -503,16 +525,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
+        infoSupplementVO.setOrderId(String.valueOf(orderId));
+
         // 客户信息
         if (null != loanOrderDO.getLoanCustomerId()) {
-            ResultBean<CustomerVO> customerVOResultBean = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
-            Preconditions.checkArgument(customerVOResultBean.getSuccess(), customerVOResultBean.getMsg());
-            CustomerVO customerVO = customerVOResultBean.getData();
+            CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
 
-            infoSupplementVO.setOrderId(String.valueOf(orderId));
-            infoSupplementVO.setCustomerId(customerVO.getId());
-            infoSupplementVO.setCustomerName(customerVO.getName());
-            infoSupplementVO.setIdCard(customerVO.getIdCard());
+            if (null != customerVO) {
+                infoSupplementVO.setCustomerId(customerVO.getId());
+                infoSupplementVO.setCustomerName(customerVO.getName());
+                infoSupplementVO.setIdCard(customerVO.getIdCard());
+            }
         }
 
         // 业务员信息
@@ -569,11 +592,11 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         if (vehicleInformationDO != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
             loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
-            String tmpApplyLicensePlateArea=null;
-            if(baseAreaDO!=null){
-                if(baseAreaDO.getParentAreaName()!=null){
-                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+baseAreaDO.getAreaName();
-                }else{
+            String tmpApplyLicensePlateArea = null;
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
                     tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
                 }
             }
@@ -621,9 +644,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
                     // 12-合影照片;13-家访视频; 16-家访照片; 17-车辆照片;18-其他资料;
                     files.stream()
-                            .filter(e -> "12".equals(e.getType()) || "13".equals(e.getType())
-                                    || "16".equals(e.getType()) || "17".equals(e.getType())
-                                    || "18".equals(e.getType()))
+//                            .filter(e -> "12".equals(e.getType()) || "13".equals(e.getType())
+//                                    || "16".equals(e.getType()) || "17".equals(e.getType())
+//                                    || "18".equals(e.getType()))
                             // 非空
                             .filter(e -> !CollectionUtils.isEmpty(e.getUrls()))
                             .forEach(e -> {

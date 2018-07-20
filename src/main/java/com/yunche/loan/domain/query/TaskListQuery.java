@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 
-
 @Data
 public class TaskListQuery {
     /**
@@ -45,8 +44,22 @@ public class TaskListQuery {
     @NotBlank
     private String taskDefinitionKey;
 
+    /**
+     * ----------------------------------------------------------------------------------
+     * 正常：
+     * 1-已提交;  2-未提交;  3-已打回;     0-全部;
+     * ----------------------------------------------------------------------------------
+     * <p>
+     * <p>
+     * <p>
+     * ----------------------------------------------------------------------------------
+     * 资料流转：
+     * 1-已提交;  [2-未提交 ===拆分为===>（21-待邮寄;  22-待接收;）]   3-已打回;     0-全部;
+     * ----------------------------------------------------------------------------------
+     */
     @NotNull
     private Integer taskStatus;
+    private Integer taskStatus_;
 
     private String transCode;
 
@@ -54,6 +67,7 @@ public class TaskListQuery {
     private boolean fuse = false;
 
     private boolean pull = true;
+
 
     private String orderId;//业务编号
 
@@ -106,7 +120,16 @@ public class TaskListQuery {
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
     private List<String> bankList = Lists.newArrayList();//银行ID列表
 
+<<<<<<< HEAD
 
+=======
+    // 资料流转-节点类型
+    private Byte dataFlowType;
+    // 资料流转-类型列表
+    private List<String> dataFlowTypeList = Lists.newArrayList();
+    // 资料流转-节点列表
+    private Set<String> dataFlowNodeSet = Sets.newHashSet();
+>>>>>>> v_1.1.4
 
     public String getIsStraighten() {
         if (StringUtils.isBlank(isStraighten)) {
@@ -134,5 +157,13 @@ public class TaskListQuery {
             return null;
         }
         return customer;
+    }
+
+    public Integer getTaskStatus_() {
+        if (null != taskStatus_) {
+            return taskStatus_;
+        }
+        this.taskStatus_ = taskStatus;
+        return taskStatus_;
     }
 }
