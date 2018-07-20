@@ -7,6 +7,45 @@
                 FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
     </select>
+    <select id="selectApplyDiviGeneralInfo" resultType="com.yunche.loan.domain.vo.ApplyDiviGeneralInfoVO">
+        select
+	        car.car_type                              as car_type,
+	        customer.name                             as customer_name,
+	        customer.id_card                          as customer_id_card,
+	        customer.mobile                           as customer_mobile,
+	        customer.family_address                   as customer_family_address,
+	        customer.income_certificate_company_name  as customer_income_certificate_company_name,
+	        useGetSmallCarName(car.car_detail_id)     as car_name,
+	        financial.car_price	                      as financial_car_price,
+	        vehicle.vehicle_identification_number     as vehicle_identification_number,
+	        vehicle.registration_certificate_number   as vehicle_registration_certificate_number,
+	        vehicle.license_plate_number              as vehicle_license_plate_number,
+	        d.price                                   AS car_assess_price,
+	        (year(now())-year(vehicle.register_date)) as vehicle_use_year,
+	        financial.down_payment_money              as financial_down_payment_money,
+	        financial.bank_period_principal           AS financial_bank_period_principal,
+	        financial.loan_time                       as financial_loan_time,
+	        useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
+                                                      AS financial_bank_fee,
+            useCalculateStagingRatio(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
+                                                      AS financial_bank_staging_ratio,
+	        format(useGetBankRate(financial.financial_product_id,financial.loan_time),3)
+                                                      AS financial_bank_rate,
+	        '1' 					                  as is_pledge,
+            customer.lend_card		                  as customer_lend_card,
+	        CONCAT(vehicle.vehicle_identification_number,' ',useGetSmallCarName(car.car_detail_id))
+	                                                  as customer_collateral
+
+
+
+        from (select * from loan_order where id = #{orderId}) orders
+        left join loan_car_info car on orders.loan_car_info_id = car.id
+        left join loan_customer customer on orders.loan_customer_id = customer.id
+        left join vehicle_information vehicle on vehicle.id = orders.vehicle_information_id
+        left join loan_financial_plan financial on financial.id = orders.loan_financial_plan_id
+        left join financial_product product on product.prod_id = financial.financial_product_id
+        left join car_detail d on car.car_detail_id = d.id
+    </select>
     <!--提车资料-->
     <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInformationVO"  parameterType="java.lang.Long">
         select
@@ -1280,26 +1319,25 @@
 		) b
     </select>
 
-    <select id="selectBankInterfaceSerialNote" resultType="java.lang.String">
+    <select id="selectLastBankInterfaceSerialNoteByTransCode" resultType="java.lang.String">
 		  select serial.reject_reason from bank_interface_serial serial
 		  inner join
 		  (
 		  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
 		  				as serial_no
 		  from (select * from bank_interface_serial where status = 3) t GROUP BY trans_code,customer_id
-		  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+		  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
 		  and serial.customer_id = #{customerId}
     </select>
-    <select id="selectBankInterfaceSerialStatus" resultType="java.lang.String">
+    <select id="selectLastBankInterfaceSerialStatusByTransCode" resultType="java.lang.String">
           select serial.status from bank_interface_serial serial
           inner join
           (
           select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
           as serial_no
           from bank_interface_serial t GROUP BY trans_code,customer_id
-          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'applyCredit'
+          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
           and serial.customer_id = #{customerId}
     </select>
-
 
 </mapper>

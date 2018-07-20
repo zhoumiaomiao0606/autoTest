@@ -11,9 +11,11 @@ import java.util.Set;
 @Mapper
 public interface LoanQueryDOMapper {
 
-    String selectBankInterfaceSerialStatus(Long customerId);
+    ApplyDiviGeneralInfoVO selectApplyDiviGeneralInfo(Long orderId);
 
-    String selectBankInterfaceSerialNote(Long customerId);
+    String selectLastBankInterfaceSerialStatusByTransCode(@Param("customerId") Long customerId,@Param("transCode") String transCode);
+
+    String selectLastBankInterfaceSerialNoteByTransCode(@Param("customerId") Long customerId,@Param("transCode") String transCode);
 
     UniversalMaterialRecordVO  getUniversalCustomerFilesByType(@Param("customerId") Long customerId,@Param("type") Byte type);
 

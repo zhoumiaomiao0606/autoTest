@@ -139,9 +139,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         List<LoanCustomerDO> customers = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(orderId,types);
         if(CollectionUtils.isEmpty(customers)){
             throw new BizException("贷款客户信息不存在");
-        }
-        checkCustomerHavingCreditON14Day(customers);
-        int value = bankId.intValue();
+        }int value = bankId.intValue();
         switch (value) {
             case 1:
                 //判断当前客户贷款银行是否为杭州工行，如为杭州工行：
@@ -495,7 +493,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
 
     private void ICBCBankCreditProcess(Long orderId,String phybrno,List<LoanCustomerDO> customers){
-            //①判断客户是否已提交了征信记录，且银行征信结果非退回，若满足，则不会推送该客户，否则继续②
+
+        //①判断客户是否已提交了征信记录，且银行征信结果非退回，若满足，则不会推送该客户，否则继续②
             for(LoanCustomerDO loanCustomerDO:customers){
                 UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYCREDIT);
                 if(result!=null){
@@ -503,9 +502,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                     //只有调用接口成功才算
                     //非处理中 并且 非查询成功的可以进行推送
                     if(!IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) && !IDict.K_JJSTS.PROCESS.equals(result.getStatus()) && !IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus()) ) {
+                        checkCustomerHavingCreditON14Day(loanCustomerDO);
                         bankCreditProcess(orderId,phybrno,loanCustomerDO);
                     }
                 }else{
+                    checkCustomerHavingCreditON14Day(loanCustomerDO);
                     bankCreditProcess(orderId,phybrno,loanCustomerDO);
                 }
             }
@@ -631,13 +632,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         return custRelation;
     }
 
-    private void checkCustomerHavingCreditON14Day(List<LoanCustomerDO> customers){
-        for(LoanCustomerDO loanCustomerDO:customers){
-            Preconditions.checkArgument(StringUtils.isNotBlank(loanCustomerDO.getIdCard()), loanCustomerDO.getName()+"身份证号不能为空");
-            if(loanQueryDOMapper.checkCustomerHavingCreditON14Day(loanCustomerDO.getIdCard())){
-                throw new BizException(loanCustomerDO.getName()+"在14天内重复查询征信");
+    private void checkCustomerHavingCreditON14Day(LoanCustomerDO customers){
+            Preconditions.checkArgument(StringUtils.isNotBlank(customers.getIdCard()), customers.getName()+"身份证号不能为空");
+            if(loanQueryDOMapper.checkCustomerHavingCreditON14Day(customers.getIdCard())){
+                throw new BizException(customers.getName()+"在14天内重复查询征信");
             }
-        }
     }
 
 

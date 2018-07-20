@@ -257,6 +257,6 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         customerCreditRecord.setCreditId(loanCreditInfoVO.getId());
         customerCreditRecord.setCreditResult(loanCreditInfoVO.getResult());
         customerCreditRecord.setCreditInfo(loanCreditInfoVO.getInfo());
-        customerCreditRecord.setBankCreditStatus(loanQueryDOMapper.selectBankInterfaceSerialStatus(customerCreditRecord.getCustomerId()));
+        customerCreditRecord.setBankCreditStatus(loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(customerCreditRecord.getCustomerId(),"applyCredit"));
     }
 }
