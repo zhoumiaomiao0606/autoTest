@@ -52,16 +52,15 @@ public class FtpImpl implements Ftp {
         if (path.length() != 0) {
             this.ftpClient.changeWorkingDirectory(path);
         }
-        try{
-            String pasvMode = System.getProperty("yunche.ftp.client.pasv.mode", "true");
-//            if ("false".equals(pasvMode)) {
-//                this.ftpClient.enterLocalActiveMode();
-//            } else {
-                this.ftpClient.enterLocalPassiveMode();//233580
-//            }
-        }catch (Exception e) {
-            this.ftpClient.enterLocalPassiveMode();
-        }
+        //try{
+        //    //String pasvMode = System.getProperty("yunche.ftp.client.pasv.mode", "true");
+//      //      if ("false".equals(pasvMode)) {
+//      //          this.ftpClient.enterLocalActiveMode();
+//      //      } else {
+//      //      }
+        //}catch (Exception e) {
+        //    this.ftpClient.enterLocalPassiveMode();
+        //}
     }
 
     public void setFileType(int fileType) throws IOException {
@@ -171,6 +170,7 @@ public class FtpImpl implements Ftp {
         try {
             BufferedInputStream  input = new BufferedInputStream(new FileInputStream(fileName));
             iStream = new FileInputStream(fileName);
+            this.ftpClient.enterLocalPassiveMode();//233580\\
             flag = this.ftpClient.storeFile(newName, input);
         }catch (IOException e){
             flag = false;

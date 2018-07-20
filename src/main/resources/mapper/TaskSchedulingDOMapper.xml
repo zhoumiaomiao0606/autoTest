@@ -313,9 +313,11 @@
                                                                AS paymentGtCreate,
                   <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
+                          case when join_serial.order_id is null then 0 else 1 end AS serialFlag,
                           deputy.credit_apply                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
+                          case when join_serial.order_id is null then 0 else 1 end AS serialFlag,
                           deputy.bank_credit_record               AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_social_credit_record'">
@@ -433,6 +435,9 @@
               left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
+              <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
+              left join (select DISTINCT order_id from bank_interface_serial where trans_code = #{transCode}) join_serial on main.id = join_serial.order_id
+              </if>
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
