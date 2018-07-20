@@ -697,7 +697,7 @@
         c.age                     AS age,
         c.guarantee_rela          AS guarantee_rela,
         c.open_card_order         AS open_card_order,
-        c.open_card_status        AS open_card_status
+        c.open_card_status        AS open_card_status,
         cb.result                 AS bank_result,
         cs.result                 AS society_result
 
