@@ -322,7 +322,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         applycreditstatus.setCmptime(DateUtil.getTime());
         applycreditstatus.setCmpseq(GeneratorIDUtil.execute());
         applycreditstatus.setFileNum(String.valueOf(0));
-
+        applycreditstatus.setCustomerId(String.valueOf(loanOrderDO.getLoanCustomerId()));
         ApplycreditstatusResponse response = bankSolutionService.applycreditstatus(applycreditstatus);
         return ResultBean.ofSuccess(response);
     }
