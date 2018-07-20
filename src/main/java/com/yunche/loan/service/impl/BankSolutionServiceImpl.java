@@ -743,6 +743,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setModelcode(dictMapCache.getValue(IConstant.COMPANY_NATURE, String.valueOf(loanCustomerDO.getCompanyNature())));//modelcode
 
         customer.setIndate(DateUtil.getDateTo8(loanCustomerDO.getCheckInDate()));
+        customer.setEdulvl(dictMapCache.getValue(IConstant.EDU_LEVEL,String.valueOf(loanCustomerDO.getEducation())));
 
         customer.setCadrchoic("3");//单位地址选择 1-预查询，2-修改，3-新增。默认送3
         customer.setHphoneno(loanCustomerDO.getMobile());//住宅电话号码
