@@ -1240,7 +1240,6 @@
         a.id =#{orderId}
     </select>
 
-<<<<<<< HEAD
     <select id="checkCustomerHavingCreditON14Day" resultType="java.lang.Boolean">
         select count(1) from
 		(
@@ -1248,7 +1247,7 @@
 			(
 				select customer.id_card as customer_id_card,credit.id as credit_id,credit.gmt_modify from loan_customer customer
 				left join loan_credit_info credit on customer.id = credit.customer_id
-				where customer.id_card = #{customerId} and credit.type = 1 and credit.result is not null and credit.result in (0,1,2) and UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP(credit.gmt_modify) &lt; 14*24*60*60 and customer.cust_type in (1,2,3)
+				where customer.id = #{customerId} and credit.type = 1 and credit.result is not null and credit.result in (0,1,2) and UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP(credit.gmt_modify) &lt; 14*24*60*60 and customer.cust_type in (1,2,3)
 			) tab GROUP BY tab.customer_id_card
 		) b
     </select>
@@ -1289,7 +1288,6 @@
               ) ss GROUP BY  ss.order_id having order_id = #{orderId}
     </select>
 
-=======
     <select id="selectUniversalDataFlowDetail" resultType="com.yunche.loan.domain.vo.UniversalDataFlowDetailVO"
             parameterType="java.lang.Long">
 

@@ -120,16 +120,12 @@ public class TaskListQuery {
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
     private List<String> bankList = Lists.newArrayList();//银行ID列表
 
-<<<<<<< HEAD
-
-=======
     // 资料流转-节点类型
     private Byte dataFlowType;
     // 资料流转-类型列表
     private List<String> dataFlowTypeList = Lists.newArrayList();
     // 资料流转-节点列表
     private Set<String> dataFlowNodeSet = Sets.newHashSet();
->>>>>>> v_1.1.4
 
     public String getIsStraighten() {
         if (StringUtils.isBlank(isStraighten)) {

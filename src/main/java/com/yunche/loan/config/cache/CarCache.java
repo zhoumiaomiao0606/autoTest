@@ -223,15 +223,9 @@ public class CarCache {
         }
 
         if (StringUtils.isNotBlank(allCarDetail)) {
-<<<<<<< HEAD
             Map<String, CarDetailDO> map = JSON.parseObject(allCarDetail, Map.class);
             String str = JSON.toJSONString(map.get(String.valueOf(carDetailId)));
             CarDetailDO carDetailDO = JSON.parseObject(str,CarDetailDO.class);
-=======
-            Map<String, JSONObject> map = JSON.parseObject(allCarDetail, Map.class);
-            JSONObject jsonObject = map.get(String.valueOf(carDetailId));
-            CarDetailDO carDetailDO = JSON.toJavaObject(jsonObject, CarDetailDO.class);
->>>>>>> v_1.1.4
             return carDetailDO;
         }
 
@@ -258,15 +252,9 @@ public class CarCache {
         }
 
         if (StringUtils.isNotBlank(allCarModel)) {
-<<<<<<< HEAD
-            Map<String, CarModelDO> map = JSON.parseObject(allCarModel, Map.class);
-            String str = JSON.toJSONString(map.get(String.valueOf(carModelId)));
-            CarModelDO carModelDO = JSON.parseObject(str,CarModelDO.class);
-=======
             Map<String, JSONObject> map = JSON.parseObject(allCarModel, Map.class);
             JSONObject jsonObject = map.get(String.valueOf(carModelId));
             CarModelDO carModelDO = JSON.toJavaObject(jsonObject, CarModelDO.class);
->>>>>>> v_1.1.4
             return carModelDO;
         }
 
@@ -293,16 +281,12 @@ public class CarCache {
         }
 
         if (StringUtils.isNotBlank(allCarBrand)) {
-<<<<<<< HEAD
-            Map<String, CarBrandDO> map = JSON.parseObject(allCarBrand, Map.class);
-            String str = JSON.toJSONString(map.get(String.valueOf(carBrandId)));
-            CarBrandDO carBrandDO = JSON.parseObject(str,CarBrandDO.class);
-=======
+
             Map<String, JSONObject> map = JSON.parseObject(allCarBrand, Map.class);
             JSONObject jsonObject = map.get(String.valueOf(carBrandId));
             CarBrandDO carBrandDO = JSON.toJavaObject(jsonObject, CarBrandDO.class);
->>>>>>> v_1.1.4
             return carBrandDO;
+
         }
 
         return null;

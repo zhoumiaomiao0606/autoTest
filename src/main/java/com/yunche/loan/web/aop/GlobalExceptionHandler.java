@@ -49,22 +49,11 @@ public class GlobalExceptionHandler {
         } else if (e instanceof MissingServletRequestParameterException) {
             return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof MethodArgumentNotValidException) {
-<<<<<<< HEAD
             return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof DecodeException) {
             return ResultBean.ofError(e.getMessage());
         }else if (e instanceof ConstraintViolationException) {
             return ResultBean.ofError(e.getMessage());
-=======
-
-            BindingResult bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
-            FieldError fieldError = bindingResult.getFieldError();
-            String field = fieldError.getField();
-            String defaultMessage = fieldError.getDefaultMessage();
-
-            return ResultBean.ofError(field + defaultMessage);
-
->>>>>>> v_1.1.4
         } else if (e instanceof IllegalArgumentException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof NullPointerException) {

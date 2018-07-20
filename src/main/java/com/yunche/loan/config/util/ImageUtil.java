@@ -28,22 +28,17 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class ImageUtil {
-<<<<<<< HEAD
-=======
+
     private  static String downLoadBasepath="/tmp";
 
     private static final String PIC_SUFFIX=".jpg";
     private static final String DOC_SUFFIX=".docx";
->>>>>>> v_1.1.4
 
     private static final int DEFAULT_WIDTH=5000;
     private static final Logger LOG = LoggerFactory.getLogger(ImageUtil.class);
-    private  static String downLoadBasepath="/tmp";
     private  static  String videoBucketName;
     public static  final String ZIP_SUFFIX = ".zip";
     public static  final String MP4_SUFFIX = ".mp4";
-    public  static  final String PIC_SUFFIX=".jpg";
-    public  static  final String DOC_SUFFIX=".docx";
     private static  final String FORMATNAME="jpg";
     static {
         ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");

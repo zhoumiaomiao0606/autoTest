@@ -49,15 +49,11 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
     @Autowired
     private LoanProcessOrderService loanProcessOrderService;
 
-<<<<<<< HEAD
-=======
     @Autowired
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
     @Autowired
     private LoanBaseInfoService loanBaseInfoService;
 
-
->>>>>>> v_1.1.4
     @Override
     public ResultBean<Long> create(LoanFinancialPlanDO loanFinancialPlanDO) {
         Preconditions.checkNotNull(loanFinancialPlanDO, "金融方案不能为空");

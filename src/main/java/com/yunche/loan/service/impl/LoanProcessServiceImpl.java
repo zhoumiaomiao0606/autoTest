@@ -129,14 +129,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private TaskDistributionService taskDistributionService;
 
     @Autowired
-<<<<<<< HEAD
     private BankSolutionService bankSolutionService;
-=======
+
     private LoanDataFlowService loanDataFlowService;
 
     @Autowired
     private DictService dictService;
->>>>>>> v_1.1.4
 
 
     @Override
@@ -235,7 +233,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
 
-<<<<<<< HEAD
     /**
      * 通过银行接口  ->  自动查询征信
      *
@@ -249,9 +246,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
     }
 
-
-=======
->>>>>>> v_1.1.4
     /**
      * [领取]完成
      *

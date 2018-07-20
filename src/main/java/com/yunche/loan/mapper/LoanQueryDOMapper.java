@@ -10,7 +10,6 @@ import java.util.Set;
 
 public interface LoanQueryDOMapper {
 
-<<<<<<< HEAD
     List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(Long orderId);
 
     ApplyDiviGeneralInfoVO selectApplyDiviGeneralInfo(Long orderId);
@@ -24,9 +23,6 @@ public interface LoanQueryDOMapper {
     UniversalBankInterfaceSerialVO selectUniversalLatestBankInterfaceSerial(@Param("customerId") Long customerId,@Param("transCode") String transCode);
 
     String selectTelephoneVerifyLevel(@Param("loginUserId") Long loginUserId );
-=======
-    String selectTelephoneVerifyLevel(@Param("loginUserId") Long loginUserId);
->>>>>>> v_1.1.4
 
     boolean checkCollectionUserRole(@Param("loginUserId") Long loginUserId);
 
@@ -97,13 +93,9 @@ public interface LoanQueryDOMapper {
 
     List<UniversalLoanRepaymentPlan> selectUniversalLoanRepaymentPlan(Long orderId);
 
-<<<<<<< HEAD
-    public List<UniversalMaterialRecordVO> selectUniversalCustomerFiles(@Param("customerId") Long customerId, @Param("types") Set<Byte> types);
+    List<UniversalMaterialRecordVO> selectUniversalCustomerFiles(@Param("customerId") Long customerId, @Param("types") Set<Byte> types);
 
-    public Long selectOrderIdbyPrincipalCustId(Long customerId);
-=======
     List<UniversalCollectionRecord> selectUniversalCollectionRecord(Long orderId);
->>>>>>> v_1.1.4
 
     UniversalCollectionRecordDetail selectUniversalCollectionRecordDetail(Long collectionId);
 

@@ -1,13 +1,11 @@
 package com.yunche.loan.domain.vo;
 
 import com.google.common.collect.Lists;
-<<<<<<< HEAD
 import com.yunche.loan.domain.entity.LoanCustomerDO;
-=======
->>>>>>> v_1.1.4
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -49,18 +47,13 @@ public class RecombinationVO<T> {
 
     private UniversalOverdueInfo overdue;
 
-<<<<<<< HEAD
         private BankInterfaceSerialVO bankSerial;
 
         private LoanBaseInfoVO loanBaseInfo;
-
-        private List<UniversalLoanRepaymentPlan>repayments = new ArrayList<UniversalLoanRepaymentPlan>();
-=======
-    /**
+        /**
      * 资料流转
      */
     private UniversalDataFlowDetailVO dataFlow;
->>>>>>> v_1.1.4
 
     /**
      * 合同归档
@@ -75,13 +68,9 @@ public class RecombinationVO<T> {
 
     private List<UniversalCreditInfoVO> credits = Lists.newArrayList();
 
-<<<<<<< HEAD
-        List<LoanCustomerDO> emergencyContacts = Lists.newArrayList();
+    List<LoanCustomerDO> emergencyContacts = Lists.newArrayList();
 
-}
-=======
     private List<UniversalCustomerVO> customers = Lists.newArrayList();
 
     private List<UniversalMaterialRecordVO> materials = Lists.newArrayList();
 }
->>>>>>> v_1.1.4
