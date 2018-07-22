@@ -80,7 +80,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
         for(BankInterFaceSerialOrderStatusVO V : list){
 
-            if(!("1".equals(V.getStatus()) && "200".equals(V.getApi_status()))){
+            if(!("0".equals(V.getStatus()) && "1".equals(V.getStatus()) && "200".equals(V.getApi_status()))){
                 //有一个是处理中 且其他不等于处理失败
                 return 4;
             }
