@@ -43,7 +43,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public void checkTaskPermission(String taskDefinitionKey) {
 
-        Set<String> userGroupNameSet = getUserGroupNameSet();
+        Set<String> userGroupNameSet = getLoginUserHasUserGroups();
 
         if (!CollectionUtils.isEmpty(userGroupNameSet) && userGroupNameSet.contains(USER_GROUP_ADMIN)) {
             return;
@@ -80,7 +80,7 @@ public class PermissionServiceImpl implements PermissionService {
      * @return
      */
     @Override
-    public Set<String> getUserGroupNameSet() {
+    public Set<String> getLoginUserHasUserGroups() {
         // getUser
         EmployeeDO loginUser = SessionUtils.getLoginUser();
 

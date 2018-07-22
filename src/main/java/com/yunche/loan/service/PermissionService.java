@@ -16,9 +16,9 @@ public interface PermissionService {
     void checkTaskPermission(String taskDefinitionKey);
 
     /**
-     * 获取当前登录用户的用户组名称列表
+     * 获取当前登录用户 拥有的用户组（名称）列表
      *
      * @return
      */
-    Set<String> getUserGroupNameSet();
+    Set<String> getLoginUserHasUserGroups();
 }

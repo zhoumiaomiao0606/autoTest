@@ -499,7 +499,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         data.setUsername(user.getName());
 
         // 角色
-        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+        Set<String> userGroupNameSet = permissionService.getLoginUserHasUserGroups();
         data.setUserGroupSet(userGroupNameSet);
 
         return data;

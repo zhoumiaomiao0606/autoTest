@@ -76,7 +76,7 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
     @Override
     public Set<String> getLoginUserOwnDataFlowNodes() {
 
-        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+        Set<String> loginUserHasUserGroups = permissionService.getLoginUserHasUserGroups();
 
         Set<String> userOwnDataFlowNodes = Sets.newHashSet();
 
@@ -86,7 +86,7 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
 
             dataFlowRoleNodesMap.forEach((role, nodes) -> {
 
-                if (userGroupNameSet.contains(role)) {
+                if (loginUserHasUserGroups.contains(role)) {
                     userOwnDataFlowNodes.addAll(nodes);
                 }
             });

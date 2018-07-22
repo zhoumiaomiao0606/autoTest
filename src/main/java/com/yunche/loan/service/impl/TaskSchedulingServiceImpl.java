@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.ListQueryTaskStatusConst.*;
+import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW;
 
@@ -334,7 +335,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         if (TASK_STATUS_21_OF_DATA_FLOW_TO_BE_SEND.equals(taskListQuery.getTaskStatus())) {
 
             Set<String> toBeSendDataFlowNodes = loginUserOwnDataFlowNodes.stream()
-                    .filter(node -> StringUtils.isNotBlank(node) && !node.endsWith("_review"))
+                    .filter(node -> StringUtils.isNotBlank(node) && !node.endsWith(DATA_FLOW_TASK_KEY_REVIEW_SUFFIX))
                     .collect(Collectors.toSet());
 
             dataFlowNodes = toBeSendDataFlowNodes;
@@ -344,7 +345,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 22-待接收(资料流转)
         else if (TASK_STATUS_22_OF_DATA_FLOW_TO_BE_RECEIVED.equals(taskListQuery.getTaskStatus())) {
             Set<String> toBeReceivedDataFlowNodes = loginUserOwnDataFlowNodes.stream()
-                    .filter(node -> StringUtils.isNotBlank(node) && node.endsWith("_review"))
+                    .filter(node -> StringUtils.isNotBlank(node) && node.endsWith(DATA_FLOW_TASK_KEY_REVIEW_SUFFIX))
                     .collect(Collectors.toSet());
 
             dataFlowNodes = toBeReceivedDataFlowNodes;

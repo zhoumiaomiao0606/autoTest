@@ -22,6 +22,8 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
+
 /**
  * @author liuzhe
  * @date 2018/4/9
@@ -38,11 +40,6 @@ public class ActivitiCache {
      * data_flow：role-nodes  映射cache-key
      */
     private static final String GROUP_CANDIDATE_DATA_FLOW_CACHE_KEY = "activiti:group:candidate:data-flow";
-
-    /**
-     * 资料流转-节点KEY前缀
-     */
-    private static final String DATA_FLOW_NODE_KEY_PREFIX = "usertask_data_flow";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -136,7 +133,7 @@ public class ActivitiCache {
             nodeRolesMap.forEach((node, roles) -> {
 
                 // 过滤data_flow节点key
-                if (node.startsWith(DATA_FLOW_NODE_KEY_PREFIX)) {
+                if (node.startsWith(DATA_FLOW_TASK_KEY_PREFIX)) {
 
                     if (!CollectionUtils.isEmpty(roles)) {
 

@@ -7,12 +7,11 @@ package com.yunche.loan.config.constant;
 public class LoanDataFlowConst {
 
     /**
-     * 流转结束 -是
+     * 资料流转-节点KEY前缀
      */
-    public static final Byte FLOW_END_YES = 1;
-
+    public static final String DATA_FLOW_TASK_KEY_PREFIX = "usertask_data_flow";
     /**
-     * 流转结束 -否
+     * 资料流转 —— review-节点 KEY后缀
      */
-    public static final Byte FLOW_END_NO = 0;
+    public static final String DATA_FLOW_TASK_KEY_REVIEW_SUFFIX = "_review";
 }

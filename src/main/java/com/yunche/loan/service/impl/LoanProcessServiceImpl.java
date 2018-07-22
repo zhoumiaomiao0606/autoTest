@@ -43,6 +43,8 @@ import static com.yunche.loan.config.constant.CustomerConst.CUST_TYPE_EMERGENCY_
 import static com.yunche.loan.config.constant.LoanAmountConst.ACTUAL_LOAN_AMOUNT_13W;
 import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W;
 import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_LT_13W;
+import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
+import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
@@ -566,7 +568,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void execFinancialSchemeModifyApplyReviewTask(ApprovalParam approval, Long loanFinancialPlanId, LoanProcessDO loanProcessDO) {
 
         // 角色
-        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+        Set<String> userGroupNameSet = permissionService.getLoginUserHasUserGroups();
         // 最大电审角色等级
         Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
@@ -1403,7 +1405,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 更新资料流转type
-        doUpateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus);
+        doUpdateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus);
 
         // 执行更新
         doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
@@ -1461,15 +1463,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param taskDefinitionKey
      * @param taskProcessStatus
      */
-    private void doUpateDataFlowType(LoanProcessDO loanProcessDO, String taskDefinitionKey, Byte taskProcessStatus) {
+    private void doUpdateDataFlowType(LoanProcessDO loanProcessDO, String taskDefinitionKey, Byte taskProcessStatus) {
 
         // 如果是：[资料流转]节点
-        if (taskDefinitionKey.startsWith("usertask_data_flow")) {
+        if (taskDefinitionKey.startsWith(DATA_FLOW_TASK_KEY_PREFIX)) {
 
-            String[] taskKeyArr = taskDefinitionKey.split("_review");
+            String[] taskKeyArr = taskDefinitionKey.split(DATA_FLOW_TASK_KEY_REVIEW_SUFFIX);
 
             // 是否为：[确认接收]节点     _review
-            boolean is_review_task_key = taskDefinitionKey.endsWith("_review") && taskKeyArr.length == 1;
+            boolean is_review_task_key = taskDefinitionKey.endsWith(DATA_FLOW_TASK_KEY_REVIEW_SUFFIX) && taskKeyArr.length == 1;
 
             // send   task-key
             String send_task_key = taskKeyArr[0];
@@ -1479,7 +1481,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (is_review_task_key) {
                 review_task_key = taskDefinitionKey;
             } else {
-                review_task_key = taskDefinitionKey + "_review";
+                review_task_key = taskDefinitionKey + DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
             }
 
             // taskKey - type  映射
@@ -1502,7 +1504,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                     // update  type -> next_review_taskKey--type
 
-                    updateDataFlowType_(loanProcessDO.getOrderId(), send_type, review_type);
+                    updateDataFlowType(loanProcessDO.getOrderId(), send_type, review_type);
                 }
 
                 // 2   新建记录
@@ -1518,7 +1520,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                     // update   type -> send_taskKey--type
 
-                    updateDataFlowType_(loanProcessDO.getOrderId(), review_type, send_type);
+                    updateDataFlowType(loanProcessDO.getOrderId(), review_type, send_type);
                 }
 
             }
@@ -1531,7 +1533,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                     // update   type -> send_taskKey--type
 
-                    updateDataFlowType_(loanProcessDO.getOrderId(), review_type, send_type);
+                    updateDataFlowType(loanProcessDO.getOrderId(), review_type, send_type);
                 }
 
                 // 1
@@ -1546,7 +1548,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                     // update  type -> next_review_taskKey--type
 
-                    updateDataFlowType_(loanProcessDO.getOrderId(), send_type, review_type);
+                    updateDataFlowType(loanProcessDO.getOrderId(), send_type, review_type);
                 }
 
             }
@@ -1560,7 +1562,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param current_type
      * @param to_be_update_type
      */
-    private void updateDataFlowType_(Long orderId, Byte current_type, Byte to_be_update_type) {
+    private void updateDataFlowType(Long orderId, Byte current_type, Byte to_be_update_type) {
 
         LoanDataFlowDO loanDataFlowDO = loanDataFlowService.getLastByOrderIdAndType(orderId, current_type);
 
@@ -1588,29 +1590,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanDataFlowDO.setType(sendType);
 
         ResultBean result = loanDataFlowService.create(loanDataFlowDO);
-        Preconditions.checkArgument(result.getSuccess(), result.getMsg());
-    }
-
-    /**
-     * 资料流转-RECEIVED-TODO待办节点-预处理：更新其对应SEND记录的 -> type
-     *
-     * @param orderId
-     * @param originTaskKey
-     * @param toTaskKey
-     */
-    private void updateDataFlowType(Long orderId, String originTaskKey, String toTaskKey) {
-
-        // record
-        String originType = dictService.getKeyByCodeOfLoanDataFlowType(originTaskKey);
-        LoanDataFlowDO loanDataFlowDO = loanDataFlowService.getLastByOrderIdAndType(orderId, Byte.valueOf(originType));
-
-        // taskKey -> type
-        String toType = dictService.getKeyByCodeOfLoanDataFlowType(toTaskKey);
-        Preconditions.checkArgument(StringUtils.isNotBlank(toType), "资料流转-taskDefinitionKey异常");
-
-        loanDataFlowDO.setType(Byte.valueOf(toType));
-
-        ResultBean result = loanDataFlowService.update(loanDataFlowDO);
         Preconditions.checkArgument(result.getSuccess(), result.getMsg());
     }
 
@@ -1701,7 +1680,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void execTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval, Long orderId, Long loanFinancialPlanId) {
 
         // 角色
-        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+        Set<String> userGroupNameSet = permissionService.getLoginUserHasUserGroups();
         // 最大电审角色等级
         Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
