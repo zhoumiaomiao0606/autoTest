@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -1153,6 +1154,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         executorService.execute(() -> {
 
+            logger.info("jpush ---------- start ");
+
             LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
             Long loanCustomerId = null;
@@ -1203,6 +1206,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 DO.setSendDate(new Timestamp(System.currentTimeMillis()));
                 DO.setReadStatus(new Byte("0"));
                 DO.setType(approval.getAction());
+
+                // TODO test
+                logger.info("jpush ---------- push" + JSON.toJSONString(DO));
+
                 jpushService.push(DO);
             }
 
