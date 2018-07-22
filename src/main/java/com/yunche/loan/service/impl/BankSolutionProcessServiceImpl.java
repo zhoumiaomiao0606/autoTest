@@ -191,6 +191,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
             approvalParam.setNeedLog(false);
             approvalParam.setCheckPermission(false);
+            approvalParam.setInfo(applyCreditCallback.getReq().getNote());
             loanProcessService.approval(approvalParam);
 
             logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
