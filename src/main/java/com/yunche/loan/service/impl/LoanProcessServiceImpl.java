@@ -133,6 +133,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private BankSolutionService bankSolutionService;
 
+    @Autowired
     private LoanDataFlowService loanDataFlowService;
 
     @Autowired
