@@ -1203,7 +1203,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 DO.setMsg(msg);
                 DO.setSender(SessionUtils.getLoginUser().getName());
                 DO.setProcessKey(taskDefinitionKey);
-                DO.setSendDate(new Timestamp(System.currentTimeMillis()));
+                DO.setSendDate(new Date());
                 DO.setReadStatus(new Byte("0"));
                 DO.setType(approval.getAction());
 
