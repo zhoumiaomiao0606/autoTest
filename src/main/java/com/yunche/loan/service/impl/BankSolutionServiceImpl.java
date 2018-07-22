@@ -734,13 +734,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         customer.setFeeratio(BigDecimalUtil.format(productRateDO.getBankRate(),6));// 银行费率
 
-        customer.setCprovince(areaCache.getAreaName(loanCustomerDO.getCprovince()));
-        customer.setCcounty(areaCache.getAreaName(loanCustomerDO.getCcounty()));//单位地址县
-        customer.setCcity(areaCache.getAreaName(loanCustomerDO.getCcity()));//ccity	单位地址市
+        customer.setCprovince(loanCustomerDO.getCprovince());
+        customer.setCcounty(loanCustomerDO.getCcounty());//单位地址县
+        customer.setCcity(loanCustomerDO.getCcity());//ccity	单位地址市
 
-        customer.setHcity(areaCache.getAreaName(loanCustomerDO.getHcity()));//住宅地址市
-        customer.setHcounty(areaCache.getAreaName(loanCustomerDO.getHcounty()));//hcounty	住宅地址县
-        customer.setHprovince(areaCache.getAreaName(loanCustomerDO.getHprovince()));//hprovince	住宅地址省份
+        customer.setHcity(loanCustomerDO.getHcity());//住宅地址市
+        customer.setHcounty(loanCustomerDO.getHcounty());//hcounty	住宅地址县
+        customer.setHprovince(loanCustomerDO.getHprovince());//hprovince	住宅地址省份
         customer.setAccaddrf(loanCustomerDO.getBillSendAddr());
         customer.setDrawaddr(loanCustomerDO.getCardSendAddrType());
         String identityValidity = loanCustomerDO.getIdentityValidity();
