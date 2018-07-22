@@ -590,17 +590,19 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
         if (vehicleInformationDO != null) {
-            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
-            loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
             String tmpApplyLicensePlateArea = null;
-            if (baseAreaDO != null) {
-                if (baseAreaDO.getParentAreaName() != null) {
-                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
-                } else {
-                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+            if(StringUtils.isNotBlank(vehicleInformationDO.getApply_license_plate_area())){
+                BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
+                loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
+
+                if (baseAreaDO != null) {
+                    if (baseAreaDO.getParentAreaName() != null) {
+                        tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                    } else {
+                        tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                    }
                 }
             }
-
             loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
