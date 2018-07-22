@@ -15,7 +15,6 @@ import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.DictService;
 import com.yunche.loan.service.LoanDataFlowService;

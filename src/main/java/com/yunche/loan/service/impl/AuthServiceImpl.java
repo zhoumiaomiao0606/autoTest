@@ -165,29 +165,25 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResultBean<Map<String, Boolean>> listMenu_() {
 
-        Map<String, Boolean> taskMap = Maps.newHashMap();
+        // 节点-是否有权  Map
+        Map<String, Boolean> taskAuthMap = Maps.newHashMap();
+
+        // LoginUser 拥有的所有角色权限
+        Set<String> loginUserHasUserGroups = permissionService.getLoginUserHasUserGroups();
 
         // 管理员
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-        if ("admin".equals(loginUser.getName())) {
-            // configure_center
-            taskMap.put("configure_center", true);
-            // task
-            for (LoanProcessEnum k : LoanProcessEnum.values()) {
-                taskMap.put(k.getCode(), true);
-            }
-
-            return ResultBean.ofSuccess(taskMap);
+        if (!CollectionUtils.isEmpty(loginUserHasUserGroups) && loginUserHasUserGroups.contains("管理员")) {
+            // 授予所有节点权限
+            return authAllRole(taskAuthMap);
         }
 
-        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+        // 节点-角色列表  Map
+        Map<String, List<String>> taskRolesMap = activitiCache.getNodeRolesMap();
 
-        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = activitiCache.getNodeRolesMap();
-
-        if (!CollectionUtils.isEmpty(taskDefinitionKeyCandidateGroupsMap)) {
+        if (!CollectionUtils.isEmpty(taskRolesMap)) {
 
             // 遍历 节点-角色列表
-            taskDefinitionKeyCandidateGroupsMap.forEach((k, v) -> {
+            taskRolesMap.forEach((k, v) -> {
 
                 List<String> candidateGroups = v;
 
@@ -195,8 +191,8 @@ public class AuthServiceImpl implements AuthService {
                 if (!CollectionUtils.isEmpty(candidateGroups)) {
 
                     // 无任何角色
-                    if (CollectionUtils.isEmpty(userGroupNameSet)) {
-                        taskMap.put(k, false);
+                    if (CollectionUtils.isEmpty(loginUserHasUserGroups)) {
+                        taskAuthMap.put(k, false);
                     }
 
                     // 有角色
@@ -205,21 +201,21 @@ public class AuthServiceImpl implements AuthService {
                             .forEach(e -> {
 
                                 // 包含 -> 有权操作
-                                if (userGroupNameSet.contains(e)) {
+                                if (loginUserHasUserGroups.contains(e)) {
 
                                     // [资料流转]节点
                                     if (k.startsWith("usertask_data_flow_")) {
-                                        taskMap.put(DATA_FLOW.getCode(), true);
+                                        taskAuthMap.put(DATA_FLOW.getCode(), true);
                                     } else {
                                         // 普通节点
-                                        taskMap.put(k, true);
+                                        taskAuthMap.put(k, true);
                                     }
                                 }
                             });
 
 
-                    if (null == taskMap.get(k)) {
-                        taskMap.put(k, false);
+                    if (null == taskAuthMap.get(k)) {
+                        taskAuthMap.put(k, false);
                     }
 
                 }
@@ -230,15 +226,32 @@ public class AuthServiceImpl implements AuthService {
                         && !REMIT_REVIEW_FILTER.getCode().equals(k)
                         && !DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode().equals(k)) {
 
-                    taskMap.put(k, true);
+                    taskAuthMap.put(k, true);
                 }
 
             });
 
-            taskMap.put("configure_center", false);
+            taskAuthMap.put("configure_center", false);
         }
 
-        return ResultBean.ofSuccess(taskMap);
+        return ResultBean.ofSuccess(taskAuthMap);
+    }
+
+    /**
+     * 授予所有节点权限
+     *
+     * @param taskAuthMap
+     * @return
+     */
+    private ResultBean<Map<String, Boolean>> authAllRole(Map<String, Boolean> taskAuthMap) {
+        // configure_center
+        taskAuthMap.put("configure_center", true);
+        // task
+        for (LoanProcessEnum k : LoanProcessEnum.values()) {
+            taskAuthMap.put(k.getCode(), true);
+        }
+
+        return ResultBean.ofSuccess(taskAuthMap);
     }
 
     /**

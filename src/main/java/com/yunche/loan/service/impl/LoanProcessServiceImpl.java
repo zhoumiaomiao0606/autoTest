@@ -43,6 +43,8 @@ import static com.yunche.loan.config.constant.CustomerConst.CUST_TYPE_EMERGENCY_
 import static com.yunche.loan.config.constant.LoanAmountConst.ACTUAL_LOAN_AMOUNT_13W;
 import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W;
 import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_LT_13W;
+import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
+import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
@@ -183,7 +185,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 【资料增补单】
         if (isInfoSupplementTask(approval)) {
-            return execInfoSupplementTask(approval, loanProcessDO);
+            return execInfoSupplementTask(approval, loanOrderDO, loanProcessDO);
         }
 
         // 【金融方案修改申请】
@@ -214,9 +216,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 流程数据同步
         syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval);
 
-        // 异步推送
-        asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
-
         // 生成客户还款计划
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO.getProcessInstId());
 
@@ -228,6 +227,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
+
+        // 异步推送
+        asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
@@ -584,7 +586,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void execFinancialSchemeModifyApplyReviewTask(ApprovalParam approval, Long loanFinancialPlanId, LoanProcessDO loanProcessDO) {
 
         // 角色
-        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+        Set<String> userGroupNameSet = permissionService.getLoginUserHasUserGroups();
         // 最大电审角色等级
         Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
@@ -1128,21 +1130,26 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @return
      */
-    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 【发起】资料增补单
         if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
+
             // 创建增补单
             startInfoSupplement(approval);
+
             return ResultBean.ofSuccess(null, "[资料增补]发起成功");
         }
 
         // 【提交】资料增补单
         else if (INFO_SUPPLEMENT.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
             // 提交增补单
             endInfoSupplement(approval);
+
             // 异步打包文件
             asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
+
             return ResultBean.ofSuccess(null, "[资料增补]提交成功");
         }
 
@@ -1162,63 +1169,61 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return;
         }
 
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
+        executorService.execute(() -> {
 
-                LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
-                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
-                Long loanCustomerId = null;
-                if (loanOrderDO != null) {
-                    loanCustomerId = loanOrderDO.getLoanCustomerId();
-                }
-                LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, new Byte("0"));
-
-                if (loanBaseInfoDO != null && !LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
-                    String title = "你有一个新的消息";
-                    String prompt = "你提交的订单被管理员审核啦";
-                    String msg = "详细信息请联系管理员";
-
-                    String taskName = LoanProcessEnum.getNameByCode(taskDefinitionKey);
-                    //审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
-                    String result = "[异常]";
-                    switch (approval.getAction().intValue()) {
-                        case 0:
-                            result = "[已打回]";
-                            break;
-                        case 1:
-                            result = "[已通过]";
-                            break;
-                        case 2:
-                            result = "[已弃单]";
-                            break;
-                        case 3:
-                            result = "[发起资料增补]";
-                            break;
-                        default:
-                            result = "[异常]";
-                    }
-                    title = taskName + result;
-
-                    if (loanCustomerDO != null) {
-                        prompt = "主贷人:[" + loanCustomerDO.getName() + "]-" + title;
-                    }
-                    msg = StringUtils.isBlank(approval.getInfo()) ? "无" : "null".equals(approval.getInfo()) ? "无" : approval.getInfo();
-
-                    FlowOperationMsgDO DO = new FlowOperationMsgDO();
-                    DO.setEmployeeId(loanBaseInfoDO.getSalesmanId());
-                    DO.setOrderId(orderId);
-                    DO.setTitle(title);
-                    DO.setPrompt(prompt);
-                    DO.setMsg(msg);
-                    DO.setSender(SessionUtils.getLoginUser().getName());
-                    DO.setProcessKey(taskDefinitionKey);
-                    DO.setSendDate(new Timestamp(System.currentTimeMillis()));
-                    DO.setReadStatus(new Byte("0"));
-                    DO.setType(approval.getAction());
-                    jpushService.push(DO);
-                }
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
+            Long loanCustomerId = null;
+            if (loanOrderDO != null) {
+                loanCustomerId = loanOrderDO.getLoanCustomerId();
             }
+            LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, new Byte("0"));
+
+            if (loanBaseInfoDO != null && !LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
+                String title = "你有一个新的消息";
+                String prompt = "你提交的订单被管理员审核啦";
+                String msg = "详细信息请联系管理员";
+
+                String taskName = LoanProcessEnum.getNameByCode(taskDefinitionKey);
+                //审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
+                String result = "[异常]";
+                switch (approval.getAction().intValue()) {
+                    case 0:
+                        result = "[已打回]";
+                        break;
+                    case 1:
+                        result = "[已通过]";
+                        break;
+                    case 2:
+                        result = "[已弃单]";
+                        break;
+                    case 3:
+                        result = "[发起资料增补]";
+                        break;
+                    default:
+                        result = "[异常]";
+                }
+                title = taskName + result;
+
+                if (loanCustomerDO != null) {
+                    prompt = "主贷人:[" + loanCustomerDO.getName() + "]-" + title;
+                }
+                msg = StringUtils.isBlank(approval.getInfo()) ? "无" : "null".equals(approval.getInfo()) ? "无" : approval.getInfo();
+
+                FlowOperationMsgDO DO = new FlowOperationMsgDO();
+                DO.setEmployeeId(loanBaseInfoDO.getSalesmanId());
+                DO.setOrderId(orderId);
+                DO.setTitle(title);
+                DO.setPrompt(prompt);
+                DO.setMsg(msg);
+                DO.setSender(SessionUtils.getLoginUser().getName());
+                DO.setProcessKey(taskDefinitionKey);
+                DO.setSendDate(new Timestamp(System.currentTimeMillis()));
+                DO.setReadStatus(new Byte("0"));
+                DO.setType(approval.getAction());
+                jpushService.push(DO);
+            }
+
         });
     }
 
@@ -1421,7 +1426,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 更新资料流转type
-        doUpateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus);
+        doUpdateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus);
 
         // 执行更新
         doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
@@ -1479,15 +1484,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param taskDefinitionKey
      * @param taskProcessStatus
      */
-    private void doUpateDataFlowType(LoanProcessDO loanProcessDO, String taskDefinitionKey, Byte taskProcessStatus) {
+    private void doUpdateDataFlowType(LoanProcessDO loanProcessDO, String taskDefinitionKey, Byte taskProcessStatus) {
 
         // 如果是：[资料流转]节点
-        if (taskDefinitionKey.startsWith("usertask_data_flow")) {
+        if (taskDefinitionKey.startsWith(DATA_FLOW_TASK_KEY_PREFIX)) {
 
-            String[] taskKeyArr = taskDefinitionKey.split("_review");
+            String[] taskKeyArr = taskDefinitionKey.split(DATA_FLOW_TASK_KEY_REVIEW_SUFFIX);
 
             // 是否为：[确认接收]节点     _review
-            boolean is_review_task_key = taskDefinitionKey.endsWith("_review") && taskKeyArr.length == 1;
+            boolean is_review_task_key = taskDefinitionKey.endsWith(DATA_FLOW_TASK_KEY_REVIEW_SUFFIX) && taskKeyArr.length == 1;
 
             // send   task-key
             String send_task_key = taskKeyArr[0];
@@ -1497,7 +1502,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (is_review_task_key) {
                 review_task_key = taskDefinitionKey;
             } else {
-                review_task_key = taskDefinitionKey + "_review";
+                review_task_key = taskDefinitionKey + DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
             }
 
             // taskKey - type  映射
@@ -1520,7 +1525,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                     // update  type -> next_review_taskKey--type
 
-                    updateDataFlowType_(loanProcessDO.getOrderId(), send_type, review_type);
+                    updateDataFlowType(loanProcessDO.getOrderId(), send_type, review_type);
                 }
 
                 // 2   新建记录
@@ -1536,7 +1541,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                     // update   type -> send_taskKey--type
 
-                    updateDataFlowType_(loanProcessDO.getOrderId(), review_type, send_type);
+                    updateDataFlowType(loanProcessDO.getOrderId(), review_type, send_type);
                 }
 
             }
@@ -1549,7 +1554,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                     // update   type -> send_taskKey--type
 
-                    updateDataFlowType_(loanProcessDO.getOrderId(), review_type, send_type);
+                    updateDataFlowType(loanProcessDO.getOrderId(), review_type, send_type);
                 }
 
                 // 1
@@ -1564,7 +1569,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                     // update  type -> next_review_taskKey--type
 
-                    updateDataFlowType_(loanProcessDO.getOrderId(), send_type, review_type);
+                    updateDataFlowType(loanProcessDO.getOrderId(), send_type, review_type);
                 }
 
             }
@@ -1578,7 +1583,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param current_type
      * @param to_be_update_type
      */
-    private void updateDataFlowType_(Long orderId, Byte current_type, Byte to_be_update_type) {
+    private void updateDataFlowType(Long orderId, Byte current_type, Byte to_be_update_type) {
 
         LoanDataFlowDO loanDataFlowDO = loanDataFlowService.getLastByOrderIdAndType(orderId, current_type);
 
@@ -1606,29 +1611,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanDataFlowDO.setType(sendType);
 
         ResultBean result = loanDataFlowService.create(loanDataFlowDO);
-        Preconditions.checkArgument(result.getSuccess(), result.getMsg());
-    }
-
-    /**
-     * 资料流转-RECEIVED-TODO待办节点-预处理：更新其对应SEND记录的 -> type
-     *
-     * @param orderId
-     * @param originTaskKey
-     * @param toTaskKey
-     */
-    private void updateDataFlowType(Long orderId, String originTaskKey, String toTaskKey) {
-
-        // record
-        String originType = dictService.getKeyByCodeOfLoanDataFlowType(originTaskKey);
-        LoanDataFlowDO loanDataFlowDO = loanDataFlowService.getLastByOrderIdAndType(orderId, Byte.valueOf(originType));
-
-        // taskKey -> type
-        String toType = dictService.getKeyByCodeOfLoanDataFlowType(toTaskKey);
-        Preconditions.checkArgument(StringUtils.isNotBlank(toType), "资料流转-taskDefinitionKey异常");
-
-        loanDataFlowDO.setType(Byte.valueOf(toType));
-
-        ResultBean result = loanDataFlowService.update(loanDataFlowDO);
         Preconditions.checkArgument(result.getSuccess(), result.getMsg());
     }
 
@@ -1719,7 +1701,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void execTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval, Long orderId, Long loanFinancialPlanId) {
 
         // 角色
-        Set<String> userGroupNameSet = permissionService.getUserGroupNameSet();
+        Set<String> userGroupNameSet = permissionService.getLoginUserHasUserGroups();
         // 最大电审角色等级
         Byte maxRoleLevel = getTelephoneVerifyMaxRole(userGroupNameSet);
         // 电审专员及以上有权电审
