@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -66,7 +64,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         V.setSendee(employeeDO.getId());
         V.setSendeeName(employeeDO.getName());
         V.setStatus(new Byte("2"));
-        V.setGetCreate(new Timestamp(new Date().getTime()));
+        V.setGetCreate(new Date());
         taskDistributionDOMapper.insertSelective(V);
     }
 
@@ -162,33 +160,33 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
             return;
         }
 
-        if(!taskKey.equals(CREDIT_APPLY.getCode())){
+        if (!taskKey.equals(CREDIT_APPLY.getCode())) {
 
-            if(taskKey.equals(TELEPHONE_VERIFY.getCode()) || taskKey.equals(FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode()) ){
+            if (taskKey.equals(TELEPHONE_VERIFY.getCode()) || taskKey.equals(FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode())) {
 
-                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
-                if(loanOrderDO == null){
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
+                if (loanOrderDO == null) {
                     throw new BizException("订单不存在");
                 }
-                Long  financialPlan = loanOrderDO.getLoanFinancialPlanId();
+                Long financialPlan = loanOrderDO.getLoanFinancialPlanId();
                 LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(financialPlan);
-                if(loanFinancialPlanDO == null){
+                if (loanFinancialPlanDO == null) {
                     throw new BizException("金融方案不存在");
                 }
 
                 double loanAmount = 0;
 
-                if(taskKey.equals(TELEPHONE_VERIFY.getCode())){
+                if (taskKey.equals(TELEPHONE_VERIFY.getCode())) {
                     loanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
-                }else{
+                } else {
                     LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.selectByPrimaryKey(taskId);
 
-                    if(loanFinancialPlanTempHisDO!=null){
+                    if (loanFinancialPlanTempHisDO != null) {
                         loanAmount = loanFinancialPlanTempHisDO.getFinancial_loan_amount().doubleValue();
                     }
                 }
 
-                if(loanAmount == 0){
+                if (loanAmount == 0) {
                     throw new BizException("金额不能为0");
                 }
 
@@ -219,7 +217,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                     currentV.setSendee(employeeDO.getId());
                     currentV.setSendeeName(employeeDO.getName());
                     currentV.setStatus(new Byte("1"));
-                    currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                    currentV.setFinishCreate(new Date());
                     taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
                 } else if (loanAmount > 100000 && loanAmount <= 300000) {
                     // 电审主管以上可过单
@@ -239,7 +237,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                             throw new BizException("该任务只能被领取人完成");
                         }
 
-                        taskDistributionDOMapper.deleteByPrimaryKey(taskId,taskKey);
+                        taskDistributionDOMapper.deleteByPrimaryKey(taskId, taskKey);
                     } else {
                         // 完成任务
                         if (taskDistributionDO == null) {
@@ -262,7 +260,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                         currentV.setSendee(employeeDO.getId());
                         currentV.setSendeeName(employeeDO.getName());
                         currentV.setStatus(new Byte("1"));
-                        currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                        currentV.setFinishCreate(new Date());
                         taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
                     }
                 } else if (loanAmount > 300000 && loanAmount <= 500000) {
@@ -282,7 +280,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                             throw new BizException("该任务只能被领取人完成");
                         }
                         // 记录
-                        taskDistributionDOMapper.deleteByPrimaryKey(taskId,taskKey);
+                        taskDistributionDOMapper.deleteByPrimaryKey(taskId, taskKey);
                     } else {
                         if (taskDistributionDO == null) {
                             throw new BizException("该任务状态无法被完成");
@@ -304,7 +302,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                         currentV.setSendee(employeeDO.getId());
                         currentV.setSendeeName(employeeDO.getName());
                         currentV.setStatus(new Byte("1"));
-                        currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                        currentV.setFinishCreate(new Date());
                         taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
                     }
                 } else if (loanAmount > 500000) {
@@ -324,7 +322,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                             throw new BizException("该任务只能被领取人完成");
                         }
                         // 记录
-                        taskDistributionDOMapper.deleteByPrimaryKey(taskId,taskKey);
+                        taskDistributionDOMapper.deleteByPrimaryKey(taskId, taskKey);
                     } else {
                         if (taskDistributionDO == null) {
                             throw new BizException("该任务状态无法被完成");
@@ -346,11 +344,11 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                         currentV.setSendee(employeeDO.getId());
                         currentV.setSendeeName(employeeDO.getName());
                         currentV.setStatus(new Byte("1"));
-                        currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                        currentV.setFinishCreate(new Date());
                         taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
                     }
                 }
-            }else {
+            } else {
 
                 TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
 
@@ -374,7 +372,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                 currentV.setSendee(employeeDO.getId());
                 currentV.setSendeeName(employeeDO.getName());
                 currentV.setStatus(new Byte("1"));
-                currentV.setFinishCreate(new Timestamp(new Date().getTime()));
+                currentV.setFinishCreate(new Date());
                 taskDistributionDOMapper.updateByPrimaryKeySelective(currentV);
             }
         }
