@@ -440,7 +440,7 @@
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
             <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
-                left join (select DISTINCT order_id from bank_interface_serial where trans_code = #{transCode}) join_serial on main.id = join_serial.order_id
+                left join (select DISTINCT order_id from bank_interface_serial where trans_code = 'applyCredit') join_serial on main.id = join_serial.order_id
             </if>
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
