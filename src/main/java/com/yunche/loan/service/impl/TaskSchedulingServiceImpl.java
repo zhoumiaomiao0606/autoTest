@@ -281,10 +281,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<List<TaskListVO>> queryDataFlowTaskList(TaskListQuery taskListQuery) {
-
-        // loginUserId      -> loginUser只能查询到 自己及下级 的单子
-        taskListQuery.setEmployeeId(SessionUtils.getLoginUser().getId());
-
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        taskListQuery.setMaxGroupLevel(maxGroupLevel);
+        taskListQuery.setJuniorIds(juniorIds);
         // 获取并设置 资料流转node-key
         getAndSetDataFlowNodeSet(taskListQuery);
 

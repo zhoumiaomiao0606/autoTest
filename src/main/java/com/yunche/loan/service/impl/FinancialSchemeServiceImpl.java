@@ -9,6 +9,7 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.FinancialSchemeModifyUpdateParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.FinancialSchemeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_INIT;
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
@@ -40,6 +42,13 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
     @Resource
     private LoanProcessDOMapper loanProcessDOMapper;
+
+
+    @Resource
+    private EmployeeService employeeService;
+
+    @Resource
+    private TaskSchedulingDOMapper taskSchedulingDOMapper;
 
 
     @Override
@@ -167,8 +176,11 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     }
 
     @Override
-    public List<UniversalCustomerOrderVO> queryModifyCustomerOrder(String name) {
-        return loanQueryDOMapper.selectUniversalModifyCustomerOrder(SessionUtils.getLoginUser().getId(), name);
+        public List<UniversalCustomerOrderVO> queryModifyCustomerOrder(String name) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
+        return loanQueryDOMapper.selectUniversalModifyCustomerOrder(SessionUtils.getLoginUser().getId(), StringUtils.isBlank(name)?null:name,maxGroupLevel == null?new Long(0):maxGroupLevel,juniorIds);
     }
 
     /**
