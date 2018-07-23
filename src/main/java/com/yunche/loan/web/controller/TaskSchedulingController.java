@@ -33,6 +33,7 @@ public class TaskSchedulingController {
 
     @Resource
     private LoanQueryService loanQueryService;
+
     /**
      * 银行单子状态
      */
@@ -63,17 +64,6 @@ public class TaskSchedulingController {
     @PostMapping(value = "/queryTaskList")
     public ResultBean<List<TaskListVO>> scheduleTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.queryTaskList(taskListQuery);
-    }
-
-    /**
-     * 资料流转列表查询
-     *
-     * @param taskListQuery
-     * @return
-     */
-    @PostMapping(value = "/queryDataFlowTaskList")
-    public ResultBean<List<TaskListVO>> queryDataFlowTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
-        return taskSchedulingService.queryDataFlowTaskList(taskListQuery);
     }
 
     /**

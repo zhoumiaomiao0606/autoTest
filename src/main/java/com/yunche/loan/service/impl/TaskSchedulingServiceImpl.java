@@ -18,7 +18,10 @@ import com.yunche.loan.domain.entity.LoanRejectLogDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
-import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.domain.vo.AppTaskVO;
+import com.yunche.loan.domain.vo.ScheduleTaskVO;
+import com.yunche.loan.domain.vo.TaskListVO;
+import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.apache.commons.lang3.StringUtils;
@@ -278,21 +281,24 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         return ResultBean.ofSuccess(appTaskVOList, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
+    /**
+     * [资料流转] 列表查询
+     *
+     * @param taskListQuery
+     * @return
+     */
+    private ResultBean<List<TaskListVO>> queryDataFlowTaskList(TaskListQuery taskListQuery) {
 
-    @Override
-    public ResultBean<List<TaskListVO>> queryDataFlowTaskList(TaskListQuery taskListQuery) {
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
-        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
-        taskListQuery.setMaxGroupLevel(maxGroupLevel);
-        taskListQuery.setJuniorIds(juniorIds);
-        // 获取并设置 资料流转node-key
+        // 获取并设置 资料流转节点-key
         getAndSetDataFlowNodeSet(taskListQuery);
 
         // 空node    则直接返回EMPTY
         if (CollectionUtils.isEmpty(taskListQuery.getDataFlowNodeSet())) {
             return ResultBean.ofSuccess(Collections.EMPTY_LIST);
         }
+
+        // loginUser 只能访问 自己及下级的数据
+        loginUserGetSelfAndSub(taskListQuery);
 
         // 分页
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
@@ -307,6 +313,19 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         convert(list);
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    /**
+     * loginUser 只能访问 自己及下级的数据
+     *
+     * @param taskListQuery
+     */
+    private void loginUserGetSelfAndSub(TaskListQuery taskListQuery) {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        taskListQuery.setMaxGroupLevel(maxGroupLevel);
+        taskListQuery.setJuniorIds(juniorIds);
     }
 
     /**
