@@ -36,23 +36,6 @@ public class VideoFaceConst {
 
 
     /**
-     * 中国工商银行杭州城站支行
-     */
-    public static final Long BANK_ID_ICBC_HangZhou_City_Station_Branch = 1L;
-    /**
-     * 中国工商银行哈尔滨顾乡支行
-     */
-    public static final Long BANK_ID_ICBC_Harbin_GuXiang_Branch = 2L;
-    /**
-     * 中国工商银行台州路桥支行
-     */
-    public static final Long BANK_ID_ICBC_TaiZhou_LuQiao_Branch = 3L;
-    /**
-     * 中国工商银行南京江宁支行
-     */
-    public static final Long BANK_ID_ICBC_NanJing_JiangNing_Branch = 4L;
-
-    /**
      * 担保公司  写死
      */
     public static final Long GUARANTEE_COMPANY_ID = 1L;

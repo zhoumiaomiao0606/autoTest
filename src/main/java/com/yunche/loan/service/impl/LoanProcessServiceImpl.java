@@ -36,6 +36,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
+import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
+import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
@@ -213,7 +215,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO, loanProcessDO);
 
         // 执行任务
-        execTask(task, variables, approval, loanOrderDO);
+        execTask(task, variables, approval, loanOrderDO, loanProcessDO);
 
         // 流程数据同步
         syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval);
@@ -441,18 +443,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         boolean isDataFlowMortgageP2cNewTask = DATA_FLOW_MORTGAGE_P2C.getCode().equals(taskDefinitionKey)
                 && ACTION_NEW_TASK.equals(action);
         return isDataFlowMortgageP2cNewTask;
-    }
-
-    /**
-     * 订单流程节点 实时状态记录
-     *
-     * @param orderId
-     * @return
-     */
-    private LoanProcessDO getLoanProcess(Long orderId) {
-        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
-        return loanProcessDO;
     }
 
     /**
@@ -1175,7 +1165,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             logger.info("jpush ---------- start ");
 
-            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanBaseInfoId);
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
             Long loanCustomerId = null;
             if (loanOrderDO != null) {
@@ -1242,8 +1232,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param variables
      * @param approval
      * @param loanOrderDO
+     * @param loanProcessDO
      */
-    private void execTask(Task task, Map<String, Object> variables, ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    private void execTask(Task task, Map<String, Object> variables, ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
         // 电审任务
         if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
             // 执行电审任务
@@ -1257,7 +1248,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         execCreditRecordFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables);
 
         // 业务申请 & 上门调查 拦截
-        execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables);
+        execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables, loanOrderDO.getLoanBaseInfoId(), loanProcessDO);
     }
 
     /**
@@ -1694,7 +1685,36 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
         Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
+
         return loanOrderDO;
+    }
+
+    /**
+     * 获取 订单流程节点 实时状态记录
+     *
+     * @param orderId
+     * @return
+     */
+    private LoanProcessDO getLoanProcess(Long orderId) {
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+
+        return loanProcessDO;
+    }
+
+    /**
+     * 获取 LoanBaseInfoDO
+     *
+     * @param loanBaseInfoId
+     * @return
+     */
+    private LoanBaseInfoDO getLoanBaseInfoDO(Long loanBaseInfoId) {
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
+        Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
+        Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
+        Preconditions.checkNotNull(loanBaseInfoDO.getBank(), "数据异常，贷款银行为空");
+
+        return loanBaseInfoDO;
     }
 
     /**
@@ -1884,16 +1904,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param processInstId
      * @param approval
      * @param variables
+     * @param loanBaseInfoId
+     * @param loanProcessDO
      */
-    private void execLoanApplyVisitVerifyFilterTask(Task currentTask, String processInstId, ApprovalParam approval, Map<String, Object> variables) {
+    private void execLoanApplyVisitVerifyFilterTask(Task currentTask, String processInstId, ApprovalParam approval,
+                                                    Map<String, Object> variables, Long loanBaseInfoId, LoanProcessDO loanProcessDO) {
 
-        // [社会征信] & [PASS] & [ target -> 贷款申请-filter     贷款申请 补充 社会征信 ]
+        // 正常-过来的拦截任务
+        boolean loanApplyVisitVerifyFilterTask = isLoanApplyVisitVerifyFilterTask(approval.getTaskDefinitionKey(), variables);
+
+        // [社会征信]-过来的拦截任务        ==>   [社会征信] & [PASS] & [ target -> 贷款申请-filter     贷款申请 补充 社会征信 ]
         Object target = variables.get(PROCESS_VARIABLE_TARGET);
-        boolean socialTaskTargetIsloanApplyVisitVerifyFilterTask = SOCIAL_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey())
-                && ACTION_PASS.equals(approval.getAction()) && LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(target);
+        boolean isSocialTask_TargetIs_LoanApplyVisitVerifyFilterTask =
+                SOCIAL_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey())
+                        && ACTION_PASS.equals(approval.getAction())
+                        && LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(target);
 
         // 执行拦截任务
-        if (isLoanApplyVisitVerifyFilterTask(approval.getTaskDefinitionKey(), variables) || socialTaskTargetIsloanApplyVisitVerifyFilterTask) {
+        if (loanApplyVisitVerifyFilterTask || isSocialTask_TargetIs_LoanApplyVisitVerifyFilterTask) {
             // 获取所有正在执行的并行任务
             List<Task> tasks = taskService.createTaskQuery()
                     .processInstanceId(processInstId)
@@ -1902,7 +1930,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 上门调查：只有【提交】;  业务申请：只有【提交】&【弃单】;      -均无[打回]
             // PASS
             if (ACTION_PASS.equals(approval.getAction())) {
-                dealLoanApplyVisitVerifyFilterPassTask(currentTask, tasks, approval);
+                doLoanApplyVisitVerifyFilterTask_Pass(currentTask, tasks, loanBaseInfoId, loanProcessDO);
             }
             // CANCEL
             else if (ACTION_CANCEL.equals(approval.getAction())) {
@@ -1910,7 +1938,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
             // AUTO_REJECT
             else if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
-                dealLoanApplyVisitVerifyAutoRejectTask(currentTask, tasks, approval);
+                doLoanApplyVisitVerifyTask_AutoReject(currentTask, tasks, approval);
             }
         }
     }
@@ -1922,7 +1950,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param tasks
      * @param approvalParam
      */
-    private void dealLoanApplyVisitVerifyAutoRejectTask(Task currentTask, List<Task> tasks, ApprovalParam approvalParam) {
+    private void doLoanApplyVisitVerifyTask_AutoReject(Task currentTask, List<Task> tasks, ApprovalParam approvalParam) {
         // 打回
         dealLoanApplyVisitVerifyAutoRejectTask(currentTask, tasks);
 
@@ -1946,9 +1974,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param currentTask
      * @param tasks
-     * @param approval
+     * @param loanBaseInfoId
+     * @param loanProcessDO
      */
-    private void dealLoanApplyVisitVerifyFilterPassTask(Task currentTask, List<Task> tasks, ApprovalParam approval) {
+    private void doLoanApplyVisitVerifyFilterTask_Pass(Task currentTask, List<Task> tasks, Long loanBaseInfoId, LoanProcessDO loanProcessDO) {
 
         // 是否都通过了      -> 既非LOAN_APPLY，也非VISIT_VERIFY
         if (!CollectionUtils.isEmpty(tasks)) {
@@ -1974,17 +2003,69 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                             // 拿到当前"主任务"
                             if (currentTask.getExecutionId().equals(task.getExecutionId())) {
-                                // "主任务"  ->  通过
+
+                                // 是否会走 [银行开卡]
+                                yes_or_not_goBankOpenCardTask(passVariables, loanBaseInfoId, loanProcessDO);
+
+                                // "主任务"  ->  执行通过
                                 completeTask(task.getId(), passVariables);
-                            } else if (LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())
+                            }
+
+                            // filter-task
+                            else if (LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())
                                     && !currentTask.getExecutionId().equals(task.getExecutionId())) {
+
                                 // 其他filter"子任务"全部弃掉
                                 taskService.complete(task.getId(), cancelVariables);
                             }
+
                         });
             }
 
             // 否 -> 等待  不做处理
+        }
+    }
+
+    /**
+     * 是否会走 [银行开卡]
+     *
+     * @param passVariables
+     * @param loanBaseInfoId
+     * @param loanProcessDO
+     */
+    private void yes_or_not_goBankOpenCardTask(Map<String, Object> passVariables, Long loanBaseInfoId, LoanProcessDO loanProcessDO) {
+
+        // 贷款银行
+        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanBaseInfoId);
+        String bankName = loanBaseInfoDO.getBank();
+
+        // 城站支行 || 台州支行
+        boolean is_match_condition_bank = BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(bankName)
+                || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName);
+
+        // 城站支行 || 台州支行
+        if (is_match_condition_bank) {
+
+            // 已经走过一次 [银行开卡]
+            if (!TASK_PROCESS_INIT.equals(loanProcessDO.getBankOpenCard())) {
+
+                // 直接走[电审]
+                passVariables.put(PROCESS_VARIABLE_TARGET, TELEPHONE_VERIFY.getCode());
+            }
+
+            // 第一次走 [银行开卡]
+            else {
+                // 走 [电审] + [银行开卡]
+                passVariables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
+            }
+
+        }
+
+        // 其他银行
+        else {
+
+            // 直接走[电审]
+            passVariables.put(PROCESS_VARIABLE_TARGET, TELEPHONE_VERIFY.getCode());
         }
     }
 
@@ -2455,9 +2536,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (isApplyVerifyTaskAndActionIsPass || isBankAndSocialCreditRecordTask) {
 
             // 预计贷款金额
-            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-            Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
-            Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
+            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
             // 流程变量
             variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_EXPECT, loanBaseInfoDO.getLoanAmount());
@@ -2467,9 +2546,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
 
             // 预计贷款金额
-            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-            Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
-            Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
+            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
             Byte expectLoanAmount = loanBaseInfoDO.getLoanAmount();
 
             // 实际贷款额度

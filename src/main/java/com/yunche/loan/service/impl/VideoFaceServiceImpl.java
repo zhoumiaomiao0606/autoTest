@@ -35,6 +35,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.CarConst.CAR_BRAND;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
