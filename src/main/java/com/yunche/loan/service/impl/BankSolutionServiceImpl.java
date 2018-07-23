@@ -207,6 +207,103 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     }
 
+    @Override
+    public void multimediaUpload(Long orderId) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        if(loanOrderDO == null){
+            throw new BizException("此订单不存在");
+        }
+
+        Long baseId = loanOrderDO.getLoanBaseInfoId();
+        if(baseId == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        if(loanBaseInfoDO == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        //征信银行
+        Long bankId  =  bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
+        if(bankId == null){
+            throw new BizException("贷款银行不存在");
+        }
+
+        int value = bankId.intValue();
+        switch (value) {
+            case 1:
+                //判断当前客户贷款银行是否为杭州工行，如为杭州工行：
+                multimediaUploadProcess(orderId,sysConfig.getHzphybrno());
+                break;
+            case 3:
+                //判断当前客户贷款银行是否为台州工行，如为台州工行：
+                multimediaUploadProcess(orderId,sysConfig.getHzphybrno());
+                break;
+            default:
+                return;
+        }
+
+    }
+
+
+    public void multimediaUploadProcess(Long orderId,String phybrno){
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        if(loanOrderDO == null){
+            throw new BizException("此订单不存在");
+        }
+
+        Long baseId = loanOrderDO.getLoanBaseInfoId();
+        if(baseId == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        if(loanBaseInfoDO == null){
+            throw new BizException("征信信息不存在");
+        }
+
+        Long customerId = loanOrderDO.getLoanCustomerId();
+        if(customerId == null){
+            throw new BizException("贷款人不存在");
+        }
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(customerId,new Byte("0"));
+        if(loanCustomerDO == null){
+            throw new BizException("贷款人不存在");
+        }
+
+        List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
+
+        for (TermFileEnum e : TermFileEnum.values()) {
+            UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,e.getKey());
+            if(authSignPic != null){
+                if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
+                    String picName = GeneratorIDUtil.execute();
+                    if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(e.getKey().toString())){
+                        //zip
+                        picName = picName +ImageUtil.ZIP_SUFFIX;
+                    }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(e.getKey().toString())){
+                        //mp4
+                        picName = picName +ImageUtil.MP4_SUFFIX;
+                    }else{
+                        //jpg
+                        picName = picName+ImageUtil.PIC_SUFFIX;
+                    }
+
+                    ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+                    picture.setPicid(e.getValue());
+                    picture.setPicname(picName);
+                    picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
+                    pictures.add(picture);
+                }
+            }
+
+        }
+
+        asyncUpload.multimediaUpload(phybrno,loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4),orderId.toString(),pictures);
+
+    }
+
     public void ICBCCommonBusinessApplyProcess(Long orderId,String phybrno){
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
@@ -494,7 +591,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //只有接口请求成功才会调用上传.防止请求过多造成内存溢出
         if(response!=null){
             if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
-                asyncUpload.multimediaUpload(phybrno,"3301",orderId.toString(),pictures);
+                asyncUpload.multimediaUpload(phybrno,loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4),orderId.toString(),pictures);
                 for(ICBCApiRequest.PicQueue picQueue :queue){
                     asyncUpload.upload(serNo,picQueue.getPicId(),picQueue.getPicName(),picQueue.getUrl());
                 }
