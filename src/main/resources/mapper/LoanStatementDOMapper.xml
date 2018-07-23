@@ -114,7 +114,9 @@
      '待审核' ELSE '已打回'
      END
      END ELSE '未知'
-     END AS action
+     END AS action,
+     partner.id as partner_id
+
      FROM
      loan_order orders
      LEFT JOIN loan_process process ON orders.id = process.order_id
@@ -167,7 +169,7 @@
 	 </if>
 	 <if test="partnerList != null and partnerList.size() > 0">
 		 and
-		 partner_id in
+         partner_id in
 		 <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
 			 #{item}
 		 </foreach>
