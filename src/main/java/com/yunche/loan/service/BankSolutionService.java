@@ -11,6 +11,8 @@ public interface BankSolutionService {
      void creditAutomaticCommit(Long orderId);
      //通用业务申请接口
      void commonBusinessApply(Long orderId);
+     //视频推送
+     void multimediaUpload(Long orderId);
 
      /**
       * 银行开卡

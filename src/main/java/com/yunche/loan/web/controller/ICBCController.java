@@ -9,8 +9,10 @@ import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.domain.entity.MaterialDownHisDO;
+import com.yunche.loan.domain.param.CommonBusinessApplyParam;
 import com.yunche.loan.domain.param.CreditAutomaticCommitParam;
 import com.yunche.loan.domain.param.ICBCApiCallbackParam;
+import com.yunche.loan.domain.param.MultimediaUploadParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.BankSolutionProcessService;
@@ -58,9 +60,16 @@ public class ICBCController {
     }
 
     //请求接口
-    @PostMapping (value = "/test", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> test() {
-        bankSolutionService.creditAutomaticCommit(new Long("1807161151425056327"));
+    @PostMapping (value = "/commonBusinessApply", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean commonBusinessApply(@RequestBody @Valid @Validated CommonBusinessApplyParam param) {
+        bankSolutionService.commonBusinessApply(Long.parseLong(param.getOrderId()));
+        return ResultBean.ofSuccess(null);
+    }
+
+    //请求接口
+    @PostMapping (value = "/multimediaUpload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean multimediaUpload(@RequestBody @Valid @Validated MultimediaUploadParam param) {
+        bankSolutionService.multimediaUpload(Long.parseLong(param.getOrderId()));
         return ResultBean.ofSuccess(null);
     }
 
