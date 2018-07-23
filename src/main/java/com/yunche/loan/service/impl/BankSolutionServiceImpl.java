@@ -494,7 +494,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //只有接口请求成功才会调用上传.防止请求过多造成内存溢出
         if(response!=null){
             if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
-                asyncUpload.multimediaUpload(phybrno,"3301",orderId.toString(),pictures);
+                asyncUpload.multimediaUpload(phybrno,loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4),orderId.toString(),pictures);
                 for(ICBCApiRequest.PicQueue picQueue :queue){
                     asyncUpload.upload(serNo,picQueue.getPicId(),picQueue.getPicName(),picQueue.getUrl());
                 }
