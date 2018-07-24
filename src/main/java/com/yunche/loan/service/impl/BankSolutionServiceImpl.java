@@ -268,6 +268,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(loanCustomerDO == null){
             throw new BizException("贷款人不存在");
         }
+        UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD);
+        if(result != null) {
+            if (IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) || IDict.K_JJSTS.PROCESS.equals(result.getStatus()) || IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus())) {
+                throw new BizException("已经推送过了");
+            }
+        }
 
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
 
