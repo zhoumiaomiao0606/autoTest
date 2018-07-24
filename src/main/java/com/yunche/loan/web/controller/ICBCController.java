@@ -17,13 +17,14 @@ import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.BankSolutionProcessService;
 import com.yunche.loan.service.BankSolutionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 
@@ -31,7 +32,7 @@ import java.net.URLDecoder;
 @RestController
 @RequestMapping("/api/v1/loanorder/icbc")
 public class ICBCController {
-
+    private static final Logger logger = LoggerFactory.getLogger(ICBCController.class);
     private static final String SUCCESS_RETCODR="00000";
     private static final String ERROR_RETCODR="20000";
 
@@ -126,6 +127,7 @@ public class ICBCController {
     @PostMapping (value = "/fileNotice", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String fileNotice( @RequestParam String reqparam) {
         try{
+            logger.info("开卡文件清单回调开始===============================================================");
             reqparam = URLDecoder.decode(reqparam,"UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
             ICBCApiRequest.FileNotice fileNotice = objectMapper.readValue(reqparam,ICBCApiRequest.FileNotice.class);
@@ -137,9 +139,7 @@ public class ICBCController {
             materialDownHisDO.setStatus(IDict.K_JYZT.PRE_TRANSACTION);
             int count = materialDownHisDOMapper.insertSelective(materialDownHisDO);
             Preconditions.checkArgument(count>0,"插入文件清单流水异常");
-//            ICBCApiRequest.ReturnMsg returnMsg = new ICBCApiRequest.ReturnMsg();
-//            returnMsg.getPub().setRetcode(IConstant.SUCCESS);
-//            returnMsg.getPub().setRetmsg("成功");
+            logger.info("开卡文件清单回调完成===============================================================");
             return  returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG);
         }catch (Exception e){
             return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
