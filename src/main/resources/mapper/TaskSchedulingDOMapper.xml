@@ -718,7 +718,7 @@
                       AND tab.isRepayment = #{isRepayment}
                   </if>
               </if>
-            <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
+            <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply' or taskDefinitionKey == 'usertask_bank_open_card' or taskDefinitionKey == 'usertask_apply_instalment'">
                 <if test="serialStatus != null">
                     <choose>
                         <when test="serialStatus == 'except'">
