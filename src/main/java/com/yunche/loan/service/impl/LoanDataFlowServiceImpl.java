@@ -16,9 +16,7 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.DictService;
-import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.LoanDataFlowService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.activiti.engine.TaskService;
@@ -35,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -78,13 +75,6 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
-
-
-    @Resource
-    private EmployeeService employeeService;
-
-    @Resource
-    private TaskSchedulingDOMapper taskSchedulingDOMapper;
 
 
     @Override
@@ -158,15 +148,13 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         return ResultBean.ofSuccess(flowDept);
     }
 
-
     @Override
     public ResultBean<List<UniversalCustomerOrderVO>> queryDataFlowCustomerOrder(String customerName) {
 
         // telephone_verify = 1  &&   data_flow_mortgage_b2c = 0
         Long loginUserId = SessionUtils.getLoginUser().getId();
-        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
-        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
-        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalDataFlowCustomerOrder(loginUserId,  StringUtils.isBlank(customerName)?null:customerName,maxGroupLevel == null?new Long(0):maxGroupLevel,juniorIds);
+        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalDataFlowCustomerOrder(loginUserId, customerName);
+
         return ResultBean.ofSuccess(universalCustomerOrderVOS);
     }
 

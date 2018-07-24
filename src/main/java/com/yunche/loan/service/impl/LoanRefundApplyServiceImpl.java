@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.entity.LoanRefundApplyDO;
@@ -13,8 +12,6 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.LoanRefundApplyDOMapper;
-import com.yunche.loan.mapper.TaskSchedulingDOMapper;
-import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.LoanRefundApplyService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -23,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_INIT;
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
@@ -42,13 +38,6 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
 
     @Resource
     private LoanProcessDOMapper loanProcessDOMapper;
-
-
-    @Resource
-    private EmployeeService employeeService;
-
-    @Resource
-    private TaskSchedulingDOMapper taskSchedulingDOMapper;
 
 
     @Override
@@ -102,10 +91,7 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
 
     @Override
     public List<UniversalCustomerOrderVO> queryRefundCustomerOrder(String name) {
-        Long loginUserId = SessionUtils.getLoginUser().getId();
-        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
-        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
-        return loanQueryDOMapper.selectUniversalRefundCustomerOrder(SessionUtils.getLoginUser().getId(), StringUtils.isBlank(name)?null:name,maxGroupLevel == null?new Long(0):maxGroupLevel,juniorIds);
+        return loanQueryDOMapper.selectUniversalRefundCustomerOrder(SessionUtils.getLoginUser().getId(), name);
     }
 
     /**

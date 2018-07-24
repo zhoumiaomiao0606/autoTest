@@ -1,6 +1,5 @@
 package com.yunche.loan.mapper;
 
-import com.google.common.collect.Sets;
 import com.yunche.loan.domain.vo.*;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -15,9 +14,9 @@ public interface LoanQueryDOMapper {
 
     boolean checkCollectionUserRole(@Param("loginUserId") Long loginUserId);
 
-    List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name,@Param("maxGroupLevel") Long maxGroupLevel,@Param("juniorIds") Set<String> juniorIds);
+    List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
 
-    List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name,@Param("maxGroupLevel") Long maxGroupLevel,@Param("juniorIds") Set<String> juniorIds);
+    List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
 
     /**
      * 资料流转-新增 客户列表
@@ -26,7 +25,7 @@ public interface LoanQueryDOMapper {
      * @param name
      * @return
      */
-    List<UniversalCustomerOrderVO> selectUniversalDataFlowCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name,@Param("maxGroupLevel") Long maxGroupLevel,@Param("juniorIds") Set<String> juniorIds);
+    List<UniversalCustomerOrderVO> selectUniversalDataFlowCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name);
 
     VehicleInformationVO selectVehicleInformation(Long orderId);
 
