@@ -115,7 +115,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         RecombinationVO recombinationVO = new RecombinationVO();
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
         Long customerId = loanOrderDO.getLoanCustomerId();
-        UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryService.universalCustomerDetail(customerId);
+
+        UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId,customerId);
         BankInterfaceSerialVO bankInterfaceSerialVO = new BankInterfaceSerialVO();
         BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
         if(serialDO!=null) {
