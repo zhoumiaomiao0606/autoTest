@@ -2,17 +2,14 @@ package com.yunche.loan.config.util;
 
 import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
+import com.lowagie.text.Document;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.rtf.RtfWriter2;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;
-import org.docx4j.dml.wordprocessingDrawing.Inline;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
-import org.docx4j.wml.Drawing;
-import org.docx4j.wml.ObjectFactory;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +29,7 @@ public class ImageUtil {
     private  static String downLoadBasepath="/tmp";
 
     public static final String PIC_SUFFIX=".jpg";
-    public static final String DOC_SUFFIX=".docx";
+    public static final String DOC_SUFFIX=".doc";
 
     private static final int DEFAULT_WIDTH=5000;
     private static final Logger LOG = LoggerFactory.getLogger(ImageUtil.class);
@@ -97,8 +94,6 @@ public class ImageUtil {
                 }
                 totalHeight += rateHeight;
             }
-
-
             //构造一个类型为预定义图像类型之一的 BufferedImage。 高度为各个图片高度之和
             BufferedImage tag = new BufferedImage(DEFAULT_WIDTH, totalHeight, BufferedImage.TYPE_INT_RGB);
             //创建输出流
@@ -125,77 +120,118 @@ public class ImageUtil {
             graphics.dispose();
             //将绘制的图像生成至输出流
             boolean write = ImageIO.write(tag, FORMATNAME, out);
+            //压缩
+            ImageUtil.compress(fileName,downLoadBasepath+File.separator+name);
         }catch(Exception e){
-            e.printStackTrace();
+           throw new BizException(e.getMessage());
         }finally {
             //关闭输出流
             try {
                 if(out!=null){
                     out.close();
                 }
+                FileUtil.deleteFile(fileName);
             } catch (IOException e) {
                 Preconditions.checkArgument(false,e.getMessage());
             }
         }
-        //压缩
-        ImageUtil.compress(fileName,downLoadBasepath+File.separator+name);
+
         return downLoadBasepath+File.separator+name;
     }
 
+//    /**
+//     * 图片合成word文档
+//     * @param imageList
+//     */
+//    public static final String  mergeImage2Doc(String name,List<String> imageList) {
+//        InputStream is =null;
+//        String fileName=null;
+//        try {
+//            WordprocessingMLPackage  wordMLPackage =  WordprocessingMLPackage.createPackage();
+//            for(int i=0;i<imageList.size();i++){
+//                String pic = imageList.get(i);
+//                is = OSSUnit.getOSS2InputStream(pic);
+//
+//                int length =  is.available();
+//                if (length > Integer.MAX_VALUE) {
+//                    Preconditions.checkArgument(false,"File too large!!");
+//                }
+//                byte[] bytes = new byte[length*1000];
+//
+//                int offset = 0;
+//                int numRead = 0;
+//                while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+//                    offset += numRead;
+//                }
+//                BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(wordMLPackage, bytes);
+//                int docPrId = 1;
+//                int cNvPrId = 2;
+//                Inline inline = imagePart.createImageInline("AAA","BBB", docPrId, cNvPrId, false);
+//                ObjectFactory factory = new ObjectFactory();
+//                P paragraph = factory.createP();
+//                R run = factory.createR();
+//                paragraph.getContent().add(run);
+//                Drawing drawing = factory.createDrawing();
+//                run.getContent().add(drawing);
+//                drawing.getAnchorOrInline().add(inline);
+//                wordMLPackage.getMainDocumentPart().addObject(paragraph);
+//            }
+//            fileName = downLoadBasepath+File.separator+generateName()+DOC_SUFFIX;
+//            wordMLPackage.save(new File(fileName));
+//
+//        } catch (Exception e) {
+//            Preconditions.checkArgument(false,e.getMessage());
+//
+//        }finally {
+//            if(is!=null){
+//                try {
+//                    is.close();
+//                } catch (IOException e) {
+//                    Preconditions.checkArgument(false,e.getMessage());
+//                }
+//            }
+//        }
+//
+//        ImageUtil.compress(fileName,downLoadBasepath+File.separator+name);
+//        return downLoadBasepath+File.separator+name;
+//    }
     /**
      * 图片合成word文档
      * @param imageList
      */
     public static final String  mergeImage2Doc(String name,List<String> imageList) {
-        InputStream is =null;
-        String fileName=null;
-        try {
-            WordprocessingMLPackage  wordMLPackage =  WordprocessingMLPackage.createPackage();
-            for(int i=0;i<imageList.size();i++){
-                String pic = imageList.get(i);
-                is = OSSUnit.getOSS2InputStream(pic);
-                int length =  is.available();
-                if (length > Integer.MAX_VALUE) {
-                    Preconditions.checkArgument(false,"File too large!!");
-                }
-                byte[] bytes = new byte[length*1000];
+        String returnKey=null;
+        try{
+            int width =550;
+            Document document = new Document(PageSize.A4);
+            returnKey = downLoadBasepath+File.separator+name;
+            File file = new File(returnKey);
+            RtfWriter2.getInstance(document,new FileOutputStream(file));
+            document.open();
 
-                int offset = 0;
-                int numRead = 0;
-                while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-                    offset += numRead;
-                }
-                BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(wordMLPackage, bytes);
-                int docPrId = 1;
-                int cNvPrId = 2;
-                Inline inline = imagePart.createImageInline("AAA","BBB", docPrId, cNvPrId, false);
-                ObjectFactory factory = new ObjectFactory();
-                P paragraph = factory.createP();
-                R run = factory.createR();
-                paragraph.getContent().add(run);
-                Drawing drawing = factory.createDrawing();
-                run.getContent().add(drawing);
-                drawing.getAnchorOrInline().add(inline);
-                wordMLPackage.getMainDocumentPart().addObject(paragraph);
+            List<String> aa = imageList.parallelStream().map(e->{
+                String singleFile = ImageUtil.getSingleFile(GeneratorIDUtil.execute() + ".jpg", e, null);
+                return singleFile;
+            }).collect(Collectors.toList());
+
+            int tmpHeight =0 ;
+            for(String tmp :aa){
+
+                com.lowagie.text.Image img = com.lowagie.text.Image.getInstance(tmp);
+                double rate  = (double) width/(double) img.getWidth();
+                Double iii = rate *(double) img.getHeight();
+                img.setAlignment(com.lowagie.text.Image.ALIGN_LEFT);// 设置图片显示位置
+                img.setAbsolutePosition(0, 0);
+                img.scaleAbsolute(width, iii.intValue());
+                document.add(img);
+                tmpHeight+=iii.intValue();
             }
-            fileName = downLoadBasepath+File.separator+generateName()+DOC_SUFFIX;
-            wordMLPackage.save(new File(fileName));
+            document.close();
 
-        } catch (Exception e) {
-            Preconditions.checkArgument(false,e.getMessage());
-
-        }finally {
-            if(is!=null){
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    Preconditions.checkArgument(false,e.getMessage());
-                }
-            }
+        }catch (Exception e){
+            throw new BizException(e.getMessage());
         }
-
-        ImageUtil.compress(fileName,downLoadBasepath+File.separator+name);
-        return downLoadBasepath+File.separator+name;
+        return returnKey;
     }
 
     private static  String generateName(){
@@ -214,22 +250,37 @@ public class ImageUtil {
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
         OSSClient ossClient =null;
+
+        String hz =null;
+        String tmpFile=null;
         String returnKey=downLoadBasepath+File.separator+name;
+        if(name.contains(".")){
+            hz = name.substring(name.lastIndexOf(".")+1);
+            tmpFile = downLoadBasepath+File.separator+GeneratorIDUtil.execute()+"."+hz;
+        }else{
+            tmpFile = returnKey;
+        }
         InputStream oss2InputStream =null;
         try {
 
             ossClient = OSSUnit.getOSSClient();
-            if(fileType.equals(IDict.K_PIC_ID.VIDEO_INTERVIEW)){
+            if(StringUtils.isNotBlank(fileType) && fileType.equals(IDict.K_PIC_ID.VIDEO_INTERVIEW)){
                 oss2InputStream = OSSUnit.getOSS2InputStream(ossClient, videoBucketName, key);
             }else{
                 oss2InputStream = OSSUnit.getOSS2InputStream(key);
             }
             in = new BufferedInputStream(oss2InputStream);
-            out = new BufferedOutputStream(new FileOutputStream(returnKey));
+            out = new BufferedOutputStream(new FileOutputStream(tmpFile));
             int len ;
             while ((len = in.read()) != -1) {
                 out.write(len);
             }
+           if("jpg,JPG".contains(hz)){
+               ImageUtil.compress(tmpFile,returnKey);
+           }else{
+               returnKey = tmpFile;
+           }
+
         } catch (FileNotFoundException e) {
             throw new BizException("文件不存在");
         }catch (IOException e2){
@@ -245,6 +296,10 @@ public class ImageUtil {
                 if(ossClient!=null){
                     ossClient.shutdown();
                 }
+                if(!tmpFile.equals(returnKey)){
+                    FileUtil.deleteFile(tmpFile);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
