@@ -327,6 +327,14 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         applycreditstatus.setFileNum(String.valueOf(0));
         applycreditstatus.setCustomerId(String.valueOf(loanOrderDO.getLoanCustomerId()));
         ApplycreditstatusResponse response = bankSolutionService.applycreditstatus(applycreditstatus);
+        LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
+        loanCustomerDO.setId(loanOrderDO.getLoanCustomerId());
+        if(StringUtils.isNotBlank(response.getStatus())){
+            loanCustomerDO.setOpenCardCurrStatus(response.getStatus());
+        }else{
+            loanCustomerDO.setOpenCardCurrStatus("44");
+        }
+        loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
         return ResultBean.ofSuccess(response);
     }
 
