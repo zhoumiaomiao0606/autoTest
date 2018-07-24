@@ -310,24 +310,17 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-
-
-<!--        <table tableName="material_down_his" domainObjectName="MaterialDownHisDO"
-
         <table tableName="bank_file_list_record" domainObjectName="BankFileListRecordDO"
 
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>-->
+        </table>
 
         <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-<<<<<<< HEAD
-
-=======
         <table tableName="bank_rela_question" domainObjectName="BankRelaQuestionDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
@@ -349,20 +342,19 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
+        <table tableName="loan_data_flow" domainObjectName="LoanDataFlowDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+
+-->
+
 
         <table tableName="loan_process" domainObjectName="LoanProcessDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
-
--->
-
-        <table tableName="loan_data_flow" domainObjectName="LoanDataFlowDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
->>>>>>> v_1.1.4
-
 
 
         <!-- 忽略列，不生成bean 字段

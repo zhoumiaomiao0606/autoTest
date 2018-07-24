@@ -31,7 +31,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,6 +38,7 @@ import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
 import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_SOCIAL;
@@ -1238,7 +1238,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 电审任务
         if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
             // 执行电审任务
-            execTelephoneVerifyTask(task, variables, approval, loanOrderDO.getId(), loanOrderDO.getLoanFinancialPlanId());
+            execTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
         } else {
             // 其他任务：直接提交
             completeTask(task.getId(), variables);
@@ -1248,7 +1248,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         execCreditRecordFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables);
 
         // 业务申请 & 上门调查 拦截
-        execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables, loanOrderDO.getLoanBaseInfoId(), loanProcessDO);
+        execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables, loanOrderDO, loanProcessDO);
     }
 
     /**
@@ -1718,15 +1718,29 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
+     * 获取 LoanCustomerDO
+     *
+     * @param loanCustomerId
+     * @return
+     */
+    private LoanCustomerDO getLoanCustomer(Long loanCustomerId) {
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, null);
+        Preconditions.checkNotNull(loanCustomerDO, "数据异常，主贷人信息为空");
+
+        return loanCustomerDO;
+    }
+
+    /**
      * 执行电审任务
      *
      * @param task
      * @param variables
      * @param approval
-     * @param orderId
-     * @param loanFinancialPlanId
+     * @param loanOrderDO
+     * @param loanProcessDO
      */
-    private void execTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval, Long orderId, Long loanFinancialPlanId) {
+    private void execTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval,
+                                         LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 角色
         Set<String> userGroupNameSet = permissionService.getLoginUserHasUserGroups();
@@ -1739,40 +1753,40 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (ACTION_PASS.equals(approval.getAction())) {
 
             // 获取贷款额度
-            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
+            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
             Preconditions.checkArgument(null != loanFinancialPlanDO && null != loanFinancialPlanDO.getLoanAmount(), "贷款额不能为空");
             double loanAmount = loanFinancialPlanDO.getLoanAmount().doubleValue();
 
             // 直接通过
             if (loanAmount >= 0 && loanAmount <= 100000) {
                 // 完成任务：全部角色直接过单
-                passTelephoneVerifyTask(task, variables, approval);
+                passTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
             } else if (loanAmount > 100000 && loanAmount <= 300000) {
                 // 电审主管以上可过单
                 if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_LEADER) {
                     // 记录
-                    updateTelephoneVerify(orderId, maxRoleLevel);
+                    updateTelephoneVerify(loanOrderDO.getId(), maxRoleLevel);
                 } else {
                     // 完成任务
-                    passTelephoneVerifyTask(task, variables, approval);
+                    passTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
                 }
             } else if (loanAmount > 300000 && loanAmount <= 500000) {
                 // 电审经理以上可过单
                 if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_MANAGER) {
                     // 记录
-                    updateTelephoneVerify(orderId, maxRoleLevel);
+                    updateTelephoneVerify(loanOrderDO.getId(), maxRoleLevel);
                 } else {
                     // 完成任务
-                    passTelephoneVerifyTask(task, variables, approval);
+                    passTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
                 }
             } else if (loanAmount > 500000) {
                 // 总监以上可过单
                 if (maxRoleLevel < LEVEL_DIRECTOR) {
                     // 记录
-                    updateTelephoneVerify(orderId, maxRoleLevel);
+                    updateTelephoneVerify(loanOrderDO.getId(), maxRoleLevel);
                 } else {
                     // 完成任务
-                    passTelephoneVerifyTask(task, variables, approval);
+                    passTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
                 }
             }
         } else if (ACTION_CANCEL.equals(approval.getAction())) {
@@ -1795,8 +1809,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param task
      * @param variables
      * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
      */
-    private void passTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval) {
+    private void passTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval,
+                                         LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
+        // 前置开卡校验
+        preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
+
         // 完成任务：全部角色直接过单
         completeTask(task.getId(), variables);
         // 自动执行【金融方案】任务
@@ -1805,6 +1826,32 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         completeCommitKeyTask(task.getProcessInstanceId(), approval.getOrderId());
         // 更新状态
         updateTelephoneVerify(approval.getOrderId(), TASK_PROCESS_DONE);
+    }
+
+    /**
+     * 前置开卡校验
+     *
+     * @param loanOrderDO
+     * @param loanProcessDO
+     */
+    private void preCondition4BankOpenCard(LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
+        // 是否 走[银行开卡]
+        boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
+
+        // 走[银行开卡]
+        if (is_match_condition_bank) {
+
+            LoanCustomerDO loanCustomerDO = getLoanCustomer(loanOrderDO.getLoanCustomerId());
+            String openCardOrder = loanCustomerDO.getOpenCardOrder();
+
+            // 是否前置开卡     -是：[银行开卡]-必须PASS
+            if (StringUtils.isNotBlank(openCardOrder) && K_YORN_YES.equals(Byte.valueOf(openCardOrder))) {
+
+                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getBankOpenCard()),
+                        "前先提交[" + BANK_OPEN_CARD.getName() + "]");
+            }
+        }
     }
 
     /**
@@ -1904,11 +1951,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param processInstId
      * @param approval
      * @param variables
-     * @param loanBaseInfoId
+     * @param loanOrderDO
      * @param loanProcessDO
      */
     private void execLoanApplyVisitVerifyFilterTask(Task currentTask, String processInstId, ApprovalParam approval,
-                                                    Map<String, Object> variables, Long loanBaseInfoId, LoanProcessDO loanProcessDO) {
+                                                    Map<String, Object> variables, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 正常-过来的拦截任务
         boolean loanApplyVisitVerifyFilterTask = isLoanApplyVisitVerifyFilterTask(approval.getTaskDefinitionKey(), variables);
@@ -1930,7 +1977,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 上门调查：只有【提交】;  业务申请：只有【提交】&【弃单】;      -均无[打回]
             // PASS
             if (ACTION_PASS.equals(approval.getAction())) {
-                doLoanApplyVisitVerifyFilterTask_Pass(currentTask, tasks, loanBaseInfoId, loanProcessDO);
+                doLoanApplyVisitVerifyFilterTask_Pass(currentTask, tasks, loanOrderDO, loanProcessDO);
             }
             // CANCEL
             else if (ACTION_CANCEL.equals(approval.getAction())) {
@@ -1974,10 +2021,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param currentTask
      * @param tasks
-     * @param loanBaseInfoId
+     * @param loanOrderDO
      * @param loanProcessDO
      */
-    private void doLoanApplyVisitVerifyFilterTask_Pass(Task currentTask, List<Task> tasks, Long loanBaseInfoId, LoanProcessDO loanProcessDO) {
+    private void doLoanApplyVisitVerifyFilterTask_Pass(Task currentTask, List<Task> tasks, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 是否都通过了      -> 既非LOAN_APPLY，也非VISIT_VERIFY
         if (!CollectionUtils.isEmpty(tasks)) {
@@ -2005,7 +2052,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             if (currentTask.getExecutionId().equals(task.getExecutionId())) {
 
                                 // 是否会走 [银行开卡]
-                                yes_or_not_goBankOpenCardTask(passVariables, loanBaseInfoId, loanProcessDO);
+                                yes_or_not_goBankOpenCardTask(passVariables, loanOrderDO, loanProcessDO);
 
                                 // "主任务"  ->  执行通过
                                 completeTask(task.getId(), passVariables);
@@ -2030,20 +2077,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 是否会走 [银行开卡]
      *
      * @param passVariables
-     * @param loanBaseInfoId
+     * @param loanOrderDO
      * @param loanProcessDO
      */
-    private void yes_or_not_goBankOpenCardTask(Map<String, Object> passVariables, Long loanBaseInfoId, LoanProcessDO loanProcessDO) {
+    private void yes_or_not_goBankOpenCardTask(Map<String, Object> passVariables, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
-        // 贷款银行
-        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanBaseInfoId);
-        String bankName = loanBaseInfoDO.getBank();
+        // 是否 走[银行开卡]
+        boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
 
-        // 城站支行 || 台州支行
-        boolean is_match_condition_bank = BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(bankName)
-                || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName);
-
-        // 城站支行 || 台州支行
+        // 走[银行开卡]
         if (is_match_condition_bank) {
 
             // 已经走过一次 [银行开卡]
@@ -2055,18 +2097,37 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 第一次走 [银行开卡]
             else {
+
                 // 走 [电审] + [银行开卡]
                 passVariables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
             }
 
         }
 
-        // 其他银行
+        // 不走[银行开卡]
         else {
 
             // 直接走[电审]
             passVariables.put(PROCESS_VARIABLE_TARGET, TELEPHONE_VERIFY.getCode());
         }
+    }
+
+    /**
+     * 是否 走[银行开卡]
+     *
+     * @param loanBaseInfoId
+     * @return
+     */
+    private boolean tel_verify_match_condition_bank(Long loanBaseInfoId) {
+        // 贷款银行
+        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanBaseInfoId);
+        String bankName = loanBaseInfoDO.getBank();
+
+        // 城站支行 || 台州支行
+        boolean is_match_condition_bank = BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(bankName)
+                || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName);
+
+        return is_match_condition_bank;
     }
 
     /**
