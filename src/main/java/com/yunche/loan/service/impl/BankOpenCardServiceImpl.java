@@ -233,9 +233,12 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             List<BankFileListRecordDO> recordLists = Lists.newArrayList();
             while((line = bufReader.readLine()) != null){
                 String[] split = line.split("\\|");
-                BankFileListRecordDO bankFileListRecordDO = packObject(split);
-                bankFileListRecordDO.setBankFileListId(Long.valueOf(bankFileListId));
-                recordLists.add(bankFileListRecordDO);
+                if(split.length >=12){
+                    BankFileListRecordDO bankFileListRecordDO = packObject(split);
+                    bankFileListRecordDO.setBankFileListId(Long.valueOf(bankFileListId));
+                    recordLists.add(bankFileListRecordDO);
+                }
+
             }
             List<BankFileListRecordDO> list = recordLists.parallelStream().filter(e-> e.getIsCustomer().equals(K_YORN_YES)).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(list)) {
