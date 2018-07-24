@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface LoanQueryDOMapper {
 
-    List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(Long orderId);
+    List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId,@Param("transCode") String transCode);
 
     ApplyDiviGeneralInfoVO selectApplyDiviGeneralInfo(Long orderId);
 
