@@ -24,7 +24,7 @@ public interface ICBCFeignClient {
 
     //通用资料补偿申请接口
     @RequestMapping(value = "/api/v1/icbc/apply/multimediaUpload",method = RequestMethod.POST)
-    public ApplyDiviGeneralResponse multimediaUpload(@RequestBody ICBCApiRequest.MultimediaUpload multimediaUpload);
+    public MultimediaUploadResponse multimediaUpload(@RequestBody ICBCApiRequest.MultimediaUpload multimediaUpload);
 
     //zhengdu
     @RequestMapping(value = "/api/v1/icbc/apply/creditcardapply",method = RequestMethod.POST)

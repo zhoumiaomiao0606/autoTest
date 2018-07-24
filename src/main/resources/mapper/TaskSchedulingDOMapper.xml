@@ -316,6 +316,7 @@
                   join_f.each_month_repay                      AS each_month_repay,
                   DATE_FORMAT(join_bp.gmt_create,'%Y-%m-%d %H:%i:%S')
                                                                AS paymentGtCreate,
+                  deputy.telephone_verify                      AS telephoneVerifyStatus,
                   <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
@@ -423,6 +424,14 @@
                           sendee.name                             AS sendeeName,
                           join_urgerecord.urge_status             AS taskStatus
                       </when>
+                      <when test="taskDefinitionKey == 'usertask_bank_open_card'">
+                          case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
+                          deputy.bank_open_card                   AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_apply_instalment'">
+                          case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
+                          deputy.apply_instalment                 AS taskStatus
+                      </when>
                       <otherwise>
                         0                                         AS taskStatus
                       </otherwise>
@@ -439,9 +448,9 @@
               left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
-            <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
-                left join (select DISTINCT order_id from bank_interface_serial where trans_code = 'applyCredit') join_serial on main.id = join_serial.order_id
-            </if>
+              <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply' or taskDefinitionKey == 'usertask_bank_open_card' or taskDefinitionKey == 'usertask_apply_instalment'">
+                  left join (select DISTINCT order_id from bank_interface_serial where trans_code = #{transCode}) join_serial on main.id = join_serial.order_id
+              </if>
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
@@ -580,16 +589,22 @@
                       AND case when #{taskStatus} = 0 then join_his.status != 0 else join_his.status = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_refund_apply'">
-                      AND case when #{taskStatus} = 0 then join_refund.status  != 0                          else join_refund.status                 = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then join_refund.status  != 0                      else join_refund.status             = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_refund_apply_review'">
-                      AND case when #{taskStatus} = 0 then join_refund.status  != 0                          else join_refund.status                 = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then join_refund.status  != 0                      else join_refund.status             = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_customer_repay_plan'">
-                      AND case when #{taskStatus} = 0 then deputy.bank_card_record  != 0                       else deputy.bank_card_record          = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy.bank_card_record  != 0                 else deputy.bank_card_record        = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_collection_workbench'">
-                      AND case when #{taskStatus} = 0 then join_urgerecord.urge_status != 0                  else join_urgerecord.urge_status        = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then join_urgerecord.urge_status != 0              else join_urgerecord.urge_status    = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_bank_open_card'">
+                      AND case when #{taskStatus} = 0 then deputy.bank_open_card != 0                    else deputy.bank_open_card          = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_apply_instalment'">
+                      AND case when #{taskStatus} = 0 then deputy.apply_instalment != 0                  else deputy.apply_instalment        = #{taskStatus} end
                   </when>
                   <otherwise>
                       AND 1=2
@@ -703,7 +718,7 @@
                       AND tab.isRepayment = #{isRepayment}
                   </if>
               </if>
-            <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply'">
+            <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply' or taskDefinitionKey == 'usertask_bank_open_card' or taskDefinitionKey == 'usertask_apply_instalment'">
                 <if test="serialStatus != null">
                     <choose>
                         <when test="serialStatus == 'except'">
@@ -806,7 +821,6 @@
                               )
                             )
                         </when>
-
                         <otherwise>
                             AND 1=2
                         </otherwise>

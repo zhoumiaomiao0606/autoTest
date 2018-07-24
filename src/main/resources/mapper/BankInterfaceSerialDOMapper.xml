@@ -145,7 +145,13 @@
     and trans_code=#{transCode,jdbcType=VARCHAR}
   </select>
   <select id="checkRequestBussIsSucessByTransCodeOrderId" resultType="java.lang.Boolean">
-      select count(1) from bank_interface_serial where api_status = 200 and (status = 2 or status = 1 or status = 0)
-      and trans_code = #{transCode,jdbcType=VARCHAR} and customer_id = #{customerId,jdbcType=BIGINT}
+          select count(1) from bank_interface_serial serial
+          inner join
+          (
+          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+          as serial_no
+          from bank_interface_serial t GROUP BY trans_code,customer_id
+          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+          and serial.customer_id = #{customerId} and serial.status in (0,1,2,3)
   </select>
 </mapper>

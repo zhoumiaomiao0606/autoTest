@@ -1,5 +1,6 @@
 package com.yunche.loan.config.common;
 
+import com.google.common.collect.Maps;
 import com.yunche.loan.config.filter.BizFormAuthenticationFilter;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
@@ -17,7 +18,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.Filter;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.apache.shiro.web.mgt.CookieRememberMeManager.DEFAULT_REMEMBER_ME_COOKIE_NAME;
@@ -56,7 +56,9 @@ public class ShiroConfig {
 
     @Bean
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
+
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
         Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
@@ -70,7 +72,7 @@ public class ShiroConfig {
 
 
         // 注意过滤器配置顺序 不能颠倒
-        Map<String, String> filterChainDefinitionMap = new LinkedHashMap();
+        Map<String, String> filterChainDefinitionMap = Maps.newLinkedHashMap();
         if (anno) {
             filterChainDefinitionMap.put("/**", "anon");
         } else {
@@ -80,11 +82,10 @@ public class ShiroConfig {
             // websocket检查服务放行
             filterChainDefinitionMap.put("/api/v1/videoFace/info", "anon");
 
-            filterChainDefinitionMap.put("/api/v1/employee/login_", "anon");
-
             filterChainDefinitionMap.put("/api/v1/employee/logout", "anon");
             filterChainDefinitionMap.put("/api/v1/employee/login", "anon");
             filterChainDefinitionMap.put("/api/v1/app/version/check", "anon");
+
             filterChainDefinitionMap.put("/api/v1/loadqr/query", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditresult", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditreturn", "anon");
@@ -92,8 +93,9 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditcardresult", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/fileNotice", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/opencard/openCard", "anon");
-            //        filterChainDefinitionMap.put("/**", "authc,perms");
+
             filterChainDefinitionMap.put("/**", "authc");
+//            filterChainDefinitionMap.put("/**", "authc,perms");
         }
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);

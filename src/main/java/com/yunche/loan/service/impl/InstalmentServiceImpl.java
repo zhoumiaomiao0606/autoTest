@@ -7,6 +7,7 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.InstalmentUpdateParam;
 import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.vo.ApplyDiviGeneralInfoVO;
+import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
@@ -17,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -32,14 +35,43 @@ public class InstalmentServiceImpl implements InstalmentService {
     @Resource
     private LoanFileDOMapper loanFileDOMapper;
     @Override
-    public ApplyDiviGeneralInfoVO detail(Long orderId) {
+    public RecombinationVO detail(Long orderId) {
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
 
         if(orderDO == null){
             throw new BizException("此订单不存在");
         }
+        Set<Byte> types = new HashSet<Byte>();
+        types.add(new Byte("30"));
+        types.add(new Byte("31"));
+        types.add(new Byte("32"));
+        types.add(new Byte("33"));
+        types.add(new Byte("34"));
+        types.add(new Byte("35"));
+        types.add(new Byte("36"));
+        types.add(new Byte("37"));
+        types.add(new Byte("38"));
+        types.add(new Byte("39"));
+        types.add(new Byte("40"));
+        types.add(new Byte("41"));
+        types.add(new Byte("42"));
+        types.add(new Byte("43"));
+        types.add(new Byte("44"));
+        types.add(new Byte("45"));
+        types.add(new Byte("46"));
+        types.add(new Byte("47"));
+        types.add(new Byte("48"));
+        types.add(new Byte("49"));
+        types.add(new Byte("50"));
+        types.add(new Byte("51"));
+        types.add(new Byte("52"));
+        types.add(new Byte("53"));
+        types.add(new Byte("54"));
 
-        return loanQueryDOMapper.selectApplyDiviGeneralInfo(orderId);
+        RecombinationVO<ApplyDiviGeneralInfoVO> recombinationVO = new RecombinationVO<ApplyDiviGeneralInfoVO>();
+        recombinationVO.setInfo(loanQueryDOMapper.selectApplyDiviGeneralInfo(orderId));
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId,types));
+        return recombinationVO;
     }
 
     @Override
