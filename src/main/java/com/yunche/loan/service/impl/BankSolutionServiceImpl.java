@@ -465,14 +465,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         String term = loanTime.toString();
         String interest = loanTimeFee.toString();
 
-        BankFileListRecordDO bankFileListRecordDO = bankFileListRecordDOMapper.selectNewestByOrderId(orderId);
-        if(bankFileListRecordDO == null){
+        String lendCard = loanCustomerDO.getLendCard();
+        if(StringUtils.isBlank(lendCard)){
             throw new BizException("信用卡卡号为空");
         }
 
-        if(bankFileListRecordDO.getCardNumber() == null ){
-            throw new BizException("信用卡卡号为空");
-        }
+
 
         //封装数据
         ICBCApiRequest.ApplyDiviGeneral applyDiviGeneral = new ICBCApiRequest.ApplyDiviGeneral();
@@ -563,7 +561,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         divi.setIsPawn(IDict.K_ISPAWN.YES);
         divi.setPawnGoods(vehicleInformationDO.getVehicle_identification_number()+carFullName);
         divi.setIsAssure(IDict.K_ISASSURE.YES);
-        divi.setCard(bankFileListRecordDO.getCardNumber().toString());
+        divi.setCard(lendCard);
         divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);
         divi.setTiexiRate("0");
 
@@ -591,10 +589,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //只有接口请求成功才会调用上传.防止请求过多造成内存溢出
         if(response!=null){
             if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
+                asyncUpload.upload(serNo,queue);
                 asyncUpload.multimediaUpload(phybrno,loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4),orderId.toString(),pictures);
-                for(ICBCApiRequest.PicQueue picQueue :queue){
-                    asyncUpload.upload(serNo,picQueue.getPicId(),picQueue.getPicName(),picQueue.getUrl());
-                }
             }
         }
     }

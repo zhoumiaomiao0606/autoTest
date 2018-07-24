@@ -54,6 +54,58 @@ public class AsyncUpload {
         icbcFeignClient.multimediaUpload(multimediaUpload);
     }
 
+
+    @Async
+    public void upload(String serNo,List<ICBCApiRequest.PicQueue> queue){
+        for(ICBCApiRequest.PicQueue picQueue :queue){
+            //1 下载出差 2 合成出错 3 上传出错
+            boolean flag = true;
+            String picPath = null;
+            Byte error = null;
+            try {
+                try {
+                    picPath = ImageUtil.getSingleFile(picQueue.getPicName(),picQueue.getUrl(),picQueue.getPicId());
+                    if(StringUtils.isBlank(picPath)){
+                        error = new Byte("1");
+                        throw new RuntimeException("文件下载出错");
+                    }
+                }catch (Exception e){
+                    throw new RuntimeException("文件下载出错");
+                }
+
+                try {
+                    boolean check = FtpUtil.icbcUpload(picPath);
+                    if(!check){
+                        error = new Byte("3");
+                        throw new RuntimeException("文件上传出错");
+                    }
+                }catch (Exception e){
+                    throw new RuntimeException("文件上传出错");
+                }
+            }catch (Exception e){
+                flag = false;
+            }
+
+            BankInterfaceFileSerialDO bankInterfaceFileSerialDO = new BankInterfaceFileSerialDO();
+            bankInterfaceFileSerialDO.setSerialNo(serNo);
+            bankInterfaceFileSerialDO.setFileName(picQueue.getPicName());
+            bankInterfaceFileSerialDO.setFilePath(picPath);
+            bankInterfaceFileSerialDO.setFileType(picQueue.getPicId());
+            bankInterfaceFileSerialDO.setError(error);
+
+            if(flag){
+                bankInterfaceFileSerialDO.setSuccess(new Byte("1"));
+            }else {
+                bankInterfaceFileSerialDO.setSuccess(new Byte("0"));
+            }
+            bankInterfaceFileSerialDOMapper.insertSelective(bankInterfaceFileSerialDO);
+
+        }
+
+    }
+
+
+
     @Async
     public void upload(String serialNo,String fileType, String name, String urls){
         //1 下载出差 2 合成出错 3 上传出错
