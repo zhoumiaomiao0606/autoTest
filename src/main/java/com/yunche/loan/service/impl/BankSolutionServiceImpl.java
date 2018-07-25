@@ -277,30 +277,19 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
 
-        for (TermFileEnum e : TermFileEnum.values()) {
-            UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,e.getKey());
-            if(authSignPic != null){
-                if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-                    String picName = GeneratorIDUtil.execute();
-                    if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(e.getKey().toString())){
-                        //zip
-                        picName = picName +ImageUtil.ZIP_SUFFIX;
-                    }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(e.getKey().toString())){
-                        //mp4
-                        picName = picName +ImageUtil.MP4_SUFFIX;
-                    }else{
-                        //jpg
-                        picName = picName+ImageUtil.PIC_SUFFIX;
-                    }
+        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,TermFileEnum.VIDEO_INTERVIEW.getKey());
+        if(authSignPic != null){
+            throw new BizException("缺少面签视频");
+        }
 
-                    ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
-                    picture.setPicid(e.getValue());
-                    picture.setPicname(picName);
-                    picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
-                    pictures.add(picture);
-                }
-            }
-
+        if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
+            String picName = GeneratorIDUtil.execute();
+            picName = picName +ImageUtil.MP4_SUFFIX;
+            ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+            picture.setPicid(TermFileEnum.VIDEO_INTERVIEW.getValue());
+            picture.setPicname(picName);
+            picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.VIDEO_INTERVIEW.getKey()));
+            pictures.add(picture);
         }
 
         //多媒体补偿接口
