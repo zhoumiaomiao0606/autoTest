@@ -412,7 +412,7 @@
     <sequenceFlow id="flow265" sourceRef="exclusivegateway9" targetRef="usertask_telephone_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 && target == 'usertask_telephone_verify'}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_open_card_list" name="银行开卡清单"></userTask>
+    <userTask id="usertask_bank_open_card_list" name="银行开卡清单" activiti:candidateGroups="管理员,总经理,培训经理"></userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
