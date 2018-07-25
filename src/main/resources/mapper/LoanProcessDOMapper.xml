@@ -8,6 +8,7 @@
         <result column="social_credit_record" property="socialCreditRecord" jdbcType="TINYINT"/>
         <result column="loan_apply" property="loanApply" jdbcType="TINYINT"/>
         <result column="visit_verify" property="visitVerify" jdbcType="TINYINT"/>
+        <result column="bank_open_card" property="bankOpenCard" jdbcType="TINYINT"/>
         <result column="telephone_verify" property="telephoneVerify" jdbcType="TINYINT"/>
         <result column="financial_scheme" property="financialScheme" jdbcType="TINYINT"/>
         <result column="bank_card_record" property="bankCardRecord" jdbcType="TINYINT"/>
@@ -19,6 +20,7 @@
         <result column="material_review" property="materialReview" jdbcType="TINYINT"/>
         <result column="material_print_review" property="materialPrintReview" jdbcType="TINYINT"/>
         <result column="material_manage" property="materialManage" jdbcType="TINYINT"/>
+        <result column="apply_instalment" property="applyInstalment" jdbcType="TINYINT"/>
         <result column="business_review" property="businessReview" jdbcType="TINYINT"/>
         <result column="loan_review" property="loanReview" jdbcType="TINYINT"/>
         <result column="remit_review" property="remitReview" jdbcType="TINYINT"/>
@@ -48,39 +50,36 @@
         <result column="data_flow_register_c2b" property="dataFlowRegisterC2b" jdbcType="TINYINT"/>
         <result column="data_flow_register_c2b_review" property="dataFlowRegisterC2bReview" jdbcType="TINYINT"/>
     </resultMap>
-
     <sql id="Base_Column_List">
         order_id, credit_apply, bank_credit_record, social_credit_record, loan_apply, visit_verify,
-        telephone_verify, financial_scheme, bank_card_record, car_insurance, vehicle_information,
-        apply_license_plate_deposit_info, install_gps, commit_key, material_review, material_print_review,
-        material_manage, business_review, loan_review, remit_review, bank_lend_record, bank_card_send,
-        customer_repay_plan, business_pay, cancel_task_def_key, loan_apply_reject_orgin_task,
-        order_status, gmt_create, gmt_modify, data_flow_contract_p2c, data_flow_contract_p2c_review,
-        data_flow_contract_c2b, data_flow_contract_c2b_review, data_flow_mortgage_b2c, data_flow_mortgage_b2c_review,
-        data_flow_mortgage_c2p, data_flow_mortgage_c2p_review, data_flow_mortgage_p2c, data_flow_mortgage_p2c_review,
-        data_flow_mortgage_c2b, data_flow_mortgage_c2b_review, data_flow_register_p2c, data_flow_register_p2c_review,
-        data_flow_register_c2b, data_flow_register_c2b_review
+        bank_open_card, telephone_verify, financial_scheme, bank_card_record, car_insurance,
+        vehicle_information, apply_license_plate_deposit_info, install_gps, commit_key, material_review,
+        material_print_review, material_manage, apply_instalment, business_review, loan_review,
+        remit_review, bank_lend_record, bank_card_send, customer_repay_plan, business_pay,
+        cancel_task_def_key, loan_apply_reject_orgin_task, order_status, gmt_create, gmt_modify,
+        data_flow_contract_p2c, data_flow_contract_p2c_review, data_flow_contract_c2b, data_flow_contract_c2b_review,
+        data_flow_mortgage_b2c, data_flow_mortgage_b2c_review, data_flow_mortgage_c2p, data_flow_mortgage_c2p_review,
+        data_flow_mortgage_p2c, data_flow_mortgage_p2c_review, data_flow_mortgage_c2b, data_flow_mortgage_c2b_review,
+        data_flow_register_p2c, data_flow_register_p2c_review, data_flow_register_c2b, data_flow_register_c2b_review
     </sql>
-
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
         from loan_process
         where order_id = #{orderId,jdbcType=BIGINT}
     </select>
-
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from loan_process
         where order_id = #{orderId,jdbcType=BIGINT}
     </delete>
-
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
         insert into loan_process (order_id, credit_apply, bank_credit_record,
         social_credit_record, loan_apply, visit_verify,
-        telephone_verify, financial_scheme, bank_card_record,
-        car_insurance, vehicle_information, apply_license_plate_deposit_info,
-        install_gps, commit_key, material_review,
-        material_print_review, material_manage, business_review,
+        bank_open_card, telephone_verify, financial_scheme,
+        bank_card_record, car_insurance, vehicle_information,
+        apply_license_plate_deposit_info, install_gps,
+        commit_key, material_review, material_print_review,
+        material_manage, apply_instalment, business_review,
         loan_review, remit_review, bank_lend_record,
         bank_card_send, customer_repay_plan, business_pay,
         cancel_task_def_key, loan_apply_reject_orgin_task,
@@ -96,10 +95,11 @@
         )
         values (#{orderId,jdbcType=BIGINT}, #{creditApply,jdbcType=TINYINT}, #{bankCreditRecord,jdbcType=TINYINT},
         #{socialCreditRecord,jdbcType=TINYINT}, #{loanApply,jdbcType=TINYINT}, #{visitVerify,jdbcType=TINYINT},
-        #{telephoneVerify,jdbcType=TINYINT}, #{financialScheme,jdbcType=TINYINT}, #{bankCardRecord,jdbcType=TINYINT},
-        #{carInsurance,jdbcType=TINYINT}, #{vehicleInformation,jdbcType=TINYINT}, #{applyLicensePlateDepositInfo,jdbcType=TINYINT},
-        #{installGps,jdbcType=TINYINT}, #{commitKey,jdbcType=TINYINT}, #{materialReview,jdbcType=TINYINT},
-        #{materialPrintReview,jdbcType=TINYINT}, #{materialManage,jdbcType=TINYINT}, #{businessReview,jdbcType=TINYINT},
+        #{bankOpenCard,jdbcType=TINYINT}, #{telephoneVerify,jdbcType=TINYINT}, #{financialScheme,jdbcType=TINYINT},
+        #{bankCardRecord,jdbcType=TINYINT}, #{carInsurance,jdbcType=TINYINT}, #{vehicleInformation,jdbcType=TINYINT},
+        #{applyLicensePlateDepositInfo,jdbcType=TINYINT}, #{installGps,jdbcType=TINYINT},
+        #{commitKey,jdbcType=TINYINT}, #{materialReview,jdbcType=TINYINT}, #{materialPrintReview,jdbcType=TINYINT},
+        #{materialManage,jdbcType=TINYINT}, #{applyInstalment,jdbcType=TINYINT}, #{businessReview,jdbcType=TINYINT},
         #{loanReview,jdbcType=TINYINT}, #{remitReview,jdbcType=TINYINT}, #{bankLendRecord,jdbcType=TINYINT},
         #{bankCardSend,jdbcType=TINYINT}, #{customerRepayPlan,jdbcType=TINYINT}, #{businessPay,jdbcType=TINYINT},
         #{cancelTaskDefKey,jdbcType=VARCHAR}, #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
@@ -114,7 +114,6 @@
         #{dataFlowRegisterC2b,jdbcType=TINYINT}, #{dataFlowRegisterC2bReview,jdbcType=TINYINT}
         )
     </insert>
-
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
         insert into loan_process
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -135,6 +134,9 @@
             </if>
             <if test="visitVerify != null">
                 visit_verify,
+            </if>
+            <if test="bankOpenCard != null">
+                bank_open_card,
             </if>
             <if test="telephoneVerify != null">
                 telephone_verify,
@@ -168,6 +170,9 @@
             </if>
             <if test="materialManage != null">
                 material_manage,
+            </if>
+            <if test="applyInstalment != null">
+                apply_instalment,
             </if>
             <if test="businessReview != null">
                 business_review,
@@ -273,6 +278,9 @@
             <if test="visitVerify != null">
                 #{visitVerify,jdbcType=TINYINT},
             </if>
+            <if test="bankOpenCard != null">
+                #{bankOpenCard,jdbcType=TINYINT},
+            </if>
             <if test="telephoneVerify != null">
                 #{telephoneVerify,jdbcType=TINYINT},
             </if>
@@ -305,6 +313,9 @@
             </if>
             <if test="materialManage != null">
                 #{materialManage,jdbcType=TINYINT},
+            </if>
+            <if test="applyInstalment != null">
+                #{applyInstalment,jdbcType=TINYINT},
             </if>
             <if test="businessReview != null">
                 #{businessReview,jdbcType=TINYINT},
@@ -392,7 +403,6 @@
             </if>
         </trim>
     </insert>
-
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
         update loan_process
         <set>
@@ -410,6 +420,9 @@
             </if>
             <if test="visitVerify != null">
                 visit_verify = #{visitVerify,jdbcType=TINYINT},
+            </if>
+            <if test="bankOpenCard != null">
+                bank_open_card = #{bankOpenCard,jdbcType=TINYINT},
             </if>
             <if test="telephoneVerify != null">
                 telephone_verify = #{telephoneVerify,jdbcType=TINYINT},
@@ -443,6 +456,9 @@
             </if>
             <if test="materialManage != null">
                 material_manage = #{materialManage,jdbcType=TINYINT},
+            </if>
+            <if test="applyInstalment != null">
+                apply_instalment = #{applyInstalment,jdbcType=TINYINT},
             </if>
             <if test="businessReview != null">
                 business_review = #{businessReview,jdbcType=TINYINT},
@@ -531,7 +547,6 @@
         </set>
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
-
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
         update loan_process
         set credit_apply = #{creditApply,jdbcType=TINYINT},
@@ -539,6 +554,7 @@
         social_credit_record = #{socialCreditRecord,jdbcType=TINYINT},
         loan_apply = #{loanApply,jdbcType=TINYINT},
         visit_verify = #{visitVerify,jdbcType=TINYINT},
+        bank_open_card = #{bankOpenCard,jdbcType=TINYINT},
         telephone_verify = #{telephoneVerify,jdbcType=TINYINT},
         financial_scheme = #{financialScheme,jdbcType=TINYINT},
         bank_card_record = #{bankCardRecord,jdbcType=TINYINT},
@@ -550,6 +566,7 @@
         material_review = #{materialReview,jdbcType=TINYINT},
         material_print_review = #{materialPrintReview,jdbcType=TINYINT},
         material_manage = #{materialManage,jdbcType=TINYINT},
+        apply_instalment = #{applyInstalment,jdbcType=TINYINT},
         business_review = #{businessReview,jdbcType=TINYINT},
         loan_review = #{loanReview,jdbcType=TINYINT},
         remit_review = #{remitReview,jdbcType=TINYINT},
@@ -580,5 +597,4 @@
         data_flow_register_c2b_review = #{dataFlowRegisterC2bReview,jdbcType=TINYINT}
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
-
 </mapper>

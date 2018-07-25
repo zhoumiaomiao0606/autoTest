@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
+import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
 import static com.yunche.loan.config.constant.FaceSignConst.FACE_SIGN_MACHINE;

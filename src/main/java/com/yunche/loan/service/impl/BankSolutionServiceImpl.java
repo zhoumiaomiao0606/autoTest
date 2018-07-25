@@ -13,10 +13,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.client.ICBCFeignNormal;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
-import com.yunche.loan.config.feign.request.group.ApplyCreditValidated;
-import com.yunche.loan.config.feign.request.group.ApplyDiviGeneralValidated;
-import com.yunche.loan.config.feign.request.group.NewValidated;
-import com.yunche.loan.config.feign.request.group.SecondValidated;
+import com.yunche.loan.config.feign.request.group.*;
 import com.yunche.loan.config.feign.response.*;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
@@ -300,9 +297,23 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         }
 
-        asyncUpload.multimediaUpload(phybrno,loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4),orderId.toString(),pictures);
-
+        //多媒体补偿接口
+        ICBCApiRequest.MultimediaUpload multimediaUpload = new ICBCApiRequest.MultimediaUpload();
+        multimediaUpload.setPlatno(sysConfig.getPlatno());
+        multimediaUpload.setGuestPlatno(sysConfig.getPlatno());
+        multimediaUpload.setCmpseq(GeneratorIDUtil.execute());
+        multimediaUpload.setZoneno(loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4));
+        multimediaUpload.setPhybrno(phybrno);
+        multimediaUpload.setOrderno(orderId.toString());
+        multimediaUpload.setAssurerno(sysConfig.getAssurerno());
+        multimediaUpload.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        multimediaUpload.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
+        multimediaUpload.setFileNum(String.valueOf(pictures.size()));
+        multimediaUpload.setPictures(pictures);
+        violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
+        icbcFeignClient.multimediaUpload(multimediaUpload);
     }
+
 
     public void ICBCCommonBusinessApplyProcess(Long orderId,String phybrno){
 
@@ -465,14 +476,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         String term = loanTime.toString();
         String interest = loanTimeFee.toString();
 
-        BankFileListRecordDO bankFileListRecordDO = bankFileListRecordDOMapper.selectNewestByOrderId(orderId);
-        if(bankFileListRecordDO == null){
+        String lendCard = loanCustomerDO.getLendCard();
+        if(StringUtils.isBlank(lendCard)){
             throw new BizException("信用卡卡号为空");
         }
 
-        if(bankFileListRecordDO.getCardNumber() == null ){
-            throw new BizException("信用卡卡号为空");
-        }
+
 
         //封装数据
         ICBCApiRequest.ApplyDiviGeneral applyDiviGeneral = new ICBCApiRequest.ApplyDiviGeneral();
@@ -563,7 +572,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         divi.setIsPawn(IDict.K_ISPAWN.YES);
         divi.setPawnGoods(vehicleInformationDO.getVehicle_identification_number()+carFullName);
         divi.setIsAssure(IDict.K_ISASSURE.YES);
-        divi.setCard(bankFileListRecordDO.getCardNumber().toString());
+        divi.setCard(lendCard);
         divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);
         divi.setTiexiRate("0");
 
@@ -591,15 +600,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //只有接口请求成功才会调用上传.防止请求过多造成内存溢出
         if(response!=null){
             if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
-                asyncUpload.multimediaUpload(phybrno,loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4),orderId.toString(),pictures);
-                for(ICBCApiRequest.PicQueue picQueue :queue){
-                    asyncUpload.upload(serNo,picQueue.getPicId(),picQueue.getPicName(),picQueue.getUrl());
-                }
+                asyncUpload.upload(serNo,queue);
             }
         }
     }
-
-
 
 
     private void ICBCBankCreditProcess(Long orderId,String phybrno,List<LoanCustomerDO> customers){
