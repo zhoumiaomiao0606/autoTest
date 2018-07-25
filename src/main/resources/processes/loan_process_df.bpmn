@@ -412,6 +412,7 @@
     <sequenceFlow id="flow265" sourceRef="exclusivegateway9" targetRef="usertask_telephone_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 && target == 'usertask_telephone_verify'}]]></conditionExpression>
     </sequenceFlow>
+    <userTask id="usertask_bank_open_card_list" name="银行开卡清单"></userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -738,6 +739,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent37" id="BPMNShape_endevent37">
         <omgdc:Bounds height="35.0" width="35.0" x="5324.0" y="781.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_bank_open_card_list" id="BPMNShape_usertask_bank_open_card_list">
+        <omgdc:Bounds height="55.0" width="105.0" x="1820.0" y="10.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="36.0" y="1100.0"></omgdi:waypoint>
