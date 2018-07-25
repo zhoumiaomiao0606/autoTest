@@ -318,7 +318,9 @@
                                                                AS paymentGtCreate,
                   deputy.telephone_verify                      AS telephoneVerifyStatus,
                   join_c.open_card_order                       AS openCardOrder,
-                  <choose>
+                  useGetSmallCarName(join_i.car_detail_id)        AS carName,
+                  join_i.gps_num                                  AS carGpsNum,
+            <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
                           deputy.credit_apply                     AS taskStatus

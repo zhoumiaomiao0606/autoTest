@@ -16,6 +16,7 @@ import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.request.group.*;
 import com.yunche.loan.config.feign.response.*;
 import com.yunche.loan.config.util.*;
+import com.yunche.loan.config.util.Process;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
@@ -281,22 +282,25 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(authSignPic != null){
             throw new BizException("缺少面签视频");
         }
+        String picName = GeneratorIDUtil.execute()+ImageUtil.MP4_SUFFIX;
 
         if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-            String picName = GeneratorIDUtil.execute();
-            picName = picName +ImageUtil.MP4_SUFFIX;
             ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
             picture.setPicid(TermFileEnum.VIDEO_INTERVIEW.getValue());
             picture.setPicname(picName);
             picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.VIDEO_INTERVIEW.getKey()));
             pictures.add(picture);
         }
+        if(pictures.size() == 0 ){
+            throw new BizException("缺少面签视频");
+        }
 
+        String serNo = GeneratorIDUtil.execute();
         //多媒体补偿接口
         ICBCApiRequest.MultimediaUpload multimediaUpload = new ICBCApiRequest.MultimediaUpload();
         multimediaUpload.setPlatno(sysConfig.getPlatno());
         multimediaUpload.setGuestPlatno(sysConfig.getPlatno());
-        multimediaUpload.setCmpseq(GeneratorIDUtil.execute());
+        multimediaUpload.setCmpseq(serNo);
         multimediaUpload.setZoneno(loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4));
         multimediaUpload.setPhybrno(phybrno);
         multimediaUpload.setOrderno(orderId.toString());
@@ -306,7 +310,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         multimediaUpload.setFileNum(String.valueOf(pictures.size()));
         multimediaUpload.setPictures(pictures);
         violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
-        icbcFeignClient.multimediaUpload(multimediaUpload);
+
+
+        asyncUpload.execute(new Process() {
+            @Override
+            public void process() {
+                asyncUpload.upload(serNo,"0004",picName,authSignPic.getUrls());
+                icbcFeignClient.multimediaUpload(multimediaUpload);
+            }
+        });
     }
 
 
@@ -595,13 +607,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCustomer(customer);
         applyDiviGeneral.setPictures(pictures);
         violationUtil.violation(applyDiviGeneral,ApplyDiviGeneralValidated.class);
-        ApplyDiviGeneralResponse response = icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
-        //只有接口请求成功才会调用上传.防止请求过多造成内存溢出
-        if(response!=null){
-            if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
+
+
+        asyncUpload.execute(new Process() {
+            @Override
+            public void process() {
                 asyncUpload.upload(serNo,queue);
+                icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
             }
-        }
+        });
     }
 
 
@@ -725,14 +739,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyCredit.setPictures(pictures);
         //走你
         violationUtil.violation(applyCredit, ApplyCreditValidated.class);
-        ApplyCreditResponse response = icbcFeignClient.applyCredit(applyCredit);
-        //上传
-        if(response!=null) {
-            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
+
+        asyncUpload.execute(new Process() {
+            @Override
+            public void process() {
                 asyncUpload.upload(serNo,"0004",picName,authSignPic.getUrls());
                 asyncUpload.upload(serNo,"0005",docName,mergeImages);
+                icbcFeignClient.applyCredit(applyCredit);
             }
-        }
+        });
     }
 
 

@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+
 @Component
 public class AsyncUpload {
 
@@ -39,7 +40,13 @@ public class AsyncUpload {
 
     @Resource
     private ICBCFeignClient icbcFeignClient;
+
+
     @Async
+    public void execute(Process process){
+        process.process();
+    }
+
     public void multimediaUpload(String phybrno,String zoneno,String orderId,List<ICBCApiRequest.Picture> pictures){
         //多媒体补偿接口
         ICBCApiRequest.MultimediaUpload multimediaUpload = new ICBCApiRequest.MultimediaUpload();
@@ -59,7 +66,6 @@ public class AsyncUpload {
     }
 
 
-    @Async
     public void upload(String serNo,List<ICBCApiRequest.PicQueue> queue){
         for(ICBCApiRequest.PicQueue picQueue :queue){
 
@@ -113,7 +119,6 @@ public class AsyncUpload {
 
 
 
-    @Async
     public void upload(String serialNo,String fileType, String name, String urls){
         //1 下载出差 2 合成出错 3 上传出错
 
@@ -159,7 +164,6 @@ public class AsyncUpload {
         bankInterfaceFileSerialDOMapper.insertSelective(bankInterfaceFileSerialDO);
     }
 
-    @Async
     public void upload(String serialNo, String fileType, String name, List<String > urls){
 
         //1 下载出差 2 合成出错 3 上传出错
