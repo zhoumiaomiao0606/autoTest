@@ -532,6 +532,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         }
 
+        if(pictures.size() == 0){
+            throw new BizException("最少需要一张图片");
+        }
+
         String serNo = GeneratorIDUtil.execute();
         //pub
         applyDiviGeneral.setPlatno(sysConfig.getPlatno());
