@@ -318,7 +318,9 @@
                                                                AS paymentGtCreate,
                   deputy.telephone_verify                      AS telephoneVerifyStatus,
                   join_c.open_card_order                       AS openCardOrder,
-                  <choose>
+                  useGetSmallCarName(join_i.car_detail_id)        AS carName,
+                  join_i.gps_num                                  AS carGpsNum,
+            <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
                           deputy.credit_apply                     AS taskStatus
@@ -737,7 +739,12 @@
                                         ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
                                       )
                                     )
-                                    AND tab.openCardOrder = 0 or tab.openCardOrder is null
+                                    AND
+                                    case when tab.openCardOrder = 1 then true
+                                         when tab.openCardOrder = 0 then tab.openCardOrder != 1
+                                    else
+                                        false
+                                    end
                                 </when>
                                 <when test="bankOpenCardOrder == 'having'">
                                     AND tab.id not in  <!--  出现一次就判定为除外 -->
@@ -752,7 +759,11 @@
                                         ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
                                       )
                                     )
-                                    AND tab.openCardOrder = 1
+                                    AND
+                                    case when tab.openCardOrder = 0 then tab.openCardOrder = 1
+                                    else
+                                        false
+                                    end
                                 </when>
                                 <otherwise>
                                     AND tab.id not in  <!--  出现一次就判定为除外 -->
