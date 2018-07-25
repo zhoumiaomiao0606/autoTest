@@ -315,7 +315,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                asyncUpload.upload(serNo,"0004",picName,authSignPic.getUrls());
+                asyncUpload.upload(serNo,TermFileEnum.VIDEO_INTERVIEW.getValue(),picName,authSignPic.getUrls());
                 icbcFeignClient.multimediaUpload(multimediaUpload);
             }
         });
