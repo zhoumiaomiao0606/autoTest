@@ -14,8 +14,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -84,13 +87,20 @@ public class DictCache {
         // getAll
         List<ConfDictDO> confDictDOList = confDictDOMapper.getAll();
 
-        // 反射赋值
-        Class<? extends DataDictionaryVO> dataDictionaryClass = dataDictionaryVO.getClass();
+        // clazz对象
+        Class<? extends DataDictionaryVO> clazz = dataDictionaryVO.getClass();
 
+        // 获取clazz的所有字段
+        Field[] fields = clazz.getFields();
+        List<String> fieldList = Arrays.stream(fields).map(e -> {
+            return e.getName();
+        }).collect(Collectors.toList());
+
+        // 反射赋值
         if (!CollectionUtils.isEmpty(confDictDOList)) {
 
             confDictDOList.stream()
-                    .filter(e -> null != e && StringUtils.isNotBlank(e.getField()))
+                    .filter(e -> null != e && StringUtils.isNotBlank(e.getField()) && fieldList.contains(e.getField()))
                     .forEach(e -> {
 
                         String field = e.getField();
@@ -98,7 +108,7 @@ public class DictCache {
                         String methodName = "set" + StringUtil.firstLetter2UpperCase(field);
 
                         try {
-                            Method method = dataDictionaryClass.getMethod(methodName, DataDictionaryVO.Detail.class);
+                            Method method = clazz.getMethod(methodName, DataDictionaryVO.Detail.class);
 
                             DataDictionaryVO.Detail detail = new DataDictionaryVO.Detail();
                             BeanUtils.copyProperties(e, detail);

@@ -184,9 +184,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             execDataFlowMortgageP2cNewFilterTask(approval);
         }
 
-        // 【资料增补单】
+        // 【资料增补】
         if (isInfoSupplementTask(approval)) {
-            return execInfoSupplementTask(approval, loanOrderDO, loanProcessDO);
+            return execInfoSupplementTask(approval, loanProcessDO);
         }
 
         // 【金融方案修改申请】
@@ -1117,9 +1117,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 执行资料增补任务
      *
      * @param approval
+     * @param loanProcessDO
      * @return
      */
-    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
 
         // 【发起】资料增补单
         if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
@@ -1644,7 +1645,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanInfoSupplementDO.setStatus(TASK_PROCESS_TODO);
 
         int count = loanInfoSupplementDOMapper.insertSelective(loanInfoSupplementDO);
-        Preconditions.checkArgument(count > 0, "资料增补发起失败");
+        Preconditions.checkArgument(count > 0, "[资料增补]发起失败");
     }
 
     /**
@@ -1673,7 +1674,35 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanInfoSupplementDO.setStatus(TASK_PROCESS_DONE);
 
         int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
-        Preconditions.checkArgument(count > 0, "资料增补提交失败");
+        Preconditions.checkArgument(count > 0, "[资料增补]提交失败");
+    }
+
+    /**
+     * 获取当前执行任务（activiti中）
+     *
+     * @param processInstId
+     * @param taskDefinitionKey
+     * @return
+     */
+    public Task getTask(String processInstId, String taskDefinitionKey) {
+
+//        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
+//            List<Task> tasks = taskService.createTaskQuery()
+//                    .processInstanceId(processInstId)
+//                    .listPage(0, 1);
+//            Preconditions.checkArgument(!CollectionUtils.isEmpty(tasks), "订单已结清或已弃单");
+//            return tasks.get(0);
+//        }
+
+        // 获取当前流程task
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(processInstId)
+                .taskDefinitionKey(taskDefinitionKey)
+                .singleResult();
+
+        Preconditions.checkNotNull(task, "当前任务不存在");
+
+        return task;
     }
 
     /**
@@ -2633,32 +2662,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
     }
 
-    /**
-     * 获取任务
-     *
-     * @param processInstId
-     * @param taskDefinitionKey
-     * @return
-     */
-    public Task getTask(String processInstId, String taskDefinitionKey) {
-
-        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
-            List<Task> tasks = taskService.createTaskQuery()
-                    .processInstanceId(processInstId)
-                    .listPage(0, 1);
-            Preconditions.checkArgument(!CollectionUtils.isEmpty(tasks), "订单已结清或已弃单");
-            return tasks.get(0);
-        }
-
-        // 获取当前流程task
-        Task task = taskService.createTaskQuery()
-                .processInstanceId(processInstId)
-                .taskDefinitionKey(taskDefinitionKey)
-                .singleResult();
-
-        Preconditions.checkNotNull(task, "当前任务不存在");
-        return task;
-    }
 
     /**
      * 设置并返回流程变量

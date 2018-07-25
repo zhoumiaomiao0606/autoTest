@@ -1,10 +1,10 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanInfoSupplementDO;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
-@Mapper
 public interface LoanInfoSupplementDOMapper {
+
     int deleteByPrimaryKey(Long id);
 
     int insert(LoanInfoSupplementDO record);
@@ -17,5 +17,6 @@ public interface LoanInfoSupplementDOMapper {
 
     int updateByPrimaryKey(LoanInfoSupplementDO record);
 
+    @Select("SELECT COUNT(id)  FROM `loan_info_supplement` WHERE `order_id` = #{orderId,jdbcType=BIGINT}")
     int countByOrderId(Long orderId);
 }

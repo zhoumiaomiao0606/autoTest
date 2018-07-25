@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.LoanProcessEnum;
@@ -137,7 +138,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private PermissionService permissionService;
 
     @Autowired
-    private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
+    private DictService dictService;
 
 
     @Override
@@ -591,7 +592,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
         if (vehicleInformationDO != null) {
             String tmpApplyLicensePlateArea = null;
-            if(StringUtils.isNotBlank(vehicleInformationDO.getApply_license_plate_area())){
+            if (StringUtils.isNotBlank(vehicleInformationDO.getApply_license_plate_area())) {
                 BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
                 loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
 
@@ -692,8 +693,12 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementParam.getFiles()) ||
                 StringUtils.isNotBlank(infoSupplementParam.getRemark()), "资料信息或备注为空");
 
+        // files
+        saveFiles(infoSupplementParam);
+
         Long suppermentOrderId = infoSupplementParam.getSupplementOrderId();
         String remark = infoSupplementParam.getRemark();
+
         LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
         loanInfoSupplementDO.setRemark(remark);
         loanInfoSupplementDO.setId(suppermentOrderId);
@@ -701,7 +706,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkArgument(count > 0, "增补失败");
 
         List<FileVO> files = infoSupplementParam.getFiles();
-        files.parallelStream()
+        files.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
@@ -715,6 +720,22 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 });
 
         return ResultBean.ofSuccess(null, "资料增补成功");
+    }
+
+    /**
+     * save
+     *
+     * @param infoSupplementParam
+     */
+    private void saveFiles(InfoSupplementParam infoSupplementParam) {
+
+        LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
+
+        loanInfoSupplementDO.setId(infoSupplementParam.getSupplementOrderId());
+        loanInfoSupplementDO.setFiles(JSON.toJSONString(infoSupplementParam.getFiles()));
+
+        int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
+        Preconditions.checkArgument(count > 0, "保存失败");
     }
 
     /**
@@ -1432,25 +1453,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      */
     public static String getSupplementTypeText(Byte supplementType) {
 
-        String supplementTypeText = null;
+        Map<String, String> kvMap = dictService.getKVMap("infoSupplementType");
 
-        switch (supplementType) {
-            case 1:
-                supplementTypeText = "电审增补";
-                break;
-            case 2:
-                supplementTypeText = "送银行资料缺少";
-                break;
-            case 3:
-                supplementTypeText = "银行退件";
-                break;
-            case 4:
-                supplementTypeText = "上门家访资料增补";
-                break;
-            case 5:
-                supplementTypeText = "费用调整";
-                break;
-        }
+        String supplementTypeText = kvMap.get(String.valueOf(supplementType));
 
         return supplementTypeText;
     }

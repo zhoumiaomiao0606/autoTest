@@ -48,11 +48,11 @@ public class InfoSupplementVO {
      */
     private String idCard;
     /**
-     * 资料增补类型  (1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;)
+     * 资料增补类型  (1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;6-;)
      */
     private Byte supplementType;
     /**
-     * 增补类型文本值  (1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;)
+     * 增补类型文本值  (1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;6-;)
      */
     private String supplementTypeText;
     /**
@@ -77,6 +77,10 @@ public class InfoSupplementVO {
     private Date supplementStartDate;
 
     private String remark;
+    /**
+     * 增补文件列表
+     */
+    private String files;
 
     /**
      * 主贷人

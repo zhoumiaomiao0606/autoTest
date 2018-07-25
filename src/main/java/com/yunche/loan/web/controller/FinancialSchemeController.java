@@ -3,6 +3,8 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.FinancialSchemeModifyUpdateParam;
+import com.yunche.loan.domain.vo.FinancialSchemeVO;
+import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.service.FinancialSchemeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -24,7 +26,7 @@ public class FinancialSchemeController {
      * 金融方案详情
      */
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String order_id) {
+    public ResultBean<RecombinationVO<FinancialSchemeVO>> detail(@RequestParam String order_id) {
         return ResultBean.ofSuccess(financialSchemeService.detail(Long.valueOf(order_id)));
     }
 
