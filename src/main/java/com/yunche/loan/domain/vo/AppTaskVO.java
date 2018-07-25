@@ -56,9 +56,9 @@ public class AppTaskVO {
      */
     private Boolean canCreditSupplement;
     /**
-     * 是否可以发起【视频面签】
+     * todo 删除  是否可以发起【视频面签】
      */
-    private Boolean canVideoFace;
+    private Boolean canVideoFace = true;
 
 
     /**
