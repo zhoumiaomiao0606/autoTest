@@ -64,8 +64,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         recombinationVO.setCustomers(customers);
         recombinationVO.setInfo(loanQueryDOMapper.selectFinancialScheme(orderId));
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
-
-
+        recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
         return recombinationVO;
     }
 

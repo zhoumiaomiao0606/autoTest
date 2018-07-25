@@ -741,7 +741,7 @@
                                     )
                                     AND
                                     case when tab.openCardOrder = 1 then true
-                                         when tab.openCardOrder = 0 then tab.openCardOrder != 1
+                                         when tab.openCardOrder = 0 then tab.telephoneVerifyStatus = 1
                                     else
                                         false
                                     end
@@ -760,7 +760,7 @@
                                       )
                                     )
                                     AND
-                                    case when tab.openCardOrder = 0 then tab.openCardOrder = 1
+                                    case when tab.openCardOrder = 0 then tab.telephoneVerifyStatus  != 1
                                     else
                                         false
                                     end

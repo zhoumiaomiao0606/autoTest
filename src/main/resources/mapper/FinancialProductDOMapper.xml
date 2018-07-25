@@ -348,4 +348,10 @@
         WHERE
         a.id=#{orderId};
     </select>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from financial_product
+    </select>
 </mapper>
