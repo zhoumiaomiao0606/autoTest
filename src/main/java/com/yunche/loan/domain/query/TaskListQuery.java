@@ -111,6 +111,8 @@ public class TaskListQuery {
 
     private String serialStatus;
 
+    private String bankOpenCardOrder;
+
     private String relevanceCustomerName;
 
     private String isStraighten;
