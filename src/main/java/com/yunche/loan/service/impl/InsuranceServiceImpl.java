@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.InsuranceInfoDO;
@@ -10,19 +11,19 @@ import com.yunche.loan.domain.param.InsuranceUpdateParam;
 import com.yunche.loan.domain.vo.InsuranceCustomerVO;
 import com.yunche.loan.domain.vo.InsuranceRelevanceVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCarInfoVO;
 import com.yunche.loan.mapper.InsuranceInfoDOMapper;
 import com.yunche.loan.mapper.InsuranceRelevanceDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.InsuranceService;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -51,7 +52,22 @@ public class InsuranceServiceImpl implements InsuranceService {
                 }
             }
         }
+        UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
         RecombinationVO<List<InsuranceCustomerVO>> recombinationVO = new RecombinationVO<List<InsuranceCustomerVO>>();
+        List<InsuranceInfoDO> insuranceInfoDOS = insuranceInfoDOMapper.listByOrderId(orderId);
+
+
+        Lists.newArrayList()
+        List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(orderId);
+        /**
+         * insuranceInfoDOS    order_id   year    id
+         *                     67          1      8
+         *                     67          2      9
+         *insuranceRelevanceDOS(8,9)
+         * 8
+         *
+         */
+        recombinationVO.setCar(universalCarInfoVO);//车辆信息
         recombinationVO.setInfo(insuranceCustomerVOList);
         return recombinationVO;
     }
