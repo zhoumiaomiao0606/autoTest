@@ -86,7 +86,7 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
                 }
 
                 bankCardRecordDO = bankCardRecordDOMapper.selectByOrderId(orderId);
-                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,null);
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
                 loanOrderDO.setBankCardRecordId((long)bankCardRecordDO.getId());
                 int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
                 Preconditions.checkArgument(count > 0, "业务单号为:"+orderId+",对应记录更新出错");
@@ -144,7 +144,7 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
         }
         Long orderId =Long.valueOf(bankCardRecordVO.getOrderId());
         bankCardRecordDO = bankCardRecordDOMapper.selectByOrderId(orderId);
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         loanOrderDO.setBankCardRecordId((long)bankCardRecordDO.getId());
         int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
         Preconditions.checkArgument(count > 0, "业务单号为:"+orderId+",对应记录更新出错");

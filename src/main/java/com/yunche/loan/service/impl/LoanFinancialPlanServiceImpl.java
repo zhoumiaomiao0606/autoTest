@@ -269,7 +269,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         double actualLoanAmount_ = actualLoanAmount.doubleValue();
 
         // 预计贷款额
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
         Preconditions.checkNotNull(loanOrderDO.getLoanBaseInfoId(), "业务单基本信息丢失");
 

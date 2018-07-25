@@ -164,7 +164,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
             if (taskKey.equals(TELEPHONE_VERIFY.getCode()) || taskKey.equals(FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode())) {
 
-                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
                 if (loanOrderDO == null) {
                     throw new BizException("订单不存在");
                 }

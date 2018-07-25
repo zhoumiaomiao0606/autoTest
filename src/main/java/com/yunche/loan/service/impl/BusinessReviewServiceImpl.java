@@ -61,7 +61,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
 
     @Override
     public void update(BusinessReviewUpdateParam param) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()), new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
         if (loanOrderDO == null) {
             throw new BizException("此业务单不存在");
         }

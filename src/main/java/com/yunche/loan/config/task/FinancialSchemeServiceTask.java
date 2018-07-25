@@ -40,7 +40,7 @@ public class FinancialSchemeServiceTask implements JavaDelegate, Serializable {
         // TODO  orderId
         Long orderId = null;
         // 业务单
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
         Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
 

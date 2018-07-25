@@ -372,7 +372,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         VideoFaceQuestionAnswerVO videoFaceQuestionAnswerVO = new VideoFaceQuestionAnswerVO();
 
         // order
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
         // customer info

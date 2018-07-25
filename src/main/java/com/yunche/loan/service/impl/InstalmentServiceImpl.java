@@ -12,7 +12,6 @@ import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.InstalmentService;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,7 @@ public class InstalmentServiceImpl implements InstalmentService {
     private LoanFileDOMapper loanFileDOMapper;
     @Override
     public RecombinationVO detail(Long orderId) {
-        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
 
         if(orderDO == null){
             throw new BizException("此订单不存在");
@@ -76,7 +75,7 @@ public class InstalmentServiceImpl implements InstalmentService {
 
     @Override
     public void update(InstalmentUpdateParam param) {
-        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()),new Byte("0"));
+        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
 
         if(orderDO == null){
             throw new BizException("此订单不存在");

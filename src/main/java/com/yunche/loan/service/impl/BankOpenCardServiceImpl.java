@@ -113,7 +113,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Override
     public ResultBean<RecombinationVO> detail(Long orderId) {
         RecombinationVO recombinationVO = new RecombinationVO();
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Long customerId = loanOrderDO.getLoanCustomerId();
 
         UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId,customerId);
@@ -174,7 +174,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
      */
     @Override
     public ResultBean openCard(Long  orderId) {
-        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
+        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(orderDO,"订单不存在");
         Long customerId = orderDO.getLoanCustomerId();
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(customerId, VALID_STATUS);
@@ -278,7 +278,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         BeanUtils.copyProperties(bankOpenCardParam,loanCustomerDO);
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId(), VALID_STATUS);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId());
         Preconditions.checkNotNull(loanOrderDO,"订单不存在");
         Long loanCustomerId = loanOrderDO.getLoanCustomerId();
         loanCustomerDO.setId(loanCustomerId);
@@ -292,7 +292,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     @Override
     public ResultBean taskschedule(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -357,7 +357,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         String  hairpinFlag = split[9].trim();//发卡标志
         String  accountStatement = split[10].trim();//对账单日
         String  repayDate = split[11].trim();//还款日
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderId), VALID_STATUS);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderId));
         if(loanOrderDO == null){
             bankFileListRecordDO.setIsCustomer(K_YORN_NO);
             return bankFileListRecordDO;

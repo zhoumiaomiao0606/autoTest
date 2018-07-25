@@ -137,7 +137,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     @Transactional
     public void migration(Long orderId, Long hisId, String action) {
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (loanOrderDO == null) {
             throw new BizException("订单不存在");
         }

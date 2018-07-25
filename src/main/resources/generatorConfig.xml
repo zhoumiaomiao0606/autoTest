@@ -352,6 +352,11 @@
         <table tableName="loan_info_supplement" domainObjectName="LoanInfoSupplementDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+
+            <ignoreColumn column="status"/>
+            <ignoreColumn column="feature"/>
+            <ignoreColumn column="name"/>
+
         </table>
 
 

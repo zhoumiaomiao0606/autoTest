@@ -314,7 +314,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             autoCompleteTask(processInstId, loanProcessDO.getOrderId(), CUSTOMER_REPAY_PLAN.getCode());
 
             //贷款期数
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanProcessDO.getOrderId(), null);
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanProcessDO.getOrderId());
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
             Long bankCardRecordId = loanOrderDO.getBankCardRecordId();
             BigDecimal eachMonthRepay = loanFinancialPlanDO.getEachMonthRepay();
@@ -1164,7 +1164,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             logger.info("jpush ---------- start ");
 
             LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanBaseInfoId);
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
             Long loanCustomerId = null;
             if (loanOrderDO != null) {
                 loanCustomerId = loanOrderDO.getLoanCustomerId();
@@ -1712,7 +1712,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     public LoanOrderDO getLoanOrder(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
         Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
 
@@ -2245,7 +2245,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     public ResultBean<List<TaskStateVO>> currentTask(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
         List<Task> runTaskList = taskService.createTaskQuery()

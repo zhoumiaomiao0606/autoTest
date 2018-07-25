@@ -94,7 +94,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
     @Override
     public void update(TelephoneVerifyParam param) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()), null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
 
         Long loanCarInfoId = loanOrderDO.getLoanCarInfoId();
         Long loanFinancialPlanId = loanOrderDO.getLoanFinancialPlanId();

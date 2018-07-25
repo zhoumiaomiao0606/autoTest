@@ -8,12 +8,10 @@ import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
 import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.query.OrderListQuery;
 import com.yunche.loan.domain.vo.InstLoanOrderVO;
-import com.yunche.loan.domain.vo.LoanBaseInfoVO;
 import com.yunche.loan.service.CreditService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,7 +111,7 @@ public class CreditServiceImpl implements CreditService {
         // 开启activiti流程
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("dev_loan_process");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         // 开启本地业务单流程：业务单不存在，则新建
         if (null == loanOrderDO) {
             loanOrderDO = new LoanOrderDO();

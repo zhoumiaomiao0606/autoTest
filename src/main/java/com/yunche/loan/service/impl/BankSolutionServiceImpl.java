@@ -123,7 +123,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     //征信自动提交
     @Override
     public void creditAutomaticCommit(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -170,7 +170,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Override
     public void commonBusinessApply(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -210,7 +210,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Override
     public void multimediaUpload(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -249,7 +249,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
 
     public void multimediaUploadProcess(Long orderId,String phybrno){
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -327,7 +327,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     public void ICBCCommonBusinessApplyProcess(Long orderId,String phybrno){
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         //获取数据源
         Long baseId = loanOrderDO.getLoanBaseInfoId();
         if(baseId == null){
@@ -643,7 +643,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     private void bankCreditProcess(Long orderId,String phybrno,LoanCustomerDO loanCustomerDO){
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         //获取数据源
         Long baseId = loanOrderDO.getLoanBaseInfoId();
         if(baseId == null){
@@ -795,7 +795,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyBankOpenCard.setCustomerId(bankOpenCardParam.getCustomerId());
 
         ICBCApiRequest.ApplyBankOpenCardCustomer customer =new ICBCApiRequest.ApplyBankOpenCardCustomer();
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId(),VALID_STATUS);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId());
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
@@ -953,7 +953,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Override
     public ApplyStatusResponse applystatus(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -988,7 +988,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     private ApplyStatusResponse applystatusProcess(Long orderId,String phybrno){
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         //获取数据源
         Long baseId = loanOrderDO.getLoanBaseInfoId();
         if(baseId == null){

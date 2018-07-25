@@ -82,7 +82,7 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
 
     @Override
     public void update(ApplyLicensePlateDepositInfoUpdateParam param){
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()),new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
         if(loanOrderDO == null){
             throw new BizException("此业务单不存在");
         }
