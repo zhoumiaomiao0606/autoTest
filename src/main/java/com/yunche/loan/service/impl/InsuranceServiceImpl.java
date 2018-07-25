@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.InsuranceInfoDO;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +54,20 @@ public class InsuranceServiceImpl implements InsuranceService {
         }
         UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
         RecombinationVO<List<InsuranceCustomerVO>> recombinationVO = new RecombinationVO<List<InsuranceCustomerVO>>();
+        List<InsuranceInfoDO> insuranceInfoDOS = insuranceInfoDOMapper.listByOrderId(orderId);
+
+
+        Lists.newArrayList()
+        List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(orderId);
+        /**
+         * insuranceInfoDOS    order_id   year    id
+         *                     67          1      8
+         *                     67          2      9
+         *insuranceRelevanceDOS(8,9)
+         * 8
+         *
+         */
+        recombinationVO.setCar(universalCarInfoVO);//车辆信息
         recombinationVO.setInfo(insuranceCustomerVOList);
         recombinationVO.setCar(universalCarInfoVO);
         return recombinationVO;
