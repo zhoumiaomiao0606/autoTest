@@ -737,7 +737,7 @@
                                         ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
                                       )
                                     )
-                                    AND tab.openCardOrder = 0
+                                    AND tab.openCardOrder = 0 or tab.openCardOrder is null
                                 </when>
                                 <when test="bankOpenCardOrder == 'having'">
                                     AND tab.id not in  <!--  出现一次就判定为除外 -->
