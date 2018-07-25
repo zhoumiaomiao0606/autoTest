@@ -918,18 +918,32 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         applyBankOpenCard.setCustomer(customer);
         applyBankOpenCard.setPictures(bankOpenCardParam.getPictures());
-        //发送银行接口
-        CreditCardApplyResponse response = icbcFeignClient.creditcardapply(applyBankOpenCard);
 
-        if(response!=null) {
-            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
+
+        asyncUpload.execute(new Process() {
+            @Override
+            public void process() {
                 List<ICBCApiRequest.Picture> pictures = bankOpenCardParam.getPictures();
                 for (ICBCApiRequest.Picture tmp:pictures) {
-                    asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicid(),tmp.getPicname(),tmp.getPicKeyList());
+                    asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicKeyList());
+                    icbcFeignClient.creditcardapply(applyBankOpenCard);
                 }
+
+
             }
-        }
-        return response;
+        });
+        //发送银行接口
+//        CreditCardApplyResponse response = icbcFeignClient.creditcardapply(applyBankOpenCard);
+//
+//        if(response!=null) {
+//            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
+//                List<ICBCApiRequest.Picture> pictures = bankOpenCardParam.getPictures();
+//                for (ICBCApiRequest.Picture tmp:pictures) {
+//                    asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicid(),tmp.getPicname(),tmp.getPicKeyList());
+//                }
+//            }
+//        }
+        return null;
     }
 
     @Override
