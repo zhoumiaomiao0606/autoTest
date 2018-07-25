@@ -52,6 +52,7 @@ public enum LoanProcessEnum {
 
 
     /////////////////////////////////////////// ↓↓↓↓↓--流程外的节点--↓↓↓↓↓ //////////////////////////////////////////////
+    BANK_OPEN_CARD_LIST("usertask_bank_open_card_list", "银行开卡清单"),
 
     INFO_SUPPLEMENT("usertask_info_supplement", "资料增补"),
     CREDIT_SUPPLEMENT("usertask_credit_supplement", "征信增补"),
@@ -61,12 +62,10 @@ public enum LoanProcessEnum {
     REFUND_APPLY_REVIEW("usertask_refund_apply_review", "退款申请审核"),
     CUSTOMER_REPAY_PLAN_RECORD("usertask_customer_repay_plan_record", "银行还款计划记录"),
     COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
-
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
 
 
     ////////////////////////////////////////// ↓↓↓↓↓--资料流转--↓↓↓↓↓ ///////////////////////////////////////////////////
-
     DATA_FLOW("usertask_data_flow", "资料流转汇总KEY"),
 
     // 合同资料
@@ -95,8 +94,6 @@ public enum LoanProcessEnum {
 
     DATA_FLOW_REGISTER_C2B("usertask_data_flow_register_c2b", "015-登记证书公司至银行"),
     DATA_FLOW_REGISTER_C2B_REVIEW("usertask_data_flow_register_c2b_review", "016-登记证书公司至银行-确认接收");
-
-
     ////////////////////////////////////////// ↑↑↑↑↑--资料流转--↑↑↑↑↑ ///////////////////////////////////////////////////
 
 
