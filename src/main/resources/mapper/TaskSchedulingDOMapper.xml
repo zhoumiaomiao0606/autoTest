@@ -760,7 +760,7 @@
                                       )
                                     )
                                     AND
-                                    case when tab.openCardOrder = 0 then tab.telephoneVerifyStatus = != 1
+                                    case when tab.openCardOrder = 0 then tab.telephoneVerifyStatus  != 1
                                     else
                                         false
                                     end
