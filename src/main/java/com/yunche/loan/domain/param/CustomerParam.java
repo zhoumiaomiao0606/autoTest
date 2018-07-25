@@ -162,6 +162,8 @@ public class CustomerParam {
 
     private String hcounty;
 
+    private String issuingDepartment;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 
 }

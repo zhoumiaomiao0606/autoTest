@@ -127,7 +127,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 //                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_NO));
 //                } else {
 //                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_YES));
-//                }
+//                }b
 //            }
 //        }
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
