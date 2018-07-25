@@ -317,6 +317,7 @@
                   DATE_FORMAT(join_bp.gmt_create,'%Y-%m-%d %H:%i:%S')
                                                                AS paymentGtCreate,
                   deputy.telephone_verify                      AS telephoneVerifyStatus,
+                  join_c.open_card_order                       AS openCardOrder,
                   <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
@@ -722,18 +723,52 @@
                 <if test="serialStatus != null">
                     <choose>
                         <when test="serialStatus == 'except'">
-                            AND tab.id not in  <!--  出现一次就判定为除外 -->
-                            (
-                              (
-                                select DISTINCT serial.order_id from bank_interface_serial serial
-                                  inner join
-                                  (
-                                    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                                    as serial_no
-                                    from bank_interface_serial GROUP BY trans_code,customer_id
-                                  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                              )
-                            )
+                            <choose>
+                                <when test="bankOpenCardOrder == 'except'">
+                                    AND tab.id not in  <!--  出现一次就判定为除外 -->
+                                    (
+                                      (
+                                        select DISTINCT serial.order_id from bank_interface_serial serial
+                                        inner join
+                                        (
+                                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                                          as serial_no
+                                          from bank_interface_serial GROUP BY trans_code,customer_id
+                                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                                      )
+                                    )
+                                    AND tab.openCardOrder = 0
+                                </when>
+                                <when test="bankOpenCardOrder == 'having'">
+                                    AND tab.id not in  <!--  出现一次就判定为除外 -->
+                                    (
+                                      (
+                                        select DISTINCT serial.order_id from bank_interface_serial serial
+                                        inner join
+                                        (
+                                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                                          as serial_no
+                                          from bank_interface_serial GROUP BY trans_code,customer_id
+                                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                                      )
+                                    )
+                                    AND tab.openCardOrder = 1
+                                </when>
+                                <otherwise>
+                                    AND tab.id not in  <!--  出现一次就判定为除外 -->
+                                    (
+                                      (
+                                        select DISTINCT serial.order_id from bank_interface_serial serial
+                                        inner join
+                                        (
+                                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                                          as serial_no
+                                          from bank_interface_serial GROUP BY trans_code,customer_id
+                                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                                      )
+                                    )
+                                </otherwise>
+                            </choose>
                         </when>
 
                         <when test="serialStatus == 'exception'">
