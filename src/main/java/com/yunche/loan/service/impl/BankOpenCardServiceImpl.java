@@ -118,18 +118,18 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId,customerId);
         BankInterfaceSerialVO bankInterfaceSerialVO = new BankInterfaceSerialVO();
-        BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
-        if(serialDO!=null) {
-            BeanUtils.copyProperties(serialDO, bankInterfaceSerialVO);
-            BankInterfaceFileSerialDO bankInterfaceFileSerialDO = bankInterfaceFileSerialDOMapper.selectByPrimaryKey(Long.valueOf(serialDO.getSerialNo()));
-            if (bankInterfaceFileSerialDO != null) {
-                if (bankInterfaceFileSerialDO.getSuccess().equals(IDict.K_YORN.K_YORN_NO) && bankInterfaceFileSerialDO.getError().equals((byte) 2)) {
-                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_NO));
-                } else {
-                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_YES));
-                }
-            }
-        }
+//        BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+//        if(serialDO!=null) {
+//            BeanUtils.copyProperties(serialDO, bankInterfaceSerialVO);
+//            BankInterfaceFileSerialDO bankInterfaceFileSerialDO = bankInterfaceFileSerialDOMapper.selectByPrimaryKey(Long.valueOf(serialDO.getSerialNo()));
+//            if (bankInterfaceFileSerialDO != null) {
+//                if (bankInterfaceFileSerialDO.getSuccess().equals(IDict.K_YORN.K_YORN_NO) && bankInterfaceFileSerialDO.getError().equals((byte) 2)) {
+//                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_NO));
+//                } else {
+//                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_YES));
+//                }
+//            }
+//        }
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO,"流程不存在");
         Byte telephoneVerify = loanProcessDO.getTelephoneVerify();
