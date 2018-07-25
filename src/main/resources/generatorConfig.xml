@@ -351,7 +351,7 @@
 -->
 
 
-        <table tableName="loan_process" domainObjectName="LoanProcessDO"
+        <table tableName="bank_interface_file_serial" domainObjectName="BankInterfaceFileSerialDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
