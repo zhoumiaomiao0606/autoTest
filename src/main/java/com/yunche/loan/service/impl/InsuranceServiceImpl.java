@@ -10,19 +10,18 @@ import com.yunche.loan.domain.param.InsuranceUpdateParam;
 import com.yunche.loan.domain.vo.InsuranceCustomerVO;
 import com.yunche.loan.domain.vo.InsuranceRelevanceVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCarInfoVO;
 import com.yunche.loan.mapper.InsuranceInfoDOMapper;
 import com.yunche.loan.mapper.InsuranceRelevanceDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.InsuranceService;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -51,8 +50,10 @@ public class InsuranceServiceImpl implements InsuranceService {
                 }
             }
         }
+        UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
         RecombinationVO<List<InsuranceCustomerVO>> recombinationVO = new RecombinationVO<List<InsuranceCustomerVO>>();
         recombinationVO.setInfo(insuranceCustomerVOList);
+        recombinationVO.setCar(universalCarInfoVO);
         return recombinationVO;
     }
 

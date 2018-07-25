@@ -38,14 +38,11 @@ import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
 import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_SOCIAL;
 import static com.yunche.loan.config.constant.CustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
-import static com.yunche.loan.config.constant.LoanAmountConst.ACTUAL_LOAN_AMOUNT_13W;
-import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W;
-import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_LT_13W;
+import static com.yunche.loan.config.constant.LoanAmountConst.*;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
@@ -1240,6 +1237,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 执行电审任务
             execTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
         } else {
+            // 前置开卡校验
+            if(BANK_OPEN_CARD.getCode().equals(approval.getTaskDefinitionKey())){
+                preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
+            }
             // 其他任务：直接提交
             completeTask(task.getId(), variables);
         }
@@ -1815,9 +1816,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void passTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval,
                                          LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
-        // 前置开卡校验
-        preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
-
         // 完成任务：全部角色直接过单
         completeTask(task.getId(), variables);
         // 自动执行【金融方案】任务
@@ -1846,10 +1844,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             String openCardOrder = loanCustomerDO.getOpenCardOrder();
 
             // 是否前置开卡     -是：[银行开卡]-必须PASS
-            if (StringUtils.isNotBlank(openCardOrder) && K_YORN_YES.equals(Byte.valueOf(openCardOrder))) {
+            if (StringUtils.isNotBlank(openCardOrder) && K_YORN_NO.equals(Byte.valueOf(openCardOrder))) {
 
-                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getBankOpenCard()),
-                        "前先提交[" + BANK_OPEN_CARD.getName() + "]");
+                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()),
+                        "前先提交[" + TELEPHONE_VERIFY.getName() + "]");
             }
         }
     }
