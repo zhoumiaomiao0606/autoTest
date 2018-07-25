@@ -222,7 +222,7 @@ public class MaterialServiceImpl implements MaterialService {
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
             if (CollectionUtils.isEmpty(loanFileDOS)) {
                 LoanFileDO loanFileDO = new LoanFileDO();
-                loanFileDO.setStatus((byte) 3);
+                loanFileDO.setStatus(DOING_STATUS);
                 loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
                 loanFileDO.setType(ZIP_PACK.getType());
                 loanFileDO.setCustomerId(customerId);
