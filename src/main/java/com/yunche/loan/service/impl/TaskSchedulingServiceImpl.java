@@ -535,13 +535,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         } else {
             appTaskVO.setCanCreditSupplement(false);
         }
-
-        // 发起【视频面签】前置条件校验： ->  已过【贷款申请】
-        if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply()) && ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
-            appTaskVO.setCanVideoFace(true);
-        } else {
-            appTaskVO.setCanVideoFace(false);
-        }
     }
 
 
