@@ -25,6 +25,8 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,7 @@ import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 @Service
 @Transactional
 public class BankSolutionServiceImpl implements BankSolutionService {
+    private static final Logger LOG = LoggerFactory.getLogger(BankSolutionService.class);
 
     @Resource
     private ViolationUtil violationUtil;
@@ -921,14 +924,16 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
 
         asyncUpload.execute(new Process() {
+
             @Override
             public void process() {
+                LOG.info("银行开卡异步调用开始......");
                 List<ICBCApiRequest.Picture> pictures = bankOpenCardParam.getPictures();
                 for (ICBCApiRequest.Picture tmp:pictures) {
-                    asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicKeyList());
-                    icbcFeignClient.creditcardapply(applyBankOpenCard);
+                    asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicid(),tmp.getPicname(),tmp.getPicKeyList());
                 }
-
+                icbcFeignClient.creditcardapply(applyBankOpenCard);
+                LOG.info("银行开卡异步调用结束");
 
             }
         });
