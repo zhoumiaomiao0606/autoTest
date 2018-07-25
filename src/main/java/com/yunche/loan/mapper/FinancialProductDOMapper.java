@@ -24,4 +24,6 @@ public interface FinancialProductDOMapper {
     int updateByPrimaryKey(FinancialProductDO record);
 
     Map selectProductInfoByOrderId(Long orderId);
+
+    List<FinancialProductDO> listAll();
 }
