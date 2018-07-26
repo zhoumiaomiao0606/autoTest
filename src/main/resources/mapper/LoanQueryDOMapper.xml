@@ -13,7 +13,7 @@
 	        customer.name                             as customer_name,
 	        customer.id_card                          as customer_id_card,
 	        customer.mobile                           as customer_mobile,
-	        customer.family_address                   as customer_family_address,
+	        customer.address                          as customer_family_address,
 	        customer.income_certificate_company_name  as customer_income_certificate_company_name,
 	        useGetSmallCarName(car.car_detail_id)     as car_name,
 	        financial.car_price	                      as financial_car_price,
