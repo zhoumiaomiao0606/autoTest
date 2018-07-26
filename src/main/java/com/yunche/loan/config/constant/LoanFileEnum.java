@@ -53,7 +53,7 @@ public enum LoanFileEnum {
     //0201【分期】【证件】证件本人正面
     SELF_CERTIFICATE_FRONT((byte)34,"证件本人正面"),
     //0202【分期】【证件】证件本人反面
-    SELF_CERTIFICATE_REVERSE((byte)34,"证件本人反面"),
+    SELF_CERTIFICATE_REVERSE((byte)35,"证件本人反面"),
     //0203【分期】【证件】证件配偶正面
     SPOUSE_CERTIFICATE_FRONT((byte)36,"证件配偶正面"),
     //0204【分期】【证件】证件配偶反面
