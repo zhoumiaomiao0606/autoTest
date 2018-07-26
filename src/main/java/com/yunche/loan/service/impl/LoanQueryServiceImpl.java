@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.config.util.StringUtil;
@@ -7,6 +8,7 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.vo.BankInterFaceSerialOrderStatusVO;
+import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
@@ -133,6 +135,22 @@ public class LoanQueryServiceImpl implements LoanQueryService {
         }
 
 
+    }
+
+    @Override
+    public void checkBankInterFaceSerialStatus(Long customerId, String transCode) {
+        if(customerId == null){
+            throw new BizException("客户id不存在");
+        }
+        if(StringUtils.isBlank(transCode)){
+            throw new BizException("transCode 不存在");
+        }
+        UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(customerId,transCode);
+        if(result != null) {
+            if (IDict.K_JJSTS.PROCESS.equals(result.getStatus())) {
+                throw new BizException("请耐心等待上一次操作的结果通知");
+            }
+        }
     }
 
 
