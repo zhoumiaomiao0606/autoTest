@@ -282,9 +282,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
 
         UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,TermFileEnum.VIDEO_INTERVIEW.getKey());
-        if(authSignPic != null){
+        if(authSignPic == null){
             throw new BizException("缺少面签视频");
         }
+
+
         String picName = GeneratorIDUtil.execute()+ImageUtil.MP4_SUFFIX;
 
         if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
@@ -312,13 +314,14 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         multimediaUpload.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
         multimediaUpload.setFileNum(String.valueOf(pictures.size()));
         multimediaUpload.setPictures(pictures);
+        multimediaUpload.setCustomerId(customerId.toString());
         violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
 
 
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                asyncUpload.upload(serNo,TermFileEnum.VIDEO_INTERVIEW.getValue(),picName,authSignPic.getUrls());
+                asyncUpload.upload(serNo,TermFileEnum.VIDEO_INTERVIEW.getValue(),picName,authSignPic.getUrls().get(0));
                 icbcFeignClient.multimediaUpload(multimediaUpload);
             }
         });
