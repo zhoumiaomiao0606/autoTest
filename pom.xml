@@ -5,7 +5,7 @@
 
     <groupId>com.yunche.loan</groupId>
     <artifactId>yunche-biz</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.6</version>
     <packaging>jar</packaging>
 
     <name>yunche-biz</name>
@@ -359,9 +359,7 @@
     </dependencies>
 
     <build>
-
         <finalName>yunche-biz</finalName>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

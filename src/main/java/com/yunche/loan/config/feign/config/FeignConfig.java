@@ -8,8 +8,11 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.response.base.BasicResponse;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.service.LoanQueryService;
 import feign.*;
 import feign.codec.DecodeException;
 import feign.codec.Decoder;
@@ -32,6 +35,12 @@ public class FeignConfig {
 
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Resource
+    private LoanQueryService loanQueryService;
 
     @Bean
     Logger.Level feignLoggerLevel() {
@@ -90,6 +99,23 @@ public class FeignConfig {
                 template.header("serialNo",cmpseq.toString());
                 template.header("orderId",orderno.toString());
 
+                loanQueryService.checkBankInterFaceSerialStatus(Long.valueOf(customerId.toString()),transCode);
+
+                //锁表
+                BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(cmpseq.toString());
+                BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
+                DO.setSerialNo(cmpseq.toString());
+                DO.setOrderId(Long.valueOf(orderno.toString()));
+                DO.setCustomerId(Long.valueOf(customerId.toString()));
+                DO.setTransCode(transCode);
+                DO.setStatus(IDict.K_JYZT.PROCESS);
+                DO.setFileNum(Integer.parseInt(fileNum.toString()));
+                DO.setApiStatus(200);
+                if(V!=null){
+                    bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
+                }else {
+                    bankInterfaceSerialDOMapper.insertSelective(DO);
+                }
             }
         };
     }
