@@ -90,7 +90,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
     @Override
     public void update(VehicleInformationUpdateParam param) {
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()), VALID_STATUS);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
         Long foundationId = loanOrderDO.getVehicleInformationId();//关联ID
         if (foundationId == null) {
             //新增提交

@@ -38,14 +38,11 @@ import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
 import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_SOCIAL;
 import static com.yunche.loan.config.constant.CustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
-import static com.yunche.loan.config.constant.LoanAmountConst.ACTUAL_LOAN_AMOUNT_13W;
-import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W;
-import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_LT_13W;
+import static com.yunche.loan.config.constant.LoanAmountConst.*;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
@@ -187,9 +184,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             execDataFlowMortgageP2cNewFilterTask(approval);
         }
 
-        // 【资料增补单】
+        // 【资料增补】
         if (isInfoSupplementTask(approval)) {
-            return execInfoSupplementTask(approval, loanOrderDO, loanProcessDO);
+            return execInfoSupplementTask(approval, loanProcessDO);
         }
 
         // 【金融方案修改申请】
@@ -317,7 +314,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             autoCompleteTask(processInstId, loanProcessDO.getOrderId(), CUSTOMER_REPAY_PLAN.getCode());
 
             //贷款期数
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanProcessDO.getOrderId(), null);
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanProcessDO.getOrderId());
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
             Long bankCardRecordId = loanOrderDO.getBankCardRecordId();
             BigDecimal eachMonthRepay = loanFinancialPlanDO.getEachMonthRepay();
@@ -1120,9 +1117,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 执行资料增补任务
      *
      * @param approval
+     * @param loanProcessDO
      * @return
      */
-    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+    private ResultBean<Void> execInfoSupplementTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
 
         // 【发起】资料增补单
         if (ACTION_INFO_SUPPLEMENT.equals(approval.getAction())) {
@@ -1166,7 +1164,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             logger.info("jpush ---------- start ");
 
             LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanBaseInfoId);
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
             Long loanCustomerId = null;
             if (loanOrderDO != null) {
                 loanCustomerId = loanOrderDO.getLoanCustomerId();
@@ -1240,6 +1238,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 执行电审任务
             execTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
         } else {
+            // 前置开卡校验
+            if(BANK_OPEN_CARD.getCode().equals(approval.getTaskDefinitionKey())){
+                preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
+            }
             // 其他任务：直接提交
             completeTask(task.getId(), variables);
         }
@@ -1643,7 +1645,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanInfoSupplementDO.setStatus(TASK_PROCESS_TODO);
 
         int count = loanInfoSupplementDOMapper.insertSelective(loanInfoSupplementDO);
-        Preconditions.checkArgument(count > 0, "资料增补发起失败");
+        Preconditions.checkArgument(count > 0, "[资料增补]发起失败");
     }
 
     /**
@@ -1672,7 +1674,35 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanInfoSupplementDO.setStatus(TASK_PROCESS_DONE);
 
         int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
-        Preconditions.checkArgument(count > 0, "资料增补提交失败");
+        Preconditions.checkArgument(count > 0, "[资料增补]提交失败");
+    }
+
+    /**
+     * 获取当前执行任务（activiti中）
+     *
+     * @param processInstId
+     * @param taskDefinitionKey
+     * @return
+     */
+    public Task getTask(String processInstId, String taskDefinitionKey) {
+
+//        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
+//            List<Task> tasks = taskService.createTaskQuery()
+//                    .processInstanceId(processInstId)
+//                    .listPage(0, 1);
+//            Preconditions.checkArgument(!CollectionUtils.isEmpty(tasks), "订单已结清或已弃单");
+//            return tasks.get(0);
+//        }
+
+        // 获取当前流程task
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(processInstId)
+                .taskDefinitionKey(taskDefinitionKey)
+                .singleResult();
+
+        Preconditions.checkNotNull(task, "当前任务不存在");
+
+        return task;
     }
 
     /**
@@ -1682,7 +1712,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     public LoanOrderDO getLoanOrder(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
         Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
 
@@ -1815,9 +1845,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void passTelephoneVerifyTask(Task task, Map<String, Object> variables, ApprovalParam approval,
                                          LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
-        // 前置开卡校验
-        preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
-
         // 完成任务：全部角色直接过单
         completeTask(task.getId(), variables);
         // 自动执行【金融方案】任务
@@ -1846,10 +1873,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             String openCardOrder = loanCustomerDO.getOpenCardOrder();
 
             // 是否前置开卡     -是：[银行开卡]-必须PASS
-            if (StringUtils.isNotBlank(openCardOrder) && K_YORN_YES.equals(Byte.valueOf(openCardOrder))) {
+            if (StringUtils.isNotBlank(openCardOrder) && K_YORN_NO.equals(Byte.valueOf(openCardOrder))) {
 
-                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getBankOpenCard()),
-                        "前先提交[" + BANK_OPEN_CARD.getName() + "]");
+                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()),
+                        "前先提交[" + TELEPHONE_VERIFY.getName() + "]");
             }
         }
     }
@@ -2218,7 +2245,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     public ResultBean<List<TaskStateVO>> currentTask(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
         List<Task> runTaskList = taskService.createTaskQuery()
@@ -2635,32 +2662,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
     }
 
-    /**
-     * 获取任务
-     *
-     * @param processInstId
-     * @param taskDefinitionKey
-     * @return
-     */
-    public Task getTask(String processInstId, String taskDefinitionKey) {
-
-        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
-            List<Task> tasks = taskService.createTaskQuery()
-                    .processInstanceId(processInstId)
-                    .listPage(0, 1);
-            Preconditions.checkArgument(!CollectionUtils.isEmpty(tasks), "订单已结清或已弃单");
-            return tasks.get(0);
-        }
-
-        // 获取当前流程task
-        Task task = taskService.createTaskQuery()
-                .processInstanceId(processInstId)
-                .taskDefinitionKey(taskDefinitionKey)
-                .singleResult();
-
-        Preconditions.checkNotNull(task, "当前任务不存在");
-        return task;
-    }
 
     /**
      * 设置并返回流程变量

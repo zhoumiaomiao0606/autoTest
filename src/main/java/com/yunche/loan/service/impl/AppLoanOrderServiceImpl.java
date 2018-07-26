@@ -41,7 +41,6 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
-import static com.yunche.loan.service.impl.LoanOrderServiceImpl.getSupplementTypeText;
 import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionText;
 
 
@@ -114,6 +113,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private VehicleInformationService vehicleInformationService;
 
     @Autowired
+    private DictService dictService;
+
+    @Autowired
     private ApplyLicensePlateDepositInfoDOMapper applyLicensePlateDepositInfoDOMapper;
 
     @Autowired
@@ -177,7 +179,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         appInfoSupplementVO.setRemark(loanInfoSupplementDO.getRemark());
 
         Long orderId = loanInfoSupplementDO.getOrderId();
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
         appInfoSupplementVO.setOrderId(String.valueOf(orderId));
@@ -233,7 +235,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     public ResultBean<AppCreditApplyOrderVO> creditApplyOrderDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
         // 订单基本信息
@@ -376,7 +378,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     public ResultBean<AppLoanHomeVisitVO> homeVisitDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
         AppLoanHomeVisitVO appLoanHomeVisitVO = new AppLoanHomeVisitVO();
@@ -576,7 +578,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
         AppBusinessInfoVO businessInfoVO = new AppBusinessInfoVO();
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "不能为空");
 
         // 基本信息
@@ -816,7 +818,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     public ResultBean<AppOrderProcessVO> orderProcess(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
         AppOrderProcessVO appOrderProcessVO = new AppOrderProcessVO();
@@ -1368,5 +1370,24 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         }
 
         return userGroup;
+    }
+
+    /**
+     * 增补类型文本值
+     *
+     * @param supplementType
+     * @return
+     */
+    private String getSupplementTypeText(Byte supplementType) {
+
+        Map<String, String> kvMap = dictService.getKVMap("infoSupplementType");
+
+        if (!CollectionUtils.isEmpty(kvMap)) {
+
+            String supplementTypeText = kvMap.get(String.valueOf(supplementType));
+
+            return supplementTypeText;
+        }
+        return null;
     }
 }

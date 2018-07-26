@@ -8,6 +8,8 @@ import com.yunche.loan.config.feign.request.group.MultimediaUploadValidated;
 import com.yunche.loan.domain.entity.BankInterfaceFileSerialDO;
 import com.yunche.loan.mapper.BankInterfaceFileSerialDOMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +19,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+
 @Component
 public class AsyncUpload {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AsyncUpload.class);
 
     private static final Set<String> PIC_SUFFIX = Sets.newHashSet("jpg", "png");
 
@@ -35,7 +40,13 @@ public class AsyncUpload {
 
     @Resource
     private ICBCFeignClient icbcFeignClient;
+
+
     @Async
+    public void execute(Process process){
+        process.process();
+    }
+
     public void multimediaUpload(String phybrno,String zoneno,String orderId,List<ICBCApiRequest.Picture> pictures){
         //多媒体补偿接口
         ICBCApiRequest.MultimediaUpload multimediaUpload = new ICBCApiRequest.MultimediaUpload();
@@ -55,9 +66,9 @@ public class AsyncUpload {
     }
 
 
-    @Async
     public void upload(String serNo,List<ICBCApiRequest.PicQueue> queue){
         for(ICBCApiRequest.PicQueue picQueue :queue){
+
             //1 下载出差 2 合成出错 3 上传出错
             boolean flag = true;
             String picPath = null;
@@ -74,11 +85,13 @@ public class AsyncUpload {
                 }
 
                 try {
+                    LOG.info("文件上传开始.....");
                     boolean check = FtpUtil.icbcUpload(picPath);
                     if(!check){
                         error = new Byte("3");
                         throw new RuntimeException("文件上传出错");
                     }
+                    LOG.info("文件上传失败.....");
                 }catch (Exception e){
                     throw new RuntimeException("文件上传出错");
                 }
@@ -106,7 +119,6 @@ public class AsyncUpload {
 
 
 
-    @Async
     public void upload(String serialNo,String fileType, String name, String urls){
         //1 下载出差 2 合成出错 3 上传出错
 
@@ -152,7 +164,6 @@ public class AsyncUpload {
         bankInterfaceFileSerialDOMapper.insertSelective(bankInterfaceFileSerialDO);
     }
 
-    @Async
     public void upload(String serialNo, String fileType, String name, List<String > urls){
 
         //1 下载出差 2 合成出错 3 上传出错

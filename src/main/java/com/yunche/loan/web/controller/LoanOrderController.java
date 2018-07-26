@@ -3,7 +3,6 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.*;
-import com.yunche.loan.domain.query.LoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,28 +24,6 @@ public class LoanOrderController {
     @Autowired
     private LoanOrderService loanOrderService;
 
-
-    /**
-     * 分页查询 各个流程环节的业务流程单列表   -单节点列表查询
-     *
-     * @param query
-     * @return
-     */
-    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<LoanOrderVO>> query(@RequestBody LoanOrderQuery query) {
-        return loanOrderService.query(query);
-    }
-
-    /**
-     * 多节点列表查询
-     *
-     * @param query
-     * @return
-     */
-    @PostMapping(value = "/multipartQuery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<LoanOrderVO>> multipartQuery(@RequestBody LoanOrderQuery query) {
-        return loanOrderService.multipartQuery(query);
-    }
 
     /**
      * 征信申请单详情

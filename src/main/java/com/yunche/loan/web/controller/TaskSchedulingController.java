@@ -38,8 +38,8 @@ public class TaskSchedulingController {
      * 银行单子状态
      */
     @GetMapping(value = "/bankOrderStatus")
-    public ResultBean<Integer> bankOrderStatus(@RequestParam Long orderId) {
-        return ResultBean.ofSuccess(loanQueryService.selectBankInterFaceSerialOrderStatusByOrderId(orderId));
+    public ResultBean<Integer> bankOrderStatus(@RequestParam Long orderId,@RequestParam String transCode) {
+        return ResultBean.ofSuccess(loanQueryService.selectBankInterFaceSerialOrderStatusByOrderId(orderId,transCode));
     }
 
     /**

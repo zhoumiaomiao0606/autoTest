@@ -132,7 +132,7 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     @Transactional
     public void update(MaterialUpdateParam param) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()), new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
         if (loanOrderDO == null) {
             throw new BizException("此业务单不存在");
         }
@@ -178,7 +178,7 @@ public class MaterialServiceImpl implements MaterialService {
 
         Long customerId = null;
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "订单不存在");
 
         customerId = loanOrderDO.getLoanCustomerId();
@@ -222,7 +222,7 @@ public class MaterialServiceImpl implements MaterialService {
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
             if (CollectionUtils.isEmpty(loanFileDOS)) {
                 LoanFileDO loanFileDO = new LoanFileDO();
-                loanFileDO.setStatus((byte) 3);
+                loanFileDO.setStatus(DOING_STATUS);
                 loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
                 loanFileDO.setType(ZIP_PACK.getType());
                 loanFileDO.setCustomerId(customerId);
@@ -579,7 +579,7 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public void carUpdate(CarUpdateParam param) {
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()), new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
         Long vid = loanOrderDO.getVehicleInformationId();
         Long cid = loanOrderDO.getLoanCarInfoId();
         Long fid = loanOrderDO.getLoanFinancialPlanId();
@@ -659,7 +659,7 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public ResultBean zipCheck(Long orderId) {
         MaterialDownloadParam materialDownloadParam = new MaterialDownloadParam();
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Long loanCustomerId = loanOrderDO.getLoanCustomerId();
 
         // 是否已经存在文件了

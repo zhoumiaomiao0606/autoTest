@@ -172,7 +172,7 @@ public class BaseAreaServiceImpl implements BaseAreaService {
     public ResultBean<List<CascadeAreaVO>> getApplyLicensePlateArea(Long orderId) {
 
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO,"订单不存在");
         Long partnerId=loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId()).getPartnerId();
 

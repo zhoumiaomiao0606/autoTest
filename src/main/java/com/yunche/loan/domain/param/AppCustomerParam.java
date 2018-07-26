@@ -147,5 +147,7 @@ public class AppCustomerParam {
 
     private String  guaranteeRela;//担保关系
 
+    private String issuingDepartment;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

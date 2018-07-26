@@ -16,6 +16,7 @@ import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.request.group.*;
 import com.yunche.loan.config.feign.response.*;
 import com.yunche.loan.config.util.*;
+import com.yunche.loan.config.util.Process;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
@@ -24,6 +25,8 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +45,7 @@ import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 @Service
 @Transactional
 public class BankSolutionServiceImpl implements BankSolutionService {
+    private static final Logger LOG = LoggerFactory.getLogger(BankSolutionService.class);
 
     @Resource
     private ViolationUtil violationUtil;
@@ -119,7 +123,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     //征信自动提交
     @Override
     public void creditAutomaticCommit(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -166,7 +170,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Override
     public void commonBusinessApply(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -206,7 +210,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Override
     public void multimediaUpload(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -245,7 +249,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
 
     public void multimediaUploadProcess(Long orderId,String phybrno){
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -268,40 +272,38 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(loanCustomerDO == null){
             throw new BizException("贷款人不存在");
         }
+        UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD);
+        if(result != null) {
+            if (IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) || IDict.K_JJSTS.PROCESS.equals(result.getStatus()) || IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus())) {
+                throw new BizException("已经推送过了");
+            }
+        }
 
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
 
-        for (TermFileEnum e : TermFileEnum.values()) {
-            UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,e.getKey());
-            if(authSignPic != null){
-                if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-                    String picName = GeneratorIDUtil.execute();
-                    if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(e.getKey().toString())){
-                        //zip
-                        picName = picName +ImageUtil.ZIP_SUFFIX;
-                    }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(e.getKey().toString())){
-                        //mp4
-                        picName = picName +ImageUtil.MP4_SUFFIX;
-                    }else{
-                        //jpg
-                        picName = picName+ImageUtil.PIC_SUFFIX;
-                    }
+        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,TermFileEnum.VIDEO_INTERVIEW.getKey());
+        if(authSignPic != null){
+            throw new BizException("缺少面签视频");
+        }
+        String picName = GeneratorIDUtil.execute()+ImageUtil.MP4_SUFFIX;
 
-                    ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
-                    picture.setPicid(e.getValue());
-                    picture.setPicname(picName);
-                    picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
-                    pictures.add(picture);
-                }
-            }
-
+        if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
+            ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+            picture.setPicid(TermFileEnum.VIDEO_INTERVIEW.getValue());
+            picture.setPicname(picName);
+            picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.VIDEO_INTERVIEW.getKey()));
+            pictures.add(picture);
+        }
+        if(pictures.size() == 0 ){
+            throw new BizException("缺少面签视频");
         }
 
+        String serNo = GeneratorIDUtil.execute();
         //多媒体补偿接口
         ICBCApiRequest.MultimediaUpload multimediaUpload = new ICBCApiRequest.MultimediaUpload();
         multimediaUpload.setPlatno(sysConfig.getPlatno());
         multimediaUpload.setGuestPlatno(sysConfig.getPlatno());
-        multimediaUpload.setCmpseq(GeneratorIDUtil.execute());
+        multimediaUpload.setCmpseq(serNo);
         multimediaUpload.setZoneno(loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4));
         multimediaUpload.setPhybrno(phybrno);
         multimediaUpload.setOrderno(orderId.toString());
@@ -311,13 +313,21 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         multimediaUpload.setFileNum(String.valueOf(pictures.size()));
         multimediaUpload.setPictures(pictures);
         violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
-        icbcFeignClient.multimediaUpload(multimediaUpload);
+
+
+        asyncUpload.execute(new Process() {
+            @Override
+            public void process() {
+                asyncUpload.upload(serNo,TermFileEnum.VIDEO_INTERVIEW.getValue(),picName,authSignPic.getUrls());
+                icbcFeignClient.multimediaUpload(multimediaUpload);
+            }
+        });
     }
 
 
     public void ICBCCommonBusinessApplyProcess(Long orderId,String phybrno){
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         //获取数据源
         Long baseId = loanOrderDO.getLoanBaseInfoId();
         if(baseId == null){
@@ -526,6 +536,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         }
 
+        if(pictures.size() == 0){
+            throw new BizException("最少需要一张图片");
+        }
+
         String serNo = GeneratorIDUtil.execute();
         //pub
         applyDiviGeneral.setPlatno(sysConfig.getPlatno());
@@ -596,13 +610,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCustomer(customer);
         applyDiviGeneral.setPictures(pictures);
         violationUtil.violation(applyDiviGeneral,ApplyDiviGeneralValidated.class);
-        ApplyDiviGeneralResponse response = icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
-        //只有接口请求成功才会调用上传.防止请求过多造成内存溢出
-        if(response!=null){
-            if(IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())){
+
+
+        asyncUpload.execute(new Process() {
+            @Override
+            public void process() {
                 asyncUpload.upload(serNo,queue);
+                icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
             }
-        }
+        });
     }
 
 
@@ -627,7 +643,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     private void bankCreditProcess(Long orderId,String phybrno,LoanCustomerDO loanCustomerDO){
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         //获取数据源
         Long baseId = loanOrderDO.getLoanBaseInfoId();
         if(baseId == null){
@@ -726,14 +742,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyCredit.setPictures(pictures);
         //走你
         violationUtil.violation(applyCredit, ApplyCreditValidated.class);
-        ApplyCreditResponse response = icbcFeignClient.applyCredit(applyCredit);
-        //上传
-        if(response!=null) {
-            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
+
+        asyncUpload.execute(new Process() {
+            @Override
+            public void process() {
                 asyncUpload.upload(serNo,"0004",picName,authSignPic.getUrls());
                 asyncUpload.upload(serNo,"0005",docName,mergeImages);
+                icbcFeignClient.applyCredit(applyCredit);
             }
-        }
+        });
     }
 
 
@@ -778,7 +795,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyBankOpenCard.setCustomerId(bankOpenCardParam.getCustomerId());
 
         ICBCApiRequest.ApplyBankOpenCardCustomer customer =new ICBCApiRequest.ApplyBankOpenCardCustomer();
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId(),VALID_STATUS);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId());
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
@@ -904,23 +921,39 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         applyBankOpenCard.setCustomer(customer);
         applyBankOpenCard.setPictures(bankOpenCardParam.getPictures());
-        //发送银行接口
-        CreditCardApplyResponse response = icbcFeignClient.creditcardapply(applyBankOpenCard);
 
-        if(response!=null) {
-            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
+
+        asyncUpload.execute(new Process() {
+
+            @Override
+            public void process() {
+                LOG.info("银行开卡异步调用开始......");
                 List<ICBCApiRequest.Picture> pictures = bankOpenCardParam.getPictures();
                 for (ICBCApiRequest.Picture tmp:pictures) {
                     asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicid(),tmp.getPicname(),tmp.getPicKeyList());
                 }
+                icbcFeignClient.creditcardapply(applyBankOpenCard);
+                LOG.info("银行开卡异步调用结束");
+
             }
-        }
-        return response;
+        });
+        //发送银行接口
+//        CreditCardApplyResponse response = icbcFeignClient.creditcardapply(applyBankOpenCard);
+//
+//        if(response!=null) {
+//            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
+//                List<ICBCApiRequest.Picture> pictures = bankOpenCardParam.getPictures();
+//                for (ICBCApiRequest.Picture tmp:pictures) {
+//                    asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicid(),tmp.getPicname(),tmp.getPicKeyList());
+//                }
+//            }
+//        }
+        return null;
     }
 
     @Override
     public ApplyStatusResponse applystatus(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
@@ -955,7 +988,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     private ApplyStatusResponse applystatusProcess(Long orderId,String phybrno){
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         //获取数据源
         Long baseId = loanOrderDO.getLoanBaseInfoId();
         if(baseId == null){

@@ -398,7 +398,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         videoFaceCustomerVO.setAnyChatUserId(anyChatUserId);
 
         // order
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
         // customer info

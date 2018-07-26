@@ -124,7 +124,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         // 005-抵押资料合伙人至公司
         if (DATA_FLOW_MORTGAGE_P2C.getCode().equals(taskKey)) {
 
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanDataFlowDO.getOrderId(), null);
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanDataFlowDO.getOrderId());
             Preconditions.checkNotNull(loanOrderDO, "订单不存在");
             Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
 

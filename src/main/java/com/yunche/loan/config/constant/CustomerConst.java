@@ -27,7 +27,7 @@ public class CustomerConst {
      */
     public static final Byte CREDIT_TYPE_BANK = 1;
     /**
-     *
+     * 社会征信
      */
     public static final Byte CREDIT_TYPE_SOCIAL = 2;
 }

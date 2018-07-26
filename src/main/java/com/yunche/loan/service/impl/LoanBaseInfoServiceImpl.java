@@ -157,7 +157,7 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
     public LoanBaseInfoDO getLoanBaseInfoByOrderId(Long orderId) {
         Preconditions.checkNotNull(orderId, "订单号不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "订单不存在");
 
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
@@ -176,7 +176,7 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
     public Long getBankId(Long orderId) {
         Preconditions.checkNotNull(orderId, "订单号不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "订单不存在");
 
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());

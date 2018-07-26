@@ -261,13 +261,12 @@
         </table>
 
 
-        -->
 
-        <!--<table tableName="loan_car_info" domainObjectName="LoanCarInfoDO"
+        <table tableName="loan_car_info" domainObjectName="LoanCarInfoDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
--->
-        <!--<table tableName="loan_customer" domainObjectName="LoanCustomerDO"
+
+        <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
@@ -350,10 +349,14 @@
 
 -->
 
-
-        <table tableName="loan_process" domainObjectName="LoanProcessDO"
+        <table tableName="loan_info_supplement" domainObjectName="LoanInfoSupplementDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+
+            <ignoreColumn column="status"/>
+            <ignoreColumn column="feature"/>
+            <ignoreColumn column="name"/>
+
         </table>
 
 

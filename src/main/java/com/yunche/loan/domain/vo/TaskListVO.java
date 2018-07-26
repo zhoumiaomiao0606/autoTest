@@ -64,6 +64,8 @@ public class TaskListVO {
     private String creditMan;
     private String creditDate;
     private String paymentGtCreate;
+    private String carName;
+    private String carGpsNum;
 
     private String dataFlowId;
     private String dataFlowType;

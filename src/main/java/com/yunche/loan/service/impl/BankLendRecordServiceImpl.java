@@ -52,16 +52,16 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
     @Override
     public ResultBean<RecombinationVO> detail(Long orderId) {
 
-        Preconditions.checkNotNull(orderId,"业务单号不能为空");
-        RecombinationVO recombinationVO=  new RecombinationVO();
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+        RecombinationVO recombinationVO = new RecombinationVO();
         BankLendRecordVO bankLendRecordVO = loanQueryDOMapper.selectBankLendRecordDetail(orderId);
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, null);
-        Preconditions.checkNotNull(loanOrderDO,"订单不存在");
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
         Long loanFinancialPlanId = loanOrderDO.getLoanFinancialPlanId();
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
 
-        if(loanFinancialPlanDO!=null){
+        if (loanFinancialPlanDO != null) {
             bankLendRecordVO.setBankPeriodPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
         }
 
@@ -69,12 +69,12 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
 
         //共贷人信息查询
-        List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
 
-        for(UniversalCustomerVO universalCustomerVO:customers){
+        for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
-            List<UniversalCustomerFileVO> tmpfiles = files.parallelStream().map( file ->{
-                if(file.getUrls()==null){
+            List<UniversalCustomerFileVO> tmpfiles = files.parallelStream().map(file -> {
+                if (file.getUrls() == null) {
                     file.setUrls("[]");
                 }
                 return file;
@@ -87,24 +87,24 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
     @Override
     public ResultBean importFile(String key) {
-        Preconditions.checkNotNull(key,"文件名不能为空（包含绝对路径）");
+        Preconditions.checkNotNull(key, "文件名不能为空（包含绝对路径）");
 
-        List<String[]>  returnList;
+        List<String[]> returnList;
         try {
 
-            returnList = POIUtil.readExcelFromOSS(0,1,key);
-            BankLendRecordDO bankLendRecordDO =new BankLendRecordDO();
+            returnList = POIUtil.readExcelFromOSS(0, 1, key);
+            BankLendRecordDO bankLendRecordDO = new BankLendRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            for(String[] tmp :returnList){
+            for (String[] tmp : returnList) {
 //                tmp[0].trim();//客户姓名
 //                tmp[1].trim();//身份证号
 //                tmp[2].trim();//放款日期
 //                tmp[3].trim();//放款金额
-                if(tmp.length!=4){
+                if (tmp.length != 4) {
                     continue;
                 }
-                Long orderId =  loanQueryDOMapper.selectOrderIdByIDCard(tmp[1].trim());
-                if(orderId==null){
+                Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(tmp[1].trim());
+                if (orderId == null) {
                     continue;
                 }
                 bankLendRecordDO.setLoanOrder(orderId);
@@ -114,23 +114,23 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 bankLendRecordDO.setStatus(Byte.valueOf("0"));
                 bankLendRecordDO.setGmtCreate(new Date());
                 //兼容重复导入
-                BankLendRecordDO  tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
-                if(tmpBankLendRecordDO == null){
-                   int count  =  bankLendRecordDOMapper.insert(bankLendRecordDO);
-                    Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录导入出错");
-                }else{
+                BankLendRecordDO tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+                if (tmpBankLendRecordDO == null) {
+                    int count = bankLendRecordDOMapper.insert(bankLendRecordDO);
+                    Preconditions.checkArgument(count > 0, "身份证号:" + tmp[1].trim() + ",对应记录导入出错");
+                } else {
                     bankLendRecordDO.setId(tmpBankLendRecordDO.getId());
-                    int count  =  bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
-                    Preconditions.checkArgument(count > 0, "身份证号:"+tmp[1].trim()+",对应记录更新出错");
+                    int count = bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
+                    Preconditions.checkArgument(count > 0, "身份证号:" + tmp[1].trim() + ",对应记录更新出错");
                 }
                 bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
-                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,null);
-                loanOrderDO.setBankLendRecordId((long)bankLendRecordDO.getId());
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+                loanOrderDO.setBankLendRecordId((long) bankLendRecordDO.getId());
                 int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
-                Preconditions.checkArgument(count > 0, "业务单号为:"+orderId+",对应记录更新出错");
+                Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
 
 
-                ApprovalParam approvalParam =  new ApprovalParam();
+                ApprovalParam approvalParam = new ApprovalParam();
                 approvalParam.setOrderId(orderId);
                 approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
                 approvalParam.setAction(LoanProcessConst.ACTION_PASS);
@@ -151,36 +151,37 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
      */
     public ResultBean manualInput(BankLendRecordVO bankLendRecordVO) {
 
-        Preconditions.checkNotNull(bankLendRecordVO,"银行放款记录不能为空");
-        Preconditions.checkNotNull(bankLendRecordVO.getLendAmount(),"银行放款金额不能为空");
-        Preconditions.checkNotNull(bankLendRecordVO.getLendDate(),"银行放款日期不能为空");
-        BankLendRecordDO bankLendRecordDO =  new BankLendRecordDO();
+        Preconditions.checkNotNull(bankLendRecordVO, "银行放款记录不能为空");
+        Preconditions.checkNotNull(bankLendRecordVO.getLendAmount(), "银行放款金额不能为空");
+        Preconditions.checkNotNull(bankLendRecordVO.getLendDate(), "银行放款日期不能为空");
+        BankLendRecordDO bankLendRecordDO = new BankLendRecordDO();
         bankLendRecordDO.setLoanOrder(Long.valueOf(bankLendRecordVO.getOrderId()));
         bankLendRecordDO.setLendAmount(bankLendRecordVO.getLendAmount());
         bankLendRecordDO.setLendDate(bankLendRecordVO.getLendDate());
         bankLendRecordDO.setRecordStatus(Byte.valueOf("1"));//正常
         bankLendRecordDO.setStatus(Byte.valueOf("0"));
         bankLendRecordDO.setGmtCreate(new Date());
-        BankLendRecordDO  tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(Long.valueOf(bankLendRecordVO.getOrderId()));
-        if(tmpBankLendRecordDO==null){
+        BankLendRecordDO tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(Long.valueOf(bankLendRecordVO.getOrderId()));
+        if (tmpBankLendRecordDO == null) {
             bankLendRecordDOMapper.insert(bankLendRecordDO);
-        }else{
+        } else {
 //            bankLendRecordDOMapper.updateByPrimaryKeySelective(bankLendRecordDO);
             bankLendRecordDOMapper.updateByOrderId(bankLendRecordDO);
         }
-        Long orderId =Long.valueOf(bankLendRecordVO.getOrderId());
+        Long orderId = Long.valueOf(bankLendRecordVO.getOrderId());
         bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,null);
-        loanOrderDO.setBankLendRecordId((long)bankLendRecordDO.getId());
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        loanOrderDO.setBankLendRecordId((long) bankLendRecordDO.getId());
         int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
-        Preconditions.checkArgument(count > 0, "业务单号为:"+orderId+",对应记录更新出错");
+        Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
         return ResultBean.ofSuccess("录入成功");
     }
-    @Override
-    public ResultBean<BankLendRecordDO> querySave(Long  orderId) {
 
-        Preconditions.checkNotNull(orderId,"业务单号不能为空");
-        BankLendRecordDO bankLendRecordDO =  bankLendRecordDOMapper.selectByLoanOrder(orderId);
+    @Override
+    public ResultBean<BankLendRecordDO> querySave(Long orderId) {
+
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+        BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
         return ResultBean.ofSuccess(bankLendRecordDO);
     }
 

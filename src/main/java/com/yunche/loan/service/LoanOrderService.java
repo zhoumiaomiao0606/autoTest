@@ -2,7 +2,6 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.*;
-import com.yunche.loan.domain.query.LoanOrderQuery;
 import com.yunche.loan.domain.vo.*;
 
 import java.util.List;
@@ -11,10 +10,6 @@ import java.util.List;
  * Created by zhouguoliang on 2018/2/5.
  */
 public interface LoanOrderService {
-
-    ResultBean<List<LoanOrderVO>> query(LoanOrderQuery query);
-
-    ResultBean<List<LoanOrderVO>> multipartQuery(LoanOrderQuery query);
 
     ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(Long orderId);
 

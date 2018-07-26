@@ -8,7 +8,7 @@ import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.Process;
 import org.activiti.bpmn.model.UserTask;
-import org.activiti.engine.*;
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -99,7 +98,7 @@ public class ActivitiCache {
     /**
      * 刷新缓存
      */
-    @PostConstruct
+//    @PostConstruct
     public void refresh() {
         // node-roles  映射cache
         refreshNodeRolesCache();

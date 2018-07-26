@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.InstallGpsDO;
-import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.GpsUpdateParam;
@@ -39,7 +38,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
 
     @Override
     public void commit(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此业务单不存在");
         }
@@ -55,7 +54,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
     @Override
     public void install(InstallUpdateParam param) {
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()),new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
         if(loanOrderDO == null){
             throw new BizException("此业务单不存在");
         }

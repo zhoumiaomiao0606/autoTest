@@ -49,7 +49,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
     @Override
     public ResultBean save(LoanBusinessPaymentParam loanBusinessPaymentParam) {
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanBusinessPaymentParam.getOrderId(), null);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanBusinessPaymentParam.getOrderId());
 
         // 关联ID
         Long remitDetailsId = loanOrderDO.getRemitDetailsId();

@@ -239,15 +239,15 @@
     <sequenceFlow id="flow186" name="手动打回 或 自动打回" sourceRef="exclusivegateway25" targetRef="usertask_business_pay">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0 || action == -1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_data_flow_contract_p2c" name="001-合同资料合伙人至公司" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤"></userTask>
-    <userTask id="usertask_data_flow_contract_p2c_review" name="002-合同资料合伙人至公司-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,哈尔滨资料流转专员,南京资料流转专员,台州资料流转专员,杭州城站资料流转专员"></userTask>
+    <userTask id="usertask_data_flow_contract_p2c" name="001-合同资料合伙人至公司" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,合伙人流转专员"></userTask>
+    <userTask id="usertask_data_flow_contract_p2c_review" name="002-合同资料合伙人至公司-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,哈尔滨资料流转专员,南京资料流转专员,台州资料流转专员,杭州城站资料流转专员,合伙人流转专员"></userTask>
     <sequenceFlow id="flow188" sourceRef="exclusivegateway35" targetRef="usertask_material_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow189" name="打回" sourceRef="exclusivegateway35" targetRef="usertask_data_flow_contract_p2c">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_data_flow_contract_c2b" name="003-合同资料公司至银行" activiti:candidateGroups="管理员,总经理,培训经理,哈尔滨资料流转专员,南京资料流转专员,台州资料流转专员,杭州城站资料流转专员"></userTask>
+    <userTask id="usertask_data_flow_contract_c2b" name="003-合同资料公司至银行" activiti:candidateGroups="管理员,总经理,培训经理,哈尔滨资料流转专员,南京资料流转专员,台州资料流转专员,杭州城站资料流转专员,合伙人流转专员"></userTask>
     <sequenceFlow id="flow190" sourceRef="parallelgateway9" targetRef="usertask_data_flow_contract_c2b"></sequenceFlow>
     <userTask id="usertask_data_flow_contract_c2b_review" name="004-合同资料公司至银行-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,哈尔滨银行驻点,南京银行驻点,台州银行驻点,杭州城站银行驻点"></userTask>
     <sequenceFlow id="flow191" sourceRef="exclusivegateway36" targetRef="usertask_data_flow_contract_c2b_review">
@@ -286,7 +286,7 @@
     <sequenceFlow id="flow202" sourceRef="exclusivegateway27" targetRef="usertask_data_flow_mortgage_c2p">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_data_flow_mortgage_c2p_review" name="012-抵押资料公司至合伙人-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_data_flow_mortgage_c2p_review" name="012-抵押资料公司至合伙人-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,合伙人流转专员"></userTask>
     <sequenceFlow id="flow203" sourceRef="usertask_data_flow_mortgage_c2p" targetRef="usertask_data_flow_mortgage_c2p_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -295,7 +295,7 @@
     <sequenceFlow id="flow205" name="打回" sourceRef="exclusivegateway28" targetRef="usertask_data_flow_mortgage_c2p">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_data_flow_mortgage_p2c" name="005-抵押资料合伙人至公司" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_data_flow_mortgage_p2c" name="005-抵押资料合伙人至公司" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,合伙人流转专员"></userTask>
     <sequenceFlow id="flow206" sourceRef="exclusivegateway28" targetRef="usertask_data_flow_mortgage_p2c">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -329,7 +329,7 @@
     <sequenceFlow id="flow221" name="打回" sourceRef="exclusivegateway30" targetRef="usertask_data_flow_mortgage_c2b">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_data_flow_register_p2c" name="013-登记证书合伙人至公司" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_data_flow_register_p2c" name="013-登记证书合伙人至公司" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,合伙人流转专员"></userTask>
     <sequenceFlow id="flow222" sourceRef="usertask_apply_license_plate_deposit_info" targetRef="usertask_data_flow_register_p2c">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -397,13 +397,13 @@
     <sequenceFlow id="flow259" name="提交" sourceRef="usertask_bank_card_send" targetRef="endevent35">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_open_card" name="银行开卡"></userTask>
+    <userTask id="usertask_bank_open_card" name="银行开卡" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤"></userTask>
     <sequenceFlow id="flow261" sourceRef="parallelgateway6" targetRef="usertask_bank_open_card"></sequenceFlow>
     <endEvent id="endevent36" name="End"></endEvent>
     <sequenceFlow id="flow262" sourceRef="usertask_bank_open_card" targetRef="endevent36">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_apply_instalment" name="申请分期" activiti:candidateGroups="管理员"></userTask>
+    <userTask id="usertask_apply_instalment" name="申请分期" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,杭州城站分期专员,台州分期专员"></userTask>
     <sequenceFlow id="flow263" sourceRef="parallelgateway9" targetRef="usertask_apply_instalment"></sequenceFlow>
     <endEvent id="endevent37" name="End"></endEvent>
     <sequenceFlow id="flow264" sourceRef="usertask_apply_instalment" targetRef="endevent37">
@@ -412,6 +412,7 @@
     <sequenceFlow id="flow265" sourceRef="exclusivegateway9" targetRef="usertask_telephone_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 && target == 'usertask_telephone_verify'}]]></conditionExpression>
     </sequenceFlow>
+    <userTask id="usertask_bank_open_card_list" name="银行开卡清单" activiti:candidateGroups="管理员,总经理,培训经理"></userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -738,6 +739,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent37" id="BPMNShape_endevent37">
         <omgdc:Bounds height="35.0" width="35.0" x="5324.0" y="781.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_bank_open_card_list" id="BPMNShape_usertask_bank_open_card_list">
+        <omgdc:Bounds height="55.0" width="105.0" x="1820.0" y="10.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="36.0" y="1100.0"></omgdi:waypoint>

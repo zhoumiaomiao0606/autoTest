@@ -40,13 +40,13 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     }
 
     @Override
-    public Integer selectBankInterFaceSerialOrderStatusByOrderId(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
+    public Integer selectBankInterFaceSerialOrderStatusByOrderId(Long orderId,String transCode) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
         }
 
-        List<BankInterFaceSerialOrderStatusVO> list =  loanQueryDOMapper.selectBankInterFaceSerialOrderStatusByOrderId(orderId);
+        List<BankInterFaceSerialOrderStatusVO> list =  loanQueryDOMapper.selectBankInterFaceSerialOrderStatusByOrderId(orderId,transCode);
         if(CollectionUtils.isEmpty(list)){
             return 1;
         }

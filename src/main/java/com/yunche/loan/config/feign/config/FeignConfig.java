@@ -16,8 +16,6 @@ import feign.codec.Decoder;
 import feign.codec.ErrorDecoder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -58,7 +56,7 @@ public class FeignConfig {
                 if(StringUtils.isBlank(orderno.toString())){
                     throw new BizException("orderno 参数为空");
                 }
-                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderno.toString()),new Byte("0"));
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderno.toString()));
                 if(loanOrderDO == null){
                     throw new BizException("此订单不存在");
                 }

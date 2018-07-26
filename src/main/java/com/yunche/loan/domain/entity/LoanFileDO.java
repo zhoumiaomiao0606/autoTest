@@ -21,6 +21,4 @@ public class LoanFileDO {
     private Date gmtModify;
 
     private Byte status;
-
-    private String feature;
 }

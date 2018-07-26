@@ -57,9 +57,6 @@ public class LoanFileServiceImpl implements LoanFileService {
         int count = loanFileDOMapper.insertSelective(loanFileDO);
         Preconditions.checkArgument(count > 0, "编辑图片信息失败");
 
-        // 异步打包
-//        asyncPackZipFile(loanFileDO.getCustomerId(), null, 2);
-
         return ResultBean.ofSuccess(loanFileDO.getId(), "文件信息保存成功");
     }
 
@@ -71,9 +68,6 @@ public class LoanFileServiceImpl implements LoanFileService {
         loanFileDO.setGmtModify(new Date());
         int count = loanFileDOMapper.updateByPrimaryKeySelective(loanFileDO);
         Preconditions.checkArgument(count > 0, "编辑图片信息失败");
-
-        // 异步打包
-//        asyncPackZipFile(loanFileDO.getCustomerId(), null, 2);
 
         return ResultBean.ofSuccess(null, "图片信息编辑成功");
     }

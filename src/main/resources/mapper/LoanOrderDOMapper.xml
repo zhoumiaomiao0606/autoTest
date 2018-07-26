@@ -67,12 +67,6 @@
         WHERE id = #{id}
     </select>
 
-    <!--getLoanHomeVisitId-->
-    <select id="getLoanHomeVisitId" parameterType="java.lang.Long" resultType="java.lang.Long">
-        select loan_home_visit_id
-        from loan_order
-        WHERE id = #{id}
-    </select>
 
     <!--getByProcessInstId-->
     <select id="getByProcessInstId" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -87,7 +81,7 @@
         select
         <include refid="Base_Column_List"/>
         from loan_order
-        where loan_customer_id = #{customerId,jdbcType=BIGINT} and status = '0'
+        where loan_customer_id = #{customerId,jdbcType=BIGINT}
     </select>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -95,9 +89,6 @@
         <include refid="Base_Column_List"/>
         from loan_order
         where id = #{id,jdbcType=BIGINT}
-        <if test="status != null">
-            AND status = #{status}
-        </if>
     </select>
 
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanOrderDO">

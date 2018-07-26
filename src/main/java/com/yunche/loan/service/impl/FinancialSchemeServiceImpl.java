@@ -52,16 +52,19 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
 
     @Override
-    public RecombinationVO detail(Long orderId) {
-        FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
+    public RecombinationVO<FinancialSchemeVO> detail(Long orderId) {
+
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
+
         RecombinationVO<FinancialSchemeVO> recombinationVO = new RecombinationVO<>();
-        recombinationVO.setInfo(financialSchemeVO);
         recombinationVO.setCustomers(customers);
+        recombinationVO.setInfo(loanQueryDOMapper.selectFinancialScheme(orderId));
+        recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
+        recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
         return recombinationVO;
     }
 
@@ -133,7 +136,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     @Transactional
     public void migration(Long orderId, Long hisId, String action) {
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (loanOrderDO == null) {
             throw new BizException("订单不存在");
         }
@@ -176,11 +179,11 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     }
 
     @Override
-        public List<UniversalCustomerOrderVO> queryModifyCustomerOrder(String name) {
+    public List<UniversalCustomerOrderVO> queryModifyCustomerOrder(String name) {
         Long loginUserId = SessionUtils.getLoginUser().getId();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
-        return loanQueryDOMapper.selectUniversalModifyCustomerOrder(SessionUtils.getLoginUser().getId(), StringUtils.isBlank(name)?null:name,maxGroupLevel == null?new Long(0):maxGroupLevel,juniorIds);
+        return loanQueryDOMapper.selectUniversalModifyCustomerOrder(SessionUtils.getLoginUser().getId(), StringUtils.isBlank(name) ? null : name, maxGroupLevel == null ? new Long(0) : maxGroupLevel, juniorIds);
     }
 
     /**

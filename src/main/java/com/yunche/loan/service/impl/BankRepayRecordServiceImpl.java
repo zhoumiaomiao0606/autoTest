@@ -268,7 +268,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
      * @return
      */
     private Byte isCustomer(Long orderId){
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId, VALID_STATUS);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if(loanOrderDO != null){
            return K_YORN_YES;
         }else{
@@ -287,7 +287,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
             if(e.getOptimalReturn().doubleValue()>0){
                 //逾期金额大于0
                 Long orderId =e.getOrderId();
-                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId(), null);
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
                 LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
                 BigDecimal ableRepay = loanFinancialPlanDO.getEachMonthRepay();//每月还款
                 Double  tmpTimes = Math.ceil(e.getOptimalReturn().divide(ableRepay,10,RoundingMode.HALF_UP).doubleValue());
