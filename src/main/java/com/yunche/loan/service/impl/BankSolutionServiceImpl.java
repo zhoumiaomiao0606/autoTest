@@ -625,21 +625,21 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private void ICBCBankCreditProcess(Long orderId,String phybrno,List<LoanCustomerDO> customers){
 
         //①判断客户是否已提交了征信记录，且银行征信结果非退回，若满足，则不会推送该客户，否则继续②
-            for(LoanCustomerDO loanCustomerDO:customers){
-                UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYCREDIT);
-                if(result!=null){
-                    //之前提交过
-                    //只有调用接口成功才算
-                    //非处理中 并且 非查询成功的可以进行推送
-                    if(!IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) && !IDict.K_JJSTS.PROCESS.equals(result.getStatus()) && !IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus()) ) {
-                        checkCustomerHavingCreditON14Day(loanCustomerDO);
-                        bankCreditProcess(orderId,phybrno,loanCustomerDO);
-                    }
-                }else{
+        for(LoanCustomerDO loanCustomerDO:customers){
+            UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYCREDIT);
+            if(result!=null){
+                //之前提交过
+                //只有调用接口成功才算
+                //非处理中 并且 非查询成功的可以进行推送
+                if(!IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) && !IDict.K_JJSTS.PROCESS.equals(result.getStatus()) && !IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus()) ) {
                     checkCustomerHavingCreditON14Day(loanCustomerDO);
                     bankCreditProcess(orderId,phybrno,loanCustomerDO);
                 }
+            }else{
+                checkCustomerHavingCreditON14Day(loanCustomerDO);
+                bankCreditProcess(orderId,phybrno,loanCustomerDO);
             }
+        }
     }
 
     private void bankCreditProcess(Long orderId,String phybrno,LoanCustomerDO loanCustomerDO){
@@ -777,10 +777,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     private void checkCustomerHavingCreditON14Day(LoanCustomerDO customers){
-            Preconditions.checkArgument(StringUtils.isNotBlank(customers.getIdCard()), customers.getName()+"身份证号不能为空");
-            if(loanQueryDOMapper.checkCustomerHavingCreditON14Day(customers.getIdCard())){
-                throw new BizException(customers.getName()+"在14天内重复查询征信");
-            }
+        Preconditions.checkArgument(StringUtils.isNotBlank(customers.getIdCard()), customers.getName()+"身份证号不能为空");
+        if(loanQueryDOMapper.checkCustomerHavingCreditON14Day(customers.getIdCard())){
+            throw new BizException(customers.getName()+"在14天内重复查询征信");
+        }
     }
 
 
@@ -797,7 +797,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyBankOpenCard.setCustomerId(bankOpenCardParam.getCustomerId());
 
         ICBCApiRequest.ApplyBankOpenCardCustomer customer =new ICBCApiRequest.ApplyBankOpenCardCustomer();
+<<<<<<< HEAD
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId());
+=======
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId(),new Byte("0"));
+>>>>>>> bankinterface
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");

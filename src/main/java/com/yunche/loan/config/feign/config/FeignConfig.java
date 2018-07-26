@@ -127,74 +127,74 @@ public class FeignConfig {
         return new ErrorDecoder() {
             @Override
             public Exception decode(String methodKey, Response response) {
-                    Object transCode = response.request().headers().get("transCode");
-                    Object customerId = response.request().headers().get("customerId");
-                    Object serialNo = response.request().headers().get("serialNo");
-                    Object fileNum = response.request().headers().get("fileNum");
-                    Object orderId = response.request().headers().get("orderId");
+                Object transCode = response.request().headers().get("transCode");
+                Object customerId = response.request().headers().get("customerId");
+                Object serialNo = response.request().headers().get("serialNo");
+                Object fileNum = response.request().headers().get("fileNum");
+                Object orderId = response.request().headers().get("orderId");
 
-                    if(transCode == null){
-                        throw new BizException("transCode 参数为空");
-                    }
-                    if(customerId == null){
-                        throw new BizException("customerId 参数为空");
-                    }
-                    if(serialNo == null){
-                        throw new BizException("serialNo 参数为空");
-                    }
-                    if(fileNum == null){
-                        throw new BizException("fileNum 参数为空");
-                    }
-                    if(orderId == null){
-                        throw new BizException("orderId 参数为空");
-                    }
+                if(transCode == null){
+                    throw new BizException("transCode 参数为空");
+                }
+                if(customerId == null){
+                    throw new BizException("customerId 参数为空");
+                }
+                if(serialNo == null){
+                    throw new BizException("serialNo 参数为空");
+                }
+                if(fileNum == null){
+                    throw new BizException("fileNum 参数为空");
+                }
+                if(orderId == null){
+                    throw new BizException("orderId 参数为空");
+                }
 
-                    List transCodeList = (List) transCode;
+                List transCodeList = (List) transCode;
 
-                    List customerIdList = (List) customerId;
+                List customerIdList = (List) customerId;
 
-                    List serialNoList = (List) serialNo;
+                List serialNoList = (List) serialNo;
 
-                    List fileNumList = (List) fileNum;
+                List fileNumList = (List) fileNum;
 
-                    List orderIdList = (List) orderId;
+                List orderIdList = (List) orderId;
 
-                    if(CollectionUtils.isEmpty(transCodeList)){
-                        throw new BizException("transCode 参数为空");
-                    }
+                if(CollectionUtils.isEmpty(transCodeList)){
+                    throw new BizException("transCode 参数为空");
+                }
 
-                    if(CollectionUtils.isEmpty(customerIdList)){
-                        throw new BizException("customerId 参数为空");
-                    }
+                if(CollectionUtils.isEmpty(customerIdList)){
+                    throw new BizException("customerId 参数为空");
+                }
 
-                    if(CollectionUtils.isEmpty(serialNoList)){
-                        throw new BizException("serialNo 参数为空");
-                    }
+                if(CollectionUtils.isEmpty(serialNoList)){
+                    throw new BizException("serialNo 参数为空");
+                }
 
-                    if(CollectionUtils.isEmpty(fileNumList)){
-                        throw new BizException("fileNum 参数为空");
-                    }
+                if(CollectionUtils.isEmpty(fileNumList)){
+                    throw new BizException("fileNum 参数为空");
+                }
 
-                    if(CollectionUtils.isEmpty(orderIdList)){
-                        throw new BizException("orderId 参数为空");
-                    }
+                if(CollectionUtils.isEmpty(orderIdList)){
+                    throw new BizException("orderId 参数为空");
+                }
 
-                    BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(serialNoList.get(0).toString());
-                    BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
-                    DO.setSerialNo(serialNoList.get(0).toString());
-                    DO.setOrderId(Long.valueOf(orderIdList.get(0).toString()));
-                    DO.setCustomerId(Long.valueOf(customerIdList.get(0).toString()));
-                    DO.setTransCode(transCodeList.get(0).toString());
-                    DO.setApiStatus(response.status());
-                    DO.setFileNum(Integer.parseInt(fileNumList.get(0).toString()));
-                    DO.setApiMsg(String.valueOf(response.status()));
-                    if(V!=null){
-                        bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
-                    }else {
-                        bankInterfaceSerialDOMapper.insertSelective(DO);
-                    }
+                BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(serialNoList.get(0).toString());
+                BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
+                DO.setSerialNo(serialNoList.get(0).toString());
+                DO.setOrderId(Long.valueOf(orderIdList.get(0).toString()));
+                DO.setCustomerId(Long.valueOf(customerIdList.get(0).toString()));
+                DO.setTransCode(transCodeList.get(0).toString());
+                DO.setApiStatus(response.status());
+                DO.setFileNum(Integer.parseInt(fileNumList.get(0).toString()));
+                DO.setApiMsg(String.valueOf(response.status()));
+                if(V!=null){
+                    bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
+                }else {
+                    bankInterfaceSerialDOMapper.insertSelective(DO);
+                }
 
-                    throw new BizException(methodKey+"接口请求失败");
+                throw new BizException(methodKey+"接口请求失败");
             }
         };
     }
