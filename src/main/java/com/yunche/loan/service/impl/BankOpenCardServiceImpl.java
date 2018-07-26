@@ -179,10 +179,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Long customerId = orderDO.getLoanCustomerId();
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(customerId, VALID_STATUS);
 
-        boolean flag = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
-        if(flag){
-            throw new BizException(loanCustomerDO.getName()+":开卡处理中,请勿重复开卡...");
-        }
+        loanQueryService.checkBankInterFaceSerialStatus(customerId,IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+
+        
 
         BankOpenCardParam bankOpenCardParam =new BankOpenCardParam();
 
