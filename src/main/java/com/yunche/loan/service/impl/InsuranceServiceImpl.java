@@ -1,8 +1,8 @@
 package com.yunche.loan.service.impl;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.InsuranceInfoDO;
 import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
@@ -14,6 +14,7 @@ import com.yunche.loan.mapper.InsuranceRelevanceDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.InsuranceService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,38 +85,40 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     @Override
     public void update(InsuranceUpdateParam param) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrderId()));
         if(loanOrderDO == null){
             throw new BizException("此业务单不存在");
         }
         //新保录入接口只能查1-续保后期在做
-        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(Long.valueOf(param.getOrder_id()),new Byte("1"));
-        if(insuranceInfoDO == null){
-            //新增所有关联数据
-            InsuranceInfoDO V= BeanPlasticityUtills.copy(InsuranceInfoDO.class,param);
-            V.setOrder_id(Long.valueOf(param.getOrder_id()));
-            V.setIssue_bills_date(new Date());
-            V.setInsurance_year(new Byte("1"));
-            insuranceInfoDOMapper.insertSelective(V);
-            //开始新增保险公司关联表
-            //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的
-            insuranceRelevanceDOMapper.deleteByInsuranceInfoId(V.getId());
-            for(InsuranceRelevanceUpdateParam obj:param.getInsurance_relevance_list()){
-                InsuranceRelevanceDO T= BeanPlasticityUtills.copy(InsuranceRelevanceDO.class,obj);
-                T.setInsurance_info_id(V.getId());
-                insuranceRelevanceDOMapper.insertSelective(T);
+        List<InsuranceRelevanceUpdateParam> insuranceRelevanceList = param.getInsuranceRelevanceList();
+        insuranceRelevanceList.stream().forEach(e->{
+            InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(param.getOrderId(),e.getYear());
+            if(insuranceInfoDO == null){
+                //新增所有关联数据
+                insuranceInfoDO = new InsuranceInfoDO();
+                insuranceInfoDO.setOrder_id(param.getOrderId());
+                insuranceInfoDO.setIssue_bills_date(new Date());
+                insuranceInfoDO.setInsurance_year(e.getYear());
+                int i = insuranceInfoDOMapper.insertSelective(insuranceInfoDO);
+                Preconditions.checkArgument(i>0,"保险信息保存失败");
+                //开始新增保险公司关联表
+                //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的
+                insuranceRelevanceDOMapper.deleteByInsuranceInfoIdAndType(insuranceInfoDO.getId(),e.getInsuranceType());
+                InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
+                BeanUtils.copyProperties(e,insuranceRelevanceDO);
+                insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
+            }else {
+                //代表存在
+                //开始更新保险公司关联表
+                //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的
+                insuranceRelevanceDOMapper.deleteByInsuranceInfoIdAndType(insuranceInfoDO.getId(),e.getInsuranceType());
+                InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
+                BeanUtils.copyProperties(e,insuranceRelevanceDO);
+                insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
             }
-        }else {
-            //代表存在
-            //开始更新保险公司关联表
-            //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的
-            insuranceRelevanceDOMapper.deleteByInsuranceInfoId(insuranceInfoDO.getId());
-            for(InsuranceRelevanceUpdateParam obj:param.getInsurance_relevance_list()){
-                InsuranceRelevanceDO T= BeanPlasticityUtills.copy(InsuranceRelevanceDO.class,obj);
-                T.setInsurance_info_id(insuranceInfoDO.getId());
-                insuranceRelevanceDOMapper.insertSelective(T);
-            }
-        }
+        });
+
+
 
     }
 }
