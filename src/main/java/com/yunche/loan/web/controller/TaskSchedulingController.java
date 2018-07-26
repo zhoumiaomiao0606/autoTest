@@ -43,6 +43,14 @@ public class TaskSchedulingController {
     }
 
     /**
+     * 是否待电审
+     */
+    @GetMapping(value = "/isTelephoneVerify")
+    public ResultBean<Integer> isTelephoneVerify(@RequestParam Long orderId) {
+        return ResultBean.ofSuccess(loanQueryService.selectBankOpenCardStatusByOrderId(orderId));
+    }
+
+    /**
      * 待办任务列表-all
      */
     @GetMapping(value = "/scheduletasklist")

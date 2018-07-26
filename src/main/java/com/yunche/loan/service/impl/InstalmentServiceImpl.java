@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.yunche.loan.config.constant.TermFileEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
@@ -41,31 +42,9 @@ public class InstalmentServiceImpl implements InstalmentService {
             throw new BizException("此订单不存在");
         }
         Set<Byte> types = new HashSet<Byte>();
-        types.add(new Byte("30"));
-        types.add(new Byte("31"));
-        types.add(new Byte("32"));
-        types.add(new Byte("33"));
-        types.add(new Byte("34"));
-        types.add(new Byte("35"));
-        types.add(new Byte("36"));
-        types.add(new Byte("37"));
-        types.add(new Byte("38"));
-        types.add(new Byte("39"));
-        types.add(new Byte("40"));
-        types.add(new Byte("41"));
-        types.add(new Byte("42"));
-        types.add(new Byte("43"));
-        types.add(new Byte("44"));
-        types.add(new Byte("45"));
-        types.add(new Byte("46"));
-        types.add(new Byte("47"));
-        types.add(new Byte("48"));
-        types.add(new Byte("49"));
-        types.add(new Byte("50"));
-        types.add(new Byte("51"));
-        types.add(new Byte("52"));
-        types.add(new Byte("53"));
-        types.add(new Byte("54"));
+        for (TermFileEnum e : TermFileEnum.values()) {
+            types.add(e.getKey());
+        }
 
         RecombinationVO<ApplyDiviGeneralInfoVO> recombinationVO = new RecombinationVO<ApplyDiviGeneralInfoVO>();
         recombinationVO.setInfo(loanQueryDOMapper.selectApplyDiviGeneralInfo(orderId));
