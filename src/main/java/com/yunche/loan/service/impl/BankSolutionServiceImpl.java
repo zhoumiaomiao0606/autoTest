@@ -797,11 +797,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyBankOpenCard.setCustomerId(bankOpenCardParam.getCustomerId());
 
         ICBCApiRequest.ApplyBankOpenCardCustomer customer =new ICBCApiRequest.ApplyBankOpenCardCustomer();
-<<<<<<< HEAD
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId());
-=======
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId(),new Byte("0"));
->>>>>>> bankinterface
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
         if(loanOrderDO == null){
             throw new BizException("此订单不存在");
