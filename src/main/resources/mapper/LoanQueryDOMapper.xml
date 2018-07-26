@@ -727,6 +727,7 @@
           (select area_name from base_area where area_id=customer.hprovince) AS customer_hprovince_name,
           (select area_name from base_area where area_id=customer.hcity) AS customer_hcity_name,
           (select area_name from base_area where area_id=customer.hcounty) AS customer_hcounty_name,
+          customer.ctelzone                              AS customer_customer,
           bank.info			      	                     AS bank_info,
           bank.result		          			         AS bank_result,
           process_bank.credit_result         	         AS process_bank_credit_result,

@@ -98,5 +98,6 @@ public class UniversalCustomerDetailVO {
     private String customer_hprovince;
     private String customer_hcity;
     private String customer_hcounty;
+    private String customer_customer;
 
 }

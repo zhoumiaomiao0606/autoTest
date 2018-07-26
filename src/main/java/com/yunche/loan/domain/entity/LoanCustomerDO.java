@@ -178,4 +178,6 @@ public class LoanCustomerDO {
     private String hcounty;
 
     private String openCardOrder;
+
+    private String ctelzone;//单位电话区号 默认'0'
 }
