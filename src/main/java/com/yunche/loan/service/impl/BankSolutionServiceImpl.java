@@ -813,11 +813,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("征信信息不存在");
         }
 
-        //征信银行
-        Long bankId  =  bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
-        if(bankId == null){
-            throw new BizException("贷款银行不存在");
-        }
+
         // 客户信息
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(Long.parseLong(bankOpenCardParam.getCustomerId()), VALID_STATUS);
         Set types = Sets.newHashSet(EMERGENCY_CONTACT.getType());
@@ -827,9 +823,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyBankOpenCard.setZoneno(String.valueOf(loanBaseInfoDO.getAreaId()).substring(0,4));
         applyBankOpenCard.setCmpdate(DateUtil.getDate());
         applyBankOpenCard.setCmptime(DateUtil.getTime());
-        if(String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)){
+        if(String.valueOf(bankOpenCardParam.getBankId()).equals(IDict.K_BANK.ICBC_HZCZ)){
             applyBankOpenCard.setPhybrno(sysConfig.getHzphybrno());
-        }else if(String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ)){
+        }else if(String.valueOf(bankOpenCardParam.getBankId()).equals(IDict.K_BANK.ICBC_TZLQ)){
             applyBankOpenCard.setPhybrno(sysConfig.getTzphybrno());
         }
         applyBankOpenCard.setCmpseq(bankOpenCardParam.getCmpseq());
@@ -842,7 +838,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setFeeamount(BigDecimalUtil.format(loanFinancialPlanDO.getBankFee(),0));
         customer.setLoanamount(BigDecimalUtil.format(loanFinancialPlanDO.getLoanAmount(),0));
         customer.setTerm(String.valueOf(loanFinancialPlanDO.getLoanTime()));
-//        BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(),3, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         customer.setLoanratio(BigDecimalUtil.format(loanratio, 1));//贷款成数
         customer.setCarprice(BigDecimalUtil.format(loanFinancialPlanDO.getCarPrice(),0));
@@ -898,7 +893,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setCorpzip(loanCustomerDO.getCompanyPostcode());//corpzip	单位邮编
         customer.setCustcode(loanCustomerDO.getIdCard());//custcode	证件号码
         customer.setMblchoic("3");//mblchoic	手机选择1-预查询，2-修改，3-新增。默认送3
-        customer.setCophozono("0571");//cophozono	单位电话区号
+        customer.setCophozono(loanCustomerDO.getCtelzone());//cophozono	单位电话区号
         customer.setCophonext("0");//cophonext	单位电话分机
         customer.setSex(String.valueOf(loanCustomerDO.getSex()));//性别
         customer.setHadrchoic("3");//hadrchoic	住宅地址选择1-预查询，2-修改，3-新增。默认送3
@@ -939,17 +934,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
             }
         });
-        //发送银行接口
-//        CreditCardApplyResponse response = icbcFeignClient.creditcardapply(applyBankOpenCard);
-//
-//        if(response!=null) {
-//            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
-//                List<ICBCApiRequest.Picture> pictures = bankOpenCardParam.getPictures();
-//                for (ICBCApiRequest.Picture tmp:pictures) {
-//                    asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicid(),tmp.getPicname(),tmp.getPicKeyList());
-//                }
-//            }
-//        }
         return null;
     }
 

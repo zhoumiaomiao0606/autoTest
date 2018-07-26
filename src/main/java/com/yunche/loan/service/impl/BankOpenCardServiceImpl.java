@@ -5,10 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
-import com.yunche.loan.config.constant.IDict;
-import com.yunche.loan.config.constant.LoanOrderProcessConst;
-import com.yunche.loan.config.constant.LoanProcessConst;
-import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.response.ApplycreditstatusResponse;
@@ -179,10 +176,10 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Long customerId = orderDO.getLoanCustomerId();
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(customerId, VALID_STATUS);
 
-        boolean flag = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
-        if(flag){
-            throw new BizException(loanCustomerDO.getName()+":开卡处理中,请勿重复开卡...");
-        }
+//        boolean flag = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+//        if(flag){
+//            throw new BizException(loanCustomerDO.getName()+":开卡处理中,请勿重复开卡...");
+//        }
 
         BankOpenCardParam bankOpenCardParam =new BankOpenCardParam();
 
@@ -394,12 +391,18 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         List<LoanFileDO> idCardback = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), ID_CARD_BACK.getType(), (byte) 1);
         List<LoanFileDO> specialQuotaApply = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), SPECIAL_QUOTA_APPLY.getType(), (byte) 1);
         List<LoanFileDO> openCardData = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), OPEN_CARD_DATA.getType(), (byte) 1);
-
+        //台州不需要合并身份证
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId(), BaseConst.VALID_STATUS);
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
+        Preconditions.checkNotNull(bankId,"贷款银行不存在");
         List<LoanFileDO> openCardTypes = Lists.newArrayList();
-        openCardTypes.addAll(idCardFront);
-        openCardTypes.addAll(idCardback);
+        if(IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))){
+            openCardTypes.addAll(idCardFront);
+            openCardTypes.addAll(idCardback);
+        }
         openCardTypes.addAll(openCardData);
-
+        bankOpenCardParam.setBankId(bankId);
         //【开卡】专项额度核定申请表
         List<String> keys = Lists.newArrayList();
         specialQuotaApply.stream().filter(Objects::nonNull).filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e->{
@@ -410,8 +413,6 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         Preconditions.checkArgument(keys.size()>0,"专项额度核定申请表,不存在");
         String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
         String serNo = GeneratorIDUtil.execute();
-//        asyncUpload.upload(serNo,IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY,picName,keys);
-
         String fileName = picName;
 
         ICBCApiRequest.Picture picture1 = new ICBCApiRequest.Picture();
@@ -428,8 +429,6 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         });
         Preconditions.checkArgument(openCardTypesStr.size()>0,"开卡申请表(和身份证正反面合并成一张图片)");
         String fileName2 =  GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
-//        asyncUpload.upload(fileName2,openCardTypesStr);
-//        asyncUpload.upload(serNo,IDict.K_PIC_ID.OPEN_CARD_DATA,fileName2,openCardTypesStr);
         ICBCApiRequest.Picture picture2 = new ICBCApiRequest.Picture();
         picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
         picture2.setPicname(fileName2);
