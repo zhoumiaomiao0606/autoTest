@@ -8,10 +8,7 @@ import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.InsuranceRelevanceUpdateParam;
 import com.yunche.loan.domain.param.InsuranceUpdateParam;
-import com.yunche.loan.domain.vo.InsuranceCustomerVO;
-import com.yunche.loan.domain.vo.InsuranceRelevanceVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.domain.vo.UniversalCarInfoVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.InsuranceInfoDOMapper;
 import com.yunche.loan.mapper.InsuranceRelevanceDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,19 +52,19 @@ public class InsuranceServiceImpl implements InsuranceService {
         RecombinationVO<List<InsuranceCustomerVO>> recombinationVO = new RecombinationVO<List<InsuranceCustomerVO>>();
         List<InsuranceInfoDO> insuranceInfoDOS = insuranceInfoDOMapper.listByOrderId(orderId);
 
+        List<UniversalInsuranceVO> insuranceDetail = Lists.newArrayList();
+        insuranceInfoDOS.stream().forEach(e->{
+            UniversalInsuranceVO universalInsuranceVO = new UniversalInsuranceVO();
+            Byte year = e.getInsurance_year();
+            List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(orderId);
 
-        Lists.newArrayList()
-        List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(orderId);
-        /**
-         * insuranceInfoDOS    order_id   year    id
-         *                     67          1      8
-         *                     67          2      9
-         *insuranceRelevanceDOS(8,9)
-         * 8
-         *
-         */
+            universalInsuranceVO.setInsuranceYear(year);
+            universalInsuranceVO.setInsuranceRele(insuranceRelevanceDOS);
+            insuranceDetail.add(universalInsuranceVO);
+        });
         recombinationVO.setCar(universalCarInfoVO);//车辆信息
         recombinationVO.setInfo(insuranceCustomerVOList);
+        recombinationVO.setInsuranceDetail(insuranceDetail);
         return recombinationVO;
     }
 
@@ -88,7 +84,7 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     @Override
     public void update(InsuranceUpdateParam param) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()),new Byte("0"));
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
         if(loanOrderDO == null){
             throw new BizException("此业务单不存在");
         }
