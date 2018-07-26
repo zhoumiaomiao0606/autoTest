@@ -181,7 +181,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         loanQueryService.checkBankInterFaceSerialStatus(customerId,IDict.K_TRANS_CODE.CREDITCARDAPPLY);
 
-        
+
         BankOpenCardParam bankOpenCardParam =new BankOpenCardParam();
 
         bankOpenCardParam.setCustomerId(orderDO.getLoanCustomerId().toString());
