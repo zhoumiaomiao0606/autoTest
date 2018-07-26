@@ -2,10 +2,12 @@ package com.yunche.loan.domain.param;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.validation.annotation.Validated;
 
 @Data
 public class InsuranceRelevanceUpdateParam {
+
+    @NotBlank
+    private String year;//年次
     @NotBlank
     private String insurance_company_name;// 保险公司名称
     @NotBlank
