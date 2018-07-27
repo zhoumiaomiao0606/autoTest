@@ -51,6 +51,15 @@ public class TaskSchedulingController {
     }
 
     /**
+     * 是否待电审
+     */
+    @GetMapping(value = "/bankOrderApiMsg")
+    public ResultBean<String> selectLastBankInterfaceSerialMsgByTransCode(@RequestParam Long customerId,@RequestParam String transCode) {
+        return ResultBean.ofSuccess(loanQueryService.selectBankInterFaceSerialApiMsg(customerId,transCode));
+    }
+
+
+    /**
      * 待办任务列表-all
      */
     @GetMapping(value = "/scheduletasklist")

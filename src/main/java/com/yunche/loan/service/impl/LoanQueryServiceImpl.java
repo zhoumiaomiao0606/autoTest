@@ -154,4 +154,16 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     }
 
 
+    @Override
+    public String selectBankInterFaceSerialApiMsg(Long customerId,String transCode){
+        if(customerId == null){
+            throw new BizException("客户id不存在");
+        }
+        if(StringUtils.isBlank(transCode)){
+            throw new BizException("transCode 不存在");
+        }
+
+        return loanQueryDOMapper.selectLastBankInterfaceSerialMsgByTransCode(customerId,transCode);
+    }
+
 }

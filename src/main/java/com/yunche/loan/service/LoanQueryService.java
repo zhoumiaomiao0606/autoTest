@@ -16,4 +16,6 @@ public interface LoanQueryService {
 
     void checkBankInterFaceSerialStatus(Long customerId,String transCode);
 
+    public String selectBankInterFaceSerialApiMsg(Long customerId,String transCode);
+
 }
