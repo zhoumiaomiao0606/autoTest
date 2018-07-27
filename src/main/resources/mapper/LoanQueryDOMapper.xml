@@ -971,7 +971,7 @@
             left join user_group ug on ug.id = eg.user_group_id
             ) t where t.level = 3
         )
-        and x.collection_level = 6
+        and x.collection_level &lt;  7
     </select>
     <select id="selectUniversalUndistributedCollection"
             resultType="com.yunche.loan.domain.vo.UniversalUndistributedCollection">
