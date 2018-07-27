@@ -37,7 +37,8 @@
 	                                                  as customer_collateral,
 	        vehicle.assess_org                        as vehicle_assess_org,
 	        customer.id                               as customer_id,
-	        vehicle.assess_use_year                   as vehicle_assess_use_year
+	        case when  v.assess_use_year is not null then  vehicle.assess_use_year
+            else TIMESTAMPDIFF(MONTH,now(),vehicle.register_date) end AS vehicle_assess_use_year
 
 
 
@@ -91,10 +92,11 @@
             v.retrieve_key                    AS retrieve_key,
             v.customize_brand                 AS customize_brand,
             f.down_payment_money              AS down_payment_money,
-            DATE_FORMAT(i.first_register_date,'%Y-%m-%d')        AS first_register_date,
+            DATE_FORMAT(i.first_register_date,'%Y-%m-%d')      AS first_register_date,
             i.car_category                                     AS car_category,
             v.assess_org                                       AS assess_org,
-            v.assess_use_year                                  AS assess_use_year
+            case when  v.assess_use_year is not null then  v.assess_use_year
+            else TIMESTAMPDIFF(MONTH,now(),v.register_date) end AS assess_use_year
 
 
 
