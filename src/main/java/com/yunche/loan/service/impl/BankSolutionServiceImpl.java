@@ -279,7 +279,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
 
-        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,TermFileEnum.VIDEO_INTERVIEW.getKey());
+        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,MultimediaUploadEnum.VIDEO_INTERVIEW.getKey());
         if(authSignPic == null){
             throw new BizException("缺少面签视频");
         }
@@ -292,7 +292,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
             picture.setPicid(TermFileEnum.VIDEO_INTERVIEW.getValue());
             picture.setPicname(picName);
-            picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.VIDEO_INTERVIEW.getKey()));
+            picture.setPicnote(LoanFileEnum.getNameByCode(MultimediaUploadEnum.VIDEO_INTERVIEW.getKey()));
             pictures.add(picture);
         }
         if(pictures.size() == 0 ){
@@ -325,7 +325,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
                     for(String str : authSignPic.getUrls()){
                         if(StringUtils.isNotBlank(str)){
-                            asyncUpload.upload(serNo,TermFileEnum.VIDEO_INTERVIEW.getValue(),picName,str);
+                            asyncUpload.upload(serNo,MultimediaUploadEnum.VIDEO_INTERVIEW.getValue(),picName,str);
                         }
                     }
                 }
