@@ -9,4 +9,6 @@ public class BankInterfaceSerialReturnVO {
     private String api_msg;
 
     private String status;
+
+    private String reject_reason;
 }
