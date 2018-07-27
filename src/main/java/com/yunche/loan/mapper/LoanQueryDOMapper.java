@@ -7,6 +7,8 @@ import java.util.Set;
 
 public interface LoanQueryDOMapper {
 
+    String selectVideoFacePath(Long orderId);
+
     BankInterfaceSerialReturnVO selectLastBankInterfaceSerialByTransCode(@Param("customerId") Long customerId,@Param("transCode") String transCode);
 
     List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId,@Param("transCode") String transCode);

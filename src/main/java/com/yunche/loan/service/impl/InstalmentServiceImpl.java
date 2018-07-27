@@ -13,6 +13,7 @@ import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.InstalmentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,9 +47,17 @@ public class InstalmentServiceImpl implements InstalmentService {
             types.add(e.getKey());
         }
 
+        String path = loanQueryDOMapper.selectVideoFacePath(orderId);
+        if(StringUtils.isNotBlank(path)){
+            path =  path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com","");
+            path.trim();
+        }
+
+
         RecombinationVO<ApplyDiviGeneralInfoVO> recombinationVO = new RecombinationVO<ApplyDiviGeneralInfoVO>();
         recombinationVO.setInfo(loanQueryDOMapper.selectApplyDiviGeneralInfo(orderId));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId,types));
+        recombinationVO.setPath(path);
         return recombinationVO;
     }
 

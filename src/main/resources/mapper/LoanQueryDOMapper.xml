@@ -1310,6 +1310,10 @@
               ) ss GROUP BY  ss.order_id having order_id = #{orderId}
     </select>
 
+    <select id="selectVideoFacePath" resultType="java.lang.String">
+        select path from video_face_log where order_id = #{orderId}  order by gmt_create desc limit 1
+    </select>
+
     <select id="selectUniversalDataFlowDetail" resultType="com.yunche.loan.domain.vo.UniversalDataFlowDetailVO"
             parameterType="java.lang.Long">
 
@@ -1465,5 +1469,7 @@
         </foreach>
         else true end
     </select>
+
+
 
 </mapper>

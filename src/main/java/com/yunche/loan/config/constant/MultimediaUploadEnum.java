@@ -6,18 +6,18 @@ import lombok.Setter;
 public enum  MultimediaUploadEnum {
 
 
-    VIDEO_INTERVIEW((byte)54,"8888");
+    VIDEO_INTERVIEW(IDict.K_PIC_ID.VIDEO_INTERVIEW,"视频面签");
 
 
     @Getter
     @Setter
-    private Byte key;
+    private String key;
 
     @Getter
     @Setter
     private String value;
 
-    MultimediaUploadEnum(byte key, String value) {
+    MultimediaUploadEnum(String key, String value) {
         this.key = key;
         this.value = value;
     }

@@ -215,7 +215,7 @@ public class IDict {
         /**
          * 【分期】视频面签文件
          */
-        public static final String VIDEO_INTERVIEW = "0902";
+        public static final String VIDEO_INTERVIEW = "8888";
     }
 
 

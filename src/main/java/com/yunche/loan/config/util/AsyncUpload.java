@@ -47,26 +47,6 @@ public class AsyncUpload {
         process.process();
     }
 
-    public void multimediaUpload(String phybrno,String zoneno,String orderId,List<ICBCApiRequest.Picture> pictures){
-        //多媒体补偿接口
-        ICBCApiRequest.MultimediaUpload multimediaUpload = new ICBCApiRequest.MultimediaUpload();
-        multimediaUpload.setPlatno(sysConfig.getPlatno());
-        multimediaUpload.setGuestPlatno(sysConfig.getPlatno());
-        multimediaUpload.setCmpseq(GeneratorIDUtil.execute());
-        multimediaUpload.setZoneno(zoneno);
-        multimediaUpload.setPhybrno(phybrno);
-        multimediaUpload.setOrderno(orderId);
-        multimediaUpload.setAssurerno(sysConfig.getAssurerno());
-        multimediaUpload.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-        multimediaUpload.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
-        multimediaUpload.setFileNum(String.valueOf(pictures.size()));
-        multimediaUpload.setPictures(pictures);
-        violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
-        icbcFeignClient.multimediaUpload(multimediaUpload);
-    }
-
-
-
     public void upload(String serNo,List<ICBCApiRequest.PicQueue> queue){
         for(ICBCApiRequest.PicQueue picQueue :queue){
 

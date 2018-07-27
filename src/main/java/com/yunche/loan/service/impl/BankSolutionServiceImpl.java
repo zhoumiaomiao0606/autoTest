@@ -276,34 +276,27 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款人不存在");
         }
 
-
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
 
-        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,MultimediaUploadEnum.VIDEO_INTERVIEW.getKey());
-        if(authSignPic == null){
+        String path = loanQueryDOMapper.selectVideoFacePath(orderId);
+        if(StringUtils.isBlank(path)){
             throw new BizException("缺少面签视频");
         }
 
-        List<ICBCApiRequest.PicQueue> queues = Lists.newArrayList();
+        path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com","");
+        path.trim();
 
-
-        if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-            for(String str : authSignPic.getUrls()){
-                if(StringUtils.isNotBlank(str)){
-                    String picName = GeneratorIDUtil.execute()+ImageUtil.MP4_SUFFIX;
-                    ICBCApiRequest.PicQueue queue = new ICBCApiRequest.PicQueue();
-                    ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
-                    picture.setPicid(MultimediaUploadEnum.VIDEO_INTERVIEW.getValue());
-                    picture.setPicname(picName);
-                    picture.setPicnote(LoanFileEnum.getNameByCode(MultimediaUploadEnum.VIDEO_INTERVIEW.getKey()));
-                    pictures.add(picture);
-                    queue.setPicId(MultimediaUploadEnum.VIDEO_INTERVIEW.getValue());
-                    queue.setPicName(picName);
-                    queue.setUrl(str);
-                    queues.add(queue);
-                }
-            }
+        if(StringUtils.isBlank(path)){
+            throw new BizException("缺少面签视频");
         }
+
+
+        String picName = GeneratorIDUtil.execute()+ImageUtil.MP4_SUFFIX;
+        ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+        picture.setPicid(MultimediaUploadEnum.VIDEO_INTERVIEW.getKey());
+        picture.setPicname(picName);
+        picture.setPicnote(MultimediaUploadEnum.VIDEO_INTERVIEW.getValue());
+        pictures.add(picture);
 
         if(pictures.size() == 0 ){
             throw new BizException("缺少面签视频");
@@ -332,7 +325,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                asyncUpload.upload(serNo,queues);
+                asyncUpload.upload(serNo,MultimediaUploadEnum.VIDEO_INTERVIEW.getKey(),picName,path);
                 icbcFeignClient.multimediaUpload(multimediaUpload);
             }
         });

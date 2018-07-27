@@ -13,6 +13,8 @@ public class RecombinationVO<T> {
 
     private T info;
 
+    private String path;
+
     private UniversalLoanFinancialPlanTempHisVO diff;
 
     private List<UniversalRelationCustomerVO> relations = Lists.newArrayList();
