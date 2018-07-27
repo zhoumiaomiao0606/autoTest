@@ -72,7 +72,7 @@ public class AsyncUpload {
                         error = new Byte("3");
                         throw new RuntimeException("文件上传出错");
                     }
-                    LOG.info("文件上传失败.....");
+                    LOG.info("文件上传成功.....");
                 }catch (Exception e){
                     throw new RuntimeException("文件上传出错");
                 }
@@ -123,6 +123,7 @@ public class AsyncUpload {
                     error = new Byte("3");
                     throw new RuntimeException("文件上传出错");
                 }
+                LOG.info("文件上传成功.....");
             }catch (Exception e){
                 throw new RuntimeException("文件上传出错");
             }
@@ -177,6 +178,7 @@ public class AsyncUpload {
                     error = new Byte("3");
                     throw new RuntimeException("文件上传出错");
                 }
+                LOG.info("文件上传成功.....");
             }catch (Exception e){
                 throw new RuntimeException("文件上传出错");
             }
