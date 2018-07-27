@@ -2,19 +2,13 @@ package com.yunche.loan.config.util;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.service.impl.ActivitiVersionServiceImpl;
-import feign.Body;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
-import java.util.concurrent.Future;
 
 public class FtpUtil {
 
@@ -182,9 +176,8 @@ public class FtpUtil {
             serverpath = serverpath.replaceAll("YYYYMMDD",DateUtil.getDate());
             String realPassword = DesEncryptUtil.decryptBasedDes(password);
             ftp.connect(servierIP,Integer.parseInt(port),userName,realPassword);
-//            if(!ftp.existDirectory(serverpath)){
-                ftp.mkdir(serverpath);
-//            }
+            boolean mkdir = ftp.mkdir(serverpath);
+
             boolean cd = ftp.cd(serverpath);
             if(!cd){
                 throw new BizException("路径切换失败");
