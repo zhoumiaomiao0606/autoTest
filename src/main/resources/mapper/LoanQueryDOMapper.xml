@@ -35,7 +35,8 @@
             customer.lend_card		                  as customer_lend_card,
 	        CONCAT(vehicle.vehicle_identification_number,' ',useGetSmallCarName(car.car_detail_id))
 	                                                  as customer_collateral,
-	        vehicle.assess_org                        as vehicle_assess_org
+	        vehicle.assess_org                        as vehicle_assess_org,
+	        customer.id                               as customer_id
 
 
 
