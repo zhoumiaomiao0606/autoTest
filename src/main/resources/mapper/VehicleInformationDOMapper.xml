@@ -1,41 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.VehicleInformationDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VehicleInformationDO">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="license_plate_type" jdbcType="TINYINT" property="license_plate_type" />
-    <result column="color" jdbcType="VARCHAR" property="color" />
-    <result column="qualified_certificate_number" jdbcType="VARCHAR" property="qualified_certificate_number" />
-    <result column="register_date" jdbcType="DATE" property="register_date" />
-    <result column="vehicle_identification_number" jdbcType="VARCHAR" property="vehicle_identification_number" />
-    <result column="displacement" jdbcType="VARCHAR" property="displacement" />
-    <result column="license_plate_number" jdbcType="VARCHAR" property="license_plate_number" />
-    <result column="apply_license_plate_date" jdbcType="DATE" property="apply_license_plate_date" />
-    <result column="apply_license_plate_area" jdbcType="VARCHAR" property="apply_license_plate_area" />
-    <result column="transfer_ownership_date" jdbcType="DATE" property="transfer_ownership_date" />
-    <result column="now_driving_license_owner" jdbcType="VARCHAR" property="now_driving_license_owner" />
-    <result column="old_driving_license_owner" jdbcType="VARCHAR" property="old_driving_license_owner" />
-    <result column="engine_number" jdbcType="VARCHAR" property="engine_number" />
-    <result column="registration_certificate_number" jdbcType="VARCHAR" property="registration_certificate_number" />
-    <result column="invoice_car_dealer" jdbcType="VARCHAR" property="invoice_car_dealer" />
-    <result column="purchase_car_invoice_num" jdbcType="VARCHAR" property="purchase_car_invoice_num" />
-    <result column="purchase_car_invoice_price" jdbcType="DECIMAL" property="purchase_car_invoice_price" />
-    <result column="invoice_down_payment" jdbcType="DECIMAL" property="invoice_down_payment" />
-    <result column="purchase_car_invoice_date" jdbcType="DATE" property="purchase_car_invoice_date" />
-    <result column="retrieve_key" jdbcType="TINYINT" property="retrieve_key" />
-    <result column="customize_brand" jdbcType="VARCHAR" property="customize_brand" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="feature" jdbcType="VARCHAR" property="feature" />
-    <result column="order_id" jdbcType="BIGINT" property="order_id" />
-    <result column="assess_org" jdbcType="VARCHAR" property="assess_org" />
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VehicleInformationDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="license_plate_type" property="license_plate_type" jdbcType="TINYINT" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="qualified_certificate_number" property="qualified_certificate_number" jdbcType="VARCHAR" />
+    <result column="register_date" property="register_date" jdbcType="DATE" />
+    <result column="vehicle_identification_number" property="vehicle_identification_number" jdbcType="VARCHAR" />
+    <result column="displacement" property="displacement" jdbcType="VARCHAR" />
+    <result column="license_plate_number" property="license_plate_number" jdbcType="VARCHAR" />
+    <result column="apply_license_plate_date" property="apply_license_plate_date" jdbcType="DATE" />
+    <result column="apply_license_plate_area" property="apply_license_plate_area" jdbcType="VARCHAR" />
+    <result column="transfer_ownership_date" property="transfer_ownership_date" jdbcType="DATE" />
+    <result column="now_driving_license_owner" property="now_driving_license_owner" jdbcType="VARCHAR" />
+    <result column="old_driving_license_owner" property="old_driving_license_owner" jdbcType="VARCHAR" />
+    <result column="engine_number" property="engine_number" jdbcType="VARCHAR" />
+    <result column="registration_certificate_number" property="registration_certificate_number" jdbcType="VARCHAR" />
+    <result column="invoice_car_dealer" property="invoice_car_dealer" jdbcType="VARCHAR" />
+    <result column="purchase_car_invoice_num" property="purchase_car_invoice_num" jdbcType="VARCHAR" />
+    <result column="purchase_car_invoice_price" property="purchase_car_invoice_price" jdbcType="DECIMAL" />
+    <result column="invoice_down_payment" property="invoice_down_payment" jdbcType="DECIMAL" />
+    <result column="purchase_car_invoice_date" property="purchase_car_invoice_date" jdbcType="DATE" />
+    <result column="retrieve_key" property="retrieve_key" jdbcType="TINYINT" />
+    <result column="customize_brand" property="customize_brand" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="feature" property="feature" jdbcType="VARCHAR" />
+    <result column="order_id" property="order_id" jdbcType="BIGINT" />
+    <result column="assess_org" property="assess_org" jdbcType="VARCHAR" />
+    <result column="assess_use_year" property="assess_use_year" jdbcType="VARCHAR" />
   </resultMap>
-  <sql id="Base_Column_List">
+  <sql id="Base_Column_List" >
     id, license_plate_type, color, qualified_certificate_number, register_date, vehicle_identification_number,
     displacement, license_plate_number, apply_license_plate_date, apply_license_plate_area,
     transfer_ownership_date, now_driving_license_owner, old_driving_license_owner, engine_number,
     registration_certificate_number, invoice_car_dealer, purchase_car_invoice_num, purchase_car_invoice_price,
     invoice_down_payment, purchase_car_invoice_date, retrieve_key, customize_brand, status,
-    feature, order_id, assess_org
+    feature, order_id, assess_org, assess_use_year
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select
@@ -47,246 +48,255 @@
     delete from vehicle_information
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.yunche.loan.domain.entity.VehicleInformationDO">
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.yunche.loan.domain.entity.VehicleInformationDO" >
     insert into vehicle_information
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
         id,
       </if>
-      <if test="license_plate_type != null">
+      <if test="license_plate_type != null" >
         license_plate_type,
       </if>
-      <if test="color != null">
+      <if test="color != null" >
         color,
       </if>
-      <if test="qualified_certificate_number != null">
+      <if test="qualified_certificate_number != null" >
         qualified_certificate_number,
       </if>
-      <if test="register_date != null">
+      <if test="register_date != null" >
         register_date,
       </if>
-      <if test="vehicle_identification_number != null">
+      <if test="vehicle_identification_number != null" >
         vehicle_identification_number,
       </if>
-      <if test="displacement != null">
+      <if test="displacement != null" >
         displacement,
       </if>
-      <if test="license_plate_number != null">
+      <if test="license_plate_number != null" >
         license_plate_number,
       </if>
-      <if test="apply_license_plate_date != null">
+      <if test="apply_license_plate_date != null" >
         apply_license_plate_date,
       </if>
-      <if test="apply_license_plate_area != null">
+      <if test="apply_license_plate_area != null" >
         apply_license_plate_area,
       </if>
-      <if test="transfer_ownership_date != null">
+      <if test="transfer_ownership_date != null" >
         transfer_ownership_date,
       </if>
-      <if test="now_driving_license_owner != null">
+      <if test="now_driving_license_owner != null" >
         now_driving_license_owner,
       </if>
-      <if test="old_driving_license_owner != null">
+      <if test="old_driving_license_owner != null" >
         old_driving_license_owner,
       </if>
-      <if test="engine_number != null">
+      <if test="engine_number != null" >
         engine_number,
       </if>
-      <if test="registration_certificate_number != null">
+      <if test="registration_certificate_number != null" >
         registration_certificate_number,
       </if>
-      <if test="invoice_car_dealer != null">
+      <if test="invoice_car_dealer != null" >
         invoice_car_dealer,
       </if>
-      <if test="purchase_car_invoice_num != null">
+      <if test="purchase_car_invoice_num != null" >
         purchase_car_invoice_num,
       </if>
-      <if test="purchase_car_invoice_price != null">
+      <if test="purchase_car_invoice_price != null" >
         purchase_car_invoice_price,
       </if>
-      <if test="invoice_down_payment != null">
+      <if test="invoice_down_payment != null" >
         invoice_down_payment,
       </if>
-      <if test="purchase_car_invoice_date != null">
+      <if test="purchase_car_invoice_date != null" >
         purchase_car_invoice_date,
       </if>
-      <if test="retrieve_key != null">
+      <if test="retrieve_key != null" >
         retrieve_key,
       </if>
-      <if test="customize_brand != null">
+      <if test="customize_brand != null" >
         customize_brand,
       </if>
-      <if test="status != null">
+      <if test="status != null" >
         status,
       </if>
-      <if test="feature != null">
+      <if test="feature != null" >
         feature,
       </if>
-      <if test="order_id != null">
+      <if test="order_id != null" >
         order_id,
       </if>
-      <if test="assess_org != null">
+      <if test="assess_org != null" >
         assess_org,
       </if>
+      <if test="assess_use_year != null" >
+        assess_use_year,
+      </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="license_plate_type != null">
+      <if test="license_plate_type != null" >
         #{license_plate_type,jdbcType=TINYINT},
       </if>
-      <if test="color != null">
+      <if test="color != null" >
         #{color,jdbcType=VARCHAR},
       </if>
-      <if test="qualified_certificate_number != null">
+      <if test="qualified_certificate_number != null" >
         #{qualified_certificate_number,jdbcType=VARCHAR},
       </if>
-      <if test="register_date != null">
+      <if test="register_date != null" >
         #{register_date,jdbcType=DATE},
       </if>
-      <if test="vehicle_identification_number != null">
+      <if test="vehicle_identification_number != null" >
         #{vehicle_identification_number,jdbcType=VARCHAR},
       </if>
-      <if test="displacement != null">
+      <if test="displacement != null" >
         #{displacement,jdbcType=VARCHAR},
       </if>
-      <if test="license_plate_number != null">
+      <if test="license_plate_number != null" >
         #{license_plate_number,jdbcType=VARCHAR},
       </if>
-      <if test="apply_license_plate_date != null">
+      <if test="apply_license_plate_date != null" >
         #{apply_license_plate_date,jdbcType=DATE},
       </if>
-      <if test="apply_license_plate_area != null">
+      <if test="apply_license_plate_area != null" >
         #{apply_license_plate_area,jdbcType=VARCHAR},
       </if>
-      <if test="transfer_ownership_date != null">
+      <if test="transfer_ownership_date != null" >
         #{transfer_ownership_date,jdbcType=DATE},
       </if>
-      <if test="now_driving_license_owner != null">
+      <if test="now_driving_license_owner != null" >
         #{now_driving_license_owner,jdbcType=VARCHAR},
       </if>
-      <if test="old_driving_license_owner != null">
+      <if test="old_driving_license_owner != null" >
         #{old_driving_license_owner,jdbcType=VARCHAR},
       </if>
-      <if test="engine_number != null">
+      <if test="engine_number != null" >
         #{engine_number,jdbcType=VARCHAR},
       </if>
-      <if test="registration_certificate_number != null">
+      <if test="registration_certificate_number != null" >
         #{registration_certificate_number,jdbcType=VARCHAR},
       </if>
-      <if test="invoice_car_dealer != null">
+      <if test="invoice_car_dealer != null" >
         #{invoice_car_dealer,jdbcType=VARCHAR},
       </if>
-      <if test="purchase_car_invoice_num != null">
+      <if test="purchase_car_invoice_num != null" >
         #{purchase_car_invoice_num,jdbcType=VARCHAR},
       </if>
-      <if test="purchase_car_invoice_price != null">
+      <if test="purchase_car_invoice_price != null" >
         #{purchase_car_invoice_price,jdbcType=DECIMAL},
       </if>
-      <if test="invoice_down_payment != null">
+      <if test="invoice_down_payment != null" >
         #{invoice_down_payment,jdbcType=DECIMAL},
       </if>
-      <if test="purchase_car_invoice_date != null">
+      <if test="purchase_car_invoice_date != null" >
         #{purchase_car_invoice_date,jdbcType=DATE},
       </if>
-      <if test="retrieve_key != null">
+      <if test="retrieve_key != null" >
         #{retrieve_key,jdbcType=TINYINT},
       </if>
-      <if test="customize_brand != null">
+      <if test="customize_brand != null" >
         #{customize_brand,jdbcType=VARCHAR},
       </if>
-      <if test="status != null">
+      <if test="status != null" >
         #{status,jdbcType=TINYINT},
       </if>
-      <if test="feature != null">
+      <if test="feature != null" >
         #{feature,jdbcType=VARCHAR},
       </if>
-      <if test="order_id != null">
+      <if test="order_id != null" >
         #{order_id,jdbcType=BIGINT},
       </if>
-      <if test="assess_org != null">
+      <if test="assess_org != null" >
         #{assess_org,jdbcType=VARCHAR},
+      </if>
+      <if test="assess_use_year != null" >
+        #{assess_use_year,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.VehicleInformationDO">
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.VehicleInformationDO" >
     update vehicle_information
-    <set>
-      <if test="license_plate_type != null">
+    <set >
+      <if test="license_plate_type != null" >
         license_plate_type = #{license_plate_type,jdbcType=TINYINT},
       </if>
-      <if test="color != null">
+      <if test="color != null" >
         color = #{color,jdbcType=VARCHAR},
       </if>
-      <if test="qualified_certificate_number != null">
+      <if test="qualified_certificate_number != null" >
         qualified_certificate_number = #{qualified_certificate_number,jdbcType=VARCHAR},
       </if>
-      <if test="register_date != null">
+      <if test="register_date != null" >
         register_date = #{register_date,jdbcType=DATE},
       </if>
-      <if test="vehicle_identification_number != null">
+      <if test="vehicle_identification_number != null" >
         vehicle_identification_number = #{vehicle_identification_number,jdbcType=VARCHAR},
       </if>
-      <if test="displacement != null">
+      <if test="displacement != null" >
         displacement = #{displacement,jdbcType=VARCHAR},
       </if>
-      <if test="license_plate_number != null">
+      <if test="license_plate_number != null" >
         license_plate_number = #{license_plate_number,jdbcType=VARCHAR},
       </if>
-      <if test="apply_license_plate_date != null">
+      <if test="apply_license_plate_date != null" >
         apply_license_plate_date = #{apply_license_plate_date,jdbcType=DATE},
       </if>
-      <if test="apply_license_plate_area != null">
+      <if test="apply_license_plate_area != null" >
         apply_license_plate_area = #{apply_license_plate_area,jdbcType=VARCHAR},
       </if>
-      <if test="transfer_ownership_date != null">
+      <if test="transfer_ownership_date != null" >
         transfer_ownership_date = #{transfer_ownership_date,jdbcType=DATE},
       </if>
-      <if test="now_driving_license_owner != null">
+      <if test="now_driving_license_owner != null" >
         now_driving_license_owner = #{now_driving_license_owner,jdbcType=VARCHAR},
       </if>
-      <if test="old_driving_license_owner != null">
+      <if test="old_driving_license_owner != null" >
         old_driving_license_owner = #{old_driving_license_owner,jdbcType=VARCHAR},
       </if>
-      <if test="engine_number != null">
+      <if test="engine_number != null" >
         engine_number = #{engine_number,jdbcType=VARCHAR},
       </if>
-      <if test="registration_certificate_number != null">
+      <if test="registration_certificate_number != null" >
         registration_certificate_number = #{registration_certificate_number,jdbcType=VARCHAR},
       </if>
-      <if test="invoice_car_dealer != null">
+      <if test="invoice_car_dealer != null" >
         invoice_car_dealer = #{invoice_car_dealer,jdbcType=VARCHAR},
       </if>
-      <if test="purchase_car_invoice_num != null">
+      <if test="purchase_car_invoice_num != null" >
         purchase_car_invoice_num = #{purchase_car_invoice_num,jdbcType=VARCHAR},
       </if>
-      <if test="purchase_car_invoice_price != null">
+      <if test="purchase_car_invoice_price != null" >
         purchase_car_invoice_price = #{purchase_car_invoice_price,jdbcType=DECIMAL},
       </if>
-      <if test="invoice_down_payment != null">
+      <if test="invoice_down_payment != null" >
         invoice_down_payment = #{invoice_down_payment,jdbcType=DECIMAL},
       </if>
-      <if test="purchase_car_invoice_date != null">
+      <if test="purchase_car_invoice_date != null" >
         purchase_car_invoice_date = #{purchase_car_invoice_date,jdbcType=DATE},
       </if>
-      <if test="retrieve_key != null">
+      <if test="retrieve_key != null" >
         retrieve_key = #{retrieve_key,jdbcType=TINYINT},
       </if>
-      <if test="customize_brand != null">
+      <if test="customize_brand != null" >
         customize_brand = #{customize_brand,jdbcType=VARCHAR},
       </if>
-      <if test="status != null">
+      <if test="status != null" >
         status = #{status,jdbcType=TINYINT},
       </if>
-      <if test="feature != null">
+      <if test="feature != null" >
         feature = #{feature,jdbcType=VARCHAR},
       </if>
-      <if test="order_id != null">
+      <if test="order_id != null" >
         order_id = #{order_id,jdbcType=BIGINT},
       </if>
-      <if test="assess_org != null">
+      <if test="assess_org != null" >
         assess_org = #{assess_org,jdbcType=VARCHAR},
+      </if>
+      <if test="assess_use_year != null" >
+        assess_use_year = #{assess_use_year,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

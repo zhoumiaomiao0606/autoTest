@@ -60,8 +60,6 @@ public class ICBCApiRequest {
         @Valid
         private String resubmit;
 
-        @NotEmpty
-        @Valid
         private String note;
     }
 
@@ -161,9 +159,9 @@ public class ICBCApiRequest {
         private String Price;
         @NotEmpty
         private String carNo1;
-        @NotEmpty
+        @NotEmpty(groups = {SecondValidated.class})
         private String carRegNo;
-        @NotEmpty
+
         private String shorp4s;
         @NotEmpty
         private String carNo2;

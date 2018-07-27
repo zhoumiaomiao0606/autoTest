@@ -394,7 +394,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款车辆不存在");
         }
 
-        String carFullName = carBrandDO.getName() + carModelDO.getName() + carDetailDO.getName();
+        String carFullName = carBrandDO.getName() + carModelDO.getName();
         if(StringUtils.isBlank(carFullName)){
             if(carBrandDO == null){
                 throw new BizException("贷款车辆不存在");
@@ -447,20 +447,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("此产品银行基准利率为空");
         }
 
-        Long useYear = new Long(0);
-        try {
-            SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-            Date old = simpleFormat.parse(simpleFormat.format(loanCarInfoDO.getFirstRegisterDate() == null?new Date():loanCarInfoDO.getFirstRegisterDate()));
-            Date now = new Date();
-            long l=now.getTime()-old.getTime();
-            long day=l/(24*60*60*1000);
-            long hour=day*24;
-            long mon=day/30;
-            long year=mon/12;
-            useYear = new Long(year);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
 
         BigDecimal dawnPaymentMoney = new BigDecimal("0");
         if(vehicleInformationDO.getInvoice_down_payment() != null ){
@@ -484,10 +471,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
 
 
-        String paidAmt = dawnPaymentMoney.toString();
-        String amount = bankPeriodPrincipal.toString();
+        String paidAmt = dawnPaymentMoney.stripTrailingZeros().toPlainString();
+        String amount = bankPeriodPrincipal.stripTrailingZeros().toPlainString();
         String term = loanTime.toString();
-        String interest = loanTimeFee.toString();
+        String interest = loanTimeFee.stripTrailingZeros().toPlainString();
 
         String lendCard = loanCustomerDO.getLendCard();
         if(StringUtils.isBlank(lendCard)){
@@ -550,7 +537,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //pub
         applyDiviGeneral.setPlatno(sysConfig.getPlatno());
         applyDiviGeneral.setCmpseq(serNo);
-        applyDiviGeneral.setZoneno(loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4));
+        applyDiviGeneral.setZoneno(StringUtils.isBlank(vehicleInformationDO.getApply_license_plate_area())?null:vehicleInformationDO.getApply_license_plate_area().substring(0,4));
         applyDiviGeneral.setPhybrno(phybrno);
         applyDiviGeneral.setOrderno(orderId.toString());
         applyDiviGeneral.setAssurerno(sysConfig.getAssurerno());
@@ -563,7 +550,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //resultsum
         boolean check = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
         info.setResubmit(check == true?"1":"0");
-        info.setNote(loanCustomerDO.getName()+"申请分期");
+        //info.setNote(loanCustomerDO.getName()+"申请分期");
 
         //customer
         customer.setCustName(loanCustomerDO.getName());
@@ -575,14 +562,14 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //busi
         //car
         car.setCarType(carFullName);
-        car.setPrice(loanFinancialPlanDO.getCarPrice().toString());
+        car.setPrice(loanFinancialPlanDO.getCarPrice().stripTrailingZeros().toPlainString());
         car.setCarNo1(vehicleInformationDO.getVehicle_identification_number());
         car.setCarRegNo(vehicleInformationDO.getRegistration_certificate_number());
         car.setShorp4s(vehicleInformationDO.getInvoice_car_dealer());
         car.setCarNo2(vehicleInformationDO.getLicense_plate_number());
         car.setAssessPrice(carDetailDO.getPrice());//车辆评估价格（元
         car.setAssessOrg(vehicleInformationDO.getAssess_org());//评估机构
-        car.setUsedYears(useYear.toString());//使用年限(月)
+        car.setUsedYears(vehicleInformationDO.getAssess_use_year());//使用年限(月)
 
         divi.setPaidAmt(paidAmt);
         divi.setAmount(amount);
@@ -590,7 +577,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         divi.setInterest(interest);
         divi.setFeeMode(IDict.K_FEEMODE.TERM);
         divi.setIsPawn(IDict.K_ISPAWN.YES);
-        divi.setPawnGoods(vehicleInformationDO.getVehicle_identification_number()+carFullName);
+        divi.setPawnGoods(carFullName);
         divi.setIsAssure(IDict.K_ISASSURE.YES);
         divi.setCard(lendCard);
         divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);

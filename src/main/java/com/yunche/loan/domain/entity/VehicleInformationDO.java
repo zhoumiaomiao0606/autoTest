@@ -58,4 +58,6 @@ public class VehicleInformationDO {
     private Long order_id;
 
     private String assess_org;
+
+    private String assess_use_year;
 }

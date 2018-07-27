@@ -351,9 +351,10 @@
 -->
 
 
-        <table tableName="bank_interface_file_serial" domainObjectName="BankInterfaceFileSerialDO"
+        <table tableName="vehicle_information" domainObjectName="VehicleInformationDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <property name="useActualColumnNames" value="true"/>
         </table>
 
 
