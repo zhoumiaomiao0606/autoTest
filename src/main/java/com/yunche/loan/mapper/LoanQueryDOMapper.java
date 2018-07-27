@@ -1,9 +1,5 @@
 package com.yunche.loan.mapper;
-
-import com.google.common.collect.Sets;
 import com.yunche.loan.domain.vo.*;
-
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -11,7 +7,7 @@ import java.util.Set;
 
 public interface LoanQueryDOMapper {
 
-    String selectLastBankInterfaceSerialMsgByTransCode(@Param("customerId") Long customerId,@Param("transCode") String transCode);
+    BankInterfaceSerialReturnVO selectLastBankInterfaceSerialByTransCode(@Param("customerId") Long customerId,@Param("transCode") String transCode);
 
     List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId,@Param("transCode") String transCode);
 

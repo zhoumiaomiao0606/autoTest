@@ -1274,8 +1274,8 @@
 		  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
 		  and serial.customer_id = #{customerId}
     </select>
-    <select id="selectLastBankInterfaceSerialMsgByTransCode" resultType="java.lang.String">
-		  select serial.reject_reason from bank_interface_serial serial
+    <select id="selectLastBankInterfaceSerialByTransCode" resultType="com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO">
+		  select serial.api_status,serial.api_msg,serial.status from bank_interface_serial serial
 		  inner join
 		  (
 		  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)

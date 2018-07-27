@@ -8,6 +8,7 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.vo.BankInterFaceSerialOrderStatusVO;
+import com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
@@ -155,7 +156,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
 
     @Override
-    public String selectBankInterFaceSerialApiMsg(Long customerId,String transCode){
+    public String selectLastBankInterfaceSerialNoteByTransCode(Long customerId,String transCode){
         if(customerId == null){
             throw new BizException("客户id不存在");
         }
@@ -163,7 +164,20 @@ public class LoanQueryServiceImpl implements LoanQueryService {
             throw new BizException("transCode 不存在");
         }
 
-        return loanQueryDOMapper.selectLastBankInterfaceSerialMsgByTransCode(customerId,transCode);
+        return loanQueryDOMapper.selectLastBankInterfaceSerialNoteByTransCode(customerId,transCode);
+    }
+
+
+    @Override
+    public BankInterfaceSerialReturnVO selectLastBankInterfaceSerialByTransCode(Long customerId, String transCode){
+        if(customerId == null){
+            throw new BizException("客户id不存在");
+        }
+        if(StringUtils.isBlank(transCode)){
+            throw new BizException("transCode 不存在");
+        }
+
+        return loanQueryDOMapper.selectLastBankInterfaceSerialByTransCode(customerId,transCode);
     }
 
 }
