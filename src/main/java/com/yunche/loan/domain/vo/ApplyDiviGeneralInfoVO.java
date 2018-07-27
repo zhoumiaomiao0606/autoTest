@@ -27,6 +27,8 @@ public class ApplyDiviGeneralInfoVO {
     private String is_pledge;//是否抵押 0否 1 是
     private String customer_lend_card;//信用卡卡号
     private String customer_collateral;//抵押物
+    private String vehicle_assess_org;
+    private String customer_id;
 
 
 }

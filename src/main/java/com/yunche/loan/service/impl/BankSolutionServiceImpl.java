@@ -279,7 +279,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
 
-        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,TermFileEnum.VIDEO_INTERVIEW.getKey());
+        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,MultimediaUploadEnum.VIDEO_INTERVIEW.getKey());
         if(authSignPic == null){
             throw new BizException("缺少面签视频");
         }
@@ -292,7 +292,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
             picture.setPicid(TermFileEnum.VIDEO_INTERVIEW.getValue());
             picture.setPicname(picName);
-            picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.VIDEO_INTERVIEW.getKey()));
+            picture.setPicnote(LoanFileEnum.getNameByCode(MultimediaUploadEnum.VIDEO_INTERVIEW.getKey()));
             pictures.add(picture);
         }
         if(pictures.size() == 0 ){
@@ -322,7 +322,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                asyncUpload.upload(serNo,TermFileEnum.VIDEO_INTERVIEW.getValue(),picName,authSignPic.getUrls().get(0));
+                if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
+                    for(String str : authSignPic.getUrls()){
+                        if(StringUtils.isNotBlank(str)){
+                            asyncUpload.upload(serNo,MultimediaUploadEnum.VIDEO_INTERVIEW.getValue(),picName,str);
+                        }
+                    }
+                }
                 icbcFeignClient.multimediaUpload(multimediaUpload);
             }
         });
@@ -508,32 +514,33 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,e.getKey());
             if(authSignPic != null){
                 if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-                    if(StringUtils.isNotBlank(authSignPic.getUrls().get(0))){
-                        String picName = GeneratorIDUtil.execute();
-                        if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(e.getKey().toString())){
-                            //zip
-                            picName = picName +ImageUtil.ZIP_SUFFIX;
-                        }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(e.getKey().toString())){
-                            //mp4
-                            picName = picName +ImageUtil.MP4_SUFFIX;
-                        }else{
-                            //jpg
-                            picName = picName+ImageUtil.PIC_SUFFIX;
+                        for(String str : authSignPic.getUrls()){
+                            if(StringUtils.isNotBlank(str)){
+                                String picName = GeneratorIDUtil.execute();
+                                if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(e.getKey().toString())){
+                                    //zip
+                                    picName = picName +ImageUtil.ZIP_SUFFIX;
+                                }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(e.getKey().toString())){
+                                    //mp4
+                                    picName = picName +ImageUtil.MP4_SUFFIX;
+                                }else{
+                                    //jpg
+                                    picName = picName+ImageUtil.PIC_SUFFIX;
+                                }
+                                ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+                                picture.setPicid(e.getValue());
+                                picture.setPicname(picName);
+                                picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
+                                pictures.add(picture);
+
+                                ICBCApiRequest.PicQueue picQueue = new ICBCApiRequest.PicQueue();
+                                picQueue.setPicId(e.getValue());
+                                picQueue.setPicName(picName);
+                                picQueue.setUrl(str);
+                                queue.add(picQueue);
+                            }
                         }
-
-                        ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
-                        picture.setPicid(e.getValue());
-                        picture.setPicname(picName);
-                        picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
-                        pictures.add(picture);
-
-                        ICBCApiRequest.PicQueue picQueue = new ICBCApiRequest.PicQueue();
-                        picQueue.setPicId(e.getValue());
-                        picQueue.setPicName(picName);
-                        picQueue.setUrl(authSignPic.getUrls().get(0));
-                        queue.add(picQueue);
                     }
-                }
             }
 
         }

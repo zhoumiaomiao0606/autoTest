@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 
+import com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO;
 import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
 
 
@@ -15,5 +16,9 @@ public interface LoanQueryService {
     Integer selectBankOpenCardStatusByOrderId(Long orderId);
 
     void checkBankInterFaceSerialStatus(Long customerId,String transCode);
+
+    public String selectLastBankInterfaceSerialNoteByTransCode(Long customerId,String transCode);
+
+    public BankInterfaceSerialReturnVO selectLastBankInterfaceSerialByTransCode(Long customerId, String transCode);
 
 }

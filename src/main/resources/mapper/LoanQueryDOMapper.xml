@@ -34,7 +34,9 @@
 	        '1' 					                  as is_pledge,
             customer.lend_card		                  as customer_lend_card,
 	        CONCAT(vehicle.vehicle_identification_number,' ',useGetSmallCarName(car.car_detail_id))
-	                                                  as customer_collateral
+	                                                  as customer_collateral,
+	        vehicle.assess_org                        as vehicle_assess_org,
+	        customer.id                               as customer_id
 
 
 
@@ -1264,6 +1266,16 @@
 
     <select id="selectLastBankInterfaceSerialNoteByTransCode" resultType="java.lang.String">
 		  select serial.reject_reason from bank_interface_serial serial
+		  inner join
+		  (
+		  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+		  				as serial_no
+		  from (select * from bank_interface_serial where status = 3) t GROUP BY trans_code,customer_id
+		  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+		  and serial.customer_id = #{customerId}
+    </select>
+    <select id="selectLastBankInterfaceSerialByTransCode" resultType="com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO">
+		  select serial.api_status,serial.api_msg,serial.status,serial.reject_reason from bank_interface_serial serial
 		  inner join
 		  (
 		  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
