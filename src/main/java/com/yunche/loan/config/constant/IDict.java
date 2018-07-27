@@ -131,7 +131,7 @@ public class IDict {
         /**
          * 多媒体补偿接口
          */
-        public static final String MULTIMEDIAUPLOAD = "multimediaUpload";
+        public static final String MULTIMEDIAUPLOAD = "multimediaupload";
         /**
          * 专项卡申请信息上送接口
          */

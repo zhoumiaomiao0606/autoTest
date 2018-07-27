@@ -284,17 +284,27 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("缺少面签视频");
         }
 
+        List<ICBCApiRequest.PicQueue> queues = Lists.newArrayList();
 
-
-        String picName = GeneratorIDUtil.execute()+ImageUtil.MP4_SUFFIX;
 
         if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-            ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
-            picture.setPicid(TermFileEnum.VIDEO_INTERVIEW.getValue());
-            picture.setPicname(picName);
-            picture.setPicnote(LoanFileEnum.getNameByCode(MultimediaUploadEnum.VIDEO_INTERVIEW.getKey()));
-            pictures.add(picture);
+            for(String str : authSignPic.getUrls()){
+                if(StringUtils.isNotBlank(str)){
+                    String picName = GeneratorIDUtil.execute()+ImageUtil.MP4_SUFFIX;
+                    ICBCApiRequest.PicQueue queue = new ICBCApiRequest.PicQueue();
+                    ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+                    picture.setPicid(MultimediaUploadEnum.VIDEO_INTERVIEW.getValue());
+                    picture.setPicname(picName);
+                    picture.setPicnote(LoanFileEnum.getNameByCode(MultimediaUploadEnum.VIDEO_INTERVIEW.getKey()));
+                    pictures.add(picture);
+                    queue.setPicId(MultimediaUploadEnum.VIDEO_INTERVIEW.getValue());
+                    queue.setPicName(picName);
+                    queue.setUrl(str);
+                    queues.add(queue);
+                }
+            }
         }
+
         if(pictures.size() == 0 ){
             throw new BizException("缺少面签视频");
         }
@@ -322,13 +332,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-                    for(String str : authSignPic.getUrls()){
-                        if(StringUtils.isNotBlank(str)){
-                            asyncUpload.upload(serNo,MultimediaUploadEnum.VIDEO_INTERVIEW.getValue(),picName,str);
-                        }
-                    }
-                }
+                asyncUpload.upload(serNo,queues);
                 icbcFeignClient.multimediaUpload(multimediaUpload);
             }
         });

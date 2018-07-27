@@ -66,6 +66,7 @@ public class AsyncUpload {
     }
 
 
+
     public void upload(String serNo,List<ICBCApiRequest.PicQueue> queue){
         for(ICBCApiRequest.PicQueue picQueue :queue){
 
