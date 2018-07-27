@@ -29,6 +29,7 @@ public class ApplyDiviGeneralInfoVO {
     private String customer_collateral;//抵押物
     private String vehicle_assess_org;
     private String customer_id;
+    private String vehicle_assess_use_year;//使用年限
 
 
 }
