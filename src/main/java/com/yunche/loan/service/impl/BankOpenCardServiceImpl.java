@@ -317,11 +317,13 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         }else if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
             applycreditstatus.setPhybrno(sysConfig.getTzphybrno());
         }
+
+        String serialNo = GeneratorIDUtil.execute();
         applycreditstatus.setOrderno(String.valueOf(loanOrderDO.getId()));
         applycreditstatus.setAssurerno(sysConfig.getAssurerno());
         applycreditstatus.setCmpdate(DateUtil.getDate());
         applycreditstatus.setCmptime(DateUtil.getTime());
-        applycreditstatus.setCmpseq(GeneratorIDUtil.execute());
+        applycreditstatus.setCmpseq(serialNo);
         applycreditstatus.setFileNum(String.valueOf(0));
         applycreditstatus.setCustomerId(String.valueOf(loanOrderDO.getLoanCustomerId()));
         ApplycreditstatusResponse response = bankSolutionService.applycreditstatus(applycreditstatus);
@@ -333,6 +335,11 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             loanCustomerDO.setOpenCardCurrStatus("44");
         }
         loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
+        BankInterfaceSerialDO bankInterfaceSerialDO = new BankInterfaceSerialDO();
+        bankInterfaceSerialDO.setSerialNo(serialNo);
+        bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JJSTS.SUCCESS));
+        int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        Preconditions.checkArgument(count>0,"查询开卡状态异常");
         return ResultBean.ofSuccess(response);
     }
 
