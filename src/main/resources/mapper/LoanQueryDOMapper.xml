@@ -969,6 +969,47 @@
         )
         and x.collection_level = 6
     </select>
+
+    <!-- 催保专员列表-->
+    <select id="selectUniversalInsuranceUrgeEmployee"
+            resultType="com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee">
+        SELECT
+            x.*
+        FROM
+        (
+            SELECT
+                employee.id,
+                employee.NAME,
+                ug.NAME AS role,
+                ug.insurance_urge_level
+            FROM
+                employee employee
+                INNER JOIN employee_rela_user_group eg ON eg.employee_id = employee.id
+                INNER JOIN user_group ug ON ug.id = eg.user_group_id
+        ) x
+        WHERE
+        x.id NOT IN (
+            SELECT DISTINCT
+                t.id
+            FROM
+            (
+                SELECT
+                    employee.id,
+                    employee.NAME,
+                    ug.NAME AS role,
+                    ug.LEVEL
+                FROM
+                    employee employee
+                    LEFT JOIN employee_rela_user_group eg ON eg.employee_id = employee.id
+                    LEFT JOIN user_group ug ON ug.id = eg.user_group_id
+            ) t
+             WHERE
+                t.LEVEL = 3
+        )
+        AND x.insurance_urge_level  &lt;  7
+    </select>
+
+
     <select id="selectUniversalUndistributedCollection"
             resultType="com.yunche.loan.domain.vo.UniversalUndistributedCollection">
             select bu.order_id,plan.bank from bank_urge_record bu

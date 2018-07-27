@@ -1,9 +1,6 @@
 package com.yunche.loan.mapper;
 
-import com.google.common.collect.Sets;
 import com.yunche.loan.domain.vo.*;
-
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -149,4 +146,7 @@ public interface LoanQueryDOMapper {
     BankCardRecordVO selectBankCardRecordDetail(Long orderId);
 
     boolean checkCustomerHavingCreditON14Day(String idCard);
+
+
+    List<UniversalTelephoneCollectionEmployee> selectUniversalInsuranceUrgeEmployee();
 }

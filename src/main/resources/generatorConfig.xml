@@ -349,7 +349,7 @@
 
 -->
 
-        <table tableName="loan_info_supplement" domainObjectName="LoanInfoSupplementDO"
+        <table tableName="insurance_distribute_record" domainObjectName="InsuranceDistributeRecordDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
 

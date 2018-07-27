@@ -8,4 +8,5 @@ public class UniversalTelephoneCollectionEmployee {
     private String name;
     private String role;
     private String collection_level;
+    private String insuranceUrgeLevel;//催保等级
 }

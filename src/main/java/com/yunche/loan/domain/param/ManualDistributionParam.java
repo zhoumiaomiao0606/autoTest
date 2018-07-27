@@ -9,4 +9,6 @@ public class ManualDistributionParam {
     private String order_id;
     @NotBlank
     private String sendee;
+
+    private Long sendee_id;
 }
