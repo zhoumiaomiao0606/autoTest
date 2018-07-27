@@ -68,7 +68,7 @@ public class ICBCController {
     }
 
     //请求接口
-    @PostMapping (value = "/multimediaUpload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping (value = "/multimediaupload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean multimediaUpload(@RequestBody @Valid @Validated MultimediaUploadParam param) {
         bankSolutionService.multimediaUpload(Long.parseLong(param.getOrderId()));
         return ResultBean.ofSuccess(null);
