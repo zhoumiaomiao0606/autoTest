@@ -5,6 +5,7 @@ import com.yunche.loan.domain.entity.BankFileListDO;
 import com.yunche.loan.domain.entity.BankFileListRecordDO;
 import com.yunche.loan.domain.entity.LoanRepayPlanDO;
 import com.yunche.loan.domain.param.BankRepayParam;
+import com.yunche.loan.domain.vo.InsuranceUrgeVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -31,4 +32,6 @@ public interface BankRecordQueryDOMapper {
 
 
     LoanRepayPlanDO selectRepayPlanByNper(@Param("orderId") Long orderId, @Param("nper") Integer nper);
+
+    List<InsuranceUrgeVO>  insuranceUrgeList(@Param("orderId") Long orderId);
 }
