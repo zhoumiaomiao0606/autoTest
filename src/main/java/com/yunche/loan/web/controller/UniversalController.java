@@ -3,8 +3,8 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.domain.entity.PartnerDO;
-import com.yunche.loan.domain.vo.Postcode;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.LoanQueryService;
 import org.springframework.validation.annotation.Validated;
@@ -40,5 +40,16 @@ public class UniversalController {
             throw new BizException("请先设置合伙人leader");
         }
         return ResultBean.ofSuccess(partnerDO.getLeaderId());
+    }
+
+    @GetMapping("/ftp")
+    public ResultBean ftp(){
+        FtpUtil.icbcUpload("/tmp/9999.jpg");
+        return ResultBean.ofSuccess("9999");
+    }
+    @GetMapping("/ftp2")
+    public ResultBean ftp2(){
+        FtpUtil.icbcUpload("/tmp/8888.jpg");
+        return ResultBean.ofSuccess("8888");
     }
 }
