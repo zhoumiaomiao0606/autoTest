@@ -37,7 +37,7 @@
 	                                                  as customer_collateral,
 	        vehicle.assess_org                        as vehicle_assess_org,
 	        customer.id                               as customer_id,
-	        case when  v.assess_use_year is not null then  vehicle.assess_use_year
+	        case when  vehicle.assess_use_year is not null then  vehicle.assess_use_year
             else TIMESTAMPDIFF(MONTH,now(),vehicle.register_date) end AS vehicle_assess_use_year
 
 

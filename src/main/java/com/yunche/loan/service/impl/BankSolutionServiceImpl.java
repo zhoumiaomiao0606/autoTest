@@ -585,7 +585,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         car.setCarNo2(vehicleInformationDO.getLicense_plate_number());
         car.setAssessPrice(carDetailDO.getPrice());//车辆评估价格（元
         car.setAssessOrg(vehicleInformationDO.getAssess_org());//评估机构
-        car.setUsedYears(StringUtils.isBlank(vehicleInformationDO.getAssess_use_year())?useYear.toString():vehicleInformationDO.getAssess_use_year());//使用年限(月)
+        car.setUsedYears(StringUtils.isBlank(vehicleInformationDO.getAssess_use_year())?useYear == 0 || useYear == null?null:useYear.toString():vehicleInformationDO.getAssess_use_year());//使用年限(月)
 
         divi.setPaidAmt(paidAmt);
         divi.setAmount(amount);
