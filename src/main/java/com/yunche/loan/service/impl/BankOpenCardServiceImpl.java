@@ -308,6 +308,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         if(bankId == null){
             throw new BizException("贷款银行不存在");
         }
+        String serialNo = GeneratorIDUtil.execute();
         ICBCApiRequest.Applycreditstatus applycreditstatus =new ICBCApiRequest.Applycreditstatus();
         applycreditstatus.setPlatno(sysConfig.getPlatno());
         applycreditstatus.setZoneno(String.valueOf(loanBaseInfoDO.getAreaId()).substring(0,4));
@@ -320,7 +321,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         applycreditstatus.setAssurerno(sysConfig.getAssurerno());
         applycreditstatus.setCmpdate(DateUtil.getDate());
         applycreditstatus.setCmptime(DateUtil.getTime());
-        applycreditstatus.setCmpseq(GeneratorIDUtil.execute());
+        applycreditstatus.setCmpseq(serialNo);
         applycreditstatus.setFileNum(String.valueOf(0));
         applycreditstatus.setCustomerId(String.valueOf(loanOrderDO.getLoanCustomerId()));
         ApplycreditstatusResponse response = bankSolutionService.applycreditstatus(applycreditstatus);
@@ -332,6 +333,11 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             loanCustomerDO.setOpenCardCurrStatus("44");
         }
         loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
+        BankInterfaceSerialDO bankInterfaceSerialDO = new BankInterfaceSerialDO();
+        bankInterfaceSerialDO.setSerialNo(serialNo);
+        bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JJSTS.SUCCESS));
+        int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        Preconditions.checkArgument(count>0,"查询开卡状态异常");
         return ResultBean.ofSuccess(response);
     }
 
