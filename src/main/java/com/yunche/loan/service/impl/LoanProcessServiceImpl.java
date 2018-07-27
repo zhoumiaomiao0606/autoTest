@@ -1238,7 +1238,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             execTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
         } else {
             // 前置开卡校验
-            if(BANK_OPEN_CARD.getCode().equals(approval.getTaskDefinitionKey())){
+            if (BANK_OPEN_CARD.getCode().equals(approval.getTaskDefinitionKey())) {
                 preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
             }
             // 其他任务：直接提交
@@ -2679,7 +2679,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanOrderDO);
 
         // 填充其他的流程变量
-        fillOtherVariables(variables, approval, loanProcessDO, loanOrderDO.getProcessInstId());
+        fillOtherVariables(variables, approval, loanProcessDO, loanOrderDO);
 
         return variables;
     }
@@ -2690,9 +2690,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param variables
      * @param approval
      * @param loanProcessDO
-     * @param processInstId
+     * @param loanOrderDO
      */
-    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO, String processInstId) {
+    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO, LoanOrderDO loanOrderDO) {
         // 【业务申请】
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
 
@@ -2766,10 +2766,26 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     || TASK_PROCESS_REJECT.equals(materialManageStatus);
 
             if (hasMaterialManage) {
+
+                // 已走过一次[合同归档]
                 variables.put(PROCESS_VARIABLE_TARGET, DATA_FLOW_CONTRACT_C2B.getCode());
+
             } else {
-                // nothing
-                variables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
+
+                // 银行匹配
+                boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
+
+                if (is_match_condition_bank) {
+
+                    // 走[申请分期]
+                    variables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
+
+                } else {
+
+                    // 不走[申请分期]    target='usertask_material_manage&usertask_data_flow_contract_c2b'
+                    variables.put(PROCESS_VARIABLE_TARGET, MATERIAL_MANAGE.getCode() + "&" + DATA_FLOW_CONTRACT_C2B.getCode());
+                }
+
             }
         }
 
