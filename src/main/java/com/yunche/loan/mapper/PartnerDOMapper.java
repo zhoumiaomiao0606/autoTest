@@ -29,4 +29,6 @@ public interface PartnerDOMapper {
     List<PartnerDO> query(PartnerQuery query);
 
     List<PartnerDO> getAll(@Param("status") Byte status);
+
+    PartnerDO queryByPartnerName(@Param("name") String name);
 }

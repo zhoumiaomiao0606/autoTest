@@ -24,7 +24,7 @@
         </javaTypeResolver>
 
         <!-- targetProject:生成PO类的位置 -->
-        <javaModelGenerator targetPackage="com.yunche.loan.domain.entity"
+        <javaModelGenerator targetPackage="com.yunche.loan.domain.entity1"
                             targetProject="./src">
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false"/>
@@ -32,18 +32,22 @@
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
         <!-- targetProject:mapper映射文件生成的位置 -->
-        <sqlMapGenerator targetPackage="com.yunche.loan.xml"
+        <sqlMapGenerator targetPackage="com.yunche.loan.xml1"
                          targetProject="./src">
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
         <!-- targetPackage：mapper接口生成的位置 -->
         <javaClientGenerator type="XMLMAPPER"
-                             targetPackage="com.yunche.loan.mapper"
+                             targetPackage="com.yunche.loan.mapper1"
                              targetProject="./src">
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
+
+        <table tableName="insurance_risk" domainObjectName="InsuranceRiskDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
 
 
         <!-- 指定数据库表 -->
@@ -341,12 +345,6 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-        <table tableName="loan_data_flow" domainObjectName="LoanDataFlowDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
-
-
 -->
 
         <table tableName="loan_file" domainObjectName="LoanFileDO"
@@ -359,7 +357,6 @@
             <columnOverride column="path" property="path" jdbcType="VARCHAR"/>
 
         </table>
-
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

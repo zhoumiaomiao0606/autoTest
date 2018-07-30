@@ -7,12 +7,16 @@
     <result column="gps_number" property="gps_number" jdbcType="VARCHAR" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="gps_company" property="gps_company" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, order_id, gps_number, feature, status
+    id, order_id, gps_number, feature, status, gps_company
   </sql>
+  <select id="selectBygpsNumber" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(*) from install_gps where gps_number = #{gps_number}
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from install_gps
     where id = #{id,jdbcType=BIGINT}
@@ -43,6 +47,9 @@
       <if test="status != null" >
         status,
       </if>
+      <if test="gps_company != null" >
+        gps_company,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -60,6 +67,9 @@
       <if test="status != null" >
         #{status,jdbcType=TINYINT},
       </if>
+      <if test="gps_company != null" >
+        #{gps_company,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.InstallGpsDO" >
@@ -76,6 +86,9 @@
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gps_company != null" >
+        gps_company = #{gps_company,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

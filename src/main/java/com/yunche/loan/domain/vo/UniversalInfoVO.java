@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class UniversalInfoVO {
 
@@ -88,5 +90,6 @@ public class UniversalInfoVO {
     private String car_info;
     private String bank_repay_date;
     private String car_category;
+    private BigDecimal performance_fee;
 
 }

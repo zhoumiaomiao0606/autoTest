@@ -34,4 +34,6 @@ public class PartnerParam extends PartnerDO {
      */
 
     private List<Long> areaIdList;
+
+    private String gpsCompany;
 }
