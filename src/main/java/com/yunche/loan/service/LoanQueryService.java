@@ -12,4 +12,8 @@ public interface LoanQueryService {
 
     Integer selectBankInterFaceSerialOrderStatusByOrderId(Long orderId,String transCode);
 
+    Integer selectBankOpenCardStatusByOrderId(Long orderId);
+
+    void checkBankInterFaceSerialStatus(Long customerId,String transCode);
+
 }

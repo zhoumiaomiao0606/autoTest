@@ -2,20 +2,25 @@ package com.yunche.loan.domain.param;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.validation.annotation.Validated;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 public class InsuranceRelevanceUpdateParam {
+
     @NotBlank
-    private String insurance_company_name;// 保险公司名称
+    private Byte year;//年次
     @NotBlank
-    private String insurance_number;//  保单号
+    private String insuranceCompanyName;// 保险公司名称
     @NotBlank
-    private String insurance_amount;// 保险金额
+    private String insuranceNumber;//  保单号
     @NotBlank
-    private String start_date;// 开始日期
+    private BigDecimal insuranceAmount;// 保险金额
     @NotBlank
-    private String end_date;// 结束日期
+    private Date startDate;// 开始日期
     @NotBlank
-    private String insurance_type;// 险种 1商业险 2交强险 3车船税
+    private Date endDate;// 结束日期
+    @NotBlank
+    private Byte insuranceType;// 险种 1商业险 2交强险 3车船税
 }

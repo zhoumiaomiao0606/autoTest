@@ -23,7 +23,7 @@ public interface ICBCFeignClient {
     public ApplyDiviGeneralResponse applyDiviGeneral(@RequestBody ICBCApiRequest.ApplyDiviGeneral applyDiviGeneral);
 
     //通用资料补偿申请接口
-    @RequestMapping(value = "/api/v1/icbc/apply/multimediaUpload",method = RequestMethod.POST)
+    @RequestMapping(value = "/api/v1/icbc/apply/multimediaupload",method = RequestMethod.POST)
     public MultimediaUploadResponse multimediaUpload(@RequestBody ICBCApiRequest.MultimediaUpload multimediaUpload);
 
     //zhengdu

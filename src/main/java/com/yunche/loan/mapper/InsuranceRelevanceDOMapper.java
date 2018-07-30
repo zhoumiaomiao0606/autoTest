@@ -24,4 +24,6 @@ public interface InsuranceRelevanceDOMapper {
      * @return
      */
     List<InsuranceRelevanceDO> listByInsuranceInfoId(Long insuranceInfoId);
+
+    int deleteByInsuranceInfoIdAndType(Long insuranceInfoId,Byte type);
 }

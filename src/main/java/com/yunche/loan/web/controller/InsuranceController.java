@@ -4,7 +4,6 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.InsuranceUpdateParam;
 import com.yunche.loan.service.InsuranceService;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -39,7 +38,7 @@ public class InsuranceController {
      * 录入车辆保险
      */
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean update(@RequestBody @Validated InsuranceUpdateParam param) {
+    public ResultBean update(@RequestBody  InsuranceUpdateParam param) {
         insuranceService.update(param);
         return ResultBean.ofSuccess(null, "保存成功");
     }

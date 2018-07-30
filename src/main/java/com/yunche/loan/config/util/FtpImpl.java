@@ -4,7 +4,6 @@ package com.yunche.loan.config.util;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.SocketException;
@@ -14,9 +13,9 @@ import java.util.List;
 /**
  * FTP 服务
  */
-@Service
 public class FtpImpl implements Ftp {
-    private FTPClient ftpClient;
+
+    private static  FTPClient ftpClient;
     public static final int BINARY = 2;
     public static final int ASCII = 0;
 
@@ -27,6 +26,16 @@ public class FtpImpl implements Ftp {
         this.ftpClient.setControlEncoding("GBK");
     }
 
+//    public static FtpImpl getInstance() {
+//        if (ftpImpl == null) {
+//            synchronized (FtpImpl.class) {
+//                if (ftpImpl == null) {
+//                    ftpImpl = new FtpImpl();
+//                }
+//            }
+//        }
+//        return ftpImpl;
+//    }
     public void setControlEncoding(String encoding) {
         this.ftpClient.setControlEncoding(encoding);
     }

@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.Date;
 
 @CrossOrigin
 @RestController
@@ -137,6 +138,7 @@ public class ICBCController {
             materialDownHisDO.setFileType(fileNotice.getReq().getFiletype());
             materialDownHisDO.setFileName(fileNotice.getReq().getFilesrc());
             materialDownHisDO.setStatus(IDict.K_JYZT.PRE_TRANSACTION);
+            materialDownHisDO.setGmtCreate(new Date());
             int count = materialDownHisDOMapper.insertSelective(materialDownHisDO);
             Preconditions.checkArgument(count>0,"插入文件清单流水异常");
             logger.info("开卡文件清单回调完成===============================================================");

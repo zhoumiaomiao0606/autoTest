@@ -1,14 +1,22 @@
 package com.yunche.loan.service.impl;
 
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.config.util.StringUtil;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.vo.BankInterFaceSerialOrderStatusVO;
+import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
+import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanProcessLogService;
 import com.yunche.loan.service.LoanQueryService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -27,6 +35,12 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
     @Resource
     private LoanProcessLogService loanProcessLogService;
+
+    @Resource
+    private LoanProcessDOMapper loanProcessDOMapper;
+
+    @Resource
+    private LoanCustomerDOMapper loanCustomerDOMapper;
 
     @Override
     public UniversalCustomerDetailVO universalCustomerDetail(Long customerId) {
@@ -88,6 +102,55 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
 
         return 1;
+    }
+
+    @Override
+    public Integer selectBankOpenCardStatusByOrderId(Long orderId) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        if(loanOrderDO == null){
+            throw new BizException("此订单不存在");
+        }
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Byte t = loanProcessDO.getTelephoneVerify();
+        if(t == null){
+            t = new Byte("0");
+        }
+        String x = t.toString();
+
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(),new Byte("0"));
+        String y = loanCustomerDO.getOpenCardOrder();
+        if(StringUtils.isBlank(y)){
+            throw new BizException("缺少开卡顺序");
+        }
+
+        //如果
+        if(y.equals("0")){
+            if(x.equals("1")){
+                return 1;
+            }else {
+                return 0;
+            }
+        }else{
+            return 1;
+        }
+
+
+    }
+
+    @Override
+    public void checkBankInterFaceSerialStatus(Long customerId, String transCode) {
+        if(customerId == null){
+            throw new BizException("客户id不存在");
+        }
+        if(StringUtils.isBlank(transCode)){
+            throw new BizException("transCode 不存在");
+        }
+        UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(customerId,transCode);
+        if(result != null) {
+            if (IDict.K_JJSTS.PROCESS.equals(result.getStatus())) {
+                throw new BizException("请耐心等待上一次操作的结果通知");
+            }
+        }
     }
 
 

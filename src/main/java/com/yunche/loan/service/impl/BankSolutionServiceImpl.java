@@ -23,6 +23,7 @@ import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionService;
+import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -114,6 +115,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private CarDetailDOMapper carDetailDOMapper;
 
 
+    @Resource
+    private LoanQueryService loanQueryService;
 
 
 
@@ -272,19 +275,17 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(loanCustomerDO == null){
             throw new BizException("贷款人不存在");
         }
-        UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD);
-        if(result != null) {
-            if (IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) || IDict.K_JJSTS.PROCESS.equals(result.getStatus()) || IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus())) {
-                throw new BizException("已经推送过了");
-            }
-        }
+
 
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
 
         UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,TermFileEnum.VIDEO_INTERVIEW.getKey());
-        if(authSignPic != null){
+        if(authSignPic == null){
             throw new BizException("缺少面签视频");
         }
+
+
+
         String picName = GeneratorIDUtil.execute()+ImageUtil.MP4_SUFFIX;
 
         if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
@@ -297,6 +298,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(pictures.size() == 0 ){
             throw new BizException("缺少面签视频");
         }
+
+        loanQueryService.checkBankInterFaceSerialStatus(customerId,IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD);
+
 
         String serNo = GeneratorIDUtil.execute();
         //多媒体补偿接口
@@ -312,13 +316,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         multimediaUpload.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
         multimediaUpload.setFileNum(String.valueOf(pictures.size()));
         multimediaUpload.setPictures(pictures);
+        multimediaUpload.setCustomerId(customerId.toString());
         violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
-
 
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                asyncUpload.upload(serNo,TermFileEnum.VIDEO_INTERVIEW.getValue(),picName,authSignPic.getUrls());
+                asyncUpload.upload(serNo,TermFileEnum.VIDEO_INTERVIEW.getValue(),picName,authSignPic.getUrls().get(0));
                 icbcFeignClient.multimediaUpload(multimediaUpload);
             }
         });
@@ -348,12 +352,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款人不存在");
         }
 
-        UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
-        if(result != null) {
-            if (IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) || IDict.K_JJSTS.PROCESS.equals(result.getStatus()) || IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus())) {
-                throw new BizException("已经申请过分期");
-            }
-        }
+        loanQueryService.checkBankInterFaceSerialStatus(customerId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
+
         Long carId = loanOrderDO.getLoanCarInfoId();
         if(carId == null){
             throw new BizException("贷款车辆不存在");
@@ -625,21 +625,21 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private void ICBCBankCreditProcess(Long orderId,String phybrno,List<LoanCustomerDO> customers){
 
         //①判断客户是否已提交了征信记录，且银行征信结果非退回，若满足，则不会推送该客户，否则继续②
-            for(LoanCustomerDO loanCustomerDO:customers){
-                UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYCREDIT);
-                if(result!=null){
-                    //之前提交过
-                    //只有调用接口成功才算
-                    //非处理中 并且 非查询成功的可以进行推送
-                    if(!IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) && !IDict.K_JJSTS.PROCESS.equals(result.getStatus()) && !IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus()) ) {
-                        checkCustomerHavingCreditON14Day(loanCustomerDO);
-                        bankCreditProcess(orderId,phybrno,loanCustomerDO);
-                    }
-                }else{
+        for(LoanCustomerDO loanCustomerDO:customers){
+            UniversalBankInterfaceSerialVO result = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYCREDIT);
+            if(result!=null){
+                //之前提交过
+                //只有调用接口成功才算
+                //非处理中 并且 非查询成功的可以进行推送
+                if(!IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) && !IDict.K_JJSTS.PROCESS.equals(result.getStatus()) && !IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus()) ) {
                     checkCustomerHavingCreditON14Day(loanCustomerDO);
                     bankCreditProcess(orderId,phybrno,loanCustomerDO);
                 }
+            }else{
+                checkCustomerHavingCreditON14Day(loanCustomerDO);
+                bankCreditProcess(orderId,phybrno,loanCustomerDO);
             }
+        }
     }
 
     private void bankCreditProcess(Long orderId,String phybrno,LoanCustomerDO loanCustomerDO){
@@ -687,6 +687,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(uniqueTypes), loanCustomerDO.getName()+"附件合成失败");
         Preconditions.checkArgument(uniqueTypes.size() == 4, loanCustomerDO.getName()+"附件合成失败");
+
+        loanQueryService.checkBankInterFaceSerialStatus(loanCustomerDO.getId(),IDict.K_TRANS_CODE.APPLYCREDIT);
 
         List fileNumList = Lists.newArrayList();
         fileNumList.add(mergeImages);
@@ -775,10 +777,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     private void checkCustomerHavingCreditON14Day(LoanCustomerDO customers){
-            Preconditions.checkArgument(StringUtils.isNotBlank(customers.getIdCard()), customers.getName()+"身份证号不能为空");
-            if(loanQueryDOMapper.checkCustomerHavingCreditON14Day(customers.getIdCard())){
-                throw new BizException(customers.getName()+"在14天内重复查询征信");
-            }
+        Preconditions.checkArgument(StringUtils.isNotBlank(customers.getIdCard()), customers.getName()+"身份证号不能为空");
+        if(loanQueryDOMapper.checkCustomerHavingCreditON14Day(customers.getIdCard())){
+            throw new BizException(customers.getName()+"在14天内重复查询征信");
+        }
     }
 
 

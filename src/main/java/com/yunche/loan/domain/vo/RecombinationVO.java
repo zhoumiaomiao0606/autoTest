@@ -5,7 +5,6 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -78,4 +77,6 @@ public class RecombinationVO<T> {
     private List<UniversalCustomerVO> customers = Lists.newArrayList();
 
     private List<UniversalMaterialRecordVO> materials = Lists.newArrayList();
+
+    private List<UniversalInsuranceVO> insuranceDetail = Lists.newArrayList();
 }

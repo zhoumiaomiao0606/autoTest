@@ -666,14 +666,15 @@ public class MaterialServiceImpl implements MaterialService {
 
         List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loanCustomerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
         if (CollectionUtils.isEmpty(loanFileDOS)) {
-            materialDownloadParam.setFileStatus("2");//文件存在
+            materialDownloadParam.setFileStatus("2");//文件不存在,需要强制重新打包
         } else {
             materialDownloadParam.setFileStatus("1");//文件处理中
-            loanFileDOS.stream().filter(e -> e.getStatus().equals(BaseConst.VALID_STATUS)).forEach(e -> {
-                materialDownloadParam.setFileStatus("0");//文件已经打包完成
+            loanFileDOS.stream().filter(Objects::nonNull).forEach(e -> {
+                if(e.getStatus()!=null && e.getStatus().equals(BaseConst.VALID_STATUS)){
+                    materialDownloadParam.setFileStatus("0");//文件已经打包完成
+                }
             });
         }
-
         return ResultBean.ofSuccess(materialDownloadParam);
     }
 

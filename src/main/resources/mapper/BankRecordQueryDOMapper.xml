@@ -165,4 +165,41 @@
 
     </select>
 
+    <select id="selectInsuranceUrgeTaskList" resultType="com.yunche.loan.domain.vo.InsuranceUrgeVO">
+        SELECT
+                loan.id                                     AS orderId,
+                partner.`name`                              AS partnerName,
+                customer.`name`,
+                customer.id_card                            AS idCard,
+                customer.mobile                             AS mobile,
+                base.bank,
+                employee.`name`                             AS employeeName,
+                employee.id                                 AS employeeId,
+                financial.car_price                         AS carPrice,
+                info.insurance_year                         AS insuranceYear,
+                insurance.insurance_type                    AS insuranceType,
+                insurance.start_date                        AS startDate,
+                insurance.end_date                          AS endDate,
+                datediff(insurance.end_date,insurance.start_date) AS days,
+                (select start_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessStartDate,
+                (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate
+        FROM
+                (select * from loan_order where 1=1
+                <if test="taskStatus != 1">
+                    and id not in(select order_id from insurance_distribute_record)
+                </if>
+                <if test="taskStatus != 2">
+                    and id in(select order_id from insurance_distribute_record)
+                </if>
+                ) loan
+                LEFT JOIN insurance_info info on loan.id = info.order_id
+                LEFT JOIN insurance_relevance insurance ON (info.id = insurance.insurance_info_id and insurance.insurance_type=1 )
+                LEFT JOIN loan_customer customer ON loan.loan_customer_id=customer.id
+                LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
+                LEFT JOIN employee ON base.salesman_id=employee.id
+                LEFT JOIN partner ON base.partner_id=partner.id
+                LEFT JOIN loan_financial_plan financial ON loan.loan_financial_plan_id=financial.id
+        where datediff(insurance.end_date,insurance.start_date)&lt;=31
+    </select>
+
 </mapper>
