@@ -1,32 +1,35 @@
 package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.InsuranceInfoDO;
 import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
+import com.yunche.loan.domain.entity.InsuranceRiskDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.InsuranceRelevanceUpdateParam;
+import com.yunche.loan.domain.param.InsuranceRisksParam;
 import com.yunche.loan.domain.param.InsuranceUpdateParam;
-import com.yunche.loan.domain.vo.InsuranceCustomerVO;
-import com.yunche.loan.domain.vo.InsuranceRelevanceVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.mapper.InsuranceInfoDOMapper;
-import com.yunche.loan.mapper.InsuranceRelevanceDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.domain.query.RiskQuery;
+import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.InsuranceService;
-import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.beans.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import org.apache.log4j.Logger;
 
 @Service
 @Transactional
 public class InsuranceServiceImpl implements InsuranceService {
+
+    private static Logger logger  = Logger.getLogger(InsuranceServiceImpl.class);
 
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -39,6 +42,121 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Resource
+    private InsuranceRiskDOMapper insuranceRiskDOMapper;
+
+    @Override
+    public InsuranceDetailVO riskDetail(Long orderId,Byte insuranceYear) {
+
+        InsuranceDetailVO insuranceDetailVO = new InsuranceDetailVO();
+        List<InsuranceCustomerVO> insuranceCustomerVOList = loanQueryDOMapper.selectInsuranceCustomerByYear(orderId,insuranceYear);
+        for(InsuranceCustomerVO obj:insuranceCustomerVOList){
+            if(obj!=null) {
+                if (obj.getInsurance_info_id() != null) {
+                    List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(obj.getInsurance_info_id()));
+                    obj.setInsurance_relevance_list(insurance_relevance_list);
+                }
+            }
+        }
+        insuranceDetailVO.setInfo(insuranceCustomerVOList);
+        //出险信息
+        insuranceDetailVO.setRisks(insuranceRiskDOMapper.riskInfoByOrderId(orderId,insuranceYear));
+
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+        insuranceDetailVO.setCustomers(customers);
+        List<UniversalCreditInfoVO> credits = loanQueryDOMapper.selectUniversalCreditInfo(orderId);
+        for (UniversalCreditInfoVO universalCreditInfoVO : credits) {
+            if (!StringUtils.isBlank(universalCreditInfoVO.getCustomer_id())) {
+                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(orderId, Long.valueOf(universalCreditInfoVO.getCustomer_id())));
+            }
+        }
+        insuranceDetailVO.setCredits(credits);
+
+        insuranceDetailVO.setNewInsurance(insuranceRiskDOMapper.newInsuranceByOrderId(orderId));
+
+        return insuranceDetailVO;
+    }
+
+    @Override
+    public void riskInsert(InsuranceRisksParam param) {
+        InsuranceRiskDO insuranceRiskDO = new InsuranceRiskDO();
+        BeanUtils.copyProperties(param, insuranceRiskDO);
+        insuranceRiskDOMapper.insertSelective(insuranceRiskDO);
+    }
+
+    @Override
+    public void riskUpdate(InsuranceRisksParam param) {
+        InsuranceRiskDO insuranceRiskDO = new InsuranceRiskDO();
+        BeanUtils.copyProperties(param, insuranceRiskDO);
+        insuranceRiskDOMapper.updateByPrimaryKeySelective(insuranceRiskDO);
+    }
+
+    @Override
+    public void riskDetele(Long insuranceNumberId) {
+        insuranceRiskDOMapper.deleteByPrimaryKey(insuranceNumberId);
+
+    }
+
+    @Override
+    public ResultBean<List<RiskQueryVO>> riskList(RiskQuery query) {
+        Date nowDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        int count = insuranceRiskDOMapper.insuranceRiskCount(query);
+        if(count > 0){
+            List<RiskQueryVO> list = insuranceRiskDOMapper.insuranceRiskList(query);
+            try {
+                for(RiskQueryVO riskQueryVO : list){
+                    String insuranceType = riskQueryVO.getInsuranceType();
+                    String endDateTotal = riskQueryVO.getEndDateTotal();
+                    if(endDateTotal.contains(",")){
+                        String[] types = insuranceType.split(",");
+                        String[] dates = endDateTotal.split(",");
+                        if("1".equals(types[0])){
+                            Date dates0  = sdf.parse(dates[0]);
+                            Date dates1  = sdf.parse(dates[1]);
+                            int dateNum0 = (int) ((dates0.getTime() - nowDate.getTime()) / (1000*3600*24));
+                            int dateNum1 = (int) ((dates1.getTime() - nowDate.getTime()) / (1000*3600*24));
+                            riskQueryVO.setEndDate1(dates0);
+                            riskQueryVO.setDateNum1(dateNum0+"");
+                            riskQueryVO.setEndDate(dates1);
+                            riskQueryVO.setDateNum(dateNum1+"");
+                        }else{
+                            Date dates0  = sdf.parse(dates[0]);
+                            Date dates1  = sdf.parse(dates[1]);
+                            int dateNum0 = (int) ((dates0.getTime() - nowDate.getTime()) / (1000*3600*24));
+                            int dateNum1 = (int) ((dates1.getTime() - nowDate.getTime()) / (1000*3600*24));
+                            riskQueryVO.setEndDate1(dates1);
+                            riskQueryVO.setDateNum1(dateNum1+"");
+                            riskQueryVO.setEndDate(dates0);
+                            riskQueryVO.setDateNum(dateNum0+"");
+                        }
+                    }else{
+                        if("1".equals(insuranceType)){
+                            Date date = sdf.parse(endDateTotal);
+                            int dateNum = (int) ((date.getTime() - nowDate.getTime()) / (1000*3600*24));
+                            riskQueryVO.setEndDate1(date);
+                            riskQueryVO.setDateNum1(dateNum+"");
+                        }else{
+                            Date date = sdf.parse(endDateTotal);
+                            int dateNum = (int) ((date.getTime() - nowDate.getTime()) / (1000*3600*24));
+                            riskQueryVO.setEndDate(date);
+                            riskQueryVO.setDateNum(dateNum+"");
+                        }
+                    }
+                }
+            } catch (ParseException e) {
+                logger.error("逻辑处理异常，请联系管理员",e);
+                throw new BizException("逻辑处理异常，请联系管理员");
+            }
+            return ResultBean.ofSuccess(list, count, query.getPageIndex(), query.getPageSize());
+        }
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST,count, query.getPageIndex(), query.getPageSize());
+    }
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -106,4 +224,6 @@ public class InsuranceServiceImpl implements InsuranceService {
         }
 
     }
+
+
 }

@@ -32,6 +32,11 @@ public class DataDictionaryVO {
      */
     private Detail loanDataFlowExpressCom;
 
+    /**
+     * 资料流转-资料增补类型
+     */
+    private Detail infoSupplementType;
+
 
     /**
      * 详情

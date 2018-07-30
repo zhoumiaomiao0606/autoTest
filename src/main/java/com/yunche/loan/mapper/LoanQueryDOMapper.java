@@ -117,6 +117,8 @@ public interface LoanQueryDOMapper {
 
     List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
 
+    List<InsuranceCustomerVO> selectInsuranceCustomerByYear(@Param("orderId") Long orderId,@Param("insuranceYear") Byte insuranceYear);
+
     InsuranceCustomerVO selectInsuranceCustomerNormalizeInsuranceYear(Long orderId);
 
     List<InsuranceRelevanceVO> selectInsuranceRelevance(Long insuranceInfoId);
@@ -126,6 +128,8 @@ public interface LoanQueryDOMapper {
     CostCalculateInfoVO selectCostCalculateInfo(Long orderId);
 
     List<GpsVO> selectGpsByOrderId(Long orderId);
+
+    GpsDetailVO selectGpsDetailByOrderId(Long orderId);
 
     BankLendRecordVO selectBankLendRecordDetail(Long orderId);
 

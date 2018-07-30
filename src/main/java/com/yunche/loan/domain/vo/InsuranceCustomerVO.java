@@ -12,6 +12,7 @@ public class InsuranceCustomerVO {
     private String customer_id;//客户id
     private String cname;//主贷人姓名
     private String id_card;//身份证
+    private String mobile;//手机
     private String ename;//业务员
     private String pname;//合伙人
     private String insurance_year;//保险年度

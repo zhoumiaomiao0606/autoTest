@@ -8,7 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
 
 @CrossOrigin
 @RestController
@@ -34,6 +33,14 @@ public class AuxiliaryController {
     }
 
     /**
+     * 查看第三方gps列表
+     */
+    @GetMapping(value = "/queryjimi")
+    public ResultBean queryOther(@RequestParam String partner_name) {
+        return ResultBean.ofSuccess(auxiliaryService.queryJimi(partner_name));
+    }
+
+    /**
      * 安装gps
      */
     @PostMapping(value = "/install", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -42,9 +49,13 @@ public class AuxiliaryController {
         return ResultBean.ofSuccess(null,"安装成功");
     }
 
-
-
-
+    /**
+     * gps详细
+     */
+    @GetMapping(value = "/detail")
+    public ResultBean detail(@RequestParam String order_id) {
+        return ResultBean.ofSuccess(auxiliaryService.detail(Long.valueOf(order_id)));
+    }
 
 
 }

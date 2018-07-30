@@ -1,29 +1,32 @@
 package com.yunche.loan.service.impl;
 
+import com.yunche.loan.config.cache.TokenCache;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
-import com.yunche.loan.domain.entity.InstallGpsDO;
-import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
-import com.yunche.loan.domain.entity.LoanCarInfoDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.config.util.CarLoanHttpUtil;
+import com.yunche.loan.config.util.OpenApiUtil;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.GpsUpdateParam;
 import com.yunche.loan.domain.param.InstallUpdateParam;
-import com.yunche.loan.domain.vo.GpsVO;
-import com.yunche.loan.mapper.InstallGpsDOMapper;
-import com.yunche.loan.mapper.LoanCarInfoDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.AuxiliaryService;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
-@Transactional
 public class AuxiliaryServiceImpl implements AuxiliaryService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuxiliaryServiceImpl.class);
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
 
@@ -36,8 +39,15 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
 
+    @Autowired
+    private TokenCache tokenCache;
+
+    @Resource
+    private PartnerDOMapper partnerDOMapper;
+
 
     @Override
+    @Transactional
     public void commit(Long orderId) {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
         if(loanOrderDO == null){
@@ -53,22 +63,82 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
     }
 
     @Override
+    @Transactional
     public void install(InstallUpdateParam param) {
-
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()),new Byte("0"));
         if(loanOrderDO == null){
             throw new BizException("此业务单不存在");
         }
-        installGpsDOMapper.deleteByOrderId(Long.valueOf(param.getOrder_id()));
-        //先删除-再新增-保持数据最新
-        for(GpsUpdateParam obj:param.getGps_list()){
-            InstallGpsDO T= BeanPlasticityUtills.copy(InstallGpsDO.class,obj);
-            T.setOrder_id(Long.valueOf(param.getOrder_id()));
-            installGpsDOMapper.insertSelective(T);
+        for(GpsUpdateParam obj:param.getGps_list()) {
+            int i = installGpsDOMapper.selectBygpsNumber(obj.getGps_number());
+            if (i > 0) {
+                throw new BizException("该GPS："+obj.getGps_number() + "已存在");
+            } else {
+                if("JIMI".equals(param.getGpsCompany())) {
+                    try {
+                        String accToken = getAccToken();
+                            boolean falg =false;
+                            List<Map<String,Object>> list = OpenApiUtil.getGpsDetailInfo(accToken,obj.getGps_number());
+                            if(list.size() > 0){
+                                while("1004".equals((String)list.get(0).get("code"))){
+                                    list = OpenApiUtil.getGpsDetailInfo(getAccToken(),obj.getGps_number());
+                                }
+                            }
+                            for(Map<String,Object> map1:list){
+                                if((map1.get("activationTime") == null || "".equals(map1.get("activationTime")))
+                                        && (map1.get("vehicleName") == null || "".equals(map1.get("vehicleName")))
+                                        && (map1.get("driverName") == null || "".equals(map1.get("driverName")))){
+                                    falg = true;
+                                }else{
+                                    throw new BizException("第三方该gps信息以绑定用户");
+                                }
+                            }
+                            if(falg) {
+                                String result = OpenApiUtil.updateGpsInfo(accToken, obj.getGps_number(), param.getVehicleName(), param.getDriverName());
+                                while ("1004".equals(result)) {
+                                    result = OpenApiUtil.updateGpsInfo(getAccToken(), obj.getGps_number(), param.getVehicleName(), param.getDriverName());
+                                }
+                            }else{
+                                throw new BizException("第三方该gps信息不存在");
+                            }
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        throw new BizException(e.getMessage());
+                    }
+                }else if("CARLOAN".equals(param.getGpsCompany())){
+                    try{
+                        List<Map<String,Object>> list = CarLoanHttpUtil.getGpsInfo(obj.getGps_number());
+                        if(list.size() > 0){
+                            for(Map<String,Object> map:list){
+                                if(map.get("activeTime") !=null){
+                                    boolean flag = CarLoanHttpUtil.bindGps(obj.getGps_number(),param.getDriverName());
+                                    if(!flag){
+                                        throw new BizException("该GPS:"+obj.getGps_number()+"绑定时失败");
+                                    }
+                                }else{
+                                    throw new BizException("该GPS:"+obj.getGps_number()+"未激活无法使用");
+                                }
+                            }
+                        }else{
+                            throw new BizException("该GPS:"+obj.getGps_number()+"信息不存在");
+                        }
+                    }catch(Exception e){
+                        logger.error("车贷管家系统通讯异常",e);
+                        throw new BizException("车贷管家系统通讯异常");
+                    }
+
+                }
+                InstallGpsDO T = BeanPlasticityUtills.copy(InstallGpsDO.class, obj);
+                T.setOrder_id(Long.valueOf(param.getOrder_id()));
+                T.setGps_company(param.getGpsCompany());
+                installGpsDOMapper.insertSelective(T);
+            }
         }
     }
 
+
     @Override
+    @Transactional
     public List<GpsVO> query(Long orderId) {
         List<GpsVO> list = new ArrayList<GpsVO>();
         List<GpsVO> result = loanQueryDOMapper.selectGpsByOrderId(orderId);
@@ -76,5 +146,129 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                 return list;
         }
         return result;
+    }
+
+    @Override
+    @Transactional
+    public GpsDetailTotalVO detail(Long orderId) {
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+
+        GpsDetailTotalVO gpsDetailTotal = new GpsDetailTotalVO();
+        gpsDetailTotal.setCustomers(customers);
+
+        GpsDetailVO gpsDetail = new GpsDetailVO();
+        gpsDetail=loanQueryDOMapper.selectGpsDetailByOrderId(orderId);
+        gpsDetailTotal.setGpsDetail(gpsDetail);
+
+
+        //gps信息
+        List<GpsVO> result = new ArrayList<GpsVO>();
+        result.addAll(loanQueryDOMapper.selectGpsByOrderId(orderId));
+        for( int i = result.size();i < gpsDetail.getGpsNum();i++){
+            GpsVO g = new GpsVO();
+            result.add(g);
+        }
+        gpsDetailTotal.setGpsNum(result);
+        //征信
+        List<UniversalCreditInfoVO> credits = loanQueryDOMapper.selectUniversalCreditInfo(orderId);
+        for (UniversalCreditInfoVO universalCreditInfoVO : credits) {
+            if (!StringUtils.isBlank(universalCreditInfoVO.getCustomer_id())) {
+                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(orderId, Long.valueOf(universalCreditInfoVO.getCustomer_id())));
+            }
+        }
+        gpsDetailTotal.setCredits(credits);
+        //贷款信息
+        gpsDetailTotal.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        return gpsDetailTotal;
+    }
+    private String getAccToken() throws Exception {
+        String[] tokens = tokenCache.getToken();
+
+        /*String[] tokens = new String[3];
+        tokens[0]="";
+        tokens[1]="";
+        tokens[2]="";*/
+        String accToken="";
+
+        if("".equals(tokens[0])){
+            String[] tokenStr = OpenApiUtil.getToken();
+            if("1006".equals(tokenStr[0])){
+                while(true){
+                    String repToken = tokenCache.getToken()[0];
+                    if(!"".equals(repToken)){
+                        accToken = repToken;
+                        break;
+                    }
+                }
+            }else{
+                accToken = tokenStr[0];
+                tokenCache.insertToken(tokenStr[0], tokenStr[1]);
+            }
+        }else{
+            accToken = tokens[0];
+        }
+        return accToken;
+    }
+    @Override
+    public List<GpsJimiInfoVO> queryOther(String partnerName){
+        List<GpsJimiInfoVO> list = new ArrayList<GpsJimiInfoVO>();
+        return list;
+    }
+    @Override
+    public List<GpsJimiInfoVO> queryJimi(String partnerName) {
+        List<Map<String,Object>> result = null;
+        try{
+            String accToken=getAccToken();
+            PartnerDO partnerDO = partnerDOMapper.queryByPartnerName(partnerName);
+            if(null != partnerDO){
+                String leaderName = partnerDO.getLeaderName().trim();
+                String target = "";
+                List<Map<String,Object>> list = OpenApiUtil.getChildTarget(accToken);
+                if(list.size() > 0){
+                    while("1004".equals((String)list.get(0).get("code"))){
+                        list = OpenApiUtil.getChildTarget(getAccToken());
+                    }
+                }
+                if(list.size() > 0){
+                    for(Map<String,Object> m:list){
+                        String name = (String)m.get("name");
+                        if(leaderName.trim().equals(name.trim())){
+                            target = (String)m.get("account");
+                            break;
+                        }
+                    }
+                }
+                if(!"".equals(target)){
+                    result = OpenApiUtil.getGpsInfo(accToken,target);
+                    while("1004".equals((String)list.get(0).get("code"))){
+                        result = OpenApiUtil.getGpsInfo(getAccToken(),target);
+                    }
+                }else {
+                    logger.info("团队领导人和GPS系统匹配失败");
+                }
+            }else{
+                logger.info("获取团队领导人失败");
+            }
+        }catch(Exception e){
+            logger.error(e.getMessage(),e);
+            throw new BizException(e.getMessage());
+        }
+        List<GpsJimiInfoVO> list = new ArrayList<GpsJimiInfoVO>();
+        if(result.size() > 0){
+            result.stream().forEach(e->{
+                GpsJimiInfoVO gpsJimiInfoVO = new GpsJimiInfoVO();
+                gpsJimiInfoVO.setGpsId((String)e.get("imei"));
+                //1为激活 0未激活
+                gpsJimiInfoVO.setActivationState(e.get("activationTime") == null ? "0" : "1");
+                gpsJimiInfoVO.setDriverName((String)e.get("driverName"));
+                gpsJimiInfoVO.setVehicleName((String)e.get("vehicleName"));
+                list.add(gpsJimiInfoVO);
+            });
+        }
+        return list;
     }
 }

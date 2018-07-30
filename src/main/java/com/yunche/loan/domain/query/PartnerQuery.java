@@ -60,4 +60,6 @@ public class PartnerQuery extends BaseQuery {
      * 所有子级areaId（含自身）
      */
     private List<Long> cascadeChildAreaIdList;
+
+    private String gpsCompany;
 }

@@ -13,4 +13,6 @@ public class InstallGpsDO {
     private String feature;
 
     private Byte status;
+
+    private String gps_company;
 }
