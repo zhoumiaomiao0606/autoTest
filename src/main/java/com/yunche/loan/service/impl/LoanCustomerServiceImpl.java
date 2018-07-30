@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.CustomerConst.*;
+import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.GuaranteeRelaConst.GUARANTOR_PERSONAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
@@ -63,29 +63,46 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
 
     @Override
+    @Transactional
     public ResultBean<Void> faceOff(Long orderId, Long principalLenderId, Long commonLenderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
         Preconditions.checkNotNull(principalLenderId, "主贷人ID不能为空");
         Preconditions.checkNotNull(commonLenderId, "共贷人ID不能为空");
+
+        // get 原共贷人的 cust_relation
+        Byte custRelation = loanCustomerDOMapper.getCustRelationById(commonLenderId);
+        // 与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
+        // 1、当共贷人关系与主贷人关系为父母的时候，切换后，共贷人与主贷人的关系变更为子女
+        // 2、当共贷人关系与主贷人关系为子女的时候，切换后，共贷人与主贷人的关系变更为父母
+        if (CUST_RELATION_fu_mu.equals(custRelation)) {
+            custRelation = CUST_RELATION_zi_nv;
+        } else if (CUST_RELATION_zi_nv.equals(custRelation)) {
+            custRelation = CUST_RELATION_fu_mu;
+        }
 
         // 编辑原主贷人
         LoanCustomerDO principalLenderDO = new LoanCustomerDO();
         principalLenderDO.setId(principalLenderId);
         principalLenderDO.setCustType(CUST_TYPE_COMMON);
         principalLenderDO.setPrincipalCustId(commonLenderId);
+        principalLenderDO.setCustRelation(custRelation);
         principalLenderDO.setGmtModify(new Date());
         loanCustomerDOMapper.updateByPrimaryKeySelective(principalLenderDO);
+
 
         // 编辑原共贷人
         LoanCustomerDO commonLenderDO = new LoanCustomerDO();
         commonLenderDO.setId(commonLenderId);
         commonLenderDO.setCustType(CUST_TYPE_PRINCIPAL);
         commonLenderDO.setPrincipalCustId(commonLenderId);
+        principalLenderDO.setCustRelation(CUST_RELATION_self);
         commonLenderDO.setGmtModify(new Date());
         loanCustomerDOMapper.updateByPrimaryKeySelective(commonLenderDO);
 
+
         // 编辑所有(其他)关联人的 主贷人ID
         loanCustomerDOMapper.updatePrincipalCustId(principalLenderId, commonLenderId);
+
 
         // 编辑业务单主贷人
         LoanOrderDO loanOrderDO = new LoanOrderDO();
@@ -94,7 +111,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         loanOrderDO.setGmtModify(new Date());
         loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
 
-        return ResultBean.ofSuccess(null, "主贷人和共贷人切换成功");
+        return ResultBean.ofSuccess(null, "主共贷人切换成功");
     }
 
     @Override
@@ -118,6 +135,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
 
     @Override
+    @Transactional
     public ResultBean<Long> updateAll(AllCustDetailParam allCustDetailParam) {
         Preconditions.checkNotNull(allCustDetailParam, "客户信息不能为空");
 
@@ -128,21 +146,22 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
 
     @Override
+    @Transactional
     public ResultBean<Long> create(LoanCustomerDO loanCustomerDO) {
         Preconditions.checkNotNull(loanCustomerDO, "客户信息不能为空");
         Preconditions.checkNotNull(loanCustomerDO.getCustType(), "客户类型不能为空");
         if (!CUST_TYPE_PRINCIPAL.equals(loanCustomerDO.getCustType())) {
             Preconditions.checkNotNull(loanCustomerDO.getPrincipalCustId(), "主贷人ID不能为空");
         }
-        if(CUST_TYPE_GUARANTOR.equals(loanCustomerDO.getCustType())){
+        if (CUST_TYPE_GUARANTOR.equals(loanCustomerDO.getCustType())) {
             List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getPrincipalCustId(), CUST_TYPE_GUARANTOR, VALID_STATUS);
-            if(CollectionUtils.isEmpty(loanCustomerDOS)){
-                if(!String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())){
-                    Preconditions.checkArgument(false,"您选择的担保人与主担保人关系有误，请核查");
+            if (CollectionUtils.isEmpty(loanCustomerDOS)) {
+                if (!String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())) {
+                    Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
                 }
-            }else{
-                if(String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())){
-                    Preconditions.checkArgument(false,"您选择的担保人与主担保人关系有误，请核查");
+            } else {
+                if (String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())) {
+                    Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
                 }
             }
         }
@@ -165,6 +184,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     }
 
     @Override
+    @Transactional
     public ResultBean<Void> update(LoanCustomerDO loanCustomerDO) {
         Preconditions.checkNotNull(loanCustomerDO, "客户信息不能为空");
         Preconditions.checkNotNull(loanCustomerDO.getId(), "客户ID不能为空");
@@ -380,8 +400,8 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         if (CREDIT_TYPE_BANK.equals(e.getType())) {
                             principalLender.setBankCreditResult(e.getResult());
                             principalLender.setBankCreditInfo(e.getInfo());
-                            principalLender.setBankCreditNote(loanQueryDOMapper.selectLastBankInterfaceSerialNoteByTransCode(e.getCustomerId(),"applyCredit"));
-                            principalLender.setBankCreditStatus(loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(e.getCustomerId(),"applyCredit"));
+                            principalLender.setBankCreditNote(loanQueryDOMapper.selectLastBankInterfaceSerialNoteByTransCode(e.getCustomerId(), "applyCredit"));
+                            principalLender.setBankCreditStatus(loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(e.getCustomerId(), "applyCredit"));
                         } else if (CREDIT_TYPE_SOCIAL.equals(e.getType())) {
                             principalLender.setSocialCreditResult(e.getResult());
                             principalLender.setSocialCreditInfo(e.getInfo());

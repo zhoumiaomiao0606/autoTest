@@ -40,8 +40,8 @@ import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_L
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
-import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_SOCIAL;
-import static com.yunche.loan.config.constant.CustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
+import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_SOCIAL;
+import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanAmountConst.*;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;

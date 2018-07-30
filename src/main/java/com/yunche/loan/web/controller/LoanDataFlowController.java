@@ -33,7 +33,7 @@ public class LoanDataFlowController {
     }
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean create(@RequestBody LoanDataFlowDO loanDataFlowDO) {
+    public ResultBean<Long> create(@RequestBody LoanDataFlowDO loanDataFlowDO) {
         return loanDataFlowService.create(loanDataFlowDO);
     }
 

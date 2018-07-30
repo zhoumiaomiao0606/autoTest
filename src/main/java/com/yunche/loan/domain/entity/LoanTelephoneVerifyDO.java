@@ -7,7 +7,7 @@ import java.util.Date;
 @Data
 public class LoanTelephoneVerifyDO {
 
-    private Long orderId;
+    private String orderId;
 
     private String info;
 

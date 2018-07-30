@@ -30,8 +30,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_BANK;
-import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_SOCIAL;
+import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_BANK;
+import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_SOCIAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;

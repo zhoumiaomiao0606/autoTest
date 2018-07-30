@@ -62,6 +62,20 @@ public interface LoanCustomerDOMapper {
     List<Long> listPrincipalCustIdByIdCard(@Param("idCard") String idCard);
 
 
-    //根据orderid获得关于这个主贷人的自己和关联的客户
+    /**
+     * 根据orderid获得关于这个主贷人的自己和关联的客户
+     *
+     * @param orderId
+     * @param types
+     * @return
+     */
     List<LoanCustomerDO> selectSelfAndRelevanceCustomersByCustTypes(@Param("orderId") Long orderId, @Param("types") Set types);
+
+    /**
+     * 根据客户ID 获取 cust_relation
+     *
+     * @param id
+     * @return
+     */
+    Byte getCustRelationById(Long id);
 }

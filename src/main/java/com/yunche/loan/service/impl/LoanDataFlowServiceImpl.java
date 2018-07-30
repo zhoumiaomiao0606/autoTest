@@ -115,7 +115,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Override
     @Transactional
-    public ResultBean create(LoanDataFlowDO loanDataFlowDO) {
+    public ResultBean<Long> create(LoanDataFlowDO loanDataFlowDO) {
         Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getType(), "type不能为空");
         Preconditions.checkNotNull(loanDataFlowDO.getOrderId(), "orderId不能为空");
 
@@ -166,7 +166,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         Long loginUserId = SessionUtils.getLoginUser().getId();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
-        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalDataFlowCustomerOrder(loginUserId,  StringUtils.isBlank(customerName)?null:customerName,maxGroupLevel == null?new Long(0):maxGroupLevel,juniorIds);
+        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalDataFlowCustomerOrder(loginUserId, StringUtils.isBlank(customerName) ? null : customerName, maxGroupLevel == null ? new Long(0) : maxGroupLevel, juniorIds);
         return ResultBean.ofSuccess(universalCustomerOrderVOS);
     }
 

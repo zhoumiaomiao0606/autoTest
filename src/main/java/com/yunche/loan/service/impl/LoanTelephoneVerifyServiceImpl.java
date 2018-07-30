@@ -42,7 +42,7 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
         loanTelephoneVerifyDO.setGmtModify(new Date());
         loanTelephoneVerifyDO.setUserId(employeeDO.getId());
         loanTelephoneVerifyDO.setUserName(employeeDO.getName());
-        LoanTelephoneVerifyDO existLoanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(loanTelephoneVerifyParam.getOrderId());
+        LoanTelephoneVerifyDO existLoanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(Long.valueOf(loanTelephoneVerifyParam.getOrderId()));
         if (null == existLoanTelephoneVerifyDO) {
             // create
             loanTelephoneVerifyDO.setGmtCreate(new Date());

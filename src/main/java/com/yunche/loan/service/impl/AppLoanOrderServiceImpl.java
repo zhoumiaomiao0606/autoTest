@@ -33,10 +33,9 @@ import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
-import static com.yunche.loan.config.constant.CustomerConst.*;
+import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
-import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
@@ -124,9 +123,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private InsuranceRelevanceDOMapper insuranceRelevanceDOMapper;
-
-    @Autowired
-    private LoanInfoSupplementDOMapper loanInfoSupplementDOMapper;
 
     @Autowired
     private LoanProcessLogDOMapper loanProcessLogDOMapper;
@@ -505,30 +501,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     public ResultBean<Void> infoSupplementUpload(InfoSupplementParam infoSupplementParam) {
 
         return loanInfoSupplementService.save(infoSupplementParam);
-
-//        Long suppermentOrderId = infoSupplementParam.getSupplementOrderId();
-//        String remark = infoSupplementParam.getRemark();
-//        LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
-//        loanInfoSupplementDO.setRemark(remark);
-//        loanInfoSupplementDO.setId(suppermentOrderId);
-//        int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
-//        Preconditions.checkArgument(count > 0, "增补失败");
-//
-//        List<FileVO> files = infoSupplementParam.getFiles();
-//        files.parallelStream()
-//                .filter(Objects::nonNull)
-//                .forEach(e -> {
-//
-//                    // 已经增补过的图片 ——> 正常上传
-//                    ResultBean<Void> moveResultBean = loanFileService.moveOldSupplementToNormal(infoSupplementParam.getCustomerId(), e.getType());
-//                    Preconditions.checkArgument(moveResultBean.getSuccess(), moveResultBean.getMsg());
-//
-//                    // 保存新增补的文件 ——> 增补上传
-//                    ResultBean<Void> saveResultBean = loanFileService.saveNewSupplementFiles(infoSupplementParam.getCustomerId(), e.getType(), e.getUrls());
-//                    Preconditions.checkArgument(saveResultBean.getSuccess(), saveResultBean.getMsg());
-//                });
-//
-//        return ResultBean.ofSuccess(null, "[资料增补]保存成功");
     }
 
     @Override
@@ -1051,6 +1023,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
      * @param appLoanFinancialPlanParam
      */
     @Override
+    @Transactional
     public ResultBean<Long> createLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam) {
         Preconditions.checkNotNull(appLoanFinancialPlanParam.getOrderId(), "业务单号不能为空");
 
@@ -1077,6 +1050,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
      * @param appLoanFinancialPlanParam
      */
     @Override
+    @Transactional
     public ResultBean<Void> updateLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam) {
         Preconditions.checkNotNull(appLoanFinancialPlanParam, "金融方案不能为空");
 

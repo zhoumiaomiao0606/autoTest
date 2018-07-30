@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.*;
-import static com.yunche.loan.config.constant.LoanCustomerConst.EMERGENCY_CONTACT;
+import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
@@ -150,7 +150,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
         //贷款信息
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
-        Set<Byte> bytes = Sets.newHashSet(EMERGENCY_CONTACT);
+        Set<Byte> bytes = Sets.newHashSet(CUST_TYPE_EMERGENCY_CONTACT);
         List<LoanCustomerDO> emergencyContact = loanCustomerDOMapper.selectSelfAndRelevanceCustomersByCustTypes(orderId, bytes);
 
 
