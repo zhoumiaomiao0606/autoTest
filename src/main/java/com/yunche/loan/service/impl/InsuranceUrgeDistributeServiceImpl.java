@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.InsuranceDistributeRecordDO;
 import com.yunche.loan.domain.entity.InsuranceDistributeRecordDOKey;
-import com.yunche.loan.domain.param.ManualDistributionParam;
+import com.yunche.loan.domain.param.ManualInsuranceParam;
 import com.yunche.loan.domain.vo.InsuranceUrgeVO;
 import com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee;
 import com.yunche.loan.mapper.BankRecordQueryDOMapper;
@@ -13,10 +13,13 @@ import com.yunche.loan.mapper.InsuranceDistributeRecordDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.InsuranceUrgeDistributeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
+@Service
 public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistributeService {
 
     @Autowired
@@ -37,28 +40,31 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
     }
 
     @Override
-    public ResultBean manualDistribution(List<ManualDistributionParam> manualDistributionParams) {
+    @Transactional
+    public ResultBean manualDistribution(ManualInsuranceParam manualInsuranceParam) {
 
-        List<InsuranceDistributeRecordDO> distributionList = Lists.newArrayList();
+        List<InsuranceDistributeRecordDO> list = Lists.newArrayList();
         //分配开始
-        for(ManualDistributionParam param:manualDistributionParams){
+        for(Long orderId:manualInsuranceParam.getOrderIdList()){
             InsuranceDistributeRecordDOKey insuranceDistributeRecordDOKey = new InsuranceDistributeRecordDOKey();
-            insuranceDistributeRecordDOKey.setOrderId(Long.valueOf(param.getOrder_id()));//业务单号
-            insuranceDistributeRecordDOKey.setEmployeeId(param.getSendee_id());//催保员工编号
+            insuranceDistributeRecordDOKey.setOrderId(orderId);//业务单号
+            insuranceDistributeRecordDOKey.setEmployeeId(manualInsuranceParam.getSendeeId());//催保员工编号
             InsuranceDistributeRecordDO insuranceDistributeRecordDO = insuranceDistributeRecordDOMapper.selectByPrimaryKey(insuranceDistributeRecordDOKey);
 
             if(insuranceDistributeRecordDO==null){
                 InsuranceDistributeRecordDO tmp = new InsuranceDistributeRecordDO();
-                tmp.setOrderId(Long.valueOf(param.getOrder_id()));
+                tmp.setOrderId(orderId);
                 tmp.setDistributeDate(new Date());
-                tmp.setEmployeeId(param.getSendee_id());
-                tmp.setEmployeeName(param.getSendee());
+                tmp.setEmployeeId(manualInsuranceParam.getSendeeId());
+                tmp.setEmployeeName(manualInsuranceParam.getSendee());
                 tmp.setGmtCreate(new Date());
-                distributionList.add(tmp);
+                list.add(tmp);
             }
-            int batch = insuranceDistributeRecordDOMapper.insertBatch(distributionList);
-            Preconditions.checkArgument(distributionList.size()!=batch,"催保分配异常");
+
         }
+
+        int batch = insuranceDistributeRecordDOMapper.insertBatch(list);
+        Preconditions.checkArgument(list.size()==batch,"催保分配异常");
         return ResultBean.ofSuccess(null,"催保分配完成");
     }
 

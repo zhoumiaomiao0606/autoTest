@@ -1,8 +1,11 @@
 package com.yunche.loan.domain.vo;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Data
 public class InsuranceUrgeVO {
     private Long  orderId;
     private String  partnerName;
@@ -11,6 +14,7 @@ public class InsuranceUrgeVO {
     private String  mobile;
     private String  bank;
     private String  employeeName;
+    private Long    employeeId;
     private BigDecimal carPrice;
     private Integer  insuranceYear;
     private Byte  insuranceType;

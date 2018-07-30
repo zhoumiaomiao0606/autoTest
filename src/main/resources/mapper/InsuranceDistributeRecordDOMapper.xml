@@ -109,8 +109,8 @@
       distribute_date, gmt_create, gmt_modify)
     VALUES
     <foreach collection="list" item="item" index="index" separator=",">
-      (#{orderId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{employeeName,jdbcType=VARCHAR},
-      #{distributeDate,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
+      (#{item.orderId,jdbcType=BIGINT}, #{item.employeeId,jdbcType=BIGINT}, #{item.employeeName,jdbcType=VARCHAR},
+      #{item.distributeDate,jdbcType=TIMESTAMP}, #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP})
     </foreach >
   </insert>
 </mapper>

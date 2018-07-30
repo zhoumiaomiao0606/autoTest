@@ -3,7 +3,7 @@ package com.yunche.loan.web.controller;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.ManualDistributionBaseParam;
+import com.yunche.loan.domain.param.ManualInsuranceParam;
 import com.yunche.loan.domain.vo.InsuranceUrgeVO;
 import com.yunche.loan.service.InsuranceUrgeDistributeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +48,9 @@ public class InsuranceUrgeDistributeController {
      * @return
      */
     @PostMapping(value = "/manualDistribution", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> manualDistribution(@RequestBody  ManualDistributionBaseParam param) {
+    public ResultBean<Void> manualDistribution(@RequestBody ManualInsuranceParam param) {
 
-        insuranceUrgeDistributeService.manualDistribution(param.getManual_distribution_list());
+        insuranceUrgeDistributeService.manualDistribution(param);
 
         return ResultBean.ofSuccess(null,"保存成功");
     }

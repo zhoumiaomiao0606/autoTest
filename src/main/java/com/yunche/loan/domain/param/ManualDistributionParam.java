@@ -5,6 +5,8 @@ import org.hibernate.validator.constraints.NotBlank;
 
 @Data
 public class ManualDistributionParam {
+
+
     @NotBlank
     private String order_id;
     @NotBlank
