@@ -205,7 +205,7 @@ public class FtpUtil {
      * 文件下载
      * @param serverFilePath
      */
-    public static String icbcDownload(String serverFilePath){
+    public static String icbcDownload(String serverFilePath,String fileName){
         Preconditions.checkNotNull(serverFilePath,"文件服务器路径未配置");
         Preconditions.checkNotNull(serverpath,"服务器文件路径未配置");
         Preconditions.checkNotNull(servierIP,"服务器IP未配置");
@@ -215,10 +215,9 @@ public class FtpUtil {
 
         String localName = null;
         try {
-            String fileName = serverFilePath.substring(serverFilePath.lastIndexOf(File.separator) + 1);
             String realPassword = DesEncryptUtil.decryptBasedDes(password);
             ftp.connect(servierIP,Integer.parseInt(port),userName,realPassword);
-            ftp.cd(serverRecvPath);
+            ftp.cd(serverFilePath);
             ftp.asc();
             boolean download = ftp.download(fileName, tempDir + fileName);
 

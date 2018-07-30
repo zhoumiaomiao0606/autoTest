@@ -8,6 +8,7 @@ import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.client.ICBCFeignNormal;
+import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.ViolationUtil;
@@ -25,12 +26,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -69,12 +67,14 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     private LoanProcessService loanProcessService;
 
     @Override
-    public String  fileDownload(String filesrc) {
+    public String  fileDownload(String filesrc,String fileType) {
 
         String returnKey=null;
         try {
-            boolean filedownload = icbcFeignFileDownLoad.filedownload(filesrc);
-            String fileAndPath = FtpUtil.icbcDownload(sysConfig.getFileServerpath() + filesrc);
+            boolean filedownload = icbcFeignFileDownLoad.filedownload(filesrc,fileType);
+            String serverRecvPath = sysConfig.getServerRecvPath();
+            serverRecvPath = serverRecvPath.replaceAll("FILETYPE",fileType);
+            String fileAndPath = FtpUtil.icbcDownload(serverRecvPath,DateUtil.getDate()+".txt");
             OSSClient ossClient = OSSUnit.getOSSClient();
             String diskName = ossConfig.getDownLoadDiskName();
             File file = new File(fileAndPath);
