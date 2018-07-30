@@ -198,11 +198,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         switch (value) {
             case 1:
                 //判断当前客户贷款银行是否为杭州工行，如为杭州工行：
-                ICBCCommonBusinessApplyProcess(orderId,sysConfig.getHzphybrno());
+                ICBCCommonBusinessApplyProcess(bankId,orderId,sysConfig.getHzphybrno());
                 break;
             case 3:
                 //判断当前客户贷款银行是否为台州工行，如为台州工行：
-                ICBCCommonBusinessApplyProcess(orderId,sysConfig.getHzphybrno());
+                ICBCCommonBusinessApplyProcess(bankId,orderId,sysConfig.getHzphybrno());
                 break;
             default:
                 return;
@@ -332,7 +332,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
 
-    public void ICBCCommonBusinessApplyProcess(Long orderId,String phybrno){
+    public void ICBCCommonBusinessApplyProcess(Long bankId, Long orderId, String phybrno){
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId,new Byte("0"));
         //获取数据源
@@ -573,7 +573,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setIdType(IDict.K_JJLX.IDCARD);
         customer.setIdNo(loanCustomerDO.getIdCard());
         customer.setMobile(loanCustomerDO.getMobile());
-        customer.setAddress(loanCustomerDO.getAddress());
+        customer.setAddress(loanCustomerDO.getCprovince() + loanCustomerDO.getCcity() + loanCustomerDO.getCcounty() + loanCustomerDO.getAddress());
         customer.setUnit(loanCustomerDO.getIncomeCertificateCompanyName());
         //busi
         //car
@@ -583,7 +583,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         car.setCarRegNo(vehicleInformationDO.getRegistration_certificate_number());
         car.setShorp4s(vehicleInformationDO.getInvoice_car_dealer());
         car.setCarNo2(vehicleInformationDO.getLicense_plate_number());
-        car.setAssessPrice(carDetailDO.getPrice());//车辆评估价格（元
+        car.setAssessPrice(loanFinancialPlanDO.getAppraisal() == null?null:loanFinancialPlanDO.getAppraisal().stripTrailingZeros().toPlainString());//车辆评估价格（元
         car.setAssessOrg(vehicleInformationDO.getAssess_org());//评估机构
         car.setUsedYears(StringUtils.isBlank(vehicleInformationDO.getAssess_use_year())?useYear == 0 || useYear == null?null:useYear.toString():vehicleInformationDO.getAssess_use_year());//使用年限(月)
 
@@ -593,7 +593,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         divi.setInterest(interest);
         divi.setFeeMode(IDict.K_FEEMODE.TERM);
         divi.setIsPawn(IDict.K_ISPAWN.YES);
-        divi.setPawnGoods(carFullName);
+        divi.setPawnGoods(bankId.intValue() == 1 ? carFullName : bankId.intValue() == 3 ?vehicleInformationDO.getVehicle_identification_number() +" "+carFullName : null);
         divi.setIsAssure(IDict.K_ISASSURE.YES);
         divi.setCard(lendCard);
         divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);

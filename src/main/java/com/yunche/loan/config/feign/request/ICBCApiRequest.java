@@ -193,7 +193,7 @@ public class ICBCApiRequest {
         private String PawnGoods;
         @NotEmpty
         private String IsAssure;
-        @NotEmpty
+
         private String card;
         @NotEmpty(groups = {NewValidated.class})
         private String tiexiFlag;
