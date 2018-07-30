@@ -31,7 +31,7 @@ public interface ICBCFeignClient {
     public CreditCardApplyResponse creditcardapply(@RequestBody ICBCApiRequest.ApplyBankOpenCard applyBankOpenCard);
 
     @RequestMapping(value = "/api/v1/test/icbc/apply/filedownload",method = RequestMethod.GET)
-    public boolean filedownload(@RequestParam(value = "filesrc") String  filesrc);
+    public boolean filedownload(@RequestParam(value = "filesrc") String  filesrc,@RequestParam(value = "fileType") String  fileType);
 
     //查询申请进度
     @RequestMapping(value = "/api/v1/icbc/apply/applystatus",method = RequestMethod.POST)

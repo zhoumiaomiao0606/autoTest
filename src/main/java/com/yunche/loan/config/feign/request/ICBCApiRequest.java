@@ -163,7 +163,7 @@ public class ICBCApiRequest {
         private String carRegNo;
 
         private String shorp4s;
-        @NotEmpty
+
         private String carNo2;
         @NotEmpty(groups = {SecondValidated.class})
         private String AssessPrice;
