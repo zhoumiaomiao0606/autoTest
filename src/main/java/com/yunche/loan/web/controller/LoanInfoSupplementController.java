@@ -42,9 +42,9 @@ public class LoanInfoSupplementController {
      * @param supplementOrderId
      * @return
      */
-    @GetMapping(value = "/detail")
-    public ResultBean<InfoSupplementVO> detail(@RequestParam Long supplementOrderId) {
-        return loanInfoSupplementService.detail(supplementOrderId);
+    @GetMapping(value = "/detail_")
+    public ResultBean<InfoSupplementVO> detail_(@RequestParam Long supplementOrderId) {
+        return loanInfoSupplementService.detail__(supplementOrderId);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,9 +66,9 @@ public class LoanInfoSupplementController {
      * @param infoSupplementId
      * @return
      */
-    @GetMapping(value = "/detail_")
-    public ResultBean<InfoSupplementVO2> detail_(@RequestParam Long infoSupplementId) {
-        return loanInfoSupplementService.detail_(infoSupplementId);
+    @GetMapping(value = "/detail")
+    public ResultBean<InfoSupplementVO2> detail(@RequestParam Long infoSupplementId) {
+        return loanInfoSupplementService.detail(infoSupplementId);
     }
 
     /**

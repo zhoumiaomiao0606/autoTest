@@ -165,7 +165,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
 
-        ResultBean<InfoSupplementVO2> detailResult = loanInfoSupplementService.detail_(supplementOrderId);
+        ResultBean<InfoSupplementVO2> detailResult = loanInfoSupplementService.detail(supplementOrderId);
         Preconditions.checkArgument(detailResult.getSuccess(), detailResult.getMsg());
 
         InfoSupplementVO2 data = detailResult.getData();

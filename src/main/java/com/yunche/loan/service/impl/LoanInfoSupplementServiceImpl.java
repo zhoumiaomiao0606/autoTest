@@ -90,7 +90,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
     }
 
     @Override
-    public ResultBean<InfoSupplementVO> detail(Long supplementOrderId) {
+    public ResultBean<InfoSupplementVO> detail__(Long supplementOrderId) {
         Preconditions.checkNotNull(supplementOrderId, "增补单不能为空");
 
         LoanInfoSupplementDO loanInfoSupplementDO = loanInfoSupplementDOMapper.selectByPrimaryKey(supplementOrderId);
@@ -172,7 +172,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
     }
 
     @Override
-    public ResultBean<InfoSupplementVO2> detail_(Long infoSupplementId) {
+    public ResultBean<InfoSupplementVO2> detail(Long infoSupplementId) {
         Preconditions.checkNotNull(infoSupplementId, "增补单ID不能为空");
 
         // getAll

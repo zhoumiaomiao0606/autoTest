@@ -15,11 +15,11 @@ public interface LoanInfoSupplementService {
 
     ResultBean<Void> upload(InfoSupplementParam infoSupplementParam);
 
-    ResultBean<InfoSupplementVO> detail(Long id);
+    ResultBean<InfoSupplementVO> detail__(Long id);
 
     ResultBean<List<InfoSupplementVO2>> history(Long orderId);
 
-    ResultBean<InfoSupplementVO2> detail_(Long infoSupplementId);
+    ResultBean<InfoSupplementVO2> detail(Long infoSupplementId);
 
     ResultBean<Void> save(InfoSupplementParam infoSupplementParam);
 }
