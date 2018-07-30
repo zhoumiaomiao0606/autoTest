@@ -153,28 +153,6 @@ public class LoanOrderController {
     }
 
     /**
-     * 资料增补 -客户证件图片信息
-     *
-     * @param infoSupplementParam
-     * @return
-     */
-    @PostMapping(value = "/infosupplement/upload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> infoSupplementUpload(@RequestBody InfoSupplementParam infoSupplementParam) {
-        return loanOrderService.infoSupplementUpload(infoSupplementParam);
-    }
-
-    /**
-     * 资料增补详情页
-     *
-     * @param supplementOrderId
-     * @return
-     */
-    @GetMapping(value = "/infosupplement/detail")
-    public ResultBean<InfoSupplementVO> infoSupplementDetail(@RequestParam Long supplementOrderId) {
-        return loanOrderService.infoSupplementDetail(supplementOrderId);
-    }
-
-    /**
      * 上门调查   -主贷客户信息
      *
      * @param orderId

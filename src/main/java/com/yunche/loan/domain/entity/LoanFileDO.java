@@ -6,11 +6,12 @@ import java.util.Date;
 
 @Data
 public class LoanFileDO {
+
     private Long id;
 
     private Long customerId;
 
-    private String path;
+    private Long infoSupplementId;
 
     private Byte type;
 
@@ -19,6 +20,8 @@ public class LoanFileDO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String path;
 
     private Byte status;
 }

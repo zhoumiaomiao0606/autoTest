@@ -194,10 +194,6 @@ public class DictServiceImpl implements DictService {
         return key;
     }
 
-    @Override
-    public String getKeyByCodeOfLoanDataFlowType(String code) {
-        return getKeyByCode("loanDataFlowType", code);
-    }
 
     private DataDictionaryVO.Detail getFieldDetail(String field) {
         // getAll

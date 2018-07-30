@@ -58,13 +58,4 @@ public interface DictService {
      * @return
      */
     String getCodeByKey(String field, String key);
-
-    /**
-     * 资料流转
-     * code -> k
-     *
-     * @param code
-     * @return
-     */
-    String getKeyByCodeOfLoanDataFlowType(String code);
 }

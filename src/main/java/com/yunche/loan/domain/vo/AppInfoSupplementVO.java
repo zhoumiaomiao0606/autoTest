@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class AppInfoSupplementVO {
     /**
      * 贷款额
      */
-    private String loanAmount;
+    private BigDecimal loanAmount;
     /**
      * 按揭期限
      */
@@ -48,11 +49,11 @@ public class AppInfoSupplementVO {
      */
     private String carName;
     /**
-     * 资料增补类型  (1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;)
+     * 资料增补类型
      */
     private Byte supplementType;
     /**
-     * 增补类型文本值  (1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;)
+     * 增补类型文本值
      */
     private String supplementTypeText;
     /**
@@ -83,9 +84,8 @@ public class AppInfoSupplementVO {
      * 文件分类 URL列表
      */
     private List<FileVO> files;
-
     /**
-     * 
+     * 备注
      */
     private String remark;
 }

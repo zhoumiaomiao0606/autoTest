@@ -36,14 +36,14 @@ public class AreaCache {
     /**
      * 级联缓存KEY
      */
-    private static final String CASCADE_CACHE_AREA_KEY = "cascade:cache:area";
+    private static final String CASCADE_CACHE_AREA_KEY = "area:cache:cascade";
     /**
      * 所有AREA缓存KEY
      */
-    private static final String ALL_CACHE_AREA_KEY = "all:cache:area";
+    private static final String ALL_CACHE_AREA_KEY = "area:cache:all";
 
 
-    private static final String ONE_BY_ONE_CACHE_AREA_KEY = "one2one:cache:area";
+    private static final String ONE_BY_ONE_CACHE_AREA_KEY = "area:cache:one2one";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

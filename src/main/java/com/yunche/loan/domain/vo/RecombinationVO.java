@@ -15,8 +15,6 @@ public class RecombinationVO<T> {
 
     private UniversalLoanFinancialPlanTempHisVO diff;
 
-    private List<UniversalRelationCustomerVO> relations = Lists.newArrayList();
-
     private UniversalLoanRefundApplyVO refund;
 
     private UniversalApprovalInfo current_msg;
@@ -40,17 +38,21 @@ public class RecombinationVO<T> {
     private UniversalRemitDetails remit;
 
     private UniversalHomeVisitInfoVO home;
-
+    /**
+     * 增补单
+     */
     private UniversalSupplementInfoVO supplement;
-
+    /**
+     * 金融方案
+     */
     private FinancialSchemeVO financial;
 
     private UniversalOverdueInfo overdue;
 
-        private BankInterfaceSerialVO bankSerial;
+    private BankInterfaceSerialVO bankSerial;
 
-        private LoanBaseInfoVO loanBaseInfo;
-        /**
+    private LoanBaseInfoVO loanBaseInfo;
+    /**
      * 资料流转
      */
     private UniversalDataFlowDetailVO dataFlow;
@@ -60,6 +62,9 @@ public class RecombinationVO<T> {
      */
     private UniversalMaterialManageVO materialManage;
 
+
+    private List<UniversalRelationCustomerVO> relations = Lists.newArrayList();
+
     private List<UniversalLoanRepaymentPlan> repayments = Lists.newArrayList();
 
     private List<UniversalCollectionRecord> collections = Lists.newArrayList();
@@ -68,7 +73,7 @@ public class RecombinationVO<T> {
 
     private List<UniversalCreditInfoVO> credits = Lists.newArrayList();
 
-    List<LoanCustomerDO> emergencyContacts = Lists.newArrayList();
+    private List<LoanCustomerDO> emergencyContacts = Lists.newArrayList();
 
     private List<UniversalCustomerVO> customers = Lists.newArrayList();
 

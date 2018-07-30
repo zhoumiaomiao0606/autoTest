@@ -243,7 +243,7 @@ public class AppLoanOrderController {
      * @return
      */
     @PostMapping(value = "/infosupplement/upload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> infoSupplementUpload(@RequestBody AppInfoSupplementParam param) {
+    public ResultBean<Void> infoSupplementUpload(@RequestBody InfoSupplementParam param) {
         return appLoanOrderService.infoSupplementUpload(param);
     }
 

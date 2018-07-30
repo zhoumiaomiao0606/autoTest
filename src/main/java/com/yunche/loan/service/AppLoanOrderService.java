@@ -28,7 +28,7 @@ public interface AppLoanOrderService {
 
     ResultBean<Void> createOrUpdateLoanHomeVisit(AppLoanHomeVisitParam loanHomeVisitParam);
 
-    ResultBean<Void> infoSupplementUpload(AppInfoSupplementParam infoSupplementParam);
+    ResultBean<Void> infoSupplementUpload(InfoSupplementParam infoSupplementParam);
 
     ResultBean<Long> createBaseInfo(AppLoanBaseInfoParam param);
 

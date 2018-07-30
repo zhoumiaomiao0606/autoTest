@@ -33,12 +33,10 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_BANK;
 import static com.yunche.loan.config.constant.CustomerConst.CREDIT_TYPE_SOCIAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
-import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_ACTION;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_INFO_SUPPLEMENT_TYPE;
-import static com.yunche.loan.config.constant.MultipartTypeConst.MULTIPART_TYPE_CUSTOMER_LOAN_DONE;
 
 /**
  * Created by zhouguoliang on 2018/2/5.
@@ -95,9 +93,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private CarDetailDOMapper carDetailDOMapper;
 
     @Autowired
-    private LoanInfoSupplementDOMapper loanInfoSupplementDOMapper;
-
-    @Autowired
     private VehicleInformationDOMapper vehicleInformationDOMapper;
 
     @Autowired
@@ -129,9 +124,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private PermissionService permissionService;
-
-    @Autowired
-    private DictService dictService;
 
 
     @Override
@@ -410,64 +402,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         return ResultBean.ofSuccess(loanSimpleCustomerInfoVOS);
     }
 
-    @Override
-    public ResultBean<InfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
-        Preconditions.checkNotNull(supplementOrderId, "增补单不能为空");
-
-        LoanInfoSupplementDO loanInfoSupplementDO = loanInfoSupplementDOMapper.selectByPrimaryKey(supplementOrderId);
-        Preconditions.checkNotNull(loanInfoSupplementDO, "增补单不存在");
-
-        InfoSupplementVO infoSupplementVO = new InfoSupplementVO();
-
-        // 增补信息
-        infoSupplementVO.setSupplementOrderId(supplementOrderId);
-        infoSupplementVO.setSupplementType(loanInfoSupplementDO.getType());
-        infoSupplementVO.setSupplementTypeText(getSupplementTypeText(loanInfoSupplementDO.getType()));
-        infoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());
-        infoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());
-        infoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
-        infoSupplementVO.setRemark(loanInfoSupplementDO.getRemark());
-
-        Long orderId = loanInfoSupplementDO.getOrderId();
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
-
-        infoSupplementVO.setOrderId(String.valueOf(orderId));
-
-        // 客户信息
-        if (null != loanOrderDO.getLoanCustomerId()) {
-            CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
-
-            if (null != customerVO) {
-                infoSupplementVO.setCustomerId(customerVO.getId());
-                infoSupplementVO.setCustomerName(customerVO.getName());
-                infoSupplementVO.setIdCard(customerVO.getIdCard());
-            }
-        }
-
-        // 业务员信息
-        ResultBean<LoanBaseInfoVO> loanBaseInfoResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
-        Preconditions.checkArgument(loanBaseInfoResultBean.getSuccess(), loanBaseInfoResultBean.getMsg());
-        LoanBaseInfoVO loanBaseInfoVO = loanBaseInfoResultBean.getData();
-        if (null != loanBaseInfoVO) {
-            BaseVO salesman = loanBaseInfoVO.getSalesman();
-            if (null != salesman) {
-                infoSupplementVO.setSalesmanId(salesman.getId());
-                infoSupplementVO.setSalesmanName(salesman.getName());
-            }
-            BaseVO partner = loanBaseInfoVO.getPartner();
-            if (null != partner) {
-                infoSupplementVO.setPartnerId(partner.getId());
-                infoSupplementVO.setPartnerName(partner.getName());
-            }
-        }
-
-        // 客户及文件分类列表
-        fillCustomerAndFile(infoSupplementVO, orderId);
-
-        return ResultBean.ofSuccess(infoSupplementVO);
-    }
-
 
     @Override
     public ResultBean<LoanCarInfoVO> loanCarInfoDetail(Long orderId) {
@@ -588,107 +522,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         } else {
             // 编辑
             return updateLoanHomeVisit(loanHomeVisitParam);
-        }
-    }
-
-
-    @Override
-    public ResultBean<Void> infoSupplementUpload(InfoSupplementParam infoSupplementParam) {
-        Preconditions.checkNotNull(infoSupplementParam.getCustomerId(), "客户ID不能为空");
-        Preconditions.checkNotNull(infoSupplementParam.getSupplementOrderId(), "增补单ID不能为空");
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementParam.getFiles()) ||
-                StringUtils.isNotBlank(infoSupplementParam.getRemark()), "资料信息或备注为空");
-
-        // files
-        saveFiles(infoSupplementParam);
-
-        Long suppermentOrderId = infoSupplementParam.getSupplementOrderId();
-        String remark = infoSupplementParam.getRemark();
-
-        LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
-        loanInfoSupplementDO.setRemark(remark);
-        loanInfoSupplementDO.setId(suppermentOrderId);
-        int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
-        Preconditions.checkArgument(count > 0, "增补失败");
-
-        List<FileVO> files = infoSupplementParam.getFiles();
-        files.stream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
-
-                    // 已经增补过的图片 ——> 正常上传
-                    ResultBean<Void> moveResultBean = loanFileService.moveOldSupplementToNormal(infoSupplementParam.getCustomerId(), e.getType());
-                    Preconditions.checkArgument(moveResultBean.getSuccess(), moveResultBean.getMsg());
-
-                    // 保存新增补的文件 ——> 增补上传
-                    ResultBean<Void> saveResultBean = loanFileService.saveNewSupplementFiles(infoSupplementParam.getCustomerId(), e.getType(), e.getUrls());
-                    Preconditions.checkArgument(saveResultBean.getSuccess(), saveResultBean.getMsg());
-                });
-
-        return ResultBean.ofSuccess(null, "资料增补成功");
-    }
-
-    /**
-     * save
-     *
-     * @param infoSupplementParam
-     */
-    private void saveFiles(InfoSupplementParam infoSupplementParam) {
-
-        LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
-
-        loanInfoSupplementDO.setId(infoSupplementParam.getSupplementOrderId());
-
-        int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
-        Preconditions.checkArgument(count > 0, "保存失败");
-    }
-
-    /**
-     * 填充订单信息
-     *
-     * @param taskInfo
-     * @param loanOrderVO
-     * @param processInstanceId
-     * @param taskDefinitionKey
-     * @param taskStatus
-     * @param multipartType
-     */
-    private void fillOrderMsg(TaskInfo taskInfo, LoanOrderVO loanOrderVO, String processInstanceId, String taskDefinitionKey,
-                              Byte taskStatus, Integer multipartType) {
-        // 任务状态
-        if (null == taskInfo) {
-            List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
-                    .processInstanceId(processInstanceId)
-                    .taskDefinitionKey(taskDefinitionKey)
-                    .orderByTaskCreateTime()
-                    .desc()
-                    .listPage(0, 1);
-
-            if (!CollectionUtils.isEmpty(historicTaskInstanceList)) {
-                taskInfo = historicTaskInstanceList.get(0);
-            }
-        }
-        loanOrderVO.setTaskStatus(getTaskStatus(taskInfo, taskStatus));
-
-        // 贷款客户基本信息填充
-        fillBaseMsg(loanOrderVO, processInstanceId);
-
-        // 资料增补类型
-        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
-            fillInfoSupplementType(loanOrderVO, taskDefinitionKey, processInstanceId);
-        }
-
-        // 打回 OR 未提交
-        fillTaskTypeText(loanOrderVO, processInstanceId);
-
-        if (null != multipartType) {
-            // 当前任务节点
-            fillCurrentTask(loanOrderVO, taskDefinitionKey);
-
-            // 还款状态
-            if (MULTIPART_TYPE_CUSTOMER_LOAN_DONE.equals(multipartType)) {
-                fillRepayStatus(loanOrderVO, taskDefinitionKey, processInstanceId);
-            }
         }
     }
 
@@ -1275,93 +1108,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         simpleCustomerInfoVO.setFiles(fileVOS);
 
-
         loanSimpleCustomerInfoVOS.add(simpleCustomerInfoVO);
     }
 
-    /**
-     * 填充客户及文件信息
-     *
-     * @param infoSupplementVO
-     * @param orderId
-     */
-    private void fillCustomerAndFile(InfoSupplementVO infoSupplementVO, Long orderId) {
-
-        ResultBean<CustDetailVO> custDetailVOResultBean = loanCustomerService.detailAll(orderId, UPLOAD_TYPE_SUPPLEMENT);
-        Preconditions.checkArgument(custDetailVOResultBean.getSuccess(), custDetailVOResultBean.getMsg());
-
-        CustDetailVO custDetailVO = custDetailVOResultBean.getData();
-        if (null != custDetailVO) {
-
-            CustomerVO principalLenderVO = custDetailVO.getPrincipalLender();
-//            List<CustomerVO> commonLenderVOList = custDetailVO.getCommonLenderList();
-//            List<CustomerVO> guarantorVOList = custDetailVO.getGuarantorList();
-//            List<CustomerVO> emergencyContactVOList = custDetailVO.getEmergencyContactList();
-
-            if (null != principalLenderVO) {
-                InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
-                fillCustomerFile(principalLenderVO, customerFile);
-                infoSupplementVO.setPrincipalLender(customerFile);
-            }
-
-//            if (!CollectionUtils.isEmpty(commonLenderVOList)) {
-//
-//                List<InfoSupplementVO.CustomerFile> commonLenderList = Lists.newArrayList();
-//                commonLenderVOList.parallelStream()
-//                        .filter(Objects::nonNull)
-//                        .forEach(e -> {
-//                            InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
-//                            fillCustomerFile(e, customerFile);
-//                            commonLenderList.add(customerFile);
-//                        });
-//                infoSupplementVO.setCommonLenderList(commonLenderList);
-//            }
-//
-//            if (!CollectionUtils.isEmpty(guarantorVOList)) {
-//
-//                List<InfoSupplementVO.CustomerFile> guarantorList = Lists.newArrayList();
-//                guarantorVOList.parallelStream()
-//                        .filter(Objects::nonNull)
-//                        .forEach(e -> {
-//                            InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
-//                            fillCustomerFile(e, customerFile);
-//                            guarantorList.add(customerFile);
-//                        });
-//                infoSupplementVO.setGuarantorList(guarantorList);
-//            }
-//
-//            if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
-//                List<InfoSupplementVO.CustomerFile> emergencyContactList = Lists.newArrayList();
-//                emergencyContactVOList.parallelStream()
-//                        .filter(Objects::nonNull)
-//                        .forEach(e -> {
-//                            InfoSupplementVO.CustomerFile customerFile = new InfoSupplementVO.CustomerFile();
-//                            fillCustomerFile(e, customerFile);
-//                            emergencyContactList.add(customerFile);
-//                        });
-//                infoSupplementVO.setEmergencyContactList(emergencyContactList);
-//            }
-        }
-    }
-
-    private void fillCustomerFile(CustomerVO customerVO, InfoSupplementVO.CustomerFile customerFile) {
-        customerFile.setCustomerId(customerVO.getId());
-        customerFile.setCustomerName(customerVO.getName());
-        customerFile.setFiles(customerVO.getFiles());
-    }
-
-    /**
-     * 增补类型文本值
-     *
-     * @param supplementType
-     * @return
-     */
-    public String getSupplementTypeText(Byte supplementType) {
-
-        Map<String, String> kvMap = dictService.getKVMap("infoSupplementType");
-
-        String supplementTypeText = kvMap.get(String.valueOf(supplementType));
-
-        return supplementTypeText;
-    }
 }

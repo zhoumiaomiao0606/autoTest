@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
 import com.yunche.loan.domain.vo.AppCustomerInfoVO;
@@ -152,6 +153,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private LoanOrderService loanOrderService;
 
     @Autowired
+    private LoanInfoSupplementService loanInfoSupplementService;
+
+    @Autowired
     private EmployeeCache employeeCache;
 
     @Autowired
@@ -160,62 +164,31 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
-        Preconditions.checkNotNull(supplementOrderId, "增补单不能为空");
 
-        LoanInfoSupplementDO loanInfoSupplementDO = loanInfoSupplementDOMapper.selectByPrimaryKey(supplementOrderId);
-        Preconditions.checkNotNull(loanInfoSupplementDO, "增补单不存在");
+        ResultBean<InfoSupplementVO2> detailResult = loanInfoSupplementService.detail_(supplementOrderId);
+        Preconditions.checkArgument(detailResult.getSuccess(), detailResult.getMsg());
+
+        InfoSupplementVO2 data = detailResult.getData();
 
         AppInfoSupplementVO appInfoSupplementVO = new AppInfoSupplementVO();
+        BeanUtils.copyProperties(data, appInfoSupplementVO);
 
-        // 增补信息
-        appInfoSupplementVO.setSupplementOrderId(supplementOrderId);
-        appInfoSupplementVO.setSupplementType(loanInfoSupplementDO.getType());
-        appInfoSupplementVO.setSupplementTypeText(getSupplementTypeText(loanInfoSupplementDO.getType()));
-        appInfoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());
-        appInfoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());
-        appInfoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
-        appInfoSupplementVO.setSupplementEndDate(loanInfoSupplementDO.getEndTime());
-        appInfoSupplementVO.setInitiator(loanInfoSupplementDO.getInitiatorName());
-        appInfoSupplementVO.setRemark(loanInfoSupplementDO.getRemark());
-
-        Long orderId = loanInfoSupplementDO.getOrderId();
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
-
-        appInfoSupplementVO.setOrderId(String.valueOf(orderId));
-
-        // 客户信息
-        if (null != loanOrderDO.getLoanCustomerId()) {
-            CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
-
-            if (null != customerVO) {
-                appInfoSupplementVO.setCustomerId(customerVO.getId());
-                appInfoSupplementVO.setCustomerName(customerVO.getName());
-                appInfoSupplementVO.setIdCard(customerVO.getIdCard());
-            }
-        }
-
-        // 贷款基本信息：贷款额、期限 & 银行
-        if (null != loanOrderDO.getLoanBaseInfoId()) {
-            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
-            if (null != loanFinancialPlanDO) {
-                appInfoSupplementVO.setLoanAmount(String.valueOf(loanFinancialPlanDO.getLoanAmount()));
-                appInfoSupplementVO.setLoanTime(loanFinancialPlanDO.getLoanTime());
-                appInfoSupplementVO.setBank(loanFinancialPlanDO.getBank());
-            }
-        }
+        appInfoSupplementVO.setBank(data.getBankName());
+        appInfoSupplementVO.setSupplementOrderId(data.getInfoSupplementId());
+        appInfoSupplementVO.setSupplementContent(data.getContent());
+        appInfoSupplementVO.setSupplementInfo(data.getInfo());
+        appInfoSupplementVO.setInitiator(data.getInitiatorName());
+        appInfoSupplementVO.setSupplementStartDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd_HHmmss(data.getStartTime()));
+        appInfoSupplementVO.setSupplementEndDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd_HHmmss(data.getEndTime()));
 
         //  车辆信息
-        if (null != loanOrderDO.getLoanCarInfoId()) {
-            LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
-            if (null != loanCarInfoDO && null != loanCarInfoDO.getCarDetailId()) {
-                String carFullName = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
-                appInfoSupplementVO.setCarName(carFullName);
-            }
+        if (null != data.getCarDetailId()) {
+            String carFullName = carService.getFullName(data.getCarDetailId(), CAR_DETAIL);
+            appInfoSupplementVO.setCarName(carFullName);
         }
 
         // 要求增补部门
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(loanInfoSupplementDO.getInitiatorId(), null);
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(data.getInitiatorId(), null);
         if (null != employeeDO) {
             DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(employeeDO.getDepartmentId(), null);
             if (null != departmentDO) {
@@ -223,12 +196,78 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             }
         }
 
-        // 文件分类列表
-        ResultBean<List<FileVO>> fileVOResultBean = loanFileService.listByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), UPLOAD_TYPE_SUPPLEMENT);
-        Preconditions.checkArgument(fileVOResultBean.getSuccess(), fileVOResultBean.getMsg());
-        appInfoSupplementVO.setFiles(fileVOResultBean.getData());
-
         return ResultBean.ofSuccess(appInfoSupplementVO);
+
+
+//        Preconditions.checkNotNull(supplementOrderId, "增补单不能为空");
+//
+//        LoanInfoSupplementDO loanInfoSupplementDO = loanInfoSupplementDOMapper.selectByPrimaryKey(supplementOrderId);
+//        Preconditions.checkNotNull(loanInfoSupplementDO, "增补单不存在");
+//
+//        AppInfoSupplementVO appInfoSupplementVO = new AppInfoSupplementVO();
+//
+//        // 增补信息
+//        appInfoSupplementVO.setSupplementOrderId(supplementOrderId);
+//        appInfoSupplementVO.setSupplementType(loanInfoSupplementDO.getType());
+//        appInfoSupplementVO.setSupplementTypeText(getSupplementTypeText(loanInfoSupplementDO.getType()));
+//        appInfoSupplementVO.setSupplementContent(loanInfoSupplementDO.getContent());
+//        appInfoSupplementVO.setSupplementInfo(loanInfoSupplementDO.getInfo());
+//        appInfoSupplementVO.setSupplementStartDate(loanInfoSupplementDO.getStartTime());
+//        appInfoSupplementVO.setSupplementEndDate(loanInfoSupplementDO.getEndTime());
+//        appInfoSupplementVO.setInitiator(loanInfoSupplementDO.getInitiatorName());
+//        appInfoSupplementVO.setRemark(loanInfoSupplementDO.getRemark());
+//
+//        Long orderId = loanInfoSupplementDO.getOrderId();
+//        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+//        Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
+//
+//        appInfoSupplementVO.setOrderId(String.valueOf(orderId));
+//
+//        // 客户信息
+//        if (null != loanOrderDO.getLoanCustomerId()) {
+//            CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
+//
+//            if (null != customerVO) {
+//                appInfoSupplementVO.setCustomerId(customerVO.getId());
+//                appInfoSupplementVO.setCustomerName(customerVO.getName());
+//                appInfoSupplementVO.setIdCard(customerVO.getIdCard());
+//            }
+//        }
+//
+//        // 贷款基本信息：贷款额、期限 & 银行
+//        if (null != loanOrderDO.getLoanBaseInfoId()) {
+//            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+//            if (null != loanFinancialPlanDO) {
+//                appInfoSupplementVO.setLoanAmount(String.valueOf(loanFinancialPlanDO.getLoanAmount()));
+//                appInfoSupplementVO.setLoanTime(loanFinancialPlanDO.getLoanTime());
+//                appInfoSupplementVO.setBank(loanFinancialPlanDO.getBank());
+//            }
+//        }
+//
+//        //  车辆信息
+//        if (null != loanOrderDO.getLoanCarInfoId()) {
+//            LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+//            if (null != loanCarInfoDO && null != loanCarInfoDO.getCarDetailId()) {
+//                String carFullName = carService.getFullName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL);
+//                appInfoSupplementVO.setCarName(carFullName);
+//            }
+//        }
+//
+//        // 要求增补部门
+//        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(loanInfoSupplementDO.getInitiatorId(), null);
+//        if (null != employeeDO) {
+//            DepartmentDO departmentDO = departmentDOMapper.selectByPrimaryKey(employeeDO.getDepartmentId(), null);
+//            if (null != departmentDO) {
+//                appInfoSupplementVO.setInitiatorUnit(departmentDO.getName());
+//            }
+//        }
+//
+//        // 文件分类列表
+//        ResultBean<List<FileVO>> fileVOResultBean = loanFileService.listByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), UPLOAD_TYPE_SUPPLEMENT);
+//        Preconditions.checkArgument(fileVOResultBean.getSuccess(), fileVOResultBean.getMsg());
+//        appInfoSupplementVO.setFiles(fileVOResultBean.getData());
+//
+//        return ResultBean.ofSuccess(appInfoSupplementVO);
     }
 
     @Override
@@ -462,35 +501,33 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Override
     @Transactional
-    public ResultBean<Void> infoSupplementUpload(AppInfoSupplementParam infoSupplementParam) {
-        Preconditions.checkNotNull(infoSupplementParam.getCustomerId(), "客户ID不能为空");
-        Preconditions.checkNotNull(infoSupplementParam.getSupplementOrderId(), "增补单ID不能为空");
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementParam.getFiles()) ||
-                StringUtils.isNotBlank(infoSupplementParam.getRemark()), "资料信息或备注为空");
+    public ResultBean<Void> infoSupplementUpload(InfoSupplementParam infoSupplementParam) {
 
-        Long suppermentOrderId = infoSupplementParam.getSupplementOrderId();
-        String remark = infoSupplementParam.getRemark();
-        LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
-        loanInfoSupplementDO.setRemark(remark);
-        loanInfoSupplementDO.setId(suppermentOrderId);
-        int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
-        Preconditions.checkArgument(count > 0, "增补失败");
+        return loanInfoSupplementService.save(infoSupplementParam);
 
-        List<FileVO> files = infoSupplementParam.getFiles();
-        files.parallelStream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
-
-                    // 已经增补过的图片 ——> 正常上传
-                    ResultBean<Void> moveResultBean = loanFileService.moveOldSupplementToNormal(infoSupplementParam.getCustomerId(), e.getType());
-                    Preconditions.checkArgument(moveResultBean.getSuccess(), moveResultBean.getMsg());
-
-                    // 保存新增补的文件 ——> 增补上传
-                    ResultBean<Void> saveResultBean = loanFileService.saveNewSupplementFiles(infoSupplementParam.getCustomerId(), e.getType(), e.getUrls());
-                    Preconditions.checkArgument(saveResultBean.getSuccess(), saveResultBean.getMsg());
-                });
-
-        return ResultBean.ofSuccess(null, "资料增补成功");
+//        Long suppermentOrderId = infoSupplementParam.getSupplementOrderId();
+//        String remark = infoSupplementParam.getRemark();
+//        LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
+//        loanInfoSupplementDO.setRemark(remark);
+//        loanInfoSupplementDO.setId(suppermentOrderId);
+//        int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
+//        Preconditions.checkArgument(count > 0, "增补失败");
+//
+//        List<FileVO> files = infoSupplementParam.getFiles();
+//        files.parallelStream()
+//                .filter(Objects::nonNull)
+//                .forEach(e -> {
+//
+//                    // 已经增补过的图片 ——> 正常上传
+//                    ResultBean<Void> moveResultBean = loanFileService.moveOldSupplementToNormal(infoSupplementParam.getCustomerId(), e.getType());
+//                    Preconditions.checkArgument(moveResultBean.getSuccess(), moveResultBean.getMsg());
+//
+//                    // 保存新增补的文件 ——> 增补上传
+//                    ResultBean<Void> saveResultBean = loanFileService.saveNewSupplementFiles(infoSupplementParam.getCustomerId(), e.getType(), e.getUrls());
+//                    Preconditions.checkArgument(saveResultBean.getSuccess(), saveResultBean.getMsg());
+//                });
+//
+//        return ResultBean.ofSuccess(null, "[资料增补]保存成功");
     }
 
     @Override

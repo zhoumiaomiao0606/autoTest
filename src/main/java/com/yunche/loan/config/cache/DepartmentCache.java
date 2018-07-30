@@ -35,9 +35,9 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Component
 public class DepartmentCache {
 
-    private static final String DEPARTMENT_CASCADE_CACHE_KEY = "cascade:cache:department";
+    private static final String DEPARTMENT_CASCADE_CACHE_KEY = "department:cache:cascade";
 
-    private static final String DATA_FLOW_FOLW_DEPT_CACHE_KEY = "data-flow:cache:flow-dept";
+    private static final String DATA_FLOW_FLOW_DEPT_CACHE_KEY = "data-flow:cache:flow-dept";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -80,7 +80,7 @@ public class DepartmentCache {
      */
     public List<BaseVO> getFlowDept() {
         // get
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DATA_FLOW_FOLW_DEPT_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DATA_FLOW_FLOW_DEPT_CACHE_KEY);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
             return JSON.parseArray(result, BaseVO.class);
@@ -155,7 +155,7 @@ public class DepartmentCache {
         deptList.removeAll(Collections.singleton(null));
 
         // 刷新缓存
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DATA_FLOW_FOLW_DEPT_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DATA_FLOW_FLOW_DEPT_CACHE_KEY);
         boundValueOps.set(JSON.toJSONString(deptList));
     }
 

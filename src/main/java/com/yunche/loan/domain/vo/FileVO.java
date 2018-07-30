@@ -29,6 +29,7 @@ public class FileVO {
      * 类型名称
      */
     private String name;
+
     /**
      * 文件存储路径
      */

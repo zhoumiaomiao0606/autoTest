@@ -43,7 +43,7 @@ public class BizExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(BizExceptionHandler.class);
 
 //    @Autowired
-    private BizSessionManager bizSessionManager;
+//    private BizSessionManager bizSessionManager;
 
 
     /**
@@ -136,22 +136,22 @@ public class BizExceptionHandler {
         return ip;
     }
 
-    /**
-     * 刷新cookie
-     */
-    private void refreshCookie() {
-
-        Collection<Session> activeSessions = bizSessionManager.getSessionDAO().getActiveSessions();
-
-        Session session = SecurityUtils.getSubject().getSession();
-        Serializable sessionId = session.getId();
-
-        Cookie sessionIdCookie = bizSessionManager.getSessionIdCookie();
-        sessionIdCookie.setMaxAge(SESSION_EXPIRE);
-
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
-
-        SessionKey key = new WebSessionKey(session.getId(), request, response);
-    }
+//    /**
+//     * 刷新cookie
+//     */
+//    private void refreshCookie() {
+//
+//        Collection<Session> activeSessions = bizSessionManager.getSessionDAO().getActiveSessions();
+//
+//        Session session = SecurityUtils.getSubject().getSession();
+//        Serializable sessionId = session.getId();
+//
+//        Cookie sessionIdCookie = bizSessionManager.getSessionIdCookie();
+//        sessionIdCookie.setMaxAge(SESSION_EXPIRE);
+//
+//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+//        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+//
+//        SessionKey key = new WebSessionKey(session.getId(), request, response);
+//    }
 }

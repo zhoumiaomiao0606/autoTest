@@ -349,13 +349,14 @@
 
 -->
 
-        <table tableName="loan_info_supplement" domainObjectName="LoanInfoSupplementDO"
+        <table tableName="loan_file" domainObjectName="LoanFileDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
 
-            <ignoreColumn column="status"/>
             <ignoreColumn column="feature"/>
             <ignoreColumn column="name"/>
+
+            <columnOverride column="path" property="path" jdbcType="VARCHAR"/>
 
         </table>
 

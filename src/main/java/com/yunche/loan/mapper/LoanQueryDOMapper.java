@@ -11,25 +11,25 @@ import java.util.Set;
 
 public interface LoanQueryDOMapper {
 
-    List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId,@Param("transCode") String transCode);
+    List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId, @Param("transCode") String transCode);
 
     ApplyDiviGeneralInfoVO selectApplyDiviGeneralInfo(Long orderId);
 
-    String selectLastBankInterfaceSerialStatusByTransCode(@Param("customerId") Long customerId,@Param("transCode") String transCode);
+    String selectLastBankInterfaceSerialStatusByTransCode(@Param("customerId") Long customerId, @Param("transCode") String transCode);
 
-    String selectLastBankInterfaceSerialNoteByTransCode(@Param("customerId") Long customerId,@Param("transCode") String transCode);
+    String selectLastBankInterfaceSerialNoteByTransCode(@Param("customerId") Long customerId, @Param("transCode") String transCode);
 
-    UniversalMaterialRecordVO  getUniversalCustomerFilesByType(@Param("customerId") Long customerId,@Param("type") Byte type);
+    UniversalMaterialRecordVO getUniversalCustomerFilesByType(@Param("customerId") Long customerId, @Param("type") Byte type);
 
-    UniversalBankInterfaceSerialVO selectUniversalLatestBankInterfaceSerial(@Param("customerId") Long customerId,@Param("transCode") String transCode);
+    UniversalBankInterfaceSerialVO selectUniversalLatestBankInterfaceSerial(@Param("customerId") Long customerId, @Param("transCode") String transCode);
 
-    String selectTelephoneVerifyLevel(@Param("loginUserId") Long loginUserId );
+    String selectTelephoneVerifyLevel(@Param("loginUserId") Long loginUserId);
 
     boolean checkCollectionUserRole(@Param("loginUserId") Long loginUserId);
 
-    List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name,@Param("maxGroupLevel") Long maxGroupLevel,@Param("juniorIds") Set<String> juniorIds);
+    List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name, @Param("maxGroupLevel") Long maxGroupLevel, @Param("juniorIds") Set<String> juniorIds);
 
-    List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name,@Param("maxGroupLevel") Long maxGroupLevel,@Param("juniorIds") Set<String> juniorIds);
+    List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name, @Param("maxGroupLevel") Long maxGroupLevel, @Param("juniorIds") Set<String> juniorIds);
 
     /**
      * 资料流转-新增 客户列表
@@ -38,7 +38,7 @@ public interface LoanQueryDOMapper {
      * @param name
      * @return
      */
-    List<UniversalCustomerOrderVO> selectUniversalDataFlowCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name,@Param("maxGroupLevel") Long maxGroupLevel,@Param("juniorIds") Set<String> juniorIds);
+    List<UniversalCustomerOrderVO> selectUniversalDataFlowCustomerOrder(@Param("employeeId") Long employeeId, @Param("name") String name, @Param("maxGroupLevel") Long maxGroupLevel, @Param("juniorIds") Set<String> juniorIds);
 
     VehicleInformationVO selectVehicleInformation(Long orderId);
 
@@ -127,6 +127,23 @@ public interface LoanQueryDOMapper {
      * @return
      */
     UniversalBankCardSendVO selectUniversalBankCardSend(Long orderId);
+
+    /**
+     * 资料增补单 详情
+     *
+     * @param infoSupplementId 资料增补单ID
+     * @return
+     */
+    List<InfoSupplementVO2> selectUniversalInfoSupplement(Long infoSupplementId);
+
+    /**
+     * 资料增补 历史列表   -已提交的
+     *
+     * @param orderId 订单ID
+     * @return
+     */
+    List<InfoSupplementVO2> selectUniversalCollectionInfoSupplement(Long orderId);
+
 
     //=======================================================================
 

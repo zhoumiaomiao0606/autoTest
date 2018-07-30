@@ -33,12 +33,12 @@ public class ActivitiCache {
     /**
      * activiti节点-用户组-缓存KEY
      */
-    private static final String CANDIDATE_GROUP_CACHE_KEY = "activiti:candidate:group";
+    private static final String CANDIDATE_GROUP_ALL_CACHE_KEY = "activiti:candidate:group:all";
 
     /**
      * data_flow：role-nodes  映射cache-key
      */
-    private static final String GROUP_CANDIDATE_DATA_FLOW_CACHE_KEY = "activiti:group:candidate:data-flow";
+    private static final String CANDIDATE_GROUP_DATA_FLOW_CACHE_KEY = "activiti:candidate:group:data-flow";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -54,7 +54,7 @@ public class ActivitiCache {
      */
     public Map<String, List<String>> getNodeRolesMap() {
         // get
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CANDIDATE_GROUP_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CANDIDATE_GROUP_ALL_CACHE_KEY);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
             return JSON.parseObject(result, Map.class);
@@ -78,7 +78,7 @@ public class ActivitiCache {
      */
     public Map<String, List<String>> getDataFlowRoleNodesMap() {
         // get
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(GROUP_CANDIDATE_DATA_FLOW_CACHE_KEY);
+        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CANDIDATE_GROUP_DATA_FLOW_CACHE_KEY);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result)) {
             return JSON.parseObject(result, Map.class);
@@ -113,7 +113,7 @@ public class ActivitiCache {
         Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = getTaskDefinitionKeyCandidateGroupsMap();
 
         if (!CollectionUtils.isEmpty(taskDefinitionKeyCandidateGroupsMap)) {
-            BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CANDIDATE_GROUP_CACHE_KEY);
+            BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CANDIDATE_GROUP_ALL_CACHE_KEY);
             boundValueOps.set(JSON.toJSONString(taskDefinitionKeyCandidateGroupsMap));
         }
     }
@@ -156,7 +156,7 @@ public class ActivitiCache {
 
         // set cache
         if (!CollectionUtils.isEmpty(roleNodesMap)) {
-            BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(GROUP_CANDIDATE_DATA_FLOW_CACHE_KEY);
+            BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CANDIDATE_GROUP_DATA_FLOW_CACHE_KEY);
             boundValueOps.set(JSON.toJSONString(roleNodesMap));
         }
     }
