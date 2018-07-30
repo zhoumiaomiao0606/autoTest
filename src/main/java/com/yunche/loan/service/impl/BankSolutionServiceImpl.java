@@ -477,9 +477,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         String interest = loanTimeFee.stripTrailingZeros().toPlainString();
 
         String lendCard = loanCustomerDO.getLendCard();
-        if(StringUtils.isBlank(lendCard)){
-            throw new BizException("信用卡卡号为空");
-        }
+//        if(StringUtils.isBlank(lendCard)){
+//            throw new BizException("信用卡卡号为空");
+//        }
 
 
 

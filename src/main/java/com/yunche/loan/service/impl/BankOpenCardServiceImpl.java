@@ -115,7 +115,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId,customerId);
         BankInterfaceSerialVO bankInterfaceSerialVO = new BankInterfaceSerialVO();
-//        BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+        BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
 //        if(serialDO!=null) {
 //            BeanUtils.copyProperties(serialDO, bankInterfaceSerialVO);
 //            BankInterfaceFileSerialDO bankInterfaceFileSerialDO = bankInterfaceFileSerialDOMapper.selectByPrimaryKey(Long.valueOf(serialDO.getSerialNo()));
@@ -124,9 +124,11 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 //                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_NO));
 //                } else {
 //                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_YES));
-//                }b
+//                }
 //            }
 //        }
+        BeanUtils.copyProperties(serialDO,bankInterfaceSerialVO);
+//        BeanPlasticityUtills.copy(BankInterfaceSerialVO.class,serialDO);
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO,"流程不存在");
         Byte telephoneVerify = loanProcessDO.getTelephoneVerify();
