@@ -93,8 +93,8 @@ public class InfoSupplementVO2 {
     /**
      * 资料增补类型(1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;6-垫款资料缺少;)
      */
-    private Byte supplementType;
-    private String supplementTypeText;
+    private Byte type;
+    private String typeText;
     /**
      * 资料增补内容
      */
@@ -114,7 +114,7 @@ public class InfoSupplementVO2 {
     /**
      * 增补单状态(默认值0-未执行到此节点;1-已提交;2-未提交;)
      */
-    private Byte supplementStatus;
+    private Byte status;
     /**
      * 发起人ID
      */

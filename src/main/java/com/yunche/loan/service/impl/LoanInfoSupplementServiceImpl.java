@@ -262,14 +262,9 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
 
                         BeanUtils.copyProperties(e, infoSupplementVO);
 
-                        infoSupplementVO.setFileId(null);
-                        infoSupplementVO.setFileType(null);
-                        infoSupplementVO.setFileTypeText(null);
-                        infoSupplementVO.setFilePath(null);
-
-                        // text
-                        String supplementTypeText = getInfoSupplementTypeText(e.getSupplementType(), kvMap);
-                        infoSupplementVO.setSupplementTypeText(supplementTypeText);
+                        // type text
+                        String supplementTypeText = getInfoSupplementTypeText(e.getType(), kvMap);
+                        infoSupplementVO.setTypeText(supplementTypeText);
 
                         // files
                         FileVO2 fileVO = new FileVO2();
@@ -288,27 +283,6 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
         // val
         Collection<InfoSupplementVO2> values = idDetailMap.values();
         return Lists.newArrayList(values);
-    }
-
-    private void convert(InfoSupplementVO2 infoSupplementVO2, InfoSupplementVO infoSupplementVO) {
-
-        infoSupplementVO.setOrderId(infoSupplementVO2.getOrderId());
-
-        infoSupplementVO.setCustomerId(infoSupplementVO2.getCustomerId());
-        infoSupplementVO.setCustomerName(infoSupplementVO2.getCustomerName());
-        infoSupplementVO.setIdCard(infoSupplementVO2.getIdCard());
-        infoSupplementVO.setSalesmanId(infoSupplementVO2.getSalesmanId());
-        infoSupplementVO.setSalesmanName(infoSupplementVO2.getSalesmanName());
-        infoSupplementVO.setPartnerId(infoSupplementVO2.getPartnerId());
-        infoSupplementVO.setPartnerName(infoSupplementVO2.getPartnerName());
-
-        infoSupplementVO.setSupplementOrderId(infoSupplementVO2.getInfoSupplementId());
-        infoSupplementVO.setSupplementType(infoSupplementVO2.getSupplementType());
-        infoSupplementVO.setSupplementTypeText(infoSupplementVO2.getSupplementTypeText());
-        infoSupplementVO.setSupplementContent(infoSupplementVO2.getContent());
-        infoSupplementVO.setSupplementInfo(infoSupplementVO2.getInfo());
-        infoSupplementVO.setRemark(infoSupplementVO2.getRemark());
-        infoSupplementVO.setSupplementStartDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd_HHmmss(infoSupplementVO2.getStartTime()));
     }
 
 

@@ -175,6 +175,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         appInfoSupplementVO.setBank(data.getBankName());
         appInfoSupplementVO.setSupplementOrderId(data.getInfoSupplementId());
+        appInfoSupplementVO.setSupplementType(data.getType());
+        appInfoSupplementVO.setSupplementTypeText(data.getTypeText());
         appInfoSupplementVO.setSupplementContent(data.getContent());
         appInfoSupplementVO.setSupplementInfo(data.getInfo());
         appInfoSupplementVO.setInitiator(data.getInitiatorName());

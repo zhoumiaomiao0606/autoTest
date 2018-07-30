@@ -1515,7 +1515,7 @@
 
         WHERE s.order_id = #{orderId}
 
-        AND   s.end_time IS NOT NULL
+        AND   s.status = 1
 
     </select>
 
@@ -1542,7 +1542,7 @@
                   car.car_detail_id							AS	  carDetailId,
 
                   s.id                                      AS    infoSupplementId,
-                  s.type                                    AS    supplementType,
+                  s.type                                    AS    type,
                   s.content                                 AS    content,
                   s.info                                    AS    info,
                   s.remark                                  AS    remark,
@@ -1555,7 +1555,7 @@
                                                             AS    startTime,
                   DATE_FORMAT(s.end_time ,'%Y-%m-%d %H:%i:%S')
                                                             AS    endTime,
-                  s.status                                  AS    supplementStatus,
+                  s.status                                  AS    status,
 
 
                   f.id                                      AS    fileId,

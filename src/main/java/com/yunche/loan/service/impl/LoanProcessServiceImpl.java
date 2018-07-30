@@ -1665,6 +1665,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         loanInfoSupplementDO.setSupplementerId(loginUser.getId());
         loanInfoSupplementDO.setSupplementerName(loginUser.getName());
+
+        // 增补提交时间
         loanInfoSupplementDO.setEndTime(new Date());
 
         // 审核备注
