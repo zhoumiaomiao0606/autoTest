@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ManualInsuranceParam;
+import com.yunche.loan.domain.query.InsuranceListQuery;
 import com.yunche.loan.domain.vo.InsuranceUrgeVO;
 import com.yunche.loan.service.InsuranceUrgeDistributeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/insuranceurge")
+@RequestMapping("/api/v1/loanorder/insuranceallot")
 public class InsuranceUrgeDistributeController {
 
     @Autowired
@@ -25,16 +26,15 @@ public class InsuranceUrgeDistributeController {
 
     /**
      * 催保列表
-     * @param pageIndex
-     * @param pageSize
-     * @param taskStatus  1:未分配列表  2：已分配列表
+     * @param insuranceListQuery
+     * @return
      */
-    @GetMapping("/tasklist")
-    public ResultBean taskList(@RequestParam("pageIndex")Integer pageIndex, @RequestParam("pageSize")Integer pageSize,@RequestParam("taskStatus") Byte taskStatus){
+    @PostMapping("/tasklist")
+    public ResultBean taskList(@RequestBody InsuranceListQuery insuranceListQuery){
 
-        PageHelper.startPage(pageIndex, pageSize, true);
+        PageHelper.startPage(insuranceListQuery.getPageIndex(), insuranceListQuery.getPageSize(), true);
 
-        List list = insuranceUrgeDistributeService.list(pageIndex, pageSize, taskStatus);
+        List list = insuranceUrgeDistributeService.list(insuranceListQuery);
 
         PageInfo<InsuranceUrgeVO> pageInfo = new PageInfo<>(list);
 
@@ -67,4 +67,13 @@ public class InsuranceUrgeDistributeController {
         return ResultBean.ofSuccess(list);
     }
 
+    /**
+     * 催保分配详情页
+     * @return
+     */
+    @GetMapping(value = "/detail")
+    public ResultBean detail(@RequestParam("orderId") Long orderId){
+
+        return insuranceUrgeDistributeService.detail(orderId);
+    }
 }

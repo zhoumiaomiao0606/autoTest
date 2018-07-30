@@ -5,6 +5,7 @@ import com.yunche.loan.domain.entity.BankFileListDO;
 import com.yunche.loan.domain.entity.BankFileListRecordDO;
 import com.yunche.loan.domain.entity.LoanRepayPlanDO;
 import com.yunche.loan.domain.param.BankRepayParam;
+import com.yunche.loan.domain.query.InsuranceListQuery;
 import com.yunche.loan.domain.vo.InsuranceUrgeVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -38,5 +39,5 @@ public interface BankRecordQueryDOMapper {
      * 催保工作台列表
      * @return
      */
-    List<InsuranceUrgeVO> selectInsuranceUrgeTaskList(@Param("taskStatus") Byte taskStatus);
+    List<InsuranceUrgeVO> selectInsuranceUrgeTaskList(InsuranceListQuery insuranceListQuery);
 }

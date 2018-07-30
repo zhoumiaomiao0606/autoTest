@@ -165,7 +165,7 @@
 
     </select>
 
-    <select id="selectInsuranceUrgeTaskList" resultType="com.yunche.loan.domain.vo.InsuranceUrgeVO">
+    <select id="selectInsuranceUrgeTaskList" resultType="com.yunche.loan.domain.vo.InsuranceUrgeVO" parameterType="com.yunche.loan.domain.query.InsuranceListQuery">
         SELECT
                 loan.id                                     AS orderId,
                 partner.`name`                              AS partnerName,
@@ -184,14 +184,22 @@
                 (select start_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessStartDate,
                 (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate
         FROM
-                (select * from loan_order where 1=1
-                <if test="taskStatus != 1">
-                    and id not in(select order_id from insurance_distribute_record)
-                </if>
-                <if test="taskStatus != 2">
-                    and id in(select order_id from insurance_distribute_record)
-                </if>
-                ) loan
+            <choose>
+                <when test="taskDefinitionKey=='fp'">
+                    (select * from loan_order where 1=1
+                    <if test="taskStatus == 1">
+                        and id not in(select order_id from insurance_distribute_record)
+                    </if>
+                    <if test="taskStatus == 2">
+                        and id in(select order_id from insurance_distribute_record)
+                    </if>
+                    ) loan
+                </when>
+                <when test="taskDefinitionKey=='fp2'">
+                    (select * from loan_order where id in(select order_id from insurance_distribute_record where employee_id=#{employeeId})
+                    ) loan
+                </when>
+            </choose>
                 LEFT JOIN insurance_info info on loan.id = info.order_id
                 LEFT JOIN insurance_relevance insurance ON (info.id = insurance.insurance_info_id and insurance.insurance_type=1 )
                 LEFT JOIN loan_customer customer ON loan.loan_customer_id=customer.id
