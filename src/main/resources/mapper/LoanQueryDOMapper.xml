@@ -1469,6 +1469,7 @@
 
       FROM
                   loan_order              a
+
       LEFT JOIN   loan_process            pc       ON  a.id = pc.order_id
       LEFT JOIN   loan_base_info          b        ON  b.id = a.loan_base_info_id
       LEFT JOIN   loan_customer           c        ON  c.id = a.loan_customer_id
@@ -1476,22 +1477,113 @@
       LEFT JOIN   partner                 p        ON  p.id = b.partner_id
       LEFT JOIN   department              d        ON  d.id = p.department_id
 
-      WHERE
-               pc.telephone_verify = 1
+      WHERE    pc.telephone_verify = 1
 
-	      AND  pc.data_flow_mortgage_b2c = 0
+	  AND      pc.data_flow_mortgage_b2c = 0
 
 	  <if test="name != null and name != '' ">
           AND  c.name LIKE CONCAT('%', #{name} ,'%')
       </if>
 
-        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
-        when  #{maxGroupLevel} = 1 then
-        b.salesman_id in
-        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-        else true end
+      AND
+          CASE
+              WHEN #{maxGroupLevel}  = 0
+                  THEN    false
+              WHEN  #{maxGroupLevel} = 1
+                  THEN
+                      b.salesman_id IN
+                      <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                          #{item}
+                      </foreach>
+              ELSE
+                    true
+          END
+
     </select>
+
+    <select id="selectUniversalInfoSupplement" resultType="com.yunche.loan.domain.vo.InfoSupplementVO2">
+
+        <include refid="universalInfoSupplement"/>
+
+        WHERE s.id = #{infoSupplementId}
+
+    </select>
+
+    <select id="selectUniversalCollectionInfoSupplement" resultType="com.yunche.loan.domain.vo.InfoSupplementVO2">
+
+        <include refid="universalInfoSupplement"/>
+
+        WHERE s.order_id = #{orderId}
+
+        AND   s.status = 1
+
+    </select>
+
+    <sql id="universalInfoSupplement">
+
+        SELECT
+                  s.order_id                                AS    orderId,
+
+                  c.id                                      AS    customerId,
+                  c.name                                    AS    customerName,
+                  c.id_card                                 AS    idCard,
+                  c.mobile                                  AS    mobile,
+                  e.id                                      AS    salesmanId,
+                  e.name                                    AS    salesmanName,
+                  p.id                                      AS    partnerId,
+                  p.name                                    AS    partnerName,
+                  d.id                                      AS    departmentId,
+                  d.name                                    AS    departmentName,
+
+                  b.bank                                    AS    bankName,
+                  fp.loan_amount					        AS	  loanAmount,
+                  fp.loan_time							    AS	  loanTime,
+
+                  car.car_detail_id							AS	  carDetailId,
+
+                  s.id                                      AS    infoSupplementId,
+                  s.type                                    AS    type,
+                  s.content                                 AS    content,
+                  s.info                                    AS    info,
+                  s.remark                                  AS    remark,
+                  s.origin_task                             AS    originTask,
+                  s.initiator_id                            AS    initiatorId,
+                  s.initiator_name                          AS    initiatorName,
+                  s.supplementer_id                         AS    supplementerId,
+                  s.supplementer_name                       AS    supplementerName,
+                  DATE_FORMAT(s.start_time  ,'%Y-%m-%d %H:%i:%S')
+                                                            AS    startTime,
+                  DATE_FORMAT(s.end_time ,'%Y-%m-%d %H:%i:%S')
+                                                            AS    endTime,
+                  s.status                                  AS    status,
+
+
+                  f.id                                      AS    fileId,
+                  f.type                                    AS    fileType,
+                  useFileTypeCastName(f.type)               AS    fileTypeText,
+                  f.path                                    AS    filePath
+
+        FROM
+
+        loan_info_supplement  	                    s
+
+        LEFT JOIN   loan_file 					    f       ON   f.info_supplement_id = s.id
+
+        LEFT JOIN   loan_order 					    o       ON   o.id = s.order_id
+
+        LEFT JOIN   loan_financial_plan 		    fp      ON   fp.id = o.loan_financial_plan_id
+
+        LEFT JOIN   loan_car_info 		            car     ON   car.id = o.loan_car_info_id
+
+        LEFT JOIN   loan_customer 					c       ON   c.id = o.loan_customer_id
+
+        LEFT JOIN   loan_base_info 					b       ON   b.id = o.loan_base_info_id
+
+        LEFT JOIN   employee                        e       ON   e.id = b.salesman_id
+
+        LEFT JOIN   partner                         p       ON   p.id = b.partner_id
+
+        LEFT JOIN   department                      d       ON   d.id = p.department_id
+    </sql>
 
 </mapper>

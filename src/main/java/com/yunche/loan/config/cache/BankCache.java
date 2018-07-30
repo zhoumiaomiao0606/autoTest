@@ -25,11 +25,11 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 @Component
 public class BankCache {
 
-    private static final String BANK_NAME_ALL_CACHE_KEY = "all:cache:bank:list:name";
+    private static final String BANK_NAME_ALL_CACHE_KEY = "bank:cache:list:name";
 
-    private static final String BANK_NAME_ID_MAP_CACHE_KEY = "all:cache:bank:map:name-id";
+    private static final String BANK_NAME_ID_MAP_CACHE_KEY = "bank:cache:map:name-id";
 
-    private static final String BANK_ID_NAME_MAP_CACHE_KEY = "all:cache:bank:map:id-name";
+    private static final String BANK_ID_NAME_MAP_CACHE_KEY = "bank:cache:map:id-name";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

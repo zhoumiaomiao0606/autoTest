@@ -70,9 +70,18 @@ public class DictCache {
         // get
         DataDictionaryVO dictionary = dictionary();
 
-        // 刷新缓存
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DICT_CACHE_KEY);
-        boundValueOps.set(JSON.toJSONString(dictionary));
+        if (null != dictionary) {
+
+            // check NULL
+            String cache = JSON.toJSONString(dictionary);
+            DataDictionaryVO dataDictionaryVO = JSON.parseObject(cache, DataDictionaryVO.class);
+
+            if (null != dataDictionaryVO) {
+                // 刷新缓存
+                BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(DICT_CACHE_KEY);
+                boundValueOps.set(cache);
+            }
+        }
     }
 
     /**
@@ -91,7 +100,7 @@ public class DictCache {
         Class<? extends DataDictionaryVO> clazz = dataDictionaryVO.getClass();
 
         // 获取clazz的所有字段
-        Field[] fields = clazz.getFields();
+        Field[] fields = clazz.getDeclaredFields();
         List<String> fieldList = Arrays.stream(fields).map(e -> {
             return e.getName();
         }).collect(Collectors.toList());

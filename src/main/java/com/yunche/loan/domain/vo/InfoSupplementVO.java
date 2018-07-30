@@ -47,6 +47,8 @@ public class InfoSupplementVO {
      * 身份证
      */
     private String idCard;
+
+
     /**
      * 资料增补类型  (1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;6-;)
      */
@@ -77,28 +79,18 @@ public class InfoSupplementVO {
     private Date supplementStartDate;
 
     private String remark;
+
+
     /**
      * 增补文件列表
      */
-    private String files;
+    private List<FileVO2> files;
+
 
     /**
      * 主贷人
      */
     private CustomerFile principalLender;
-    /**
-     * 共贷人列表
-     */
-//    private List<CustomerFile> commonLenderList;
-    /**
-     * 担保人列表
-     */
-//    private List<CustomerFile> guarantorList;
-
-    /**
-     * 紧急联系人列表
-     */
-//    private List<CustomerFile> emergencyContactList;
 
     @Data
     public static class CustomerFile {

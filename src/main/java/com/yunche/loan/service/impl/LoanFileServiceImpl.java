@@ -5,7 +5,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
@@ -24,10 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.LoanFileConst.TYPE_NAME_MAP;
-import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
-import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
-import static com.yunche.loan.config.thread.ThreadPool.executorService;
+import static com.yunche.loan.config.constant.LoanFileConst.*;
 
 /**
  * @author liuzhe
@@ -70,88 +66,6 @@ public class LoanFileServiceImpl implements LoanFileService {
         Preconditions.checkArgument(count > 0, "编辑图片信息失败");
 
         return ResultBean.ofSuccess(null, "图片信息编辑成功");
-    }
-
-    @Override
-    public void asyncPackZipFile(Long customerId, List<Byte> fileTypes, Integer retryNum) {
-
-        if (null == retryNum) {
-            retryNum = 0;
-        } else if (retryNum < 0) {
-            return;
-        }
-        retryNum--;
-
-        int finalRetryNum = retryNum;
-        executorService.execute(() ->
-                {
-
-                    boolean result = true;
-                    try {
-                        // 打包，并上传至OSS
-                        zipFile2OSS(customerId, fileTypes);
-                    } catch (Exception e) {
-                        logger.error("zipFile2OSS error", e);
-
-                        asyncPackZipFile(customerId, fileTypes, finalRetryNum);
-                    } finally {
-                        // 失败，重试
-                        if (!result) {
-                            asyncPackZipFile(customerId, fileTypes, finalRetryNum);
-                        }
-                    }
-                }
-        );
-
-    }
-
-    private boolean zipFile2OSS(Long customerId, List<Byte> fileTypes) {
-
-        ResultBean<List<FileVO>> listResultBean = listByCustomerId(customerId, null);
-        Preconditions.checkArgument(listResultBean.getSuccess(), listResultBean.getMsg());
-
-        List<FileVO> fileVOList = listResultBean.getData();
-
-        if (!CollectionUtils.isEmpty(fileVOList)) {
-            List<FileVO> zipFileVOList = fileVOList;
-            String separator = "_";
-
-            // 过滤
-            if (!CollectionUtils.isEmpty(fileTypes)) {
-                zipFileVOList = fileVOList.stream()
-                        .filter(Objects::nonNull)
-                        .filter(e -> fileTypes.contains(e.getType()))
-                        .collect(Collectors.toList());
-
-                separator = "__";
-            }
-
-            LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(customerId, null);
-            Preconditions.checkNotNull(loanCustomerDO, "客户不存在");
-
-            String fileName = loanCustomerDO.getName() + separator + loanCustomerDO.getIdCard();
-
-            // 异步打包文件
-            zipFile(zipFileVOList, fileName);
-        }
-
-        return true;
-    }
-
-    /**
-     * 异步打包文件
-     *
-     * @param zipFileVOList 需要打包的文件列表
-     * @param fileName
-     */
-    private void zipFile(List<FileVO> zipFileVOList, String fileName) {
-
-        if (CollectionUtils.isEmpty(zipFileVOList)) {
-            return;
-        }
-
-        // TODO 打包，并上传至OSS
-//        downloadFiles2OSS(zipFileVOList, fileName);
     }
 
     @Override
@@ -435,4 +349,44 @@ public class LoanFileServiceImpl implements LoanFileService {
 
         return ResultBean.ofSuccess(null);
     }
+
+    @Override
+    public void save(List<FileVO> files, Long infoSupplementId, Long customerId, Byte uploadType) {
+
+        // del  all
+        int count = loanFileDOMapper.deleteByInfoSupplementId(infoSupplementId);
+
+        // insert
+        if (!CollectionUtils.isEmpty(files)) {
+
+            List<LoanFileDO> loanFileDOList = files.stream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
+
+                        LoanFileDO loanFileDO = new LoanFileDO();
+
+                        loanFileDO.setCustomerId(customerId);
+                        loanFileDO.setInfoSupplementId(infoSupplementId);
+
+                        loanFileDO.setType(e.getType());
+                        loanFileDO.setPath(JSON.toJSONString(e.getUrls()));
+                        loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
+
+                        loanFileDO.setStatus(VALID_STATUS);
+                        loanFileDO.setGmtCreate(new Date());
+                        loanFileDO.setGmtModify(new Date());
+
+                        return loanFileDO;
+                    })
+                    .collect(Collectors.toList());
+
+            // insert now
+            if (!CollectionUtils.isEmpty(loanFileDOList)) {
+                int count_ = loanFileDOMapper.batchInsert(loanFileDOList);
+                Preconditions.checkArgument(count_ == loanFileDOList.size(), "保存失败");
+            }
+        }
+
+    }
+
 }

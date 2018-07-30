@@ -37,7 +37,7 @@ public class LoanInfoSupplementDO {
      */
     private String originTask;
     /**
-     * 增补单状态(1-已提交;2-未提交;)
+     * 增补单状态(默认值0-未执行到此节点;1-已提交;2-未提交;)
      */
     private Byte status;
     /**

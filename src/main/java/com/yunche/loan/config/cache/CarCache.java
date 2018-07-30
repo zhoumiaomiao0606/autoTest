@@ -40,13 +40,13 @@ public class CarCache {
 
     private static final Logger logger = LoggerFactory.getLogger(CarCache.class);
 
-    private static final String CAR_CASCADE_CACHE_KEY = "cascade:cache:car";
+    private static final String CAR_CASCADE_CACHE_KEY = "car:cache:cascade";
 
-    private static final String CAR_BRAND_ALL_CACHE_KEY = "all:cache:car:brand";
+    private static final String CAR_BRAND_ALL_CACHE_KEY = "car:cache:all:brand";
 
-    private static final String CAR_MODEL_ALL_CACHE_KEY = "all:cache:car:model";
+    private static final String CAR_MODEL_ALL_CACHE_KEY = "car:cache:all:model";
 
-    private static final String CAR_DETAIL_ALL_CACHE_KEY = "all:cache:car:detail";
+    private static final String CAR_DETAIL_ALL_CACHE_KEY = "car:cache:all:detail";
 
 
     @Resource

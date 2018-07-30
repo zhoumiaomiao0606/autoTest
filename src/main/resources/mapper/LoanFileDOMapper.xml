@@ -1,19 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.LoanFileDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanFileDO">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="customer_id" jdbcType="BIGINT" property="customerId"/>
-        <result column="path" jdbcType="VARCHAR" property="path"/>
-        <result column="type" jdbcType="TINYINT" property="type"/>
-        <result column="upload_type" jdbcType="TINYINT" property="uploadType"/>
-        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-        <result column="status" jdbcType="TINYINT" property="status"/>
-        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
+        <result column="info_supplement_id" property="infoSupplementId" jdbcType="BIGINT"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="upload_type" property="uploadType" jdbcType="TINYINT"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
     </resultMap>
+
     <sql id="Base_Column_List">
-        id, customer_id, path, type, upload_type, gmt_create, gmt_modify, status, feature
+        id, customer_id, info_supplement_id, path, type, upload_type, gmt_create, gmt_modify,
+        status
     </sql>
 
     <!--listByCustomerIdAndType-->
@@ -38,7 +40,29 @@
         where customer_id = #{customerId,jdbcType=BIGINT}
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--deleteByInfoSupplementId-->
+    <delete id="deleteByInfoSupplementId" parameterType="java.lang.Long">
+        DELETE FROM loan_file
+        WHERE info_supplement_id = #{infoSupplementId}
+    </delete>
+
+    <!--batchInsert-->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO loan_file
+        (customer_id, info_supplement_id,
+        path, type, upload_type,
+        gmt_create, gmt_modify, status
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.customerId,jdbcType=BIGINT}, #{item.infoSupplementId,jdbcType=BIGINT},
+            #{item.path,jdbcType=VARCHAR}, #{item.type,jdbcType=TINYINT}, #{item.uploadType,jdbcType=TINYINT},
+            #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP}, #{item.status,jdbcType=TINYINT}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
         from loan_file
@@ -50,41 +74,20 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <!--batchInsert-->
-    <insert id="batchInsert" parameterType="java.util.List">
-        insert into loan_file (customer_id, path,
-        type, upload_type, gmt_create,
-        gmt_modify, status, feature
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanFileDO"
+            useGeneratedKeys="true" keyColumn="id">
+        insert into loan_file (id, customer_id, info_supplement_id,
+        path, type, upload_type,
+        gmt_create, gmt_modify, status
         )
-        values
-        <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.customerId,jdbcType=BIGINT}, #{item.path,jdbcType=VARCHAR},
-            #{item.type,jdbcType=TINYINT}, #{item.uploadType,jdbcType=TINYINT}, #{item.gmtCreate,jdbcType=TIMESTAMP},
-            #{item.gmtModify,jdbcType=TIMESTAMP}, #{item.status,jdbcType=TINYINT}, #{item.feature,jdbcType=VARCHAR}
-            )
-        </foreach>
-    </insert>
-
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanFileDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id"
-                   order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
-        insert into loan_file (id, customer_id, path,
-        type, upload_type, gmt_create,
-        gmt_modify, status, feature
-        )
-        values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{path,jdbcType=VARCHAR},
-        #{type,jdbcType=TINYINT}, #{uploadType,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}
+        values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{infoSupplementId,jdbcType=BIGINT},
+        #{path,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{uploadType,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
         )
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanFileDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id"
-                   order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanFileDO"
+            useGeneratedKeys="true" keyColumn="id">
         insert into loan_file
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -92,6 +95,9 @@
             </if>
             <if test="customerId != null">
                 customer_id,
+            </if>
+            <if test="infoSupplementId != null">
+                info_supplement_id,
             </if>
             <if test="path != null">
                 path,
@@ -111,9 +117,6 @@
             <if test="status != null">
                 status,
             </if>
-            <if test="feature != null">
-                feature,
-            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -121,6 +124,9 @@
             </if>
             <if test="customerId != null">
                 #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="infoSupplementId != null">
+                #{infoSupplementId,jdbcType=BIGINT},
             </if>
             <if test="path != null">
                 #{path,jdbcType=VARCHAR},
@@ -140,9 +146,6 @@
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
             </if>
-            <if test="feature != null">
-                #{feature,jdbcType=VARCHAR},
-            </if>
         </trim>
     </insert>
 
@@ -151,6 +154,9 @@
         <set>
             <if test="customerId != null">
                 customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="infoSupplementId != null">
+                info_supplement_id = #{infoSupplementId,jdbcType=BIGINT},
             </if>
             <if test="path != null">
                 path = #{path,jdbcType=VARCHAR},
@@ -170,9 +176,6 @@
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
-            <if test="feature != null">
-                feature = #{feature,jdbcType=VARCHAR},
-            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -180,26 +183,14 @@
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanFileDO">
         update loan_file
         set customer_id = #{customerId,jdbcType=BIGINT},
+        info_supplement_id = #{infoSupplementId,jdbcType=BIGINT},
         path = #{path,jdbcType=VARCHAR},
         type = #{type,jdbcType=TINYINT},
         upload_type = #{uploadType,jdbcType=TINYINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        status = #{status,jdbcType=TINYINT},
-        feature = #{feature,jdbcType=VARCHAR}
+        status = #{status,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
-
-    <select id="selectByCustomerAndTypes" resultType="com.yunche.loan.domain.entity.LoanFileDO">
-        select
-            path
-        from loan_file where customer_id=#{customerId}
-            and
-            type in
-            <foreach item="item" index="index" collection="typeList" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-
-    </select>
 
 </mapper>

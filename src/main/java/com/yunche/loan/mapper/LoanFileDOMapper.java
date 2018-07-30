@@ -8,6 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface LoanFileDOMapper {
+
     int deleteByPrimaryKey(Long id);
 
     int insert(LoanFileDO record);
@@ -42,7 +43,6 @@ public interface LoanFileDOMapper {
                                              @Param("type") Byte type,
                                              @Param("uploadType") Byte uploadType);
 
-
     /**
      * 批量插入
      *
@@ -52,10 +52,10 @@ public interface LoanFileDOMapper {
     int batchInsert(List<LoanFileDO> loanFileDOS);
 
     /**
-     * 查询客户部分类型信息
-     * @param customerId
-     * @param typeList
+     * 根据增补单ID 删除
+     *
+     * @param infoSupplementId
      * @return
      */
-    List<LoanFileDO> selectByCustomerAndTypes(Long customerId ,List typeList);
+    int deleteByInfoSupplementId(Long infoSupplementId);
 }

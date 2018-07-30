@@ -21,8 +21,6 @@ public interface LoanOrderService {
 
     ResultBean<Long> createOrUpdateLoanHomeVisit(LoanHomeVisitParam loanHomeVisitParam);
 
-    ResultBean<Void> infoSupplementUpload(InfoSupplementParam infoSupplementParam);
-
     ResultBean<String> createCreditApplyOrder(CreditApplyOrderParam param);
 
     ResultBean<Void> updateCreditApplyOrder(CreditApplyOrderParam param);
@@ -38,6 +36,4 @@ public interface LoanOrderService {
     ResultBean<LoanSimpleInfoVO> simpleInfo(Long orderId);
 
     ResultBean<List<LoanSimpleCustomerInfoVO>> simpleCustomerInfo(Long orderId);
-
-    ResultBean<InfoSupplementVO> infoSupplementDetail(Long supplementOrderId);
 }

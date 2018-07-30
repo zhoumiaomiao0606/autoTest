@@ -61,10 +61,6 @@ public class DateTimeFormatUtils {
         return convertStrToDate(dateStr, formatter_yyyyMMdd);
     }
 
-    public static Date convertStrToDate(String dateStr) {
-
-        return convertStrToDate(dateStr, formatter_yyyyMMdd_HHmmss);
-    }
 
     /**
      * Str  ->  Date

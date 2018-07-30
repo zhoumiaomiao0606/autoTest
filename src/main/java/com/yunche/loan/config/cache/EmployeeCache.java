@@ -36,23 +36,23 @@ public class EmployeeCache {
     /**
      * 正式员工缓存
      */
-    private static final String EMPLOYEE_ZS_CASCADE_CACHE_KEY = "cascade:cache:employee:zs";
+    private static final String EMPLOYEE_ZS_CASCADE_CACHE_KEY = "employee:cache:cascade:zs";
     /**
      * 外包员工缓存
      */
-    private static final String EMPLOYEE_WB_CASCADE_CACHE_KEY = "cascade:cache:employee:wb";
+    private static final String EMPLOYEE_WB_CASCADE_CACHE_KEY = "employee:cache:cascade:wb";
     /**
      * ID-BaseDO缓存
      */
-    private static final String EMPLOYEE_ALL_CACHE_KEY = "all:cache:employee";
+    private static final String EMPLOYEE_ALL_CACHE_KEY = "employee:cache:all";
 
     /**
      * 唯一属性 (身份证号、手机号、邮箱、钉钉)
      */
-    private static final String EMPLOYEE_ALL_ONLY_PROPERTY_IDCARD_CACHE_KEY = "all:cache:employee:onlyProperty:id_card";
-    private static final String EMPLOYEE_ALL_ONLY_PROPERTY_MOBILE_CACHE_KEY = "all:cache:employee:onlyProperty:mobile";
-    private static final String EMPLOYEE_ALL_ONLY_PROPERTY_EMAIL_CACHE_KEY = "all:cache:employee:onlyProperty:email";
-    private static final String EMPLOYEE_ALL_ONLY_PROPERTY_DINGDING_CACHE_KEY = "all:cache:employee:onlyProperty:ding_ding";
+    private static final String EMPLOYEE_ALL_IDCARD_CACHE_KEY = "employee:cache:all:id_card";
+    private static final String EMPLOYEE_ALL_MOBILE_CACHE_KEY = "employee:cache:all:mobile";
+    private static final String EMPLOYEE_ALL_EMAIL_CACHE_KEY = "employee:cache:all:email";
+    private static final String EMPLOYEE_ALL_DINGDING_CACHE_KEY = "employee:cache:all:ding_ding";
 
     public static final Byte ID_CARD = 1;
 
@@ -301,13 +301,13 @@ public class EmployeeCache {
 
         String key = null;
         if (ID_CARD.equals(type)) {
-            key = EMPLOYEE_ALL_ONLY_PROPERTY_IDCARD_CACHE_KEY;
+            key = EMPLOYEE_ALL_IDCARD_CACHE_KEY;
         } else if (MOBILE.equals(type)) {
-            key = EMPLOYEE_ALL_ONLY_PROPERTY_MOBILE_CACHE_KEY;
+            key = EMPLOYEE_ALL_MOBILE_CACHE_KEY;
         } else if (EMAIL.equals(type)) {
-            key = EMPLOYEE_ALL_ONLY_PROPERTY_EMAIL_CACHE_KEY;
+            key = EMPLOYEE_ALL_EMAIL_CACHE_KEY;
         } else if (DINGDING.equals(type)) {
-            key = EMPLOYEE_ALL_ONLY_PROPERTY_DINGDING_CACHE_KEY;
+            key = EMPLOYEE_ALL_DINGDING_CACHE_KEY;
         }
 
         // get
@@ -523,16 +523,16 @@ public class EmployeeCache {
                     });
 
             // 刷新缓存
-            BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_ONLY_PROPERTY_IDCARD_CACHE_KEY);
+            BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_IDCARD_CACHE_KEY);
             boundValueOps.set(JSON.toJSONString(idCardList));
 
-            boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_ONLY_PROPERTY_MOBILE_CACHE_KEY);
+            boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_MOBILE_CACHE_KEY);
             boundValueOps.set(JSON.toJSONString(mobileList));
 
-            boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_ONLY_PROPERTY_EMAIL_CACHE_KEY);
+            boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_EMAIL_CACHE_KEY);
             boundValueOps.set(JSON.toJSONString(emailList));
 
-            boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_ONLY_PROPERTY_DINGDING_CACHE_KEY);
+            boundValueOps = stringRedisTemplate.boundValueOps(EMPLOYEE_ALL_DINGDING_CACHE_KEY);
             boundValueOps.set(JSON.toJSONString(dingDingList));
         }
     }
