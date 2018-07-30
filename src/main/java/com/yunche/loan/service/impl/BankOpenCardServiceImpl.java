@@ -127,8 +127,10 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 //                }
 //            }
 //        }
-        BeanUtils.copyProperties(serialDO,bankInterfaceSerialVO);
-//        BeanPlasticityUtills.copy(BankInterfaceSerialVO.class,serialDO);
+
+        if(serialDO!=null){
+            BeanUtils.copyProperties(serialDO,bankInterfaceSerialVO);
+        }
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO,"流程不存在");
         Byte telephoneVerify = loanProcessDO.getTelephoneVerify();
