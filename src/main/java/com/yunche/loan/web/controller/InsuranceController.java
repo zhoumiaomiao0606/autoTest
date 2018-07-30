@@ -51,7 +51,7 @@ public class InsuranceController {
     /**
      * 出险列表
      *
-     * @param jjq
+     * @param query
      * @return
      */
     @PostMapping(value = "/risklist", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
