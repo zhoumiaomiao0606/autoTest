@@ -174,7 +174,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         BeanUtils.copyProperties(data, appInfoSupplementVO);
 
         appInfoSupplementVO.setBank(data.getBankName());
-        appInfoSupplementVO.setSupplementOrderId(data.getInfoSupplementId());
         appInfoSupplementVO.setSupplementType(data.getType());
         appInfoSupplementVO.setSupplementTypeText(data.getTypeText());
         appInfoSupplementVO.setSupplementContent(data.getContent());

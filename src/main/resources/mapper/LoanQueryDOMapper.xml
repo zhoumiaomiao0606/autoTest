@@ -1571,7 +1571,7 @@
 
                   car.car_detail_id							AS	  carDetailId,
 
-                  s.id                                      AS    infoSupplementId,
+                  s.id                                      AS    supplementOrderId,
                   s.type                                    AS    type,
                   s.content                                 AS    content,
                   s.info                                    AS    info,
@@ -1643,6 +1643,7 @@
       LEFT JOIN   department                  d        ON  d.id = p.department_id
       LEFT JOIN   loan_car_info               l        ON  l.id = a.loan_car_info_id
       LEFT JOIN   vehicle_information         g        ON  g.id = a.vehicle_information_id
+
       WHERE a.id = #{orderId}
     </select>
 
