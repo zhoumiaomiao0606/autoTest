@@ -191,6 +191,7 @@ public class FtpImpl implements Ftp {
         File outfile = new File(localFileName);
         OutputStream oStream = null;
         try {
+            this.ftpClient.enterLocalPassiveMode();//233580\\
             oStream = new FileOutputStream(outfile);
             flag = this.ftpClient.retrieveFile(remoteFileName, oStream);
         }catch (IOException e){
