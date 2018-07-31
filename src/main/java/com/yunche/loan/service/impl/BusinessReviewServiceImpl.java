@@ -10,13 +10,18 @@ import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BusinessReviewService;
+import com.yunche.loan.service.LoanInfoSupplementService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
+
+import static com.yunche.loan.config.constant.LoanProcessEnum.BUSINESS_REVIEW;
+import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
 @Service
 @Transactional
@@ -37,6 +42,10 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     @Resource
     private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
 
+    @Autowired
+    private LoanInfoSupplementService loanInfoSupplementService;
+
+
     @Override
     public RecombinationVO detail(Long orderId) {
 
@@ -50,11 +59,10 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
         recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
-        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_business_review", orderId));
-        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify", orderId));
+        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
+        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
-        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
-        recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
+        recombinationVO.setSupplement(loanInfoSupplementService.history(orderId));
         recombinationVO.setCustomers(customers);
         return recombinationVO;
     }

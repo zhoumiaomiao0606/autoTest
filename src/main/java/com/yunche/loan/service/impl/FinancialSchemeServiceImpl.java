@@ -11,7 +11,9 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.FinancialSchemeService;
+import com.yunche.loan.service.LoanInfoSupplementService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,9 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     @Resource
     private EmployeeService employeeService;
 
+    @Autowired
+    private LoanInfoSupplementService loanInfoSupplementService;
+
     @Resource
     private TaskSchedulingDOMapper taskSchedulingDOMapper;
 
@@ -65,6 +70,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         recombinationVO.setInfo(loanQueryDOMapper.selectFinancialScheme(orderId));
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
+        recombinationVO.setSupplement(loanInfoSupplementService.history(orderId));
         return recombinationVO;
     }
 

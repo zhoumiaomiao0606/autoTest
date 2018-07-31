@@ -13,11 +13,13 @@ import java.util.List;
  */
 public interface LoanInfoSupplementService {
 
+    @Deprecated
     ResultBean<Void> upload(InfoSupplementParam infoSupplementParam);
 
+    @Deprecated
     ResultBean<InfoSupplementVO> detail__(Long id);
 
-    ResultBean<List<InfoSupplementVO2>> history(Long orderId);
+    List<InfoSupplementVO2> history(Long orderId);
 
     ResultBean<InfoSupplementVO2> detail(Long infoSupplementId);
 

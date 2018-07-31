@@ -40,7 +40,7 @@ public class RecombinationVO<T> {
     /**
      * 增补单
      */
-    private UniversalSupplementInfoVO supplement;
+    private UniversalSupplementInfoVO supplement_;
     /**
      * 金融方案
      */
@@ -76,7 +76,15 @@ public class RecombinationVO<T> {
 
     private List<UniversalCustomerVO> customers = Lists.newArrayList();
 
+    /**
+     * 文件
+     */
     private List<UniversalMaterialRecordVO> materials = Lists.newArrayList();
 
     private List<UniversalInsuranceVO> insuranceDetail = Lists.newArrayList();
+
+    /**
+     * 资料增补历史列表
+     */
+    private List<InfoSupplementVO2> supplement = Lists.newArrayList();
 }

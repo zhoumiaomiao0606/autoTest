@@ -67,21 +67,11 @@ public interface LoanQueryDOMapper {
 
     UniversalHomeVisitInfoVO selectUniversalHomeVisitInfo(Long orderId);
 
-    UniversalSupplementInfoVO selectUniversalSupplementInfo(Long orderId);
-
     List<UniversalCustomerVO> selectUniversalCustomer(Long orderId);
 
     UniversalCustomerDetailVO selectUniversalCustomerDetail(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
 
     List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId);
-
-    /**
-     * 资料增补  文件列表（最新一次增补）
-     *
-     * @param orderId
-     * @return
-     */
-    List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
     List<UniversalMaterialRecordVO> selectUniversalCustomerFileByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
 
@@ -141,12 +131,24 @@ public interface LoanQueryDOMapper {
      */
     List<InfoSupplementVO2> selectUniversalCollectionInfoSupplement(Long orderId);
 
+    /**
+     * 资料增补  文件列表（最新一次增补）
+     *
+     * @param orderId
+     * @return
+     */
+    @Deprecated
+    List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
+
+    @Deprecated
+    UniversalSupplementInfoVO selectUniversalSupplementInfo(Long orderId);
+
 
     //=======================================================================
 
     List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
 
-    List<InsuranceCustomerVO> selectInsuranceCustomerByYear(@Param("orderId") Long orderId,@Param("insuranceYear") Byte insuranceYear);
+    List<InsuranceCustomerVO> selectInsuranceCustomerByYear(@Param("orderId") Long orderId, @Param("insuranceYear") Byte insuranceYear);
 
     InsuranceCustomerVO selectInsuranceCustomerNormalizeInsuranceYear(Long orderId);
 

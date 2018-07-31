@@ -24,7 +24,7 @@ import com.yunche.loan.domain.vo.UniversalCreditInfoVO;
 import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.LoanFileService;
+import com.yunche.loan.service.LoanInfoSupplementService;
 import com.yunche.loan.service.MaterialService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,15 +56,13 @@ import static com.yunche.loan.config.constant.BaseConst.DOING_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_CREDIT_RECORD;
-import static com.yunche.loan.config.constant.LoanProcessEnum.SOCIAL_CREDIT_RECORD;
+import static com.yunche.loan.config.constant.LoanProcessEnum.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
 @Service
 public class MaterialServiceImpl implements MaterialService {
 
     private static final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
-
-    private final static Long CUSTOMER_DEFAULT_ID = (long) 0;
 
     private static final Set<String> URL_FILTER_SUFFIX = Sets.newHashSet("rar", "mp4", "mov", "avi", "m4v", "3gp", "zip");
 
@@ -80,8 +78,6 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Autowired
     private OSSConfig ossConfig;
-    @Autowired
-    private MaterialDownHisDOMapper materialDownHisDOMapper;
 
     @Resource
     private VehicleInformationDOMapper vehicleInformationDOMapper;
@@ -95,8 +91,8 @@ public class MaterialServiceImpl implements MaterialService {
     @Resource
     private LoanFileDOMapper loanFileDOMapper;
 
-    @Resource
-    private LoanFileService loanFileService;
+    @Autowired
+    private LoanInfoSupplementService loanInfoSupplementService;
 
 
     @Override
@@ -120,11 +116,10 @@ public class MaterialServiceImpl implements MaterialService {
         recombinationVO.setLoan(loanQueryDOMapper.selectUniversalLoanInfo(orderId));
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         recombinationVO.setCredits(credits);
-        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify", orderId));
-        recombinationVO.setLoanreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_loan_review", orderId));
-        recombinationVO.setBusinessreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_business_review", orderId));
-        recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
-        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
+        recombinationVO.setLoanreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(LOAN_REVIEW.getCode(), orderId));
+        recombinationVO.setBusinessreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
+        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
+        recombinationVO.setSupplement(loanInfoSupplementService.history(orderId));
         recombinationVO.setCustomers(customers);
         return recombinationVO;
     }
@@ -271,7 +266,7 @@ public class MaterialServiceImpl implements MaterialService {
             CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
             // 用于将数据压缩成Zip文件格式
             zos = new ZipOutputStream(csum);
-            logger.info("打包开始："+System.currentTimeMillis());
+            logger.info("打包开始：" + System.currentTimeMillis());
             for (MaterialDownloadParam typeFile : downloadParams) {
                 // 获取Object，返回结果为OSSObject对象
                 for (String url : typeFile.getPathList()) {
@@ -279,7 +274,7 @@ public class MaterialServiceImpl implements MaterialService {
                     try {
                         ossObject = OSSUnit.getObject(ossClient, url);
                     } catch (Exception e) {
-                        logger.info(">>>>>>>>>文件不存在:"+url);
+                        logger.info(">>>>>>>>>文件不存在:" + url);
                         continue;
                     }
 
@@ -340,13 +335,13 @@ public class MaterialServiceImpl implements MaterialService {
             }
             String diskName = ossConfig.getZipDiskName();
             //删除OSS上的文件
-            OSSUnit.deleteFile(ossClient,bucketName,diskName+File.separator,zipFile.getName());
+            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, zipFile.getName());
             OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
             returnKey = diskName + File.separator + zipFile.getName();
-            logger.info("打包结束："+System.currentTimeMillis());
+            logger.info("打包结束：" + System.currentTimeMillis());
         } catch (Exception e) {
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), null);
-            loanFileDOS.stream().filter(Objects::nonNull).forEach(f->{
+            loanFileDOS.stream().filter(Objects::nonNull).forEach(f -> {
                 loanFileDOMapper.deleteByPrimaryKey(f.getId());
             });
             throw new RuntimeException("文件打包/上传/下载失败", e);
@@ -575,7 +570,6 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
 
-
     @Override
     public void carUpdate(CarUpdateParam param) {
 
@@ -670,7 +664,7 @@ public class MaterialServiceImpl implements MaterialService {
         } else {
             materialDownloadParam.setFileStatus("1");//文件处理中
             loanFileDOS.stream().filter(Objects::nonNull).forEach(e -> {
-                if(e.getStatus()!=null && e.getStatus().equals(BaseConst.VALID_STATUS)){
+                if (e.getStatus() != null && e.getStatus().equals(BaseConst.VALID_STATUS)) {
                     materialDownloadParam.setFileStatus("0");//文件已经打包完成
                 }
             });
@@ -709,7 +703,5 @@ public class MaterialServiceImpl implements MaterialService {
             e.setGmtCreate(new Date());
             loanFileDOMapper.updateByPrimaryKeySelective(e);
         });
-
-
     }
 }

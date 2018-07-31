@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.LoanProcessEnum.BUSINESS_REVIEW;
+import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_REVIEW;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
 @Service
@@ -23,16 +25,16 @@ public class FinanceServiceImpl implements FinanceService {
     @Override
     public RecombinationVO detail(Long orderId) {
 
-        List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
-        for(UniversalCustomerVO universalCustomerVO:customers){
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
 
         List<UniversalCreditInfoVO> credits = loanQueryDOMapper.selectUniversalCreditInfo(orderId);
-        for(UniversalCreditInfoVO universalCreditInfoVO:credits){
-            if(!StringUtils.isBlank(universalCreditInfoVO.getCustomer_id())){
-                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(orderId,Long.valueOf(universalCreditInfoVO.getCustomer_id())));
+        for (UniversalCreditInfoVO universalCreditInfoVO : credits) {
+            if (!StringUtils.isBlank(universalCreditInfoVO.getCustomer_id())) {
+                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(orderId, Long.valueOf(universalCreditInfoVO.getCustomer_id())));
             }
         }
 
@@ -40,9 +42,9 @@ public class FinanceServiceImpl implements FinanceService {
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
         recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
-        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_loan_review",orderId));
-        recombinationVO.setChannel_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_business_review",orderId));
-        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify",orderId));
+        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(LOAN_REVIEW.getCode(), orderId));
+        recombinationVO.setChannel_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
+        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
         recombinationVO.setLoan(loanQueryDOMapper.selectUniversalLoanInfo(orderId));
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         recombinationVO.setCredits(credits);

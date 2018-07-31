@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.domain.entity.LoanInfoSupplementDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.InfoSupplementParam;
@@ -155,7 +154,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
         Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementParam.getFiles()) ||
                 StringUtils.isNotBlank(infoSupplementParam.getRemark()), "资料信息或备注为空");
 
-
+        // save remark
         LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
 
         loanInfoSupplementDO.setId(infoSupplementParam.getSupplementOrderId());
@@ -163,6 +162,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
 
         int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
         Preconditions.checkArgument(count > 0, "保存失败");
+
 
         // save file
         loanFileService.save(infoSupplementParam.getFiles(), infoSupplementParam.getSupplementOrderId(),
@@ -188,7 +188,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
     }
 
     @Override
-    public ResultBean<List<InfoSupplementVO2>> history(Long orderId) {
+    public List<InfoSupplementVO2> history(Long orderId) {
         Preconditions.checkNotNull(orderId, "订单号不能为空");
 
         // getAll
@@ -200,7 +200,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
         // sort
         List<InfoSupplementVO2> sortList = sortByEndTime(infoSupplementVOList);
 
-        return ResultBean.ofSuccess(sortList);
+        return sortList;
     }
 
     /**

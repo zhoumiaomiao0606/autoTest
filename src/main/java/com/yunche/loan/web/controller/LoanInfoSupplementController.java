@@ -79,7 +79,7 @@ public class LoanInfoSupplementController {
      */
     @GetMapping(value = "/history")
     public ResultBean<List<InfoSupplementVO2>> history(@RequestParam Long orderId) {
-        return loanInfoSupplementService.history(orderId);
+        return ResultBean.ofSuccess(loanInfoSupplementService.history(orderId));
     }
 
 }

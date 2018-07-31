@@ -60,6 +60,7 @@ public interface LoanFileService {
      * @param type
      * @return
      */
+    @Deprecated
     ResultBean<Void> moveOldSupplementToNormal(Long customerId, Byte type);
 
     /**
@@ -70,6 +71,7 @@ public interface LoanFileService {
      * @param urls
      * @return
      */
+    @Deprecated
     ResultBean<Void> saveNewSupplementFiles(Long customerId, Byte type, List<String> urls);
 
     /**
