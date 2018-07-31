@@ -186,8 +186,7 @@ public class CarLoanHttpUtil {
 		url += "?gprsCode="+gprsCode+"&sp=9&sign="+sign;
 		String returnInfo = sendGet(url);
 		if(!StringUtil.isEmpty(returnInfo)) {
-			carLoanResultVO = formJson2Obj(returnInfo, CarLoanResultVO.class);
-			if("true".equals(carLoanResultVO.getSuccess())) {
+			if("1".equals(returnInfo)){
 				flag = true;
 			}
 		}
@@ -244,7 +243,7 @@ public class CarLoanHttpUtil {
 			response = httpClient.execute(get);
 			HttpEntity entity = response.getEntity();
 			result = EntityUtils.toString(entity, "utf-8");
-			System.out.println(result);
+			System.out.println("返回json:"+result);
 		} catch (IOException e) {
 			logger.error("系统链接失败",e);
 		}finally {

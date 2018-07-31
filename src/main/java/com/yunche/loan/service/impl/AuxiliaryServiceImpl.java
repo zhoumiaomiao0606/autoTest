@@ -111,9 +111,9 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                     }
                 } else if ("CARLOAN".equals(param.getGpsCompany())) {
                     try {
-                        List<Map<String, Object>> list = CarLoanHttpUtil.getGpsInfo(obj.getGps_number());
-                        if (list.size() > 0) {
-                            for (Map<String, Object> map : list) {
+                        boolean flag = CarLoanHttpUtil.getGpsStatus(obj.getGps_number());
+                        if (flag) {
+                           /* for (Map<String, Object> map : list) {
                                 if (map.get("activeTime") != null) {
                                     boolean flag = CarLoanHttpUtil.bindGps(obj.getGps_number(), param.getDriverName());
                                     if (!flag) {
@@ -122,13 +122,13 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                                 } else {
                                     throw new BizException("该GPS:" + obj.getGps_number() + "未激活无法使用");
                                 }
-                            }
+                            }*/
                         } else {
-                            throw new BizException("该GPS:" + obj.getGps_number() + "信息不存在");
+                            throw new BizException("该GPS:" + obj.getGps_number() + "无法登记");
                         }
                     } catch (Exception e) {
                         logger.error("车贷管家系统通讯异常", e);
-                        throw new BizException("车贷管家系统通讯异常");
+                        throw new BizException(e.getMessage());
                     }
 
                 }
