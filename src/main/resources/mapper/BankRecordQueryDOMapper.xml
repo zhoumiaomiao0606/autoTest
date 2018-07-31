@@ -185,7 +185,7 @@
                 (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate
         FROM
             <choose>
-                <when test="taskDefinitionKey=='fp'">
+                <when test="taskDefinitionKey=='usertask_urge_insurance_assign_work_bench'">
                     (select * from loan_order where 1=1
                     <if test="taskStatus == 1">
                         and id not in(select order_id from insurance_distribute_record)
@@ -195,7 +195,7 @@
                     </if>
                     ) loan
                 </when>
-                <when test="taskDefinitionKey=='fp2'">
+                <when test="taskDefinitionKey=='usertask_urge_insurance_work_bench'">
                     (select * from loan_order where id in(select order_id from insurance_distribute_record where employee_id=#{employeeId})
                     ) loan
                 </when>
