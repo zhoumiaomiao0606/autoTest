@@ -18,14 +18,11 @@ package com.yunche.loan.config.util;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yunche.loan.config.common.GpsConfig;
 import com.yunche.loan.domain.vo.GetTokenVO;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.Header;
@@ -44,6 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
+
 import static com.yunche.loan.config.util.SignUtils.signTopRequest;
 
 
@@ -61,14 +60,20 @@ public class OpenApiUtil {
 	@Autowired
 	private static GetTokenVO getTokenVO;
 
-	private static final String openapi_url = "http://open.aichezaixian.com/route/rest";
+	@Resource
+	private static GpsConfig gpsConfig;
+
+	private static  String openapi_url = "";
 	
 	// 申请来的appKey和appSecret
-	private static final String app_key = "8FB345B8693CCD00760000EE2CEC4EDD";
-	private static final String app_secret = "b4bb37b73d1f4072b269bbb9580d0ba3";
-	
-	public static void main(String[] args) {
+	private static  String app_key = "";
+	private static  String app_secret = "";
 
+	static{
+		ResourceBundle bundle = PropertyResourceBundle.getBundle("gpsconfig");
+		openapi_url = bundle.getString("jimiUrl");
+		app_key = bundle.getString("jimiKey");
+		app_secret = bundle.getString("jimiSecret");
 	}
 	private static Map<String, String> getCommonMap(){
 		Map<String, String> paramMap = new HashMap<String, String>();

@@ -18,6 +18,8 @@ package com.yunche.loan.config.util;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yunche.loan.config.common.GpsConfig;
+import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.domain.vo.CarLoanResultVO;
 import com.yunche.loan.domain.vo.GetTokenVO;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -38,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -59,10 +62,21 @@ public class CarLoanHttpUtil {
 	@Autowired
 	private static CarLoanResultVO carLoanResultVO;
 
-	private static String openapi_url = "http://114.55.174.190:8280/vehicle_client";
+	@Autowired
+	private GpsConfig gpsConfig;
+
+
+	private static String openapi_url = "";
 	
 	// 申请来的appKey和appSecret
-	private static final String app_key = "836923d25d2290f15aae11a74acac69a";
+	private static String app_key = "";
+	static{
+		ResourceBundle bundle = PropertyResourceBundle.getBundle("gpsconfig");
+		openapi_url = bundle.getString("carLoanUrl");
+		app_key = bundle.getString("carLoanKey");
+	}
+
+
 	//机构新增修改
 	public static void modifyClient(String tName,String tId,String sName,String sId) throws Exception {
 		String url = openapi_url+"/api/modifyClient";
@@ -125,6 +139,8 @@ public class CarLoanHttpUtil {
 	//绑定gps
 	public static boolean bindGps(String gpsCode,String orderId) throws Exception {
 		boolean flag = false;
+		//openapi_url = gpsConfig.getCarLoanUrl();
+		//app_key = gpsConfig.getCarLoanKey();
 		String url = openapi_url+"/api/bindGps";
 		String sign =MD5Utils.md5Hex(gpsCode+app_key);
 		url += "?orderId="+orderId+"&gprsCode="+gpsCode+"&sp=9&sign="+sign;
@@ -161,6 +177,22 @@ public class CarLoanHttpUtil {
 			}
 		}
 		return result;
+	}
+	//gps是否正常
+	public static boolean getGpsStatus(String gprsCode)throws Exception {
+		boolean flag = false;
+		String url = openapi_url+"/api/getGpsStatus";
+		String sign =MD5Utils.md5Hex(gprsCode+app_key);
+		url += "?gprsCode="+gprsCode+"&sp=9&sign="+sign;
+		String returnInfo = sendGet(url);
+		if(!StringUtil.isEmpty(returnInfo)) {
+			carLoanResultVO = formJson2Obj(returnInfo, CarLoanResultVO.class);
+			if("true".equals(carLoanResultVO.getSuccess())) {
+				flag = true;
+			}
+		}
+		return flag;
+
 	}
 	private static String sendPost(String url) throws IOException {
 	    String result = "";
