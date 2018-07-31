@@ -1531,7 +1531,7 @@
 
     </select>
 
-    <select id="selectUniversalInfoSupplement" resultType="com.yunche.loan.domain.vo.InfoSupplementVO2">
+    <select id="selectUniversalInfoSupplement" resultType="com.yunche.loan.domain.vo.UniversalInfoSupplementVO">
 
         <include refid="universalInfoSupplement"/>
 
@@ -1539,7 +1539,7 @@
 
     </select>
 
-    <select id="selectUniversalCollectionInfoSupplement" resultType="com.yunche.loan.domain.vo.InfoSupplementVO2">
+    <select id="selectUniversalCollectionInfoSupplement" resultType="com.yunche.loan.domain.vo.UniversalInfoSupplementVO">
 
         <include refid="universalInfoSupplement"/>
 

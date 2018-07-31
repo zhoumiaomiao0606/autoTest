@@ -134,6 +134,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private HistoryService historyService;
 
     @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+
+    @Autowired
     private FinancialProductDOMapper financialProductDOMapper;
 
     @Autowired
@@ -141,6 +144,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanHomeVisitDOMapper loanHomeVisitDOMapper;
+
+    @Autowired
+    private EmployeeCache employeeCache;
 
     @Autowired
     private PermissionService permissionService;
@@ -151,20 +157,14 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private LoanInfoSupplementService loanInfoSupplementService;
 
-    @Autowired
-    private EmployeeCache employeeCache;
-
-    @Autowired
-    private BaseAreaDOMapper baseAreaDOMapper;
-
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
 
-        ResultBean<InfoSupplementVO2> detailResult = loanInfoSupplementService.detail(supplementOrderId);
+        ResultBean<UniversalInfoSupplementVO> detailResult = loanInfoSupplementService.detail(supplementOrderId);
         Preconditions.checkArgument(detailResult.getSuccess(), detailResult.getMsg());
 
-        InfoSupplementVO2 data = detailResult.getData();
+        UniversalInfoSupplementVO data = detailResult.getData();
 
         AppInfoSupplementVO appInfoSupplementVO = new AppInfoSupplementVO();
         BeanUtils.copyProperties(data, appInfoSupplementVO);

@@ -86,5 +86,5 @@ public class RecombinationVO<T> {
     /**
      * 资料增补历史列表
      */
-    private List<InfoSupplementVO2> supplement = Lists.newArrayList();
+    private List<UniversalInfoSupplementVO> supplement = Lists.newArrayList();
 }

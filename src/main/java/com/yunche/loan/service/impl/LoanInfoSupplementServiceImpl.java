@@ -172,33 +172,33 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
     }
 
     @Override
-    public ResultBean<InfoSupplementVO2> detail(Long infoSupplementId) {
+    public ResultBean<UniversalInfoSupplementVO> detail(Long infoSupplementId) {
         Preconditions.checkNotNull(infoSupplementId, "增补单ID不能为空");
 
         // getAll
-        List<InfoSupplementVO2> infoSupplementVO2List = loanQueryDOMapper.selectUniversalInfoSupplement(infoSupplementId);
+        List<UniversalInfoSupplementVO> universalInfoSupplementVOList = loanQueryDOMapper.selectUniversalInfoSupplement(infoSupplementId);
 
         // check
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementVO2List), "增补单不存在");
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(universalInfoSupplementVOList), "增补单不存在");
 
         // group by
-        List<InfoSupplementVO2> infoSupplementVOList = groupByInfoSupplementId(infoSupplementVO2List);
+        List<UniversalInfoSupplementVO> infoSupplementVOList = groupByInfoSupplementId(universalInfoSupplementVOList);
 
         return ResultBean.ofSuccess(infoSupplementVOList.get(0));
     }
 
     @Override
-    public List<InfoSupplementVO2> history(Long orderId) {
+    public List<UniversalInfoSupplementVO> history(Long orderId) {
         Preconditions.checkNotNull(orderId, "订单号不能为空");
 
         // getAll
-        List<InfoSupplementVO2> infoSupplementVO2List = loanQueryDOMapper.selectUniversalCollectionInfoSupplement(orderId);
+        List<UniversalInfoSupplementVO> universalInfoSupplementVOList = loanQueryDOMapper.selectUniversalCollectionInfoSupplement(orderId);
 
         // group by
-        List<InfoSupplementVO2> infoSupplementVOList = groupByInfoSupplementId(infoSupplementVO2List);
+        List<UniversalInfoSupplementVO> infoSupplementVOList = groupByInfoSupplementId(universalInfoSupplementVOList);
 
         // sort
-        List<InfoSupplementVO2> sortList = sortByEndTime(infoSupplementVOList);
+        List<UniversalInfoSupplementVO> sortList = sortByEndTime(infoSupplementVOList);
 
         return sortList;
     }
@@ -208,13 +208,13 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
      *
      * @param infoSupplementVOList
      */
-    private List<InfoSupplementVO2> sortByEndTime(List<InfoSupplementVO2> infoSupplementVOList) {
+    private List<UniversalInfoSupplementVO> sortByEndTime(List<UniversalInfoSupplementVO> infoSupplementVOList) {
 
         if (!CollectionUtils.isEmpty(infoSupplementVOList)) {
 
-            List<InfoSupplementVO2> sortList = infoSupplementVOList.stream()
+            List<UniversalInfoSupplementVO> sortList = infoSupplementVOList.stream()
                     .filter(Objects::nonNull)
-                    .sorted(Comparator.comparing(InfoSupplementVO2::getEndTime).reversed())
+                    .sorted(Comparator.comparing(UniversalInfoSupplementVO::getEndTime).reversed())
                     .collect(Collectors.toList());
 
             return sortList;
@@ -223,13 +223,13 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
         return infoSupplementVOList;
     }
 
-    private List<InfoSupplementVO2> groupByInfoSupplementId(List<InfoSupplementVO2> infoSupplementVOList) {
+    private List<UniversalInfoSupplementVO> groupByInfoSupplementId(List<UniversalInfoSupplementVO> infoSupplementVOList) {
 
         if (CollectionUtils.isEmpty(infoSupplementVOList)) {
             return Collections.EMPTY_LIST;
         }
 
-        Map<Long, InfoSupplementVO2> idDetailMap = Maps.newHashMap();
+        Map<Long, UniversalInfoSupplementVO> idDetailMap = Maps.newHashMap();
 
         // text - kvMap
         Map<String, String> kvMap = dictService.getKVMap("infoSupplementType");
@@ -242,7 +242,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
 
                     if (idDetailMap.containsKey(infoSupplementId)) {
 
-                        InfoSupplementVO2 infoSupplementVO = idDetailMap.get(infoSupplementId);
+                        UniversalInfoSupplementVO infoSupplementVO = idDetailMap.get(infoSupplementId);
 
                         List<FileVO2> files = infoSupplementVO.getFiles();
 
@@ -258,7 +258,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
 
                     } else {
 
-                        InfoSupplementVO2 infoSupplementVO = new InfoSupplementVO2();
+                        UniversalInfoSupplementVO infoSupplementVO = new UniversalInfoSupplementVO();
 
                         BeanUtils.copyProperties(e, infoSupplementVO);
 
@@ -281,7 +281,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
                 });
 
         // val
-        Collection<InfoSupplementVO2> values = idDetailMap.values();
+        Collection<UniversalInfoSupplementVO> values = idDetailMap.values();
         return Lists.newArrayList(values);
     }
 

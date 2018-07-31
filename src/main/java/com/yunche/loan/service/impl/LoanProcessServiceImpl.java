@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.constant.VideoFaceConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
@@ -138,6 +139,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private DictService dictService;
+
+    @Autowired
+    private VideoFaceService videoFaceService;
+
+    @Autowired
+    private VideoFaceLogDOMapper videoFaceLogDOMapper;
 
 
     @Override
@@ -943,11 +950,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         else if ((BUSINESS_REVIEW.getCode().equals(taskDefinitionKey) || LOAN_REVIEW.getCode().equals(taskDefinitionKey))
                 && ACTION_PASS.equals(action)) {
 
+            // 财务放款审批时，需要判断几个子业务的状态
+            // 1.[金融方案修改申请]审批通过
             // 进行中的【金融方案修改申请】
             LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(loanOrderDO.getId());
             if (null != loanFinancialPlanTempHisDO) {
-                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "该订单已发起[金融方案修改申请]，请待审核通过后再操作！");
+                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前订单已发起[金融方案修改申请]，请待审核通过后再操作！");
             }
+
+            // 2.GPS安装完成
+            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getInstallGps()), "当前订单[GPS安装]未提交");
+
+            // 3.（根据银行配置）视频面签完成
+            VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(loanOrderDO.getId());
+            Preconditions.checkNotNull(videoFaceLogDO, "当前订单未进行[视频面签]");
+            Preconditions.checkArgument(VideoFaceConst.ACTION_PASS.equals(videoFaceLogDO.getAction()), "当前订单[视频面签]未通过");
         }
 
         // [资料流转（抵押资料 - 合伙人->公司]
@@ -1239,7 +1256,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             execTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
         } else {
             // 前置开卡校验
-            if(BANK_OPEN_CARD.getCode().equals(approval.getTaskDefinitionKey())){
+            if (BANK_OPEN_CARD.getCode().equals(approval.getTaskDefinitionKey())) {
                 preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
             }
             // 其他任务：直接提交

@@ -501,8 +501,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     // taskStatus
                     fillTaskStatus(appTaskVO);
 
-                    // canXX
-                    canCreditSupplementAndCanVideoFace(Long.valueOf(e.getId()), appTaskVO);
+                    // can [征信增补]
+                    canCreditSupplement(Long.valueOf(e.getId()), appTaskVO);
 
                     // 面签客户查询时，才需要车型
                     if (null == multipartType) {
@@ -520,12 +520,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     /**
-     * 发起【征信增补】&【贷款申请】前置条件校验
+     * 发起【征信增补】前置条件校验
      *
      * @param orderId
      * @param appTaskVO
      */
-    private void canCreditSupplementAndCanVideoFace(Long orderId, AppTaskVO appTaskVO) {
+    private void canCreditSupplement(Long orderId, AppTaskVO appTaskVO) {
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 

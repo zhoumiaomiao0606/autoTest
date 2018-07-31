@@ -55,10 +55,6 @@ public class AppTaskVO {
      * 是否可以发起【征信增补】
      */
     private Boolean canCreditSupplement;
-    /**
-     * todo 删除  是否可以发起【视频面签】
-     */
-    private Boolean canVideoFace = true;
 
 
     /**

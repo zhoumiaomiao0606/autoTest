@@ -20,4 +20,12 @@ public interface VideoFaceLogDOMapper {
     int updateByPrimaryKey(VideoFaceLogDO record);
 
     List<VideoFaceLogDO> query(VideoFaceQuery videoFaceQuery);
+
+    /**
+     * 最后一条 视频面签记录
+     *
+     * @param orderId
+     * @return
+     */
+    VideoFaceLogDO lastVideoFaceLogByOrderId(Long orderId);
 }
