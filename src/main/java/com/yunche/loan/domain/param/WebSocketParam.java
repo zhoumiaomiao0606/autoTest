@@ -3,7 +3,6 @@ package com.yunche.loan.domain.param;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.constant.VideoFaceConst;
 
-import com.yunche.loan.web.aop.GlobalExceptionHandler;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,7 +19,7 @@ import java.net.URLDecoder;
 @Data
 public class WebSocketParam {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketParam.class);
 
 
     /**
