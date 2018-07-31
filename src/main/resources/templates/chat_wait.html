@@ -48,6 +48,15 @@
     <input type="submit" value="latlon"/>
 </form>
 
+<form id="network">
+    bankId：<textarea rows="2" cols="15" name="bankId"></textarea>
+    pcAnyChatUserId：<textarea rows="2" cols="15" name="pcAnyChatUserId"></textarea>
+    netType：<textarea rows="2" cols="15" name="netType"></textarea>
+    uplinkSpeed：<textarea rows="2" cols="15" name="uplinkSpeed"></textarea>
+    downlinkSpeed：<textarea rows="2" cols="15" name="downlinkSpeed"></textarea>
+    <input type="submit" value="network"/>
+</form>
+
 <script th:inline="javascript">
 
     $('#wiselyForm').submit(function (e) {
@@ -85,6 +94,16 @@
         sendLatlon(bankId, pcAnyChatUserId, latlon, address);
     })
     ;
+    $('#network').submit(function (e) {
+        e.preventDefault();
+        var bankId = $('#network').find('textarea[name="bankId"]').val();
+        var pcAnyChatUserId = $('#network').find('textarea[name="pcAnyChatUserId"]').val();
+        var netType = $('#network').find('textarea[name="netType"]').val();
+        var uplinkSpeed = $('#network').find('textarea[name="uplinkSpeed"]').val();
+        var downlinkSpeed = $('#network').find('textarea[name="downlinkSpeed"]').val();
+        sendNetwork(bankId, pcAnyChatUserId, netType, uplinkSpeed, downlinkSpeed);
+    })
+    ;
     //链接endpoint名称为 "/endpointChat" 的endpoint。
     //    var sock = new SockJS("/endpointChat");
     //    var sock = new SockJS("http://localhost:8001" + "/videoFace");
@@ -101,6 +120,7 @@
         stomp.subscribe("/user/queue/team/info/app", handleNotification);
         stomp.subscribe("/user/queue/team/info/pc", handleNotification);
         stomp.subscribe("/user/queue/latlon/pc", handleNotification);
+        stomp.subscribe("/user/queue/network/pc", handleNotification);
     });
 
 
@@ -148,6 +168,16 @@
             'pcAnyChatUserId': pcAnyChatUserId,
             'latlon': latlon,
             'address': address
+        }));//3
+    };
+
+    function sendNetwork(bankId, pcAnyChatUserId, netType, uplinkSpeed, downlinkSpeed) {
+        stomp.send("/api/v1/ws/network", {}, JSON.stringify({
+            'bankId': bankId,
+            'pcAnyChatUserId': pcAnyChatUserId,
+            'netType': netType,
+            'uplinkSpeed': uplinkSpeed,
+            'downlinkSpeed': downlinkSpeed
         }));//3
     };
 

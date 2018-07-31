@@ -60,10 +60,13 @@ public class WebSocketParam {
      */
     private Long pcAnyChatUserId;
 
+
     /**
      * 人物照片存储路径
      */
     private String livePhotoPath;
+
+
     /**
      * APP端面签定位点 经纬度
      */
@@ -72,6 +75,20 @@ public class WebSocketParam {
      * 地址信息
      */
     private String address;
+
+
+    /**
+     * 网络类型：  0-无网络 / 1-WiFi / 2-2G / 3-3G / 4-4G / 5-5G
+     */
+    private Integer netType;
+    /**
+     * 上行网速：200k/s
+     */
+    private Double uplinkSpeed;
+    /**
+     * 下行网速：2M/s
+     */
+    private Double downlinkSpeed;
 
 
     public Long getBankId(BankCache bankCache) {
@@ -109,5 +126,68 @@ public class WebSocketParam {
 
         return null;
     }
+
+
+    //////////////////////////////////////////////  network  ///////////////////////////////////////////////////////////
+
+    public String getNetType() {
+
+        String netTypeText = "";
+
+        if (null != netType) {
+
+            switch (netType) {
+                case 0:
+                    netTypeText = "无网络";
+                case 1:
+                    netTypeText = "WiFi";
+                case 2:
+                    netTypeText = "2G";
+                case 3:
+                    netTypeText = "3G";
+                case 4:
+                    netTypeText = "4G";
+                case 5:
+                    netTypeText = "5G";
+                default:
+                    netTypeText = "未知";
+            }
+        }
+
+        return netTypeText;
+    }
+
+    public String getUplinkSpeed() {
+
+        return getNetSpeed(uplinkSpeed);
+    }
+
+    public String getDownlinkSpeed() {
+
+        return getNetSpeed(downlinkSpeed);
+    }
+
+    private String getNetSpeed(Double netSpeed) {
+
+        if (null == netSpeed) {
+
+            return "0k/s";
+
+        } else if (netSpeed < 1000) {
+
+            double value = new BigDecimal(netSpeed).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+            return value + "k/s";
+
+        } else {
+
+            double m = netSpeed / 1024;
+
+            double value = new BigDecimal(m).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+            return value + "M/s";
+        }
+    }
+    //////////////////////////////////////////////  network  ///////////////////////////////////////////////////////////
 
 }

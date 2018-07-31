@@ -83,6 +83,12 @@ public interface LoanQueryDOMapper {
 
     List<UniversalMaterialRecordVO> selectUniversalCustomerFiles(@Param("customerId") Long customerId, @Param("types") Set<Byte> types);
 
+    /**
+     * 催收
+     *
+     * @param orderId
+     * @return
+     */
     List<UniversalCollectionRecord> selectUniversalCollectionRecord(Long orderId);
 
     UniversalCollectionRecordDetail selectUniversalCollectionRecordDetail(Long collectionId);

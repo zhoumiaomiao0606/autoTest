@@ -96,6 +96,18 @@ public class WebSocketController {
         webSocketService.latlon(webSocketParam);
     }
 
+    /**
+     * APP端 网络环境实时 转发
+     *
+     * @param webSocketParam
+     */
+    @MessageMapping("/network")
+    public void network(WebSocketParam webSocketParam) {
+
+        webSocketService.network(webSocketParam);
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
