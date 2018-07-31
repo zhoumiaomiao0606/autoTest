@@ -27,7 +27,7 @@ public class AsyncUpload {
 
     private static final Set<String> PIC_SUFFIX = Sets.newHashSet("jpg", "png");
 
-    private static final Set<String> DOCX_SUFFIX = Sets.newHashSet("docx");
+    private static final Set<String> DOCX_SUFFIX = Sets.newHashSet("docx","doc");
 
     @Resource
     private BankInterfaceFileSerialDOMapper bankInterfaceFileSerialDOMapper;
