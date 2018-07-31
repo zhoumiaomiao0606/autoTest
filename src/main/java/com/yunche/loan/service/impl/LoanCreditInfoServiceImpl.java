@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.CustomerConst.*;
+import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 
 /**
  * @author liuzhe

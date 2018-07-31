@@ -238,7 +238,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
-                    Long infoSupplementId = e.getInfoSupplementId();
+                    Long infoSupplementId = e.getSupplementOrderId();
 
                     if (idDetailMap.containsKey(infoSupplementId)) {
 

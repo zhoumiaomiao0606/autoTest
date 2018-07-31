@@ -17,7 +17,7 @@ public class InfoSupplementVO2 {
     /**
      * 增补单ID
      */
-    private Long infoSupplementId;
+    private Long supplementOrderId;
     /**
      * 订单ID
      */

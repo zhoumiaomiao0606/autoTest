@@ -50,4 +50,6 @@ public class PartnerDO {
      * 禁用银行列表 (征信申请)
      */
     private String disableBankList;
+
+    private String gpsCompany;
 }

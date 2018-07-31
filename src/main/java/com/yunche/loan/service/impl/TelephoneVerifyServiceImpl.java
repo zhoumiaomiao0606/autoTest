@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
+
 @Service
 @Transactional
 public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
@@ -83,7 +85,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
         recombinationVO.setCredits(credits);
         recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
-        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo("usertask_telephone_verify", orderId));
+        recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
         recombinationVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderId(orderId));
         recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
@@ -117,8 +119,8 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                     loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
                 }
             }
-            if(loanCustomerId !=null){
-                if(StringUtils.isNotBlank(param.getOpenCardOrder())){
+            if (loanCustomerId != null) {
+                if (StringUtils.isNotBlank(param.getOpenCardOrder())) {
                     LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
                     loanCustomerDO.setId(loanCustomerId);
                     loanCustomerDO.setOpenCardOrder(param.getOpenCardOrder());
@@ -266,6 +268,5 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
         return ossConfig.getDownLoadDiskName() + File.separator + fileName;
     }
-
 
 }

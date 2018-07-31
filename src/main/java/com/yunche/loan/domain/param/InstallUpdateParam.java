@@ -15,4 +15,9 @@ public class InstallUpdateParam  {
     @NotEmpty
     private List<GpsUpdateParam> gps_list;
 
+    private String vehicleName;
+
+    private String driverName;
+
+    private String gpsCompany;
 }

@@ -357,7 +357,8 @@
             process.apply_license_plate_deposit_info                                                AS process_apply_license_plate_deposit_info,
             process.bank_lend_record                                                                AS process_bank_lend_record,
             bank.repay_date                                                                         AS bank_repay_date,
-            car.car_category                                                                        AS car_category
+            car.car_category                                                                        AS car_category,
+            cost.performance_fee                                                                    AS performance_fee
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
     left join loan_process process on main_order.id = process.order_id
@@ -376,7 +377,7 @@
     left join employee salesman on loan.salesman_id = salesman.id
     left join partner partner on loan.partner_id = partner.id
     left join department department on partner.department_id = department.id
-
+    left join cost_details cost on main_order.cost_details_id = cost.id
 
   </select>
 
@@ -1063,6 +1064,37 @@
 
   </select>
 
+
+    <!--保险客户信息-->
+    <select id="selectInsuranceCustomerByYear" resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO">
+      select
+              o.id                              AS order_id,
+              i.id                              AS insurance_info_id,
+              c.id                              AS customer_id,
+              c.name                            AS cname,
+              c.id_card                         AS id_card,
+              c.mobile                          AS mobile,
+              e.name                            AS ename,
+              p.name                            AS pname,
+              i.insurance_year                  AS insurance_year,
+              i.issue_bills_date                AS issue_bills_date,
+              c.address                         AS residential_address,
+              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )
+                                                AS total_insurance_amount
+
+      from
+            (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+                left join insurance_info i on i.order_id = o.id and i.insurance_year = #{insuranceYear,jdbcType=TINYINT}
+                left join loan_customer c on c.id = o.loan_customer_id
+                left join loan_base_info b on b.id = o.loan_base_info_id
+                left join employee e on e.id = b.salesman_id
+                left join partner p on p.id = b.partner_id
+
+    ORDER BY i.issue_bills_date asc
+
+
+  </select>
+
     <!--保险客户信息-->
     <select id="selectInsuranceCustomerNormalizeInsuranceYear"
             resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO" parameterType="java.lang.Long">
@@ -1088,7 +1120,6 @@
                 left join employee e on e.id = b.salesman_id
                 left join partner p on p.id = b.partner_id
     ORDER BY i.issue_bills_date asc
-
   </select>
 
     <!--保险相关信息-->
@@ -1448,7 +1479,6 @@
 
     </select>
 
-
     <select id="selectUniversalDataFlowCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
 
         SELECT
@@ -1541,7 +1571,7 @@
 
                   car.car_detail_id							AS	  carDetailId,
 
-                  s.id                                      AS    infoSupplementId,
+                  s.id                                      AS    supplementOrderId,
                   s.type                                    AS    type,
                   s.content                                 AS    content,
                   s.info                                    AS    info,
@@ -1585,5 +1615,36 @@
 
         LEFT JOIN   department                      d       ON   d.id = p.department_id
     </sql>
+
+    <select id="selectGpsDetailByOrderId" resultType="com.yunche.loan.domain.vo.GpsDetailVO"
+            parameterType="java.lang.Long">
+
+        SELECT
+                  a.id                              AS orderId,
+                  c.id_card                         AS idCard,
+                  c.name                            AS customerName,
+                  e.name                            AS salesmanName,
+                  c.mobile                          AS mobile,
+                  d.name                            AS departmentName,
+                  p.name                            AS partnerName,
+                  b.bank                            AS bankName,
+                  l.car_type                        AS carType,
+                  useGetCarName(l.car_detail_id)    AS carDetailName,
+                  l.gps_num                         AS gpsNum,
+                  g.license_plate_number            AS licensePlateNymber,
+                  p.gps_company                     AS gpsCompany
+
+      FROM
+                  loan_order                  a
+      LEFT JOIN   loan_base_info              b        ON  b.id = a.loan_base_info_id
+      LEFT JOIN   loan_customer               c        ON  c.id = a.loan_customer_id
+      LEFT JOIN   employee                    e        ON  e.id = b.salesman_id
+      LEFT JOIN   partner                     p        ON  p.id = b.partner_id
+      LEFT JOIN   department                  d        ON  d.id = p.department_id
+      LEFT JOIN   loan_car_info               l        ON  l.id = a.loan_car_info_id
+      LEFT JOIN   vehicle_information         g        ON  g.id = a.vehicle_information_id
+
+      WHERE a.id = #{orderId}
+    </select>
 
 </mapper>

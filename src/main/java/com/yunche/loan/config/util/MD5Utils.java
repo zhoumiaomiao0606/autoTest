@@ -1,6 +1,7 @@
 package com.yunche.loan.config.util;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,4 +113,12 @@ public class MD5Utils {
             return null;
         }
     }
+
+    public static String md5(String text, String key) throws Exception {
+        //加密后的字符串
+        String encodeStr=DigestUtils.md5Hex(text + key);
+        System.out.println("MD5加密后的字符串为:encodeStr="+encodeStr);
+        return encodeStr;
+    }
+
 }

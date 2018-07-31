@@ -19,7 +19,7 @@ public interface LoanDataFlowService {
 
     ResultBean<UniversalDataFlowDetailVO> detail(Long id);
 
-    ResultBean create(LoanDataFlowDO loanDataFlowDO);
+    ResultBean<Long> create(LoanDataFlowDO loanDataFlowDO);
 
     ResultBean<Integer> update(LoanDataFlowDO loanDataFlowDO);
 

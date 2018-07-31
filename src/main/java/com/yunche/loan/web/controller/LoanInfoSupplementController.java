@@ -31,7 +31,7 @@ public class LoanInfoSupplementController {
      * @param infoSupplementParam
      * @return
      */
-    @PostMapping(value = "/upload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/upload_", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> upload(@RequestBody InfoSupplementParam infoSupplementParam) {
         return loanInfoSupplementService.upload(infoSupplementParam);
     }
@@ -63,12 +63,12 @@ public class LoanInfoSupplementController {
     /**
      * 资料增补 详情
      *
-     * @param infoSupplementId
+     * @param supplementOrderId
      * @return
      */
     @GetMapping(value = "/detail")
-    public ResultBean<InfoSupplementVO2> detail(@RequestParam Long infoSupplementId) {
-        return loanInfoSupplementService.detail(infoSupplementId);
+    public ResultBean<InfoSupplementVO2> detail(@RequestParam Long supplementOrderId) {
+        return loanInfoSupplementService.detail(supplementOrderId);
     }
 
     /**

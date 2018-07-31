@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.InsuranceRiskDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.InsuranceRiskDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="insurance_number" property="insuranceNumber" jdbcType="VARCHAR" />
+    <result column="insurance_company_name" property="insuranceCompanyName" jdbcType="VARCHAR" />
+    <result column="risk_date" property="riskDate" jdbcType="DATE" />
+    <result column="accept_date" property="acceptDate" jdbcType="DATE" />
+    <result column="total_money" property="totalMoney" jdbcType="DECIMAL" />
+    <result column="apply_clamis_money" property="applyClamisMoney" jdbcType="DECIMAL" />
+    <result column="clamis_commissioner" property="clamisCommissioner" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, insurance_number, insurance_company_name, risk_date, accept_date, total_money,
+    apply_clamis_money, clamis_commissioner
+  </sql>
+  <select id="riskInfoByOrderId"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from insurance_risk  r where r.insurance_number in
+      (
+      select a.insurance_number from insurance_info i left join insurance_relevance a on i.id = a.insurance_info_id
+      where i.order_id = #{orderId,jdbcType=BIGINT} and i.insurance_year = #{insuranceYear,jdbcType=TINYINT}
+      )
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from insurance_risk
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from insurance_risk
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.InsuranceRiskDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into insurance_risk (id, insurance_number, insurance_company_name,
+      risk_date, accept_date, total_money,
+      apply_clamis_money, clamis_commissioner)
+    values (#{id,jdbcType=BIGINT}, #{insuranceNumber,jdbcType=VARCHAR}, #{insuranceCompanyName,jdbcType=VARCHAR},
+      #{riskDate,jdbcType=DATE}, #{acceptDate,jdbcType=DATE}, #{totalMoney,jdbcType=DECIMAL},
+      #{applyClamisMoney,jdbcType=DECIMAL}, #{clamisCommissioner,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.InsuranceRiskDO" useGeneratedKeys="true" keyProperty="id">
+    <!--<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">-->
+      <!--SELECT LAST_INSERT_ID()-->
+    <!--</selectKey>-->
+    insert into insurance_risk
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      id ,
+      <if test="insuranceNumber != null">
+        insurance_number,
+      </if>
+      <if test="insuranceCompanyName != null">
+        insurance_company_name,
+      </if>
+      <if test="riskDate != null">
+        risk_date,
+      </if>
+      <if test="acceptDate != null">
+        accept_date,
+      </if>
+      <if test="totalMoney != null">
+        total_money,
+      </if>
+      <if test="applyClamisMoney != null">
+        apply_clamis_money,
+      </if>
+      <if test="clamisCommissioner != null">
+        clamis_commissioner,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #{id},
+      <if test="insuranceNumber != null">
+        #{insuranceNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="insuranceCompanyName != null">
+        #{insuranceCompanyName,jdbcType=VARCHAR},
+      </if>
+      <if test="riskDate != null">
+        #{riskDate,jdbcType=DATE},
+      </if>
+      <if test="acceptDate != null">
+        #{acceptDate,jdbcType=DATE},
+      </if>
+      <if test="totalMoney != null">
+        #{totalMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="applyClamisMoney != null">
+        #{applyClamisMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="clamisCommissioner != null">
+        #{clamisCommissioner,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.InsuranceRiskDO">
+    update insurance_risk
+    <set>
+      <if test="insuranceNumber != null">
+        insurance_number = #{insuranceNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="insuranceCompanyName != null">
+        insurance_company_name = #{insuranceCompanyName,jdbcType=VARCHAR},
+      </if>
+      <if test="riskDate != null">
+        risk_date = #{riskDate,jdbcType=DATE},
+      </if>
+      <if test="acceptDate != null">
+        accept_date = #{acceptDate,jdbcType=DATE},
+      </if>
+      <if test="totalMoney != null">
+        total_money = #{totalMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="applyClamisMoney != null">
+        apply_clamis_money = #{applyClamisMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="clamisCommissioner != null">
+        clamis_commissioner = #{clamisCommissioner,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.InsuranceRiskDO">
+    update insurance_risk
+    set insurance_number = #{insuranceNumber,jdbcType=VARCHAR},
+      insurance_company_name = #{insuranceCompanyName,jdbcType=VARCHAR},
+      risk_date = #{riskDate,jdbcType=DATE},
+      accept_date = #{acceptDate,jdbcType=DATE},
+      total_money = #{totalMoney,jdbcType=DECIMAL},
+      apply_clamis_money = #{applyClamisMoney,jdbcType=DECIMAL},
+      clamis_commissioner = #{clamisCommissioner,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="insuranceRiskList" parameterType="com.yunche.loan.domain.query.RiskQuery" resultType="com.yunche.loan.domain.vo.RiskQueryVO">
+    select tab.* from (
+    SELECT
+    l.id AS id,
+    c.NAME AS customerName,
+    c.id_card AS idCard,
+    a.insurance_company_name AS insuranceCompanyName,
+    i.insurance_year AS insuranceYear,
+    useGetCarName ( m.car_detail_id ) AS carName,
+    f.car_price AS carPrice,
+    e.NAME AS saleName,
+    p.NAME AS partnerName,
+    GROUP_CONCAT(a.insurance_type order by a.insurance_info_id asc  separator ',') AS insuranceType,
+    GROUP_CONCAT(a.end_date order by a.insurance_info_id asc  separator ',') AS endDateTotal
+    FROM
+    insurance_info i
+    LEFT JOIN loan_order l ON l.id = i.order_id
+    LEFT JOIN insurance_relevance a ON i.id = a.insurance_info_id
+    LEFT JOIN loan_customer c ON l.loan_customer_id = c.id
+    LEFT JOIN loan_car_info m ON l.loan_car_info_id = m.id
+    LEFT JOIN loan_base_info v ON l.loan_base_info_id = v.id
+    LEFT JOIN partner p ON v.partner_id = p.id
+    LEFT JOIN employee e ON v.salesman_id = e.id
+    LEFT JOIN loan_financial_plan f ON l.loan_financial_plan_id = f.id
+    LEFT JOIN loan_process o ON l.id = o.order_id
+    where a.insurance_type != 3 and o.order_status = 1
+    <if test="customerName !=null">
+      and c.name LIKE CONCAT('%',#{customerName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="idCard !=null">
+      and c.id_card = #{idCard,jdbcType=VARCHAR}
+    </if>
+    group by a.insurance_info_id
+    )tab
+    ORDER BY tab.id
+    LIMIT #{startRow}, #{pageSize}
+  </select>
+
+  <select id="insuranceRiskCount" parameterType="com.yunche.loan.domain.query.RiskQuery"
+          resultType="java.lang.Integer">
+    select COUNT(m.id)
+    from(
+    SELECT
+    l.id AS id,
+    c.NAME AS customerName,
+    c.id_card AS idCard,
+    a.insurance_company_name AS insuranceCompanyName,
+    i.insurance_year AS insuranceYear,
+    useGetCarName ( m.car_detail_id ) AS carName,
+    f.car_price AS carPrice,
+    e.NAME AS saleName,
+    p.NAME AS partnerName,
+    GROUP_CONCAT(a.insurance_type order by a.insurance_info_id asc  separator ','),
+    GROUP_CONCAT(a.end_date order by a.insurance_info_id asc  separator ',')
+    FROM
+    insurance_info i
+    LEFT JOIN loan_order l ON l.id = i.order_id
+    LEFT JOIN insurance_relevance a ON i.id = a.insurance_info_id
+    LEFT JOIN loan_customer c ON l.loan_customer_id = c.id
+    LEFT JOIN loan_car_info m ON l.loan_car_info_id = m.id
+    LEFT JOIN loan_base_info v ON l.loan_base_info_id = v.id
+    LEFT JOIN partner p ON v.partner_id = p.id
+    LEFT JOIN employee e ON v.salesman_id = e.id
+    LEFT JOIN loan_financial_plan f ON l.loan_financial_plan_id = f.id
+    LEFT JOIN loan_process o ON l.id = o.order_id
+    where a.insurance_type != 3 and o.order_status = 1
+    <if test="customerName !=null">
+      and c.name LIKE CONCAT('%',#{customerName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="idCard !=null">
+      and c.id_card = #{idCard,jdbcType=VARCHAR}
+    </if>
+    group by a.insurance_info_id
+    ) m
+  </select>
+  <select id="newInsuranceByOrderId" resultType="com.yunche.loan.domain.vo.newInsuranceVO">
+    SELECT
+	b.insurance_company_name AS insurance_company_name,
+	b.insurance_number AS insurance_number,
+	b.insurance_amount AS insurance_amount,
+	b.start_date AS start_date,
+	b.end_date AS end_date,
+	b.insurance_type AS insurance_type
+    FROM
+	( SELECT t.id id ,max( t.insurance_year )FROM insurance_info t WHERE t.order_id = #{orderId,jdbcType=BIGINT} GROUP BY t.order_id,t.insurance_year
+	order by max( t.insurance_year )desc limit 1 ) a
+	LEFT JOIN insurance_relevance b ON a.id = b.insurance_info_id
+
+  </select>
+
+</mapper>

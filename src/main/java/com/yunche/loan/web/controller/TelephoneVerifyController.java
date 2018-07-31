@@ -30,27 +30,21 @@ public class TelephoneVerifyController {
     /**
      * 更新
      */
-    @PostMapping(value = "/update",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody @Validated TelephoneVerifyParam param) {
         telephoneVerifyService.update(param);
-        return ResultBean.ofSuccess(null,"保存成功");
+        return ResultBean.ofSuccess(null, "保存成功");
     }
 
     /**
      * EXCEl导出
      */
     @PostMapping(value = "/export")
-    public ResultBean export(@RequestBody  TelephoneVerifyParam telephoneVerifyParam) {
-        Preconditions.checkNotNull(telephoneVerifyParam.getStartDate(),"开始时间不能为空");
-        Preconditions.checkNotNull(telephoneVerifyParam.getEndDate(),"结束时间不能为空");
+    public ResultBean export(@RequestBody TelephoneVerifyParam telephoneVerifyParam) {
+        Preconditions.checkNotNull(telephoneVerifyParam.getStartDate(), "开始时间不能为空");
+        Preconditions.checkNotNull(telephoneVerifyParam.getEndDate(), "结束时间不能为空");
         return ResultBean.ofSuccess(telephoneVerifyService.export(telephoneVerifyParam));
     }
-
-
-
-
-
-
 
 }
 
