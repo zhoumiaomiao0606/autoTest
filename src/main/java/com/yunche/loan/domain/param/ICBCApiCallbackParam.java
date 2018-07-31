@@ -73,14 +73,9 @@ public class ICBCApiCallbackParam implements Serializable {
         @NotNull
         private String picnum = "0";
 
-        private Pics pics;
+        private List<Pic> pics;
     }
 
-    @Data
-    public static class Pics {
-        @NotNull
-        private List<Pic> pic;
-    }
 
     @Data
     public static class Pic {

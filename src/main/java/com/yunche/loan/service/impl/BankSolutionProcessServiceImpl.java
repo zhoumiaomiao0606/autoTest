@@ -331,7 +331,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             throw new BizException("图片不存在");
         }
 
-        ICBCApiCallbackParam.Pics pics = new ICBCApiCallbackParam.Pics();
         List<ICBCApiCallbackParam.Pic> picList = Lists.newArrayList();
 
         for(UniversalBankInterfaceFileSerialDO universalBankInterfaceFileSerialDO:list){
@@ -350,9 +349,8 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             }
             picList.add(pic);
         }
-        pics.setPic(picList);
         ICBCApiCallbackParam.Ans ans = new ICBCApiCallbackParam.Ans();
-        ans.setPics(pics);
+        ans.setPics(picList);
         ans.setPicnum(String.valueOf(list.size()));
         return ans;
     }
