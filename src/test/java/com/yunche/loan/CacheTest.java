@@ -78,10 +78,17 @@ public class CacheTest extends BaseTest {
             System.out.println(e);
         }
     }
-    @Test
+    //@Test
     public void carLoanGetGpsInfo() throws Exception {
-        CarLoanHttpUtil.getGpsInfo("3918225060");
+        CarLoanHttpUtil.getGpsInfo("39182250606");
     }
+
+    @Test
+    public void carLoanUpdateGpsInfo() throws Exception {
+        CarLoanHttpUtil v=new CarLoanHttpUtil();
+    }
+
+
 
     //@Test
     public void getDetail(){
