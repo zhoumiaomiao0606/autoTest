@@ -305,4 +305,11 @@
       total_premium = #{totalPremium,jdbcType=DECIMAL}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="selectByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from renew_insurance
+    where order_id = #{id,jdbcType=BIGINT}
+  </select>
 </mapper>

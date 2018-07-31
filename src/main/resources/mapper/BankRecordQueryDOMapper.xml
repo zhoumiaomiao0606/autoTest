@@ -196,7 +196,11 @@
                     ) loan
                 </when>
                 <when test="taskDefinitionKey=='usertask_urge_insurance_work_bench'">
-                    (select * from loan_order where id in(select order_id from insurance_distribute_record where employee_id=#{employeeId})
+                    (select * from loan_order where id in(select order_id from insurance_distribute_record where employee_id=#{employeeId}
+                        <if test="taskStatus!=0">
+                            and status=#{taskStatus}
+                        </if>
+                    )
                     ) loan
                 </when>
             </choose>
