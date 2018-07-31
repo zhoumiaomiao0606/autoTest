@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
-import com.yunche.loan.config.feign.request.group.MultimediaUploadValidated;
 import com.yunche.loan.domain.entity.BankInterfaceFileSerialDO;
 import com.yunche.loan.mapper.BankInterfaceFileSerialDOMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +13,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +24,7 @@ public class AsyncUpload {
 
     private static final Set<String> PIC_SUFFIX = Sets.newHashSet("jpg", "png");
 
-    private static final Set<String> DOCX_SUFFIX = Sets.newHashSet("docx");
+    private static final Set<String> DOCX_SUFFIX = Sets.newHashSet("docx","doc");
 
     @Resource
     private BankInterfaceFileSerialDOMapper bankInterfaceFileSerialDOMapper;
