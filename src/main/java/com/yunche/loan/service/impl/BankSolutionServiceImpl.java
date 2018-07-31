@@ -202,7 +202,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 break;
             case 3:
                 //判断当前客户贷款银行是否为台州工行，如为台州工行：
-                ICBCCommonBusinessApplyProcess(bankId,orderId,sysConfig.getHzphybrno());
+                ICBCCommonBusinessApplyProcess(bankId,orderId,sysConfig.getTzphybrno());
                 break;
             default:
                 return;
@@ -242,7 +242,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 break;
             case 3:
                 //判断当前客户贷款银行是否为台州工行，如为台州工行：
-                multimediaUploadProcess(orderId,sysConfig.getHzphybrno());
+                multimediaUploadProcess(orderId,sysConfig.getTzphybrno());
                 break;
             default:
                 return;
