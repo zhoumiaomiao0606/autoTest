@@ -1,4 +1,5 @@
 package com.yunche.loan.mapper;
+import com.yunche.loan.domain.entity.BankInterfaceFileSerialDO;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -6,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 public interface LoanQueryDOMapper {
+
+    List<UniversalBankInterfaceFileSerialDO> selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType(@Param("serialNo") String serialNo , @Param("fileType") String fileType);
 
     String selectVideoFacePath(Long orderId);
 

@@ -14,4 +14,5 @@ public interface BankSolutionProcessService {
 
     public void creditCardApplyCallback(ICBCApiCallbackParam.CreditCardApplyCallback creditCardApplyCallback);
 
+    public ICBCApiCallbackParam.Ans artificialgainImage(ICBCApiCallbackParam.ArtificialGainImageCallback artificialGainImageCallback);
 }

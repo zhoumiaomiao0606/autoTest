@@ -1394,6 +1394,12 @@
 
     </select>
 
+    <select id="selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType" resultType="com.yunche.loan.domain.vo.UniversalBankInterfaceFileSerialDO">
+        select
+             id, serial_no, file_name, file_path, file_type, success, request_time, error
+         from bank_interface_file_serial where success = 1 and serial_no = #{serialNo} and file_type = #{fileType}
+    </select>
+
     <select id="selectUniversalBankCardSend" resultType="com.yunche.loan.domain.vo.UniversalBankCardSendVO"
             parameterType="java.lang.Long">
 
@@ -1476,6 +1482,7 @@
         </foreach>
         else true end
     </select>
+
 
 
 

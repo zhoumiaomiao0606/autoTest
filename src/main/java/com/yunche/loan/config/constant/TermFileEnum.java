@@ -60,18 +60,6 @@ public enum TermFileEnum {
     S9001((byte)59,"9001"),
     //合同：牡丹信用卡透支分期付款/抵押合同（即三合一新合同
     S9002_1((byte)60,"9002"),
-    //合同：牡丹信用卡透支分期付款/抵押合同（即三合一新合同
-    S9002_2((byte)61,"9002"),
-    //合同：牡丹信用卡透支分期付款/抵押合同（即三合一新合同
-    S9002_3((byte)62,"9002"),
-    //合同：牡丹信用卡透支分期付款/抵押合同（即三合一新合同
-    S9002_4((byte)63,"9002"),
-    //合同：牡丹信用卡透支分期付款/抵押合同（即三合一新合同
-    S9002_5((byte)64,"9002"),
-    //合同：牡丹信用卡透支分期付款/抵押合同（即三合一新合同
-    S9002_6((byte)65,"9002"),
-    //合同：牡丹信用卡透支分期付款/抵押合同（即三合一新合同
-    S9002_7((byte)66,"9002"),
     //汽车销售合同
     S9003((byte)67,"9003"),
     //共同还款人承诺函
@@ -114,7 +102,6 @@ public enum TermFileEnum {
     S9022((byte)86,"9022");
 
 
-
     @Getter
     @Setter
     private Byte key;
@@ -134,6 +121,16 @@ public enum TermFileEnum {
             if (e.key.equals(key)) {
 
                 return e.value;
+            }
+        }
+        return null;
+    }
+
+    public static Byte getKeyByValue(String value) {
+
+        for (TermFileEnum e : TermFileEnum.values()) {
+            if (e.value.equals(value)) {
+                return e.key;
             }
         }
         return null;

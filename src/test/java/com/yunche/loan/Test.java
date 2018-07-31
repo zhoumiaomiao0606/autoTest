@@ -38,7 +38,7 @@ public class Test extends BaseTest {
         //bankSolutionProcessService.applyCreditCallback(applyCreditCallback);
 
 
-        bankSolutionService.creditAutomaticCommit(new Long("1807171134134698396"));
+        bankSolutionService.commonBusinessApply(new Long("1807161151425056327"));
 
 
         //bankSolutionService.commonBusinessApply(new Long("1806291133480804371"));

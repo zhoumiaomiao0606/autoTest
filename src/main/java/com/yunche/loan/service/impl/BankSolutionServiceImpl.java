@@ -477,9 +477,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         String interest = loanTimeFee.stripTrailingZeros().toPlainString();
 
         String lendCard = loanCustomerDO.getLendCard();
-//        if(StringUtils.isBlank(lendCard)){
-//            throw new BizException("信用卡卡号为空");
-//        }
+
 
 
 
@@ -516,7 +514,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                                 picture.setPicname(picName);
                                 picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
                                 pictures.add(picture);
-
                                 ICBCApiRequest.PicQueue picQueue = new ICBCApiRequest.PicQueue();
                                 picQueue.setPicId(e.getValue());
                                 picQueue.setPicName(picName);

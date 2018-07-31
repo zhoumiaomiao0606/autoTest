@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
@@ -149,6 +150,43 @@ public class ICBCController {
 
     }
 
+    @PostMapping (value = "/artificialgainImage", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String artificialgainImage( @RequestParam String reqparam) {
+        try{
+            logger.info("手工获取图片回调开始===============================================================");
+            reqparam = URLDecoder.decode(reqparam,"UTF-8");
+            ObjectMapper objectMapper = new ObjectMapper();
+            ICBCApiCallbackParam.Ans ans = bankSolutionProcessService.artificialgainImage(objectMapper.readValue(reqparam,ICBCApiCallbackParam.ArtificialGainImageCallback.class));
+            logger.info("手工获取图片回调完成===============================================================");
+            return  returnResponse(SUCCESS_RETCODR,SUCCESS_RETMSG,ans);
+        }catch (Exception e){
+            return returnResponse(ERROR_RETCODR,ERROR_RETMSG);
+        }
+
+    }
+
+
+    public String returnResponse(String code,String msg,ICBCApiCallbackParam.Ans ans){
+        /*00000– 成功
+        1****-参数上送错误(修改参数后可直接重复提交)
+        2****-程序处理错误(含业务规则控制不符等)
+        3****-系统错误(出现此错误先通知我们之后可以重新提交*/
+        ICBCApiCallbackParam.Response response = new ICBCApiCallbackParam.Response();
+        ICBCApiCallbackParam.ResponsePub responsePub = new ICBCApiCallbackParam.ResponsePub();
+        responsePub.setRetcode(code);
+        responsePub.setRetmsg(msg);
+        response.setPub(responsePub);
+        if(ans!=null){
+            response.setAns(ans);
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(response);
+        } catch (JsonProcessingException e) {
+            String str = new String("{\"pub\": {\"retcode\": \""+ERROR_RETCODR+"\",\"retmsg\": \""+ERROR_RETMSG+"\"}}") ;
+            return str;
+        }
+    }
 
     public String returnResponse(String code,String msg){
         /*00000– 成功
@@ -160,16 +198,13 @@ public class ICBCController {
         responsePub.setRetcode(code);
         responsePub.setRetmsg(msg);
         response.setPub(responsePub);
-
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         try {
             return objectMapper.writeValueAsString(response);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            String str = new String("{\"pub\": {\"retcode\": \""+ERROR_RETCODR+"\",\"retmsg\": \""+ERROR_RETMSG+"\"}}") ;
+            return str;
         }
-        String str = new String("{\"pub\": {\"retcode\": \""+ERROR_RETCODR+"\",\"retmsg\": \""+ERROR_RETMSG+"\"}}") ;
-        return str;
     }
-
-
 }
