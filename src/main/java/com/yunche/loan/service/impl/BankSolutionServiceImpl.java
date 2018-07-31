@@ -492,6 +492,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //start 封装
         List<ICBCApiRequest.PicQueue> queue = Lists.newLinkedList();
 
+
         for (TermFileEnum e : TermFileEnum.values()) {
             UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,e.getKey());
             if(authSignPic != null){
@@ -509,11 +510,14 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                                     //jpg
                                     picName = picName+ImageUtil.PIC_SUFFIX;
                                 }
-                                ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
-                                picture.setPicid(e.getValue());
-                                picture.setPicname(picName);
-                                picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
-                                pictures.add(picture);
+
+                                if(Integer.valueOf(e.getKey()).intValue()<59){
+                                    ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+                                    picture.setPicid(e.getValue());
+                                    picture.setPicname(picName);
+                                    picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
+                                    pictures.add(picture);
+                                }
                                 ICBCApiRequest.PicQueue picQueue = new ICBCApiRequest.PicQueue();
                                 picQueue.setPicId(e.getValue());
                                 picQueue.setPicName(picName);
