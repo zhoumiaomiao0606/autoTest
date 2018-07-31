@@ -13,8 +13,6 @@ public enum TermFileEnum {
     //0104【分期】注册登记证4
     REGISTRATION4((byte)33,"0104"),
     //0201【分期】【证件】证件本人正面
-    SELF_CERTIFICATE_FRONT_TEMP((byte) 2,"0201"),
-    //0201【分期】【证件】证件本人正面
     SELF_CERTIFICATE_FRONT((byte)34,"0201"),
     //0202【分期】【证件】证件本人反面
     SELF_CERTIFICATE_REVERSE((byte)35,"0202"),
