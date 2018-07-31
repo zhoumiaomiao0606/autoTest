@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.RenewInsuranceDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.RenewInsuranceDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="remind_date" jdbcType="TIMESTAMP" property="remindDate" />
+    <result column="renew_insurance_status" jdbcType="TINYINT" property="renewInsuranceStatus" />
+    <result column="auto_insu_employee" jdbcType="VARCHAR" property="autoInsuEmployee" />
+    <result column="busi_insur" jdbcType="DECIMAL" property="busiInsur" />
+    <result column="sign" jdbcType="VARCHAR" property="sign" />
+    <result column="damage_insur" jdbcType="DECIMAL" property="damageInsur" />
+    <result column="damage_insur_fee" jdbcType="DECIMAL" property="damageInsurFee" />
+    <result column="third_duty_insur" jdbcType="DECIMAL" property="thirdDutyInsur" />
+    <result column="third_duty_insur_fee" jdbcType="DECIMAL" property="thirdDutyInsurFee" />
+    <result column="robbery_insur" jdbcType="DECIMAL" property="robberyInsur" />
+    <result column="autoignition_insur" jdbcType="DECIMAL" property="autoignitionInsur" />
+    <result column="glass_insur" jdbcType="DECIMAL" property="glassInsur" />
+    <result column="not_deduct_insur" jdbcType="DECIMAL" property="notDeductInsur" />
+    <result column="strong_insur" jdbcType="DECIMAL" property="strongInsur" />
+    <result column="vessel_tax" jdbcType="DECIMAL" property="vesselTax" />
+    <result column="insur_employee_tel" jdbcType="DECIMAL" property="insurEmployeeTel" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="message" jdbcType="VARCHAR" property="message" />
+    <result column="pers_liability_insur" jdbcType="DECIMAL" property="persLiabilityInsur" />
+    <result column="pers_liability_insur_fee" jdbcType="DECIMAL" property="persLiabilityInsurFee" />
+    <result column="total_premium" jdbcType="DECIMAL" property="totalPremium" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, order_id, remind_date, renew_insurance_status, auto_insu_employee, busi_insur, 
+    sign, damage_insur, damage_insur_fee, third_duty_insur, third_duty_insur_fee, robbery_insur, 
+    autoignition_insur, glass_insur, not_deduct_insur, strong_insur, vessel_tax, insur_employee_tel, 
+    remark, message, pers_liability_insur, pers_liability_insur_fee, total_premium
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from renew_insurance
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from renew_insurance
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.RenewInsuranceDO">
+    insert into renew_insurance (id, order_id, remind_date, 
+      renew_insurance_status, auto_insu_employee, 
+      busi_insur, sign, damage_insur, 
+      damage_insur_fee, third_duty_insur, third_duty_insur_fee, 
+      robbery_insur, autoignition_insur, glass_insur, 
+      not_deduct_insur, strong_insur, vessel_tax, 
+      insur_employee_tel, remark, message, 
+      pers_liability_insur, pers_liability_insur_fee, 
+      total_premium)
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{remindDate,jdbcType=TIMESTAMP}, 
+      #{renewInsuranceStatus,jdbcType=TINYINT}, #{autoInsuEmployee,jdbcType=VARCHAR}, 
+      #{busiInsur,jdbcType=DECIMAL}, #{sign,jdbcType=VARCHAR}, #{damageInsur,jdbcType=DECIMAL}, 
+      #{damageInsurFee,jdbcType=DECIMAL}, #{thirdDutyInsur,jdbcType=DECIMAL}, #{thirdDutyInsurFee,jdbcType=DECIMAL}, 
+      #{robberyInsur,jdbcType=DECIMAL}, #{autoignitionInsur,jdbcType=DECIMAL}, #{glassInsur,jdbcType=DECIMAL}, 
+      #{notDeductInsur,jdbcType=DECIMAL}, #{strongInsur,jdbcType=DECIMAL}, #{vesselTax,jdbcType=DECIMAL}, 
+      #{insurEmployeeTel,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR}, #{message,jdbcType=VARCHAR}, 
+      #{persLiabilityInsur,jdbcType=DECIMAL}, #{persLiabilityInsurFee,jdbcType=DECIMAL}, 
+      #{totalPremium,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RenewInsuranceDO">
+    insert into renew_insurance
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="remindDate != null">
+        remind_date,
+      </if>
+      <if test="renewInsuranceStatus != null">
+        renew_insurance_status,
+      </if>
+      <if test="autoInsuEmployee != null">
+        auto_insu_employee,
+      </if>
+      <if test="busiInsur != null">
+        busi_insur,
+      </if>
+      <if test="sign != null">
+        sign,
+      </if>
+      <if test="damageInsur != null">
+        damage_insur,
+      </if>
+      <if test="damageInsurFee != null">
+        damage_insur_fee,
+      </if>
+      <if test="thirdDutyInsur != null">
+        third_duty_insur,
+      </if>
+      <if test="thirdDutyInsurFee != null">
+        third_duty_insur_fee,
+      </if>
+      <if test="robberyInsur != null">
+        robbery_insur,
+      </if>
+      <if test="autoignitionInsur != null">
+        autoignition_insur,
+      </if>
+      <if test="glassInsur != null">
+        glass_insur,
+      </if>
+      <if test="notDeductInsur != null">
+        not_deduct_insur,
+      </if>
+      <if test="strongInsur != null">
+        strong_insur,
+      </if>
+      <if test="vesselTax != null">
+        vessel_tax,
+      </if>
+      <if test="insurEmployeeTel != null">
+        insur_employee_tel,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="message != null">
+        message,
+      </if>
+      <if test="persLiabilityInsur != null">
+        pers_liability_insur,
+      </if>
+      <if test="persLiabilityInsurFee != null">
+        pers_liability_insur_fee,
+      </if>
+      <if test="totalPremium != null">
+        total_premium,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="remindDate != null">
+        #{remindDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="renewInsuranceStatus != null">
+        #{renewInsuranceStatus,jdbcType=TINYINT},
+      </if>
+      <if test="autoInsuEmployee != null">
+        #{autoInsuEmployee,jdbcType=VARCHAR},
+      </if>
+      <if test="busiInsur != null">
+        #{busiInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="sign != null">
+        #{sign,jdbcType=VARCHAR},
+      </if>
+      <if test="damageInsur != null">
+        #{damageInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="damageInsurFee != null">
+        #{damageInsurFee,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdDutyInsur != null">
+        #{thirdDutyInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdDutyInsurFee != null">
+        #{thirdDutyInsurFee,jdbcType=DECIMAL},
+      </if>
+      <if test="robberyInsur != null">
+        #{robberyInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="autoignitionInsur != null">
+        #{autoignitionInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="glassInsur != null">
+        #{glassInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="notDeductInsur != null">
+        #{notDeductInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="strongInsur != null">
+        #{strongInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="vesselTax != null">
+        #{vesselTax,jdbcType=DECIMAL},
+      </if>
+      <if test="insurEmployeeTel != null">
+        #{insurEmployeeTel,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null">
+        #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="persLiabilityInsur != null">
+        #{persLiabilityInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="persLiabilityInsurFee != null">
+        #{persLiabilityInsurFee,jdbcType=DECIMAL},
+      </if>
+      <if test="totalPremium != null">
+        #{totalPremium,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.RenewInsuranceDO">
+    update renew_insurance
+    <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="remindDate != null">
+        remind_date = #{remindDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="renewInsuranceStatus != null">
+        renew_insurance_status = #{renewInsuranceStatus,jdbcType=TINYINT},
+      </if>
+      <if test="autoInsuEmployee != null">
+        auto_insu_employee = #{autoInsuEmployee,jdbcType=VARCHAR},
+      </if>
+      <if test="busiInsur != null">
+        busi_insur = #{busiInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="sign != null">
+        sign = #{sign,jdbcType=VARCHAR},
+      </if>
+      <if test="damageInsur != null">
+        damage_insur = #{damageInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="damageInsurFee != null">
+        damage_insur_fee = #{damageInsurFee,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdDutyInsur != null">
+        third_duty_insur = #{thirdDutyInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdDutyInsurFee != null">
+        third_duty_insur_fee = #{thirdDutyInsurFee,jdbcType=DECIMAL},
+      </if>
+      <if test="robberyInsur != null">
+        robbery_insur = #{robberyInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="autoignitionInsur != null">
+        autoignition_insur = #{autoignitionInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="glassInsur != null">
+        glass_insur = #{glassInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="notDeductInsur != null">
+        not_deduct_insur = #{notDeductInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="strongInsur != null">
+        strong_insur = #{strongInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="vesselTax != null">
+        vessel_tax = #{vesselTax,jdbcType=DECIMAL},
+      </if>
+      <if test="insurEmployeeTel != null">
+        insur_employee_tel = #{insurEmployeeTel,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null">
+        message = #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="persLiabilityInsur != null">
+        pers_liability_insur = #{persLiabilityInsur,jdbcType=DECIMAL},
+      </if>
+      <if test="persLiabilityInsurFee != null">
+        pers_liability_insur_fee = #{persLiabilityInsurFee,jdbcType=DECIMAL},
+      </if>
+      <if test="totalPremium != null">
+        total_premium = #{totalPremium,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RenewInsuranceDO">
+    update renew_insurance
+    set order_id = #{orderId,jdbcType=BIGINT},
+      remind_date = #{remindDate,jdbcType=TIMESTAMP},
+      renew_insurance_status = #{renewInsuranceStatus,jdbcType=TINYINT},
+      auto_insu_employee = #{autoInsuEmployee,jdbcType=VARCHAR},
+      busi_insur = #{busiInsur,jdbcType=DECIMAL},
+      sign = #{sign,jdbcType=VARCHAR},
+      damage_insur = #{damageInsur,jdbcType=DECIMAL},
+      damage_insur_fee = #{damageInsurFee,jdbcType=DECIMAL},
+      third_duty_insur = #{thirdDutyInsur,jdbcType=DECIMAL},
+      third_duty_insur_fee = #{thirdDutyInsurFee,jdbcType=DECIMAL},
+      robbery_insur = #{robberyInsur,jdbcType=DECIMAL},
+      autoignition_insur = #{autoignitionInsur,jdbcType=DECIMAL},
+      glass_insur = #{glassInsur,jdbcType=DECIMAL},
+      not_deduct_insur = #{notDeductInsur,jdbcType=DECIMAL},
+      strong_insur = #{strongInsur,jdbcType=DECIMAL},
+      vessel_tax = #{vesselTax,jdbcType=DECIMAL},
+      insur_employee_tel = #{insurEmployeeTel,jdbcType=DECIMAL},
+      remark = #{remark,jdbcType=VARCHAR},
+      message = #{message,jdbcType=VARCHAR},
+      pers_liability_insur = #{persLiabilityInsur,jdbcType=DECIMAL},
+      pers_liability_insur_fee = #{persLiabilityInsurFee,jdbcType=DECIMAL},
+      total_premium = #{totalPremium,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
