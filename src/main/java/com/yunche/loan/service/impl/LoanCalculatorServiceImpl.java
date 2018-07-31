@@ -1,21 +1,26 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.FinancialProductDO;
 import com.yunche.loan.domain.entity.ProductRateDO;
 import com.yunche.loan.domain.entity.ProductRateDOKey;
 import com.yunche.loan.domain.vo.CalcParamVO;
+import com.yunche.loan.domain.vo.FinancialProductAndRateVO;
+import com.yunche.loan.domain.vo.FinancialProductVO;
 import com.yunche.loan.mapper.FinancialProductDOMapper;
 import com.yunche.loan.mapper.ProductRateDOMapper;
 import com.yunche.loan.service.ComputeModeService;
 import com.yunche.loan.service.LoanCalculatorService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -29,10 +34,22 @@ public class LoanCalculatorServiceImpl implements LoanCalculatorService{
     @Autowired
     private ProductRateDOMapper productRateDOMapper;
 
+
     @Override
     public ResultBean getAllProduct() {
+        List<FinancialProductAndRateVO> product = Lists.newArrayList();
+
         List<FinancialProductDO> financialProductDOS = financialProductDOMapper.listAll();
-        return ResultBean.ofSuccess(financialProductDOS);
+        financialProductDOS.stream().filter(Objects::nonNull).forEach(e->{
+            FinancialProductAndRateVO financialProductAndRateVO = new FinancialProductAndRateVO();
+            FinancialProductVO financialProductVO = new FinancialProductVO();
+            BeanUtils.copyProperties(e,financialProductVO);
+            financialProductAndRateVO.setFinancialProductVO(financialProductVO);
+            List<ProductRateDO> productRateDOS = productRateDOMapper.selectByProdId(e.getProdId());
+            financialProductAndRateVO.setProductRateDOs(productRateDOS);
+            product.add(financialProductAndRateVO);
+        });
+        return ResultBean.ofSuccess(product);
     }
 
     @Override
