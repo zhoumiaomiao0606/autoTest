@@ -1,4 +1,4 @@
-package com.yunche.loan.web;
+package com.yunche.loan.web.websocket;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -37,7 +37,7 @@ public class WebSocketController {
     /**
      * 加入排队/心跳消息    client -> server
      * <p>
-     * path： ws://localhost:8001/ws/queue/wait
+     * path： websocket://localhost:8001/websocket/queue/wait
      *
      * @param webSocketParam 前端参数：以JSON格式发送，即可自动映射
      * @MessageMapping client -> server    发送消息的path      若有设置前缀,则还需加上前缀
@@ -51,7 +51,7 @@ public class WebSocketController {
     /**
      * 退出排队     client -> server
      * <p>
-     * path： ws://localhost:8001/ws/queue/exit
+     * path： websocket://localhost:8001/websocket/queue/exit
      *
      * @param webSocketParam
      */
@@ -95,6 +95,18 @@ public class WebSocketController {
 
         webSocketService.latlon(webSocketParam);
     }
+
+    /**
+     * APP端 网络环境实时 转发
+     *
+     * @param webSocketParam
+     */
+    @MessageMapping("/network")
+    public void network(WebSocketParam webSocketParam) {
+
+        webSocketService.network(webSocketParam);
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -277,7 +289,7 @@ public class WebSocketController {
 
     @GetMapping("/ws")
     public String ws() {
-        return "ws";
+        return "websocket";
     }
 
     @GetMapping("/sendMsg")

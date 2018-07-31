@@ -13,6 +13,7 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.TelephoneVerifyParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.LoanInfoSupplementService;
 import com.yunche.loan.service.TelephoneVerifyService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -58,6 +59,9 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
     private OSSConfig ossConfig;
 
     @Autowired
+    private LoanInfoSupplementService loanInfoSupplementService;
+
+    @Autowired
     private LoanStatementDOMapper loanStatementDOMapper;
 
 
@@ -87,8 +91,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
         recombinationVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderId(orderId));
-        recombinationVO.setSupplement(loanQueryDOMapper.selectUniversalSupplementInfo(orderId));
-        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalMaterialRecord(orderId));
+        recombinationVO.setSupplement(loanInfoSupplementService.history(orderId));
         recombinationVO.setCustomers(customers);
 
         return recombinationVO;

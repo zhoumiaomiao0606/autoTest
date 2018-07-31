@@ -3,7 +3,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.InfoSupplementParam;
 import com.yunche.loan.domain.vo.InfoSupplementVO;
-import com.yunche.loan.domain.vo.InfoSupplementVO2;
+import com.yunche.loan.domain.vo.UniversalInfoSupplementVO;
 import com.yunche.loan.service.LoanInfoSupplementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -67,7 +67,7 @@ public class LoanInfoSupplementController {
      * @return
      */
     @GetMapping(value = "/detail")
-    public ResultBean<InfoSupplementVO2> detail(@RequestParam Long supplementOrderId) {
+    public ResultBean<UniversalInfoSupplementVO> detail(@RequestParam Long supplementOrderId) {
         return loanInfoSupplementService.detail(supplementOrderId);
     }
 
@@ -78,8 +78,8 @@ public class LoanInfoSupplementController {
      * @return
      */
     @GetMapping(value = "/history")
-    public ResultBean<List<InfoSupplementVO2>> history(@RequestParam Long orderId) {
-        return loanInfoSupplementService.history(orderId);
+    public ResultBean<List<UniversalInfoSupplementVO>> history(@RequestParam Long orderId) {
+        return ResultBean.ofSuccess(loanInfoSupplementService.history(orderId));
     }
 
 }

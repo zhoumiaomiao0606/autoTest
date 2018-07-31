@@ -158,10 +158,11 @@ public class LoanFileServiceImpl implements LoanFileService {
      */
     @Override
     public ResultBean<Void> batchInsert(List<LoanFileDO> loanFileDOS) {
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(loanFileDOS), "文件列表不能为空");
 
-        int count = loanFileDOMapper.batchInsert(loanFileDOS);
-        Preconditions.checkArgument(count > 0, "批量插入失败");
+        if (!CollectionUtils.isEmpty(loanFileDOS)) {
+            int count = loanFileDOMapper.batchInsert(loanFileDOS);
+            Preconditions.checkArgument(count > 0, "批量插入失败");
+        }
 
         return ResultBean.ofSuccess(null, "批量插入成功");
     }
@@ -210,7 +211,7 @@ public class LoanFileServiceImpl implements LoanFileService {
         if (!CollectionUtils.isEmpty(files)) {
 
             List<LoanFileDO> loanFileDOS = files.parallelStream()
-                    .filter(Objects::nonNull)
+                    .filter(e -> null != e && !CollectionUtils.isEmpty(e.getUrls()))
                     .map(e -> {
                         LoanFileDO loanFileDO = new LoanFileDO();
                         loanFileDO.setCustomerId(customerId);
@@ -356,11 +357,11 @@ public class LoanFileServiceImpl implements LoanFileService {
         // del  all
         int count = loanFileDOMapper.deleteByInfoSupplementId(infoSupplementId);
 
-        // insert
+        // insert new
         if (!CollectionUtils.isEmpty(files)) {
 
             List<LoanFileDO> loanFileDOList = files.stream()
-                    .filter(Objects::nonNull)
+                    .filter(e -> null != e && !CollectionUtils.isEmpty(e.getUrls()))
                     .map(e -> {
 
                         LoanFileDO loanFileDO = new LoanFileDO();

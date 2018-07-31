@@ -50,6 +50,9 @@ public enum LoanProcessEnum {
     BANK_CARD_SEND("usertask_bank_card_send", "银行卡寄送"),
     CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划"),
 
+    URGE_INSURANCE_WORK_BENCH("usertask_urge_insurance_work_bench", "催保工作台"),
+    URGE_INSURANCE_ASSIGN_WORK_BENCH("usertask_urge_insurance_assign_work_bench", "催保分配工作台"),
+
 
     /////////////////////////////////////////// ↓↓↓↓↓--流程外的节点--↓↓↓↓↓ //////////////////////////////////////////////
     BANK_OPEN_CARD_LIST("usertask_bank_open_card_list", "银行开卡清单"),

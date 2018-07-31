@@ -1,11 +1,12 @@
 package com.yunche.loan.config.constant;
 
 /**
+ * [金融方案申请单] & [退款申请单]
+ *
  * @author liuzhe
  * @date 2018/4/26
  */
-public class
-ApplyOrderStatusConst {
+public class ApplyOrderStatusConst {
 
     /**
      * 初始状态

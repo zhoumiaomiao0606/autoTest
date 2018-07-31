@@ -149,10 +149,6 @@ public class WebSocketServiceImpl implements WebSocketService {
     public void livePhotoPath(WebSocketParam webSocketParam) {
         Preconditions.checkNotNull(webSocketParam.getBankId(bankCache), "bank不能为空");
         Preconditions.checkNotNull(webSocketParam.getPcAnyChatUserId(), "pcAnyChatUserId不能为空");
-//        Preconditions.checkNotNull(webSocketParam.getLivePhotoPath(), "livePhotoPath不能为空");
-
-        // 存储到面签记录表
-
 
         // PC端 wsSessionId
         String wsSessionId_pc = videoFaceQueue.getWsSessionIdByAnyChatUserId(webSocketParam.getBankId(),
@@ -167,10 +163,6 @@ public class WebSocketServiceImpl implements WebSocketService {
     public void latlon(WebSocketParam webSocketParam) {
         Preconditions.checkNotNull(webSocketParam.getBankId(bankCache), "bank不能为空");
         Preconditions.checkNotNull(webSocketParam.getPcAnyChatUserId(), "pcAnyChatUserId不能为空");
-//        Preconditions.checkNotNull(webSocketParam.getLatlon(), "latlon不能为空");
-
-        // 存储到面签记录表
-
 
         // PC端 wsSessionId
         String wsSessionId_pc = videoFaceQueue.getWsSessionIdByAnyChatUserId(webSocketParam.getBankId(),
@@ -179,6 +171,20 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 转发给pc端
         simpMessagingTemplate.convertAndSendToUser(wsSessionId_pc,
                 "/queue/latlon/pc", JSON.toJSONString(ResultBean.ofSuccess(webSocketParam)));
+    }
+
+    @Override
+    public void network(WebSocketParam webSocketParam) {
+        Preconditions.checkNotNull(webSocketParam.getBankId(bankCache), "bank不能为空");
+        Preconditions.checkNotNull(webSocketParam.getPcAnyChatUserId(), "pcAnyChatUserId不能为空");
+
+        // PC端 wsSessionId
+        String wsSessionId_pc = videoFaceQueue.getWsSessionIdByAnyChatUserId(webSocketParam.getBankId(),
+                webSocketParam.getPcAnyChatUserId(), TYPE_PC);
+
+        // 转发给pc端
+        simpMessagingTemplate.convertAndSendToUser(wsSessionId_pc,
+                "/queue/network/pc", JSON.toJSONString(ResultBean.ofSuccess(webSocketParam)));
     }
 
     /**

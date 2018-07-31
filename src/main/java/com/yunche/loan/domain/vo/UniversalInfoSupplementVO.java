@@ -13,7 +13,7 @@ import java.util.List;
  * @date 2018/7/26
  */
 @Data
-public class InfoSupplementVO2 {
+public class UniversalInfoSupplementVO {
     /**
      * 增补单ID
      */

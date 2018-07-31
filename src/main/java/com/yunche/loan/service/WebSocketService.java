@@ -17,4 +17,6 @@ public interface WebSocketService {
     void livePhotoPath(WebSocketParam webSocketParam);
 
     void latlon(WebSocketParam webSocketParam);
+
+    void network(WebSocketParam webSocketParam);
 }

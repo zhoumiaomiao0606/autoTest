@@ -67,21 +67,11 @@ public interface LoanQueryDOMapper {
 
     UniversalHomeVisitInfoVO selectUniversalHomeVisitInfo(Long orderId);
 
-    UniversalSupplementInfoVO selectUniversalSupplementInfo(Long orderId);
-
     List<UniversalCustomerVO> selectUniversalCustomer(Long orderId);
 
     UniversalCustomerDetailVO selectUniversalCustomerDetail(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
 
     List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId);
-
-    /**
-     * 资料增补  文件列表（最新一次增补）
-     *
-     * @param orderId
-     * @return
-     */
-    List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
     List<UniversalMaterialRecordVO> selectUniversalCustomerFileByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
 
@@ -93,6 +83,12 @@ public interface LoanQueryDOMapper {
 
     List<UniversalMaterialRecordVO> selectUniversalCustomerFiles(@Param("customerId") Long customerId, @Param("types") Set<Byte> types);
 
+    /**
+     * 催收
+     *
+     * @param orderId
+     * @return
+     */
     List<UniversalCollectionRecord> selectUniversalCollectionRecord(Long orderId);
 
     UniversalCollectionRecordDetail selectUniversalCollectionRecordDetail(Long collectionId);
@@ -131,7 +127,7 @@ public interface LoanQueryDOMapper {
      * @param infoSupplementId 资料增补单ID
      * @return
      */
-    List<InfoSupplementVO2> selectUniversalInfoSupplement(Long infoSupplementId);
+    List<UniversalInfoSupplementVO> selectUniversalInfoSupplement(Long infoSupplementId);
 
     /**
      * 资料增补 历史列表   -已提交的
@@ -139,14 +135,26 @@ public interface LoanQueryDOMapper {
      * @param orderId 订单ID
      * @return
      */
-    List<InfoSupplementVO2> selectUniversalCollectionInfoSupplement(Long orderId);
+    List<UniversalInfoSupplementVO> selectUniversalCollectionInfoSupplement(Long orderId);
+
+    /**
+     * 资料增补  文件列表（最新一次增补）
+     *
+     * @param orderId
+     * @return
+     */
+    @Deprecated
+    List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
+
+    @Deprecated
+    UniversalSupplementInfoVO selectUniversalSupplementInfo(Long orderId);
 
 
     //=======================================================================
 
     List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
 
-    List<InsuranceCustomerVO> selectInsuranceCustomerByYear(@Param("orderId") Long orderId,@Param("insuranceYear") Byte insuranceYear);
+    List<InsuranceCustomerVO> selectInsuranceCustomerByYear(@Param("orderId") Long orderId, @Param("insuranceYear") Byte insuranceYear);
 
     InsuranceCustomerVO selectInsuranceCustomerNormalizeInsuranceYear(Long orderId);
 
