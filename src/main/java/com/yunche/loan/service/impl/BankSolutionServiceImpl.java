@@ -394,12 +394,20 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款车辆不存在");
         }
 
-        String carFullName = carBrandDO.getName() + carModelDO.getName();
+        String carFullName = null;
+        //城站只要宝马
+        if(bankId.intValue() == 1){
+            carFullName = carBrandDO.getName();
+        }else if(bankId.intValue() == 3){
+            carFullName = carBrandDO.getName() + carModelDO.getName();
+        }
+
         if(StringUtils.isBlank(carFullName)){
             if(carBrandDO == null){
                 throw new BizException("贷款车辆不存在");
             }
         }
+
 
         Long planId  = loanOrderDO.getLoanFinancialPlanId();
         if(planId == null){
@@ -567,8 +575,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //resultsum
         boolean check = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
         info.setResubmit(check == true?"1":"0");
-        //info.setNote(loanCustomerDO.getName()+"申请分期");
-
+        info.setNote(" ");
         //customer
         customer.setCustName(loanCustomerDO.getName());
         customer.setIdType(IDict.K_JJLX.IDCARD);

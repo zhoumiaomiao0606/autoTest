@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @FeignClient(name = "icbcFeignClient" ,url = "http://122.225.203.102:18090/",configuration = FeignConfig.class)
-//@FeignClient(name = "iCBCFeignClient" ,url = "http://localhost:18090/")
+//@FeignClient(name = "iCBCFeignClient" ,url = "http://192.168.0.166:18090/",configuration = FeignConfig.class)
 public interface ICBCFeignClient {
 
     //wanggang
