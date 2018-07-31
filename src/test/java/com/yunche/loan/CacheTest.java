@@ -85,7 +85,7 @@ public class CacheTest extends BaseTest {
 
     @Test
     public void carLoanUpdateGpsInfo() throws Exception {
-        CarLoanHttpUtil v=new CarLoanHttpUtil();
+        CarLoanHttpUtil.getGpsStatus("39182250606");
     }
 
 
