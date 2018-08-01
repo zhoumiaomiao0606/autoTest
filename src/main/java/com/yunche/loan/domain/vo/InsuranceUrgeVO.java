@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Data
 public class InsuranceUrgeVO {
-    private Long  orderId;
+    private String  orderId;
     private String  partnerName;
     private String  name;
     private String  idCard;
