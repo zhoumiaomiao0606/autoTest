@@ -276,7 +276,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         // 3
-        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(bankId)) {
+        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(bankId) || BANK_ID_ICBC_TaiZhou_LuQiao__Branch_TEST.equals(bankId)) {
             questionList = get_Question_List_ICBC_TaiZhou_LuQiao_Branch(bankId, orderId, address);
         }
 
