@@ -130,30 +130,30 @@ public class InsuranceServiceImpl implements InsuranceService {
                             int dateNum0 = (int) ((dates0.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             int dateNum1 = (int) ((dates1.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             riskQueryVO.setEndDate1(dates0);
-                            riskQueryVO.setDateNum1(dateNum0 + "");
+                            riskQueryVO.setDateNum1(dateNum0 < 0 ? "已到期": dateNum0+"");
                             riskQueryVO.setEndDate(dates1);
-                            riskQueryVO.setDateNum(dateNum1 + "");
+                            riskQueryVO.setDateNum(dateNum1 < 0 ? "已到期": dateNum1+"");
                         } else {
                             Date dates0 = sdf.parse(dates[0]);
                             Date dates1 = sdf.parse(dates[1]);
                             int dateNum0 = (int) ((dates0.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             int dateNum1 = (int) ((dates1.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             riskQueryVO.setEndDate1(dates1);
-                            riskQueryVO.setDateNum1(dateNum1 + "");
+                            riskQueryVO.setDateNum1(dateNum1 < 0 ? "已到期": dateNum1+"");
                             riskQueryVO.setEndDate(dates0);
-                            riskQueryVO.setDateNum(dateNum0 + "");
+                            riskQueryVO.setDateNum(dateNum0 < 0 ? "已到期": dateNum0+"");
                         }
                     } else {
                         if ("1".equals(insuranceType)) {
                             Date date = sdf.parse(endDateTotal);
                             int dateNum = (int) ((date.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             riskQueryVO.setEndDate1(date);
-                            riskQueryVO.setDateNum1(dateNum + "");
+                            riskQueryVO.setDateNum1(dateNum < 0 ? "已到期": dateNum+"");
                         } else {
                             Date date = sdf.parse(endDateTotal);
                             int dateNum = (int) ((date.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             riskQueryVO.setEndDate(date);
-                            riskQueryVO.setDateNum(dateNum + "");
+                            riskQueryVO.setDateNum(dateNum < 0 ? "已到期": dateNum+"");
                         }
                     }
                 }

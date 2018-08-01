@@ -89,7 +89,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                             }
                         }
                         for (Map<String, Object> map1 : list) {
-                            if ((map1.get("activationTime") == null || "".equals(map1.get("activationTime")))
+                            if ((map1.get("activationTime") != null || !"".equals(map1.get("activationTime")))
                                     && (map1.get("vehicleName") == null || "".equals(map1.get("vehicleName")))
                                     && (map1.get("driverName") == null || "".equals(map1.get("driverName")))) {
                                 falg = true;
@@ -187,6 +187,23 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
         gpsDetailTotal.setCredits(credits);
         //贷款信息
         gpsDetailTotal.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        return gpsDetailTotal;
+    }
+
+    @Override
+    public GpsDetailTotalVO appDetail(Long orderId) {
+        GpsDetailTotalVO gpsDetailTotal = new GpsDetailTotalVO();
+        GpsDetailVO gpsDetail = new GpsDetailVO();
+        gpsDetail = loanQueryDOMapper.selectGpsDetailByOrderId(orderId);
+        gpsDetailTotal.setGpsDetail(gpsDetail);
+        //gps信息
+        List<GpsVO> result = new ArrayList<GpsVO>();
+        result.addAll(loanQueryDOMapper.selectGpsByOrderId(orderId));
+        for (int i = result.size(); i < gpsDetail.getGpsNum(); i++) {
+            GpsVO g = new GpsVO();
+            result.add(g);
+        }
+        gpsDetailTotal.setGpsNum(result);
         return gpsDetailTotal;
     }
 
