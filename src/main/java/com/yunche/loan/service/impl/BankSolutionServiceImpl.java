@@ -283,9 +283,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("缺少面签视频");
         }
 
-        path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com","");
-        path.trim();
-
         if(StringUtils.isBlank(path)){
             throw new BizException("缺少面签视频");
         }
@@ -325,7 +322,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                asyncUpload.upload(serNo,MultimediaUploadEnum.VIDEO_INTERVIEW.getKey(),picName,path);
+                asyncUpload.upload(serNo,MultimediaUploadEnum.VIDEO_INTERVIEW.getKey(),picName,path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/",""));
                 icbcFeignClient.multimediaUpload(multimediaUpload);
             }
         });
