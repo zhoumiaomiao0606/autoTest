@@ -96,5 +96,4 @@ public class RecombinationVO<T> {
      */
     private List<UniversalInfoSupplementVO> supplement = Lists.newArrayList();
 
-    List<RenewInsuranceDO> renewInsurList = Lists.newArrayList();
 }
