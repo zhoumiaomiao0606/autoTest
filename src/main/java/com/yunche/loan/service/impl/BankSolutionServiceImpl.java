@@ -394,7 +394,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款车辆不存在");
         }
 
-        String carFullName =  carBrandDO.getName() + carModelDO.getName();
+        String carFullName =  carBrandDO.getName() + carModelDO.getFullName().replace(carBrandDO.getName(),"");
 
 
         if(StringUtils.isBlank(carFullName)){
@@ -449,6 +449,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(pkDO == null){
             throw new BizException("此产品银行基准利率为空");
         }
+
 
 
 
@@ -596,11 +597,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         divi.setFeeMode(IDict.K_FEEMODE.TERM);
         divi.setIsPawn(IDict.K_ISPAWN.YES);
 
+
         //城站只要宝马
         if(bankId.intValue() == 1){
             carFullName = carBrandDO.getName();
         }else if(bankId.intValue() == 3){
-            carFullName = carBrandDO.getName() + carModelDO.getName();
+            carFullName =  carBrandDO.getName() + carModelDO.getFullName().replace(carBrandDO.getName(),"");
         }
         divi.setPawnGoods(bankId.intValue() == 1 ? carFullName : bankId.intValue() == 3 ?vehicleInformationDO.getVehicle_identification_number() +" "+carFullName : null);
         divi.setIsAssure(IDict.K_ISASSURE.YES);

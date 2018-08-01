@@ -15,7 +15,7 @@
 	        customer.mobile                           as customer_mobile,
 	        customer.address                          as customer_family_address,
 	        customer.income_certificate_company_name  as customer_income_certificate_company_name,
-	        useGetSmallCarName(car.car_detail_id)     as car_name,
+	        CONCAT(b.name,replace(m.name,b.name,''))  as car_name,
 	        financial.car_price	                      as financial_car_price,
 	        vehicle.vehicle_identification_number     as vehicle_identification_number,
 	        vehicle.registration_certificate_number   as vehicle_registration_certificate_number,
@@ -33,8 +33,12 @@
                                                       AS financial_bank_rate,
 	        '1' 					                  as is_pledge,
             customer.lend_card		                  as customer_lend_card,
-	        CONCAT(vehicle.vehicle_identification_number,' ',useGetSmallCarName(car.car_detail_id))
-	                                                  as customer_collateral,
+            case when (select id from bank where name = base.bank) = 1
+                      then b.name
+                 when (select id from bank where name = base.bank) = 3
+                      then  CONCAT(vehicle.vehicle_identification_number,' ',CONCAT(b.name,replace(m.name,b.name,'')))
+                 else null
+                 end                                  as customer_collateral,
 	        vehicle.assess_org                        as vehicle_assess_org,
 	        customer.id                               as customer_id,
 	        case when  vehicle.assess_use_year is not null then  vehicle.assess_use_year
@@ -50,7 +54,10 @@
         left join vehicle_information vehicle on vehicle.id = orders.vehicle_information_id
         left join loan_financial_plan financial on financial.id = orders.loan_financial_plan_id
         left join financial_product product on product.prod_id = financial.financial_product_id
+        left join loan_base_info base on base.id = orders.loan_base_info_id
         left join car_detail d on car.car_detail_id = d.id
+        left join car_model m on d.model_id = m.id
+        left join car_brand b on m.brand_id = b.id
     </select>
     <!--提车资料-->
     <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInformationVO"
