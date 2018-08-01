@@ -393,9 +393,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(carBrandDO == null){
             throw new BizException("贷款车辆不存在");
         }
-
-        String carFullName =  carBrandDO.getName() + carModelDO.getFullName().replace(carBrandDO.getName(),"");
-
+        String carFullName = null;
+        //城站只要宝马
+        if(bankId.intValue() == 1){
+            carFullName = carBrandDO.getName();
+        }else if(bankId.intValue() == 3){
+            carFullName =  carBrandDO.getName() + carModelDO.getFullName().replace(carBrandDO.getName(),"");
+        }
 
         if(StringUtils.isBlank(carFullName)){
             if(carBrandDO == null){

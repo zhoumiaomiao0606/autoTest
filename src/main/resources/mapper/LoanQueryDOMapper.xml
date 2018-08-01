@@ -15,7 +15,11 @@
 	        customer.mobile                           as customer_mobile,
 	        customer.address                          as customer_family_address,
 	        customer.income_certificate_company_name  as customer_income_certificate_company_name,
-	        CONCAT(b.name,replace(m.name,b.name,''))  as car_name,
+	        case when (select id from bank where name = base.bank) = 1
+	                then b.name
+	             when (select id from bank where name = base.bank) = 3
+	                then CONCAT(b.name,replace(m.name,b.name,''))
+	             else null end                        as car_name,
 	        financial.car_price	                      as financial_car_price,
 	        vehicle.vehicle_identification_number     as vehicle_identification_number,
 	        vehicle.registration_certificate_number   as vehicle_registration_certificate_number,
