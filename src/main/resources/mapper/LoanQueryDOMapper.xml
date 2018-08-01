@@ -319,6 +319,12 @@
             customer.residence_address                                                              AS customer_residence_address,
             customer.family_person_num                                                              AS customer_family_person_num,
             customer.reserve_mobile                                                                 AS customer_reserve_mobile,
+            customer.cprovince                                                                      AS customer_cprovince,
+            customer.ccity                                                                          AS customer_ccity,
+            customer.ccounty                                                                        AS customer_ccounty,
+            customer.hprovince                                                                      AS customer_hprovince,
+            customer.hcity                                                                          AS customer_hcity,
+            customer.hcounty                                                                        AS customer_hcounty,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
@@ -499,7 +505,14 @@
             customer.guarantee_type                                                 AS customer_guarantee_type,
             customer.company_name                                                   AS customer_company_name,
             customer.identity_address                                               AS customer_identity_address,
-            customer.reserve_mobile                                                 AS customer_reserve_mobile
+            customer.reserve_mobile                                                 AS customer_reserve_mobile,
+            customer.cprovince                                                      AS customer_cprovince,
+            customer.ccity                                                          AS customer_ccity,
+            customer.ccounty                                                        AS customer_ccounty,
+            customer.hprovince                                                      AS customer_hprovince,
+            customer.hcity                                                          AS customer_hcity,
+            customer.hcounty                                                        AS customer_hcounty
+
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join loan_customer customer on main_order.loan_customer_id = customer.principal_cust_id and cust_type !=0
@@ -644,7 +657,13 @@
         c.open_card_order         AS open_card_order,
         c.open_card_status        AS open_card_status,
         cb.result                 AS bank_result,
-        cs.result                 AS society_result
+        cs.result                 AS society_result,
+        c.cprovince               AS customer_cprovince,
+        c.ccity                   AS customer_ccity,
+        c.ccounty                 AS customer_ccounty,
+        c.hprovince               AS customer_hprovince,
+        c.hcity                   AS customer_hcity,
+        c.hcounty                 AS customer_hcounty
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
