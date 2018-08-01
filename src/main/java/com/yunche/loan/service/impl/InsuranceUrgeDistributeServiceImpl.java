@@ -109,12 +109,12 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
 
         Preconditions.checkNotNull(loanOrderDO,"订单不存在");
 
-        UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId, loanOrderDO.getLoanCustomerId());
+//        UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId, loanOrderDO.getLoanCustomerId());
 
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
         UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
-
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
 
         List<InsuranceInfoDO> insuranceInfoDOS = insuranceInfoDOMapper.listByOrderId(orderId);
 
@@ -133,7 +133,7 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
-        recombinationVO.setInfo(universalCustomerDetailVO);
+        recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setCar(universalCarInfoVO);
         recombinationVO.setInsuranceDetail(insuranceDetail);

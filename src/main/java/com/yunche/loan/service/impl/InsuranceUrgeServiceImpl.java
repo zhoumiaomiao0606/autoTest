@@ -76,7 +76,9 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
 
             Preconditions.checkNotNull(loanOrderDO,"订单不存在");
 
-            UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId, loanOrderDO.getLoanCustomerId());
+            UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+
+//            UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId, loanOrderDO.getLoanCustomerId());
 
             FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
@@ -103,7 +105,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
             List<RenewInsuranceDO> renewInsurList = renewInsuranceDOMapper.selectByOrderId(orderId);
 
             recombinationVO.setRenewInsurList(renewInsurList);
-            recombinationVO.setInfo(universalCustomerDetailVO);
+            recombinationVO.setInfo(universalInfoVO);
             recombinationVO.setFinancial(financialSchemeVO);
             recombinationVO.setCar(universalCarInfoVO);
             recombinationVO.setInsuranceDetail(insuranceDetail);
