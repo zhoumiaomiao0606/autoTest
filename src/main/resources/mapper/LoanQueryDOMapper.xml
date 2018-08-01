@@ -1619,32 +1619,50 @@
     <select id="selectGpsDetailByOrderId" resultType="com.yunche.loan.domain.vo.GpsDetailVO"
             parameterType="java.lang.Long">
 
-        SELECT
-                  a.id                              AS orderId,
-                  c.id_card                         AS idCard,
-                  c.name                            AS customerName,
-                  e.name                            AS salesmanName,
-                  c.mobile                          AS mobile,
-                  d.name                            AS departmentName,
-                  p.name                            AS partnerName,
-                  b.bank                            AS bankName,
-                  l.car_type                        AS carType,
-                  useGetCarName(l.car_detail_id)    AS carDetailName,
-                  l.gps_num                         AS gpsNum,
-                  g.license_plate_number            AS licensePlateNymber,
-                  p.gps_company                     AS gpsCompany
+      SELECT
+                  a.id                                      AS orderId,
+                  c.id_card                                 AS idCard,
+                  c.name                                    AS customerName,
+                  e.name                                    AS salesmanName,
+                  c.mobile                                  AS mobile,
+                  d.name                                    AS departmentName,
+                  p.name                                    AS partnerName,
+                  b.bank                                    AS bankName,
+                  l.car_type                                AS carType,
+                  useGetCarName(l.car_detail_id)            AS carDetailName,
+                  l.gps_num                                 AS gpsNum,
+                  g.license_plate_number                    AS licensePlateNymber,
+                  p.gps_company                             AS gpsCompany
 
       FROM
-                  loan_order                  a
-      LEFT JOIN   loan_base_info              b        ON  b.id = a.loan_base_info_id
-      LEFT JOIN   loan_customer               c        ON  c.id = a.loan_customer_id
-      LEFT JOIN   employee                    e        ON  e.id = b.salesman_id
-      LEFT JOIN   partner                     p        ON  p.id = b.partner_id
-      LEFT JOIN   department                  d        ON  d.id = p.department_id
-      LEFT JOIN   loan_car_info               l        ON  l.id = a.loan_car_info_id
-      LEFT JOIN   vehicle_information         g        ON  g.id = a.vehicle_information_id
+                  loan_order                        a
+      LEFT JOIN   loan_base_info                    b       ON  b.id = a.loan_base_info_id
+      LEFT JOIN   loan_customer                     c       ON  c.id = a.loan_customer_id
+      LEFT JOIN   employee                          e       ON  e.id = b.salesman_id
+      LEFT JOIN   partner                           p       ON  p.id = b.partner_id
+      LEFT JOIN   department                        d       ON  d.id = p.department_id
+      LEFT JOIN   loan_car_info                     l       ON  l.id = a.loan_car_info_id
+      LEFT JOIN   vehicle_information               g       ON  g.id = a.vehicle_information_id
 
       WHERE a.id = #{orderId}
+
+    </select>
+
+    <select id="selectUniversalMaterialAudit" resultType="com.yunche.loan.domain.vo.UniversalMaterialAuditVO"
+            parameterType="java.lang.Long">
+
+      SELECT
+                  DATE_FORMAT(m.complete_material_date , '%Y-%m-%d %H:%i:%S')
+                                                            AS completeMaterialDate,
+                  m.remark                                  AS remark
+
+      FROM
+                  loan_order                        o
+
+      LEFT JOIN   material_audit                    m       ON  m.id = o.material_audit_id
+
+      WHERE o.id = #{orderId}
+
     </select>
 
 </mapper>

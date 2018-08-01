@@ -114,6 +114,14 @@ public interface LoanQueryDOMapper {
     UniversalMaterialManageVO selectUniversalMaterialManage(Long orderId);
 
     /**
+     * 资料审核     -资料齐全日期
+     *
+     * @param orderId
+     * @return
+     */
+    UniversalMaterialAuditVO selectUniversalMaterialAudit(Long orderId);
+
+    /**
      * 银行卡寄送单
      *
      * @param orderId

@@ -55,11 +55,14 @@ public class RecombinationVO<T> {
      * 资料流转
      */
     private UniversalDataFlowDetailVO dataFlow;
-
     /**
      * 合同归档
      */
     private UniversalMaterialManageVO materialManage;
+    /**
+     * 资料审核    -资料齐全日期
+     */
+    private UniversalMaterialAuditVO materialAudit;
 
 
     private List<UniversalRelationCustomerVO> relations = Lists.newArrayList();

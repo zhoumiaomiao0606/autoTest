@@ -102,7 +102,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
         UniversalDataFlowDetailVO universalDataFlowDetailVO = loanQueryDOMapper.selectUniversalDataFlowDetail(id);
 
-        // tyoe - kvMap
+        // type - kvMap
         Map<String, String> loanDataFlowTypeKVMap = dictService.getKVMap("loanDataFlowType");
         universalDataFlowDetailVO.setTypeText(loanDataFlowTypeKVMap.get(String.valueOf(universalDataFlowDetailVO.getType())));
 
