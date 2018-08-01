@@ -89,9 +89,10 @@
         <result column="hcity" jdbcType="VARCHAR" property="hcity"/>
         <result column="hcounty" jdbcType="VARCHAR" property="hcounty"/>
         <result column="open_card_order" jdbcType="VARCHAR" property="openCardOrder"/>
+        <result column="ctelzone" jdbcType="VARCHAR" property="ctelzone"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, name, nation, birth, identity_validity, lend_card, id_card, mobile, age, sex, 
+    id, name, nation, birth, identity_validity, lend_card, id_card, mobile, age, sex,
     apply_date, address, marry, identity_address, mobile_area, education, company_name, 
     company_phone, company_address, month_income, house_type, house_owner, house_feature, 
     house_address, info, cust_type, principal_cust_id, cust_relation, status, gmt_create, 
@@ -105,7 +106,7 @@
     card_send_addr_type, balance_change_remind, open_email, email, occupation, issuing_department, 
     master_card_tel, bell_tel, balance_change_tel, open_card_status, open_card_curr_status, 
     bill_send_type, bill_send_addr, cprovince, ccity, ccounty, hprovince, hcity, hcounty, 
-    open_card_order
+    open_card_order,ctelzone
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -117,6 +118,7 @@
     delete from loan_customer
     where id = #{id,jdbcType=BIGINT}
   </delete>
+
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
@@ -971,7 +973,872 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into loan_customer (id, name, nation,
+        birth, identity_validity, lend_card,
+        id_card, mobile, age, sex,
+        apply_date, address, marry,
+        identity_address, mobile_area, education,
+        company_name, company_phone, company_address,
+        month_income, house_type, house_owner,
+        house_feature, house_address, info,
+        cust_type, principal_cust_id, cust_relation,
+        status, gmt_create, gmt_modify,
+        feature, postcode, working_years,
+        duty, household_nature, children_num,
+        reserve_mobile, company_nature, industry_category,
+        income_certificate_company_name, income_certificate_company_address,
+        family_address, family_mobile, family_monthly_income,
+        feeding_num, floor_space, house_owner_relation,
+        bank_card_transmit_address, bank_card_transmit_postcode,
+        house_certificate_type, bank_card_transmit_address_type,
+        company_postcode, elementary_school, professional,
+        family_person_num, debt_ratio, guarantee_type,
+        residence_address, padding_company, play_company,
+        guarantee_rela, name_pinyin, check_in_date,
+        enrollment_date, card_receive_mode, card_send_addr_type,
+        balance_change_remind, open_email, email,
+        occupation, issuing_department, master_card_tel,
+        bell_tel, balance_change_tel, open_card_status,
+        open_card_curr_status, bill_send_type, bill_send_addr,
+        cprovince, ccity, ccounty,
+        hprovince, hcity, hcounty,
+        open_card_order,ctelzone)
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
+        #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR},
+        #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT},
+        #{applyDate,jdbcType=DATE}, #{address,jdbcType=VARCHAR}, #{marry,jdbcType=TINYINT},
+        #{identityAddress,jdbcType=VARCHAR}, #{mobileArea,jdbcType=VARCHAR}, #{education,jdbcType=TINYINT},
+        #{companyName,jdbcType=VARCHAR}, #{companyPhone,jdbcType=VARCHAR}, #{companyAddress,jdbcType=VARCHAR},
+        #{monthIncome,jdbcType=DECIMAL}, #{houseType,jdbcType=TINYINT}, #{houseOwner,jdbcType=TINYINT},
+        #{houseFeature,jdbcType=TINYINT}, #{houseAddress,jdbcType=VARCHAR}, #{info,jdbcType=VARCHAR},
+        #{custType,jdbcType=TINYINT}, #{principalCustId,jdbcType=BIGINT}, #{custRelation,jdbcType=TINYINT},
+        #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
+        #{feature,jdbcType=VARCHAR}, #{postcode,jdbcType=VARCHAR}, #{workingYears,jdbcType=BIGINT},
+        #{duty,jdbcType=VARCHAR}, #{householdNature,jdbcType=TINYINT}, #{childrenNum,jdbcType=VARCHAR},
+        #{reserveMobile,jdbcType=VARCHAR}, #{companyNature,jdbcType=TINYINT}, #{industryCategory,jdbcType=TINYINT},
+        #{incomeCertificateCompanyName,jdbcType=VARCHAR}, #{incomeCertificateCompanyAddress,jdbcType=VARCHAR},
+        #{familyAddress,jdbcType=VARCHAR}, #{familyMobile,jdbcType=BIGINT}, #{familyMonthlyIncome,jdbcType=DECIMAL},
+        #{feedingNum,jdbcType=BIGINT}, #{floorSpace,jdbcType=DECIMAL}, #{houseOwnerRelation,jdbcType=TINYINT},
+        #{bankCardTransmitAddress,jdbcType=VARCHAR}, #{bankCardTransmitPostcode,jdbcType=VARCHAR},
+        #{houseCertificateType,jdbcType=TINYINT}, #{bankCardTransmitAddressType,jdbcType=TINYINT},
+        #{companyPostcode,jdbcType=VARCHAR}, #{elementarySchool,jdbcType=VARCHAR}, #{professional,jdbcType=VARCHAR},
+        #{familyPersonNum,jdbcType=BIGINT}, #{debtRatio,jdbcType=DECIMAL}, #{guaranteeType,jdbcType=TINYINT},
+        #{residenceAddress,jdbcType=VARCHAR}, #{paddingCompany,jdbcType=VARCHAR}, #{playCompany,jdbcType=VARCHAR},
+        #{guaranteeRela,jdbcType=VARCHAR}, #{namePinyin,jdbcType=VARCHAR}, #{checkInDate,jdbcType=TIMESTAMP},
+        #{enrollmentDate,jdbcType=TIMESTAMP}, #{cardReceiveMode,jdbcType=VARCHAR}, #{cardSendAddrType,jdbcType=VARCHAR},
+        #{balanceChangeRemind,jdbcType=VARCHAR}, #{openEmail,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+        #{occupation,jdbcType=VARCHAR}, #{issuingDepartment,jdbcType=VARCHAR}, #{masterCardTel,jdbcType=VARCHAR},
+        #{bellTel,jdbcType=VARCHAR}, #{balanceChangeTel,jdbcType=VARCHAR}, #{openCardStatus,jdbcType=VARCHAR},
+        #{openCardCurrStatus,jdbcType=VARCHAR}, #{billSendType,jdbcType=VARCHAR}, #{billSendAddr,jdbcType=VARCHAR},
+        #{cprovince,jdbcType=VARCHAR}, #{ccity,jdbcType=VARCHAR}, #{ccounty,jdbcType=VARCHAR},
+        #{hprovince,jdbcType=VARCHAR}, #{hcity,jdbcType=VARCHAR}, #{hcounty,jdbcType=VARCHAR},
+        #{openCardOrder,jdbcType=VARCHAR},#{ctelzone,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into loan_customer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="nation != null">
+                nation,
+            </if>
+            <if test="birth != null">
+                birth,
+            </if>
+            <if test="identityValidity != null">
+                identity_validity,
+            </if>
+            <if test="lendCard != null">
+                lend_card,
+            </if>
+            <if test="idCard != null">
+                id_card,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="applyDate != null">
+                apply_date,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="marry != null">
+                marry,
+            </if>
+            <if test="identityAddress != null">
+                identity_address,
+            </if>
+            <if test="mobileArea != null">
+                mobile_area,
+            </if>
+            <if test="education != null">
+                education,
+            </if>
+            <if test="companyName != null">
+                company_name,
+            </if>
+            <if test="companyPhone != null">
+                company_phone,
+            </if>
+            <if test="companyAddress != null">
+                company_address,
+            </if>
+            <if test="monthIncome != null">
+                month_income,
+            </if>
+            <if test="houseType != null">
+                house_type,
+            </if>
+            <if test="houseOwner != null">
+                house_owner,
+            </if>
+            <if test="houseFeature != null">
+                house_feature,
+            </if>
+            <if test="houseAddress != null">
+                house_address,
+            </if>
+            <if test="info != null">
+                info,
+            </if>
+            <if test="custType != null">
+                cust_type,
+            </if>
+            <if test="principalCustId != null">
+                principal_cust_id,
+            </if>
+            <if test="custRelation != null">
+                cust_relation,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+            <if test="postcode != null">
+                postcode,
+            </if>
+            <if test="workingYears != null">
+                working_years,
+            </if>
+            <if test="duty != null">
+                duty,
+            </if>
+            <if test="householdNature != null">
+                household_nature,
+            </if>
+            <if test="childrenNum != null">
+                children_num,
+            </if>
+            <if test="reserveMobile != null">
+                reserve_mobile,
+            </if>
+            <if test="companyNature != null">
+                company_nature,
+            </if>
+            <if test="industryCategory != null">
+                industry_category,
+            </if>
+            <if test="incomeCertificateCompanyName != null">
+                income_certificate_company_name,
+            </if>
+            <if test="incomeCertificateCompanyAddress != null">
+                income_certificate_company_address,
+            </if>
+            <if test="familyAddress != null">
+                family_address,
+            </if>
+            <if test="familyMobile != null">
+                family_mobile,
+            </if>
+            <if test="familyMonthlyIncome != null">
+                family_monthly_income,
+            </if>
+            <if test="feedingNum != null">
+                feeding_num,
+            </if>
+            <if test="floorSpace != null">
+                floor_space,
+            </if>
+            <if test="houseOwnerRelation != null">
+                house_owner_relation,
+            </if>
+            <if test="bankCardTransmitAddress != null">
+                bank_card_transmit_address,
+            </if>
+            <if test="bankCardTransmitPostcode != null">
+                bank_card_transmit_postcode,
+            </if>
+            <if test="houseCertificateType != null">
+                house_certificate_type,
+            </if>
+            <if test="bankCardTransmitAddressType != null">
+                bank_card_transmit_address_type,
+            </if>
+            <if test="companyPostcode != null">
+                company_postcode,
+            </if>
+            <if test="elementarySchool != null">
+                elementary_school,
+            </if>
+            <if test="professional != null">
+                professional,
+            </if>
+            <if test="familyPersonNum != null">
+                family_person_num,
+            </if>
+            <if test="debtRatio != null">
+                debt_ratio,
+            </if>
+            <if test="guaranteeType != null">
+                guarantee_type,
+            </if>
+            <if test="residenceAddress != null">
+                residence_address,
+            </if>
+            <if test="paddingCompany != null">
+                padding_company,
+            </if>
+            <if test="playCompany != null">
+                play_company,
+            </if>
+            <if test="guaranteeRela != null">
+                guarantee_rela,
+            </if>
+            <if test="namePinyin != null">
+                name_pinyin,
+            </if>
+            <if test="checkInDate != null">
+                check_in_date,
+            </if>
+            <if test="enrollmentDate != null">
+                enrollment_date,
+            </if>
+            <if test="cardReceiveMode != null">
+                card_receive_mode,
+            </if>
+            <if test="cardSendAddrType != null">
+                card_send_addr_type,
+            </if>
+            <if test="balanceChangeRemind != null">
+                balance_change_remind,
+            </if>
+            <if test="openEmail != null">
+                open_email,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="occupation != null">
+                occupation,
+            </if>
+            <if test="issuingDepartment != null">
+                issuing_department,
+            </if>
+            <if test="masterCardTel != null">
+                master_card_tel,
+            </if>
+            <if test="bellTel != null">
+                bell_tel,
+            </if>
+            <if test="balanceChangeTel != null">
+                balance_change_tel,
+            </if>
+            <if test="openCardStatus != null">
+                open_card_status,
+            </if>
+            <if test="openCardCurrStatus != null">
+                open_card_curr_status,
+            </if>
+            <if test="billSendType != null">
+                bill_send_type,
+            </if>
+            <if test="billSendAddr != null">
+                bill_send_addr,
+            </if>
+            <if test="cprovince != null">
+                cprovince,
+            </if>
+            <if test="ccity != null">
+                ccity,
+            </if>
+            <if test="ccounty != null">
+                ccounty,
+            </if>
+            <if test="hprovince != null">
+                hprovince,
+            </if>
+            <if test="hcity != null">
+                hcity,
+            </if>
+            <if test="hcounty != null">
+                hcounty,
+            </if>
+            <if test="openCardOrder != null">
+                open_card_order,
+            </if>
+            <if test="ctelzone != null">
+                ctelzone,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="nation != null">
+                #{nation,jdbcType=VARCHAR},
+            </if>
+            <if test="birth != null">
+                #{birth,jdbcType=DATE},
+            </if>
+            <if test="identityValidity != null">
+                #{identityValidity,jdbcType=VARCHAR},
+            </if>
+            <if test="lendCard != null">
+                #{lendCard,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null">
+                #{idCard,jdbcType=CHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="age != null">
+                #{age,jdbcType=TINYINT},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=TINYINT},
+            </if>
+            <if test="applyDate != null">
+                #{applyDate,jdbcType=DATE},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="marry != null">
+                #{marry,jdbcType=TINYINT},
+            </if>
+            <if test="identityAddress != null">
+                #{identityAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="mobileArea != null">
+                #{mobileArea,jdbcType=VARCHAR},
+            </if>
+            <if test="education != null">
+                #{education,jdbcType=TINYINT},
+            </if>
+            <if test="companyName != null">
+                #{companyName,jdbcType=VARCHAR},
+            </if>
+            <if test="companyPhone != null">
+                #{companyPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="companyAddress != null">
+                #{companyAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="monthIncome != null">
+                #{monthIncome,jdbcType=DECIMAL},
+            </if>
+            <if test="houseType != null">
+                #{houseType,jdbcType=TINYINT},
+            </if>
+            <if test="houseOwner != null">
+                #{houseOwner,jdbcType=TINYINT},
+            </if>
+            <if test="houseFeature != null">
+                #{houseFeature,jdbcType=TINYINT},
+            </if>
+            <if test="houseAddress != null">
+                #{houseAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="info != null">
+                #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="custType != null">
+                #{custType,jdbcType=TINYINT},
+            </if>
+            <if test="principalCustId != null">
+                #{principalCustId,jdbcType=BIGINT},
+            </if>
+            <if test="custRelation != null">
+                #{custRelation,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="postcode != null">
+                #{postcode,jdbcType=VARCHAR},
+            </if>
+            <if test="workingYears != null">
+                #{workingYears,jdbcType=BIGINT},
+            </if>
+            <if test="duty != null">
+                #{duty,jdbcType=VARCHAR},
+            </if>
+            <if test="householdNature != null">
+                #{householdNature,jdbcType=TINYINT},
+            </if>
+            <if test="childrenNum != null">
+                #{childrenNum,jdbcType=VARCHAR},
+            </if>
+            <if test="reserveMobile != null">
+                #{reserveMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="companyNature != null">
+                #{companyNature,jdbcType=TINYINT},
+            </if>
+            <if test="industryCategory != null">
+                #{industryCategory,jdbcType=TINYINT},
+            </if>
+            <if test="incomeCertificateCompanyName != null">
+                #{incomeCertificateCompanyName,jdbcType=VARCHAR},
+            </if>
+            <if test="incomeCertificateCompanyAddress != null">
+                #{incomeCertificateCompanyAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="familyAddress != null">
+                #{familyAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="familyMobile != null">
+                #{familyMobile,jdbcType=BIGINT},
+            </if>
+            <if test="familyMonthlyIncome != null">
+                #{familyMonthlyIncome,jdbcType=DECIMAL},
+            </if>
+            <if test="feedingNum != null">
+                #{feedingNum,jdbcType=BIGINT},
+            </if>
+            <if test="floorSpace != null">
+                #{floorSpace,jdbcType=DECIMAL},
+            </if>
+            <if test="houseOwnerRelation != null">
+                #{houseOwnerRelation,jdbcType=TINYINT},
+            </if>
+            <if test="bankCardTransmitAddress != null">
+                #{bankCardTransmitAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="bankCardTransmitPostcode != null">
+                #{bankCardTransmitPostcode,jdbcType=VARCHAR},
+            </if>
+            <if test="houseCertificateType != null">
+                #{houseCertificateType,jdbcType=TINYINT},
+            </if>
+            <if test="bankCardTransmitAddressType != null">
+                #{bankCardTransmitAddressType,jdbcType=TINYINT},
+            </if>
+            <if test="companyPostcode != null">
+                #{companyPostcode,jdbcType=VARCHAR},
+            </if>
+            <if test="elementarySchool != null">
+                #{elementarySchool,jdbcType=VARCHAR},
+            </if>
+            <if test="professional != null">
+                #{professional,jdbcType=VARCHAR},
+            </if>
+            <if test="familyPersonNum != null">
+                #{familyPersonNum,jdbcType=BIGINT},
+            </if>
+            <if test="debtRatio != null">
+                #{debtRatio,jdbcType=DECIMAL},
+            </if>
+            <if test="guaranteeType != null">
+                #{guaranteeType,jdbcType=TINYINT},
+            </if>
+            <if test="residenceAddress != null">
+                #{residenceAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="paddingCompany != null">
+                #{paddingCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="playCompany != null">
+                #{playCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="guaranteeRela != null">
+                #{guaranteeRela,jdbcType=VARCHAR},
+            </if>
+            <if test="namePinyin != null">
+                #{namePinyin,jdbcType=VARCHAR},
+            </if>
+            <if test="checkInDate != null">
+                #{checkInDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enrollmentDate != null">
+                #{enrollmentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cardReceiveMode != null">
+                #{cardReceiveMode,jdbcType=VARCHAR},
+            </if>
+            <if test="cardSendAddrType != null">
+                #{cardSendAddrType,jdbcType=VARCHAR},
+            </if>
+            <if test="balanceChangeRemind != null">
+                #{balanceChangeRemind,jdbcType=VARCHAR},
+            </if>
+            <if test="openEmail != null">
+                #{openEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="occupation != null">
+                #{occupation,jdbcType=VARCHAR},
+            </if>
+            <if test="issuingDepartment != null">
+                #{issuingDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="masterCardTel != null">
+                #{masterCardTel,jdbcType=VARCHAR},
+            </if>
+            <if test="bellTel != null">
+                #{bellTel,jdbcType=VARCHAR},
+            </if>
+            <if test="balanceChangeTel != null">
+                #{balanceChangeTel,jdbcType=VARCHAR},
+            </if>
+            <if test="openCardStatus != null">
+                #{openCardStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="openCardCurrStatus != null">
+                #{openCardCurrStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="billSendType != null">
+                #{billSendType,jdbcType=VARCHAR},
+            </if>
+            <if test="billSendAddr != null">
+                #{billSendAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="cprovince != null">
+                #{cprovince,jdbcType=VARCHAR},
+            </if>
+            <if test="ccity != null">
+                #{ccity,jdbcType=VARCHAR},
+            </if>
+            <if test="ccounty != null">
+                #{ccounty,jdbcType=VARCHAR},
+            </if>
+            <if test="hprovince != null">
+                #{hprovince,jdbcType=VARCHAR},
+            </if>
+            <if test="hcity != null">
+                #{hcity,jdbcType=VARCHAR},
+            </if>
+            <if test="hcounty != null">
+                #{hcounty,jdbcType=VARCHAR},
+            </if>
+            <if test="openCardOrder != null">
+                #{openCardOrder,jdbcType=VARCHAR},
+            </if>
+            <if test="ctelzone != null">
+                #{ctelzone,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+        update loan_customer
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="nation != null">
+                nation = #{nation,jdbcType=VARCHAR},
+            </if>
+            <if test="birth != null">
+                birth = #{birth,jdbcType=DATE},
+            </if>
+            <if test="identityValidity != null">
+                identity_validity = #{identityValidity,jdbcType=VARCHAR},
+            </if>
+            <if test="lendCard != null">
+                lend_card = #{lendCard,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null">
+                id_card = #{idCard,jdbcType=CHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="age != null">
+                age = #{age,jdbcType=TINYINT},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=TINYINT},
+            </if>
+            <if test="applyDate != null">
+                apply_date = #{applyDate,jdbcType=DATE},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="marry != null">
+                marry = #{marry,jdbcType=TINYINT},
+            </if>
+            <if test="identityAddress != null">
+                identity_address = #{identityAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="mobileArea != null">
+                mobile_area = #{mobileArea,jdbcType=VARCHAR},
+            </if>
+            <if test="education != null">
+                education = #{education,jdbcType=TINYINT},
+            </if>
+            <if test="companyName != null">
+                company_name = #{companyName,jdbcType=VARCHAR},
+            </if>
+            <if test="companyPhone != null">
+                company_phone = #{companyPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="companyAddress != null">
+                company_address = #{companyAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="monthIncome != null">
+                month_income = #{monthIncome,jdbcType=DECIMAL},
+            </if>
+            <if test="houseType != null">
+                house_type = #{houseType,jdbcType=TINYINT},
+            </if>
+            <if test="houseOwner != null">
+                house_owner = #{houseOwner,jdbcType=TINYINT},
+            </if>
+            <if test="houseFeature != null">
+                house_feature = #{houseFeature,jdbcType=TINYINT},
+            </if>
+            <if test="houseAddress != null">
+                house_address = #{houseAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="custType != null">
+                cust_type = #{custType,jdbcType=TINYINT},
+            </if>
+            <if test="principalCustId != null">
+                principal_cust_id = #{principalCustId,jdbcType=BIGINT},
+            </if>
+            <if test="custRelation != null">
+                cust_relation = #{custRelation,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="postcode != null">
+                postcode = #{postcode,jdbcType=VARCHAR},
+            </if>
+            <if test="workingYears != null">
+                working_years = #{workingYears,jdbcType=BIGINT},
+            </if>
+            <if test="duty != null">
+                duty = #{duty,jdbcType=VARCHAR},
+            </if>
+            <if test="householdNature != null">
+                household_nature = #{householdNature,jdbcType=TINYINT},
+            </if>
+            <if test="childrenNum != null">
+                children_num = #{childrenNum,jdbcType=VARCHAR},
+            </if>
+            <if test="reserveMobile != null">
+                reserve_mobile = #{reserveMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="companyNature != null">
+                company_nature = #{companyNature,jdbcType=TINYINT},
+            </if>
+            <if test="industryCategory != null">
+                industry_category = #{industryCategory,jdbcType=TINYINT},
+            </if>
+            <if test="incomeCertificateCompanyName != null">
+                income_certificate_company_name = #{incomeCertificateCompanyName,jdbcType=VARCHAR},
+            </if>
+            <if test="incomeCertificateCompanyAddress != null">
+                income_certificate_company_address = #{incomeCertificateCompanyAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="familyAddress != null">
+                family_address = #{familyAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="familyMobile != null">
+                family_mobile = #{familyMobile,jdbcType=BIGINT},
+            </if>
+            <if test="familyMonthlyIncome != null">
+                family_monthly_income = #{familyMonthlyIncome,jdbcType=DECIMAL},
+            </if>
+            <if test="feedingNum != null">
+                feeding_num = #{feedingNum,jdbcType=BIGINT},
+            </if>
+            <if test="floorSpace != null">
+                floor_space = #{floorSpace,jdbcType=DECIMAL},
+            </if>
+            <if test="houseOwnerRelation != null">
+                house_owner_relation = #{houseOwnerRelation,jdbcType=TINYINT},
+            </if>
+            <if test="bankCardTransmitAddress != null">
+                bank_card_transmit_address = #{bankCardTransmitAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="bankCardTransmitPostcode != null">
+                bank_card_transmit_postcode = #{bankCardTransmitPostcode,jdbcType=VARCHAR},
+            </if>
+            <if test="houseCertificateType != null">
+                house_certificate_type = #{houseCertificateType,jdbcType=TINYINT},
+            </if>
+            <if test="bankCardTransmitAddressType != null">
+                bank_card_transmit_address_type = #{bankCardTransmitAddressType,jdbcType=TINYINT},
+            </if>
+            <if test="companyPostcode != null">
+                company_postcode = #{companyPostcode,jdbcType=VARCHAR},
+            </if>
+            <if test="elementarySchool != null">
+                elementary_school = #{elementarySchool,jdbcType=VARCHAR},
+            </if>
+            <if test="professional != null">
+                professional = #{professional,jdbcType=VARCHAR},
+            </if>
+            <if test="familyPersonNum != null">
+                family_person_num = #{familyPersonNum,jdbcType=BIGINT},
+            </if>
+            <if test="debtRatio != null">
+                debt_ratio = #{debtRatio,jdbcType=DECIMAL},
+            </if>
+            <if test="guaranteeType != null">
+                guarantee_type = #{guaranteeType,jdbcType=TINYINT},
+            </if>
+            <if test="residenceAddress != null">
+                residence_address = #{residenceAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="paddingCompany != null">
+                padding_company = #{paddingCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="playCompany != null">
+                play_company = #{playCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="guaranteeRela != null">
+                guarantee_rela = #{guaranteeRela,jdbcType=VARCHAR},
+            </if>
+            <if test="namePinyin != null">
+                name_pinyin = #{namePinyin,jdbcType=VARCHAR},
+            </if>
+            <if test="checkInDate != null">
+                check_in_date = #{checkInDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enrollmentDate != null">
+                enrollment_date = #{enrollmentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cardReceiveMode != null">
+                card_receive_mode = #{cardReceiveMode,jdbcType=VARCHAR},
+            </if>
+            <if test="cardSendAddrType != null">
+                card_send_addr_type = #{cardSendAddrType,jdbcType=VARCHAR},
+            </if>
+            <if test="balanceChangeRemind != null">
+                balance_change_remind = #{balanceChangeRemind,jdbcType=VARCHAR},
+            </if>
+            <if test="openEmail != null">
+                open_email = #{openEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="occupation != null">
+                occupation = #{occupation,jdbcType=VARCHAR},
+            </if>
+            <if test="issuingDepartment != null">
+                issuing_department = #{issuingDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="masterCardTel != null">
+                master_card_tel = #{masterCardTel,jdbcType=VARCHAR},
+            </if>
+            <if test="bellTel != null">
+                bell_tel = #{bellTel,jdbcType=VARCHAR},
+            </if>
+            <if test="balanceChangeTel != null">
+                balance_change_tel = #{balanceChangeTel,jdbcType=VARCHAR},
+            </if>
+            <if test="openCardStatus != null">
+                open_card_status = #{openCardStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="openCardCurrStatus != null">
+                open_card_curr_status = #{openCardCurrStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="billSendType != null">
+                bill_send_type = #{billSendType,jdbcType=VARCHAR},
+            </if>
+            <if test="billSendAddr != null">
+                bill_send_addr = #{billSendAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="cprovince != null">
+                cprovince = #{cprovince,jdbcType=VARCHAR},
+            </if>
+            <if test="ccity != null">
+                ccity = #{ccity,jdbcType=VARCHAR},
+            </if>
+            <if test="ccounty != null">
+                ccounty = #{ccounty,jdbcType=VARCHAR},
+            </if>
+            <if test="hprovince != null">
+                hprovince = #{hprovince,jdbcType=VARCHAR},
+            </if>
+            <if test="hcity != null">
+                hcity = #{hcity,jdbcType=VARCHAR},
+            </if>
+            <if test="hcounty != null">
+                hcounty = #{hcounty,jdbcType=VARCHAR},
+            </if>
+            <if test="openCardOrder != null">
+                open_card_order = #{openCardOrder,jdbcType=VARCHAR},
+            </if>
+            <if test="ctelzone != null">
+                ctelzone = #{ctelzone,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+>>>>>>> bankinterface
     update loan_customer
     set name = #{name,jdbcType=VARCHAR},
       nation = #{nation,jdbcType=VARCHAR},
@@ -1057,7 +1924,8 @@
       hprovince = #{hprovince,jdbcType=VARCHAR},
       hcity = #{hcity,jdbcType=VARCHAR},
       hcounty = #{hcounty,jdbcType=VARCHAR},
-      open_card_order = #{openCardOrder,jdbcType=VARCHAR}
+      open_card_order = #{openCardOrder,jdbcType=VARCHAR},
+      ctelzone = #{ctelzone,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
     <select id="selectSelfAndRelevanceCustomersByCustTypes" resultMap="BaseResultMap">

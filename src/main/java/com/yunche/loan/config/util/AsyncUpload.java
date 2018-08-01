@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
-import com.yunche.loan.config.feign.request.group.MultimediaUploadValidated;
 import com.yunche.loan.domain.entity.BankInterfaceFileSerialDO;
 import com.yunche.loan.mapper.BankInterfaceFileSerialDOMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +13,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -47,25 +44,6 @@ public class AsyncUpload {
         process.process();
     }
 
-    public void multimediaUpload(String phybrno,String zoneno,String orderId,List<ICBCApiRequest.Picture> pictures){
-        //多媒体补偿接口
-        ICBCApiRequest.MultimediaUpload multimediaUpload = new ICBCApiRequest.MultimediaUpload();
-        multimediaUpload.setPlatno(sysConfig.getPlatno());
-        multimediaUpload.setGuestPlatno(sysConfig.getPlatno());
-        multimediaUpload.setCmpseq(GeneratorIDUtil.execute());
-        multimediaUpload.setZoneno(zoneno);
-        multimediaUpload.setPhybrno(phybrno);
-        multimediaUpload.setOrderno(orderId);
-        multimediaUpload.setAssurerno(sysConfig.getAssurerno());
-        multimediaUpload.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-        multimediaUpload.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
-        multimediaUpload.setFileNum(String.valueOf(pictures.size()));
-        multimediaUpload.setPictures(pictures);
-        violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
-        icbcFeignClient.multimediaUpload(multimediaUpload);
-    }
-
-
     public void upload(String serNo,List<ICBCApiRequest.PicQueue> queue){
         for(ICBCApiRequest.PicQueue picQueue :queue){
 
@@ -91,7 +69,7 @@ public class AsyncUpload {
                         error = new Byte("3");
                         throw new RuntimeException("文件上传出错");
                     }
-                    LOG.info("文件上传失败.....");
+                    LOG.info("文件上传成功.....");
                 }catch (Exception e){
                     throw new RuntimeException("文件上传出错");
                 }
@@ -142,6 +120,7 @@ public class AsyncUpload {
                     error = new Byte("3");
                     throw new RuntimeException("文件上传出错");
                 }
+                LOG.info("文件上传成功.....");
             }catch (Exception e){
                 throw new RuntimeException("文件上传出错");
             }
@@ -196,6 +175,7 @@ public class AsyncUpload {
                     error = new Byte("3");
                     throw new RuntimeException("文件上传出错");
                 }
+                LOG.info("文件上传成功.....");
             }catch (Exception e){
                 throw new RuntimeException("文件上传出错");
             }

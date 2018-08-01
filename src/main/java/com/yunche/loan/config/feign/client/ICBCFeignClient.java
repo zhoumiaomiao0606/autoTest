@@ -7,10 +7,9 @@ import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "icbcFeignClient" ,url = "http://122.225.203.102:18090/",configuration = FeignConfig.class)
-//@FeignClient(name = "iCBCFeignClient" ,url = "http://localhost:18090/")
+//@FeignClient(name = "iCBCFeignClient" ,url = "http://192.168.0.166:18090/",configuration = FeignConfig.class)
 public interface ICBCFeignClient {
 
     //wanggang
@@ -30,8 +29,6 @@ public interface ICBCFeignClient {
     @RequestMapping(value = "/api/v1/icbc/apply/creditcardapply",method = RequestMethod.POST)
     public CreditCardApplyResponse creditcardapply(@RequestBody ICBCApiRequest.ApplyBankOpenCard applyBankOpenCard);
 
-    @RequestMapping(value = "/api/v1/test/icbc/apply/filedownload",method = RequestMethod.GET)
-    public boolean filedownload(@RequestParam(value = "filesrc") String  filesrc);
 
     //查询申请进度
     @RequestMapping(value = "/api/v1/icbc/apply/applystatus",method = RequestMethod.POST)

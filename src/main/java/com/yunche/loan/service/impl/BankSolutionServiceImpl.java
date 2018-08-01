@@ -198,11 +198,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         switch (value) {
             case 1:
                 //判断当前客户贷款银行是否为杭州工行，如为杭州工行：
-                ICBCCommonBusinessApplyProcess(orderId,sysConfig.getHzphybrno());
+                ICBCCommonBusinessApplyProcess(bankId,orderId,sysConfig.getHzphybrno());
                 break;
             case 3:
                 //判断当前客户贷款银行是否为台州工行，如为台州工行：
-                ICBCCommonBusinessApplyProcess(orderId,sysConfig.getHzphybrno());
+                ICBCCommonBusinessApplyProcess(bankId,orderId,sysConfig.getTzphybrno());
                 break;
             default:
                 return;
@@ -242,7 +242,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 break;
             case 3:
                 //判断当前客户贷款银行是否为台州工行，如为台州工行：
-                multimediaUploadProcess(orderId,sysConfig.getHzphybrno());
+                multimediaUploadProcess(orderId,sysConfig.getTzphybrno());
                 break;
             default:
                 return;
@@ -276,25 +276,28 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款人不存在");
         }
 
-
         List<ICBCApiRequest.Picture> pictures =  Lists.newArrayList();
 
-        UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,TermFileEnum.VIDEO_INTERVIEW.getKey());
-        if(authSignPic == null){
+        String path = loanQueryDOMapper.selectVideoFacePath(orderId);
+        if(StringUtils.isBlank(path)){
+            throw new BizException("缺少面签视频");
+        }
+
+        path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com","");
+        path.trim();
+
+        if(StringUtils.isBlank(path)){
             throw new BizException("缺少面签视频");
         }
 
 
-
         String picName = GeneratorIDUtil.execute()+ImageUtil.MP4_SUFFIX;
+        ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+        picture.setPicid(MultimediaUploadEnum.VIDEO_INTERVIEW.getKey());
+        picture.setPicname(picName);
+        picture.setPicnote(MultimediaUploadEnum.VIDEO_INTERVIEW.getValue());
+        pictures.add(picture);
 
-        if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-            ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
-            picture.setPicid(TermFileEnum.VIDEO_INTERVIEW.getValue());
-            picture.setPicname(picName);
-            picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.VIDEO_INTERVIEW.getKey()));
-            pictures.add(picture);
-        }
         if(pictures.size() == 0 ){
             throw new BizException("缺少面签视频");
         }
@@ -322,14 +325,14 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                asyncUpload.upload(serNo,TermFileEnum.VIDEO_INTERVIEW.getValue(),picName,authSignPic.getUrls().get(0));
+                asyncUpload.upload(serNo,MultimediaUploadEnum.VIDEO_INTERVIEW.getKey(),picName,path);
                 icbcFeignClient.multimediaUpload(multimediaUpload);
             }
         });
     }
 
 
-    public void ICBCCommonBusinessApplyProcess(Long orderId,String phybrno){
+    public void ICBCCommonBusinessApplyProcess(Long bankId, Long orderId, String phybrno){
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         //获取数据源
@@ -390,13 +393,20 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(carBrandDO == null){
             throw new BizException("贷款车辆不存在");
         }
+        String carFullName = null;
+        //城站只要宝马
+        if(bankId.intValue() == 1){
+            carFullName = carBrandDO.getName();
+        }else if(bankId.intValue() == 3){
+            carFullName =  carBrandDO.getName() + carModelDO.getFullName().replace(carBrandDO.getName(),"");
+        }
 
-        String carFullName = carBrandDO.getName() + carModelDO.getName() + carDetailDO.getName();
         if(StringUtils.isBlank(carFullName)){
             if(carBrandDO == null){
                 throw new BizException("贷款车辆不存在");
             }
         }
+
 
         Long planId  = loanOrderDO.getLoanFinancialPlanId();
         if(planId == null){
@@ -444,20 +454,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("此产品银行基准利率为空");
         }
 
-        Long useYear = new Long(0);
-        try {
-            SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-            Date old = simpleFormat.parse(simpleFormat.format(loanCarInfoDO.getFirstRegisterDate() == null?new Date():loanCarInfoDO.getFirstRegisterDate()));
-            Date now = new Date();
-            long l=now.getTime()-old.getTime();
-            long day=l/(24*60*60*1000);
-            long hour=day*24;
-            long mon=day/30;
-            long year=mon/12;
-            useYear = new Long(year);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
+
 
         BigDecimal dawnPaymentMoney = new BigDecimal("0");
         if(vehicleInformationDO.getInvoice_down_payment() != null ){
@@ -481,15 +479,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
 
 
-        String paidAmt = dawnPaymentMoney.toString();
-        String amount = bankPeriodPrincipal.toString();
+        String paidAmt = dawnPaymentMoney.stripTrailingZeros().toPlainString();
+        String amount = bankPeriodPrincipal.stripTrailingZeros().toPlainString();
         String term = loanTime.toString();
-        String interest = loanTimeFee.toString();
+        String interest = loanTimeFee.stripTrailingZeros().toPlainString();
 
         String lendCard = loanCustomerDO.getLendCard();
-        if(StringUtils.isBlank(lendCard)){
-            throw new BizException("信用卡卡号为空");
-        }
+
 
 
 
@@ -504,34 +500,40 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //start 封装
         List<ICBCApiRequest.PicQueue> queue = Lists.newLinkedList();
 
+
         for (TermFileEnum e : TermFileEnum.values()) {
             UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,e.getKey());
             if(authSignPic != null){
                 if(CollectionUtils.isNotEmpty(authSignPic.getUrls())){
-                    String picName = GeneratorIDUtil.execute();
-                    if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(e.getKey().toString())){
-                        //zip
-                        picName = picName +ImageUtil.ZIP_SUFFIX;
-                    }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(e.getKey().toString())){
-                        //mp4
-                        picName = picName +ImageUtil.MP4_SUFFIX;
-                    }else{
-                        //jpg
-                        picName = picName+ImageUtil.PIC_SUFFIX;
+                        for(String str : authSignPic.getUrls()){
+                            if(StringUtils.isNotBlank(str)){
+                                String picName = GeneratorIDUtil.execute();
+                                if(TermFileEnum.OTHER_ZIP.getKey().toString().equals(e.getKey().toString())){
+                                    //zip
+                                    picName = picName +ImageUtil.ZIP_SUFFIX;
+                                }else if(TermFileEnum.VIDEO_INTERVIEW.getKey().toString().equals(e.getKey().toString())){
+                                    //mp4
+                                    picName = picName +ImageUtil.MP4_SUFFIX;
+                                }else{
+                                    //jpg
+                                    picName = picName+ImageUtil.PIC_SUFFIX;
+                                }
+
+                                if(Integer.valueOf(e.getKey()).intValue()<59){
+                                    ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+                                    picture.setPicid(e.getValue());
+                                    picture.setPicname(picName);
+                                    picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
+                                    pictures.add(picture);
+                                }
+                                ICBCApiRequest.PicQueue picQueue = new ICBCApiRequest.PicQueue();
+                                picQueue.setPicId(e.getValue());
+                                picQueue.setPicName(picName);
+                                picQueue.setUrl(str);
+                                queue.add(picQueue);
+                            }
+                        }
                     }
-
-                    ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
-                    picture.setPicid(e.getValue());
-                    picture.setPicname(picName);
-                    picture.setPicnote(LoanFileEnum.getNameByCode(e.getKey()));
-                    pictures.add(picture);
-
-                    ICBCApiRequest.PicQueue picQueue = new ICBCApiRequest.PicQueue();
-                    picQueue.setPicId(e.getValue());
-                    picQueue.setPicName(picName);
-                    picQueue.setUrl(authSignPic.getUrls().get(0));
-                    queue.add(picQueue);
-                }
             }
 
         }
@@ -540,11 +542,27 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("最少需要一张图片");
         }
 
+
+        Long useYear = new Long(0);
+        try {
+            SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+            Date old = simpleFormat.parse(simpleFormat.format(loanCarInfoDO.getFirstRegisterDate() == null?new Date():loanCarInfoDO.getFirstRegisterDate()));
+            Date now = new Date();
+            long l=now.getTime()-old.getTime();
+            long day=l/(24*60*60*1000);
+            long hour=day*24;
+            long mon=day/30;
+            long year=mon/12;
+            useYear = new Long(mon);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         String serNo = GeneratorIDUtil.execute();
         //pub
         applyDiviGeneral.setPlatno(sysConfig.getPlatno());
         applyDiviGeneral.setCmpseq(serNo);
-        applyDiviGeneral.setZoneno(loanBaseInfoDO.getAreaId() == null?null:loanBaseInfoDO.getAreaId().toString().substring(0,4));
+        applyDiviGeneral.setZoneno(StringUtils.isBlank(vehicleInformationDO.getApply_license_plate_area())?null:vehicleInformationDO.getApply_license_plate_area().substring(0,4));
         applyDiviGeneral.setPhybrno(phybrno);
         applyDiviGeneral.setOrderno(orderId.toString());
         applyDiviGeneral.setAssurerno(sysConfig.getAssurerno());
@@ -557,40 +575,44 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //resultsum
         boolean check = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
         info.setResubmit(check == true?"1":"0");
-        info.setNote(loanCustomerDO.getName()+"申请分期");
-
+        info.setNote(" ");
         //customer
         customer.setCustName(loanCustomerDO.getName());
         customer.setIdType(IDict.K_JJLX.IDCARD);
         customer.setIdNo(loanCustomerDO.getIdCard());
         customer.setMobile(loanCustomerDO.getMobile());
-        customer.setAddress(loanCustomerDO.getAddress());
+        customer.setAddress(loanCustomerDO.getCprovince() + loanCustomerDO.getCcity() + loanCustomerDO.getCcounty() + loanCustomerDO.getAddress());
         customer.setUnit(loanCustomerDO.getIncomeCertificateCompanyName());
         //busi
         //car
         car.setCarType(carFullName);
-        car.setPrice(loanFinancialPlanDO.getCarPrice().toString());
+        car.setPrice(loanFinancialPlanDO.getCarPrice().stripTrailingZeros().toPlainString());
         car.setCarNo1(vehicleInformationDO.getVehicle_identification_number());
         car.setCarRegNo(vehicleInformationDO.getRegistration_certificate_number());
         car.setShorp4s(vehicleInformationDO.getInvoice_car_dealer());
         car.setCarNo2(vehicleInformationDO.getLicense_plate_number());
-        car.setAssessPrice(carDetailDO.getPrice());//车辆评估价格（元
+        car.setAssessPrice(loanFinancialPlanDO.getAppraisal() == null?null:loanFinancialPlanDO.getAppraisal().stripTrailingZeros().toPlainString());//车辆评估价格（元
         car.setAssessOrg(vehicleInformationDO.getAssess_org());//评估机构
-        car.setUsedYears(useYear.toString());//使用年限(月)
-
+        car.setUsedYears(StringUtils.isBlank(vehicleInformationDO.getAssess_use_year())?useYear == 0 || useYear == null?null:useYear.toString():vehicleInformationDO.getAssess_use_year());//使用年限(月)
         divi.setPaidAmt(paidAmt);
         divi.setAmount(amount);
         divi.setTerm(term);
         divi.setInterest(interest);
         divi.setFeeMode(IDict.K_FEEMODE.TERM);
         divi.setIsPawn(IDict.K_ISPAWN.YES);
-        divi.setPawnGoods(vehicleInformationDO.getVehicle_identification_number()+carFullName);
+
+
+        //城站只要宝马
+        if(bankId.intValue() == 1){
+            carFullName = carBrandDO.getName();
+        }else if(bankId.intValue() == 3){
+            carFullName =  carBrandDO.getName() + carModelDO.getFullName().replace(carBrandDO.getName(),"");
+        }
+        divi.setPawnGoods(bankId.intValue() == 1 ? carFullName : bankId.intValue() == 3 ?vehicleInformationDO.getVehicle_identification_number() +" "+carFullName : null);
         divi.setIsAssure(IDict.K_ISASSURE.YES);
         divi.setCard(lendCard);
         divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);
         divi.setTiexiRate("0");
-
-
 
         //封装完毕
         //针对新 - 二手车进行校验
@@ -813,11 +835,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("征信信息不存在");
         }
 
-        //征信银行
-        Long bankId  =  bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
-        if(bankId == null){
-            throw new BizException("贷款银行不存在");
-        }
+
         // 客户信息
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(Long.parseLong(bankOpenCardParam.getCustomerId()), VALID_STATUS);
         Set types = Sets.newHashSet(EMERGENCY_CONTACT.getType());
@@ -827,9 +845,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyBankOpenCard.setZoneno(String.valueOf(loanBaseInfoDO.getAreaId()).substring(0,4));
         applyBankOpenCard.setCmpdate(DateUtil.getDate());
         applyBankOpenCard.setCmptime(DateUtil.getTime());
-        if(String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)){
+        if(String.valueOf(bankOpenCardParam.getBankId()).equals(IDict.K_BANK.ICBC_HZCZ)){
             applyBankOpenCard.setPhybrno(sysConfig.getHzphybrno());
-        }else if(String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ)){
+        }else if(String.valueOf(bankOpenCardParam.getBankId()).equals(IDict.K_BANK.ICBC_TZLQ)){
             applyBankOpenCard.setPhybrno(sysConfig.getTzphybrno());
         }
         applyBankOpenCard.setCmpseq(bankOpenCardParam.getCmpseq());
@@ -842,7 +860,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setFeeamount(BigDecimalUtil.format(loanFinancialPlanDO.getBankFee(),0));
         customer.setLoanamount(BigDecimalUtil.format(loanFinancialPlanDO.getLoanAmount(),0));
         customer.setTerm(String.valueOf(loanFinancialPlanDO.getLoanTime()));
-//        BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         BigDecimal loanratio = loanFinancialPlanDO.getBankPeriodPrincipal().divide(loanFinancialPlanDO.getCarPrice(),3, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
         customer.setLoanratio(BigDecimalUtil.format(loanratio, 1));//贷款成数
         customer.setCarprice(BigDecimalUtil.format(loanFinancialPlanDO.getCarPrice(),0));
@@ -898,7 +915,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setCorpzip(loanCustomerDO.getCompanyPostcode());//corpzip	单位邮编
         customer.setCustcode(loanCustomerDO.getIdCard());//custcode	证件号码
         customer.setMblchoic("3");//mblchoic	手机选择1-预查询，2-修改，3-新增。默认送3
-        customer.setCophozono("0571");//cophozono	单位电话区号
+        customer.setCophozono(loanCustomerDO.getCtelzone());//cophozono	单位电话区号
         customer.setCophonext("0");//cophonext	单位电话分机
         customer.setSex(String.valueOf(loanCustomerDO.getSex()));//性别
         customer.setHadrchoic("3");//hadrchoic	住宅地址选择1-预查询，2-修改，3-新增。默认送3
@@ -939,17 +956,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
             }
         });
-        //发送银行接口
-//        CreditCardApplyResponse response = icbcFeignClient.creditcardapply(applyBankOpenCard);
-//
-//        if(response!=null) {
-//            if (IConstant.API_SUCCESS.equals(response.getIcbcApiRetcode()) && IConstant.SUCCESS.equals(response.getReturnCode())) {
-//                List<ICBCApiRequest.Picture> pictures = bankOpenCardParam.getPictures();
-//                for (ICBCApiRequest.Picture tmp:pictures) {
-//                    asyncUpload.upload(bankOpenCardParam.getCmpseq(),tmp.getPicid(),tmp.getPicname(),tmp.getPicKeyList());
-//                }
-//            }
-//        }
         return null;
     }
 

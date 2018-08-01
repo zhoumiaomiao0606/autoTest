@@ -4,10 +4,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.TaskDistributionParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
-import com.yunche.loan.domain.vo.AppTaskVO;
-import com.yunche.loan.domain.vo.ScheduleTaskVO;
-import com.yunche.loan.domain.vo.TaskDisVO;
-import com.yunche.loan.domain.vo.TaskListVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TaskDistributionService;
 import com.yunche.loan.service.TaskSchedulingService;
@@ -49,6 +46,23 @@ public class TaskSchedulingController {
     public ResultBean<Integer> isTelephoneVerify(@RequestParam Long orderId) {
         return ResultBean.ofSuccess(loanQueryService.selectBankOpenCardStatusByOrderId(orderId));
     }
+
+    /**
+     * 是否待电审
+     */
+    @GetMapping(value = "/bankOrderApiMsg")
+    public ResultBean<String> selectLastBankInterfaceSerialMsgByTransCode(@RequestParam Long customerId,@RequestParam String transCode) {
+        return ResultBean.ofSuccess(loanQueryService.selectLastBankInterfaceSerialNoteByTransCode(customerId,transCode));
+    }
+
+    /**
+     * 是否待电审
+     */
+    @GetMapping(value = "/bankOrder")
+    public ResultBean<BankInterfaceSerialReturnVO> selectLastBankInterfaceSerialByTransCode(@RequestParam Long customerId, @RequestParam String transCode) {
+        return ResultBean.ofSuccess(loanQueryService.selectLastBankInterfaceSerialByTransCode(customerId,transCode));
+    }
+
 
     /**
      * 待办任务列表-all

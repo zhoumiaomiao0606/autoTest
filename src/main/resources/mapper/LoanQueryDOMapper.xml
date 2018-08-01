@@ -15,7 +15,11 @@
 	        customer.mobile                           as customer_mobile,
 	        customer.address                          as customer_family_address,
 	        customer.income_certificate_company_name  as customer_income_certificate_company_name,
-	        useGetSmallCarName(car.car_detail_id)     as car_name,
+	        case when (select id from bank where name = base.bank) = 1
+	                then b.name
+	             when (select id from bank where name = base.bank) = 3
+	                then CONCAT(b.name,replace(m.name,b.name,''))
+	             else null end                        as car_name,
 	        financial.car_price	                      as financial_car_price,
 	        vehicle.vehicle_identification_number     as vehicle_identification_number,
 	        vehicle.registration_certificate_number   as vehicle_registration_certificate_number,
@@ -33,8 +37,18 @@
                                                       AS financial_bank_rate,
 	        '1' 					                  as is_pledge,
             customer.lend_card		                  as customer_lend_card,
-	        CONCAT(vehicle.vehicle_identification_number,' ',useGetSmallCarName(car.car_detail_id))
-	                                                  as customer_collateral
+            case when (select id from bank where name = base.bank) = 1
+                      then b.name
+                 when (select id from bank where name = base.bank) = 3
+                      then  CONCAT(vehicle.vehicle_identification_number,' ',CONCAT(b.name,replace(m.name,b.name,'')))
+                 else null
+                 end                                  as customer_collateral,
+	        vehicle.assess_org                        as vehicle_assess_org,
+	        customer.id                               as customer_id,
+	        case when  vehicle.assess_use_year is not null then  vehicle.assess_use_year
+            else TIMESTAMPDIFF(MONTH,now(),vehicle.register_date) end AS vehicle_assess_use_year,
+            car.car_category                          as car_category
+
 
 
 
@@ -44,7 +58,10 @@
         left join vehicle_information vehicle on vehicle.id = orders.vehicle_information_id
         left join loan_financial_plan financial on financial.id = orders.loan_financial_plan_id
         left join financial_product product on product.prod_id = financial.financial_product_id
+        left join loan_base_info base on base.id = orders.loan_base_info_id
         left join car_detail d on car.car_detail_id = d.id
+        left join car_model m on d.model_id = m.id
+        left join car_brand b on m.brand_id = b.id
     </select>
     <!--提车资料-->
     <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInformationVO"
@@ -87,9 +104,11 @@
             v.retrieve_key                    AS retrieve_key,
             v.customize_brand                 AS customize_brand,
             f.down_payment_money              AS down_payment_money,
-            DATE_FORMAT(i.first_register_date,'%Y-%m-%d')        AS first_register_date,
+            DATE_FORMAT(i.first_register_date,'%Y-%m-%d')      AS first_register_date,
             i.car_category                                     AS car_category,
-            v.assess_org                                       AS assess_org
+            v.assess_org                                       AS assess_org,
+            case when  v.assess_use_year is not null then  v.assess_use_year
+            else TIMESTAMPDIFF(MONTH,now(),v.register_date) end AS assess_use_year
 
 
 
@@ -728,6 +747,7 @@
           (select area_name from base_area where area_id=customer.hprovince) AS customer_hprovince_name,
           (select area_name from base_area where area_id=customer.hcity) AS customer_hcity_name,
           (select area_name from base_area where area_id=customer.hcounty) AS customer_hcounty_name,
+          customer.ctelzone                              AS customer_ctelzone,
           bank.info			      	                     AS bank_info,
           bank.result		          			         AS bank_result,
           process_bank.credit_result         	         AS process_bank_credit_result,
@@ -1343,6 +1363,18 @@
 		  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
 		  and serial.customer_id = #{customerId}
     </select>
+    <select id="selectLastBankInterfaceSerialByTransCode" resultType="com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO">
+		  select serial.api_status,serial.api_msg,serial.status,serial.reject_reason,serial.request_time,
+		         serial.callback_time,serial.file_num,serial.trans_code
+		  from bank_interface_serial serial
+		  inner join
+		  (
+		  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+		  				as serial_no
+		  from bank_interface_serial GROUP BY trans_code,customer_id
+		  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+		  and serial.customer_id = #{customerId}
+    </select>
     <select id="selectLastBankInterfaceSerialStatusByTransCode" resultType="java.lang.String">
           select serial.status from bank_interface_serial serial
           inner join
@@ -1367,6 +1399,10 @@
                       from bank_interface_serial GROUP BY trans_code,customer_id
                       ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
               ) ss GROUP BY  ss.order_id having order_id = #{orderId}
+    </select>
+
+    <select id="selectVideoFacePath" resultType="java.lang.String">
+        select path from video_face_log where order_id = #{orderId}  order by gmt_create desc limit 1
     </select>
 
     <select id="selectUniversalDataFlowDetail" resultType="com.yunche.loan.domain.vo.UniversalDataFlowDetailVO"
@@ -1440,6 +1476,12 @@
 
       WHERE a.id = #{orderId}
 
+    </select>
+
+    <select id="selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType" resultType="com.yunche.loan.domain.vo.UniversalBankInterfaceFileSerialDO">
+        select
+             id, serial_no, file_name, file_path, file_type, success, request_time, error
+         from bank_interface_file_serial where success = 1 and serial_no = #{serialNo} and file_type = #{fileType}
     </select>
 
     <select id="selectUniversalBankCardSend" resultType="com.yunche.loan.domain.vo.UniversalBankCardSendVO"
@@ -1664,5 +1706,8 @@
       WHERE o.id = #{orderId}
 
     </select>
+
+
+
 
 </mapper>

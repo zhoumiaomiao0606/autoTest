@@ -16,8 +16,8 @@ spring:
     port: 6380
     password: yunche@1234
     pool:
-      max-active: 50
-      max-idle: 50
+      max-active: 100
+      max-idle: 100
       min-idle: 0
       max-wait: 10000
 

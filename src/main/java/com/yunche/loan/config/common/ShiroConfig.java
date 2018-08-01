@@ -89,11 +89,11 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/loadqr/query", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditresult", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditreturn", "anon");
-            filterChainDefinitionMap.put("/api/v1/loanorder/icbc/multimediaUploadreturn", "anon");
+            filterChainDefinitionMap.put("/api/v1/loanorder/icbc/multimediareturn", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditcardresult", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/fileNotice", "anon");
+            filterChainDefinitionMap.put("/api/v1/loanorder/icbc/artificialgainImage", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/opencard/openCard", "anon");
-
             filterChainDefinitionMap.put("/**", "authc");
 //            filterChainDefinitionMap.put("/**", "authc,perms");
         }

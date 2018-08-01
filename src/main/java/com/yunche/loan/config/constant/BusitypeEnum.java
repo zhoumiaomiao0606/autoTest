@@ -6,8 +6,8 @@ import lombok.Setter;
 public enum BusitypeEnum {
     //所贷车辆类型：1-新车; 2-二手车; 3-不限;
     //0:一手车业务 907:二手车业务 909:租金业务
-    NEW(new Byte("0"),"907"),
-    SECOND(new Byte("1"),"909");
+    NEW(new Byte("0"),"1"),
+    SECOND(new Byte("1"),"907");
     //RENT(new Byte("999"),"909");
 
 

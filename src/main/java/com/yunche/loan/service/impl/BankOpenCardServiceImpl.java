@@ -5,10 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
-import com.yunche.loan.config.constant.IDict;
-import com.yunche.loan.config.constant.LoanOrderProcessConst;
-import com.yunche.loan.config.constant.LoanProcessConst;
-import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.response.ApplycreditstatusResponse;
@@ -43,9 +40,9 @@ import static com.yunche.loan.config.constant.LoanFileEnum.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 
 @Service
-public class BankOpenCardServiceImpl implements BankOpenCardService{
+public class BankOpenCardServiceImpl implements BankOpenCardService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BankOpenCardService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BankOpenCardServiceImpl.class);
 
 
     @Autowired
@@ -107,6 +104,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     /**
      * 银行开卡详情页
+     *
      * @param orderId
      * @return
      */
@@ -116,7 +114,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Long customerId = loanOrderDO.getLoanCustomerId();
 
-        UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId,customerId);
+        UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId, customerId);
         BankInterfaceSerialVO bankInterfaceSerialVO = new BankInterfaceSerialVO();
         BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
 //        if(serialDO!=null) {
@@ -127,24 +125,32 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 //                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_NO));
 //                } else {
 //                    bankInterfaceSerialVO.setMergeStatus(String.valueOf(IDict.K_YORN.K_YORN_YES));
-//                }b
+//                }
 //            }
 //        }
-        BeanUtils.copyProperties(serialDO,bankInterfaceSerialVO);
+
+        if (null != serialDO) {
+            BeanUtils.copyProperties(serialDO, bankInterfaceSerialVO);
+        }
+
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanProcessDO,"流程不存在");
+        Preconditions.checkNotNull(loanProcessDO, "流程不存在");
         Byte telephoneVerify = loanProcessDO.getTelephoneVerify();
-        switch (telephoneVerify){
+        switch (telephoneVerify) {
             case 0:
-                bankInterfaceSerialVO.setElectricResults("未执行到此节点");break;
+                bankInterfaceSerialVO.setElectricResults("未执行到此节点");
+                break;
             case 1:
-                bankInterfaceSerialVO.setElectricResults("已处理");break;
+                bankInterfaceSerialVO.setElectricResults("已处理");
+                break;
             case 2:
-                bankInterfaceSerialVO.setElectricResults("未处理");break;
+                bankInterfaceSerialVO.setElectricResults("未处理");
+                break;
             case 3:
-                bankInterfaceSerialVO.setElectricResults("打回修改");break;
-                default:
-                    bankInterfaceSerialVO.setElectricResults("未知");
+                bankInterfaceSerialVO.setElectricResults("打回修改");
+                break;
+            default:
+                bankInterfaceSerialVO.setElectricResults("未知");
         }
 
         ResultBean<LoanBaseInfoVO> loanBaseInfoVOResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
@@ -170,20 +176,25 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     /**
      * 银行开卡
+     *
      * @param orderId
      * @return
      */
     @Override
-    public ResultBean openCard(Long  orderId) {
+    public ResultBean openCard(Long orderId) {
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(orderDO,"订单不存在");
+        Preconditions.checkNotNull(orderDO, "订单不存在");
         Long customerId = orderDO.getLoanCustomerId();
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(customerId, VALID_STATUS);
 
-        loanQueryService.checkBankInterFaceSerialStatus(customerId,IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+        loanQueryService.checkBankInterFaceSerialStatus(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
 
+//        boolean flag = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId, IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+//        if(flag){
+//            throw new BizException(loanCustomerDO.getName()+":开卡处理中,请勿重复开卡...");
+//        }
 
-        BankOpenCardParam bankOpenCardParam =new BankOpenCardParam();
+        BankOpenCardParam bankOpenCardParam = new BankOpenCardParam();
 
         bankOpenCardParam.setCustomerId(orderDO.getLoanCustomerId().toString());
 
@@ -198,6 +209,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     /**
      * 导入银行开卡文件记录
+     *
      * @param ossKey
      * @return
      */
@@ -211,9 +223,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
             BankFileListDO bankFileListDO = new BankFileListDO();
             String[] split1 = ossKey.split(File.separator);
-            String fileName =ossKey;
-            if(split1.length>0){
-                fileName = split1[split1.length-1].trim();
+            String fileName = ossKey;
+            if (split1.length > 0) {
+                fileName = split1[split1.length - 1].trim();
             }
             bankFileListDO.setFileName(fileName);
             bankFileListDO.setFileKey(ossKey);
@@ -222,7 +234,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
             bankFileListDO.setOperator("auto");
             int bankFileListId = bankFileListDOMapper.insertSelective(bankFileListDO);
 
-            String line="";
+            String line = "";
             BankFileListRecordDOKey bankFileListRecordDOKey = new BankFileListRecordDOKey();
 
             bankFileListRecordDOMapper.deleteBylistId(Long.valueOf(bankFileListId));
@@ -231,32 +243,32 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
              * 证件号码、发卡标志[0：开卡失败 1：开卡成功]、对账单日、还款日
              */
             List<BankFileListRecordDO> recordLists = Lists.newArrayList();
-            while((line = bufReader.readLine()) != null){
+            while ((line = bufReader.readLine()) != null) {
                 String[] split = line.split("\\|");
-                if(split.length >=12){
+                if (split.length >= 12) {
                     BankFileListRecordDO bankFileListRecordDO = packObject(split);
                     bankFileListRecordDO.setBankFileListId(Long.valueOf(bankFileListId));
                     recordLists.add(bankFileListRecordDO);
                 }
 
             }
-            List<BankFileListRecordDO> list = recordLists.parallelStream().filter(e-> e.getIsCustomer().equals(K_YORN_YES)).collect(Collectors.toList());
+            List<BankFileListRecordDO> list = recordLists.parallelStream().filter(e -> e.getIsCustomer().equals(K_YORN_YES)).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(list)) {
                 int count = bankFileListRecordDOMapper.insertBatch(list);
                 Preconditions.checkArgument(count == list.size(), "批量插入失败");
             }
 
-            list.parallelStream().filter(Objects::nonNull).forEach(e->{
+            list.parallelStream().filter(Objects::nonNull).forEach(e -> {
 
                 LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
-                Byte openCard=loanProcessDO.getBankOpenCard();
-                if(!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)){
-                    ApprovalParam approvalParam =  new ApprovalParam();
+                Byte openCard = loanProcessDO.getBankOpenCard();
+                if (!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)) {
+                    ApprovalParam approvalParam = new ApprovalParam();
                     approvalParam.setOrderId(e.getOrderId());
                     approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
                     approvalParam.setAction(LoanProcessConst.ACTION_PASS);
                     ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
-                    LOG.info(e.getOrderId()+approvalResultBean.getMsg());
+                    LOG.info(e.getOrderId() + approvalResultBean.getMsg());
                 }
             });
         } catch (UnsupportedEncodingException e) {
@@ -269,6 +281,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     /**
      * 暂存开卡信息
+     *
      * @param bankOpenCardParam
      * @return
      */
@@ -276,14 +289,14 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     public ResultBean save(BankOpenCardParam bankOpenCardParam) {
 
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
-        BeanUtils.copyProperties(bankOpenCardParam,loanCustomerDO);
+        BeanUtils.copyProperties(bankOpenCardParam, loanCustomerDO);
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId());
-        Preconditions.checkNotNull(loanOrderDO,"订单不存在");
+        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
         Long loanCustomerId = loanOrderDO.getLoanCustomerId();
         loanCustomerDO.setId(loanCustomerId);
-        Preconditions.checkNotNull(loanCustomerDO.getId(),"客户信息不存在");
+        Preconditions.checkNotNull(loanCustomerDO.getId(), "客户信息不存在");
         int count = loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
-        Preconditions.checkArgument(count>0,"客户信息更新失败");
+        Preconditions.checkArgument(count > 0, "客户信息更新失败");
         ResultBean<Void> updateFileResult = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanCustomerId, bankOpenCardParam.getFiles(), UPLOAD_TYPE_NORMAL);
 
         return ResultBean.ofSuccess("保存成功");
@@ -292,34 +305,35 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
     @Override
     public ResultBean taskschedule(Long orderId) {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        if(loanOrderDO == null){
+        if (loanOrderDO == null) {
             throw new BizException("此订单不存在");
         }
 
         Long baseId = loanOrderDO.getLoanBaseInfoId();
-        if(baseId == null){
+        if (baseId == null) {
             throw new BizException("征信信息不存在");
         }
 
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
-        if(loanBaseInfoDO == null){
+        if (loanBaseInfoDO == null) {
             throw new BizException("征信信息不存在");
         }
         //征信银行
-        Long bankId  =  bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
-        if(bankId == null){
+        Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
+        if (bankId == null) {
             throw new BizException("贷款银行不存在");
         }
-        ICBCApiRequest.Applycreditstatus applycreditstatus =new ICBCApiRequest.Applycreditstatus();
+        String serialNo = GeneratorIDUtil.execute();
+        ICBCApiRequest.Applycreditstatus applycreditstatus = new ICBCApiRequest.Applycreditstatus();
         applycreditstatus.setPlatno(sysConfig.getPlatno());
-        applycreditstatus.setZoneno(String.valueOf(loanBaseInfoDO.getAreaId()).substring(0,4));
-        if(IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))){
+        applycreditstatus.setZoneno(String.valueOf(loanBaseInfoDO.getAreaId()).substring(0, 4));
+        if (IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))) {
             applycreditstatus.setPhybrno(sysConfig.getHzphybrno());
-        }else if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
+        } else if (IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))) {
             applycreditstatus.setPhybrno(sysConfig.getTzphybrno());
         }
 
-        String serialNo = GeneratorIDUtil.execute();
+//        String serialNo = GeneratorIDUtil.execute();
         applycreditstatus.setOrderno(String.valueOf(loanOrderDO.getId()));
         applycreditstatus.setAssurerno(sysConfig.getAssurerno());
         applycreditstatus.setCmpdate(DateUtil.getDate());
@@ -330,9 +344,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         ApplycreditstatusResponse response = bankSolutionService.applycreditstatus(applycreditstatus);
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         loanCustomerDO.setId(loanOrderDO.getLoanCustomerId());
-        if(StringUtils.isNotBlank(response.getStatus())){
+        if (StringUtils.isNotBlank(response.getStatus())) {
             loanCustomerDO.setOpenCardCurrStatus(response.getStatus());
-        }else{
+        } else {
             loanCustomerDO.setOpenCardCurrStatus("44");
         }
         loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
@@ -340,34 +354,33 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         bankInterfaceSerialDO.setSerialNo(serialNo);
         bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JJSTS.SUCCESS));
         int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
-        Preconditions.checkArgument(count>0,"查询开卡状态异常");
+        Preconditions.checkArgument(count > 0, "查询开卡状态异常");
         return ResultBean.ofSuccess(response);
     }
 
     /**
-     *
      * @param split
      */
     private BankFileListRecordDO packObject(String[] split) {
         BankFileListRecordDO bankFileListRecordDO = new BankFileListRecordDO();
 
-        String  areaId = split[0].trim();//地区号
-        String  platNo = split[1].trim();//平台编号
-        String  guarantyUnit = split[2].trim();//担保单位编号
-        String  orderId = split[3].trim();//订单号
-        String  openCardDate = split[4].trim();//开卡日期
-        String  cardNumber = split[5].trim();//卡号
-        String  name = split[6].trim();//姓名
-        String  cardType = split[7].trim();//证件类型
-        String  credentialNo = split[8].trim();//证件号码
-        String  hairpinFlag = split[9].trim();//发卡标志
-        String  accountStatement = split[10].trim();//对账单日
-        String  repayDate = split[11].trim();//还款日
+        String areaId = split[0].trim();//地区号
+        String platNo = split[1].trim();//平台编号
+        String guarantyUnit = split[2].trim();//担保单位编号
+        String orderId = split[3].trim();//订单号
+        String openCardDate = split[4].trim();//开卡日期
+        String cardNumber = split[5].trim();//卡号
+        String name = split[6].trim();//姓名
+        String cardType = split[7].trim();//证件类型
+        String credentialNo = split[8].trim();//证件号码
+        String hairpinFlag = split[9].trim();//发卡标志
+        String accountStatement = split[10].trim();//对账单日
+        String repayDate = split[11].trim();//还款日
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(orderId));
-        if(loanOrderDO == null){
+        if (loanOrderDO == null) {
             bankFileListRecordDO.setIsCustomer(K_YORN_NO);
             return bankFileListRecordDO;
-        }else{
+        } else {
             bankFileListRecordDO.setCustomerId(loanOrderDO.getLoanCustomerId());
         }
 
@@ -391,6 +404,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     /**
      * 合并资料并上传至中间服务器
+     *
      * @param bankOpenCardParam
      * @return
      */
@@ -400,24 +414,28 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
         List<LoanFileDO> idCardback = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), ID_CARD_BACK.getType(), (byte) 1);
         List<LoanFileDO> specialQuotaApply = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), SPECIAL_QUOTA_APPLY.getType(), (byte) 1);
         List<LoanFileDO> openCardData = loanFileDOMapper.listByCustomerIdAndType(Long.parseLong(bankOpenCardParam.getCustomerId()), OPEN_CARD_DATA.getType(), (byte) 1);
-
+        //台州不需要合并身份证
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(bankOpenCardParam.getOrderId());
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
+        Preconditions.checkNotNull(bankId, "贷款银行不存在");
         List<LoanFileDO> openCardTypes = Lists.newArrayList();
-        openCardTypes.addAll(idCardFront);
-        openCardTypes.addAll(idCardback);
+        if (IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))) {
+            openCardTypes.addAll(idCardFront);
+            openCardTypes.addAll(idCardback);
+        }
         openCardTypes.addAll(openCardData);
-
+        bankOpenCardParam.setBankId(bankId);
         //【开卡】专项额度核定申请表
         List<String> keys = Lists.newArrayList();
-        specialQuotaApply.stream().filter(Objects::nonNull).filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e->{
+        specialQuotaApply.stream().filter(Objects::nonNull).filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e -> {
             String path = e.getPath();
             List<String> list = JSONArray.parseArray(path, String.class);
             keys.addAll(list);
         });
-        Preconditions.checkArgument(keys.size()>0,"专项额度核定申请表,不存在");
-        String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
+        Preconditions.checkArgument(keys.size() > 0, "专项额度核定申请表,不存在");
+        String picName = GeneratorIDUtil.execute() + ImageUtil.PIC_SUFFIX;
         String serNo = GeneratorIDUtil.execute();
-//        asyncUpload.upload(serNo,IDict.K_PIC_ID.SPECIAL_QUOTA_APPLY,picName,keys);
-
         String fileName = picName;
 
         ICBCApiRequest.Picture picture1 = new ICBCApiRequest.Picture();
@@ -427,15 +445,13 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
         //开卡】开卡申请表(和身份证正反面合并成一张图片)
         List<String> openCardTypesStr = Lists.newArrayList();
-        openCardTypes.stream().filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e->{
+        openCardTypes.stream().filter(e -> StringUtils.isNotBlank(e.getPath())).forEach(e -> {
             String path = e.getPath();
             List<String> list = JSONArray.parseArray(path, String.class);
             openCardTypesStr.addAll(list);
         });
-        Preconditions.checkArgument(openCardTypesStr.size()>0,"开卡申请表(和身份证正反面合并成一张图片)");
-        String fileName2 =  GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
-//        asyncUpload.upload(fileName2,openCardTypesStr);
-//        asyncUpload.upload(serNo,IDict.K_PIC_ID.OPEN_CARD_DATA,fileName2,openCardTypesStr);
+        Preconditions.checkArgument(openCardTypesStr.size() > 0, "开卡申请表(和身份证正反面合并成一张图片)");
+        String fileName2 = GeneratorIDUtil.execute() + ImageUtil.PIC_SUFFIX;
         ICBCApiRequest.Picture picture2 = new ICBCApiRequest.Picture();
         picture2.setPicid(IDict.K_PIC_ID.OPEN_CARD_DATA);
         picture2.setPicname(fileName2);
@@ -448,13 +464,14 @@ public class BankOpenCardServiceImpl implements BankOpenCardService{
 
     /**
      * 废弃
+     *
      * @param list
      */
-    private void asyncPush(List<String> list){
+    private void asyncPush(List<String> list) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                list.parallelStream().forEach(e->{
+                list.parallelStream().forEach(e -> {
                     FtpUtil.icbcUpload(e);
                 });
 
