@@ -101,7 +101,7 @@ public class ICBCController {
         }
     }
 
-    @PostMapping (value = "/multimediauploadreturn", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping (value = "/multimediareturn", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String multimediaUploadreturn(@RequestParam String reqparam) throws IOException {
         try {
             reqparam = URLDecoder.decode(reqparam,"UTF-8");
