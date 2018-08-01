@@ -122,7 +122,7 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
         insuranceInfoDOS.stream().forEach(e->{
             UniversalInsuranceVO universalInsuranceVO = new UniversalInsuranceVO();
             Byte year = e.getInsurance_year();
-            List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(orderId);
+            List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(e.getId());
             universalInsuranceVO.setInsuranceYear(year);
             universalInsuranceVO.setInsuranceRele(insuranceRelevanceDOS);
             insuranceDetail.add(universalInsuranceVO);

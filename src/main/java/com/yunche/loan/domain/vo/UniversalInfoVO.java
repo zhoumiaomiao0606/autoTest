@@ -97,5 +97,12 @@ public class UniversalInfoVO {
     private String bank_repay_date;
     private String car_category;
     private BigDecimal performance_fee;
+    private String cprovince;
+    private String ccity;
+    private String ccounty;
+    private String hprovince;
+    private String hcity;
+    private String hcounty;
+
 
 }
