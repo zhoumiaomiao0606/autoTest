@@ -42,12 +42,12 @@
         s.id = f.info_supplement_id
         AND s.status = 1
 
-        AND customer_id = #{customerId,jdbcType=BIGINT}
+        AND f.customer_id = #{customerId,jdbcType=BIGINT}
         <if test="type != null">
-            AND type = #{type}
+            AND f.type = #{type}
         </if>
         <if test="uploadType != null">
-            AND upload_type = #{uploadType}
+            AND f.upload_type = #{uploadType}
         </if>
 
     </select>

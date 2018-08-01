@@ -812,11 +812,11 @@
 
     where
 
-    customer_id =
+    f.customer_id =
 
     (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT})
 
-    AND upload_type = 2
+    AND f.upload_type = 2
 
     /*资料流转已提交*/
     AND s.id = f.info_supplement_id

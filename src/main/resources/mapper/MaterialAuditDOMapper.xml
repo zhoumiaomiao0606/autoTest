@@ -94,6 +94,7 @@
         loan_file b,
         loan_info_supplement s,
         loan_customer c
+
         WHERE
 
         (a.loan_customer_id = c.id or a.loan_customer_id=c.principal_cust_id)
