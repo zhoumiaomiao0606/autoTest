@@ -20,16 +20,17 @@ public interface BankRecordQueryDOMapper {
     BankRepayParam selectByIdCardOrRepayCard(@Param("idCard") String idCard, @Param("repayCard") String repayCard);
 
     List<LoanRepayPlanDO> selectRepayPlanListByOrderId(@Param("orderId") Long orderId);
-    List<LoanRepayPlanDO>  selectOverdueRepayPlanList(@Param("orderId") Long orderId,
-                                                      @Param("batchDate") Date batchDate, @Param("overdueTimes") Integer overdueTimes);
 
-    List<BankFileListDO> selectBankImpRecord(@Param("fileName") String fileName,@Param("startDate") String startDate,
-                                                  @Param("endDate") String endDate, @Param("fileType") String fileType);
+    List<LoanRepayPlanDO> selectOverdueRepayPlanList(@Param("orderId") Long orderId,
+                                                     @Param("batchDate") Date batchDate, @Param("overdueTimes") Integer overdueTimes);
 
-    List<BankFileListRecordDO>selectBankRecordDetail(@Param("listId") Long listId,
-                                                     @Param("userName") String userName,
-                                                     @Param("idCard") String idCard,
-                                                     @Param("isCustomer") Byte isCustomer);
+    List<BankFileListDO> selectBankImpRecord(@Param("fileName") String fileName, @Param("startDate") String startDate,
+                                             @Param("endDate") String endDate, @Param("fileType") String fileType);
+
+    List<BankFileListRecordDO> selectBankRecordDetail(@Param("listId") Long listId,
+                                                      @Param("userName") String userName,
+                                                      @Param("idCard") String idCard,
+                                                      @Param("isCustomer") Byte isCustomer);
 
 
     LoanRepayPlanDO selectRepayPlanByNper(@Param("orderId") Long orderId, @Param("nper") Integer nper);
@@ -37,7 +38,10 @@ public interface BankRecordQueryDOMapper {
 
     /**
      * 催保工作台列表
+     *
      * @return
      */
     List<InsuranceUrgeVO> selectInsuranceUrgeTaskList(InsuranceListQuery insuranceListQuery);
+
+    List<InsuranceUrgeVO> insuranceUrgeList(@Param("orderId") Long orderId);
 }

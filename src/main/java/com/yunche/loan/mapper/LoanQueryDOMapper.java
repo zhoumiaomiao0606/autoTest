@@ -10,6 +10,12 @@ public interface LoanQueryDOMapper {
 
     List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId, @Param("transCode") String transCode);
 
+    List<UniversalBankInterfaceFileSerialDO> selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType(@Param("serialNo") String serialNo, @Param("fileType") String fileType);
+
+    String selectVideoFacePath(Long orderId);
+
+    BankInterfaceSerialReturnVO selectLastBankInterfaceSerialByTransCode(@Param("customerId") Long customerId, @Param("transCode") String transCode);
+
     ApplyDiviGeneralInfoVO selectApplyDiviGeneralInfo(Long orderId);
 
     String selectLastBankInterfaceSerialStatusByTransCode(@Param("customerId") Long customerId, @Param("transCode") String transCode);

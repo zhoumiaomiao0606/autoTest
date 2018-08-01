@@ -4,7 +4,7 @@ import com.yunche.loan.domain.param.ICBCApiCallbackParam;
 
 public interface BankSolutionProcessService {
 
-    public String fileDownload(String fileName);
+    public String fileDownload(String fileName,String fileType);
 
     public void applyCreditCallback(ICBCApiCallbackParam.ApplyCreditCallback applyCreditCallback);
 
@@ -14,4 +14,5 @@ public interface BankSolutionProcessService {
 
     public void creditCardApplyCallback(ICBCApiCallbackParam.CreditCardApplyCallback creditCardApplyCallback);
 
+    public ICBCApiCallbackParam.Ans artificialgainImage(ICBCApiCallbackParam.ArtificialGainImageCallback artificialGainImageCallback);
 }

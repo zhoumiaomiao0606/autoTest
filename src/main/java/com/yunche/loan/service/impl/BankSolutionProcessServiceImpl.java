@@ -1,13 +1,17 @@
 package com.yunche.loan.service.impl;
 
 import com.aliyun.oss.OSSClient;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.CreditEnum;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.constant.LoanFileEnum;
+import com.yunche.loan.config.constant.TermFileEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.client.ICBCFeignNormal;
+import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.ViolationUtil;
@@ -16,21 +20,17 @@ import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ICBCApiCallbackParam;
-import com.yunche.loan.mapper.BankCreditInfoDOMapper;
-import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
-import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
+import com.yunche.loan.domain.vo.UniversalBankInterfaceFileSerialDO;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionProcessService;
 import com.yunche.loan.service.LoanProcessService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -68,13 +68,24 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     @Resource
     private LoanProcessService loanProcessService;
 
+    @Resource
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Resource
+    private BankInterfaceFileSerialDOMapper bankInterfaceFileSerialDOMapper;
+
     @Override
-    public String  fileDownload(String filesrc) {
+    public String  fileDownload(String filesrc,String fileType) {
 
         String returnKey=null;
         try {
-            boolean filedownload = icbcFeignFileDownLoad.filedownload(filesrc);
-            String fileAndPath = FtpUtil.icbcDownload(sysConfig.getFileServerpath() + filesrc);
+            boolean filedownload = icbcFeignFileDownLoad.filedownload(filesrc,fileType);
+            String serverRecvPath = sysConfig.getServerRecvPath();
+            serverRecvPath = serverRecvPath.replaceAll("FILETYPE",fileType);
+            String fileAndPath = FtpUtil.icbcDownload(serverRecvPath,DateUtil.getDate()+"_"+fileType+".txt");
             OSSClient ossClient = OSSUnit.getOSSClient();
             String diskName = ossConfig.getDownLoadDiskName();
             File file = new File(fileAndPath);
@@ -305,6 +316,48 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         logger.info("开卡退回回调结束===============================================================");
     }
 
+    @Override
+    public ICBCApiCallbackParam.Ans artificialgainImage(ICBCApiCallbackParam.ArtificialGainImageCallback artificialGainImageCallback) {
+        logger.info("手动获取图片回调开始===============================================================");
+        violationUtil.violation(artificialGainImageCallback);
+        if(!checkStatus(artificialGainImageCallback.getPub().getCmpseq())){
+            throw new BizException("缺少流水号");
+        }
+
+        if(TermFileEnum.getKeyByValue(artificialGainImageCallback.getReq().getPicid()) == null){
+            throw new BizException("id 不存在");
+        }
+
+        List<UniversalBankInterfaceFileSerialDO> list = loanQueryDOMapper.selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType(artificialGainImageCallback.getPub().getCmpseq(),artificialGainImageCallback.getReq().getPicid());
+
+        if(CollectionUtils.isEmpty(list)){
+            throw new BizException("图片不存在");
+        }
+
+        List<ICBCApiCallbackParam.Pic> picList = Lists.newArrayList();
+
+        for(UniversalBankInterfaceFileSerialDO universalBankInterfaceFileSerialDO:list){
+            ICBCApiCallbackParam.Pic pic = new ICBCApiCallbackParam.Pic();
+            String note = "未知";
+            if(TermFileEnum.getKeyByValue(universalBankInterfaceFileSerialDO.getFile_type()) != null){
+                note = LoanFileEnum.getNameByCode(TermFileEnum.getKeyByValue(universalBankInterfaceFileSerialDO.getFile_type()));
+            }
+            pic.setPicnote(note);
+
+            if(StringUtils.isNotBlank(universalBankInterfaceFileSerialDO.getFile_name())){
+
+                String date = universalBankInterfaceFileSerialDO.getFile_name().substring(0,8);
+                String path = "http://109.2.148.206:9030/ftpwebv3/yunche/" + date+"/"+universalBankInterfaceFileSerialDO.getFile_name();
+                pic.setPicurl(path);
+            }
+            picList.add(pic);
+        }
+        ICBCApiCallbackParam.Ans ans = new ICBCApiCallbackParam.Ans();
+        ans.setPics(picList);
+        ans.setPicnum(String.valueOf(list.size()));
+        return ans;
+    }
+
     private boolean checkStatus(String cmpseq){
 
         BankInterfaceSerialDO D = bankInterfaceSerialDOMapper.selectByPrimaryKey(cmpseq);
@@ -327,7 +380,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         }
 
         //只有处理中和超时状态才能进行后续处理
-        if(!IDict.K_JYZT.PROCESS.equals(V.getStatus()) && !IDict.K_JYZT.TIMEOUT.equals(V.getStatus()) && !IDict.K_JYZT.FAIL.equals(V.getStatus()) && !IDict.K_JYZT.SUCCESS_ERROR.equals(V.getStatus())){
+        if(!IDict.K_JYZT.PROCESS.equals(V.getStatus())){
             return false;
         }
 

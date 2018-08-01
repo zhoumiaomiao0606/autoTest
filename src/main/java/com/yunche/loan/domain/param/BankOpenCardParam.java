@@ -63,6 +63,12 @@ public class BankOpenCardParam  extends ICBCApiRequest.ApplyBankOpenCard{
 
         private String hcounty;
 
+        private Long bankId;
+
+        private String ctelzone;
+
+        private String companyPhone;
+
         private List<FileVO> files = Collections.EMPTY_LIST;
 
 }

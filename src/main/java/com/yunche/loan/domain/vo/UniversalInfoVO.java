@@ -35,6 +35,12 @@ public class UniversalInfoVO {
     private String customer_residence_address;
     private String customer_family_person_num;
     private String customer_reserve_mobile;
+    private String customer_cprovince;
+    private String customer_ccity;
+    private String customer_ccounty;
+    private String customer_hprovince;
+    private String customer_hcity;
+    private String customer_hcounty;
     private String partner_id;
     private String partner_name;
     private String partner_biz_area;

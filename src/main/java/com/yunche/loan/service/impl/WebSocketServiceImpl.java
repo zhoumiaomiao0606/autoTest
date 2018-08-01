@@ -208,7 +208,8 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
 
         // 若贷款银行为台州路桥支行，则判断：
-        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())) {
+        else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())
+                || BANK_ID_ICBC_TaiZhou_LuQiao__Branch_TEST.equals(webSocketParam.getBankId())) {
 
             // 银行分期本金
             double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();

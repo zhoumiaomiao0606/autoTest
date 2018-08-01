@@ -142,7 +142,7 @@
     <include refid="Base_Column_List" />
     from bank_interface_serial
     where customer_id = #{customerId,jdbcType=BIGINT}
-    and trans_code=#{transCode,jdbcType=VARCHAR}
+    and trans_code=#{transCode,jdbcType=VARCHAR}  ORDER BY serial_no DESC LIMIT 1
   </select>
   <select id="checkRequestBussIsSucessByTransCodeOrderId" resultType="java.lang.Boolean">
           select count(1) from bank_interface_serial serial

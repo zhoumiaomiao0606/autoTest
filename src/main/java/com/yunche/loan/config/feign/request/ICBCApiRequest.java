@@ -60,8 +60,6 @@ public class ICBCApiRequest {
         @Valid
         private String resubmit;
 
-        @NotEmpty
-        @Valid
         private String note;
     }
 
@@ -161,11 +159,11 @@ public class ICBCApiRequest {
         private String Price;
         @NotEmpty
         private String carNo1;
-        @NotEmpty
+        @NotEmpty(groups = {SecondValidated.class})
         private String carRegNo;
-        @NotEmpty
+
         private String shorp4s;
-        @NotEmpty
+        @NotEmpty(groups = {SecondValidated.class})
         private String carNo2;
         @NotEmpty(groups = {SecondValidated.class})
         private String AssessPrice;
@@ -195,7 +193,7 @@ public class ICBCApiRequest {
         private String PawnGoods;
         @NotEmpty
         private String IsAssure;
-        @NotEmpty
+
         private String card;
         @NotEmpty(groups = {NewValidated.class})
         private String tiexiFlag;

@@ -7,6 +7,7 @@ import java.util.Date;
 
 @Data
 public class LoanCustomerDO {
+
     private Long id;
 
     private String name;
@@ -178,4 +179,7 @@ public class LoanCustomerDO {
     private String hcounty;
 
     private String openCardOrder;
+
+    // 单位电话区号 默认'0'
+    private String ctelzone;
 }

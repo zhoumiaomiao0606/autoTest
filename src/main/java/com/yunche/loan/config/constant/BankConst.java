@@ -35,6 +35,12 @@ public class BankConst {
     public static final String BANK_NAME_ICBC_TaiZhou_LuQiao_Branch = "中国工商银行台州路桥支行";
 
     /**
+     * TODO 中国工商银行台州路桥支行 -TEST
+     */
+    public static final Long BANK_ID_ICBC_TaiZhou_LuQiao__Branch_TEST = 5L;
+    public static final String BANK_NAME_ICBC_TaiZhou_LuQiao_Branch_TEST = "云车测试银行";
+
+    /**
      * 中国工商银行南京江宁支行
      */
     public static final Long BANK_ID_ICBC_NanJing_JiangNing_Branch = 4L;

@@ -55,7 +55,7 @@ public class MaterialTask {
                         //文件下载
                         String  key=null;
                         if(StringUtil.isEmpty(e.getFileKey())){
-                            key = bankSolutionProcessService.fileDownload(e.getFileName());
+                            key = bankSolutionProcessService.fileDownload(e.getFileName(),e.getFileType());
                             if(StringUtil.isEmpty(key)){
                                throw new BizException("文件下载失败");
                             }else{

@@ -8,7 +8,8 @@ import java.security.SecureRandom;
 
 
 public class DesEncryptUtil {
-    private static final byte[] DES_KEY = { 21, 1, -110, 82, -32, -85, -128, -65,-34 ,67 ,1 ,-98 ,14 ,5 ,98 ,-44};
+    private static final byte[] DES_KEY = {21, 1, -110, 82, -32, -85, -128, -65, -34, 67, 1, -98, 14, 5, 98, -44};
+
     public DesEncryptUtil() {
     }
 
@@ -24,8 +25,7 @@ public class DesEncryptUtil {
     /**
      * 数据加密，算法（DES）
      *
-     * @param data
-     *            要进行加密的数据
+     * @param data 要进行加密的数据
      * @return 加密后的数据
      */
     public static String encryptBasedDes(String data) {
@@ -51,8 +51,7 @@ public class DesEncryptUtil {
     /**
      * 数据解密，算法（DES）
      *
-     * @param cryptData
-     *            加密数据
+     * @param cryptData 加密数据
      * @return 解密后的数据
      */
     public static String decryptBasedDes(String cryptData) {

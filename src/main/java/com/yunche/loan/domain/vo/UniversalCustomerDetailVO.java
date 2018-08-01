@@ -61,6 +61,12 @@ public class UniversalCustomerDetailVO {
     private String customer_family_person_num;
     private String customer_debt_ratio;
     private String customer_guarantee_rela;
+    private String customer_cprovince;
+    private String customer_ccity;
+    private String customer_ccounty;
+    private String customer_hprovince;
+    private String customer_hcity;
+    private String customer_hcounty;
     private String bank_info;
     private String bank_result;
     private String process_bank_credit_result;
@@ -91,12 +97,5 @@ public class UniversalCustomerDetailVO {
     private String customer_repay_card_number;
     private String customer_occupation;
     private String customer_bill_send_type;
-
-    private String customer_cprovince;
-    private String customer_ccity;
-    private String customer_ccounty;
-    private String customer_hprovince;
-    private String customer_hcity;
-    private String customer_hcounty;
 
 }

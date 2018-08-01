@@ -256,7 +256,12 @@ public class ImageUtil {
         String returnKey=downLoadBasepath+File.separator+name;
         if(name.contains(".")){
             hz = name.substring(name.lastIndexOf(".")+1);
-            tmpFile = downLoadBasepath+File.separator+GeneratorIDUtil.execute()+"."+hz;
+            if("jpg,JPG".contains(hz)){
+                tmpFile = downLoadBasepath+File.separator+GeneratorIDUtil.execute()+"."+hz;
+            }else{
+                tmpFile = returnKey;
+            }
+
         }else{
             tmpFile = returnKey;
         }

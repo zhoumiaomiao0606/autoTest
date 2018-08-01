@@ -131,7 +131,7 @@ public class IDict {
         /**
          * 多媒体补偿接口
          */
-        public static final String MULTIMEDIAUPLOAD = "multimediaUpload";
+        public static final String MULTIMEDIAUPLOAD = "multimediaupload";
         /**
          * 专项卡申请信息上送接口
          */
@@ -215,7 +215,7 @@ public class IDict {
         /**
          * 【分期】视频面签文件
          */
-        public static final String VIDEO_INTERVIEW = "0902";
+        public static final String VIDEO_INTERVIEW = "8888";
     }
 
 
