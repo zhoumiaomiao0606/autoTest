@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yunche.loan.mapper.InsuranceDistributeRecordDOMapper">
+<mapper namespace="com.yunche.loan.mapper1.InsuranceDistributeRecordDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.InsuranceDistributeRecordDO">
     <id column="order_Id" jdbcType="BIGINT" property="orderId" />
     <id column="employee_id" jdbcType="BIGINT" property="employeeId" />
     <result column="employee_name" jdbcType="VARCHAR" property="employeeName" />
     <result column="distribute_date" jdbcType="TIMESTAMP" property="distributeDate" />
+    <result column="insurance_year" jdbcType="INTEGER" property="insuranceYear" />
+    <result column="status" jdbcType="TINYINT" property="status" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
   </resultMap>
   <sql id="Base_Column_List">
-    order_Id, employee_id, employee_name, distribute_date, gmt_create, gmt_modify
+    order_Id, employee_id, employee_name, distribute_date, insurance_year, status, gmt_create, 
+    gmt_modify, remark
   </sql>
   <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.InsuranceDistributeRecordDOKey" resultMap="BaseResultMap">
     select 
@@ -26,10 +30,12 @@
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.InsuranceDistributeRecordDO">
     insert into insurance_distribute_record (order_Id, employee_id, employee_name, 
-      distribute_date, gmt_create, gmt_modify
+      distribute_date, insurance_year, status, 
+      gmt_create, gmt_modify, remark
       )
     values (#{orderId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{employeeName,jdbcType=VARCHAR}, 
-      #{distributeDate,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
+      #{distributeDate,jdbcType=TIMESTAMP}, #{insuranceYear,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, 
+      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.InsuranceDistributeRecordDO">
@@ -47,11 +53,20 @@
       <if test="distributeDate != null">
         distribute_date,
       </if>
+      <if test="insuranceYear != null">
+        insurance_year,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
       <if test="gmtCreate != null">
         gmt_create,
       </if>
       <if test="gmtModify != null">
         gmt_modify,
+      </if>
+      <if test="remark != null">
+        remark,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -67,11 +82,20 @@
       <if test="distributeDate != null">
         #{distributeDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="insuranceYear != null">
+        #{insuranceYear,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
       <if test="gmtCreate != null">
         #{gmtCreate,jdbcType=TIMESTAMP},
       </if>
       <if test="gmtModify != null">
         #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -84,11 +108,20 @@
       <if test="distributeDate != null">
         distribute_date = #{distributeDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="insuranceYear != null">
+        insurance_year = #{insuranceYear,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
       <if test="gmtCreate != null">
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       </if>
       <if test="gmtModify != null">
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
       </if>
     </set>
     where order_Id = #{orderId,jdbcType=BIGINT}
@@ -98,19 +131,23 @@
     update insurance_distribute_record
     set employee_name = #{employeeName,jdbcType=VARCHAR},
       distribute_date = #{distributeDate,jdbcType=TIMESTAMP},
+      insurance_year = #{insuranceYear,jdbcType=INTEGER},
+      status = #{status,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
     where order_Id = #{orderId,jdbcType=BIGINT}
       and employee_id = #{employeeId,jdbcType=BIGINT}
   </update>
 
   <insert id="insertBatch" parameterType="java.util.List">
-    INSERT INTO insurance_distribute_record(order_Id, employee_id, employee_name,
-      distribute_date, gmt_create, gmt_modify)
+    INSERT INTO insurance_distribute_record( order_Id, employee_id, employee_name, distribute_date, insurance_year, status, gmt_create,
+    gmt_modify, remark)
     VALUES
     <foreach collection="list" item="item" index="index" separator=",">
-      (#{item.orderId,jdbcType=BIGINT}, #{item.employeeId,jdbcType=BIGINT}, #{item.employeeName,jdbcType=VARCHAR},
-      #{item.distributeDate,jdbcType=TIMESTAMP}, #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP})
+      (#{orderId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{employeeName,jdbcType=VARCHAR},
+      #{distributeDate,jdbcType=TIMESTAMP}, #{insuranceYear,jdbcType=INTEGER}, #{status,jdbcType=TINYINT},
+      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
     </foreach >
   </insert>
 </mapper>

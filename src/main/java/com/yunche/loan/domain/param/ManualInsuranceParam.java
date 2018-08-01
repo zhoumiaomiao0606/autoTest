@@ -13,4 +13,6 @@ public class ManualInsuranceParam {
     private String sendee;
 
     private Long sendeeId;
+
+    private Integer  insuranceYear;
 }

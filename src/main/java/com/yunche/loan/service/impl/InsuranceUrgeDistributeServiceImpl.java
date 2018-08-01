@@ -72,6 +72,8 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
                 tmp.setEmployeeId(manualInsuranceParam.getSendeeId());
                 tmp.setEmployeeName(manualInsuranceParam.getSendee());
                 tmp.setGmtCreate(new Date());
+                tmp.setInsuranceYear(manualInsuranceParam.getInsuranceYear());
+                tmp.setStatus(new Byte("1"));//待处理
                 list.add(tmp);
             }
 

@@ -39,8 +39,10 @@ public class InsuranceUrgeController {
 
     @PostMapping(value = "/renew")
     public ResultBean renewInsurance(@RequestBody RenewInsuranceParam renewInsuranceParam){
+
         insuranceUrgeService.renew(renewInsuranceParam);
-        return null;
+
+        return ResultBean.ofSuccess(null,"保存成功");
     }
     /**
      * 催保分配详情页
@@ -76,7 +78,7 @@ public class InsuranceUrgeController {
      不然保证金会将受到影响,谢谢.）
 
      */
-    @GetMapping("/genesms")
+    @PostMapping("/genesms")
     public ResultBean generateSms(@RequestBody RenewInsuranceParam renewInsuranceParam){
         String sms = insuranceUrgeService.generateSms(renewInsuranceParam);
         return ResultBean.ofSuccess(sms);

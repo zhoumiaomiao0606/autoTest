@@ -10,9 +10,14 @@ public class InsuranceDistributeRecordDO extends InsuranceDistributeRecordDOKey 
 
     private Date distributeDate;
 
+    private Integer insuranceYear;
+
+    private Byte status;
+
     private Date gmtCreate;
 
     private Date gmtModify;
 
+    private String remark;
 
 }
