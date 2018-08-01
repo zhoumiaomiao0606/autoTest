@@ -58,6 +58,9 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
     @Autowired
     private SysConfig sysConfig;
 
+    @Autowired
+    private EmployeeDOMapper employeeDOMapper;
+
     @Override
     public List list(InsuranceListQuery insuranceListQuery) {
 
@@ -76,7 +79,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
 
             Preconditions.checkNotNull(loanOrderDO,"订单不存在");
 
-            UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId, loanOrderDO.getLoanCustomerId());
+            UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
 
             FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
@@ -103,7 +106,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
             List<RenewInsuranceDO> renewInsurList = renewInsuranceDOMapper.selectByOrderId(orderId);
 
             recombinationVO.setRenewInsurList(renewInsurList);
-            recombinationVO.setInfo(universalCustomerDetailVO);
+            recombinationVO.setInfo(universalInfoVO);
             recombinationVO.setFinancial(financialSchemeVO);
             recombinationVO.setCar(universalCarInfoVO);
             recombinationVO.setInsuranceDetail(insuranceDetail);
@@ -119,10 +122,9 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
     @Override
     public Void renew(RenewInsuranceParam renewInsuranceParam) {
         Preconditions.checkNotNull(renewInsuranceParam,"新催保记录不能为空");
-
         RenewInsuranceDO renewInsuranceDO = new RenewInsuranceDO();
         BeanUtils.copyProperties(renewInsuranceParam,renewInsuranceDO);
-
+        renewInsuranceDO.setOmbudsman(renewInsuranceParam.getEmployeeName());
         RenewInsuranceDO insuranceDO = renewInsuranceDOMapper.selectByPrimaryKey(renewInsuranceParam.getId());
         if(insuranceDO == null){
             int count = renewInsuranceDOMapper.insert(renewInsuranceDO);
@@ -165,6 +167,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
      */
     @Override
     public String generateSms(RenewInsuranceParam renewInsuranceParam) {
+        Preconditions.checkNotNull(renewInsuranceParam);
         String tempSms="您好:{}(先生/女士)" +
                 "这里是中顺汽车有限公司(你车子担保公司)的车险专员:{} 你的车子保险金额已经核算好." +
                 "车损险:{} 保费:{}." +
@@ -207,6 +210,10 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
 
     @Override
     public ResultBean  sendSms(RenewInsuranceParam param) {
+
+        Preconditions.checkNotNull(param,"参数有误");
+        Preconditions.checkNotNull(param.getSms(),"短信内容为空");
+        Preconditions.checkNotNull(param.getTelphone(),"电话号码必输*");
 
         String url="https://sh2.ipyy.com/smsJson.aspx";
         HashMap<String, String> headers = Maps.newHashMap();

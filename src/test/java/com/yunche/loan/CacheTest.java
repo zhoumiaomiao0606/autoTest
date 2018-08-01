@@ -36,9 +36,9 @@ public class CacheTest extends BaseTest {
             e.printStackTrace();
         }
     }
-    //@Test
+   //@Test
     public void doA(){
-        auxiliaryService.queryJimi("浙江杭州测试张三团队");
+        auxiliaryService.queryJimi("yy团队");
     }
    // @Test
     public void doB(){
@@ -83,18 +83,18 @@ public class CacheTest extends BaseTest {
         CarLoanHttpUtil.getGpsInfo("39182250606");
     }
 
-    @Test
+    //@Test
     public void carLoanUpdateGpsInfo() throws Exception {
         CarLoanHttpUtil.getGpsStatus("39182250606");
     }
 
 
 
-    //@Test
+   @Test
     public void getDetail(){
         try {
             String accToken=getAccToken();
-            OpenApiUtil.getGpsDetailInfo(accToken,"868120193961791");
+            OpenApiUtil.getGpsDetailInfo(accToken,"868120182173432");
         } catch (Exception e) {
             e.printStackTrace();
         }

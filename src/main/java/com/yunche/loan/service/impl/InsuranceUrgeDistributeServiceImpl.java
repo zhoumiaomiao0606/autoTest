@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ManualInsuranceParam;
@@ -38,6 +39,12 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
     @Autowired
     private InsuranceRelevanceDOMapper insuranceRelevanceDOMapper;
 
+    @Autowired
+    private RenewInsuranceDOMapper renewInsuranceDOMapper;
+
+    @Autowired
+    private EmployeeDOMapper employeeDOMapper;
+
 
 
 
@@ -56,27 +63,32 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
     @Override
     @Transactional
     public ResultBean manualDistribution(ManualInsuranceParam manualInsuranceParam) {
+        Preconditions.checkNotNull(manualInsuranceParam.getSendeeId(),"接收人不能为空");
+        Preconditions.checkNotNull(manualInsuranceParam.getAllotList(),"请选择待分配任务");
+
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(manualInsuranceParam.getSendeeId(), BaseConst.VALID_STATUS);
+        Preconditions.checkNotNull(employeeDO,"此业务员不存在，请确认后提交");
+
 
         List<InsuranceDistributeRecordDO> list = Lists.newArrayList();
         //分配开始
-        for(Long orderId:manualInsuranceParam.getOrderIdList()){
+        for(ManualInsuranceParam.AllocationRela allocationRela:manualInsuranceParam.getAllotList()){
             InsuranceDistributeRecordDOKey insuranceDistributeRecordDOKey = new InsuranceDistributeRecordDOKey();
-            insuranceDistributeRecordDOKey.setOrderId(orderId);//业务单号
+            insuranceDistributeRecordDOKey.setOrderId(allocationRela.getOrderId());//业务单号
             insuranceDistributeRecordDOKey.setEmployeeId(manualInsuranceParam.getSendeeId());//催保员工编号
             InsuranceDistributeRecordDO insuranceDistributeRecordDO = insuranceDistributeRecordDOMapper.selectByPrimaryKey(insuranceDistributeRecordDOKey);
 
             if(insuranceDistributeRecordDO==null){
                 InsuranceDistributeRecordDO tmp = new InsuranceDistributeRecordDO();
-                tmp.setOrderId(orderId);
+                tmp.setOrderId(allocationRela.getOrderId());
                 tmp.setDistributeDate(new Date());
                 tmp.setEmployeeId(manualInsuranceParam.getSendeeId());
-                tmp.setEmployeeName(manualInsuranceParam.getSendee());
+                tmp.setEmployeeName(employeeDO.getName());
                 tmp.setGmtCreate(new Date());
-                tmp.setInsuranceYear(manualInsuranceParam.getInsuranceYear());
+                tmp.setInsuranceYear(allocationRela.getInsuranceYear());
                 tmp.setStatus(new Byte("1"));//待处理
                 list.add(tmp);
             }
-
         }
 
         int batch = insuranceDistributeRecordDOMapper.insertBatch(list);
@@ -92,7 +104,7 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
     public List selectInsuranceDistributeEmployee() {
 
         List<UniversalTelephoneCollectionEmployee> universalTelephoneCollectionEmployees = loanQueryDOMapper.selectUniversalInsuranceUrgeEmployee();
-
+        Preconditions.checkNotNull(universalTelephoneCollectionEmployees,"暂无催保人员");
         return universalTelephoneCollectionEmployees;
     }
 
@@ -103,18 +115,16 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
      */
     @Override
     public ResultBean detail(Long orderId) {
-
+        Preconditions.checkNotNull(orderId,"参数有误(缺少订单号)");
         RecombinationVO recombinationVO = new RecombinationVO<>();
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
 
         Preconditions.checkNotNull(loanOrderDO,"订单不存在");
 
-        UniversalCustomerDetailVO universalCustomerDetailVO = loanQueryDOMapper.selectUniversalCustomerDetail(orderId, loanOrderDO.getLoanCustomerId());
-
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
         UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
-
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
 
         List<InsuranceInfoDO> insuranceInfoDOS = insuranceInfoDOMapper.listByOrderId(orderId);
 
@@ -122,7 +132,7 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
         insuranceInfoDOS.stream().forEach(e->{
             UniversalInsuranceVO universalInsuranceVO = new UniversalInsuranceVO();
             Byte year = e.getInsurance_year();
-            List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(orderId);
+            List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(e.getId());
             universalInsuranceVO.setInsuranceYear(year);
             universalInsuranceVO.setInsuranceRele(insuranceRelevanceDOS);
             insuranceDetail.add(universalInsuranceVO);
@@ -133,11 +143,14 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
             List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
-        recombinationVO.setInfo(universalCustomerDetailVO);
+        List<RenewInsuranceDO> renewList = renewInsuranceDOMapper.selectByOrderId(orderId);
+        recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setCar(universalCarInfoVO);
         recombinationVO.setInsuranceDetail(insuranceDetail);
         recombinationVO.setCustomers(customers);
+        recombinationVO.setRenewInsurList(renewList);
+
         return ResultBean.ofSuccess(recombinationVO);
     }
 

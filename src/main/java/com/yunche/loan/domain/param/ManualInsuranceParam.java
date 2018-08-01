@@ -8,11 +8,13 @@ import java.util.List;
 @Data
 public class ManualInsuranceParam {
 
-    List<Long> orderIdList = Lists.newArrayList();
-
-    private String sendee;
+    List<AllocationRela> allotList = Lists.newArrayList();
 
     private Long sendeeId;
 
-    private Integer  insuranceYear;
+    @Data
+    public static class AllocationRela{
+        Long orderId;
+        Integer insuranceYear;
+    }
 }
