@@ -608,8 +608,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         divi.setTiexiFlag(IDict.K_TIEXIFLAG.NO);
         divi.setTiexiRate("0");
 
-
-
         //封装完毕
         //针对新 - 二手车进行校验
         if(BusitypeEnum.NEW.getKey().toString().equals(loanCarInfoDO.getCarType().toString())){
