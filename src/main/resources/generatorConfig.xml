@@ -349,7 +349,7 @@
 
 -->
 
-        <table tableName="renew_insurance" domainObjectName="RenewInsuranceDO"
+        <table tableName="material_audit" domainObjectName="MaterialAuditDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
