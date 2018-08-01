@@ -7,8 +7,8 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     tomcat:
       max-wait: 10000
-      max-idle: 30
-      max-active: 30
+      max-idle: 100
+      max-active: 100
       test-on-borrow: true
 
   redis:
@@ -16,8 +16,8 @@ spring:
     port: 6380
     password: yunche@1234
     pool:
-      max-active: 50
-      max-idle: 30
+      max-active: 100
+      max-idle: 100
       min-idle: 0
       max-wait: 10000
 
@@ -81,8 +81,8 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     tomcat:
       max-wait: 10000
-      max-idle: 30
-      max-active: 30
+      max-idle: 300
+      max-active: 300
       test-on-borrow: true
 
   redis:
@@ -90,8 +90,8 @@ spring:
     port: 6379
     password: Yunche2018
     pool:
-      max-active: 50
-      max-idle: 30
+      max-active: 2000
+      max-idle: 2000
       min-idle: 0
       max-wait: 10000
 
