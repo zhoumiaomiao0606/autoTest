@@ -464,6 +464,17 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             bankPeriodPrincipal = loanFinancialPlanDO.getBankPeriodPrincipal();
         }
 
+        BigDecimal loanAmount = new BigDecimal("0");
+        if(loanFinancialPlanDO.getLoanAmount() != null){
+            loanAmount = loanFinancialPlanDO.getLoanAmount();
+        }
+
+        String danBaoFee = (bankPeriodPrincipal.subtract(loanAmount)).stripTrailingZeros().toPlainString();
+
+
+        if(loanFinancialPlanDO.getBankPeriodPrincipal() != null){
+            bankPeriodPrincipal = loanFinancialPlanDO.getBankPeriodPrincipal();
+        }
 
         Integer loanTime = new Integer(0);
         if(loanFinancialPlanDO.getLoanTime() != null){
@@ -572,7 +583,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //resultsum
         boolean check = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
         info.setResubmit(check == true?"1":"0");
-        info.setNote(" ");
+        if(bankId.intValue() == 1){
+            info.setNote(" ");
+        }else if(bankId.intValue() == 3){
+            info.setNote("汽车附加消费分期  "+danBaoFee+"  元，其中担保服务费  "+danBaoFee+"  元");
+        }
+
         //customer
         customer.setCustName(loanCustomerDO.getName());
         customer.setIdType(IDict.K_JJLX.IDCARD);
