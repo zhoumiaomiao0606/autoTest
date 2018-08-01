@@ -57,5 +57,12 @@ public class AuxiliaryController {
         return ResultBean.ofSuccess(auxiliaryService.detail(Long.valueOf(order_id)));
     }
 
+    /**
+     * gps详细
+     */
+    @GetMapping(value = "/appdetail")
+    public ResultBean appDetail(@RequestParam String order_id) {
+        return ResultBean.ofSuccess(auxiliaryService.appDetail(Long.valueOf(order_id)));
+    }
 
 }

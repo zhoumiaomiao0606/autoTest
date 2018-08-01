@@ -140,6 +140,9 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
     @Override
     public void checkBankInterFaceSerialStatus(Long customerId, String transCode) {
+        if(IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD.equals(transCode)){
+            return;
+        }
         if(customerId == null){
             throw new BizException("客户id不存在");
         }
