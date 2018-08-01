@@ -3,6 +3,7 @@ package com.yunche.loan.domain.vo;
 import com.google.common.collect.Lists;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
+import com.yunche.loan.domain.entity.RenewInsuranceDO;
 import lombok.Data;
 
 import java.util.List;
@@ -85,6 +86,8 @@ public class RecombinationVO<T> {
     private List<UniversalMaterialRecordVO> materials = Lists.newArrayList();
 
     private List<UniversalInsuranceVO> insuranceDetail = Lists.newArrayList();
+
+    List<RenewInsuranceDO> renewInsurList = Lists.newArrayList();
 
     /**
      * 资料增补历史列表

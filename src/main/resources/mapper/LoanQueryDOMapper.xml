@@ -1652,7 +1652,7 @@
             parameterType="java.lang.Long">
 
       SELECT
-                  DATE_FORMAT(m.complete_material_date , '%Y-%m-%d %H:%i:%S')
+                  DATE_FORMAT(m.complete_material_date , '%Y-%m-%d')
                                                             AS completeMaterialDate,
                   m.remark                                  AS remark
 

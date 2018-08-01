@@ -2,8 +2,6 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * @author liuzhe
  * @date 2018/8/1
