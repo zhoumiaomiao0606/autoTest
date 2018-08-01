@@ -32,6 +32,12 @@ public class UniversalCustomerVO {
     private String residence_address;//户籍地址
     private String age;//年龄
     private String guarantee_rela;
+    private String customer_cprovince;
+    private String customer_ccity;
+    private String customer_ccounty;
+    private String customer_hprovince;
+    private String customer_hcity;
+    private String customer_hcounty;
 
     private String open_card_order;//银行开卡顺序 （0：电审后  1：电审前）
 
