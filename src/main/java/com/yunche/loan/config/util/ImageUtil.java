@@ -254,7 +254,7 @@ public class ImageUtil {
         String hz =null;
         String tmpFile=null;
         String returnKey=downLoadBasepath+File.separator+name;
-        if(name.contains(".")){
+        if("jpg,JPG".contains(hz) && name.contains(".")){
             hz = name.substring(name.lastIndexOf(".")+1);
             tmpFile = downLoadBasepath+File.separator+GeneratorIDUtil.execute()+"."+hz;
         }else{
