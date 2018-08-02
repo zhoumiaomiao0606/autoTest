@@ -959,7 +959,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
             Preconditions.checkNotNull(loanCarInfoDO, "车辆信息不存在");
             Integer gpsNum = loanCarInfoDO.getGpsNum();
-            if (null != gpsNum && gpsNum != 0) {
+            if (null != gpsNum && gpsNum > 0) {
                 Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getInstallGps()), "当前订单[GPS安装]未提交");
             }
 
