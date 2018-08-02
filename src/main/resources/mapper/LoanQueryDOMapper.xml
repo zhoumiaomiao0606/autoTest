@@ -24,7 +24,7 @@
 	        vehicle.vehicle_identification_number     as vehicle_identification_number,
 	        vehicle.registration_certificate_number   as vehicle_registration_certificate_number,
 	        vehicle.license_plate_number              as vehicle_license_plate_number,
-	        d.price                                   AS car_assess_price,
+	        financial.appraisal                       AS car_assess_price,
 	        (year(now())-year(vehicle.register_date)) as vehicle_use_year,
 	        financial.down_payment_money              as financial_down_payment_money,
 	        financial.bank_period_principal           AS financial_bank_period_principal,
