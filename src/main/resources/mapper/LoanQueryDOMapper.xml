@@ -1135,7 +1135,7 @@
               i.insurance_year                  AS insurance_year,
               i.issue_bills_date                AS issue_bills_date,
               c.address                         AS residential_address,
-              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )
+              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = i.id )
                                                 AS total_insurance_amount
 
       from
