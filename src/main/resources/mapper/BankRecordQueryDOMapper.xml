@@ -255,8 +255,8 @@
         <if test="bankName != null and  bankName !=''">
             and base.bank = #{bankName}
         </if>
-        <if test="partnerId != null and  partnerId !=''">
-            and partner.id =#{partnerId}
+        <if test="partnerName != null and  partnerName !=''">
+            and partner.id =#{partnerName}
         </if>
     </select>
 
