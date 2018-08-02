@@ -22,14 +22,6 @@ public interface LoanFileDOMapper {
     int updateByPrimaryKey(LoanFileDO record);
 
     /**
-     * 根据客户ID查询列表
-     *
-     * @param customerId
-     * @return
-     */
-    List<LoanFileDO> listByCustomerId(Long customerId);
-
-    /**
      * 根据客户ID 和 上传类型 查询列表
      *
      * @param customerId

@@ -800,11 +800,28 @@
     <!--资料增补-->
     <select id="selectUniversalMaterialRecord" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO"
             parameterType="java.lang.Long">
+
     select
-            path                      AS urls,
-            type                      AS type,
-            useFileTypeCastName(type) AS name
-    from loan_file where customer_id = (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT}) and upload_type = 2
+
+            f.path                        AS urls,
+            f.type                        AS type,
+            useFileTypeCastName(f.type)   AS name
+
+    from    loan_file               f,
+            loan_info_supplement    s
+
+    where
+
+    f.customer_id =
+
+    (select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT})
+
+    AND f.upload_type = 2
+
+    /*资料流转已提交*/
+    AND s.id = f.info_supplement_id
+    AND s.status = 1
+
   </select>
 
     <!--资料增补根据type-->

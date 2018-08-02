@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.FinancialProductDO;
 import com.yunche.loan.domain.entity.ProductRateDO;
@@ -40,7 +41,7 @@ public class LoanCalculatorServiceImpl implements LoanCalculatorService{
         List<FinancialProductAndRateVO> product = Lists.newArrayList();
 
         List<FinancialProductDO> financialProductDOS = financialProductDOMapper.listAll();
-        financialProductDOS.stream().filter(Objects::nonNull).forEach(e->{
+        financialProductDOS.stream().filter(Objects::nonNull).filter(e ->e.getStatus().equals(BaseConst.VALID_STATUS)).forEach(e->{
             FinancialProductAndRateVO financialProductAndRateVO = new FinancialProductAndRateVO();
             FinancialProductVO financialProductVO = new FinancialProductVO();
             BeanUtils.copyProperties(e,financialProductVO);

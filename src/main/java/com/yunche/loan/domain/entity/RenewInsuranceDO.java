@@ -53,5 +53,11 @@ public class RenewInsuranceDO {
 
     private BigDecimal totalPremium;
 
+    private String ombudsman;
+
+    private Date renewDate;
+
+    private String sms;
+
 
 }

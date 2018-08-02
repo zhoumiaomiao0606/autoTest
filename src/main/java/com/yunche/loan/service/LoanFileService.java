@@ -26,14 +26,6 @@ public interface LoanFileService {
     ResultBean<List<FileVO>> listByCustomerIdAndUploadType(Long customerId, Byte uploadType);
 
     /**
-     * 文件上传
-     *
-     * @param fileParams
-     * @return
-     */
-//    ResultBean<Void> upload(List<LoanFileParam> fileParams);
-
-    /**
      * 批量插入
      *
      * @param loanFileDOS

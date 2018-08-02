@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ManualInsuranceParam;
 import com.yunche.loan.domain.query.InsuranceListQuery;
@@ -62,8 +63,8 @@ public class InsuranceUrgeDistributeController {
     @GetMapping(value = "/insuranceUrgeEmployee")
     public ResultBean recordDetail() {
 
-         List list = insuranceUrgeDistributeService.selectInsuranceDistributeEmployee();
-
+        List list = insuranceUrgeDistributeService.selectInsuranceDistributeEmployee();
+        Preconditions.checkNotNull(list,"暂无催保人员");
         return ResultBean.ofSuccess(list);
     }
 

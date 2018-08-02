@@ -20,24 +20,36 @@
 
     <!--listByCustomerIdAndType-->
     <select id="listByCustomerIdAndType" resultMap="BaseResultMap">
+
         select
-        <include refid="Base_Column_List"/>
-        from loan_file
-        where customer_id = #{customerId,jdbcType=BIGINT}
+
+        f.id AS id,
+        f.customer_id AS customerId,
+        f.info_supplement_id AS infoSupplementId,
+        f.path AS path,
+        f.type AS type,
+        f.upload_type AS uploadType,
+        f.gmt_create AS gmtCreate,
+        f.gmt_modify AS gmtModify,
+        f.status AS status
+
+        FROM loan_file f,
+        loan_info_supplement s
+
+        WHERE
+
+        /*资料流转已提交*/
+        s.id = f.info_supplement_id
+        AND s.status = 1
+
+        AND f.customer_id = #{customerId,jdbcType=BIGINT}
         <if test="type != null">
-            AND type = #{type}
+            AND f.type = #{type}
         </if>
         <if test="uploadType != null">
-            AND upload_type = #{uploadType}
+            AND f.upload_type = #{uploadType}
         </if>
-    </select>
 
-    <!--listByCustomerId-->
-    <select id="listByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from loan_file
-        where customer_id = #{customerId,jdbcType=BIGINT}
     </select>
 
     <!--deleteByInfoSupplementId-->

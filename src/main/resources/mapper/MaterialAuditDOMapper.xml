@@ -4,13 +4,12 @@
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.MaterialAuditDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="complete_material_date" property="complete_material_date" jdbcType="DATE"/>
-        <result column="status" property="status" jdbcType="TINYINT"/>
-        <result column="feature" property="feature" jdbcType="VARCHAR"/>
         <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="contract_num" property="contractNum" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, complete_material_date,status, feature, remark
-  </sql>
+        id, complete_material_date, remark, contract_num
+    </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
@@ -18,11 +17,16 @@
         where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from material_audit
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
+        delete from material_audit
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
+        insert into material_audit (id, complete_material_date, remark,
+        contract_num)
+        values (#{id,jdbcType=BIGINT}, #{complete_material_date,jdbcType=DATE}, #{remark,jdbcType=VARCHAR},
+        #{contractNum,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
         insert into material_audit
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -31,16 +35,12 @@
             <if test="complete_material_date != null">
                 complete_material_date,
             </if>
-            <if test="status != null">
-                status,
-            </if>
-            <if test="feature != null">
-                feature,
-            </if>
             <if test="remark != null">
                 remark,
             </if>
-
+            <if test="contractNum != null">
+                contract_num,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -49,16 +49,12 @@
             <if test="complete_material_date != null">
                 #{complete_material_date,jdbcType=DATE},
             </if>
-            <if test="status != null">
-                #{status,jdbcType=TINYINT},
-            </if>
-            <if test="feature != null">
-                #{feature,jdbcType=VARCHAR},
-            </if>
             <if test="remark != null">
                 #{remark,jdbcType=VARCHAR},
             </if>
-
+            <if test="contractNum != null">
+                #{contractNum,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
@@ -67,17 +63,20 @@
             <if test="complete_material_date != null">
                 complete_material_date = #{complete_material_date,jdbcType=DATE},
             </if>
-            <if test="status != null">
-                status = #{status,jdbcType=TINYINT},
-            </if>
-            <if test="feature != null">
-                feature = #{feature,jdbcType=VARCHAR},
-            </if>
             <if test="remark != null">
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
-
+            <if test="contractNum != null">
+                contract_num = #{contractNum,jdbcType=VARCHAR},
+            </if>
         </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
+        update material_audit
+        set complete_material_date = #{complete_material_date,jdbcType=DATE},
+        remark = #{remark,jdbcType=VARCHAR},
+        contract_num = #{contractNum,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
 
@@ -93,13 +92,24 @@
         FROM
         loan_order a,
         loan_file b,
+        loan_info_supplement s,
         loan_customer c
+
         WHERE
+
         (a.loan_customer_id = c.id or a.loan_customer_id=c.principal_cust_id)
-        and b.customer_id = c.id
+        AND b.customer_id = c.id
+
+        /*资料流转已提交*/
+        AND s.id = b.info_supplement_id
+        AND s.status = 1
+
         <if test="customerId != null">
             AND b.customer_id = #{customerId}
         </if>
-        AND a.id = #{orderId} AND b.type!=26
+        AND a.id = #{orderId}
+        AND b.type != 26
+
     </select>
+
 </mapper>

@@ -132,7 +132,7 @@ public class LoanFileServiceImpl implements LoanFileService {
         List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, null, uploadType);
         if (!CollectionUtils.isEmpty(loanFileDOS)) {
 
-            fileVOS = loanFileDOS.parallelStream()
+            fileVOS = loanFileDOS.stream()
                     .filter(Objects::nonNull)
                     .map(e -> {
 
