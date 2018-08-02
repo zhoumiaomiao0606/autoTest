@@ -110,7 +110,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ResultBean<Long> create(EmployeeParam employeeParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getName()), "姓名不能为空");
         Preconditions.checkArgument(!"admin".equals(employeeParam.getName()), "账号名不能为admin");
-        Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getIdCard()), "身份证号不能为空");
+//        Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getIdCard()), "身份证号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getMobile()), "手机号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getEmail()), "电子邮箱不能为空");
         Preconditions.checkNotNull(employeeParam.getStatus(), "员工状态不能为空");
