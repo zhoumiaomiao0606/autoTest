@@ -183,7 +183,7 @@
                 (select start_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessStartDate,
                 (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate
         FROM
-                (select * from loan_order where id=1805141034169293887) loan
+                (select * from loan_order where id=#{orderId}) loan
                 LEFT JOIN insurance_info info on loan.id = info.order_id
                 LEFT JOIN insurance_relevance insurance ON (info.id = insurance.insurance_info_id and insurance.insurance_type=1 )
                 LEFT JOIN loan_customer customer ON loan.loan_customer_id=customer.id
@@ -249,6 +249,18 @@
                 LEFT JOIN partner ON base.partner_id=partner.id
                 LEFT JOIN loan_financial_plan financial ON loan.loan_financial_plan_id=financial.id
         where datediff(insurance.end_date,insurance.start_date)&lt;=31
+        <if test="customerName != null and  customerName !=''">
+            and customer.name like concat(concat('%',#{customerName}),'%')
+        </if>
+        <if test="bankName != null and  bankName !=''">
+            and base.bank = #{bankName}
+        </if>
+        <if test="employeeName != null and  employeeName !=''">
+            and employee.`name` like concat(concat('%',#{employeeName}),'%')
+        </if>
+        <if test="partnerName != null and  partnerName !=''">
+            and partner.name like concat(concat('%',#{partnerName}),'%')
+        </if>
     </select>
 
 </mapper>
