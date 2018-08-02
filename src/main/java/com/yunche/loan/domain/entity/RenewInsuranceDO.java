@@ -57,5 +57,7 @@ public class RenewInsuranceDO {
 
     private Date renewDate;
 
+    private String sms;
+
 
 }
