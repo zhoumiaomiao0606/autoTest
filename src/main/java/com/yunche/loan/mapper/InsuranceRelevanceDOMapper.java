@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -25,5 +26,5 @@ public interface InsuranceRelevanceDOMapper {
      */
     List<InsuranceRelevanceDO> listByInsuranceInfoId(Long insuranceInfoId);
 
-    int deleteByInsuranceInfoIdAndType(Long insuranceInfoId,Byte type);
+    int deleteByInsuranceInfoIdAndType(@Param("insuranceInfoId") Long insuranceInfoId, @Param("insuranceType") Byte insuranceType);
 }
