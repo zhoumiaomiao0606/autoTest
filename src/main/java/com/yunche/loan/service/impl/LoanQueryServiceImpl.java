@@ -44,6 +44,11 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     private LoanCustomerDOMapper loanCustomerDOMapper;
 
     @Override
+    public boolean selectCheckOrderInBankInterfaceSerial(Long orderId, String transCode) {
+        return loanQueryDOMapper.selectCheckOrderInBankInterfaceSerial(orderId,transCode);
+    }
+
+    @Override
     public UniversalCustomerDetailVO universalCustomerDetail(Long customerId) {
 
         return loanQueryDOMapper.selectUniversalCustomerDetail(loanQueryDOMapper.selectOrderIdbyPrincipalCustId(customerId),customerId);

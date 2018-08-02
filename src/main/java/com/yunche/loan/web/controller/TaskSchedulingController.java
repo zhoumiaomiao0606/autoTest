@@ -32,6 +32,14 @@ public class TaskSchedulingController {
     private LoanQueryService loanQueryService;
 
     /**
+     * 是否属于银行单子
+     */
+    @GetMapping(value = "/isBankOrder")
+    public ResultBean<Boolean> isBankOrder(@RequestParam Long orderId,@RequestParam String transCode) {
+        return ResultBean.ofSuccess(loanQueryService.selectCheckOrderInBankInterfaceSerial(orderId,transCode));
+    }
+
+    /**
      * 银行单子状态
      */
     @GetMapping(value = "/bankOrderStatus")

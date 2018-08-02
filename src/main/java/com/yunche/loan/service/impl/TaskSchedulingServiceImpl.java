@@ -182,7 +182,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
-
+        List<Long> bankInterfaceSerialOrderidList = taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
         taskListQuery.setJuniorIds(juniorIds);
         taskListQuery.setEmployeeId(loginUser.getId());
         taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
@@ -196,6 +196,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+        taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
 
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
@@ -223,6 +224,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
         Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
         Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+        List<Long> bankInterfaceSerialOrderidList = taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
 
         taskListQuery.setJuniorIds(juniorIds);
         taskListQuery.setEmployeeId(loginUser.getId());
@@ -237,6 +239,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+        taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+
 
         long count = PageHelper.count(() -> {
             taskSchedulingDOMapper.selectTaskList(taskListQuery);

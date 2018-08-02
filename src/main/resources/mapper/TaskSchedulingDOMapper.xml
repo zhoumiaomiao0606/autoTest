@@ -51,6 +51,162 @@
         FROM
         ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{employeeId} ) t
     </select>
+    <select id="selectBankInterfaceSerialOrderidList" resultType="java.lang.Long" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+     <choose>
+          <when test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply' or taskDefinitionKey == 'usertask_bank_open_card' or taskDefinitionKey == 'usertask_apply_instalment'">
+                <choose>
+                    <when test="serialStatus == 'except'">
+                        <choose>
+                            <when test="bankOpenCardOrder == 'except'">
+                                select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                                  as serial_no
+                                  from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                            </when>
+                            <when test="bankOpenCardOrder == 'having'">
+                                select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                                  as serial_no
+                                  from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                            </when>
+                            <otherwise>
+                                select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                                  as serial_no
+                                  from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                            </otherwise>
+                        </choose>
+                    </when>
+
+                    <when test="serialStatus == 'exception'">
+                        select  DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status !=200 or serial.status not in (0,1,2,3)
+                    </when>
+                    <when test="serialStatus == 'pending'">
+                        select DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status = 200 and serial.status in (0,1) and serial.order_id not in
+                        (
+                          select DISTINCT serial.order_id from bank_interface_serial serial
+                          inner join
+                          (
+                            select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                            ','),',',1)
+                            as serial_no
+                            from bank_interface_serial GROUP BY trans_code,customer_id
+                          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status != 200 or serial.status not in (0,1)
+                        )
+                    </when>
+                    <when test="serialStatus == 'success'">
+                        select DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status = 200 and serial.status in (1) and serial.order_id not in
+                        (
+                          select DISTINCT serial.order_id from bank_interface_serial serial
+                          inner join
+                          (
+                            select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                            ','),',',1)
+                            as serial_no
+                            from bank_interface_serial GROUP BY trans_code,customer_id
+                          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                          where serial.api_status != 200 or serial.status not in (1)
+                        )
+                    </when>
+                    <when test="serialStatus == 'failure'">
+                        select DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status = 200 and serial.status in (0) and serial.order_id not in
+                        (
+                          select DISTINCT serial.order_id from bank_interface_serial serial
+                          inner join
+                          (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                          where serial.api_status != 200 or serial.status not in (0)
+                        )
+                    </when>
+                    <when test="serialStatus == 'back'">
+                        select DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status = 200 and serial.status = 3
+                    </when>
+                    <when test="serialStatus == 'process'">
+
+                        select DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status = 200 and serial.status = 2 and  serial.order_id not in
+                        (
+                          select DISTINCT serial.order_id from bank_interface_serial serial
+                          inner join
+                          (
+                            select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                            ','),',',1)
+                            as serial_no
+                            from bank_interface_serial GROUP BY trans_code,customer_id
+                          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                          where serial.api_status != 200 or serial.status not in (0,1,2,3)
+                        )
+                    </when>
+                    <otherwise>
+                        select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                    </otherwise>
+                </choose>
+              </when>
+              <otherwise>
+                  select temp.id from (SELECT 1 as id) temp  where temp.id =2
+              </otherwise>
+          </choose>
+    </select>
 
     <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO">
         select complex.* from
@@ -322,11 +478,9 @@
                   join_i.gps_num                                  AS carGpsNum,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
-                          case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
                           deputy.credit_apply                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bank_credit_record'">
-                          case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
                           deputy.bank_credit_record               AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_social_credit_record'">
@@ -428,11 +582,9 @@
                           join_urgerecord.urge_status             AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bank_open_card'">
-                          case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
                           deputy.bank_open_card                   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_apply_instalment'">
-                          case when join_serial.order_id is null then 1 else 0 end AS serialFlag,
                           deputy.apply_instalment                 AS taskStatus
                       </when>
                       <otherwise>
@@ -451,9 +603,6 @@
               left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
-              <if test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply' or taskDefinitionKey == 'usertask_bank_open_card' or taskDefinitionKey == 'usertask_apply_instalment'">
-                  left join (select DISTINCT order_id from bank_interface_serial where trans_code = #{transCode}) join_serial on main.id = join_serial.order_id
-              </if>
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
@@ -558,6 +707,7 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_install_gps'">
                       AND case when #{taskStatus} = 0 then deputy.install_gps != 0                      else deputy.install_gps                      = #{taskStatus} end
+                      AND join_i.gps_num>0
                   </when>
                   <when test="taskDefinitionKey == 'usertask_commit_key'">
                       AND case when #{taskStatus} = 0 then deputy.commit_key != 0                       else deputy.commit_key                       = #{taskStatus} end
@@ -729,15 +879,16 @@
                                 <when test="bankOpenCardOrder == 'except'">
                                     AND tab.id not in  <!--  出现一次就判定为除外 -->
                                     (
-                                      (
-                                        select DISTINCT serial.order_id from bank_interface_serial serial
-                                        inner join
-                                        (
-                                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                                          as serial_no
-                                          from bank_interface_serial GROUP BY trans_code,customer_id
-                                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                      )
+                                      <choose>
+                                          <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                              <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
+                                                  #{item}
+                                              </foreach>
+                                          </when>
+                                          <otherwise>
+                                              select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                                          </otherwise>
+                                      </choose>
                                     )
                                     AND
                                     case when tab.openCardOrder = 1 then true
@@ -749,15 +900,16 @@
                                 <when test="bankOpenCardOrder == 'having'">
                                     AND tab.id not in  <!--  出现一次就判定为除外 -->
                                     (
-                                      (
-                                        select DISTINCT serial.order_id from bank_interface_serial serial
-                                        inner join
-                                        (
-                                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                                          as serial_no
-                                          from bank_interface_serial GROUP BY trans_code,customer_id
-                                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                      )
+                                      <choose>
+                                          <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                              <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
+                                                  #{item}
+                                              </foreach>
+                                          </when>
+                                          <otherwise>
+                                              select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                                          </otherwise>
+                                      </choose>
                                     )
                                     AND
                                     case when tab.openCardOrder = 0 then tab.telephoneVerifyStatus  != 1
@@ -768,15 +920,16 @@
                                 <otherwise>
                                     AND tab.id not in  <!--  出现一次就判定为除外 -->
                                     (
-                                      (
-                                        select DISTINCT serial.order_id from bank_interface_serial serial
-                                        inner join
-                                        (
-                                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                                          as serial_no
-                                          from bank_interface_serial GROUP BY trans_code,customer_id
-                                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                      )
+                                      <choose>
+                                          <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                              <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
+                                                  #{item}
+                                              </foreach>
+                                          </when>
+                                          <otherwise>
+                                              select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                                          </otherwise>
+                                      </choose>
                                     )
                                 </otherwise>
                             </choose>
@@ -785,141 +938,92 @@
                         <when test="serialStatus == 'exception'">
                             AND tab.id in  <!--  有一个异常,就判定为这个单子异常 -->
                             (
-                              (
-                                select  DISTINCT serial.order_id from bank_interface_serial serial
-                                inner join
-                                (
-                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                                  as serial_no
-                                  from bank_interface_serial GROUP BY trans_code,customer_id
-                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                where serial.api_status !=200 or serial.status not in (0,1,2,3)
-                              )
+                              <choose>
+                                  <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                      <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
+                                          #{item}
+                                      </foreach>
+                                  </when>
+                                  <otherwise>
+                                      select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                                  </otherwise>
+                              </choose>
                             )
                         </when>
                         <when test="serialStatus == 'pending'">
                             AND tab.id in <!--  全部成功才算成功 -->
                             (
-                              (
-                                select DISTINCT serial.order_id from bank_interface_serial serial
-                                inner join
-                                (
-                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                                  ','),',',1)
-                                  as serial_no
-                                  from bank_interface_serial GROUP BY trans_code,customer_id
-                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                where serial.api_status = 200 and serial.status in (0,1) and serial.order_id not in
-                                (
-                                  select DISTINCT serial.order_id from bank_interface_serial serial
-                                  inner join
-                                  (
-                                    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                                    ','),',',1)
-                                    as serial_no
-                                    from bank_interface_serial GROUP BY trans_code,customer_id
-                                  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                  where serial.api_status != 200 or serial.status not in (0,1)
-                                )
-                              )
+                              <choose>
+                                  <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                      <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
+                                          #{item}
+                                      </foreach>
+                                  </when>
+                                  <otherwise>
+                                      select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                                  </otherwise>
+                              </choose>
                             )
                         </when>
                         <when test="serialStatus == 'success'">
                             AND tab.id in <!--  全部成功才算成功 -->
                               (
-                                (
-                                  select DISTINCT serial.order_id from bank_interface_serial serial
-                                    inner join
-                                    (
-                                      select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                                      ','),',',1)
-                                      as serial_no
-                                      from bank_interface_serial GROUP BY trans_code,customer_id
-                                    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                    where serial.api_status = 200 and serial.status in (1) and serial.order_id not in
-                                    (
-                                      select DISTINCT serial.order_id from bank_interface_serial serial
-                                      inner join
-                                    (
-                                      select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                                      ','),',',1)
-                                      as serial_no
-                                      from bank_interface_serial GROUP BY trans_code,customer_id
-                                    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                  where serial.api_status != 200 or serial.status not in (1)
-                                )
+                                <choose>
+                                    <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                        <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
+                                            #{item}
+                                        </foreach>
+                                    </when>
+                                    <otherwise>
+                                        select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                                    </otherwise>
+                                </choose>
                               )
-                            )
                         </when>
                         <when test="serialStatus == 'failure'">
                             AND tab.id in <!--  全部成功才算成功 -->
                               (
-                                (
-                                  select DISTINCT serial.order_id from bank_interface_serial serial
-                                    inner join
-                                    (
-                                      select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                                      ','),',',1)
-                                      as serial_no
-                                      from bank_interface_serial GROUP BY trans_code,customer_id
-                                    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                    where serial.api_status = 200 and serial.status in (0) and serial.order_id not in
-                                    (
-                                      select DISTINCT serial.order_id from bank_interface_serial serial
-                                      inner join
-                                    (
-                                      select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                                      ','),',',1)
-                                      as serial_no
-                                      from bank_interface_serial GROUP BY trans_code,customer_id
-                                    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                  where serial.api_status != 200 or serial.status not in (0)
-                                )
+                                <choose>
+                                    <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                        <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
+                                            #{item}
+                                        </foreach>
+                                    </when>
+                                    <otherwise>
+                                        select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                                    </otherwise>
+                                </choose>
                               )
-                            )
                         </when>
                         <when test="serialStatus == 'back'">
                             AND tab.id in <!--  有一个退回就判定单子为退回 -->
                             (
-                              (
-                                select DISTINCT serial.order_id from bank_interface_serial serial
-                                inner join
-                                (
-                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                                  ','),',',1)
-                                  as serial_no
-                                  from bank_interface_serial GROUP BY trans_code,customer_id
-                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                where serial.api_status = 200 and serial.status = 3
-                              )
+                              <choose>
+                                  <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                      <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
+                                          #{item}
+                                      </foreach>
+                                  </when>
+                                  <otherwise>
+                                      select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                                  </otherwise>
+                              </choose>
                             )
                         </when>
                         <when test="serialStatus == 'process'">
                             AND tab.id in <!--  全部处理中才算处理中 -->
                             (
-                              (
-                                select DISTINCT serial.order_id from bank_interface_serial serial
-                                inner join
-                                (
-                                  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                                  ','),',',1)
-                                  as serial_no
-                                  from bank_interface_serial GROUP BY trans_code,customer_id
-                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                where serial.api_status = 200 and serial.status = 2 and  serial.order_id not in
-                                (
-                                  select DISTINCT serial.order_id from bank_interface_serial serial
-                                  inner join
-                                  (
-                                    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                                    ','),',',1)
-                                    as serial_no
-                                    from bank_interface_serial GROUP BY trans_code,customer_id
-                                  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                                    where serial.api_status != 200 or serial.status not in (0,1,2,3)
-                                )
-                              )
-                            )
+                                <choose>
+                                    <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                        <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
+                                            #{item}
+                                        </foreach>
+                                    </when>
+                                    <otherwise>
+                                        select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                                    </otherwise>
+                                </choose>
+                             )
                         </when>
                         <otherwise>
                             AND 1=2
@@ -938,11 +1042,7 @@
                 )
             </if>
             ) task
-            left join
-            (
-            select * from task_distribution
-            )
-            taskdis
+            left join task_distribution taskdis
             on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
             <if test="taskStatus != 0">
                 <choose>
