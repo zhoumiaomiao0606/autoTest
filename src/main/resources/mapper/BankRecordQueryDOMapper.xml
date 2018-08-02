@@ -248,7 +248,7 @@
                 LEFT JOIN employee ON base.salesman_id=employee.id
                 LEFT JOIN partner ON base.partner_id=partner.id
                 LEFT JOIN loan_financial_plan financial ON loan.loan_financial_plan_id=financial.id
-        where datediff(insurance.end_date,insurance.start_date)&lt;=31
+        where datediff(insurance.end_date,now())&lt;=31
         <if test="customerName != null and  customerName !=''">
             and customer.name like concat(concat('%',#{customerName}),'%')
         </if>
