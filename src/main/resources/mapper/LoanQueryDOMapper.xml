@@ -7,6 +7,9 @@
                 FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
     </select>
+    <select id="selectCheckOrderInBankInterfaceSerial" resultType="java.lang.Boolean">
+      select count(t.order_id) as flag from (select DISTINCT order_id from bank_interface_serial where order_id = #{orderId} and trans_code = #{transCode} ) t
+    </select>
     <select id="selectApplyDiviGeneralInfo" resultType="com.yunche.loan.domain.vo.ApplyDiviGeneralInfoVO">
         select
 	        car.car_type                              as car_type,
