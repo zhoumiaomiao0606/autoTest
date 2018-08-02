@@ -255,11 +255,11 @@
         <if test="bankName != null and  bankName !=''">
             and base.bank = #{bankName}
         </if>
-        <if test="employeeName != null and  employeeName !=''">
-            and employee.`name` like concat(concat('%',#{employeeName}),'%')
+        <if test="employeeId != null and  employeeId !=''">
+            and employee.id =#{employeeId}
         </if>
-        <if test="partnerName != null and  partnerName !=''">
-            and partner.name like concat(concat('%',#{partnerName}),'%')
+        <if test="partnerId != null and  partnerId !=''">
+            and partner.id =#{partnerId}
         </if>
     </select>
 

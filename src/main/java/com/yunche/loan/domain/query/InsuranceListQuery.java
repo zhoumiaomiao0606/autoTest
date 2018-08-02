@@ -29,7 +29,6 @@ public class InsuranceListQuery {
 
     private String bankName;
 
-    private String partnerName;
+    private String partnerId;
 
-    private String employeeName;
 }
