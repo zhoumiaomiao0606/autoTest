@@ -29,6 +29,6 @@ public class InsuranceListQuery {
 
     private String bankName;
 
-    private String partnerId;
+    private Long partnerId;
 
 }

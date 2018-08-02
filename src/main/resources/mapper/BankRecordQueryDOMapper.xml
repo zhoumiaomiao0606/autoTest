@@ -255,9 +255,6 @@
         <if test="bankName != null and  bankName !=''">
             and base.bank = #{bankName}
         </if>
-        <if test="employeeId != null and  employeeId !=''">
-            and employee.id =#{employeeId}
-        </if>
         <if test="partnerId != null and  partnerId !=''">
             and partner.id =#{partnerId}
         </if>
