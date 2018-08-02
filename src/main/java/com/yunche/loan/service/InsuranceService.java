@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
 import com.yunche.loan.domain.param.InsuranceRisksParam;
 import com.yunche.loan.domain.param.InsuranceUpdateParam;
 import com.yunche.loan.domain.query.RiskQuery;
@@ -20,6 +21,8 @@ public interface InsuranceService {
     public void update(InsuranceUpdateParam param);
 
     public InsuranceDetailVO riskDetail(Long orderId,Byte insuranceYear);
+
+    public List<InsuranceRelevanceDO> insuranceCompany(String insurance_number);
 
     public void riskInsert(InsuranceRisksParam param);
 

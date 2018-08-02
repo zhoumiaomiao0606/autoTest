@@ -86,6 +86,12 @@ public class InsuranceServiceImpl implements InsuranceService {
     }
 
     @Override
+    public List<InsuranceRelevanceDO> insuranceCompany(String insurance_number) {
+        List<InsuranceRelevanceDO> list = insuranceRelevanceDOMapper.selectCompanyByNum(insurance_number);
+        return list;
+    }
+
+    @Override
     public void riskInsert(InsuranceRisksParam param) {
         InsuranceRiskDO insuranceRiskDO = new InsuranceRiskDO();
         BeanUtils.copyProperties(param, insuranceRiskDO);

@@ -93,5 +93,12 @@ public class InsuranceController {
         insuranceService.riskDetele(id);
         return ResultBean.ofSuccess(null, "删除成功");
     }
+    /**
+     * 更具保单号获取保险公司
+     */
+    @GetMapping(value = "companybyinnum")
+    public ResultBean companyByInNum(@RequestParam String insurance_number){
+        return ResultBean.ofSuccess(insuranceService.insuranceCompany(insurance_number));
+    }
 
 }
