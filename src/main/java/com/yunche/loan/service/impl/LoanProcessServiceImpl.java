@@ -923,7 +923,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanProcessDO
      */
     private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
-        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()), "订单" + getOrderStatusText(loanProcessDO));
+        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()), "当前订单" + getOrderStatusText(loanProcessDO));
 
         // 【资料审核】
         if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
@@ -1011,7 +1011,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     private String getOrderStatusText(LoanProcessDO loanProcessDO) {
-        String orderStatusText = ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) ? "已弃单" : (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus()) ? "已结单" : "状态异常");
+        String orderStatusText = ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) ? "[已弃单]" : (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus()) ? "[已结单]" : "[状态异常]");
         return orderStatusText;
     }
 
