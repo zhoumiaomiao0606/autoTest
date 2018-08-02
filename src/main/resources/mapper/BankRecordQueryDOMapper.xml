@@ -211,7 +211,15 @@
                 insurance.end_date                          AS endDate,
                 datediff(insurance.end_date,insurance.start_date) AS days,
                 (select start_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessStartDate,
-                (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate
+                (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate,
+                case when
+                    (select renew_insurance_status from renew_insurance where loan.id=order_id order by remind_date desc LIMIT 1) is null
+                then
+                    0
+                else
+                    (select renew_insurance_status from renew_insurance where loan.id=order_id order by remind_date desc LIMIT 1)
+                end                                          AS renewInsuranceStatus
+
         FROM
             <choose>
                 <when test="taskDefinitionKey=='usertask_urge_insurance_assign_work_bench'">

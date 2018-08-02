@@ -3,46 +3,50 @@
 <mapper namespace="com.yunche.loan.mapper.InsuranceDistributeRecordDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.InsuranceDistributeRecordDO">
     <id column="order_Id" jdbcType="BIGINT" property="orderId" />
-    <id column="employee_id" jdbcType="BIGINT" property="employeeId" />
+    <id column="insurance_year" jdbcType="INTEGER" property="insuranceYear" />
+    <result column="employee_id" jdbcType="BIGINT" property="employeeId" />
     <result column="employee_name" jdbcType="VARCHAR" property="employeeName" />
     <result column="distribute_date" jdbcType="TIMESTAMP" property="distributeDate" />
-    <result column="insurance_year" jdbcType="INTEGER" property="insuranceYear" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="renew_insur_status" jdbcType="TINYINT" property="renewInsurStatus" />
   </resultMap>
   <sql id="Base_Column_List">
-    order_Id, employee_id, employee_name, distribute_date, insurance_year, status, gmt_create, 
-    gmt_modify, remark
+    order_Id, insurance_year, employee_id, employee_name, distribute_date, status, gmt_create, 
+    gmt_modify, remark, renew_insur_status
   </sql>
   <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.InsuranceDistributeRecordDOKey" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from insurance_distribute_record
     where order_Id = #{orderId,jdbcType=BIGINT}
-      and employee_id = #{employeeId,jdbcType=BIGINT}
+      and insurance_year = #{insuranceYear,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.InsuranceDistributeRecordDOKey">
     delete from insurance_distribute_record
     where order_Id = #{orderId,jdbcType=BIGINT}
-      and employee_id = #{employeeId,jdbcType=BIGINT}
+      and insurance_year = #{insuranceYear,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.InsuranceDistributeRecordDO">
-    insert into insurance_distribute_record (order_Id, employee_id, employee_name, 
-      distribute_date, insurance_year, status, 
-      gmt_create, gmt_modify, remark
-      )
-    values (#{orderId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{employeeName,jdbcType=VARCHAR}, 
-      #{distributeDate,jdbcType=TIMESTAMP}, #{insuranceYear,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, 
-      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
-      )
+    insert into insurance_distribute_record (order_Id, insurance_year, employee_id, 
+      employee_name, distribute_date, status, 
+      gmt_create, gmt_modify, remark, 
+      renew_insur_status)
+    values (#{orderId,jdbcType=BIGINT}, #{insuranceYear,jdbcType=INTEGER}, #{employeeId,jdbcType=BIGINT}, 
+      #{employeeName,jdbcType=VARCHAR}, #{distributeDate,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, 
+      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{renewInsurStatus,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.InsuranceDistributeRecordDO">
     insert into insurance_distribute_record
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="orderId != null">
         order_Id,
+      </if>
+      <if test="insuranceYear != null">
+        insurance_year,
       </if>
       <if test="employeeId != null">
         employee_id,
@@ -52,9 +56,6 @@
       </if>
       <if test="distributeDate != null">
         distribute_date,
-      </if>
-      <if test="insuranceYear != null">
-        insurance_year,
       </if>
       <if test="status != null">
         status,
@@ -68,10 +69,16 @@
       <if test="remark != null">
         remark,
       </if>
+      <if test="renewInsurStatus != null">
+        renew_insur_status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="orderId != null">
         #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="insuranceYear != null">
+        #{insuranceYear,jdbcType=INTEGER},
       </if>
       <if test="employeeId != null">
         #{employeeId,jdbcType=BIGINT},
@@ -81,9 +88,6 @@
       </if>
       <if test="distributeDate != null">
         #{distributeDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="insuranceYear != null">
-        #{insuranceYear,jdbcType=INTEGER},
       </if>
       <if test="status != null">
         #{status,jdbcType=TINYINT},
@@ -97,19 +101,22 @@
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
       </if>
+      <if test="renewInsurStatus != null">
+        #{renewInsurStatus,jdbcType=TINYINT},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.InsuranceDistributeRecordDO">
     update insurance_distribute_record
     <set>
+      <if test="employeeId != null">
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
       <if test="employeeName != null">
         employee_name = #{employeeName,jdbcType=VARCHAR},
       </if>
       <if test="distributeDate != null">
         distribute_date = #{distributeDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="insuranceYear != null">
-        insurance_year = #{insuranceYear,jdbcType=INTEGER},
       </if>
       <if test="status != null">
         status = #{status,jdbcType=TINYINT},
@@ -123,23 +130,26 @@
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
+      <if test="renewInsurStatus != null">
+        renew_insur_status = #{renewInsurStatus,jdbcType=TINYINT},
+      </if>
     </set>
     where order_Id = #{orderId,jdbcType=BIGINT}
-      and employee_id = #{employeeId,jdbcType=BIGINT}
+      and insurance_year = #{insuranceYear,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.InsuranceDistributeRecordDO">
     update insurance_distribute_record
-    set employee_name = #{employeeName,jdbcType=VARCHAR},
+    set employee_id = #{employeeId,jdbcType=BIGINT},
+      employee_name = #{employeeName,jdbcType=VARCHAR},
       distribute_date = #{distributeDate,jdbcType=TIMESTAMP},
-      insurance_year = #{insuranceYear,jdbcType=INTEGER},
       status = #{status,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      remark = #{remark,jdbcType=VARCHAR}
+      remark = #{remark,jdbcType=VARCHAR},
+      renew_insur_status = #{renewInsurStatus,jdbcType=TINYINT}
     where order_Id = #{orderId,jdbcType=BIGINT}
-      and employee_id = #{employeeId,jdbcType=BIGINT}
+      and insurance_year = #{insuranceYear,jdbcType=INTEGER}
   </update>
-
   <insert id="insertBatch" parameterType="java.util.List">
     INSERT INTO insurance_distribute_record( order_Id, employee_id, employee_name, distribute_date, insurance_year, status, gmt_create,
     gmt_modify, remark)
@@ -150,4 +160,16 @@
       #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR})
     </foreach >
   </insert>
+
+  <select id="selectRenewInsurLimit"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    FROM
+    insurance_distribute_record
+    WHERE
+    order_Id = #{orderId,jdbcType=BIGINT}
+    ORDER BY
+    insurance_year DESC
+    LIMIT 1
+  </select>
 </mapper>

@@ -89,4 +89,10 @@ public class InsuranceUrgeController {
         return insuranceUrgeService.sendSms(param);
 
     }
+
+    @GetMapping(value = "/approval")
+    public ResultBean approval(@RequestParam Long orderId){
+        return insuranceUrgeService.approval(orderId);
+
+    }
 }

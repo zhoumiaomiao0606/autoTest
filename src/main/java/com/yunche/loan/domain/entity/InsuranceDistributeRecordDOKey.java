@@ -6,7 +6,5 @@ import lombok.Data;
 public class InsuranceDistributeRecordDOKey {
     private Long orderId;
 
-    private Long employeeId;
-
-
+    private Integer insuranceYear;
 }

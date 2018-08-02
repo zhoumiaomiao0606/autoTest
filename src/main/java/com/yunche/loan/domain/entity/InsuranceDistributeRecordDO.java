@@ -6,11 +6,11 @@ import java.util.Date;
 
 @Data
 public class InsuranceDistributeRecordDO extends InsuranceDistributeRecordDOKey {
+    private Long employeeId;
+
     private String employeeName;
 
     private Date distributeDate;
-
-    private Integer insuranceYear;
 
     private Byte status;
 
@@ -20,4 +20,5 @@ public class InsuranceDistributeRecordDO extends InsuranceDistributeRecordDOKey 
 
     private String remark;
 
+    private Byte renewInsurStatus;
 }
