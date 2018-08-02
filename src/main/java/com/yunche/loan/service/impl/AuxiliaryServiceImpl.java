@@ -166,6 +166,9 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
 
         GpsDetailVO gpsDetail = new GpsDetailVO();
         gpsDetail = loanQueryDOMapper.selectGpsDetailByOrderId(orderId);
+        if(gpsDetail.getLicensePlateNymber() == null){
+            gpsDetail.setLicensePlateNymber("");
+        }
         gpsDetailTotal.setGpsDetail(gpsDetail);
 
 
