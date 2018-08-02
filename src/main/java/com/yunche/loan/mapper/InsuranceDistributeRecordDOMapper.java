@@ -21,4 +21,6 @@ public interface InsuranceDistributeRecordDOMapper {
     int updateByPrimaryKey(InsuranceDistributeRecordDO record);
 
     int insertBatch(List<InsuranceDistributeRecordDO> recordLists);
+
+    InsuranceDistributeRecordDO selectRenewInsurLimit(Long orderId);
 }

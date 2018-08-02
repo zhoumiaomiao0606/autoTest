@@ -187,7 +187,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
         ArrayList<Object> objects = Lists.newArrayList();
 
         Preconditions.checkNotNull(renewInsuranceParam.getCustomerName(),"客户姓名不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getEmployeeName(),"车险专员不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getAutoInsuEmployee(),"车险专员不能为空");
         Preconditions.checkNotNull(renewInsuranceParam.getDamageInsur(),"车损险不能为空");
         Preconditions.checkNotNull(renewInsuranceParam.getDamageInsurFee(),"车损险保费不能为空");
         Preconditions.checkNotNull(renewInsuranceParam.getThirdDutyInsur(),"三者费用不能为空");
@@ -204,7 +204,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
 
 
         objects.add(renewInsuranceParam.getCustomerName());
-        objects.add(renewInsuranceParam.getEmployeeName());
+        objects.add(renewInsuranceParam.getAutoInsuEmployee());
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getDamageInsur(),2));
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getDamageInsurFee(),2));
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getThirdDutyInsur(),2));
@@ -250,6 +250,27 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
            throw new BizException(e.getMessage());
         }
         return ResultBean.ofSuccess(null,"发送成功");
+    }
+
+    /**
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public ResultBean approval(Long orderId) {
+        Preconditions.checkNotNull(orderId,"参数有误");
+        InsuranceDistributeRecordDO recordDO = insuranceDistributeRecordDOMapper.selectRenewInsurLimit(orderId);
+        int nextInsurYear = recordDO.getInsuranceYear()+1;
+        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(orderId, new Byte(String.valueOf(nextInsurYear)));
+        if(insuranceInfoDO == null){
+            return  ResultBean.ofError("续保信息未录入");
+        }else{
+            recordDO.setStatus(BaseConst.VALID_STATUS);
+            int count = insuranceDistributeRecordDOMapper.updateByPrimaryKeySelective(recordDO);
+            Preconditions.checkArgument(count>0,"催保记录更新失败");
+        }
+        return ResultBean.ofSuccess("提交成功");
     }
 
     /**

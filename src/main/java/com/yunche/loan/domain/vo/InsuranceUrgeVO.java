@@ -23,5 +23,6 @@ public class InsuranceUrgeVO {
     private Integer  days;
     private Date  businessStartDate;
     private Date  businessEndDate;
+    private Byte renewInsuranceStatus;
 
 }
