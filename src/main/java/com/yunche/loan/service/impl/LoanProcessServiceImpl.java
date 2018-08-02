@@ -129,6 +129,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanRepayPlanDOMapper loanRepayPlanDOMapper;
 
     @Autowired
+    private VideoFaceLogDOMapper videoFaceLogDOMapper;
+
+    @Autowired
     private TaskDistributionService taskDistributionService;
 
     @Autowired
@@ -139,12 +142,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private DictService dictService;
-
-    @Autowired
-    private VideoFaceService videoFaceService;
-
-    @Autowired
-    private VideoFaceLogDOMapper videoFaceLogDOMapper;
 
 
     @Override
@@ -946,7 +943,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Preconditions.checkArgument(null != loanCustomerDOS && loanCustomerDOS.size() >= 2, "紧急联系人不能少于2个");
         }
 
-        // 【业务审批】|| 【放款审批】
+        // 【业务审批】|| 【放款审批】  -> PASS
         else if ((BUSINESS_REVIEW.getCode().equals(taskDefinitionKey) || LOAN_REVIEW.getCode().equals(taskDefinitionKey))
                 && ACTION_PASS.equals(action)) {
 
@@ -959,7 +956,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
 
             // 2.GPS安装完成
-            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getInstallGps()), "当前订单[GPS安装]未提交");
+            LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+            Preconditions.checkNotNull(loanCarInfoDO, "车辆信息不存在");
+            Integer gpsNum = loanCarInfoDO.getGpsNum();
+            if (null != gpsNum && gpsNum != 0) {
+                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getInstallGps()), "当前订单[GPS安装]未提交");
+            }
 
             // 3.（根据银行配置）视频面签完成
             VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(loanOrderDO.getId());
