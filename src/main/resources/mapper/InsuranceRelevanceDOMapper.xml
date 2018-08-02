@@ -43,10 +43,10 @@
     where insurance_info_id = #{insuranceInfoId,jdbcType=BIGINT}
   </delete>
 
-    <delete id="deleteByInsuranceInfoIdAndType" parameterType="java.lang.Long">
+    <delete id="deleteByInsuranceInfoIdAndType" >
         delete from insurance_relevance
-        where insurance_info_id = #{insuranceInfoId,jdbcType=BIGINT}
-        and insurance_type= #{insuranceType,jdbcType=TINYINT}
+        where insurance_info_id = #{insuranceInfoId}
+        and insurance_type= #{insuranceType}
     </delete>
 
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"

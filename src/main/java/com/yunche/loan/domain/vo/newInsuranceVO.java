@@ -15,7 +15,7 @@ public class newInsuranceVO {
 
     private Date start_date;
 
-    private Data end_date;
+    private Date end_date;
 
     private Byte insurance_type;
 }
