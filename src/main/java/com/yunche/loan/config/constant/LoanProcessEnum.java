@@ -50,8 +50,7 @@ public enum LoanProcessEnum {
     BANK_CARD_SEND("usertask_bank_card_send", "银行卡寄送"),
     CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划"),
 
-    URGE_INSURANCE_WORK_BENCH("usertask_urge_insurance_work_bench", "催保工作台"),
-    URGE_INSURANCE_ASSIGN_WORK_BENCH("usertask_urge_insurance_assign_work_bench", "催保分配工作台"),
+
 
 
     /////////////////////////////////////////// ↓↓↓↓↓--流程外的节点--↓↓↓↓↓ //////////////////////////////////////////////
@@ -64,8 +63,11 @@ public enum LoanProcessEnum {
     REFUND_APPLY("usertask_refund_apply", "退款申请"),
     REFUND_APPLY_REVIEW("usertask_refund_apply_review", "退款申请审核"),
     CUSTOMER_REPAY_PLAN_RECORD("usertask_customer_repay_plan_record", "银行还款计划记录"),
-    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
+
     INSURANCE_SCENE_RECORD("usertask_insurance_scene_record", "出险登记"),
+    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
+    URGE_INSURANCE_WORK_BENCH("usertask_urge_insurance_work_bench", "催保工作台"),
+    URGE_INSURANCE_ASSIGN_WORK_BENCH("usertask_urge_insurance_assign_work_bench", "催保分配工作台"),
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
 
 

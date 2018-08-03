@@ -1,17 +1,16 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.BankCardRecordDO;
-import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
 public interface BankCardRecordDOMapper {
-    int deleteByPrimaryKey(Integer id);
+
+    int deleteByPrimaryKey(Long id);
 
     int insert(BankCardRecordDO record);
 
     int insertSelective(BankCardRecordDO record);
 
-    BankCardRecordDO selectByPrimaryKey(Integer id);
+    BankCardRecordDO selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(BankCardRecordDO record);
 

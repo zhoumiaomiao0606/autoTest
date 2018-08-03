@@ -14,14 +14,10 @@ import java.util.Map;
 @Component
 public class DictMapCache {
 
-
-
-    public static  Map<String, String> map = Maps.newHashMap();
+    public static Map<String, String> map = Maps.newHashMap();
 
     @Autowired
     DictMapDOMapper dictMapDOMapper;
-
-
 
 
     /**
@@ -36,19 +32,19 @@ public class DictMapCache {
         if (CollectionUtils.isEmpty(allDictMap)) {
             return;
         }
-        allDictMap.parallelStream().forEach(e->{
-            String key = e.getItemKey()+"_"+e.getSource();
+        allDictMap.parallelStream().forEach(e -> {
+            String key = e.getItemKey() + "_" + e.getSource();
             String value = e.getTarget();
-            map.put(key,value);
+            map.put(key, value);
         });
 
     }
 
-   public String  getValue(String key,String source){
-        if(map.containsKey(key + "_" + source)){
-               return  map.get(key + "_" + source);
-        }else{
+    public String getValue(String key, String source) {
+        if (map.containsKey(key + "_" + source)) {
+            return map.get(key + "_" + source);
+        } else {
             return source;
         }
-   }
+    }
 }

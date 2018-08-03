@@ -27,6 +27,7 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
 
     private static final Logger logger = LoggerFactory.getLogger(ActivitiVersionServiceImpl.class);
 
+
     @Autowired
     private ActivitiDeploymentMapper activitiDeploymentMapper;
 
@@ -41,7 +42,7 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
      * 流程替换
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void replaceActivitiVersion() {
 
         // 获取上个版本的部署ID
@@ -94,4 +95,5 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
 
         return userOwnDataFlowNodes;
     }
+
 }
