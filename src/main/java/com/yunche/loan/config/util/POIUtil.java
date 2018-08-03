@@ -352,7 +352,7 @@ public class POIUtil {
         Long id = SessionUtils.getLoginUser().getId();
         fileName.append(fname).append(timestamp).append(id).append(".xlsx");
         //创建workbook
-        File file = new File("D:" + File.separator + fileName);
+        File file = new File( ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
         XSSFWorkbook workbook = null;
 

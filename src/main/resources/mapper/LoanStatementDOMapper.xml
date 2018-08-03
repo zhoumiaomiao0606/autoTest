@@ -476,8 +476,25 @@ LEFT JOIN loan_process process ON orders.id = process.order_id
 LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
 LEFT JOIN employee employee ON base.salesman_id = employee.id
 LEFT JOIN partner partner ON partner.id = base.partner_id
-
-        <where>
+where 1=1
+        and process.loan_review = 1
+        and
+        case when #{maxGroupLevel} = 0 then false
+        when #{maxGroupLevel} = 1 then
+        loaninfo.salesman_id in
+        (
+            <choose>
+              <when test="juniorIds != null and juniorIds.size() > 0">
+                  <foreach item="item" index="index" collection="juniorIds" separator=",">
+                  #{item}
+                  </foreach>
+              </when>
+              <otherwise>
+                  select temp.id from (SELECT 1 as id) temp  where temp.id =2
+              </otherwise>
+        </choose>
+        )
+        else true end
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 partner_id in
@@ -492,9 +509,8 @@ LEFT JOIN partner partner ON partner.id = base.partner_id
                     #{item}
                 </foreach>
             </if>
-            process.loan_review = 1
-        </where>
-    </select>
+
+</select>
 
     <!--=======================================导出 EXCEL 资料审核明细查询=========================================-->
     <select id="exportMaterialReviewQuerys" parameterType="com.yunche.loan.domain.param.ExportMaterialReviewQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMaterialReviewDetailQueryVO" >
@@ -553,20 +569,13 @@ FROM
 	(
 		SELECT
 			base_area.area_name,
-			#业务区域
 			partner. NAME AS partner_name,
-			#业务团队
 			customer. NAME AS customer_name,
-			#客户姓名
 			customer.id_card,
-			#身份证号
 			loan_base_info.bank,
-			#贷款银行
 			loan_financial_plan.bank_period_principal,
-			#银行分期本金
 			(SELECT create_time FROM loan_process_log   WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_apply_license_plate_deposit_info' ORDER BY id DESC LIMIT 1)
 										AS remitdate,
-			#垫款日期  --  remit汇款
 			(
 				SELECT
 					loan_data_flow.express_receive_date
@@ -576,19 +585,12 @@ FROM
 					orders.id = loan_data_flow.order_id
 				AND type = 2
 			) AS express_receive_date,
-			#资料接收日期
 
 			material_audit.complete_material_date,
-			#资料齐全日期
-
-
-      #---资料审核提交日期
 (SELECT create_time FROM loan_process_log   WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1) AS materialReviewSubmit,
 
-			#---资料审核状态
 loan_process.material_review,
 
-      #资料增补次数
 			(
 				SELECT
 					count(type = 2)
@@ -597,7 +599,6 @@ loan_process.material_review,
 				WHERE
 					loan_info_supplement.order_id = orders.id
 			) AS supplementCount,
-			#增补次数
 			(
 				SELECT
 					GROUP_CONCAT(
@@ -612,7 +613,6 @@ loan_process.material_review,
 					loan_info_supplement.order_id = orders.id
 				AND type = 2
 			) AS supplementContent,
-			#增补内容
 			(
 				SELECT
 					GROUP_CONCAT(
@@ -627,7 +627,6 @@ loan_process.material_review,
 					loan_info_supplement.order_id = orders.id
 				AND type = 2
 			) AS supplementTime,
-			#资料增补时间
 
 			(
 				SELECT
@@ -638,7 +637,6 @@ loan_process.material_review,
 					orders.id = loan_process_log.order_id
 				AND task_definition_key = 'usertask_vehicle_information'
 			) AS carMaterialCreateTime,
-			#提车资料提交时间
 
 			(
 				SELECT
@@ -651,7 +649,7 @@ loan_process.material_review,
 				ORDER BY
 					id DESC
 				LIMIT 1
-			) AS express_sendbank_date #合同上缴银行日期
+			) AS express_sendbank_date
 		FROM
 			loan_order orders
 		LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -679,7 +677,7 @@ loan_process.material_review,
                     #{item}
                 </foreach>
             </if>
-            loan_process.material_review IN (1, 3)
+            and loan_process.material_review IN (1, 3)
         </where>
 	) t
     </select>
@@ -697,7 +695,6 @@ SELECT
 	vehicle_information.license_plate_number,
 	cardetail.price,
 	loan_financial_plan.loan_amount,
-	#贷款金额
 	loan_financial_plan.bank_period_principal,
 	(
 		SELECT
@@ -711,9 +708,7 @@ SELECT
 			id DESC
 		LIMIT 1
 	) AS remitdate,
-	#垫款日期
 	bank_lend_record.lend_date,
-	#银行放款日期
 	(
 		SELECT
 			loan_data_flow.express_send_date
@@ -726,7 +721,6 @@ SELECT
 			id DESC
 		LIMIT 1
 	) AS sendMaterialToParter_date,
-	#抵押资料公司寄合伙人
 	(
 		SELECT
 			loan_data_flow.express_receive_date
@@ -739,9 +733,7 @@ SELECT
 			id DESC
 		LIMIT 1
 	) AS ParterReceiveMaterial_date,
-	#抵押资料合伙人接收时间
 	process.apply_license_plate_deposit_info,
-	#抵押状态
 	CASE
 WHEN process.apply_license_plate_deposit_info = 1 THEN
 	(
@@ -759,7 +751,6 @@ WHEN process.apply_license_plate_deposit_info = 1 THEN
 ELSE
 	NULL
 END depositTime,
- #抵押日期
 CASE
 WHEN (
 	SELECT
@@ -821,7 +812,6 @@ ELSE
 		) / (24 * 60 * 60)
 	)
 END AS depositOverdueTime,
- #抵押超期天数
 (
 	SELECT
 		user_name
@@ -866,7 +856,7 @@ LEFT JOIN partner partner ON partner.id = base.partner_id
                     #{item}
                 </foreach>
             </if>
-            loan_process.material_review IN (1, 3)
+            and process.material_review IN (1, 3)
         </where>
     </select>
 
