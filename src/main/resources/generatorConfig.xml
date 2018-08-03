@@ -349,7 +349,7 @@
 
 -->
 
-        <table tableName="bank_card_record" domainObjectName="BankCardRecordDO"
+        <table tableName="loan_bank_card_send" domainObjectName="LoanBankCardSendDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

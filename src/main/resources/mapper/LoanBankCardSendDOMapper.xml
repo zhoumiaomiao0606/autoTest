@@ -19,43 +19,7 @@
     express_send_address, express_send_num, express_send_date, gmt_create, gmt_modify
   </sql>
 
-    <!--batchInsert-->
-    <insert id="batchInsert">
 
-        INSERT INTO
-
-            loan_bank_card_send
-
-            (
-                order_id, cardholder_name, cardholder_phone,
-                cardholder_address, repay_card_num, express_send_address,
-                express_send_num, express_send_date, gmt_create,gmt_modify
-            )
-
-        VALUES
-
-        <foreach collection="list" item="item" separator=",">
-            (#{item.orderId,jdbcType=BIGINT}, #{item.cardholderName,jdbcType=VARCHAR},
-            #{item.cardholderPhone,jdbcType=VARCHAR},
-            #{item.cardholderAddress,jdbcType=VARCHAR}, #{item.repayCardNum,jdbcType=VARCHAR},
-            #{item.expressSendAddress,jdbcType=VARCHAR},
-            #{item.expressSendNum,jdbcType=VARCHAR}, #{item.expressSendDate,jdbcType=TIMESTAMP},
-            #{item.gmtCreate,jdbcType=TIMESTAMP},
-            #{item.gmtModify,jdbcType=TIMESTAMP})
-        </foreach>
-
-        ON DUPLICATE KEY UPDATE
-
-        cardholder_name = VALUES(cardholder_name),
-        cardholder_phone = VALUES(cardholder_phone),
-        cardholder_address = VALUES(cardholder_address),
-        repay_card_num = VALUES(repay_card_num),
-        express_send_address = VALUES(express_send_address),
-        express_send_num = VALUES(express_send_num),
-        express_send_date = VALUES(express_send_date),
-        gmt_modify = VALUES(gmt_modify)
-
-    </insert>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
