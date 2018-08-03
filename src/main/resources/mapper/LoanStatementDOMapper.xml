@@ -522,140 +522,59 @@
     <!--=======================================导出 EXCEL 资料审核明细查询=========================================-->
     <select id="exportMaterialReviewQuerys" parameterType="com.yunche.loan.domain.param.ExportMaterialReviewQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMaterialReviewDetailQueryVO" >
         SELECT
-        t.*, CASE
+        t.*,
+        CASE
+
         WHEN t.express_receive_date IS NOT NULL THEN
         floor(
-        (
-        UNIX_TIMESTAMP(
-        DATE_FORMAT(
-        t.express_receive_date,
-        '%Y-%m-%d'
-        )
-        ) - UNIX_TIMESTAMP(
-        DATE_FORMAT(t.remitdate, '%Y-%m-%d')
-        )
-        ) / (24 * 60 * 60)
-        )
-        ELSE
-        floor(
-        (
-        UNIX_TIMESTAMP(
-        DATE_FORMAT(now(), '%Y-%m-%d')
-        ) - UNIX_TIMESTAMP(
-        DATE_FORMAT(t.remitdate, '%Y-%m-%d')
-        )
-        ) / (24 * 60 * 60)
+        ( UNIX_TIMESTAMP( DATE_FORMAT( t.express_receive_date, '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ) ELSE floor(
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
         )
         END AS remitOverdueTime,
         CASE
+
         WHEN t.complete_material_date IS NOT NULL THEN
         floor(
-        (
-        UNIX_TIMESTAMP(
-        DATE_FORMAT(
-        t.complete_material_date,
-        '%Y-%m-%d'
-        )
-        ) - UNIX_TIMESTAMP(
-        DATE_FORMAT(t.remitdate, '%Y-%m-%d')
-        )
-        ) / (24 * 60 * 60)
-        )
-        ELSE
-        floor(
-        (
-        UNIX_TIMESTAMP(
-        DATE_FORMAT(now(), '%Y-%m-%d')
-        ) - UNIX_TIMESTAMP(
-        DATE_FORMAT(t.remitdate, '%Y-%m-%d')
-        )
-        ) / (24 * 60 * 60)
+        ( UNIX_TIMESTAMP( DATE_FORMAT( t.complete_material_date, '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ) ELSE floor(
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
         )
         END AS revievOverdueTime
         FROM
         (
         SELECT
         base_area.area_name,
-        partner. NAME AS partner_name,
-        customer. NAME AS customer_name,
+        partner.NAME AS partner_name,
+        customer.NAME AS customer_name,
         customer.id_card,
         loan_base_info.bank,
         loan_financial_plan.bank_period_principal,
-        (SELECT create_time FROM loan_process_log   WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1)
-        AS remitdate,
-        (
-        SELECT
-        loan_data_flow.express_receive_date
-        FROM
-        loan_data_flow
-        WHERE
-        orders.id = loan_data_flow.order_id
-        AND type = 2
-        ) AS express_receive_date,
-
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
+        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 2 ) AS express_receive_date,
         material_audit.complete_material_date,
-        (SELECT create_time FROM loan_process_log   WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1) AS materialReviewSubmit,
-        case when loan_process.material_review = 1 then '已提交'
-             when loan_process.material_review = 2 then '未提交'
-             when loan_process.material_review = 2 then '已提交'
-             else '未知' end as material_review,
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS materialReviewSubmit,
+        CASE
+
+        WHEN loan_process.material_review = 1 THEN
+        '已提交'
+        WHEN loan_process.material_review = 2 THEN
+        '未提交'
+        WHEN loan_process.material_review = 3 THEN
+        '已打回'
+        ELSE '未知' END AS material_review,
+        ( SELECT count( 1 ) FROM loan_info_supplement WHERE loan_info_supplement.order_id = orders.id ) AS supplementCount,
+        ( SELECT GROUP_CONCAT( DATE_FORMAT( end_time, '%Y-%m-%d  ' ), content ORDER BY id DESC ) FROM loan_info_supplement WHERE loan_info_supplement.order_id = orders.id ) AS supplementContent,
         (
         SELECT
-        count(1)
-        FROM
-        loan_info_supplement
-        WHERE
-        loan_info_supplement.order_id = orders.id
-        ) AS supplementCount,
-        (
-        SELECT
-        GROUP_CONCAT(
-        DATE_FORMAT(end_time, '%Y-%m-%d  '),
-        content
-        ORDER BY
-        id DESC
-        )
-        FROM
-        loan_info_supplement
-        WHERE
-        loan_info_supplement.order_id = orders.id
-        ) AS supplementContent,
-        (
-        SELECT
-        GROUP_CONCAT(
-        DATE_FORMAT(start_time, '%Y-%m-%d至'),
-        DATE_FORMAT(end_time, '%Y-%m-%d')
-        ORDER BY
-        id DESC
-        )
+        GROUP_CONCAT( DATE_FORMAT( start_time, '%Y-%m-%d至' ), DATE_FORMAT( end_time, '%Y-%m-%d' ) ORDER BY id DESC )
         FROM
         loan_info_supplement
         WHERE
         loan_info_supplement.order_id = orders.id
         ) AS supplementTime,
-
-        (
-        SELECT
-        create_time
-        FROM
-        loan_process_log
-        WHERE
-        orders.id = loan_process_log.order_id
-        AND task_definition_key = 'usertask_vehicle_information'
-        ) AS carMaterialCreateTime,
-
-        (
-        SELECT
-        loan_data_flow.express_send_date
-        FROM
-        loan_data_flow
-        WHERE
-        orders.id = loan_data_flow.order_id
-        AND type = 3
-        ORDER BY
-        id DESC
-        LIMIT 1
-        ) AS express_sendbank_date
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND task_definition_key = 'usertask_vehicle_information' ) AS carMaterialCreateTime,
+        ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 3 ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -687,11 +606,17 @@
 
         </where>
         ) t where remitdate between #{startDate} and #{endDate}
-        <if test="endCreditGmtCreate != null">
+        <if test="startDate1 != null">
             AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{startDate1})
         </if>
-        <if test="endCreditGmtCreate != null">
+        <if test="endDate1 != null">
             AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{endDate1})
+        </if>
+        <if test="startDate2 != null">
+            AND TO_DAYS(t.materialReviewSubmit) &lt;= TO_DAYS(#{startDate2})
+        </if>
+        <if test="endDate2 != null">
+            AND TO_DAYS(t.materialReviewSubmit) &lt;= TO_DAYS(#{endDate2})
         </if>
         order by t.express_receive_date desc
     </select>
@@ -700,146 +625,53 @@
     <select id="exportMortgageOverdueQuerys" parameterType="com.yunche.loan.domain.param.ExportMortgageOverdueQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMortgageOverdueQueryVO" >
         SELECT
         base_area.area_name,
-        partner. NAME AS partner_name,
-        customer. NAME AS customer_name,
+        partner.NAME AS partner_name,
+        customer.NAME AS customer_name,
         customer.id_card,
         customer.mobile AS customer_mobile,
         loanbaseinfo.bank,
-        case when car.car_type = 0 then '新车'
-             when car.car_type = 1 then '二手车'
-             else '其他' end as car_type,
+        CASE
+
+        WHEN car.car_type = 0 THEN
+        '新车'
+        WHEN car.car_type = 1 THEN
+        '二手车' ELSE '其他'
+        END AS car_type,
         vehicle_information.license_plate_number,
         cardetail.price,
         loan_financial_plan.loan_amount,
         loan_financial_plan.bank_period_principal,
-        (
-        SELECT
-        create_time
-        FROM
-        loan_process_log
-        WHERE
-        orders.id = loan_process_log.order_id
-        AND loan_process_log.task_definition_key = 'usertask_apply_license_plate_deposit_info'
-        ORDER BY
-        id DESC
-        LIMIT 1
-        ) AS remitdate,
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
         bank_lend_record.lend_date,
-        (
-        SELECT
-        loan_data_flow.express_send_date
-        FROM
-        loan_data_flow
-        WHERE
-        orders.id = loan_data_flow.order_id
-        AND type = 12
-        ORDER BY
-        id DESC
-        LIMIT 1
-        ) AS sendMaterialToParter_date,
-        (
-        SELECT
-        loan_data_flow.express_receive_date
-        FROM
-        loan_data_flow
-        WHERE
-        orders.id = loan_data_flow.order_id
-        AND type = 12
-        ORDER BY
-        id DESC
-        LIMIT 1
-        ) AS ParterReceiveMaterial_date,
-        process.apply_license_plate_deposit_info,
+        ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 12 ORDER BY id DESC LIMIT 1 ) AS sendMaterialToParter_date,
+        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 12 ORDER BY id DESC LIMIT 1 ) AS ParterReceiveMaterial_date,
         CASE
+
         WHEN process.apply_license_plate_deposit_info = 1 THEN
-        (
-        SELECT
-        create_time
-        FROM
-        loan_process_log
-        WHERE
-        order_id = orders.id
-        AND task_definition_key = 'usertask_apply_license_plate_deposit_info'
-        ORDER BY
-        create_time DESC
-        LIMIT 1
-        )
-        ELSE
-        NULL
-        END depositTime,
+        '已提交'
+        WHEN process.apply_license_plate_deposit_info = 2 THEN
+        '未提交'
+        WHEN process.apply_license_plate_deposit_info = 3 THEN
+        '已打回' ELSE '未知'
+        END AS apply_license_plate_deposit_info,
         CASE
-        WHEN (
-        SELECT
-        create_time
-        FROM
-        loan_process_log
-        WHERE
-        order_id = orders.id
-        AND task_definition_key = 'usertask_apply_license_plate_deposit_info'
-        ORDER BY
-        create_time DESC
-        LIMIT 1
-        ) IS NULL THEN
+
+        WHEN process.apply_license_plate_deposit_info  !=1 THEN
+        NULL ELSE a.apply_license_plate_deposit_date
+        END AS depositTime,
+        CASE
+
+        WHEN a.apply_license_plate_deposit_date IS NULL THEN
         floor(
-        (
-        UNIX_TIMESTAMP(
-        DATE_FORMAT(now(), '%Y-%m-%d')
-        ) - UNIX_TIMESTAMP(
-        DATE_FORMAT(
-        (
-        SELECT
-        create_time
-        FROM
-        loan_process_log
-        WHERE
-        order_id = orders.id
-        AND task_definition_key = 'usertask_remit_review'
-        ORDER BY
-        create_time DESC
-        LIMIT 1
-        ),
-        '%Y-%m-%d'
-        )
-        )
-        ) / (24 * 60 * 60)
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( lend.lend_date, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
         )
         ELSE
-        floor(
+        floor
         (
-        UNIX_TIMESTAMP(
-        DATE_FORMAT(
-        (
-        SELECT
-        create_time
-        FROM
-        loan_process_log
-        WHERE
-        order_id = orders.id
-        AND task_definition_key = 'usertask_apply_license_plate_deposit_info'
-        ORDER BY
-        create_time DESC
-        LIMIT 1
-        ),
-        '%Y-%m-%d'
-        )
-        ) - UNIX_TIMESTAMP(
-        DATE_FORMAT(lend.lend_date, '%Y-%m-%d')
-        )
-        ) / (24 * 60 * 60)
+        (UNIX_TIMESTAMP( DATE_FORMAT(a.apply_license_plate_deposit_date, '%Y-%m-%d'  )) - UNIX_TIMESTAMP( DATE_FORMAT( lend.lend_date, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
         )
         END AS depositOverdueTime,
-        (
-        SELECT
-        user_name
-        FROM
-        loan_process_log
-        WHERE
-        order_id = orders.id
-        AND task_definition_key = 'usertask_apply_license_plate_deposit_info'
-        ORDER BY
-        create_time DESC
-        LIMIT 1
-        ) AS submitUser
+        ( SELECT user_name FROM loan_process_log WHERE order_id = orders.id AND task_definition_key = 'usertask_apply_license_plate_deposit_info' ORDER BY create_time DESC LIMIT 1 ) AS submitUser
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -856,6 +688,7 @@
         LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
         LEFT JOIN employee employee ON base.salesman_id = employee.id
         LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN apply_license_plate_deposit_info a ON a.id = orders.apply_license_plate_deposit_info_id
 
         <where>
             and process.apply_license_plate_deposit_info != 0  and bank_lend_record.lend_date between #{startDate} and #{endDate}
