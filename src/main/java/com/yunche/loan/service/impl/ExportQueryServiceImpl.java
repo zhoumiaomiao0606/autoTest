@@ -139,7 +139,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
         ArrayList<String> header = Lists.newArrayList("业务区域", "业务团队", "客户姓名", "身份证号",
                 "贷款银行", "车辆型号", "车牌号", "车价", "贷款金融", "银行分期本金", "垫款日期", "银行放款日期", "抵押资料公司寄合伙人",
-                "抵押资料合伙人接收时间","抵押状态","抵押日期","抵押超期天数","免责","提交人"
+                "抵押资料合伙人接收时间","抵押状态","抵押日期","抵押超期天数","提交人"
         );
 
 

@@ -688,6 +688,7 @@
 
         </where>
         ) t where remitdate between #{startDate} and #{endDate}
+                  and t.express_receive_date between #{startDate1} and #{endDate1}
         order by t.express_receive_date desc
     </select>
 
