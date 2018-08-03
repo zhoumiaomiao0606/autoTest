@@ -259,7 +259,12 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                 int count = bankFileListRecordDOMapper.insertBatch(list);
                 Preconditions.checkArgument(count == list.size(), "批量插入失败");
             }
-
+            list.stream().filter(Objects::nonNull).forEach(e->{
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
+                LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), BaseConst.VALID_STATUS);
+                loanCustomerDO.setLendCard(e.getCardNumber());
+                loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
+            });
             list.parallelStream().filter(Objects::nonNull).forEach(e -> {
 
                 LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
@@ -269,6 +274,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                     approvalParam.setOrderId(e.getOrderId());
                     approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
                     approvalParam.setAction(LoanProcessConst.ACTION_PASS);
+                    approvalParam.setNeedLog(false);
+                    approvalParam.setCheckPermission(false);
                     ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                     LOG.info(e.getOrderId() + approvalResultBean.getMsg());
                 }
