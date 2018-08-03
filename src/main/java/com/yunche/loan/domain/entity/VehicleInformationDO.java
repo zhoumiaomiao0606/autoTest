@@ -60,4 +60,6 @@ public class VehicleInformationDO {
     private String assess_org;
 
     private String assess_use_year;
+
+    private String car_category;
 }

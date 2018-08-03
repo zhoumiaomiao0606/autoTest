@@ -108,7 +108,7 @@
             v.customize_brand                 AS customize_brand,
             f.down_payment_money              AS down_payment_money,
             DATE_FORMAT(i.first_register_date,'%Y-%m-%d')      AS first_register_date,
-            i.car_category                                     AS car_category,
+            v.car_category                                     AS car_category,
             v.assess_org                                       AS assess_org,
             case when  v.assess_use_year is not null then  v.assess_use_year
             else TIMESTAMPDIFF(MONTH,now(),v.register_date) end AS assess_use_year
