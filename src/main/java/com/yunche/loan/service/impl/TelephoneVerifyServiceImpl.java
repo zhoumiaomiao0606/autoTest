@@ -169,7 +169,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
 
             ArrayList<String> header = Lists.newArrayList("申请单号", "客户名称", "证件类型", "证件号",
-                    "业务员", "合伙人团队", "贷款银行", "贷款金额", "银行分期本金", "gps数量", "审核结果", "审核状态", "审核员", "审核时间", "备注"
+                    "业务员", "合伙人团队", "贷款银行", "贷款金额", "银行分期本金", "gps数量", "审核结果", "审核状态", "审核员", "审核时间", "备注","车辆类型"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);
@@ -231,7 +231,8 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 cell = row.createCell(14);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
 
-
+                cell = row.createCell(15);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCar_type());
             }
             //文件宽度自适应
             sheet.autoSizeColumn((short) 0);
@@ -249,6 +250,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             sheet.autoSizeColumn((short) 12);
             sheet.autoSizeColumn((short) 13);
             sheet.autoSizeColumn((short) 14);
+            sheet.autoSizeColumn((short) 15);
 
             workbook.write(out);
             //上传OSS

@@ -21,4 +21,5 @@ public class TelephoneVerifyNodeOrdersVO {
     String op_info;
     String bank_period_principal;
     String bank;
+    String car_type;
 }
