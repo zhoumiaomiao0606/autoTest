@@ -41,10 +41,10 @@ public class ExportRemitDetailQueryVO
     private String sign_rate;
 
     //首付款
-    private String loan_amount;
+    private String down_payment_money;
 
     //贷款金额
-    private String down_payment_money;
+    private String loan_amount;
 
     //银行分期本金
     private String bank_period_principal;
