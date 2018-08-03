@@ -182,7 +182,7 @@
     <sequenceFlow id="flow163" name="提交" sourceRef="usertask_vehicle_information" targetRef="usertask_apply_license_plate_deposit_info">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="servicetask_financial_scheme" name="金融方案" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,总监,财务经理,催收主管,客服,江浙大区经理,华中大区经理,华东大区经理,华南大区经理,华北大区经理,西南大区经理,西北大区经理,东北大区经理,看车网大区经理,哈尔滨GPS专员,GPS专员,哈尔滨客户信息,南京客户信息,台州客户信息,杭州城站客户信息,客户信息"></userTask>
+    <userTask id="servicetask_financial_scheme" name="金融方案" activiti:candidateGroups="管理员,总经理,培训经理,渠道经理,总监,财务经理,催收主管,客服,江浙大区经理,华中大区经理,华东大区经理,华南大区经理,华北大区经理,西南大区经理,西北大区经理,东北大区经理,看车网大区经理,哈尔滨GPS专员,GPS专员,哈尔滨客户信息,南京客户信息,台州客户信息,杭州城站客户信息,客户信息,合伙人客户信息"></userTask>
     <endEvent id="endevent28" name="End"></endEvent>
     <sequenceFlow id="flow164" name="提交" sourceRef="usertask_customer_repay_plan" targetRef="endevent28">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
@@ -392,7 +392,7 @@
     <sequenceFlow id="flow259" name="提交" sourceRef="usertask_bank_card_send" targetRef="endevent35">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_open_card" name="银行开卡" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_bank_open_card" name="银行开卡" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤,杭州城站开卡专员,台州开卡专员"></userTask>
     <sequenceFlow id="flow261" sourceRef="parallelgateway6" targetRef="usertask_bank_open_card"></sequenceFlow>
     <endEvent id="endevent36" name="End"></endEvent>
     <sequenceFlow id="flow262" sourceRef="usertask_bank_open_card" targetRef="endevent36">
@@ -415,8 +415,8 @@
     <sequenceFlow id="flow267" sourceRef="parallelgateway12" targetRef="usertask_data_flow_contract_c2b"></sequenceFlow>
     <sequenceFlow id="flow268" sourceRef="parallelgateway12" targetRef="usertask_material_manage"></sequenceFlow>
     <userTask id="usertask_insurance_scene_record" name="出险登记" activiti:candidateGroups="管理员,总经理,培训经理,出险专员"></userTask>
-    <userTask id="usertask_urge_insurance_work_bench" name="催保工作台" activiti:candidateGroups="管理员,总经理,培训经理"></userTask>
-    <userTask id="usertask_urge_insurance_assign_work_bench" name="催保分配工作台" activiti:candidateGroups="管理员,总经理,培训经理"></userTask>
+    <userTask id="usertask_urge_insurance_work_bench" name="催保工作台" activiti:candidateGroups="管理员,总经理,培训经理,催保专员"></userTask>
+    <userTask id="usertask_urge_insurance_assign_work_bench" name="催保分配工作台" activiti:candidateGroups="管理员,总经理,培训经理,催保主管"></userTask>
     <parallelGateway id="parallelgateway13" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow273" name="提交" sourceRef="usertask_bank_card_record" targetRef="parallelgateway13">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
@@ -1549,7 +1549,7 @@
         <omgdi:waypoint x="6245.0" y="883.0"></omgdi:waypoint>
         <omgdi:waypoint x="6460.0" y="883.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="6245.0" y="883.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="6245.0" y="883.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
