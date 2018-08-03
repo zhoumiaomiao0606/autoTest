@@ -1625,7 +1625,7 @@
                   s.cardholder_phone                AS cardholderPhone,
                   s.cardholder_address              AS cardholderAddress,
                   s.express_send_address            AS expressSendAddress,
-                  s.express_com;                    AS expressCom,
+                  s.express_com                     AS expressCom,
                   s.express_send_num                AS expressSendNum,
                   s.express_send_date               AS expressSendDate,
                   s.gmt_create                      AS gmtCreate,
