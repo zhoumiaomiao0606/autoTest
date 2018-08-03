@@ -357,7 +357,19 @@
 
 
         <select id="selectTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
-            select complex.* from
+            select complex.*,
+            complex_log.user_name                                      AS creditMan,
+            DATE_FORMAT(complex_log.create_time, '%Y-%m-%d %H:%i:%S' ) AS creditDate,
+            CASE  WHEN complex.taskStatus = 3
+                  THEN complex_rej_log.reason
+                  ELSE NULL END                                        AS rejectReason,
+            CASE
+                  WHEN complex.orderStatus = 1  AND complex.taskStatus = 3  AND complex_rej_log.reject_origin_task = 'usertask_material_review'
+                  THEN  FALSE ELSE TRUE END                                  AS canUpdateLoanApply,
+            DATE_FORMAT(complex_credit_log.create_time,'%Y-%m-%d %H:%i:%S')  AS creditGmtCreate,
+            DATE_FORMAT(complex_remit_log.create_time,'%Y-%m-%d %H:%i:%S')   AS remitGmtCreate,
+            DATE_FORMAT(complex_loan_log.create_time,'%Y-%m-%d %H:%i:%S')    AS loanGmtCreate
+            from
             (
             select task.*,
             taskdis.status as taskDisStatus,
@@ -370,21 +382,7 @@
             (#{taskDefinitionKey}) AS taskKey,
             tab.taskStatus AS taskType,
             useGetTaskTypeText(#{taskDefinitionKey},tab.taskStatus,tab.orderStatus) AS taskTypeText,
-            useGetCurrentTask(#{taskDefinitionKey}) AS currentTask,
-            (select user_name from loan_process_log where order_id = tab.id and task_definition_key =
-            #{taskDefinitionKey} order by create_time desc limit 1)
-            AS creditMan,
-            DATE_FORMAT((select create_time from loan_process_log where order_id = tab.id and task_definition_key =
-            #{taskDefinitionKey} order by create_time desc limit 1)
-            ,'%Y-%m-%d %H:%i:%S') AS creditDate,
-            case when tab.taskStatus = 3 then
-            (select reason from loan_reject_log where order_id = tab.id and reject_to_task = #{taskDefinitionKey} order
-            by gmt_create DESC limit 1 )
-            else null end AS rejectReason,
-            case when tab.orderStatus = 1 and tab.taskStatus = 3 and
-            (select reject_origin_task from loan_reject_log where order_id = tab.id and reject_to_task =
-            #{taskDefinitionKey} order by gmt_create DESC limit 1) = 'usertask_material_review'
-            then false else true end AS canUpdateLoanApply
+            useGetCurrentTask(#{taskDefinitionKey}) AS currentTask
             from
             (
             select
@@ -418,47 +416,11 @@
                   join_c.id_card                               AS idCard,
                   join_c.mobile                                AS mobile,
                   join_e.name                                  AS salesman,
-                  (select
-                  case when
-                  END_TIME_ = null
-                  then null
-                  else
-                  DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
-                  end
-                  from act_hi_taskinst
-                  where PROC_INST_ID_ = main.process_inst_id
-                  and TASK_DEF_KEY_ = 'usertask_credit_apply'
-                  order by START_TIME_
-                  desc limit 1)                                AS creditGmtCreate,
-                  (select
-                  case when
-                  END_TIME_ = null
-                  then null
-                  else
-                  DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
-                  end
-                  from act_hi_taskinst
-                  where PROC_INST_ID_ = main.process_inst_id
-                  and TASK_DEF_KEY_ = 'usertask_remit_review'
-                  order by START_TIME_
-                  desc limit 1)                                AS remitGmtCreate,
                   join_b.bank                                  AS bank,
                   join_d.name                                  AS departmentName,
                   join_f.loan_amount                           AS loanAmount,
                   join_f.bank_period_principal                 AS bankPeriodPrincipal,
                   join_f.sign_rate                             AS signRate,
-                  (select
-                  case when
-                  END_TIME_ = null
-                  then null
-                  else
-                  DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
-                  end
-                  from act_hi_taskinst
-                  where PROC_INST_ID_ = main.process_inst_id
-                  and TASK_DEF_KEY_ = 'usertask_loan_apply'
-                  order by START_TIME_
-                  desc limit 1)                                AS loanGmtCreate,
                   join_i.car_type                              AS carType,
                   join_h.license_plate_number                  AS licensePlateNumber,
                   join_p.name                                  AS partner,
@@ -474,8 +436,8 @@
                                                                AS paymentGtCreate,
                   deputy.telephone_verify                      AS telephoneVerifyStatus,
                   join_c.open_card_order                       AS openCardOrder,
-                  useGetSmallCarName(join_i.car_detail_id)        AS carName,
-                  join_i.gps_num                                  AS carGpsNum,
+                  useGetSmallCarName(join_i.car_detail_id)     AS carName,
+                  join_i.gps_num                               AS carGpsNum,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           deputy.credit_apply                     AS taskStatus
@@ -499,16 +461,16 @@
                           deputy.business_pay                     AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'servicetask_financial_scheme'">
-                          deputy.financial_scheme                   AS taskStatus
+                          deputy.financial_scheme                 AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bank_card_record'">
-                          deputy.bank_card_record                   AS taskStatus
+                          deputy.bank_card_record                 AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_car_insurance'">
                           deputy.car_insurance                    AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_vehicle_information'">
-                          deputy.vehicle_information       AS taskStatus
+                          deputy.vehicle_information              AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_apply_license_plate_deposit_info'">
                           deputy.apply_license_plate_deposit_info AS taskStatus
@@ -552,7 +514,7 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply_review'">
                           join_his.id                              AS his_id,
-                          DATE_FORMAT(join_his.start_time ,'%Y-%m-%d %H:%i:%S')          AS his_start_time,
+                          DATE_FORMAT(join_his.start_time ,'%Y-%m-%d %H:%i:%S')            AS his_start_time,
                           useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status)   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_refund_apply'">
@@ -1068,6 +1030,51 @@
                 </choose>
             </if>
             ) complex
+            left JOIN
+            (
+              select main_log.* from loan_process_log main_log
+              inner join
+              (
+                select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1) as id
+                from loan_process_log GROUP BY task_definition_key,order_id
+              ) inner_log on inner_log.id = main_log.id and main_log.task_definition_key = #{taskDefinitionKey}
+            ) complex_log on complex_log.order_id = complex.id
+            left JOIN
+            (
+              select main_log.* from loan_process_log main_log
+              inner join
+              (
+                select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1) as id
+                from loan_process_log GROUP BY task_definition_key,order_id
+              ) inner_log on inner_log.id = main_log.id and main_log.task_definition_key = 'usertask_credit_apply'
+            ) complex_credit_log on complex_credit_log.order_id = complex.id
+            left JOIN
+            (
+              select main_log.* from loan_process_log main_log
+              inner join
+              (
+                select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1) as id
+                from loan_process_log GROUP BY task_definition_key,order_id
+              ) inner_log on inner_log.id = main_log.id and main_log.task_definition_key = 'usertask_remit_review'
+            ) complex_remit_log on complex_remit_log.order_id = complex.id
+            left JOIN
+            (
+              select main_log.* from loan_process_log main_log
+              inner join
+              (
+                select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1) as id
+                from loan_process_log GROUP BY task_definition_key,order_id
+              ) inner_log on inner_log.id = main_log.id and main_log.task_definition_key = 'usertask_loan_apply'
+            ) complex_loan_log on complex_loan_log.order_id = complex.id
+            left join
+            (
+              select main_rej_log.* from loan_reject_log main_rej_log
+              inner join
+              (
+                select SUBSTRING_INDEX(GROUP_CONCAT(id order by gmt_create desc separator ','),',',1) as id
+                from loan_reject_log GROUP BY reject_to_task,order_id
+              ) inner_rej_log on inner_rej_log.id = main_rej_log.id and main_rej_log.reject_to_task = #{taskDefinitionKey}
+            ) complex_rej_log on complex_rej_log.order_id = complex.id
             where 1=1
             and
             case when #{maxGroupLevel} = 3 then 1=1
