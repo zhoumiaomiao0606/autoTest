@@ -438,6 +438,7 @@
                   join_c.open_card_order                       AS openCardOrder,
                   useGetSmallCarName(join_i.car_detail_id)     AS carName,
                   join_i.gps_num                               AS carGpsNum,
+                  join_bp.remit_amount                         AS remitAmount,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           deputy.credit_apply                     AS taskStatus
