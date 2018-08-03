@@ -64,14 +64,16 @@ public class App {
 
 
     @Bean
-    @DistributedLock(timeOut = 60 * 5 * 1000)
-    public CommandLineRunner init(final RepositoryService repositoryService,
-                                  final ActivitiCache activitiCache,
-                                  final ActivitiVersionService activitiVersionService) {
+    public CommandLineRunner init(RepositoryService repositoryService,
+                                  ActivitiCache activitiCache,
+                                  ActivitiVersionService activitiVersionService) {
 
         return new CommandLineRunner() {
-            @Override@DistributedLock(timeOut = 60 * 5 * 1000)
+
+            @Override
+            @DistributedLock(timeOut = 60 * 5 * 1000)
             public void run(String... args) throws Exception {
+
                 // 部署
                 repositoryService.createDeployment()
                         .name("消费贷流程")

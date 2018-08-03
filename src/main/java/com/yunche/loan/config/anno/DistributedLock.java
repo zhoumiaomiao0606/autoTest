@@ -32,9 +32,9 @@ public @interface DistributedLock {
     String val() default "lock:val:random";
 
     /**
-     * 当前锁的：过期时间  （单位：微秒）默认值：1000
+     * 当前锁的：自动过期时间  （单位：微秒）默认值：1000
      *
      * @return
      */
-    int timeOut() default 1000;
+    long timeOut() default 1000;
 }
