@@ -20,13 +20,13 @@
     id, order_id, user_name, id_card, billing_date, first_billing_date, repay_date, first_repayment_date, 
     repay_card_id, receive_date, sendee, status, feature
   </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from bank_card_record
         where id = #{id,jdbcType=BIGINT}
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from bank_card_record
     where id = #{id,jdbcType=BIGINT}
   </delete>
