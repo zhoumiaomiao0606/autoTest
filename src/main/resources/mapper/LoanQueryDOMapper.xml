@@ -805,7 +805,7 @@
 
     WHERE
 
-    customer_id = #{customerId,jdbcType=BIGINT}
+    f.customer_id = #{customerId,jdbcType=BIGINT}
 
     AND
         CASE
@@ -865,7 +865,7 @@
         customer_id = ( select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT} )
 
         <if test="types != null">
-            AND type IN
+            AND f.type IN
             <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -902,7 +902,7 @@
         customer_id = #{customerId,jdbcType=BIGINT}
 
         <if test="types != null">
-            AND type IN
+            AND f.type IN
             <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -935,9 +935,9 @@
 
         WHERE
 
-        customer_id = #{customerId}
+        f.customer_id = #{customerId}
 
-        AND type =  #{type}
+        AND f.type =  #{type}
 
         AND
             CASE

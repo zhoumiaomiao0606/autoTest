@@ -202,7 +202,6 @@ public class FtpUtil {
         }
         logger.info("文件上传============================================= result:" + flag);
         return flag;
-
     }
 
 
