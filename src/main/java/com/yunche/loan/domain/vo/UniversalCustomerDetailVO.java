@@ -97,5 +97,6 @@ public class UniversalCustomerDetailVO {
     private String customer_repay_card_number;
     private String customer_occupation;
     private String customer_bill_send_type;
+    private String customer_ctelzone;
 
 }
