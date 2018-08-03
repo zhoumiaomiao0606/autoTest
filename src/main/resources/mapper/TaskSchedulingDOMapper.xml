@@ -809,18 +809,6 @@
               <if test="endOrderGmtCreate != null">
                   AND TO_DAYS(tab.orderGmtCreate) &lt;= TO_DAYS(#{endOrderGmtCreate})
               </if>
-              <if test="startLoanGmtCreate != null">
-                  AND TO_DAYS(tab.loanGmtCreate) &gt;= TO_DAYS(#{startLoanGmtCreate})
-              </if>
-              <if test="endLoanGmtCreate != null">
-                  AND TO_DAYS(tab.loanGmtCreate) &lt;= TO_DAYS(#{endLoanGmtCreate})
-              </if>
-              <if test="startCreditGmtCreate != null">
-                  AND TO_DAYS(tab.creditGmtCreate) &gt;= TO_DAYS(#{startCreditGmtCreate})
-              </if>
-              <if test="endCreditGmtCreate != null">
-                  AND TO_DAYS(tab.creditGmtCreate) &lt;= TO_DAYS(#{endCreditGmtCreate})
-              </if>
               <if test="taskDefinitionKey == 'usertask_customer_repay_plan'">
                   <if test="isStraighten != null">
                       AND tab.isStraighten = #{isStraighten}
@@ -1095,6 +1083,18 @@
                 </foreach>
             </if>
             end
+            <if test="startLoanGmtCreate != null">
+                AND TO_DAYS(complex_loan_log.create_time) &gt;= TO_DAYS(#{startLoanGmtCreate})
+            </if>
+            <if test="endLoanGmtCreate != null">
+                AND TO_DAYS(complex_loan_log.create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
+            </if>
+            <if test="startCreditGmtCreate != null">
+                AND TO_DAYS(complex_credit_log.create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+            </if>
+            <if test="endCreditGmtCreate != null">
+                AND TO_DAYS(complex_credit_log.create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+            </if>
 
             <choose>
                 <when test="taskDefinitionKey == 'usertask_collection_workbench'">

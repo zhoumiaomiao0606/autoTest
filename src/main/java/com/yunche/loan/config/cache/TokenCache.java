@@ -9,55 +9,55 @@ import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**
- * jjq
+ * @author jjq
  */
 @Component
 public class TokenCache {
 
-    private static final String GPS_ACCESS_TOKEN_KEY = "gpsaccesstoken";
+    private static final String GPS_TOKEN_ACCESS_KEY = "gps:token:access";
 
-    private static final String GPS_FOREVER_ACCESS_TOKEN_KEY = "gpsforeveraccesstoken";
+    private static final String GPS_TOKEN_ACCESS_FOREVER_KEY = "gps:token:access:forever";
 
-    private static final String GPS_REFRESH_TOKEN_KEY = "gpsrefreshtoken";
+    private static final String GPS_TOKEN_REFRESH_KEY = "gps:token:refresh";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    public String[] getToken(){
+
+    public String[] getToken() {
         String[] result = new String[3];
-        BoundValueOperations<String,String> boundValueOpsAcc = stringRedisTemplate.boundValueOps(GPS_ACCESS_TOKEN_KEY);
-        BoundValueOperations<String,String> boundValueOpsRef = stringRedisTemplate.boundValueOps(GPS_REFRESH_TOKEN_KEY);
-        BoundValueOperations<String,String> boundValueOpsForeverAcc = stringRedisTemplate.boundValueOps(GPS_FOREVER_ACCESS_TOKEN_KEY);
+        BoundValueOperations<String, String> boundValueOpsAcc = stringRedisTemplate.boundValueOps(GPS_TOKEN_ACCESS_KEY);
+        BoundValueOperations<String, String> boundValueOpsRef = stringRedisTemplate.boundValueOps(GPS_TOKEN_REFRESH_KEY);
+        BoundValueOperations<String, String> boundValueOpsForeverAcc = stringRedisTemplate.boundValueOps(GPS_TOKEN_ACCESS_FOREVER_KEY);
         String accToken = boundValueOpsAcc.get();
         String refToken = boundValueOpsRef.get();
         String foreverAccToken = boundValueOpsForeverAcc.get();
         if (StringUtils.isNotBlank(accToken)) {
             result[0] = accToken;
-        }else{
+        } else {
             result[0] = "";
         }
         if (StringUtils.isNotBlank(refToken)) {
             result[1] = refToken;
-        }else{
+        } else {
             result[1] = "";
         }
         if (StringUtils.isNotBlank(foreverAccToken)) {
             result[2] = foreverAccToken;
-        }else{
+        } else {
             result[2] = "";
         }
         return result;
     }
 
-    public void insertToken(String accessToken,String refreshToken){
-        BoundValueOperations<String,String> boundValueOpsAcc = stringRedisTemplate.boundValueOps(GPS_ACCESS_TOKEN_KEY);
-        BoundValueOperations<String,String> boundValueOpsRef = stringRedisTemplate.boundValueOps(GPS_REFRESH_TOKEN_KEY);
-        BoundValueOperations<String,String> boundValueOpsForeverAcc = stringRedisTemplate.boundValueOps(GPS_FOREVER_ACCESS_TOKEN_KEY);
+    public void insertToken(String accessToken, String refreshToken) {
+        BoundValueOperations<String, String> boundValueOpsAcc = stringRedisTemplate.boundValueOps(GPS_TOKEN_ACCESS_KEY);
+        BoundValueOperations<String, String> boundValueOpsRef = stringRedisTemplate.boundValueOps(GPS_TOKEN_REFRESH_KEY);
+        BoundValueOperations<String, String> boundValueOpsForeverAcc = stringRedisTemplate.boundValueOps(GPS_TOKEN_ACCESS_FOREVER_KEY);
 
-        boundValueOpsAcc.set(accessToken,7200,TimeUnit.SECONDS);
+        boundValueOpsAcc.set(accessToken, 7200, TimeUnit.SECONDS);
         boundValueOpsRef.set(refreshToken);
         boundValueOpsRef.set(refreshToken);
         boundValueOpsForeverAcc.set(accessToken);
-
     }
 }

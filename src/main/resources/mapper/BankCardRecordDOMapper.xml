@@ -1,175 +1,177 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.BankCardRecordDOMapper">
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankCardRecordDO">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="order_id" jdbcType="BIGINT" property="orderId" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
-    <result column="billing_date" jdbcType="VARCHAR" property="billingDate" />
-    <result column="first_billing_date" jdbcType="TIMESTAMP" property="firstBillingDate" />
-    <result column="repay_date" jdbcType="VARCHAR" property="repayDate" />
-    <result column="first_repayment_date" jdbcType="TIMESTAMP" property="firstRepaymentDate" />
-    <result column="repay_card_id" jdbcType="VARCHAR" property="repayCardId" />
-    <result column="receive_date" jdbcType="TIMESTAMP" property="receiveDate" />
-    <result column="sendee" jdbcType="VARCHAR" property="sendee" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="feature" jdbcType="VARCHAR" property="feature" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankCardRecordDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="order_id" jdbcType="BIGINT" property="orderId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
+        <result column="billing_date" jdbcType="VARCHAR" property="billingDate"/>
+        <result column="first_billing_date" jdbcType="TIMESTAMP" property="firstBillingDate"/>
+        <result column="repay_date" jdbcType="VARCHAR" property="repayDate"/>
+        <result column="first_repayment_date" jdbcType="TIMESTAMP" property="firstRepaymentDate"/>
+        <result column="repay_card_id" jdbcType="VARCHAR" property="repayCardId"/>
+        <result column="receive_date" jdbcType="TIMESTAMP" property="receiveDate"/>
+        <result column="sendee" jdbcType="VARCHAR" property="sendee"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="feature" jdbcType="VARCHAR" property="feature"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, order_id, user_name, id_card, billing_date, first_billing_date, repay_date, first_repayment_date, 
     repay_card_id, receive_date, sendee, status, feature
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from bank_card_record
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bank_card_record
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from bank_card_record
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into bank_card_record (id, order_id, user_name, 
       id_card, billing_date, first_billing_date, 
       repay_date, first_repayment_date, repay_card_id, 
       receive_date, sendee, status, 
       feature)
-    values (#{id,jdbcType=INTEGER}, #{orderId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR},
       #{idCard,jdbcType=VARCHAR}, #{billingDate,jdbcType=VARCHAR}, #{firstBillingDate,jdbcType=TIMESTAMP}, 
       #{repayDate,jdbcType=VARCHAR}, #{firstRepaymentDate,jdbcType=TIMESTAMP}, #{repayCardId,jdbcType=VARCHAR}, 
       #{receiveDate,jdbcType=TIMESTAMP}, #{sendee,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
       #{feature,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO">
-    insert into bank_card_record
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="orderId != null">
-        order_id,
-      </if>
-      <if test="userName != null">
-        user_name,
-      </if>
-      <if test="idCard != null">
-        id_card,
-      </if>
-      <if test="billingDate != null">
-        billing_date,
-      </if>
-      <if test="firstBillingDate != null">
-        first_billing_date,
-      </if>
-      <if test="repayDate != null">
-        repay_date,
-      </if>
-      <if test="firstRepaymentDate != null">
-        first_repayment_date,
-      </if>
-      <if test="repayCardId != null">
-        repay_card_id,
-      </if>
-      <if test="receiveDate != null">
-        receive_date,
-      </if>
-      <if test="sendee != null">
-        sendee,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-      <if test="feature != null">
-        feature,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="orderId != null">
-        #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="userName != null">
-        #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="idCard != null">
-        #{idCard,jdbcType=VARCHAR},
-      </if>
-      <if test="billingDate != null">
-        #{billingDate,jdbcType=VARCHAR},
-      </if>
-      <if test="firstBillingDate != null">
-        #{firstBillingDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="repayDate != null">
-        #{repayDate,jdbcType=VARCHAR},
-      </if>
-      <if test="firstRepaymentDate != null">
-        #{firstRepaymentDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="repayCardId != null">
-        #{repayCardId,jdbcType=VARCHAR},
-      </if>
-      <if test="receiveDate != null">
-        #{receiveDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="sendee != null">
-        #{sendee,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="feature != null">
-        #{feature,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO">
-    update bank_card_record
-    <set>
-      <if test="orderId != null">
-        order_id = #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="userName != null">
-        user_name = #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="idCard != null">
-        id_card = #{idCard,jdbcType=VARCHAR},
-      </if>
-      <if test="billingDate != null">
-        billing_date = #{billingDate,jdbcType=VARCHAR},
-      </if>
-      <if test="firstBillingDate != null">
-        first_billing_date = #{firstBillingDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="repayDate != null">
-        repay_date = #{repayDate,jdbcType=VARCHAR},
-      </if>
-      <if test="firstRepaymentDate != null">
-        first_repayment_date = #{firstRepaymentDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="repayCardId != null">
-        repay_card_id = #{repayCardId,jdbcType=VARCHAR},
-      </if>
-      <if test="receiveDate != null">
-        receive_date = #{receiveDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="sendee != null">
-        sendee = #{sendee,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null">
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="feature != null">
-        feature = #{feature,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into bank_card_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="idCard != null">
+                id_card,
+            </if>
+            <if test="billingDate != null">
+                billing_date,
+            </if>
+            <if test="firstBillingDate != null">
+                first_billing_date,
+            </if>
+            <if test="repayDate != null">
+                repay_date,
+            </if>
+            <if test="firstRepaymentDate != null">
+                first_repayment_date,
+            </if>
+            <if test="repayCardId != null">
+                repay_card_id,
+            </if>
+            <if test="receiveDate != null">
+                receive_date,
+            </if>
+            <if test="sendee != null">
+                sendee,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="feature != null">
+                feature,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null">
+                #{idCard,jdbcType=VARCHAR},
+            </if>
+            <if test="billingDate != null">
+                #{billingDate,jdbcType=VARCHAR},
+            </if>
+            <if test="firstBillingDate != null">
+                #{firstBillingDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="repayDate != null">
+                #{repayDate,jdbcType=VARCHAR},
+            </if>
+            <if test="firstRepaymentDate != null">
+                #{firstRepaymentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="repayCardId != null">
+                #{repayCardId,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveDate != null">
+                #{receiveDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sendee != null">
+                #{sendee,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                #{feature,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO">
+        update bank_card_record
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null">
+                id_card = #{idCard,jdbcType=VARCHAR},
+            </if>
+            <if test="billingDate != null">
+                billing_date = #{billingDate,jdbcType=VARCHAR},
+            </if>
+            <if test="firstBillingDate != null">
+                first_billing_date = #{firstBillingDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="repayDate != null">
+                repay_date = #{repayDate,jdbcType=VARCHAR},
+            </if>
+            <if test="firstRepaymentDate != null">
+                first_repayment_date = #{firstRepaymentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="repayCardId != null">
+                repay_card_id = #{repayCardId,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveDate != null">
+                receive_date = #{receiveDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sendee != null">
+                sendee = #{sendee,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO">
     update bank_card_record
     set order_id = #{orderId,jdbcType=BIGINT},
       user_name = #{userName,jdbcType=VARCHAR},
@@ -183,50 +185,50 @@
       sendee = #{sendee,jdbcType=VARCHAR},
       status = #{status,jdbcType=TINYINT},
       feature = #{feature,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <update id="updateByOrderId" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO" >
-    update bank_card_record
-    <set >
-      <if test="userName != null" >
-        user_name = #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="billingDate != null" >
-        billing_date = #{billingDate,jdbcType=VARCHAR},
-      </if>
-      <if test="firstBillingDate != null" >
-        first_billing_date = #{firstBillingDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="repayCardId != null" >
-        repay_card_id = #{repayCardId,jdbcType=VARCHAR},
-      </if>
-      <if test="receiveDate != null" >
-        receive_date = #{receiveDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="repayDate != null" >
-        repay_date = #{repayDate,jdbcType=VARCHAR},
-      </if>
-      <if test="firstRepaymentDate!=null">
-        first_repayment_date = #{firstRepaymentDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="sendee != null" >
-        sendee = #{sendee,jdbcType=VARCHAR},
-      </if>
-      <if test="status != null" >
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="feature != null" >
-        feature = #{feature,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </update>
+    <update id="updateByOrderId" parameterType="com.yunche.loan.domain.entity.BankCardRecordDO">
+        update bank_card_record
+        <set>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="billingDate != null">
+                billing_date = #{billingDate,jdbcType=VARCHAR},
+            </if>
+            <if test="firstBillingDate != null">
+                first_billing_date = #{firstBillingDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="repayCardId != null">
+                repay_card_id = #{repayCardId,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveDate != null">
+                receive_date = #{receiveDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="repayDate != null">
+                repay_date = #{repayDate,jdbcType=VARCHAR},
+            </if>
+            <if test="firstRepaymentDate!=null">
+                first_repayment_date = #{firstRepaymentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sendee != null">
+                sendee = #{sendee,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="feature != null">
+                feature = #{feature,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
 
-  <select id="selectByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from bank_card_record
-    where order_id = #{orderId}
-  </select>
+    <select id="selectByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bank_card_record
+        where order_id = #{orderId}
+    </select>
 </mapper>

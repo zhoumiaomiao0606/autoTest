@@ -23,15 +23,16 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }),
-        @Signature(type = Executor.class, method = "query", args = { MappedStatement.class, Object.class,
-                RowBounds.class, ResultHandler.class }) })
+@Intercepts({@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
+        @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class,
+                RowBounds.class, ResultHandler.class})})
 public class SqlTimeInterceptor implements Interceptor {
 
     @SuppressWarnings("unused")
     private Properties properties;
     private static Logger log = LoggerFactory.getLogger(SqlTimeInterceptor.class);
 
+    @Override
     public Object intercept(Invocation invocation) throws Throwable {
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
         Object parameter = null;
@@ -109,10 +110,12 @@ public class SqlTimeInterceptor implements Interceptor {
         return sql;
     }
 
+    @Override
     public Object plugin(Object target) {
         return Plugin.wrap(target, this);
     }
 
+    @Override
     public void setProperties(Properties properties0) {
         this.properties = properties0;
     }

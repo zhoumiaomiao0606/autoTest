@@ -222,7 +222,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval);
 
         // 生成客户还款计划
-        createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO.getProcessInstId());
+        createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
 
         // [领取]完成
         finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
@@ -308,21 +308,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param taskDefinitionKey
      * @param loanProcessDO
-     * @param processInstId
+     * @param loanOrderDO
      */
-    private void createRepayPlan(String taskDefinitionKey, LoanProcessDO loanProcessDO, String processInstId) {
+    private void createRepayPlan(String taskDefinitionKey, LoanProcessDO loanProcessDO, LoanOrderDO loanOrderDO) {
 
         if (BANK_CARD_RECORD.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(loanProcessDO.getTelephoneVerify())) {
 
             // AUTO_PASS[客户还款计划]
-            autoCompleteTask(processInstId, loanProcessDO.getOrderId(), CUSTOMER_REPAY_PLAN.getCode());
+            autoCompleteTask(loanOrderDO.getProcessInstId(), loanProcessDO.getOrderId(), CUSTOMER_REPAY_PLAN.getCode());
 
-            //贷款期数
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanProcessDO.getOrderId());
+            // 贷款期数
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
             Long bankCardRecordId = loanOrderDO.getBankCardRecordId();
             BigDecimal eachMonthRepay = loanFinancialPlanDO.getEachMonthRepay();
-            BankCardRecordDO bankCardRecordDO = bankCardRecordDOMapper.selectByPrimaryKey(bankCardRecordId.intValue());
+            BankCardRecordDO bankCardRecordDO = bankCardRecordDOMapper.selectByPrimaryKey(bankCardRecordId);
             Integer loanTime = loanFinancialPlanDO.getLoanTime();// 贷款期数
             Date firstRepaymentDate = bankCardRecordDO.getFirstRepaymentDate();// 首月还款日
 

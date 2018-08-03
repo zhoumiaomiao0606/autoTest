@@ -1,5 +1,6 @@
 package com.yunche.loan;
 
+import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.cache.ActivitiCache;
 import com.yunche.loan.service.ActivitiVersionService;
 import org.activiti.engine.RepositoryService;
@@ -63,15 +64,16 @@ public class App {
 
 
     @Bean
-    public CommandLineRunner init(final RepositoryService repositoryService,
-//                                  final RuntimeService runtimeService,
-//                                  final TaskService taskService,
-                                  final ActivitiCache activitiCache,
-                                  final ActivitiVersionService activitiVersionService) {
+    public CommandLineRunner init(RepositoryService repositoryService,
+                                  ActivitiCache activitiCache,
+                                  ActivitiVersionService activitiVersionService) {
 
         return new CommandLineRunner() {
+
             @Override
+            @DistributedLock(timeOut = 60 * 5 * 1000)
             public void run(String... args) throws Exception {
+
                 // 部署
                 repositoryService.createDeployment()
                         .name("消费贷流程")
@@ -83,11 +85,6 @@ public class App {
 
                 // 流程替换
                 activitiVersionService.replaceActivitiVersion();
-
-//                System.out.println("Number of process definitions : "
-//                        + repositoryService.createProcessDefinitionQuery().count());
-//                System.out.println("Number of tasks : " + taskService.createTaskQuery().count());
-//                System.out.println("Number of tasks after process start: " + taskService.createTaskQuery().count());
             }
         };
 
