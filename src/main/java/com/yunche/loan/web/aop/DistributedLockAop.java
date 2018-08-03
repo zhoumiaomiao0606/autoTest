@@ -67,16 +67,23 @@ public class DistributedLockAop {
         // 获取到锁
         if (getLock) {
 
-            // 执行原方法
-            Object result = point.proceed();
+            try {
 
-            // 执行完：再释放锁
-            boolean releaseLock = lockUtils.releaseLock(key, val);
+                // 执行原方法
+                Object result = point.proceed();
 
-            // 释放锁成功
-            if (releaseLock) {
                 return result;
+
+            } catch (Exception ex) {
+
+                throw ex;
+
+            } finally {
+
+                // 释放锁
+                boolean releaseLock = lockUtils.releaseLock(key, val);
             }
+
         }
 
         return null;
