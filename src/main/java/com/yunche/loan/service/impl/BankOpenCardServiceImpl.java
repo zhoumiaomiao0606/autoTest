@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.io.*;
@@ -214,6 +215,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
      * @return
      */
     @Override
+    @Transactional
     public boolean importFile(String ossKey) {
 
         try {
@@ -381,6 +383,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
             bankFileListRecordDO.setIsCustomer(K_YORN_NO);
             return bankFileListRecordDO;
         } else {
+            bankFileListRecordDO.setIsCustomer(K_YORN_YES);
             bankFileListRecordDO.setCustomerId(loanOrderDO.getLoanCustomerId());
         }
 
