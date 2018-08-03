@@ -10,7 +10,5 @@ public class RenewInsuranceParam extends RenewInsuranceDO {
 
     private String employeeName;
 
-    private String sms;
-
     private String telphone;
 }
