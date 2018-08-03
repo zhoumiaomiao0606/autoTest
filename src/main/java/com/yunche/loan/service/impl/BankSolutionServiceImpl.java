@@ -546,6 +546,33 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         }
 
+        if(CollectionUtils.isEmpty(pictures)){
+            UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,new Byte("2"));
+            if(authSignPic == null){
+                throw new BizException("最少需要一张图片");
+            }
+
+            if(CollectionUtils.isEmpty(authSignPic.getUrls())){
+                throw new BizException("最少需要一张图片");
+            }
+            if(StringUtils.isBlank(authSignPic.getUrls().get(0))){
+                throw new BizException("最少需要一张图片");
+            }
+
+            ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+            picture.setPicid(TermFileEnum.SELF_CERTIFICATE_FRONT.getValue());
+            String picName = GeneratorIDUtil.execute();
+            picture.setPicname(picName);
+            picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.SELF_CERTIFICATE_FRONT.getKey()));
+            pictures.add(picture);
+
+            ICBCApiRequest.PicQueue picQueue = new ICBCApiRequest.PicQueue();
+            picQueue.setPicId(TermFileEnum.SELF_CERTIFICATE_FRONT.getValue());
+            picQueue.setPicName(picName);
+            picQueue.setUrl(authSignPic.getUrls().get(0));
+            queue.add(picQueue);
+        }
+
         if(pictures.size() == 0){
             throw new BizException("最少需要一张图片");
         }

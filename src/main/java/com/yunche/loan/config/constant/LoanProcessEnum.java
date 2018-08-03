@@ -65,6 +65,7 @@ public enum LoanProcessEnum {
     REFUND_APPLY_REVIEW("usertask_refund_apply_review", "退款申请审核"),
     CUSTOMER_REPAY_PLAN_RECORD("usertask_customer_repay_plan_record", "银行还款计划记录"),
     COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
+    INSURANCE_SCENE_RECORD("usertask_insurance_scene_record", "出险登记"),
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
 
 

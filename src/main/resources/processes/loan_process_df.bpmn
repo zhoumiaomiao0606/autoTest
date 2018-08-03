@@ -419,6 +419,7 @@
     </sequenceFlow>
     <sequenceFlow id="flow267" sourceRef="parallelgateway12" targetRef="usertask_data_flow_contract_c2b"></sequenceFlow>
     <sequenceFlow id="flow268" sourceRef="parallelgateway12" targetRef="usertask_material_manage"></sequenceFlow>
+    <userTask id="usertask_insurance_scene_record" name="出险登记"></userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -751,6 +752,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="parallelgateway12" id="BPMNShape_parallelgateway12">
         <omgdc:Bounds height="40.0" width="40.0" x="4947.0" y="685.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_insurance_scene_record" id="BPMNShape_usertask_insurance_scene_record">
+        <omgdc:Bounds height="55.0" width="105.0" x="1820.0" y="150.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="36.0" y="1100.0"></omgdi:waypoint>
@@ -1273,7 +1277,7 @@
         <omgdi:waypoint x="4850.0" y="864.0"></omgdi:waypoint>
         <omgdi:waypoint x="5042.0" y="863.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="4859.0" y="856.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="62.0" x="4859.0" y="856.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow195" id="BPMNEdge_flow195">
@@ -1532,7 +1536,7 @@
         <omgdi:waypoint x="4828.0" y="704.0"></omgdi:waypoint>
         <omgdi:waypoint x="4947.0" y="705.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="4848.0" y="699.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="73.0" x="4848.0" y="699.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow267" id="BPMNEdge_flow267">
