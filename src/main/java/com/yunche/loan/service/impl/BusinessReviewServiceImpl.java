@@ -10,7 +10,7 @@ import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BusinessReviewService;
-import com.yunche.loan.service.LoanInfoSupplementService;
+import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
 
     @Autowired
-    private LoanInfoSupplementService loanInfoSupplementService;
+    private LoanQueryService loanQueryService;
 
 
     @Override
@@ -62,7 +62,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
         recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
-        recombinationVO.setSupplement(loanInfoSupplementService.history(orderId));
+        recombinationVO.setSupplement(loanQueryService.history(orderId));
         recombinationVO.setCustomers(customers);
         return recombinationVO;
     }
