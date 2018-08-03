@@ -409,17 +409,17 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
                         throw new BizException("第" + rowNum + "行，第12列格式有误：" + row[11]);
                     }
 
-                    try {
-                        loanDataFlowDO.setFlowOutDeptName(row[12]);
-                    } catch (Exception e) {
-                        throw new BizException("第" + rowNum + "行，第13列格式有误：" + row[12]);
-                    }
-
-                    try {
-                        loanDataFlowDO.setFlowInDeptName(row[13]);
-                    } catch (Exception e) {
-                        throw new BizException("第" + rowNum + "行，第14列格式有误：" + row[13]);
-                    }
+//                    try {
+//                        loanDataFlowDO.setFlowOutDeptName(row[12]);
+//                    } catch (Exception e) {
+//                        throw new BizException("第" + rowNum + "行，第13列格式有误：" + row[12]);
+//                    }
+//
+//                    try {
+//                        loanDataFlowDO.setFlowInDeptName(row[13]);
+//                    } catch (Exception e) {
+//                        throw new BizException("第" + rowNum + "行，第14列格式有误：" + row[13]);
+//                    }
 
                     loanDataFlowDO.setGmtModify(new Date());
 
