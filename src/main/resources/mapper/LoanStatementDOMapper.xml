@@ -524,7 +524,7 @@
         SELECT
         t.*, CASE
         WHEN t.express_receive_date IS NOT NULL THEN
-        ROUND(
+        floor(
         (
         UNIX_TIMESTAMP(
         DATE_FORMAT(
@@ -537,7 +537,7 @@
         ) / (24 * 60 * 60)
         )
         ELSE
-        ROUND(
+        floor(
         (
         UNIX_TIMESTAMP(
         DATE_FORMAT(now(), '%Y-%m-%d')
@@ -549,7 +549,7 @@
         END AS remitOverdueTime,
         CASE
         WHEN t.complete_material_date IS NOT NULL THEN
-        ROUND(
+        floor(
         (
         UNIX_TIMESTAMP(
         DATE_FORMAT(
@@ -562,7 +562,7 @@
         ) / (24 * 60 * 60)
         )
         ELSE
-        ROUND(
+        floor(
         (
         UNIX_TIMESTAMP(
         DATE_FORMAT(now(), '%Y-%m-%d')
@@ -595,12 +595,13 @@
 
         material_audit.complete_material_date,
         (SELECT create_time FROM loan_process_log   WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1) AS materialReviewSubmit,
-
-        loan_process.material_review,
-
+        case when loan_process.material_review = 1 then '已提交'
+             when loan_process.material_review = 2 then '未提交'
+             when loan_process.material_review = 2 then '已提交'
+             else '未知' end as material_review,
         (
         SELECT
-        count(type = 2)
+        count(1)
         FROM
         loan_info_supplement
         WHERE
@@ -618,7 +619,6 @@
         loan_info_supplement
         WHERE
         loan_info_supplement.order_id = orders.id
-        AND type = 2
         ) AS supplementContent,
         (
         SELECT
@@ -632,7 +632,6 @@
         loan_info_supplement
         WHERE
         loan_info_supplement.order_id = orders.id
-        AND type = 2
         ) AS supplementTime,
 
         (
@@ -688,7 +687,12 @@
 
         </where>
         ) t where remitdate between #{startDate} and #{endDate}
-                  and t.express_receive_date between #{startDate1} and #{endDate1}
+        <if test="endCreditGmtCreate != null">
+            AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{startDate1})
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{endDate1})
+        </if>
         order by t.express_receive_date desc
     </select>
 
@@ -776,7 +780,7 @@
         create_time DESC
         LIMIT 1
         ) IS NULL THEN
-        round(
+        floor(
         (
         UNIX_TIMESTAMP(
         DATE_FORMAT(now(), '%Y-%m-%d')
@@ -800,7 +804,7 @@
         ) / (24 * 60 * 60)
         )
         ELSE
-        round(
+        floor(
         (
         UNIX_TIMESTAMP(
         DATE_FORMAT(
