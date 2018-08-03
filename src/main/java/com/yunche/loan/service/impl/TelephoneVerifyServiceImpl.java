@@ -4,6 +4,7 @@ import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
+import com.yunche.loan.config.constant.CarTypeEnum;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
@@ -232,7 +233,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
 
                 cell = row.createCell(15);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCar_type());
+                cell.setCellValue(CarTypeEnum.getValueByKey(telephoneVerifyNodeOrdersVO.getCar_type()));
             }
             //文件宽度自适应
             sheet.autoSizeColumn((short) 0);
