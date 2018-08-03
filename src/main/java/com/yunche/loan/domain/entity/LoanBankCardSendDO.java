@@ -19,6 +19,8 @@ public class LoanBankCardSendDO {
 
     private String expressSendAddress;
 
+    private Byte expressCom;
+
     private String expressSendNum;
 
     private Date expressSendDate;
