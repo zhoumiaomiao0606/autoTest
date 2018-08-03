@@ -177,12 +177,699 @@
 		 </foreach>
 	 </if>
 	 <if test="bankList != null and bankList.size() > 0">
-		 and
-		 bank in
-		 <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
-			 #{item}
-		 </foreach>
-	 </if>
+     and
+     bank in
+     <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+         #{item}
+     </foreach>
+     </if>
     order by op_time asc
  </select>
+    <!--=======================================导出 EXCEL 银行征信查询=========================================-->
+    <select id="exportBankCreditQuerys" parameterType="com.yunche.loan.domain.param.ExportBankCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportBankCreditQueryVO">
+        SELECT
+	principal_area.area_name,
+	-- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
+	CASE
+WHEN customer.cust_type = 1 THEN
+	'主贷人'
+WHEN customer.cust_type = 2 THEN
+	'共贷人'
+WHEN customer.cust_type = 3 THEN
+	'担保人'
+WHEN customer.cust_type = 4 THEN
+	'紧急联系人'
+ELSE
+	NULL
+END AS cust_type,
+ customer. NAME AS customer_name,
+ customer.id_card AS customer_id_card,
+ customer.mobile AS customer_mobile,
+ principal_base.bank,
+ principal_partner. NAME AS partner_name,
+ employee. NAME AS salesman_name,
+ principal. NAME AS principal_name,
+ -- 与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
+CASE
+WHEN customer.id = customer.principal_cust_id THEN
+	'本人'
+WHEN customer.cust_relation = 0 THEN
+	'本人'
+WHEN customer.cust_relation = 1 THEN
+	'配偶'
+WHEN customer.cust_relation = 2 THEN
+	'父母'
+WHEN customer.cust_relation = 3 THEN
+	'子女'
+WHEN customer.cust_relation = 4 THEN
+	'兄弟姐妹'
+WHEN customer.cust_relation = 5 THEN
+	'亲戚'
+WHEN customer.cust_relation = 6 THEN
+	'朋友'
+WHEN customer.cust_relation = 7 THEN
+	'同学'
+WHEN customer.cust_relation = 8 THEN
+	'同事'
+WHEN customer.cust_relation = 9 THEN
+	'其他'
+ELSE
+	NULL
+END AS cust_relation,
+ -- 征信结果: 0-不通过;1-通过;2-关注;
+CASE
+WHEN credit_info.result = 0 THEN
+	'不通过'
+WHEN credit_info.result = 1 THEN
+	'通过'
+WHEN credit_info.result = 2 THEN
+	'关注'
+WHEN credit_info.result = 3 THEN
+	'银行退回'
+ELSE
+	NULL
+END AS credit_result,
+ (
+	SELECT
+		create_time
+	FROM
+		loan_process_log
+	WHERE
+		task_definition_key = 'usertask_credit_apply'
+	AND order_id = principal_orders.id
+	ORDER BY
+		create_time
+	LIMIT 1
+) AS credit_apply_time,
+ credit_info.gmt_modify AS credit_query_time,
+ (
+	SELECT
+		user_name
+	FROM
+		loan_process_log
+	WHERE
+		task_definition_key = 'usertask_bank_credit_record'
+	AND order_id = principal_orders.id
+	ORDER BY
+		create_time
+	LIMIT 1
+) AS gmt_user
+FROM
+	loan_credit_info credit_info
+LEFT JOIN loan_customer customer ON credit_info.customer_id = customer.id
+LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
+LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
+LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
+LEFT JOIN partner principal_partner ON principal_partner.id = principal_base.partner_id
+LEFT JOIN base_area principal_area ON principal_area.area_id = principal_base.area_id
+LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
+
+        <where>
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+	credit_info.type = 1
+        </where>
+    </select>
+
+    <!--=======================================导出 EXCEL 社会征信查询=========================================-->
+    <select id="exportSocialCreditQuerys" parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO" >
+SELECT
+	principal_area.area_name,
+	-- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
+	CASE
+WHEN customer.cust_type = 1 THEN
+	'主贷人'
+WHEN customer.cust_type = 2 THEN
+	'共贷人'
+WHEN customer.cust_type = 3 THEN
+	'担保人'
+WHEN customer.cust_type = 4 THEN
+	'紧急联系人'
+ELSE
+	NULL
+END AS cust_type,
+ customer. NAME AS customer_name,
+ customer.id_card AS customer_id_card,
+ customer.mobile AS customer_mobile,
+ principal_base.bank,
+ principal_partner. NAME AS partner_name,
+ employee. NAME AS salesman_name,
+ principal. NAME AS principal_name,
+ -- 与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
+CASE
+WHEN customer.id = customer.principal_cust_id THEN
+	'本人'
+WHEN customer.cust_relation = 0 THEN
+	'本人'
+WHEN customer.cust_relation = 1 THEN
+	'配偶'
+WHEN customer.cust_relation = 2 THEN
+	'父母'
+WHEN customer.cust_relation = 3 THEN
+	'子女'
+WHEN customer.cust_relation = 4 THEN
+	'兄弟姐妹'
+WHEN customer.cust_relation = 5 THEN
+	'亲戚'
+WHEN customer.cust_relation = 6 THEN
+	'朋友'
+WHEN customer.cust_relation = 7 THEN
+	'同学'
+WHEN customer.cust_relation = 8 THEN
+	'同事'
+WHEN customer.cust_relation = 9 THEN
+	'其他'
+ELSE
+	NULL
+END AS cust_relation,
+ -- 征信结果: 0-不通过;1-通过;2-关注;
+CASE
+WHEN credit_info.result = 0 THEN
+	'不通过'
+WHEN credit_info.result = 1 THEN
+	'通过'
+WHEN credit_info.result = 2 THEN
+	'关注'
+WHEN credit_info.result = 3 THEN
+	'银行退回'
+ELSE
+	NULL
+END AS credit_result,
+ (
+	SELECT
+		create_time
+	FROM
+		loan_process_log
+	WHERE
+		task_definition_key = 'usertask_credit_apply'
+	AND order_id = principal_orders.id
+	ORDER BY
+		create_time
+	LIMIT 1
+) AS credit_apply_time,
+ credit_info.gmt_modify AS credit_query_time,
+ (
+	SELECT
+		user_name
+	FROM
+		loan_process_log
+	WHERE
+		task_definition_key = 'usertask_bank_credit_record'
+	AND order_id = principal_orders.id
+	ORDER BY
+		create_time
+	LIMIT 1
+) AS gmt_user
+FROM
+	loan_credit_info credit_info
+LEFT JOIN loan_customer customer ON credit_info.customer_id = customer.id
+LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
+LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
+LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
+LEFT JOIN partner principal_partner ON principal_partner.id = principal_base.partner_id
+LEFT JOIN base_area principal_area ON principal_area.area_id = principal_base.area_id
+LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
+        <where>
+            <if test="partnerList != null and partnerList.size() > 0">
+                and
+                partner_id in
+                <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            credit_info.type = 2
+        </where>
+    </select>
+
+    <!--=======================================导出 EXCEL 财务垫款明细查询=========================================-->
+    <select id="exportRemitDetailQuerys" parameterType="com.yunche.loan.domain.param.ExportRemitDetailQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryVO" >
+
+        SELECT
+	base_area.area_name,
+	customer. NAME AS customer_name,
+	customer.id_card AS customer_id_card,
+	customer.mobile AS customer_mobile,
+	loaninfo.bank,
+	partner. NAME AS partner_name,
+	employee. NAME AS salesman_name,
+	car.car_type,
+	cardetail.price,
+	loan_financial_plan.sign_rate,
+	loan_financial_plan.loan_amount,
+	loan_financial_plan.down_payment_money,
+	loan_financial_plan.bank_period_principal,
+	remit_details.remit_amount,
+	orders.gmt_create,
+	(
+		SELECT
+			loan_process_log.create_time
+		FROM
+			loan_process_log
+		WHERE
+			order_id = orders.id
+		AND task_definition_key = 'usertask_remit_review'
+		ORDER BY
+			create_time DESC
+		LIMIT 1
+	) submitTime,
+	(
+		SELECT
+			loan_process_log.user_name
+		FROM
+			loan_process_log
+		WHERE
+			order_id = orders.id
+		AND task_definition_key = 'usertask_remit_review'
+		ORDER BY
+			create_time DESC
+		LIMIT 1
+	) username
+FROM
+	loan_order orders
+LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+LEFT JOIN loan_base_info loaninfo ON orders.loan_base_info_id = loaninfo.id
+LEFT JOIN base_area ON loaninfo.area_id = base_area.area_id
+LEFT JOIN loan_car_info car ON orders.loan_car_info_id = car.id
+LEFT JOIN car_detail cardetail ON cardetail.id = car.car_detail_id
+LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+LEFT JOIN remit_details ON orders.remit_details_id = remit_details.id
+LEFT JOIN loan_process process ON orders.id = process.order_id
+LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
+LEFT JOIN employee employee ON base.salesman_id = employee.id
+LEFT JOIN partner partner ON partner.id = base.partner_id
+
+        <where>
+            <if test="partnerList != null and partnerList.size() > 0">
+                and
+                partner_id in
+                <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            process.loan_review = 1
+        </where>
+    </select>
+
+    <!--=======================================导出 EXCEL 资料审核明细查询=========================================-->
+    <select id="exportMaterialReviewQuerys" parameterType="com.yunche.loan.domain.param.ExportMaterialReviewQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMaterialReviewDetailQueryVO" >
+SELECT
+	t.*, CASE
+WHEN t.express_receive_date IS NOT NULL THEN
+	ROUND(
+		(
+			UNIX_TIMESTAMP(
+				DATE_FORMAT(
+					t.express_receive_date,
+					'%Y-%m-%d'
+				)
+			) - UNIX_TIMESTAMP(
+				DATE_FORMAT(t.remitdate, '%Y-%m-%d')
+			)
+		) / (24 * 60 * 60)
+	)
+ELSE
+	ROUND(
+		(
+			UNIX_TIMESTAMP(
+				DATE_FORMAT(now(), '%Y-%m-%d')
+			) - UNIX_TIMESTAMP(
+				DATE_FORMAT(t.remitdate, '%Y-%m-%d')
+			)
+		) / (24 * 60 * 60)
+	)
+END AS remitOverdueTime,
+ CASE
+WHEN t.complete_material_date IS NOT NULL THEN
+	ROUND(
+		(
+			UNIX_TIMESTAMP(
+				DATE_FORMAT(
+					t.complete_material_date,
+					'%Y-%m-%d'
+				)
+			) - UNIX_TIMESTAMP(
+				DATE_FORMAT(t.remitdate, '%Y-%m-%d')
+			)
+		) / (24 * 60 * 60)
+	)
+ELSE
+	ROUND(
+		(
+			UNIX_TIMESTAMP(
+				DATE_FORMAT(now(), '%Y-%m-%d')
+			) - UNIX_TIMESTAMP(
+				DATE_FORMAT(t.remitdate, '%Y-%m-%d')
+			)
+		) / (24 * 60 * 60)
+	)
+END AS revievOverdueTime
+FROM
+	(
+		SELECT
+			base_area.area_name,
+			#业务区域
+			partner. NAME AS partner_name,
+			#业务团队
+			customer. NAME AS customer_name,
+			#客户姓名
+			customer.id_card,
+			#身份证号
+			loan_base_info.bank,
+			#贷款银行
+			loan_financial_plan.bank_period_principal,
+			#银行分期本金
+			(SELECT create_time FROM loan_process_log   WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_apply_license_plate_deposit_info' ORDER BY id DESC LIMIT 1)
+										AS remitdate,
+			#垫款日期  --  remit汇款
+			(
+				SELECT
+					loan_data_flow.express_receive_date
+				FROM
+					loan_data_flow
+				WHERE
+					orders.id = loan_data_flow.order_id
+				AND type = 2
+			) AS express_receive_date,
+			#资料接收日期
+
+			material_audit.complete_material_date,
+			#资料齐全日期
+
+
+      #---资料审核提交日期
+(SELECT create_time FROM loan_process_log   WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1) AS materialReviewSubmit,
+
+			#---资料审核状态
+loan_process.material_review,
+
+      #资料增补次数
+			(
+				SELECT
+					count(type = 2)
+				FROM
+					loan_info_supplement
+				WHERE
+					loan_info_supplement.order_id = orders.id
+			) AS supplementCount,
+			#增补次数
+			(
+				SELECT
+					GROUP_CONCAT(
+						DATE_FORMAT(end_time, '%Y-%m-%d  '),
+						content
+					ORDER BY
+						id DESC
+					)
+				FROM
+					loan_info_supplement
+				WHERE
+					loan_info_supplement.order_id = orders.id
+				AND type = 2
+			) AS supplementContent,
+			#增补内容
+			(
+				SELECT
+					GROUP_CONCAT(
+						DATE_FORMAT(start_time, '%Y-%m-%d至'),
+						DATE_FORMAT(end_time, '%Y-%m-%d')
+					ORDER BY
+						id DESC
+					)
+				FROM
+					loan_info_supplement
+				WHERE
+					loan_info_supplement.order_id = orders.id
+				AND type = 2
+			) AS supplementTime,
+			#资料增补时间
+
+			(
+				SELECT
+					create_time
+				FROM
+					loan_process_log
+				WHERE
+					orders.id = loan_process_log.order_id
+				AND task_definition_key = 'usertask_vehicle_information'
+			) AS carMaterialCreateTime,
+			#提车资料提交时间
+
+			(
+				SELECT
+					loan_data_flow.express_send_date
+				FROM
+					loan_data_flow
+				WHERE
+					orders.id = loan_data_flow.order_id
+				AND type = 3
+				ORDER BY
+					id DESC
+				LIMIT 1
+			) AS express_sendbank_date #合同上缴银行日期
+		FROM
+			loan_order orders
+		LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+		LEFT JOIN loan_base_info ON orders.loan_base_info_id = loan_base_info.id
+		LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+		LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
+		LEFT JOIN partner partner ON partner.id = base.partner_id
+		LEFT JOIN remit_details ON orders.remit_details_id = remit_details.id
+		LEFT JOIN base_area ON loan_base_info.area_id = base_area.area_id
+		LEFT JOIN loan_process ON orders.id = loan_process.order_id
+		LEFT JOIN material_audit ON orders.material_audit_id = material_audit.id
+
+        <where>
+            <if test="partnerList != null and partnerList.size() > 0">
+                and
+                partner_id in
+                <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            loan_process.material_review IN (1, 3)
+        </where>
+	) t
+    </select>
+
+    <!--=======================================导出 EXCEL 抵押超期=========================================-->
+    <select id="exportMortgageOverdueQuerys" parameterType="com.yunche.loan.domain.param.ExportMortgageOverdueQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMortgageOverdueQueryVO" >
+SELECT
+	base_area.area_name,
+	partner. NAME AS partner_name,
+	customer. NAME AS customer_name,
+	customer.id_card,
+	customer.mobile AS customer_mobile,
+	loanbaseinfo.bank,
+	car.car_type,
+	vehicle_information.license_plate_number,
+	cardetail.price,
+	loan_financial_plan.loan_amount,
+	#贷款金额
+	loan_financial_plan.bank_period_principal,
+	(
+		SELECT
+			create_time
+		FROM
+			loan_process_log
+		WHERE
+			orders.id = loan_process_log.order_id
+		AND loan_process_log.task_definition_key = 'usertask_apply_license_plate_deposit_info'
+		ORDER BY
+			id DESC
+		LIMIT 1
+	) AS remitdate,
+	#垫款日期
+	bank_lend_record.lend_date,
+	#银行放款日期
+	(
+		SELECT
+			loan_data_flow.express_send_date
+		FROM
+			loan_data_flow
+		WHERE
+			orders.id = loan_data_flow.order_id
+		AND type = 12
+		ORDER BY
+			id DESC
+		LIMIT 1
+	) AS sendMaterialToParter_date,
+	#抵押资料公司寄合伙人
+	(
+		SELECT
+			loan_data_flow.express_receive_date
+		FROM
+			loan_data_flow
+		WHERE
+			orders.id = loan_data_flow.order_id
+		AND type = 12
+		ORDER BY
+			id DESC
+		LIMIT 1
+	) AS ParterReceiveMaterial_date,
+	#抵押资料合伙人接收时间
+	process.apply_license_plate_deposit_info,
+	#抵押状态
+	CASE
+WHEN process.apply_license_plate_deposit_info = 1 THEN
+	(
+		SELECT
+			create_time
+		FROM
+			loan_process_log
+		WHERE
+			order_id = orders.id
+		AND task_definition_key = 'usertask_apply_license_plate_deposit_info'
+		ORDER BY
+			create_time DESC
+		LIMIT 1
+	)
+ELSE
+	NULL
+END depositTime,
+ #抵押日期
+CASE
+WHEN (
+	SELECT
+		create_time
+	FROM
+		loan_process_log
+	WHERE
+		order_id = orders.id
+	AND task_definition_key = 'usertask_apply_license_plate_deposit_info'
+	ORDER BY
+		create_time DESC
+	LIMIT 1
+) IS NULL THEN
+	round(
+		(
+			UNIX_TIMESTAMP(
+				DATE_FORMAT(now(), '%Y-%m-%d')
+			) - UNIX_TIMESTAMP(
+				DATE_FORMAT(
+					(
+						SELECT
+							create_time
+						FROM
+							loan_process_log
+						WHERE
+							order_id = orders.id
+						AND task_definition_key = 'usertask_remit_review'
+						ORDER BY
+							create_time DESC
+						LIMIT 1
+					),
+					'%Y-%m-%d'
+				)
+			)
+		) / (24 * 60 * 60)
+	)
+ELSE
+	round(
+		(
+			UNIX_TIMESTAMP(
+				DATE_FORMAT(
+					(
+						SELECT
+							create_time
+						FROM
+							loan_process_log
+						WHERE
+							order_id = orders.id
+						AND task_definition_key = 'usertask_apply_license_plate_deposit_info'
+						ORDER BY
+							create_time DESC
+						LIMIT 1
+					),
+					'%Y-%m-%d'
+				)
+			) - UNIX_TIMESTAMP(
+				DATE_FORMAT(lend.lend_date, '%Y-%m-%d')
+			)
+		) / (24 * 60 * 60)
+	)
+END AS depositOverdueTime,
+ #抵押超期天数
+(
+	SELECT
+		user_name
+	FROM
+		loan_process_log
+	WHERE
+		order_id = orders.id
+	AND task_definition_key = 'usertask_apply_license_plate_deposit_info'
+	ORDER BY
+		create_time DESC
+	LIMIT 1
+) AS submitUser
+FROM
+	loan_order orders
+LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+LEFT JOIN bank_lend_record lend ON lend.id = orders.bank_lend_record_id
+LEFT JOIN loan_base_info loanbaseinfo ON orders.loan_base_info_id = loanbaseinfo.id
+LEFT JOIN base_area ON loanbaseinfo.area_id = base_area.area_id
+LEFT JOIN loan_car_info car ON orders.loan_car_info_id = car.id
+LEFT JOIN car_detail cardetail ON cardetail.id = car.car_detail_id
+LEFT JOIN vehicle_information ON vehicle_information.id = orders.vehicle_information_id
+LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+LEFT JOIN remit_details ON orders.remit_details_id = remit_details.id
+LEFT JOIN bank_lend_record ON orders.bank_lend_record_id = bank_lend_record.id
+LEFT JOIN loan_process process ON orders.id = process.order_id
+LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
+LEFT JOIN employee employee ON base.salesman_id = employee.id
+LEFT JOIN partner partner ON partner.id = base.partner_id
+
+        <where>
+            <if test="partnerList != null and partnerList.size() > 0">
+                and
+                partner_id in
+                <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            loan_process.material_review IN (1, 3)
+        </where>
+    </select>
+
+
+
 </mapper>

@@ -1,13 +1,23 @@
 package com.yunche.loan.config.util;
 
+import com.aliyun.oss.OSSClient;
+import com.google.common.base.Preconditions;
+import com.yunche.loan.config.common.OSSConfig;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.beans.PropertyDescriptor;
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class POIUtil {
@@ -327,4 +337,89 @@ public class POIUtil {
 //        }
 //    }
 
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param: 导出头信息、导出数据、导出
+    * @return:
+    * @Date:
+    * @Description:
+    */
+    public static  <T> String  createExcelFile(String fname,List<T> list,List<String> header,Class<T> clazz,OSSConfig ossConfig)
+    {
+        StringBuilder fileName = new StringBuilder();
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        Long id = SessionUtils.getLoginUser().getId();
+        fileName.append(fname).append(timestamp).append(id).append(".xlsx");
+        //创建workbook
+        File file = new File("D:" + File.separator + fileName);
+        FileOutputStream out = null;
+        XSSFWorkbook workbook = null;
+
+        try {
+
+            out = new FileOutputStream(file);
+
+            workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet();
+
+            XSSFRow headRow = sheet.createRow(0);
+            for (int i = 0; i < header.size(); i++) {
+                XSSFCell cell = headRow.createCell(i);
+                cell.setCellValue(header.get(i));
+            }
+            XSSFRow row = null;
+            XSSFCell cell = null;
+
+            Field[] fields = clazz.getDeclaredFields();
+
+            List<Method> getMethods = new ArrayList();
+
+
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+                // 此处应该判断beanObj,property不为null
+                PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz);
+                getMethods.add(pd.getReadMethod());
+            }
+
+
+            //设置数据
+            for (int i = 0; i < list.size(); i++) {
+                T data = list.get(i);
+                //创建行
+                row = sheet.createRow(i + 1);
+
+                for (int j = 0; j < getMethods.size(); j++) {
+                    cell = row.createCell(j);
+                    cell.setCellValue((String) getMethods.get(j).invoke(data));
+                }
+
+            }
+
+            for (int j = 0; j < getMethods.size(); j++) {
+                //文件宽度自适应
+                sheet.autoSizeColumn((short) j);
+            }
+            workbook.write(out);
+            //上传OSS
+            OSSClient ossClient = OSSUnit.getOSSClient();
+            String bucketName = ossConfig.getBucketName();
+            String diskName = ossConfig.getDownLoadDiskName();
+            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
+            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+        } catch (Exception e) {
+            Preconditions.checkArgument(false, e.getMessage());
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                Preconditions.checkArgument(false, e.getMessage());
+            }
+        }
+
+        return ossConfig.getDownLoadDiskName() + File.separator + fileName;
+        }
 }
