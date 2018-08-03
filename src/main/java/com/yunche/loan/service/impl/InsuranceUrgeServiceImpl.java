@@ -230,7 +230,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
     public ResultBean  sendSms(RenewInsuranceParam param) {
 
         Preconditions.checkNotNull(param,"参数有误");
-        Preconditions.checkNotNull(param.getSms(),"短信内容为空");
+        Preconditions.checkNotNull(param.getMessage(),"短信内容为空");
         Preconditions.checkNotNull(param.getTelphone(),"电话号码必输*");
 
         String url="https://sh2.ipyy.com/smsJson.aspx";
@@ -241,7 +241,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
         querys.put("account","hxwl0049");
         querys.put("password","780565");
         querys.put("mobile",param.getTelphone());
-        querys.put("content",param.getSms());
+        querys.put("content",param.getMessage());
         querys.put("sendTime","");
         querys.put("extno", "");
         try {
