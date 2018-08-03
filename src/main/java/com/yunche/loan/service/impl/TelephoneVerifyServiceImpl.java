@@ -14,7 +14,7 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.TelephoneVerifyParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.LoanInfoSupplementService;
+import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TelephoneVerifyService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -60,7 +60,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
     private OSSConfig ossConfig;
 
     @Autowired
-    private LoanInfoSupplementService loanInfoSupplementService;
+    private LoanQueryService loanQueryService;
 
     @Autowired
     private LoanStatementDOMapper loanStatementDOMapper;
@@ -92,7 +92,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
         recombinationVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderId(orderId));
-        recombinationVO.setSupplement(loanInfoSupplementService.history(orderId));
+        recombinationVO.setSupplement(loanQueryService.history(orderId));
         recombinationVO.setCustomers(customers);
 
         return recombinationVO;
@@ -170,7 +170,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
 
             ArrayList<String> header = Lists.newArrayList("申请单号", "客户名称", "证件类型", "证件号",
-                    "业务员", "合伙人团队", "贷款银行", "贷款金额", "银行分期本金", "gps数量", "审核结果", "审核状态", "审核员", "审核时间", "备注","车辆类型"
+                    "业务员", "合伙人团队", "贷款银行", "贷款金额", "银行分期本金", "gps数量", "审核结果", "审核状态", "审核员", "审核时间", "备注", "车辆类型"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);

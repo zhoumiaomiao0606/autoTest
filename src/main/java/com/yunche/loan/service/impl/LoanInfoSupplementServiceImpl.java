@@ -1,8 +1,6 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanInfoSupplementDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
@@ -10,16 +8,13 @@ import com.yunche.loan.domain.param.InfoSupplementParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanInfoSupplementDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 
@@ -49,7 +44,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
     private LoanInfoSupplementDOMapper loanInfoSupplementDOMapper;
 
     @Autowired
-    private LoanQueryDOMapper loanQueryDOMapper;
+    private LoanQueryService loanQueryService;
 
 
     @Override
@@ -173,118 +168,19 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
 
     @Override
     public ResultBean<UniversalInfoSupplementVO> detail(Long infoSupplementId) {
-        Preconditions.checkNotNull(infoSupplementId, "增补单ID不能为空");
 
-        // getAll
-        List<UniversalInfoSupplementVO> universalInfoSupplementVOList = loanQueryDOMapper.selectUniversalInfoSupplement(infoSupplementId);
+        UniversalInfoSupplementVO detail = loanQueryService.detail(infoSupplementId);
 
-        // check
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(universalInfoSupplementVOList), "增补单不存在");
-
-        // group by
-        List<UniversalInfoSupplementVO> infoSupplementVOList = groupByInfoSupplementId(universalInfoSupplementVOList);
-
-        return ResultBean.ofSuccess(infoSupplementVOList.get(0));
+        return ResultBean.ofSuccess(detail);
     }
 
     @Override
-    public List<UniversalInfoSupplementVO> history(Long orderId) {
-        Preconditions.checkNotNull(orderId, "订单号不能为空");
+    public ResultBean<List<UniversalInfoSupplementVO>> history(Long orderId) {
 
-        // getAll
-        List<UniversalInfoSupplementVO> universalInfoSupplementVOList = loanQueryDOMapper.selectUniversalCollectionInfoSupplement(orderId);
+        List<UniversalInfoSupplementVO> history = loanQueryService.history(orderId);
 
-        // group by
-        List<UniversalInfoSupplementVO> infoSupplementVOList = groupByInfoSupplementId(universalInfoSupplementVOList);
-
-        // sort
-        List<UniversalInfoSupplementVO> sortList = sortByEndTime(infoSupplementVOList);
-
-        return sortList;
+        return ResultBean.ofSuccess(history);
     }
-
-    /**
-     * sort
-     *
-     * @param infoSupplementVOList
-     */
-    private List<UniversalInfoSupplementVO> sortByEndTime(List<UniversalInfoSupplementVO> infoSupplementVOList) {
-
-        if (!CollectionUtils.isEmpty(infoSupplementVOList)) {
-
-            List<UniversalInfoSupplementVO> sortList = infoSupplementVOList.stream()
-                    .filter(Objects::nonNull)
-                    .sorted(Comparator.comparing(UniversalInfoSupplementVO::getEndTime).reversed())
-                    .collect(Collectors.toList());
-
-            return sortList;
-        }
-
-        return infoSupplementVOList;
-    }
-
-    private List<UniversalInfoSupplementVO> groupByInfoSupplementId(List<UniversalInfoSupplementVO> infoSupplementVOList) {
-
-        if (CollectionUtils.isEmpty(infoSupplementVOList)) {
-            return Collections.EMPTY_LIST;
-        }
-
-        Map<Long, UniversalInfoSupplementVO> idDetailMap = Maps.newHashMap();
-
-        // text - kvMap
-        Map<String, String> kvMap = dictService.getKVMap("infoSupplementType");
-
-        infoSupplementVOList.stream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
-
-                    Long infoSupplementId = e.getSupplementOrderId();
-
-                    if (idDetailMap.containsKey(infoSupplementId)) {
-
-                        UniversalInfoSupplementVO infoSupplementVO = idDetailMap.get(infoSupplementId);
-
-                        List<FileVO2> files = infoSupplementVO.getFiles();
-
-                        // file
-                        FileVO2 fileVO = new FileVO2();
-                        fileVO.setFileId(e.getFileId());
-                        fileVO.setType(e.getFileType());
-                        fileVO.setName(e.getFileTypeText());
-                        fileVO.setUrls(e.getFilePath());
-
-                        // add files
-                        files.add(fileVO);
-
-                    } else {
-
-                        UniversalInfoSupplementVO infoSupplementVO = new UniversalInfoSupplementVO();
-
-                        BeanUtils.copyProperties(e, infoSupplementVO);
-
-                        // type text
-                        String supplementTypeText = getInfoSupplementTypeText(e.getType(), kvMap);
-                        infoSupplementVO.setTypeText(supplementTypeText);
-
-                        // files
-                        FileVO2 fileVO = new FileVO2();
-                        fileVO.setFileId(e.getFileId());
-                        fileVO.setType(e.getFileType());
-                        fileVO.setName(e.getFileTypeText());
-                        fileVO.setUrls(e.getFilePath());
-
-                        infoSupplementVO.setFiles(Lists.newArrayList(fileVO));
-
-                        idDetailMap.put(infoSupplementId, infoSupplementVO);
-                    }
-
-                });
-
-        // val
-        Collection<UniversalInfoSupplementVO> values = idDetailMap.values();
-        return Lists.newArrayList(values);
-    }
-
 
     /**
      * 填充客户及文件信息

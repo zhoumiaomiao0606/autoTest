@@ -84,7 +84,6 @@
         /*type                      = VALUES(type),*/
         status                    = VALUES(status),
         info                      = VALUES(info),
-        task_key                  = VALUES(task_key),
         gmt_modify                = VALUES(gmt_modify)
 
     </insert>

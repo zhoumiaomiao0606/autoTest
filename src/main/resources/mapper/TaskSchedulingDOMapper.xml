@@ -550,6 +550,9 @@
                       <when test="taskDefinitionKey == 'usertask_apply_instalment'">
                           deputy.apply_instalment                 AS taskStatus
                       </when>
+                        <when test="taskDefinitionKey == 'usertask_bank_card_send'">
+                            deputy.bank_card_send                 AS taskStatus
+                        </when>
                       <otherwise>
                         0                                         AS taskStatus
                       </otherwise>
@@ -721,6 +724,9 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_apply_instalment'">
                       AND case when #{taskStatus} = 0 then deputy.apply_instalment != 0                  else deputy.apply_instalment        = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_bank_card_send'">
+                      AND case when #{taskStatus} = 0 then deputy.bank_card_send != 0                    else deputy.bank_card_send        = #{taskStatus} end
                   </when>
                   <otherwise>
                       AND 1=2
