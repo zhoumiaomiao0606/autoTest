@@ -73,6 +73,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
         if (loanOrderDO == null) {
             throw new BizException("此业务单不存在");
         }
+        PartnerDO partnerDO = partnerDOMapper.queryLeaderNameById(Long.valueOf(param.getOrder_id()));
         for (GpsUpdateParam obj : param.getGps_list()) {
             int i = installGpsDOMapper.selectBygpsNumber(obj.getGps_number());
             if (i > 0) {
@@ -92,7 +93,17 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                             if ((map1.get("activationTime") != null || !"".equals(map1.get("activationTime")))
                                     && (map1.get("vehicleName") == null || "".equals(map1.get("vehicleName")))
                                     && (map1.get("driverName") == null || "".equals(map1.get("driverName")))) {
-                                falg = true;
+                                String account = (String)map1.get("account");
+                                if(account != null && !"".equals(account)){
+                                    if(partnerDO.getLeaderName().trim().equals(account.trim())){
+                                        falg = true;
+                                    }else{
+                                        throw new BizException("第三方该gps所属人与本地合伙人不符");
+                                    }
+                                }else{
+                                    throw new BizException("第三方该gps不属于该合伙人");
+                                }
+
                             } else {
                                 throw new BizException("第三方该gps信息以绑定用户");
                             }
@@ -113,15 +124,15 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                     try {
                         boolean flag = CarLoanHttpUtil.getGpsStatus(obj.getGps_number());
                         if (flag) {
-                           /* for (Map<String, Object> map : list) {
-                                if (map.get("activeTime") != null) {
-                                    boolean flag = CarLoanHttpUtil.bindGps(obj.getGps_number(), param.getDriverName());
-                                    if (!flag) {
-                                        throw new BizException("该GPS:" + obj.getGps_number() + "绑定时失败");
-                                    }
-                                } else {
-                                    throw new BizException("该GPS:" + obj.getGps_number() + "未激活无法使用");
+                            /*PartnerCusInfoVO partnerCusInfoVO = installGpsDOMapper.selectPartnerAndCusByOrderId(Long.valueOf(param.getOrder_id()));
+                            boolean cusFlag = CarLoanHttpUtil.modifyCustomer(String.valueOf(partnerCusInfoVO.getPId()),String.valueOf(partnerCusInfoVO.getCusId()),param.getDriverName(),param.getVehicleName());
+                            if(cusFlag){
+                                boolean gpsFlag = CarLoanHttpUtil.bindGps(obj.getGps_number(),String.valueOf(partnerCusInfoVO.getCusId()));
+                                if(!gpsFlag){
+                                    throw new BizException("该GPS:" + obj.getGps_number() + "绑定失败");
                                 }
+                            }else{
+                                throw new BizException("该客户:" + param.getDriverName() + "无法登记");
                             }*/
                         } else {
                             throw new BizException("该GPS:" + obj.getGps_number() + "无法登记");
@@ -130,7 +141,6 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                         logger.error("车贷管家系统通讯异常", e);
                         throw new BizException(e.getMessage());
                     }
-
                 }
                 InstallGpsDO T = BeanPlasticityUtills.copy(InstallGpsDO.class, obj);
                 T.setOrder_id(Long.valueOf(param.getOrder_id()));

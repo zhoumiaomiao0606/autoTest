@@ -83,6 +83,17 @@
         </if>
     </sql>
 
+    <select id="queryLeaderNameById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+            c.*
+        FROM
+            loan_order a
+            LEFT JOIN loan_base_info b ON a.loan_base_info_id = b.id
+            LEFT JOIN partner c ON b.partner_id = c.id
+        WHERE
+	a.id = #{id,jdbcType=BIGINT}
+    </select>
+
     <!--  count -->
     <select id="count" parameterType="com.yunche.loan.domain.query.PartnerQuery"
             resultType="java.lang.Integer">
