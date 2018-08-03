@@ -273,6 +273,18 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
         return ResultBean.ofSuccess("提交成功");
     }
 
+    @Override
+    public ResultBean insurQuery(Long orderId, Byte year) {
+        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(orderId, year);
+        List<InsuranceRelevanceDO> currInsurRele=Lists.newArrayList();
+        if(insuranceInfoDO!=null){
+           currInsurRele = insuranceRelevanceDOMapper.listByInsuranceInfoId(insuranceInfoDO.getId());
+        }
+        RecombinationVO recombinationVO = new RecombinationVO();
+        recombinationVO.setInfo(currInsurRele);
+        return ResultBean.ofSuccess(recombinationVO);
+    }
+
     /**
      *
      * @param openToken
