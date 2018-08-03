@@ -183,7 +183,7 @@
                 (select start_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessStartDate,
                 (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate
         FROM
-                (select * from loan_order where id=1805141034169293887) loan
+                (select * from loan_order where id=#{orderId}) loan
                 LEFT JOIN insurance_info info on loan.id = info.order_id
                 LEFT JOIN insurance_relevance insurance ON (info.id = insurance.insurance_info_id and insurance.insurance_type=1 )
                 LEFT JOIN loan_customer customer ON loan.loan_customer_id=customer.id
@@ -211,7 +211,15 @@
                 insurance.end_date                          AS endDate,
                 datediff(insurance.end_date,insurance.start_date) AS days,
                 (select start_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessStartDate,
-                (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate
+                (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate,
+                case when
+                    (select renew_insurance_status from renew_insurance where loan.id=order_id order by remind_date desc LIMIT 1) is null
+                then
+                    0
+                else
+                    (select renew_insurance_status from renew_insurance where loan.id=order_id order by remind_date desc LIMIT 1)
+                end                                          AS renewInsuranceStatus
+
         FROM
             <choose>
                 <when test="taskDefinitionKey=='usertask_urge_insurance_assign_work_bench'">
@@ -240,7 +248,16 @@
                 LEFT JOIN employee ON base.salesman_id=employee.id
                 LEFT JOIN partner ON base.partner_id=partner.id
                 LEFT JOIN loan_financial_plan financial ON loan.loan_financial_plan_id=financial.id
-        where datediff(insurance.end_date,insurance.start_date)&lt;=31
+        where datediff(insurance.end_date,now())&lt;=31
+        <if test="customerName != null and  customerName !=''">
+            and customer.name like concat(concat('%',#{customerName}),'%')
+        </if>
+        <if test="bankName != null and  bankName !=''">
+            and base.bank = #{bankName}
+        </if>
+        <if test="partnerName != null and  partnerName !=''">
+            and partner.id =#{partnerName}
+        </if>
     </select>
 
 </mapper>

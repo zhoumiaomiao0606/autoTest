@@ -6,12 +6,15 @@ import com.yunche.loan.domain.query.TaskListQuery;
 
 import com.yunche.loan.domain.vo.ScheduleTaskVO;
 import com.yunche.loan.domain.vo.TaskListVO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.validation.annotation.Validated;
 
 
 import java.util.List;
 
 public interface TaskSchedulingDOMapper {
+
+    List<Long> selectBankInterfaceSerialOrderidList(@Validated TaskListQuery taskListQuery);
 
     List<ScheduleTaskVO> selectScheduleTaskList(@Validated ScheduleTaskQuery param);
 

@@ -75,7 +75,7 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
         for(ManualInsuranceParam.AllocationRela allocationRela:manualInsuranceParam.getAllotList()){
             InsuranceDistributeRecordDOKey insuranceDistributeRecordDOKey = new InsuranceDistributeRecordDOKey();
             insuranceDistributeRecordDOKey.setOrderId(allocationRela.getOrderId());//业务单号
-            insuranceDistributeRecordDOKey.setEmployeeId(manualInsuranceParam.getSendeeId());//催保员工编号
+            insuranceDistributeRecordDOKey.setInsuranceYear(allocationRela.getInsuranceYear());//催保员工编号
             InsuranceDistributeRecordDO insuranceDistributeRecordDO = insuranceDistributeRecordDOMapper.selectByPrimaryKey(insuranceDistributeRecordDOKey);
 
             if(insuranceDistributeRecordDO==null){

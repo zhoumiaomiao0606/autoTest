@@ -24,4 +24,11 @@ public class InsuranceListQuery {
     private  Byte taskStatus; // 1:未分配列表  2：已分配列表
 
     private Long employeeId;
+
+    private String customerName;
+
+    private String bankName;
+
+    private Long partnerName;
+
 }

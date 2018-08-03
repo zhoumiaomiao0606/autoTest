@@ -31,4 +31,6 @@ public interface PartnerDOMapper {
     List<PartnerDO> getAll(@Param("status") Byte status);
 
     PartnerDO queryByPartnerName(@Param("name") String name);
+
+    PartnerDO queryLeaderNameById(@Param("id") Long id);
 }
