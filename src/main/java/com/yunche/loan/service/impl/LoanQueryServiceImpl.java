@@ -219,7 +219,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
         // sort
         List<UniversalInfoSupplementVO> sortList = sortByEndTime(infoSupplementVOList);
 
-        return null;
+        return sortList;
     }
 
     private List<UniversalInfoSupplementVO> groupByInfoSupplementId(List<UniversalInfoSupplementVO> infoSupplementVOList) {

@@ -192,7 +192,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         String exportFileName = "资料流转_" + now + ".xlsx";
         String[] cellTitle = {"流转编号（勿动）", "业务编号（勿动）", "姓名", "身份证号码", "业务团队",
                 "资料流转类型（勿动）", "寄送公司（必填）", "寄送单号（必填）", "含抵押资料（格式：是/否，必填）", "寄送日期（格式：2018-08-08 ，必填）",
-                "接收日期（格式：2018-08-08 ）", "接收人", "流出部门", "流入部门"};
+                "接收日期（格式：2018-08-08 ）", "接收人"};
 
         // 声明一个工作薄
         XSSFWorkbook workBook = new XSSFWorkbook();
