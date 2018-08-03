@@ -1106,4 +1106,18 @@
         WHERE id = #{id}
     </select>
 
+    <select id="selectSelfAndRelevanceCustomersByCustTypes" resultMap="BaseResultMap">
+        select *
+        from
+        loan_customer where principal_cust_id = (select loan_customer_id from loan_order where id = #{orderId})
+        and status = 0
+        <if test="types != null">
+            and cust_type in
+            <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
 </mapper>
