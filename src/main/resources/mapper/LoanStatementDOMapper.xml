@@ -285,24 +285,24 @@ LEFT JOIN base_area principal_area ON principal_area.area_id = principal_base.ar
 LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
 
         <where>
-            and credit_info.type = 1  and credit_info.gmt_modify between #{startDate} and #{endDate}
-            <if test="partnerList != null and partnerList.size() > 0">
+        <if test="partnerList != null and partnerList.size() > 0">
             and
-                principal_base.partner_id in
+            partner_id in
             <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
         <if test="bankList != null and bankList.size() > 0">
             and
-            principal_base.bank in
+            bank in
             <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
+	credit_info.type = 1
         </where>
+        order by credit_apply_time asc
     </select>
-
 
     <!--=======================================导出 EXCEL 社会征信查询=========================================-->
     <select id="exportSocialCreditQuerys" parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO" >
@@ -403,23 +403,25 @@ LEFT JOIN partner principal_partner ON principal_partner.id = principal_base.par
 LEFT JOIN base_area principal_area ON principal_area.area_id = principal_base.area_id
 LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
         <where>
-            and credit_info.type = 2  and credit_info.gmt_modify between #{startDate} and #{endDate}
             <if test="partnerList != null and partnerList.size() > 0">
                 and
-                principal_base.partner_id in
+                partner_id in
                 <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="bankList != null and bankList.size() > 0">
                 and
-                principal_base.bank in
+                bank in
                 <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
+            credit_info.type = 2
         </where>
+        order by credit_apply_time asc
     </select>
+
     <!--=======================================导出 EXCEL 财务垫款明细查询=========================================-->
     <select id="exportRemitDetailQuerys" parameterType="com.yunche.loan.domain.param.ExportRemitDetailQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryVO" >
 
@@ -450,7 +452,7 @@ LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
 		ORDER BY
 			create_time DESC
 		LIMIT 1
-	) as submitTime,
+	) submitTime,
 	(
 		SELECT
 			loan_process_log.user_name
@@ -462,7 +464,7 @@ LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
 		ORDER BY
 			create_time DESC
 		LIMIT 1
-	) as username
+	) username
 FROM
 	loan_order orders
 LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -497,23 +499,20 @@ where 1=1
         else true end
             <if test="partnerList != null and partnerList.size() > 0">
                 and
-                base.partner_id in
+                partner_id in
                 <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="bankList != null and bankList.size() > 0">
                 and
-                base.bank in
+                bank in
                 <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
-
-        having submitTime between #{startDate} and #{endDate}
-
-
-    </select>
+        order by gmt_create asc
+</select>
 
     <!--=======================================导出 EXCEL 资料审核明细查询=========================================-->
     <select id="exportMaterialReviewQuerys" parameterType="com.yunche.loan.domain.param.ExportMaterialReviewQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMaterialReviewDetailQueryVO" >
@@ -577,7 +576,7 @@ FROM
 			customer.id_card,
 			loan_base_info.bank,
 			loan_financial_plan.bank_period_principal,
-			(SELECT create_time FROM loan_process_log   WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1)
+			(SELECT create_time FROM loan_process_log   WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_apply_license_plate_deposit_info' ORDER BY id DESC LIMIT 1)
 										AS remitdate,
 			(
 				SELECT
@@ -666,24 +665,24 @@ loan_process.material_review,
 		LEFT JOIN material_audit ON orders.material_audit_id = material_audit.id
 
         <where>
-            and loan_process.material_review IN (1, 3)
             <if test="partnerList != null and partnerList.size() > 0">
                 and
-                base.partner_id in
+                partner_id in
                 <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="bankList != null and bankList.size() > 0">
                 and
-                base.bank in
+                bank in
                 <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
-
+            and loan_process.material_review IN (1, 3)
+            order by express_receive_date asc
         </where>
-	) t where remitdate between #{startDate} and #{endDate}
+	) t
     </select>
 
     <!--=======================================导出 EXCEL 抵押超期=========================================-->
@@ -846,22 +845,23 @@ LEFT JOIN employee employee ON base.salesman_id = employee.id
 LEFT JOIN partner partner ON partner.id = base.partner_id
 
         <where>
-            and process.material_review IN (1, 3) and bank_lend_record.lend_date between #{startDate} and #{endDate}
             <if test="partnerList != null and partnerList.size() > 0">
                 and
-                base.partner_id in
+                partner_id in
                 <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="bankList != null and bankList.size() > 0">
                 and
-                base.bank in
+                bank in
                 <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
+            and process.material_review IN (1, 3)
         </where>
+        order by lend_date asc
     </select>
 
 
