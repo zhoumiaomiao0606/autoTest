@@ -4,13 +4,18 @@ package com.yunche.loan.service.impl;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.util.POIUtil;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
+import com.yunche.loan.mapper.TaskSchedulingDOMapper;
+import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.ExportQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +28,12 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
     @Autowired
     private LoanStatementDOMapper loanStatementDOMapper;
+
+    @Resource
+    private EmployeeService employeeService;
+
+    @Resource
+    private TaskSchedulingDOMapper taskSchedulingDOMapper;
 
     /**
      * 导出 EXCEL 银行征信查询
@@ -74,9 +85,12 @@ public class ExportQueryServiceImpl implements ExportQueryService
      */
     @Override
     public String expertRemitDetailQuery(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
         String startDate = exportRemitDetailQueryVerifyParam.getStartDate();
         String endDate = exportRemitDetailQueryVerifyParam.getEndDate();
 
+        exportRemitDetailQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        exportRemitDetailQueryVerifyParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
         List<ExportRemitDetailQueryVO> list = loanStatementDOMapper.exportRemitDetailQuerys(exportRemitDetailQueryVerifyParam);
 
         ArrayList<String> header = Lists.newArrayList("业务区域","客户姓名", "身份证号",
