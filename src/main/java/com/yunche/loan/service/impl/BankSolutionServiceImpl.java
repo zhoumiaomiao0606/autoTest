@@ -546,6 +546,33 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         }
 
+        if(CollectionUtils.isEmpty(pictures)){
+            UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(customerId,new Byte("2"));
+            if(authSignPic == null){
+                throw new BizException("最少需要一张图片");
+            }
+
+            if(CollectionUtils.isEmpty(authSignPic.getUrls())){
+                throw new BizException("最少需要一张图片");
+            }
+            if(StringUtils.isBlank(authSignPic.getUrls().get(0))){
+                throw new BizException("最少需要一张图片");
+            }
+
+            ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
+            picture.setPicid(TermFileEnum.SELF_CERTIFICATE_FRONT.getValue());
+            String picName = GeneratorIDUtil.execute();
+            picture.setPicname(picName);
+            picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.SELF_CERTIFICATE_FRONT.getKey()));
+            pictures.add(picture);
+
+            ICBCApiRequest.PicQueue picQueue = new ICBCApiRequest.PicQueue();
+            picQueue.setPicId(TermFileEnum.SELF_CERTIFICATE_FRONT.getValue());
+            picQueue.setPicName(picName);
+            picQueue.setUrl(authSignPic.getUrls().get(0));
+            queue.add(picQueue);
+        }
+
         if(pictures.size() == 0){
             throw new BizException("最少需要一张图片");
         }
@@ -605,7 +632,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         car.setShorp4s(vehicleInformationDO.getInvoice_car_dealer());
         car.setCarNo2(vehicleInformationDO.getLicense_plate_number());
         car.setAssessPrice(loanFinancialPlanDO.getAppraisal() == null?null:loanFinancialPlanDO.getAppraisal().stripTrailingZeros().toPlainString());//车辆评估价格（元
-        car.setAssessOrg(vehicleInformationDO.getAssess_org());//评估机构
+        car.setAssessOrg(BusitypeEnum.SECOND.getKey().toString().equals(loanCarInfoDO.getCarType().toString())?"0":null);//评估机构
         car.setUsedYears(StringUtils.isBlank(vehicleInformationDO.getAssess_use_year())?useYear == 0 || useYear == null?null:useYear.toString():vehicleInformationDO.getAssess_use_year());//使用年限(月)
         divi.setPaidAmt(paidAmt);
         divi.setAmount(amount);

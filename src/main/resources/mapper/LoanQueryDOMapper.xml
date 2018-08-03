@@ -7,6 +7,9 @@
                 FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
     </select>
+    <select id="selectCheckOrderInBankInterfaceSerial" resultType="java.lang.Boolean">
+      select count(t.order_id) as flag from (select DISTINCT order_id from bank_interface_serial where order_id = #{orderId} and trans_code = #{transCode} ) t
+    </select>
     <select id="selectApplyDiviGeneralInfo" resultType="com.yunche.loan.domain.vo.ApplyDiviGeneralInfoVO">
         select
 	        car.car_type                              as car_type,
@@ -105,7 +108,7 @@
             v.customize_brand                 AS customize_brand,
             f.down_payment_money              AS down_payment_money,
             DATE_FORMAT(i.first_register_date,'%Y-%m-%d')      AS first_register_date,
-            i.car_category                                     AS car_category,
+            v.car_category                                     AS car_category,
             v.assess_org                                       AS assess_org,
             case when  v.assess_use_year is not null then  v.assess_use_year
             else TIMESTAMPDIFF(MONTH,now(),v.register_date) end AS assess_use_year
@@ -294,6 +297,7 @@
             main_order.id                                                                           AS order_id,
             DATE_FORMAT(material.complete_material_date,'%Y-%m-%d %H:%i:%S')                        AS material_complete_material_date,
             material.remark                                                                         AS material_remark,
+            material.contract_num                                                                   AS material_contract_num,
             DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')                                        AS loan_gmt_create,
             product.category_superior                                                               AS product_category_superior,
             department.name                                                                         AS department_name,
@@ -789,11 +793,30 @@
     <!--客户附件信息-->
     <select id="selectUniversalCustomerFile" resultType="com.yunche.loan.domain.vo.UniversalCustomerFileVO"
             parameterType="java.lang.Long">
-    select
-            path                      AS urls,
-            type                      AS type,
-            useFileTypeCastName(type) AS name
-    from  loan_file  where customer_id = #{customerId,jdbcType=BIGINT}
+
+    SELECT
+                f.path                                AS urls,
+                f.type                                AS type,
+                useFileTypeCastName(f.type)           AS name
+
+    FROM        loan_file                             f
+
+    LEFT JOIN   loan_info_supplement 				  s  ON s.id = f.info_supplement_id
+
+    WHERE
+
+    f.customer_id = #{customerId,jdbcType=BIGINT}
+
+    AND
+        CASE
+            WHEN f.upload_type = 1 THEN
+                TRUE
+            WHEN f.upload_type = 2 THEN
+                s.STATUS = 1
+            ELSE
+                FALSE
+        END
+
     </select>
 
 
@@ -807,8 +830,8 @@
             f.type                        AS type,
             useFileTypeCastName(f.type)   AS name
 
-    from    loan_file               f,
-            loan_info_supplement    s
+    from    loan_file                     f,
+            loan_info_supplement          s
 
     where
 
@@ -824,44 +847,108 @@
 
   </select>
 
-    <!--资料增补根据type-->
+    <!--file根据type-->
     <select id="selectUniversalCustomerFileByTypes" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
-        select
-        path AS urls,
-        type AS type,
-        useFileTypeCastName(type) AS name
-        from loan_file where customer_id = (select loan_customer_id from loan_order where id =
-        #{orderId,jdbcType=BIGINT})
+
+        SELECT
+                        f.path                                AS urls,
+                        f.type                                AS type,
+                        useFileTypeCastName(f.type)           AS name
+
+        FROM
+                        loan_file                             f
+
+        LEFT JOIN       loan_info_supplement 				  s  ON s.id = f.info_supplement_id
+
+        WHERE
+
+        customer_id = ( select loan_customer_id from loan_order where id = #{orderId,jdbcType=BIGINT} )
+
         <if test="types != null">
-            and type in
+            AND f.type IN
             <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
+
+        AND
+            CASE
+                WHEN f.upload_type = 1 THEN
+                    TRUE
+                WHEN f.upload_type = 2 THEN
+                    s.status = 1
+            ELSE
+                    FALSE
+        END
+
     </select>
 
-    <!--资料增补根据type-->
+    <!--file根据type-->
     <select id="selectUniversalCustomerFiles" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
-        select
-        path                      AS urls,
-        type                      AS type,
-        useFileTypeCastName(type) AS name
-        from loan_file where customer_id = #{customerId,jdbcType=BIGINT}
+
+
+        SELECT
+                        f.path                                AS urls,
+                        f.type                                AS type,
+                        useFileTypeCastName(f.type)           AS name
+
+        FROM
+                        loan_file                             f
+
+        LEFT JOIN       loan_info_supplement 				  s  ON s.id = f.info_supplement_id
+
+        WHERE
+
+        customer_id = #{customerId,jdbcType=BIGINT}
+
         <if test="types != null">
-            and type in
+            AND f.type IN
             <foreach collection="types" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
+
+        AND
+            CASE
+                WHEN f.upload_type = 1 THEN
+                    TRUE
+                WHEN f.upload_type = 2 THEN
+                    s.status = 1
+                ELSE
+                    FALSE
+            END
+
     </select>
 
-    <!--资料增补根据type-->
+    <!--file根据type-->
     <select id="getUniversalCustomerFilesByType" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
-        select
-        path                      AS urls,
-        type                      AS type,
-        useFileTypeCastName(type) AS name
-        from loan_file where customer_id = #{customerId} and type =  #{type}
+
+        SELECT
+                        f.path                                AS urls,
+                        f.type                                AS type,
+                        useFileTypeCastName(f.type)           AS name
+
+        FROM
+                        loan_file                             f
+
+        LEFT JOIN       loan_info_supplement 				  s  ON s.id = f.info_supplement_id
+
+        WHERE
+
+        f.customer_id = #{customerId}
+
+        AND f.type =  #{type}
+
+        AND
+            CASE
+                WHEN f.upload_type = 1 THEN
+                    TRUE
+                WHEN f.upload_type = 2 THEN
+                    s.status = 1
+                ELSE
+                    FALSE
+            END
+
     </select>
 
     <!--关联订单-->

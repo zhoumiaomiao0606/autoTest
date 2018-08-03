@@ -8,6 +8,8 @@ import java.util.Set;
 
 public interface LoanQueryDOMapper {
 
+    boolean selectCheckOrderInBankInterfaceSerial(@Param("orderId") Long orderId,@Param("transCode")  String transCode);
+
     List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId, @Param("transCode") String transCode);
 
     List<UniversalBankInterfaceFileSerialDO> selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType(@Param("serialNo") String serialNo, @Param("fileType") String fileType);

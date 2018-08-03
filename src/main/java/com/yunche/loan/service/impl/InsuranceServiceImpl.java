@@ -11,27 +11,22 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.InsuranceRelevanceUpdateParam;
 import com.yunche.loan.domain.param.InsuranceRisksParam;
 import com.yunche.loan.domain.param.InsuranceUpdateParam;
-import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.InsuranceInfoDOMapper;
-import com.yunche.loan.mapper.InsuranceRelevanceDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.service.InsuranceService;
-import org.springframework.beans.BeanUtils;
 import com.yunche.loan.domain.query.RiskQuery;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.InsuranceService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.apache.log4j.Logger;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -88,6 +83,12 @@ public class InsuranceServiceImpl implements InsuranceService {
         insuranceDetailVO.setNewInsurance(insuranceRiskDOMapper.newInsuranceByOrderId(orderId));
 
         return insuranceDetailVO;
+    }
+
+    @Override
+    public List<InsuranceRelevanceDO> insuranceCompany(String insurance_number) {
+        List<InsuranceRelevanceDO> list = insuranceRelevanceDOMapper.selectCompanyByNum(insurance_number);
+        return list;
     }
 
     @Override
@@ -230,10 +231,11 @@ public class InsuranceServiceImpl implements InsuranceService {
                 int i = insuranceInfoDOMapper.insertSelective(insuranceInfoDO);
                 Preconditions.checkArgument(i > 0, "保险信息保存失败");
                 //开始新增保险公司关联表
-                //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的
+                //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的`
                 insuranceRelevanceDOMapper.deleteByInsuranceInfoIdAndType(insuranceInfoDO.getId(), e.getInsuranceType());
                 InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
-                BeanUtils.copyProperties(e, insuranceRelevanceDO);
+                insuranceRelevanceDO.setInsurance_info_id(insuranceInfoDO.getId());
+                parseDao(e,insuranceRelevanceDO);
                 insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
             } else {
                 //代表存在
@@ -241,13 +243,48 @@ public class InsuranceServiceImpl implements InsuranceService {
                 //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的
                 insuranceRelevanceDOMapper.deleteByInsuranceInfoIdAndType(insuranceInfoDO.getId(), e.getInsuranceType());
                 InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
-                BeanUtils.copyProperties(e, insuranceRelevanceDO);
-                insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
+                insuranceRelevanceDO.setInsurance_info_id(insuranceInfoDO.getId());
+                parseDao(e,insuranceRelevanceDO);
+                insuranceRelevanceDOMapper.updateByPrimaryKeySelective(insuranceRelevanceDO);
             }
         });
 
 
     }
 
+    /**
+     *
+     * @param insuranceRelevanceUpdateParam
+     * @param insuranceRelevanceDO
+     * @return
+     */
+    private InsuranceRelevanceDO parseDao(InsuranceRelevanceUpdateParam insuranceRelevanceUpdateParam,InsuranceRelevanceDO insuranceRelevanceDO){
+        /**
+         *    @NotBlank
+        private Byte year;//年次
+         @NotBlank
+         private String insuranceCompanyName;// 保险公司名称
+         @NotBlank
+         private String insuranceNumber;//  保单号
+         @NotBlank
+         private BigDecimal insuranceAmount;// 保险金额
+         @NotBlank
+         private Date startDate;// 开始日期
+         @NotBlank
+         private Date endDate;// 结束日期
+         @NotBlank
+         private Byte insuranceType;// 险种 1商业险 2交强险 3车船税
+         */
+
+        insuranceRelevanceDO.setInsurance_company_name(insuranceRelevanceUpdateParam.getInsuranceCompanyName());
+        insuranceRelevanceDO.setInsurance_number(insuranceRelevanceUpdateParam.getInsuranceNumber());
+        insuranceRelevanceDO.setInsurance_amount(insuranceRelevanceUpdateParam.getInsuranceAmount());
+        insuranceRelevanceDO.setStart_date(insuranceRelevanceUpdateParam.getStartDate());
+        insuranceRelevanceDO.setEnd_date(insuranceRelevanceUpdateParam.getEndDate());
+        insuranceRelevanceDO.setInsurance_type(insuranceRelevanceUpdateParam.getInsuranceType());
+
+
+        return insuranceRelevanceDO;
+    }
 
 }

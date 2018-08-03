@@ -168,16 +168,16 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
     @Override
     public String generateSms(RenewInsuranceParam renewInsuranceParam) {
         Preconditions.checkNotNull(renewInsuranceParam);
-        String tempSms="您好:{}(先生/女士)" +
-                "这里是中顺汽车有限公司(你车子担保公司)的车险专员:{} 你的车子保险金额已经核算好." +
-                "车损险:{} 保费:{}." +
-                "三者{}万,保费:{}." +
-                "(司机/乘客1万1座)保费:{}." +
-                "盗抢险:{}.自燃险:{}." +
-                "玻璃险:{}." +
-                "不计免赔特约险:{}." +
-                "交强险:{}.车船税:{}." +
-                "共计:{}." +
+        String tempSms="您好:{}(先生/女士)," +
+                "这里是中顺汽车有限公司(你车子担保公司)的车险专员:{}。 你的车子保险金额已经核算好:" +
+                "车损险:{}元、保费:{}元," +
+                "三者{}万元,保费:{}元," +
+                "(司机/乘客{}万1座)、保费:{}元，" +
+                "盗抢险:{}元，自燃险:{}元，" +
+                "玻璃险:{}元，" +
+                "不计免赔特约险:{}元，" +
+                "交强险:{}元，车船税:{}元，" +
+                "共计:{}。" +
                 "公司法代账号：6222081202007385758" +
                 ",包功.工商银行城站支行." +
                 "如有问题可以直接联系我." +
@@ -186,13 +186,31 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
                 "不然保证金会将受到影响,谢谢.）【云车金融】";
         ArrayList<Object> objects = Lists.newArrayList();
 
+        Preconditions.checkNotNull(renewInsuranceParam.getCustomerName(),"客户姓名不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getAutoInsuEmployee(),"车险专员不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getDamageInsur(),"车损险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getDamageInsurFee(),"车损险保费不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getThirdDutyInsur(),"三者费用不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getThirdDutyInsurFee(),"三者费用保费不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getPersLiabilityInsur(),"车上人员责任险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getPersLiabilityInsurFee(),"车上人员责任险保费不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getRobberyInsur(),"盗抢险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getAutoignitionInsur(),"自燃险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getGlassInsur(),"玻璃险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getNotDeductInsur(),"不计免赔特约险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getStrongInsur(),"交强险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getVesselTax(),"车船税不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getTotalPremium(),"共计总额不能为空");
+
+
         objects.add(renewInsuranceParam.getCustomerName());
-        objects.add(renewInsuranceParam.getEmployeeName());
+        objects.add(renewInsuranceParam.getAutoInsuEmployee());
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getDamageInsur(),2));
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getDamageInsurFee(),2));
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getThirdDutyInsur(),2));
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getThirdDutyInsurFee(),2));
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getPersLiabilityInsur(),2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getPersLiabilityInsurFee(),2));
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getRobberyInsur(),2));
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getAutoignitionInsur(),2));
         objects.add(BigDecimalUtil.format(renewInsuranceParam.getGlassInsur(),2));
@@ -232,6 +250,39 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
            throw new BizException(e.getMessage());
         }
         return ResultBean.ofSuccess(null,"发送成功");
+    }
+
+    /**
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public ResultBean approval(Long orderId) {
+        Preconditions.checkNotNull(orderId,"参数有误");
+        InsuranceDistributeRecordDO recordDO = insuranceDistributeRecordDOMapper.selectRenewInsurLimit(orderId);
+        int nextInsurYear = recordDO.getInsuranceYear()+1;
+        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(orderId, new Byte(String.valueOf(nextInsurYear)));
+        if(insuranceInfoDO == null){
+            return  ResultBean.ofError("续保信息未录入");
+        }else{
+            recordDO.setStatus(BaseConst.VALID_STATUS);
+            int count = insuranceDistributeRecordDOMapper.updateByPrimaryKeySelective(recordDO);
+            Preconditions.checkArgument(count>0,"催保记录更新失败");
+        }
+        return ResultBean.ofSuccess("提交成功");
+    }
+
+    @Override
+    public ResultBean insurQuery(Long orderId, Byte year) {
+        InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(orderId, year);
+        List<InsuranceRelevanceDO> currInsurRele=Lists.newArrayList();
+        if(insuranceInfoDO!=null){
+           currInsurRele = insuranceRelevanceDOMapper.listByInsuranceInfoId(insuranceInfoDO.getId());
+        }
+        RecombinationVO recombinationVO = new RecombinationVO();
+        recombinationVO.setInfo(currInsurRele);
+        return ResultBean.ofSuccess(recombinationVO);
     }
 
     /**

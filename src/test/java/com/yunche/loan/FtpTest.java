@@ -33,37 +33,37 @@ public class FtpTest {
 //            }
 //            ftp.disconnect();
 
-
-            Thread thread1 = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("A.......1");
-                    FtpUtil.icbcUpload("/tmp/8888.jpg");
-                    System.out.println("A.......2");
-                }
-            });
-            Thread thread2 = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("B.......1");
-                    FtpUtil.icbcUpload("/tmp/9999.jpg");
-                    System.out.println("B.......2");
-                }
-            });
-            Thread thread3 = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("C.......1");
-                    FtpUtil.icbcUpload("/tmp/9898.jpg");
-                    System.out.println("C.......2");
-                }
-            });
-            thread1.start();
-            thread2.start();
-            thread3.start();
+//
+//            Thread thread1 = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    System.out.println("A.......1");
+//                    FtpUtil.icbcUpload("/tmp/8888.jpg");
+//                    System.out.println("A.......2");
+//                }
+//            });
+//            Thread thread2 = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    System.out.println("B.......1");
+//                    FtpUtil.icbcUpload("/tmp/9999.jpg");
+//                    System.out.println("B.......2");
+//                }
+//            });
+//            Thread thread3 = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    System.out.println("C.......1");
+//                    FtpUtil.icbcUpload("/tmp/9898.jpg");
+//                    System.out.println("C.......2");
+//                }
+//            });
+//            thread1.start();
+//            thread2.start();
+//            thread3.start();
 //            FtpUtil.icbcUpload("/tmp/9999.jpg");
 
-            FtpUtil.icbcUpload("/tmp/9999.jpg");
+            FtpUtil.icbcUpload("/tmp/20180730.txt");
         } catch (Exception e) {
             e.printStackTrace();
         }

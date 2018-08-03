@@ -11,7 +11,6 @@ public class MaterialUpdateParam {
     /**
      * 资料齐全日期
      */
-    @NotBlank
     private String complete_material_date;
     /**
      * 资料审核备注

@@ -55,5 +55,7 @@ public class VehicleInformationUpdateParam {
 
     private String assess_use_year;
 
+    private String car_category;
+
     private List<UniversalFileParam> files;
 }

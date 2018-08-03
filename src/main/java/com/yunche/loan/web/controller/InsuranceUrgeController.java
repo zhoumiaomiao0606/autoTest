@@ -89,4 +89,15 @@ public class InsuranceUrgeController {
         return insuranceUrgeService.sendSms(param);
 
     }
+
+    @GetMapping(value = "/approval")
+    public ResultBean approval(@RequestParam Long orderId){
+        return insuranceUrgeService.approval(orderId);
+
+    }
+
+    @GetMapping(value = "/insurQuery")
+    public ResultBean insurQuery(@RequestParam("orderId") Long orderId,@RequestParam("year") Byte year) {
+        return insuranceUrgeService.insurQuery(orderId,year);
+    }
 }

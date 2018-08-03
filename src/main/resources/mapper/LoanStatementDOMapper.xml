@@ -115,7 +115,8 @@
      END
      END ELSE '未知'
      END AS action,
-     partner.id as partner_id
+     partner.id as partner_id,
+     car.car_type
 
      FROM
      loan_order orders
@@ -123,6 +124,7 @@
      LEFT JOIN loan_base_info baseinfo ON orders.loan_base_info_id = baseinfo.id
      LEFT JOIN loan_customer customer ON customer.id = orders.loan_customer_id
      LEFT JOIN loan_financial_plan plan ON plan.id = orders.loan_financial_plan_id
+     LEFT join loan_car_info car on car.id = orders.loan_car_info_id
      LEFT JOIN partner partner ON baseinfo.partner_id = partner.id
      LEFT JOIN employee saleman ON baseinfo.salesman_id = saleman.id
      LEFT JOIN department department ON saleman.department_id = department.id

@@ -19,4 +19,10 @@ public interface InsuranceUrgeService {
     String generateSms(RenewInsuranceParam renewInsuranceParam);
 
     ResultBean sendSms(RenewInsuranceParam param);
+
+    ResultBean approval(Long orderId);
+
+    ResultBean insurQuery(Long orderId,Byte year);
+
+
 }

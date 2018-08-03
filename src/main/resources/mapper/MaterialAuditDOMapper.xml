@@ -82,33 +82,47 @@
 
     <select id="selectDownloadMaterial" parameterType="java.lang.Long"
             resultType="com.yunche.loan.domain.param.MaterialDownloadParam">
+
         SELECT
-        b.customer_id AS customerId,
-        b.type,
-        b.path,
-        c.id_card AS idCard,
-        c.`name`,
-        c.cust_type AS custType
+
+                    f.customer_id               AS customerId,
+                    f.type                      AS type,
+                    f.path                      AS path,
+                    c.id_card                   AS idCard,
+                    c.`name`                    AS name,
+                    c.cust_type                 AS custType
+
         FROM
-        loan_order a,
-        loan_file b,
-        loan_info_supplement s,
-        loan_customer c
+                    loan_order                  o,
+                    loan_customer               c,
+                    loan_file                   f
+
+        LEFT JOIN   loan_info_supplement 		s  ON s.id = f.info_supplement_id
 
         WHERE
 
-        (a.loan_customer_id = c.id or a.loan_customer_id=c.principal_cust_id)
-        AND b.customer_id = c.id
+        (o.loan_customer_id = c.id  OR  o.loan_customer_id = c.principal_cust_id)
 
-        /*资料流转已提交*/
-        AND s.id = b.info_supplement_id
-        AND s.status = 1
+        AND f.customer_id = c.id
 
         <if test="customerId != null">
-            AND b.customer_id = #{customerId}
+            AND f.customer_id = #{customerId}
         </if>
-        AND a.id = #{orderId}
-        AND b.type != 26
+
+        AND o.id = #{orderId}
+
+        AND f.type != 26
+
+        /*资料流转已提交*/
+        AND
+            CASE
+                WHEN f.upload_type = 1 THEN
+                    TRUE
+                WHEN f.upload_type = 2 THEN
+                    s.status = 1
+            ELSE
+                    FALSE
+        END
 
     </select>
 

@@ -122,6 +122,8 @@ public class TaskListQuery {
     private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
     private List<String> bankList = Lists.newArrayList();//银行ID列表
 
+    private List<Long> bankInterfaceSerialOrderidList = Lists.newArrayList();
+
     // 资料流转-节点类型
     private Byte dataFlowType;
     // 资料流转-类型列表

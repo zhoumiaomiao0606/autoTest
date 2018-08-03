@@ -3,9 +3,12 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO;
 import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
+import org.apache.ibatis.annotations.Param;
 
 
 public interface LoanQueryService {
+
+    boolean selectCheckOrderInBankInterfaceSerial(Long orderId,String transCode);
 
     UniversalCustomerDetailVO universalCustomerDetail(Long customerId);
 
