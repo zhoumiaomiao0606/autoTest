@@ -10,12 +10,15 @@ import com.yunche.loan.domain.query.InsuranceListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.InsuranceUrgeDistributeService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistributeService {
@@ -128,6 +131,7 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
 
         List<InsuranceInfoDO> insuranceInfoDOS = insuranceInfoDOMapper.listByOrderId(orderId);
 
+
         List<UniversalInsuranceVO> insuranceDetail = Lists.newArrayList();
         insuranceInfoDOS.stream().forEach(e->{
             UniversalInsuranceVO universalInsuranceVO = new UniversalInsuranceVO();
@@ -144,12 +148,19 @@ public class InsuranceUrgeDistributeServiceImpl implements InsuranceUrgeDistribu
             universalCustomerVO.setFiles(files);
         }
         List<RenewInsuranceDO> renewList = renewInsuranceDOMapper.selectByOrderId(orderId);
+        List<RenewInsuranceVO> renewInsuranceVOS = renewList.stream().filter(Objects::nonNull).map(e->{
+            RenewInsuranceVO renewInsuranceVO = new RenewInsuranceVO();
+            InsuranceDistributeRecordDO recordDO = insuranceDistributeRecordDOMapper.selectRenewInsurLimit(e.getOrderId());
+            BeanUtils.copyProperties(e,renewInsuranceVO);
+            renewInsuranceVO.setSendee(recordDO.getEmployeeName());
+            return renewInsuranceVO;
+        }).collect(Collectors.toList());
         recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setCar(universalCarInfoVO);
         recombinationVO.setInsuranceDetail(insuranceDetail);
         recombinationVO.setCustomers(customers);
-        recombinationVO.setRenewInsurList(renewList);
+        recombinationVO.setRenewInsurList(renewInsuranceVOS);
 
         return ResultBean.ofSuccess(recombinationVO);
     }
