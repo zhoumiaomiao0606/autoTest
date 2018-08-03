@@ -156,6 +156,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private LoanQueryService loanQueryService;
 
+    @Autowired
+    private LoanInfoSupplementService loanInfoSupplementService;
+
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
