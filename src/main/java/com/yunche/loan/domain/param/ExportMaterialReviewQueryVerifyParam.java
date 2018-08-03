@@ -14,6 +14,9 @@ public class ExportMaterialReviewQueryVerifyParam
     private  String startDate1;
     private  String endDate1;
 
+    private  String startDate2;
+    private  String endDate2;
+
     //合伙人团队列表
     private List<Long> partnerList;
     //贷款银行列表

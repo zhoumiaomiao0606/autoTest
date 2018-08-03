@@ -19,7 +19,7 @@ public interface LoanInfoSupplementService {
     @Deprecated
     ResultBean<InfoSupplementVO> detail__(Long id);
 
-    List<UniversalInfoSupplementVO> history(Long orderId);
+    ResultBean<List<UniversalInfoSupplementVO>> history(Long orderId);
 
     ResultBean<UniversalInfoSupplementVO> detail(Long infoSupplementId);
 

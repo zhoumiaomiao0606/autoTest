@@ -24,7 +24,7 @@ import com.yunche.loan.domain.vo.UniversalCreditInfoVO;
 import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.LoanInfoSupplementService;
+import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.MaterialService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -92,7 +92,7 @@ public class MaterialServiceImpl implements MaterialService {
     private LoanFileDOMapper loanFileDOMapper;
 
     @Autowired
-    private LoanInfoSupplementService loanInfoSupplementService;
+    private LoanQueryService loanQueryService;
 
 
     @Override
@@ -119,7 +119,7 @@ public class MaterialServiceImpl implements MaterialService {
         recombinationVO.setLoanreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(LOAN_REVIEW.getCode(), orderId));
         recombinationVO.setBusinessreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
         recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
-        recombinationVO.setSupplement(loanInfoSupplementService.history(orderId));
+        recombinationVO.setSupplement(loanQueryService.history(orderId));
         recombinationVO.setCustomers(customers);
         return recombinationVO;
     }

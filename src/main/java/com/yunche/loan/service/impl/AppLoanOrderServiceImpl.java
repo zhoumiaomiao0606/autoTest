@@ -43,7 +43,6 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionText;
 
-
 /**
  * @author liuzhe
  * @date 2018/3/5
@@ -155,16 +154,16 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private LoanOrderService loanOrderService;
 
     @Autowired
+    private LoanQueryService loanQueryService;
+
+    @Autowired
     private LoanInfoSupplementService loanInfoSupplementService;
 
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
 
-        ResultBean<UniversalInfoSupplementVO> detailResult = loanInfoSupplementService.detail(supplementOrderId);
-        Preconditions.checkArgument(detailResult.getSuccess(), detailResult.getMsg());
-
-        UniversalInfoSupplementVO data = detailResult.getData();
+        UniversalInfoSupplementVO data = loanQueryService.detail(supplementOrderId);
 
         AppInfoSupplementVO appInfoSupplementVO = new AppInfoSupplementVO();
         BeanUtils.copyProperties(data, appInfoSupplementVO);
