@@ -172,16 +172,17 @@ public class FtpUtil {
         FtpImpl ftp = new FtpImpl();
         boolean flag = false;
         try {
-            serverpath = serverpath.replaceAll("YYYYMMDD", DateUtil.getDate());
             String realPassword = DesEncryptUtil.decryptBasedDes(password);
             ftp.connect(servierIP, Integer.parseInt(port), userName, realPassword);
-
-            boolean mkdir = ftp.mkdir(serverpath);
+            ftp.cd(serverpath);
+            boolean mkdir = ftp.mkdir(DateUtil.getDate());
             if (!mkdir) {
-                throw new BizException("创建路径失败");
+                logger.info("----------->路径已存在....");
+            }else{
+                logger.info("----------->路径创建成功");
             }
 
-            boolean cd = ftp.cd(serverpath);
+            boolean cd = ftp.cd(DateUtil.getDate());
             if (!cd) {
                 throw new BizException("路径切换失败");
             }
