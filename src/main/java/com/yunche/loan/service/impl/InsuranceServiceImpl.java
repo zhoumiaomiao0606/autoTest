@@ -218,7 +218,6 @@ public class InsuranceServiceImpl implements InsuranceService {
         if (loanOrderDO == null) {
             throw new BizException("此业务单不存在");
         }
-        //新保录入接口只能查1-续保后期在做
         List<InsuranceRelevanceUpdateParam> insuranceRelevanceList = param.getInsuranceRelevanceList();
         insuranceRelevanceList.stream().forEach(e -> {
             InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(param.getOrderId(), e.getYear());
@@ -245,7 +244,8 @@ public class InsuranceServiceImpl implements InsuranceService {
                 InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
                 insuranceRelevanceDO.setInsurance_info_id(insuranceInfoDO.getId());
                 parseDao(e,insuranceRelevanceDO);
-                insuranceRelevanceDOMapper.updateByPrimaryKeySelective(insuranceRelevanceDO);
+                int count = insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
+                Preconditions.checkArgument(count>0,"新增失败");
             }
         });
 
