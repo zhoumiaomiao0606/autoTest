@@ -131,30 +131,30 @@ public class InsuranceServiceImpl implements InsuranceService {
                             int dateNum0 = (int) ((dates0.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             int dateNum1 = (int) ((dates1.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             riskQueryVO.setEndDate1(dates0);
-                            riskQueryVO.setDateNum1(dateNum0 < 0 ? "已到期": dateNum0+"");
+                            riskQueryVO.setDateNum1(dateNum0 < 0 ? "已到期" : dateNum0 + "");
                             riskQueryVO.setEndDate(dates1);
-                            riskQueryVO.setDateNum(dateNum1 < 0 ? "已到期": dateNum1+"");
+                            riskQueryVO.setDateNum(dateNum1 < 0 ? "已到期" : dateNum1 + "");
                         } else {
                             Date dates0 = sdf.parse(dates[0]);
                             Date dates1 = sdf.parse(dates[1]);
                             int dateNum0 = (int) ((dates0.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             int dateNum1 = (int) ((dates1.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             riskQueryVO.setEndDate1(dates1);
-                            riskQueryVO.setDateNum1(dateNum1 < 0 ? "已到期": dateNum1+"");
+                            riskQueryVO.setDateNum1(dateNum1 < 0 ? "已到期" : dateNum1 + "");
                             riskQueryVO.setEndDate(dates0);
-                            riskQueryVO.setDateNum(dateNum0 < 0 ? "已到期": dateNum0+"");
+                            riskQueryVO.setDateNum(dateNum0 < 0 ? "已到期" : dateNum0 + "");
                         }
                     } else {
                         if ("1".equals(insuranceType)) {
                             Date date = sdf.parse(endDateTotal);
                             int dateNum = (int) ((date.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             riskQueryVO.setEndDate1(date);
-                            riskQueryVO.setDateNum1(dateNum < 0 ? "已到期": dateNum+"");
+                            riskQueryVO.setDateNum1(dateNum < 0 ? "已到期" : dateNum + "");
                         } else {
                             Date date = sdf.parse(endDateTotal);
                             int dateNum = (int) ((date.getTime() - nowDate.getTime()) / (1000 * 3600 * 24));
                             riskQueryVO.setEndDate(date);
-                            riskQueryVO.setDateNum(dateNum < 0 ? "已到期": dateNum+"");
+                            riskQueryVO.setDateNum(dateNum < 0 ? "已到期" : dateNum + "");
                         }
                     }
                 }
@@ -214,10 +214,11 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     @Override
     public void update(InsuranceUpdateParam param) {
+        Preconditions.checkArgument(null != param && null != param.getOrderId(), "业务单号不能为空");
+
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrderId()));
-        if (loanOrderDO == null) {
-            throw new BizException("此业务单不存在");
-        }
+        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
+
         List<InsuranceRelevanceUpdateParam> insuranceRelevanceList = param.getInsuranceRelevanceList();
         insuranceRelevanceList.stream().forEach(e -> {
             InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(param.getOrderId(), e.getYear());
@@ -234,7 +235,7 @@ public class InsuranceServiceImpl implements InsuranceService {
                 insuranceRelevanceDOMapper.deleteByInsuranceInfoIdAndType(insuranceInfoDO.getId(), e.getInsuranceType());
                 InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
                 insuranceRelevanceDO.setInsurance_info_id(insuranceInfoDO.getId());
-                parseDao(e,insuranceRelevanceDO);
+                parseDao(e, insuranceRelevanceDO);
                 insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
             } else {
                 //代表存在
@@ -243,9 +244,9 @@ public class InsuranceServiceImpl implements InsuranceService {
                 insuranceRelevanceDOMapper.deleteByInsuranceInfoIdAndType(insuranceInfoDO.getId(), e.getInsuranceType());
                 InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
                 insuranceRelevanceDO.setInsurance_info_id(insuranceInfoDO.getId());
-                parseDao(e,insuranceRelevanceDO);
+                parseDao(e, insuranceRelevanceDO);
                 int count = insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
-                Preconditions.checkArgument(count>0,"新增失败");
+                Preconditions.checkArgument(count > 0, "新增失败");
             }
         });
 
@@ -253,27 +254,19 @@ public class InsuranceServiceImpl implements InsuranceService {
     }
 
     /**
-     *
      * @param insuranceRelevanceUpdateParam
      * @param insuranceRelevanceDO
      * @return
      */
-    private InsuranceRelevanceDO parseDao(InsuranceRelevanceUpdateParam insuranceRelevanceUpdateParam,InsuranceRelevanceDO insuranceRelevanceDO){
+    private InsuranceRelevanceDO parseDao(InsuranceRelevanceUpdateParam insuranceRelevanceUpdateParam, InsuranceRelevanceDO insuranceRelevanceDO) {
         /**
-         *    @NotBlank
-        private Byte year;//年次
-         @NotBlank
-         private String insuranceCompanyName;// 保险公司名称
-         @NotBlank
-         private String insuranceNumber;//  保单号
-         @NotBlank
-         private BigDecimal insuranceAmount;// 保险金额
-         @NotBlank
-         private Date startDate;// 开始日期
-         @NotBlank
-         private Date endDate;// 结束日期
-         @NotBlank
-         private Byte insuranceType;// 险种 1商业险 2交强险 3车船税
+         *    @NotBlank private Byte year;//年次
+         @NotBlank private String insuranceCompanyName;// 保险公司名称
+         @NotBlank private String insuranceNumber;//  保单号
+         @NotBlank private BigDecimal insuranceAmount;// 保险金额
+         @NotBlank private Date startDate;// 开始日期
+         @NotBlank private Date endDate;// 结束日期
+         @NotBlank private Byte insuranceType;// 险种 1商业险 2交强险 3车船税
          */
 
         insuranceRelevanceDO.setInsurance_company_name(insuranceRelevanceUpdateParam.getInsuranceCompanyName());
