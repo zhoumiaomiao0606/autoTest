@@ -8,6 +8,7 @@ import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.constant.VideoFaceConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
@@ -32,6 +33,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,6 +44,7 @@ import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
 import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_SOCIAL;
+import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_ID_CARD_EXPIRE_DATE;
 import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanAmountConst.*;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
@@ -924,8 +927,34 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
         Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()), "当前订单" + getOrderStatusText(loanProcessDO));
 
+        // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
+        if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+
+            LoanCustomerDO loanCustomerDO = getLoanCustomer(loanOrderDO.getLoanCustomerId());
+            String identityValidity = loanCustomerDO.getIdentityValidity();
+            Preconditions.checkArgument(StringUtils.isNotBlank(identityValidity), "身份证有效期不能为空");
+
+            // 2011.04.18-2031.04.18
+            String[] split = identityValidity.split("\\-");
+            String expireDateStr = split[1];
+
+            // 长期
+            if (CUST_ID_CARD_EXPIRE_DATE.equals(expireDateStr)) {
+                return;
+            }
+
+            // 天数比较
+            String[] expireDateStrArr = expireDateStr.split("\\.");
+            LocalDate idCardExpireDate = LocalDate.of(Integer.valueOf(expireDateStrArr[0]), Integer.valueOf(expireDateStrArr[1]), Integer.valueOf(expireDateStrArr[2]));
+
+            LocalDate today = LocalDate.now();
+
+            long daysDiff = DateTimeFormatUtils.daysDiff(today, idCardExpireDate);
+            Preconditions.checkArgument(daysDiff > 7, "身份证已过期，不允许申请贷款");
+        }
+
         // 【资料审核】
-        if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+        else if (MATERIAL_REVIEW.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
             // 提车资料必须已经提交了
             Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getVehicleInformation()), "请先录入提车资料");
         }
@@ -977,32 +1006,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Preconditions.checkArgument(TASK_PROCESS_INIT.equals(dataFlowMortgageP2cStatus), "已新建过[抵押资料合伙人至公司]单据");
         }
 
-        // 已经在create中做了校验
-//        // 【金融方案修改申请】
-//        else if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
-//            // 1
-//            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "[电审]未通过，无法发起[金融方案修改申请]");
-//            // 0/2
-//            Preconditions.checkArgument(!TASK_PROCESS_DONE.equals(loanProcessDO.getLoanReview()), "[放款审批]已通过，无法发起[金融方案修改申请]");
-//
-//            // 历史进行中的申请单
-//            LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(loanOrderDO.getId());
-//            if (null != loanFinancialPlanTempHisDO) {
-//                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前已存在审核中的[金融方案修改申请]");
-//            }
-//        }
-//
-//        // 【退款申请】
-//        else if (REFUND_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
-//            // 1
-//            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview()), "[打款确认]未通过，无法发起[退款申请]");
-//
-//            // 历史进行中的申请单
-//            LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(loanOrderDO.getId());
-//            if (null != loanRefundApplyDO) {
-//                Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanRefundApplyDO.getStatus()), "当前已存在审核中的[退款申请]");
-//            }
-//        }
+        // [银行开卡]
+        else if (BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
+            // 前置开卡校验
+            preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
+        }
 
     }
 
@@ -1259,10 +1267,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 执行电审任务
             execTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
         } else {
-            // 前置开卡校验
-            if (BANK_OPEN_CARD.getCode().equals(approval.getTaskDefinitionKey())) {
-                preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
-            }
             // 其他任务：直接提交
             completeTask(task.getId(), variables);
         }

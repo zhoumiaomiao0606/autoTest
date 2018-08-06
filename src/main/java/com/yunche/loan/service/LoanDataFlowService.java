@@ -30,4 +30,6 @@ public interface LoanDataFlowService {
     ResultBean<String> export(TaskListQuery taskListQuery);
 
     ResultBean<Integer> imp(String ossKey);
+
+    ResultBean<Integer> batchReceived(String ids);
 }
