@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.TaskDistributionParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
@@ -35,16 +36,16 @@ public class TaskSchedulingController {
      * 是否属于银行单子
      */
     @GetMapping(value = "/isBankOrder")
-    public ResultBean<Boolean> isBankOrder(@RequestParam Long orderId,@RequestParam String transCode) {
-        return ResultBean.ofSuccess(loanQueryService.selectCheckOrderInBankInterfaceSerial(orderId,transCode));
+    public ResultBean<Boolean> isBankOrder(@RequestParam Long orderId, @RequestParam String transCode) {
+        return ResultBean.ofSuccess(loanQueryService.selectCheckOrderInBankInterfaceSerial(orderId, transCode));
     }
 
     /**
      * 银行单子状态
      */
     @GetMapping(value = "/bankOrderStatus")
-    public ResultBean<Integer> bankOrderStatus(@RequestParam Long orderId,@RequestParam String transCode) {
-        return ResultBean.ofSuccess(loanQueryService.selectBankInterFaceSerialOrderStatusByOrderId(orderId,transCode));
+    public ResultBean<Integer> bankOrderStatus(@RequestParam Long orderId, @RequestParam String transCode) {
+        return ResultBean.ofSuccess(loanQueryService.selectBankInterFaceSerialOrderStatusByOrderId(orderId, transCode));
     }
 
     /**
@@ -59,8 +60,8 @@ public class TaskSchedulingController {
      * 是否待电审
      */
     @GetMapping(value = "/bankOrderApiMsg")
-    public ResultBean<String> selectLastBankInterfaceSerialMsgByTransCode(@RequestParam Long customerId,@RequestParam String transCode) {
-        return ResultBean.ofSuccess(loanQueryService.selectLastBankInterfaceSerialNoteByTransCode(customerId,transCode));
+    public ResultBean<String> selectLastBankInterfaceSerialMsgByTransCode(@RequestParam Long customerId, @RequestParam String transCode) {
+        return ResultBean.ofSuccess(loanQueryService.selectLastBankInterfaceSerialNoteByTransCode(customerId, transCode));
     }
 
     /**
@@ -68,29 +69,34 @@ public class TaskSchedulingController {
      */
     @GetMapping(value = "/bankOrder")
     public ResultBean<BankInterfaceSerialReturnVO> selectLastBankInterfaceSerialByTransCode(@RequestParam Long customerId, @RequestParam String transCode) {
-        return ResultBean.ofSuccess(loanQueryService.selectLastBankInterfaceSerialByTransCode(customerId,transCode));
+        return ResultBean.ofSuccess(loanQueryService.selectLastBankInterfaceSerialByTransCode(customerId, transCode));
     }
-
 
     /**
      * 待办任务列表-all
      */
+    @Limiter(route = "/api/v1/app/taskscheduling/scheduletasklist", limit = 1)
     @GetMapping(value = "/scheduletasklist")
-    public ResultBean<List<ScheduleTaskVO>> scheduletasklist(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
+    public ResultBean<List<ScheduleTaskVO>> scheduletasklist(@RequestParam Integer pageIndex,
+                                                             @RequestParam Integer pageSize) {
         return taskSchedulingService.scheduleTaskList(pageIndex, pageSize);
     }
 
     /**
      * 待办任务列表
      */
+    @Limiter(route = "/api/v1/taskscheduling/scheduletasklistBykey", limit = 1)
     @GetMapping(value = "/scheduletasklistBykey")
-    public ResultBean<List<ScheduleTaskVO>> scheduletasklistBykey(@RequestParam String key, @RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
+    public ResultBean<List<ScheduleTaskVO>> scheduletasklistBykey(@RequestParam String key,
+                                                                  @RequestParam Integer pageIndex,
+                                                                  @RequestParam Integer pageSize) {
         return taskSchedulingService.scheduleTaskListBykey(key, pageIndex, pageSize);
     }
 
     /**
      * 查询接口
      */
+    @Limiter(route = "/api/v1/taskscheduling/queryTaskList", limit = 1)
     @PostMapping(value = "/queryTaskList")
     public ResultBean<List<TaskListVO>> scheduleTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.queryTaskList(taskListQuery);
@@ -99,6 +105,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
+    @Limiter(route = "/api/v1/taskscheduling/countQueryTaskList", limit = 1)
     @PostMapping(value = "/countQueryTaskList")
     public ResultBean<Long> countQueryTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.countQueryTaskList(taskListQuery);
@@ -107,6 +114,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
+    @Limiter(route = "/api/v1/taskscheduling/queryAppTaskList", limit = 1)
     @PostMapping(value = "/queryAppTaskList")
     public ResultBean<List<AppTaskVO>> queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
         return taskSchedulingService.queryAppTaskList(appTaskListQuery);

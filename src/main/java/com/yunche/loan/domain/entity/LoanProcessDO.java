@@ -16,6 +16,10 @@ public class LoanProcessDO {
      */
     private Byte creditApply;
     /**
+     * 贷款信息登记
+     */
+    private Byte loanInfoRecord;
+    /**
      * 银行征信
      */
     private Byte bankCreditRecord;

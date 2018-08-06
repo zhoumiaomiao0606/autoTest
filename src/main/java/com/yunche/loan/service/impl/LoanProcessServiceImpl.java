@@ -57,7 +57,6 @@ import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
 import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_DOING;
 import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_DONE;
-import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_REJECT;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
 
@@ -74,15 +73,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     public static final String NEW_LINE = System.getProperty("line.separator");
 
-
-    @Autowired
-    private RuntimeService runtimeService;
-
-    @Autowired
-    private TaskService taskService;
-
-    @Autowired
-    private MaterialService materialService;
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -109,16 +99,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanRejectLogDOMapper loanRejectLogDOMapper;
 
     @Autowired
-    private JpushService jpushService;
-
-    @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
-
-    @Autowired
-    private PermissionService permissionService;
-
-    @Autowired
-    private LoanRejectLogService loanRejectLogService;
 
     @Autowired
     private LoanCarInfoDOMapper loanCarInfoDOMapper;
@@ -140,6 +121,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private TaskDistributionDOMapper taskDistributionDOMapper;
+
+    @Autowired
+    private RuntimeService runtimeService;
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private JpushService jpushService;
+
+    @Autowired
+    private MaterialService materialService;
+
+    @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
+    private LoanRejectLogService loanRejectLogService;
 
     @Autowired
     private TaskDistributionService taskDistributionService;
@@ -236,6 +235,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 流程数据同步
         syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval);
 
+        // 自动提交  新产生的[贷款信息登记]
+        autoCompleteLoanInfoRecordTask(approval, loanProcessDO);
+
         // 生成客户还款计划
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
 
@@ -252,6 +254,28 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
+    }
+
+    /**
+     * [贷款信息登记] 如果已存在  =则=>  自动提交  新产生的[贷款信息登记]
+     *
+     * @param approval
+     * @param loanProcessDO
+     */
+    private void autoCompleteLoanInfoRecordTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+
+        // 【征信申请】
+        if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // [贷款信息登记] 是否已存在
+            Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
+            // 已存在
+            if (!TASK_PROCESS_INIT.equals(loanInfoRecordStatus)) {
+
+                // 自动提交 新[贷款信息登记]
+                autoCompleteTask_(approval.getOrderId(), LOAN_INFO_RECORD.getCode(), ACTION_PASS);
+            }
+        }
     }
 
 
