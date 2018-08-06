@@ -1395,73 +1395,75 @@
     <select id="selectBankLendRecordDetail" resultType="com.yunche.loan.domain.vo.BankLendRecordVO"
             parameterType="java.lang.Long">
         SELECT
-        a.id AS orderId,
-        b.id_card AS idCard,
-        b.name AS principalLenderName,
-        h.name AS salesman,
-        e. NAME AS departmentName,
-        a.loan_customer_id AS customerId,
-        a.gmt_create AS gmtCreate,
-        c.bank,
-        (select
-        case when
-        END_TIME_ = null
-        then null
-        else
-        DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
-        end
-        from act_hi_taskinst
-        where PROC_INST_ID_ = a.process_inst_id
-        and TASK_DEF_KEY_ = 'usertask_loan_review'
-        order by START_TIME_
-        desc limit 1) AS remitGmtCreate,
-        f.lend_date AS lendDate,
-        f.lend_amount AS lendAmount,
-        d.name AS partnerName
+                    a.id                                        AS orderId,
+                    b.id_card                                   AS idCard,
+                    b.name                                      AS principalLenderName,
+                    h.name                                      AS salesman,
+                    e. NAME                                     AS departmentName,
+                    a.loan_customer_id                          AS customerId,
+                    a.gmt_create                                AS gmtCreate,
+                    c.bank,
+                    (select
+                        case when
+                            END_TIME_ = null
+                        then
+                            null
+                        else
+                            DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
+                        end
+                    from act_hi_taskinst
+                    where
+                        PROC_INST_ID_ = a.process_inst_id
+                        and TASK_DEF_KEY_ = 'usertask_loan_review'
+                        order by START_TIME_
+                        desc limit 1)                           AS remitGmtCreate,
+                    f.lend_date                                 AS lendDate,
+                    f.lend_amount                               AS lendAmount,
+                    d.name                                      AS partnerName
         FROM
-        loan_order a
-        LEFT JOIN  bank_lend_record f on a.bank_lend_record_id=f.id
-        LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
-        LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
-        LEFT JOIN employee h ON h.id=c.salesman_id
-        LEFT JOIN partner d ON c.partner_id = d.id
-        LEFT JOIN department e ON d.department_id = e.id
+            loan_order a
+            LEFT JOIN  bank_lend_record f on a.bank_lend_record_id=f.id
+            LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
+            LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
+            LEFT JOIN employee h ON h.id=c.salesman_id
+            LEFT JOIN partner d ON c.partner_id = d.id
+            LEFT JOIN department e ON d.department_id = e.id
         WHERE
-        a.id =#{orderId}
+            a.id =#{orderId}
     </select>
 
 
     <select id="selectBankCardRecordDetail" resultType="com.yunche.loan.domain.vo.BankCardRecordVO"
             parameterType="java.lang.Long">
         SELECT
-        a.id AS orderId,
-        b.id_card AS idCard,
-        b.name AS principalLenderName,
-        h.name AS salesman,
-        e.name AS departmentName,
-        a.loan_customer_id AS customerId,
-        a.gmt_create AS gmtCreate,
-        c.bank,
-        f.lend_date AS lendDate,
-        g.billing_date AS billingDate,
-        g.first_billing_date AS firstBillingDate,
-        g.repay_date AS repayDate,
-        g.first_repayment_date AS firstRepaymentDate,
-        g.repay_card_id AS repayCardId,
-        g.receive_date AS receiveDate,
-        g.sendee,
-        d.name  AS partnerName
+                a.id                                AS orderId,
+                b.id_card                           AS idCard,
+                b.name                              AS principalLenderName,
+                h.name                              AS salesman,
+                e.name                              AS departmentName,
+                a.loan_customer_id                  AS customerId,
+                a.gmt_create                        AS gmtCreate,
+                c.bank,
+                f.lend_date                         AS lendDate,
+                g.billing_date                      AS billingDate,
+                g.first_billing_date                AS firstBillingDate,
+                g.repay_date                        AS repayDate,
+                g.first_repayment_date              AS firstRepaymentDate,
+                g.repay_card_id                     AS repayCardId,
+                g.receive_date                      AS receiveDate,
+                g.sendee,
+                d.name                              AS partnerName
         FROM
-        loan_order a
-        LEFT JOIN  bank_card_record g  on a.id= g.order_id
-        LEFT JOIN  bank_lend_record f on a.bank_lend_record_id=f.id
-        LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
-        LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
-        LEFT JOIN employee h ON  c.salesman_id=h.id
-        LEFT JOIN partner d ON c.partner_id = d.id
-        LEFT JOIN department e ON d.department_id = e.id
+            loan_order a
+            LEFT JOIN  bank_card_record g  on a.id= g.order_id
+            LEFT JOIN  bank_lend_record f on a.bank_lend_record_id=f.id
+            LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
+            LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
+            LEFT JOIN employee h ON  c.salesman_id=h.id
+            LEFT JOIN partner d ON c.partner_id = d.id
+            LEFT JOIN department e ON d.department_id = e.id
         WHERE
-        a.id =#{orderId}
+            a.id =#{orderId}
     </select>
 
     <select id="checkCustomerHavingCreditON14Day" resultType="java.lang.Boolean">

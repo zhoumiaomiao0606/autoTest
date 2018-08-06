@@ -237,15 +237,19 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
         // insert
-        ResultBean<Long> createResultBean = loanCarInfoService.create(loanCarInfoDO);
-        Preconditions.checkArgument(createResultBean.getSuccess(), createResultBean.getMsg());
-
-        // 关联
-        LoanOrderDO loanOrderDO = new LoanOrderDO();
-        loanOrderDO.setId(loanCarInfoParam.getOrderId());
-        loanOrderDO.setLoanCarInfoId(createResultBean.getData());
-        ResultBean<Void> updateRelaResultBean = loanProcessOrderService.update(loanOrderDO);
-        Preconditions.checkArgument(updateRelaResultBean.getSuccess(), updateRelaResultBean.getMsg());
+        LoanOrderDO loanOrder = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
+        if(loanOrder.getLoanCarInfoId()!=null){
+            ResultBean<Void> update = loanCarInfoService.update(loanCarInfoDO);
+        }else{
+            ResultBean<Long> createResultBean = loanCarInfoService.create(loanCarInfoDO);
+            Preconditions.checkArgument(createResultBean.getSuccess(), createResultBean.getMsg());
+            // 关联
+            LoanOrderDO loanOrderDO = new LoanOrderDO();
+            loanOrderDO.setId(loanCarInfoParam.getOrderId());
+            loanOrderDO.setLoanCarInfoId(createResultBean.getData());
+            ResultBean<Void> updateRelaResultBean = loanProcessOrderService.update(loanOrderDO);
+            Preconditions.checkArgument(updateRelaResultBean.getSuccess(), updateRelaResultBean.getMsg());
+        }
 
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
@@ -256,7 +260,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         vehicleInformationService.update(vehicleInformationUpdateParam);
 
-        return ResultBean.ofSuccess(createResultBean.getData(), "创建成功");
+        return ResultBean.ofSuccess(null, "创建成功");
     }
 
     @Override
