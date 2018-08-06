@@ -962,10 +962,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getInstallGps()), "当前订单[GPS安装]未提交");
             }
 
-            // 3.（根据银行配置）视频面签完成
-            VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(loanOrderDO.getId());
-            Preconditions.checkNotNull(videoFaceLogDO, "当前订单未进行[视频面签]");
-            Preconditions.checkArgument(VideoFaceConst.ACTION_PASS.equals(videoFaceLogDO.getAction()), "当前订单[视频面签]未通过");
+            // 3.（根据银行配置）视频面签完成   -仅：台州路桥支行
+            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
+            if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())) {
+                VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(loanOrderDO.getId());
+                Preconditions.checkNotNull(videoFaceLogDO, "当前订单未进行[视频面签]");
+                Preconditions.checkArgument(VideoFaceConst.ACTION_PASS.equals(videoFaceLogDO.getAction()), "当前订单[视频面签]未通过");
+            }
         }
 
         // [资料流转（抵押资料 - 合伙人->公司]

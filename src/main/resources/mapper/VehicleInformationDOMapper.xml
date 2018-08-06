@@ -50,6 +50,10 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.VehicleInformationDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into vehicle_information (id, license_plate_type, color, 
       qualified_certificate_number, register_date, 
       vehicle_identification_number, displacement, 
@@ -78,6 +82,10 @@
       )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VehicleInformationDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into vehicle_information
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

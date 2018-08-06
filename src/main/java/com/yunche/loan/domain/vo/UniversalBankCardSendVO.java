@@ -61,6 +61,9 @@ public class UniversalBankCardSendVO {
 
     private String expressSendAddress;
 
+    private Byte expressCom;
+    private String expressComText;
+
     private String expressSendNum;
 
     private Date expressSendDate;
