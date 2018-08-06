@@ -14,8 +14,6 @@ public class BankDO {
 
     private String contact;
 
-    private Long carLicenseLocation;
-
     private String tel;
 
     private String officePhone;
@@ -27,9 +25,9 @@ public class BankDO {
     private Byte needVideoFace;
 
     private Byte videoFaceMachine;
-
-
-    //0 启用 1 停用  2 删除
+    /**
+     * 状态（0-启用;1-停用;2-删除;）
+     */
     private Byte status;
 
     private Date gmtCreate;
