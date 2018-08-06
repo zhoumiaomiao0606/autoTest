@@ -24,7 +24,7 @@ public class ApprovalParam {
     private String taskDefinitionKey_;
 
     /**
-     * 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补  / 4-新增任务
+     * 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补  / 4-新增任务  / 5-反审
      */
     private Byte action;
     /**

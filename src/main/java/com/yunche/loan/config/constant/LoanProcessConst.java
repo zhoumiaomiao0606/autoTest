@@ -39,9 +39,13 @@ public class LoanProcessConst {
      */
     public static final Byte ACTION_NEW_TASK = 4;
     /**
+     * 反审（回退）
+     */
+    public static final Byte ACTION_ROLL_BACK = 5;
+    /**
      * 停止一条支线流程
      */
-    public static final Byte ACTION_STOP_ONE_FLOW = 5;
+    public static final Byte ACTION_STOP_ONE_FLOW = 6;
 
     /**
      * 发起任务申请

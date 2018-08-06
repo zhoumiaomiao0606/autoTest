@@ -18,6 +18,8 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_DIRECTOR;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_TELEPHONE_VERIFY_LEADER;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_TELEPHONE_VERIFY_MANAGER;
+import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_DOING;
+import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_DONE;
 
 @Service
 @Transactional
@@ -39,24 +41,32 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
     private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
 
 
-    //领取
+    /**
+     * 领取
+     *
+     * @param taskId
+     * @param taskKey
+     */
     @Override
     public void get(Long taskId, String taskKey) {
         if (taskId == null || StringUtils.isBlank(taskKey)) {
             throw new BizException("必须传入任务id和任务key");
         }
-        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
 
-        if (taskDistributionDO != null) {
+        TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
+        if (null != taskDistributionDO) {
+
             Byte status = taskDistributionDO.getStatus();
-            if (status.toString().equals("2")) {
+
+            if (TASK_STATUS_DOING.equals(status)) {
                 throw new BizException("该任务已被领取,正在执行中");
-            } else if (status.toString().equals("1")) {
+            } else if (TASK_STATUS_DONE.equals(status)) {
                 throw new BizException("该任务已被完成");
             } else {
                 throw new BizException("该任务状态异常");
             }
         }
+
         EmployeeDO employeeDO = SessionUtils.getLoginUser();
         TaskDistributionDO V = new TaskDistributionDO();
         V.setTaskId(taskId);
