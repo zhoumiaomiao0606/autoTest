@@ -349,11 +349,7 @@
 
 -->
 
-<<<<<<< HEAD
-        <table tableName="bank" domainObjectName="BankDO"
-=======
-        <table tableName="loan_bank_card_send" domainObjectName="LoanBankCardSendDO"
->>>>>>> 7654dd387a3c18e22620acb2893cb609e07bb3fc
+        <table tableName="bank_car_license_location" domainObjectName="BankCarLicenseLocationDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

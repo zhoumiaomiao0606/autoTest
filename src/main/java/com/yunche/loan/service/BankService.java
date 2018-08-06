@@ -24,4 +24,6 @@ public interface BankService {
     ResultBean<Void> delete(Long id);
 
     ResultBean<BankVO> getById(Long id);
+
+    ResultBean<List<Long>> areaListByBankName(String bankName);
 }

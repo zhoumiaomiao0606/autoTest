@@ -26,4 +26,7 @@ public class BankParam {
      * 机器面签问卷列表
      */
     private List<BankRelaQuestionDO> machineQuestionList = Collections.EMPTY_LIST;
+
+    //绑定上牌地list
+    private List<Long> bankCarLicenseLocationList = Collections.EMPTY_LIST;
 }
