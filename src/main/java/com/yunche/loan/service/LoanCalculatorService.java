@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public interface LoanCalculatorService {
 
-    public ResultBean getAllProduct();
+    public ResultBean getAllProduct(String bankName);
 
     public ResultBean cal(Long prodId, BigDecimal loanAmt, BigDecimal exeRate, int loanTime, BigDecimal carPrice);
 
