@@ -9,18 +9,17 @@ import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
-import com.yunche.loan.service.DictService;
-import com.yunche.loan.service.EmployeeService;
-import com.yunche.loan.service.LoanDataFlowService;
-import com.yunche.loan.service.TaskSchedulingService;
+import com.yunche.loan.service.*;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.ArrayUtils;
@@ -35,15 +34,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.ExportExcelConst.*;
+import static com.yunche.loan.config.constant.LoanProcessConst.ACTION_PASS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C_NEW_FILTER;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;
@@ -65,6 +65,12 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     private LoanQueryDOMapper loanQueryDOMapper;
 
     @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
+    private TaskSchedulingDOMapper taskSchedulingDOMapper;
+
+    @Autowired
     private TaskSchedulingService taskSchedulingService;
 
     @Autowired
@@ -77,14 +83,10 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     private TaskService taskService;
 
     @Autowired
-    private LoanOrderDOMapper loanOrderDOMapper;
-
-
-    @Resource
     private EmployeeService employeeService;
 
-    @Resource
-    private TaskSchedulingDOMapper taskSchedulingDOMapper;
+    @Autowired
+    private LoanProcessService loanProcessService;
 
 
     @Override
@@ -409,18 +411,6 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
                         throw new BizException("第" + rowNum + "行，第12列格式有误：" + row[11]);
                     }
 
-//                    try {
-//                        loanDataFlowDO.setFlowOutDeptName(row[12]);
-//                    } catch (Exception e) {
-//                        throw new BizException("第" + rowNum + "行，第13列格式有误：" + row[12]);
-//                    }
-//
-//                    try {
-//                        loanDataFlowDO.setFlowInDeptName(row[13]);
-//                    } catch (Exception e) {
-//                        throw new BizException("第" + rowNum + "行，第14列格式有误：" + row[13]);
-//                    }
-
                     loanDataFlowDO.setGmtModify(new Date());
 
                     loanDataFlowDOList.add(loanDataFlowDO);
@@ -435,7 +425,67 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         // batchInsert
         int count = batchInsert(loanDataFlowDOList);
 
+        // 资料流转[待邮寄]导入后，自动提交
+        autoCompleteTask(loanDataFlowDOList);
+
         return ResultBean.ofSuccess(count, "导入成功");
+    }
+
+    /**
+     * 自动提交
+     *
+     * @param loanDataFlowDOList
+     */
+    private void autoCompleteTask(List<LoanDataFlowDO> loanDataFlowDOList) {
+
+        if (CollectionUtils.isEmpty(loanDataFlowDOList)) {
+            return;
+        }
+
+        // kCodeMap
+        Map<String, String> kCodeMap = dictService.getKCodeMap("loanDataFlowType");
+
+        loanDataFlowDOList.stream().filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    ApprovalParam approvalParam = new ApprovalParam();
+
+                    approvalParam.setOrderId(e.getOrderId());
+                    approvalParam.setTaskDefinitionKey(kCodeMap.get(String.valueOf(e.getType())));
+                    approvalParam.setAction(ACTION_PASS);
+
+                    ResultBean<Void> approval = loanProcessService.approval(approvalParam);
+                    Preconditions.checkArgument(approval.getSuccess(), approval.getMsg());
+                });
+    }
+
+    @Override
+    public ResultBean<Integer> batchReceived(String ids) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(ids), "ids不能为空");
+
+        String[] idArr = ids.split("\\,");
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+
+
+        List<LoanDataFlowDO> loanDataFlowDOList = Arrays.stream(idArr).filter(StringUtils::isNotBlank)
+                .map(id -> {
+
+                    Long id_ = Long.valueOf(id);
+
+                    LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+                    loanDataFlowDO.setId(id_);
+                    loanDataFlowDO.setExpressReceiveMan(loginUser.getName());
+                    loanDataFlowDO.setExpressReceiveDate(new Date());
+                    loanDataFlowDO.setGmtModify(new Date());
+
+                    return loanDataFlowDO;
+                })
+                .collect(Collectors.toList());
+
+        int count = batchInsert(loanDataFlowDOList);
+
+        return ResultBean.ofSuccess(count);
     }
 
     /**

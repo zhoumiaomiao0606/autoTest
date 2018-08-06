@@ -61,4 +61,15 @@ public class LoanDataFlowController {
     public ResultBean<String> export(@RequestBody @Validated TaskListQuery taskListQuery) {
         return loanDataFlowService.export(taskListQuery);
     }
+
+    /**
+     * 批量接收
+     *
+     * @param ids 逗号分隔
+     * @return
+     */
+    @GetMapping(value = "/batchReceived")
+    public ResultBean<Integer> batchReceived(@RequestParam String ids) {
+        return loanDataFlowService.batchReceived(ids);
+    }
 }

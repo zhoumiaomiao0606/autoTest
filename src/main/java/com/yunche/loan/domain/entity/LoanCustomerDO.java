@@ -122,6 +122,9 @@ public class LoanCustomerDO {
 
     private BigDecimal debtRatio;
 
+    /**
+     * 担保类型：1-银行担保;  2-内部担保;
+     */
     private Byte guaranteeType;
 
     private String residenceAddress;
@@ -129,7 +132,9 @@ public class LoanCustomerDO {
     private String paddingCompany;
 
     private String playCompany;
-
+    /**
+     * 担保关系
+     */
     private String guaranteeRela;
 
     private String namePinyin;

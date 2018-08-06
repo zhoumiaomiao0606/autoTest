@@ -45,6 +45,11 @@ public class BankController {
         return bankService.listAll();
     }
 
+    @GetMapping(value = "/areaListByBankName")
+    public ResultBean<List<Long>> areaListByBankName(@RequestParam String bankName) {
+        return bankService.areaListByBankName(bankName);
+    }
+
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> create(@RequestBody BankParam bankParam) {
         return bankService.create(bankParam);

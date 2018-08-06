@@ -1,16 +1,20 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BankCarLicenseLocationDO;
 import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.entity.BankRelaQuestionDO;
 import com.yunche.loan.domain.param.BankParam;
 import com.yunche.loan.domain.query.BankQuery;
 import com.yunche.loan.domain.vo.BankVO;
+import com.yunche.loan.mapper.BankCarLicenseLocationDOMapper;
 import com.yunche.loan.mapper.BankDOMapper;
 import com.yunche.loan.mapper.BankRelaQuestionDOMapper;
 import com.yunche.loan.service.BankService;
+import org.activiti.engine.impl.util.CollectionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +47,9 @@ public class BankServiceImpl implements BankService {
     @Autowired
     private BankCache bankCache;
 
+    @Autowired
+    private BankCarLicenseLocationDOMapper bankCarLicenseLocationDOMapper;
+
 
     @Override
     public ResultBean<List<String>> listAll() {
@@ -73,13 +80,14 @@ public class BankServiceImpl implements BankService {
         Preconditions.checkArgument(StringUtils.isNotBlank(bankParam.getBank().getName()), "银行不能为空");
         Preconditions.checkNotNull(bankParam.getBank().getStatus(), "状态不能为空");
         Preconditions.checkArgument(VALID_STATUS.equals(bankParam.getBank().getStatus()) || INVALID_STATUS.equals(bankParam.getBank().getStatus()), "状态非法");
-
+        Preconditions.checkArgument(CollectionUtil.isNotEmpty(bankParam.getBankCarLicenseLocationList()), "上牌地列表为空");
         // 插入银行
         Long bankId = insertAndGetBank(bankParam.getBank());
 
         // 绑定问卷
         bindQuestion(bankId, bankParam.getBankQuestionList());
         bindQuestion(bankId, bankParam.getMachineQuestionList());
+        bindBankCarLicenseLocation(bankId,bankParam.getBankCarLicenseLocationList());
 
         // 刷新缓存
         bankCache.refresh();
@@ -100,6 +108,8 @@ public class BankServiceImpl implements BankService {
         Long bankId = bankParam.getBank().getId();
         updateQuestion(bankId, bankParam.getBankQuestionList());
         updateQuestion(bankId, bankParam.getMachineQuestionList());
+        bindBankCarLicenseLocation(bankId,bankParam.getBankCarLicenseLocationList());
+
 
         // 刷新缓存
         bankCache.refresh();
@@ -113,7 +123,7 @@ public class BankServiceImpl implements BankService {
         Preconditions.checkNotNull(id, "ID不能为空");
 
         int count = bankDOMapper.deleteByPrimaryKey(id);
-
+        bankCarLicenseLocationDOMapper.deleteByBankId(id);
         // 刷新缓存
         bankCache.refresh();
 
@@ -133,11 +143,29 @@ public class BankServiceImpl implements BankService {
         // 问卷
         List<BankRelaQuestionDO> bankQuestionList = bankRelaQuestionDOMapper.listByBankIdAndType(id, QUESTION_BANK);
         List<BankRelaQuestionDO> machineQuestionList = bankRelaQuestionDOMapper.listByBankIdAndType(id, QUESTION_MACHINE);
+        List<BankCarLicenseLocationDO> bankCarLicenseLocationList = bankCarLicenseLocationDOMapper.listByBankId(id);
+        List<Long> longs = Lists.newArrayList();
+        for(BankCarLicenseLocationDO v:bankCarLicenseLocationList){
+            longs.add(v.getAreaId());
+        }
         bankVO.setBankQuestionList(bankQuestionList);
         bankVO.setMachineQuestionList(machineQuestionList);
-
+        bankVO.setBankCarLicenseLocationList(longs);
         return ResultBean.ofSuccess(bankVO);
     }
+
+    @Override
+    public ResultBean<List<Long>> areaListByBankName(String bankName) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(bankName),"银行名称不能为空");
+        Long bankId = bankDOMapper.selectIdByName(bankName);
+        List<BankCarLicenseLocationDO> list = bankCarLicenseLocationDOMapper.listByBankId(bankId);
+        List<Long> longs = Lists.newArrayList();
+        for(BankCarLicenseLocationDO v:list){
+            longs.add(v.getAreaId());
+        }
+        return ResultBean.ofSuccess(longs);
+    }
+
 
     /**
      * 创建银行
@@ -204,5 +232,15 @@ public class BankServiceImpl implements BankService {
 
         // bindNow
         bindQuestion(bankId, questionList);
+    }
+
+    private void bindBankCarLicenseLocation(Long bankId, List<Long> bankCarLicenseLocationList){
+        bankCarLicenseLocationDOMapper.deleteByBankId(bankId);
+        for(Long areaId:bankCarLicenseLocationList){
+            BankCarLicenseLocationDO save = new BankCarLicenseLocationDO();
+            save.setBankId(bankId);
+            save.setAreaId(areaId);
+            bankCarLicenseLocationDOMapper.insertSelective(save);
+        }
     }
 }

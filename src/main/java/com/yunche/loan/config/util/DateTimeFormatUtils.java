@@ -2,11 +2,9 @@ package com.yunche.loan.config.util;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
@@ -89,4 +87,56 @@ public class DateTimeFormatUtils {
         return date;
     }
 
+    /**
+     * 日期天数差值
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static int daysDiff(Date startDate, Date endDate) {
+
+        Instant startInstant = startDate.toInstant();
+        Instant endInstant = endDate.toInstant();
+        LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(startInstant, zone);
+        LocalDateTime endLocalDateTime = LocalDateTime.ofInstant(endInstant, zone);
+        LocalDate startLocalDate = startLocalDateTime.toLocalDate();
+        LocalDate endLocalDate = endLocalDateTime.toLocalDate();
+
+        Period between = Period.between(startLocalDate, endLocalDate);
+        int days = between.getDays();
+
+        return days;
+    }
+
+    /**
+     * 日期天数差值
+     *
+     * @param start
+     * @param end
+     * @return
+     */
+    public static long daysDiff(LocalDate start, LocalDate end) {
+
+        long daysDiff = ChronoUnit.DAYS.between(start, end);
+
+        return daysDiff;
+    }
+
+    public static void main(String[] args) {
+
+        // 2011.04.18-2031.04.18
+        String identityValidity = "2011.04.18-2031.04.18";
+        String[] split = identityValidity.split("\\-");
+        String str = split[1];
+
+        String[] expireDateStrArr = str.split("\\.");
+        LocalDate idCardExpireDate = LocalDate.of(Integer.valueOf(expireDateStrArr[0]), Integer.valueOf(expireDateStrArr[1]), Integer.valueOf(expireDateStrArr[2]));
+
+        LocalDate today = LocalDate.now();
+
+        long daysDiff = DateTimeFormatUtils.daysDiff(today, idCardExpireDate);
+
+        System.out.println(daysDiff);
+    }
 }
