@@ -10,5 +10,5 @@ import java.util.List;
 public class BankReturnVO {
     private BankDO info;
 
-    private List<Long> list = Lists.newArrayList();
+    private List<AreaRVO> list = Lists.newArrayList();
 }
