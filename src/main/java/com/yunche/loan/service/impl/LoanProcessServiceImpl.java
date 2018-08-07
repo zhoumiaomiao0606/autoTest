@@ -21,6 +21,7 @@ import com.yunche.loan.service.*;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -54,6 +55,8 @@ import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
+import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_DOING;
+import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_DONE;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
 
@@ -70,15 +73,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     public static final String NEW_LINE = System.getProperty("line.separator");
 
-
-    @Autowired
-    private RuntimeService runtimeService;
-
-    @Autowired
-    private TaskService taskService;
-
-    @Autowired
-    private MaterialService materialService;
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -105,16 +99,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanRejectLogDOMapper loanRejectLogDOMapper;
 
     @Autowired
-    private JpushService jpushService;
-
-    @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
-
-    @Autowired
-    private PermissionService permissionService;
-
-    @Autowired
-    private LoanRejectLogService loanRejectLogService;
 
     @Autowired
     private LoanCarInfoDOMapper loanCarInfoDOMapper;
@@ -133,6 +118,27 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private VideoFaceLogDOMapper videoFaceLogDOMapper;
+
+    @Autowired
+    private TaskDistributionDOMapper taskDistributionDOMapper;
+
+    @Autowired
+    private RuntimeService runtimeService;
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private JpushService jpushService;
+
+    @Autowired
+    private MaterialService materialService;
+
+    @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
+    private LoanRejectLogService loanRejectLogService;
 
     @Autowired
     private TaskDistributionService taskDistributionService;
@@ -206,6 +212,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return execRefundApplyTask(approval, loanProcessDO);
         }
 
+        // 【反审】
+        if (actionIsRollBack(approval.getAction())) {
+            return execRollBackTask(approval, loanOrderDO, loanProcessDO);
+        }
+
         ////////////////////////////////////////// ↑↑↑↑↑ 特殊处理  ↑↑↑↑↑ ////////////////////////////////////////////////
 
 
@@ -223,6 +234,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 流程数据同步
         syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval);
+
+        // 自动提交  新产生的[贷款信息登记]
+        autoCompleteLoanInfoRecordTask(approval, loanProcessDO);
 
         // 生成客户还款计划
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
@@ -242,6 +256,115 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey_()) + "]任务执行成功");
     }
 
+    /**
+     * [贷款信息登记] 如果已存在  =则=>  自动提交  新产生的[贷款信息登记]
+     *
+     * @param approval
+     * @param loanProcessDO
+     */
+    private void autoCompleteLoanInfoRecordTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+
+        // 【征信申请】
+        if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // [贷款信息登记] 是否已存在
+            Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
+            // 已存在
+            if (!TASK_PROCESS_INIT.equals(loanInfoRecordStatus)) {
+
+                // 自动提交 新[贷款信息登记]
+                autoCompleteTask_(approval.getOrderId(), LOAN_INFO_RECORD.getCode(), ACTION_PASS);
+            }
+        }
+    }
+
+
+    /**
+     * 反审
+     *
+     * @param action
+     * @return
+     */
+    private boolean actionIsRollBack(Byte action) {
+        return ACTION_ROLL_BACK.equals(action);
+    }
+
+    /**
+     * 执行[反审]
+     *
+     * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
+     * @return
+     */
+    private ResultBean<Void> execRollBackTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
+        // [业务申请]
+        if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            // [电审]任务状态
+            Byte telephoneVerifyStatus = loanProcessDO.getTelephoneVerify();
+
+            // 1
+            if (TASK_PROCESS_DONE.equals(telephoneVerifyStatus)) {
+                throw new BizException("[电审]任务已完成，无法发起[反审]");
+            }
+
+            // 3   -不存在该状态
+
+            // 4、5、6、7
+            else if (TASK_PROCESS_TELEPHONE_VERIFY_COMMISSIONER.equals(telephoneVerifyStatus)
+                    || TASK_PROCESS_TELEPHONE_VERIFY_LEADER.equals(telephoneVerifyStatus)
+                    || TASK_PROCESS_TELEPHONE_VERIFY_MANAGER.equals(telephoneVerifyStatus)
+                    || TASK_PROCESS_TELEPHONE_VERIFY_DIRECTOR.equals(telephoneVerifyStatus)) {
+
+                throw new BizException("[电审]任务已领取，无法发起[反审]");
+            }
+
+            // 2     -[电审]中
+            // 已流转到[电审]，但未被领取的时候，可进行-[反审]
+            else if (TASK_PROCESS_TODO.equals(telephoneVerifyStatus)) {
+
+                TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(approval.getOrderId(), TELEPHONE_VERIFY.getCode());
+
+                if (null != taskDistributionDO) {
+                    Preconditions.checkArgument(TASK_STATUS_DOING.equals(taskDistributionDO.getStatus()), "[电审]任务已领取，无法发起[反审]");
+                    Preconditions.checkArgument(TASK_STATUS_DONE.equals(taskDistributionDO.getStatus()), "[电审]任务已完成，无法发起[反审]");
+                }
+
+                // [电审]-反审 自动打回至[贷款申请]和[上门调查]
+                autoCompleteTask_(approval.getOrderId(), TELEPHONE_VERIFY.getCode(), ACTION_REJECT_AUTO);
+
+                // update process
+                LoanProcessDO loanProcessDO_ = new LoanProcessDO();
+                loanProcessDO_.setOrderId(approval.getOrderId());
+                loanProcessDO_.setTelephoneVerify(TASK_PROCESS_INIT);
+                loanProcessDO_.setLoanApply(TASK_PROCESS_INIT);
+                loanProcessDO_.setVisitVerify(TASK_PROCESS_INIT);
+                updateLoanProcess(loanProcessDO_);
+            }
+
+            // 0     -[电审]前   ==> 即：[上门调查]未提交
+            else if (TASK_PROCESS_INIT.equals(telephoneVerifyStatus)) {
+
+                // [业务申请] ->执行[反审]
+                doLoanApplyVisitVerifyFilterTask_RollBack(loanOrderDO);
+
+                // update process
+                LoanProcessDO loanProcessDO_ = new LoanProcessDO();
+                loanProcessDO_.setOrderId(approval.getOrderId());
+                loanProcessDO_.setLoanApply(TASK_PROCESS_INIT);
+                loanProcessDO_.setVisitVerify(TASK_PROCESS_INIT);
+                updateLoanProcess(loanProcessDO_);
+
+            } else {
+
+                throw new BizException("[反审]发起异常");
+            }
+        }
+
+        return ResultBean.ofSuccess(null, "[反审]发起成功");
+    }
 
     /**
      * 通过银行接口  ->  自动查询征信
@@ -960,15 +1083,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 【业务申请】
-        else if (LOAN_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
-            // 客户资料、车辆信息、金融方案  必须均已录入
-            Preconditions.checkNotNull(loanOrderDO.getLoanCustomerId(), "请先录入客户信息");
-            Preconditions.checkNotNull(loanOrderDO.getLoanCarInfoId(), "请先录入车辆信息");
-            Preconditions.checkNotNull(loanOrderDO.getLoanFinancialPlanId(), "请先录入金融方案");
+        else if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
 
-            // 紧急联系人不能少于2个
-            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanOrderDO.getLoanCustomerId(), CUST_TYPE_EMERGENCY_CONTACT, VALID_STATUS);
-            Preconditions.checkArgument(null != loanCustomerDOS && loanCustomerDOS.size() >= 2, "紧急联系人不能少于2个");
+            // PASS
+            if (ACTION_PASS.equals(action)) {
+                // 客户资料、车辆信息、金融方案  必须均已录入
+                Preconditions.checkNotNull(loanOrderDO.getLoanCustomerId(), "请先录入客户信息");
+                Preconditions.checkNotNull(loanOrderDO.getLoanCarInfoId(), "请先录入车辆信息");
+                Preconditions.checkNotNull(loanOrderDO.getLoanFinancialPlanId(), "请先录入金融方案");
+
+                // 紧急联系人不能少于2个
+                List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanOrderDO.getLoanCustomerId(), CUST_TYPE_EMERGENCY_CONTACT, VALID_STATUS);
+                Preconditions.checkArgument(null != loanCustomerDOS && loanCustomerDOS.size() >= 2, "紧急联系人不能少于2个");
+            }
+
         }
 
         // 【业务审批】|| 【放款审批】  -> PASS
@@ -1067,9 +1195,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkArgument(TASK_PROCESS_INIT.equals(loanProcessDO.getTelephoneVerify()), "流程已过[电审]，无法发起[征信增补]");
 
         // 当前所有task
-        List<Task> tasks = taskService.createTaskQuery()
-                .processInstanceId(processInstanceId)
-                .list();
+        List<Task> tasks = getCurrentTaskList(processInstanceId);
 
         Preconditions.checkArgument(!CollectionUtils.isEmpty(tasks), "无可执行任务");
 
@@ -1713,14 +1839,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     public Task getTask(String processInstId, String taskDefinitionKey) {
 
-//        if (INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
-//            List<Task> tasks = taskService.createTaskQuery()
-//                    .processInstanceId(processInstId)
-//                    .listPage(0, 1);
-//            Preconditions.checkArgument(!CollectionUtils.isEmpty(tasks), "订单已结清或已弃单");
-//            return tasks.get(0);
-//        }
-
         // 获取当前流程task
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstId)
@@ -1957,6 +2075,28 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
+     * 执行任务
+     *
+     * @param orderId
+     * @param taskDefinitionKey
+     * @param action
+     */
+    private void autoCompleteTask_(Long orderId, String taskDefinitionKey, Byte action) {
+
+        ApprovalParam approvalParam = new ApprovalParam();
+        approvalParam.setOrderId(orderId);
+        approvalParam.setTaskDefinitionKey(taskDefinitionKey);
+        approvalParam.setAction(action);
+
+        approvalParam.setCheckPermission(false);
+        approvalParam.setNeedLog(false);
+        approvalParam.setNeedPush(false);
+
+        ResultBean<Void> approvalResult = approval(approvalParam);
+        Preconditions.checkArgument(approvalResult.getSuccess(), approvalResult.getMsg());
+    }
+
+    /**
      * 更新电审流程
      *
      * @param orderId
@@ -2023,10 +2163,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 执行拦截任务
         if (loanApplyVisitVerifyFilterTask || isSocialTask_TargetIs_LoanApplyVisitVerifyFilterTask) {
+
             // 获取所有正在执行的并行任务
-            List<Task> tasks = taskService.createTaskQuery()
-                    .processInstanceId(processInstId)
-                    .list();
+            List<Task> tasks = getCurrentTaskList(processInstId);
 
             // 上门调查：只有【提交】;  业务申请：只有【提交】&【弃单】;      -均无[打回]
             // PASS
@@ -2042,6 +2181,69 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 doLoanApplyVisitVerifyTask_AutoReject(currentTask, tasks, approval);
             }
         }
+    }
+
+
+    /**
+     * [业务申请] -> 执行[反审]
+     *
+     * @param loanOrderDO
+     */
+    private void doLoanApplyVisitVerifyFilterTask_RollBack(LoanOrderDO loanOrderDO) {
+
+        HashMap<String, Object> passVariables = Maps.newHashMap();
+        HashMap<String, Object> cancelVariables = Maps.newHashMap();
+        HashMap<String, Object> rollBackVariables = Maps.newHashMap();
+
+        passVariables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
+        cancelVariables.put(PROCESS_VARIABLE_ACTION, ACTION_CANCEL);
+        rollBackVariables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT_AUTO);
+        rollBackVariables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
+
+
+        // getTask -> [上门调查]
+        Task visitVerifyTask = getTask(loanOrderDO.getProcessInstId(), VISIT_VERIFY.getCode());
+
+        // PASS
+        if (null != visitVerifyTask) {
+            completeTask(visitVerifyTask.getId(), passVariables);
+        }
+
+
+        // 获取当前所有正在执行的任务
+        List<Task> currentTaskList = getCurrentTaskList(loanOrderDO.getProcessInstId());
+
+        // filterTasks
+        if (!CollectionUtils.isEmpty(currentTaskList)) {
+
+            final Task[] filterTask = {null};
+
+            currentTaskList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(task -> {
+
+                        if (LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())) {
+
+                            if (null == filterTask[0]) {
+
+                                // 仅保留一个 filterTask
+                                filterTask[0] = task;
+
+                            } else {
+                                // 其他filter"子任务"全部弃掉
+                                taskService.complete(task.getId(), cancelVariables);
+                            }
+
+                        }
+
+                    });
+
+            Preconditions.checkArgument(ArrayUtils.isNotEmpty(filterTask), "[反审]发起失败");
+
+            // 执行[反审]
+            taskService.complete(filterTask[0].getId(), rollBackVariables);
+        }
+
     }
 
     /**
@@ -2198,9 +2400,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (isBankAndSocialCreditRecordTask(variables, approval.getTaskDefinitionKey())) {
 
             // 获取所有正在执行的并行任务
-            List<Task> tasks = taskService.createTaskQuery()
-                    .processInstanceId(processInstId)
-                    .list();
+            List<Task> tasks = getCurrentTaskList(processInstId);
 
             // PASS
             if (ACTION_PASS.equals(approval.getAction())) {
@@ -2723,6 +2923,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanOrderDO
      */
     private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessDO loanProcessDO, LoanOrderDO loanOrderDO) {
+
         // 【业务申请】
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
 
@@ -2754,10 +2955,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // 否
                 variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, null);
             }
+
         }
 
         // 【电审】
         else if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            // PASS
             if (ACTION_PASS.equals(approval.getAction())) {
                 // 如果为打回
                 if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
@@ -2769,6 +2973,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                         }
                     }
                 }
+            }
+
+            // REJECT
+            else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+                variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY.getCode());
             }
         }
 

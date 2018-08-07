@@ -349,7 +349,7 @@
 
 -->
 
-        <table tableName="bank_car_license_location" domainObjectName="BankCarLicenseLocationDO"
+        <table tableName="loan_process" domainObjectName="LoanProcessDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

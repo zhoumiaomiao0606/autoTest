@@ -2,6 +2,7 @@ package com.yunche.loan.web.aop;
 
 import com.alibaba.fastjson.JSON;
 
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -88,34 +89,53 @@ public class BizExceptionHandler {
      * @throws IOException
      */
     public final static String getIpAddress(HttpServletRequest request) {
+
         String ip = request.getHeader("X-Forwarded-For");
 
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-                ip = request.getHeader("Proxy-Client-IP");
-            }
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ipIsBlank(ip)) {
+
+            ip = request.getHeader("Proxy-Client-IP");
+
+            if (ipIsBlank(ip)) {
                 ip = request.getHeader("WL-Proxy-Client-IP");
             }
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+
+            if (ipIsBlank(ip)) {
                 ip = request.getHeader("HTTP_CLIENT_IP");
             }
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+
+            if (ipIsBlank(ip)) {
                 ip = request.getHeader("HTTP_X_FORWARDED_FOR");
             }
-            if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+
+            if (ipIsBlank(ip)) {
                 ip = request.getRemoteAddr();
             }
+
         } else if (ip.length() > 15) {
-            String[] ips = ip.split(",");
+
+            // 经过多层代理后会有多个代理，取第一个ip地址就可以了
+            String[] ips = ip.split("\\,");
+
             for (int index = 0; index < ips.length; index++) {
-                String strIp = (String) ips[index];
+
+                String strIp = ips[index];
+
                 if (!("unknown".equalsIgnoreCase(strIp))) {
                     ip = strIp;
                     break;
                 }
             }
         }
+
         return ip;
     }
+
+    private static boolean ipIsBlank(String ip) {
+
+        boolean ipIsBank = StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip);
+
+        return ipIsBank;
+    }
+
 }

@@ -63,7 +63,7 @@ public class FtpTest {
 //            thread3.start();
 //            FtpUtil.icbcUpload("/tmp/9999.jpg");
 
-            FtpUtil.icbcUpload("/tmp/20180730.txt");
+            FtpUtil.icbcUpload("/tmp/aaa.txt");
         } catch (Exception e) {
             e.printStackTrace();
         }

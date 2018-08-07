@@ -22,7 +22,9 @@ public class LoanRefundApplyDO {
     private BigDecimal refund_amount;
 
     private Date refund_date;
-
+    /**
+     * 退款原因(1-金融方案修改;2-退款不做;3-业务审批重审;)
+     */
     private Byte refund_reason;
 
     private String refund_pay_open_bank;

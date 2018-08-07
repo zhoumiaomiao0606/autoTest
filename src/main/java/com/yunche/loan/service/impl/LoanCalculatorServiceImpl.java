@@ -37,11 +37,12 @@ public class LoanCalculatorServiceImpl implements LoanCalculatorService{
 
 
     @Override
-    public ResultBean getAllProduct() {
+    public ResultBean getAllProduct(String bankName) {
+        Preconditions.checkNotNull(bankName,"请先选择贷款银行");
         List<FinancialProductAndRateVO> product = Lists.newArrayList();
 
         List<FinancialProductDO> financialProductDOS = financialProductDOMapper.listAll();
-        financialProductDOS.stream().filter(Objects::nonNull).filter(e ->e.getStatus().equals(BaseConst.VALID_STATUS)).forEach(e->{
+        financialProductDOS.stream().filter(Objects::nonNull).filter(e ->e.getStatus().equals(BaseConst.VALID_STATUS) && e.getBankName().equals(bankName)).forEach(e->{
             FinancialProductAndRateVO financialProductAndRateVO = new FinancialProductAndRateVO();
             FinancialProductVO financialProductVO = new FinancialProductVO();
             BeanUtils.copyProperties(e,financialProductVO);

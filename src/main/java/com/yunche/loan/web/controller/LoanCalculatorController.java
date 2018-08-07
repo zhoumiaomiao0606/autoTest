@@ -16,8 +16,8 @@ public class LoanCalculatorController {
     private LoanCalculatorService loanCalculatorService;
 
     @GetMapping("/product")
-    public ResultBean getAllProduct(){
-        return loanCalculatorService.getAllProduct();
+    public ResultBean getAllProduct(@RequestParam("bankName") String bankName){
+        return loanCalculatorService.getAllProduct(bankName);
     }
 
     @GetMapping("/cal")

@@ -10,8 +10,10 @@ public enum LoanProcessEnum {
 
     // 电审前
     CREDIT_APPLY("usertask_credit_apply", "征信申请"),
+
     BANK_CREDIT_RECORD("usertask_bank_credit_record", "银行征信录入"),
     SOCIAL_CREDIT_RECORD("usertask_social_credit_record", "社会征信录入"),
+    LOAN_INFO_RECORD("usertask_loan_info_record", "贷款信息登记"),
 
     BANK_SOCIAL_CREDIT_RECORD_FILTER("filter_bank_social_credit_record", "征信记录-拦截任务"),
     LOAN_APPLY_VISIT_VERIFY_FILTER("filter_loan_apply_visit_verify", "业务申请&上门调查-拦截任务"),
@@ -49,8 +51,6 @@ public enum LoanProcessEnum {
     BANK_CARD_RECORD("usertask_bank_card_record", "银行卡接收"),
     BANK_CARD_SEND("usertask_bank_card_send", "银行卡寄送"),
     CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划"),
-
-
 
 
     /////////////////////////////////////////// ↓↓↓↓↓--流程外的节点--↓↓↓↓↓ //////////////////////////////////////////////
