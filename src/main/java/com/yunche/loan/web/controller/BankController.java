@@ -5,6 +5,7 @@ import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.param.BankParam;
 import com.yunche.loan.domain.query.BankQuery;
 import com.yunche.loan.domain.vo.BankVO;
+import com.yunche.loan.domain.vo.CascadeAreaVO;
 import com.yunche.loan.service.BankService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -48,6 +49,20 @@ public class BankController {
     @GetMapping(value = "/areaListByBankName")
     public ResultBean<List<Long>> areaListByBankName(@RequestParam String bankName) {
         return bankService.areaListByBankName(bankName);
+    }
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:  根据bankName 查询银行关联省市名
+    */
+    @GetMapping(value = "/areaNameListByBankName")
+    public ResultBean<List<CascadeAreaVO>> areaNameListByBankName(@RequestParam String bankName)
+    {
+
+        return bankService.areaNameListByBankName(bankName);
     }
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
