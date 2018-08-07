@@ -61,29 +61,28 @@ public class DistributedLockAop {
             val = String.valueOf(randomNum);
         }
 
-        // 获取锁
-        boolean getLock = lockUtils.lock(key, val, timeOut);
+        try {
 
-        // 获取到锁
-        if (getLock) {
+            // 获取锁
+            boolean getLock = lockUtils.lock(key, val, timeOut);
 
-            try {
+            // 获取到锁
+            if (getLock) {
 
                 // 执行原方法
                 Object result = point.proceed();
 
                 return result;
-
-            } catch (Exception ex) {
-
-                throw ex;
-
-            } finally {
-
-                // 释放锁
-                boolean releaseLock = lockUtils.releaseLock(key, val);
             }
 
+        } catch (Exception ex) {
+
+            throw ex;
+
+        } finally {
+
+            // 释放锁
+            boolean releaseLock = lockUtils.releaseLock(key, val);
         }
 
         return null;

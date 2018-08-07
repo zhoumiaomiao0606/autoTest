@@ -114,7 +114,8 @@ public class BizExceptionHandler {
 
         } else if (ip.length() > 15) {
 
-            String[] ips = ip.split(",");
+            // 经过多层代理后会有多个代理，取第一个ip地址就可以了
+            String[] ips = ip.split("\\,");
 
             for (int index = 0; index < ips.length; index++) {
 
