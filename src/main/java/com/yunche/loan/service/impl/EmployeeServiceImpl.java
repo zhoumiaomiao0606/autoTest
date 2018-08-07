@@ -162,6 +162,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         updateParent(employeeDO.getId(), employeeDO.getParentId());
 
         // 禁止通过update更新密码
+        employeeDO.setEmail(employeeDO.getEmail().trim());
         employeeDO.setPassword(null);
         employeeDO.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
@@ -437,8 +438,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 使用shiro提供的方式进行身份认证
         Subject subject = SecurityUtils.getSubject();
-        String username = employeeParam.getUsername();
-        String password = employeeParam.getPassword();
+        String username = employeeParam.getUsername().trim();
+        String password = employeeParam.getPassword().trim();
         String machineId = employeeParam.getMachineId();
 
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
@@ -650,6 +651,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private Long insertAndGetId(EmployeeParam employeeParam) {
         EmployeeDO employeeDO = new EmployeeDO();
         BeanUtils.copyProperties(employeeParam, employeeDO);
+        employeeDO.setEmail(employeeParam.getEmail().trim());
 
         // level
         Long parentId = employeeParam.getParentId();

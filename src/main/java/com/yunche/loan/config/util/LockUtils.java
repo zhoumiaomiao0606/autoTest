@@ -24,15 +24,16 @@ public class LockUtils {
      * 获取🔐
      *
      * @param key
-     * @param timeOut 单位：微秒
+     * @param randomVal
+     * @param timeOut   单位：微秒
      */
-    public boolean lock(String key, String val, Long timeOut) {
+    public boolean lock(String key, String randomVal, Long timeOut) {
 
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/distributedLock.lua")));
         redisScript.setResultType(Long.TYPE);
 
-        Object result = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key), val, String.valueOf(timeOut));
+        Object result = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key), randomVal, String.valueOf(timeOut));
 
         if ((long) result == 1) {
             return true;

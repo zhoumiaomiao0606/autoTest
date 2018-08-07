@@ -12,7 +12,9 @@ import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.entity.BankRelaQuestionDO;
 import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.param.BankParam;
+import com.yunche.loan.domain.param.BankSaveParam;
 import com.yunche.loan.domain.query.BankQuery;
+import com.yunche.loan.domain.vo.BankReturnVO;
 import com.yunche.loan.domain.vo.BankVO;
 import com.yunche.loan.domain.vo.CascadeAreaVO;
 import com.yunche.loan.mapper.BankCarLicenseLocationDOMapper;
@@ -62,6 +64,40 @@ public class BankServiceImpl implements BankService
 
 
     @Override
+    public void save(BankSaveParam param) {
+
+        Preconditions.checkNotNull(param, "银行不能为空");
+        Preconditions.checkNotNull(param.getBank(), "银行不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(param.getBank().getName()), "银行不能为空");
+        Preconditions.checkNotNull(param.getBank().getStatus(), "状态不能为空");
+        Preconditions.checkArgument(VALID_STATUS.equals(param.getBank().getStatus()) || INVALID_STATUS.equals(param.getBank().getStatus()), "状态非法");
+        Preconditions.checkArgument(CollectionUtil.isNotEmpty(param.getBankCarLicenseLocationList()), "上牌地列表为空");
+        Long bankId = param.getBank().getId();
+        if(bankId!=null){
+            Preconditions.checkNotNull(param.getBank().getId(), "银行不能为空");
+            bindBankCarLicenseLocation(param.getBank().getId(),param.getBankCarLicenseLocationList());
+            updateBank(param.getBank());
+        }else{
+            // 插入银行
+            bankId = insertAndGetBank(param.getBank());
+            bindBankCarLicenseLocation(bankId,param.getBankCarLicenseLocationList());
+        }
+        // 刷新缓存
+        bankCache.refresh();
+    }
+
+    @Override
+    public BankReturnVO detail(Long bankId) {
+        Preconditions.checkNotNull(bankId, "银行ID不能为空");
+        BankReturnVO bankReturnVO = new BankReturnVO();
+        // 银行
+        BankDO bankDO = bankDOMapper.selectByPrimaryKey(bankId);
+        bankReturnVO.setInfo(bankDO);
+        bankReturnVO.setList(areaList(bankId));
+        return bankReturnVO;
+    }
+
+    @Override
     public ResultBean<List<String>> listAll() {
         List<String> allBankName = bankCache.getAllBankName();
         return ResultBean.ofSuccess(allBankName);
@@ -95,18 +131,13 @@ public class BankServiceImpl implements BankService
         Preconditions.checkArgument(StringUtils.isNotBlank(bankParam.getBank().getName()), "银行不能为空");
         Preconditions.checkNotNull(bankParam.getBank().getStatus(), "状态不能为空");
         Preconditions.checkArgument(VALID_STATUS.equals(bankParam.getBank().getStatus()) || INVALID_STATUS.equals(bankParam.getBank().getStatus()), "状态非法");
-        Preconditions.checkArgument(CollectionUtil.isNotEmpty(bankParam.getBankCarLicenseLocationList()), "上牌地列表为空");
         // 插入银行
         Long bankId = insertAndGetBank(bankParam.getBank());
-
         // 绑定问卷
         bindQuestion(bankId, bankParam.getBankQuestionList());
         bindQuestion(bankId, bankParam.getMachineQuestionList());
-        bindBankCarLicenseLocation(bankId,bankParam.getBankCarLicenseLocationList());
-
         // 刷新缓存
         bankCache.refresh();
-
         return ResultBean.ofSuccess(bankId, "创建成功");
     }
 
@@ -115,20 +146,14 @@ public class BankServiceImpl implements BankService
     public ResultBean<Void> update(BankParam bankParam) {
         Preconditions.checkNotNull(bankParam, "ID不能为空");
         Preconditions.checkNotNull(bankParam.getBank().getId(), "银行ID不能为空");
-
         // 更新银行
         updateBank(bankParam.getBank());
-
         // 更新问卷
         Long bankId = bankParam.getBank().getId();
         updateQuestion(bankId, bankParam.getBankQuestionList());
         updateQuestion(bankId, bankParam.getMachineQuestionList());
-        bindBankCarLicenseLocation(bankId,bankParam.getBankCarLicenseLocationList());
-
-
         // 刷新缓存
         bankCache.refresh();
-
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
@@ -160,7 +185,6 @@ public class BankServiceImpl implements BankService
         List<BankRelaQuestionDO> machineQuestionList = bankRelaQuestionDOMapper.listByBankIdAndType(id, QUESTION_MACHINE);
         bankVO.setBankQuestionList(bankQuestionList);
         bankVO.setMachineQuestionList(machineQuestionList);
-        bankVO.setReturnBankCarLicenseLocationList(areaList(bankDO.getId()));
         return ResultBean.ofSuccess(bankVO);
     }
 
@@ -285,6 +309,7 @@ public class BankServiceImpl implements BankService
         return cascadeAreaVOS;
 
     }
+
 
     /**
      * 填充信息

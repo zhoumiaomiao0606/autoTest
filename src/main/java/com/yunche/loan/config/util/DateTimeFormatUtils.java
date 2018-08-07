@@ -94,7 +94,7 @@ public class DateTimeFormatUtils {
      * @param endDate
      * @return
      */
-    public static int daysDiff(Date startDate, Date endDate) {
+    public static long daysDiff(Date startDate, Date endDate) {
 
         Instant startInstant = startDate.toInstant();
         Instant endInstant = endDate.toInstant();
@@ -103,10 +103,8 @@ public class DateTimeFormatUtils {
         LocalDate startLocalDate = startLocalDateTime.toLocalDate();
         LocalDate endLocalDate = endLocalDateTime.toLocalDate();
 
-        Period between = Period.between(startLocalDate, endLocalDate);
-        int days = between.getDays();
-
-        return days;
+        long daysDiff = daysDiff(startLocalDate, endLocalDate);
+        return daysDiff;
     }
 
     /**
@@ -123,20 +121,4 @@ public class DateTimeFormatUtils {
         return daysDiff;
     }
 
-    public static void main(String[] args) {
-
-        // 2011.04.18-2031.04.18
-        String identityValidity = "2011.04.18-2031.04.18";
-        String[] split = identityValidity.split("\\-");
-        String str = split[1];
-
-        String[] expireDateStrArr = str.split("\\.");
-        LocalDate idCardExpireDate = LocalDate.of(Integer.valueOf(expireDateStrArr[0]), Integer.valueOf(expireDateStrArr[1]), Integer.valueOf(expireDateStrArr[2]));
-
-        LocalDate today = LocalDate.now();
-
-        long daysDiff = DateTimeFormatUtils.daysDiff(today, idCardExpireDate);
-
-        System.out.println(daysDiff);
-    }
 }
