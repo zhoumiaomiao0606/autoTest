@@ -3,7 +3,9 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.param.BankParam;
+import com.yunche.loan.domain.param.BankSaveParam;
 import com.yunche.loan.domain.query.BankQuery;
+import com.yunche.loan.domain.vo.BankReturnVO;
 import com.yunche.loan.domain.vo.BankVO;
 import com.yunche.loan.domain.vo.CascadeAreaVO;
 import com.yunche.loan.service.BankService;
@@ -46,6 +48,17 @@ public class BankController {
         return bankService.listAll();
     }
 
+    @GetMapping(value = "/detatil")
+    public ResultBean<BankReturnVO> detatil(@RequestParam Long bankId) {
+        return ResultBean.ofSuccess(bankService.detail(bankId));
+    }
+
+
+    @PostMapping(value = "/save")
+    public ResultBean<Void> save(@RequestBody BankSaveParam param) {
+        bankService.save(param);
+        return ResultBean.ofSuccess(null, "编辑成功");
+    }
 
     /**
      * 获取银行列表
