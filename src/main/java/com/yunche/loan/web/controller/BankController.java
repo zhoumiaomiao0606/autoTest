@@ -54,7 +54,7 @@ public class BankController {
     }
 
 
-    @PostMapping(value = "/save")
+    @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> save(@RequestBody BankSaveParam param) {
         bankService.save(param);
         return ResultBean.ofSuccess(null, "编辑成功");
