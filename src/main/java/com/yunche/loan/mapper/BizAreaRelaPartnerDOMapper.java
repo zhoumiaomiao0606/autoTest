@@ -2,8 +2,13 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.BizAreaRelaPartnerDO;
 import com.yunche.loan.domain.entity.BizAreaRelaPartnerDOKey;
+import com.yunche.loan.domain.vo.BizAreaPartnerVO;
+
+import java.util.List;
 
 public interface BizAreaRelaPartnerDOMapper {
+    List<BizAreaPartnerVO> selectByAreaId(Long bizAreaId);
+
     int deleteByPrimaryKey(BizAreaRelaPartnerDOKey key);
 
     int insert(BizAreaRelaPartnerDO record);

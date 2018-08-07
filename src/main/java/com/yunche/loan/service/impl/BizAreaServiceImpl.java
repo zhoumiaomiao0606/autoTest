@@ -4,17 +4,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.mapper.BaseAreaDOMapper;
-import com.yunche.loan.mapper.BizAreaDOMapper;
-import com.yunche.loan.mapper.BizAreaRelaAreaDOMapper;
-import com.yunche.loan.mapper.EmployeeDOMapper;
+import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.domain.query.BizAreaQuery;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BizAreaParam;
-import com.yunche.loan.domain.vo.CascadeAreaVO;
-import com.yunche.loan.domain.vo.BaseVO;
-import com.yunche.loan.domain.vo.BizAreaVO;
-import com.yunche.loan.domain.vo.CascadeVO;
 import com.yunche.loan.service.BizAreaService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -23,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +42,9 @@ public class BizAreaServiceImpl implements BizAreaService {
     private EmployeeDOMapper employeeDOMapper;
     @Autowired
     private BizAreaRelaAreaDOMapper bizAreaRelaAreaDOMapper;
+
+    @Resource
+    private BizAreaRelaPartnerDOMapper bizAreaRelaPartnerDOMapper;
 
 
     @Override
@@ -254,6 +252,29 @@ public class BizAreaServiceImpl implements BizAreaService {
                 });
 
         return ResultBean.ofSuccess(null, "删除成功");
+    }
+
+    @Override
+    public ResultBean<List<CascadeAreaVO.Partner>> listPartner(Long id) {
+        List<CascadeAreaVO.Partner> result = Lists.newArrayList();
+        List<BizAreaPartnerVO> list = bizAreaRelaPartnerDOMapper.selectByAreaId(id);
+        for(BizAreaPartnerVO bizAreaPartnerVO : list){
+            CascadeAreaVO.Partner partner = new CascadeAreaVO.Partner();
+            partner.setPartnerId(StringUtils.isBlank(bizAreaPartnerVO.getId())?null:Long.valueOf(bizAreaPartnerVO.getId()));
+            partner.setPartnerName(partner.getPartnerName());
+            result.add(partner);
+        }
+        return ResultBean.ofSuccess(result);
+    }
+
+    @Override
+    public ResultBean<Void> bindPartner(Long id, List<Long> partnerIds) {
+        return null;
+    }
+
+    @Override
+    public ResultBean<Void> unbinPartner(Long id, List<Long> partnerIds) {
+        return null;
     }
 
     @Override
