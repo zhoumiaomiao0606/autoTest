@@ -46,20 +46,16 @@ public class DistributedLockAop {
         DistributedLock annotation = method.getAnnotation(DistributedLock.class);
 
         String key = annotation.key();
-        String val = annotation.val();
         long timeOut = annotation.timeOut();
 
         Object defaultValue_key = methodName_DefaultValue_Map.get("key");
         if (defaultValue_key.equals(key) || StringUtils.isBlank(key)) {
-            key = method.getName();
+            key = defaultValue_key + method.getName();
         }
 
-        Object defaultValue_val = methodName_DefaultValue_Map.get("val");
-        if (defaultValue_val.equals(val) || StringUtils.isBlank(val)) {
-            // 生成一个随机数：作为当前🔐的val
-            long randomNum = new Random().nextInt(1000000000);
-            val = String.valueOf(randomNum);
-        }
+        // 生成一个随机数：作为当前🔐的val
+        long randomNum = new Random().nextInt(1000000000);
+        String val = System.currentTimeMillis() + String.valueOf(randomNum);
 
         try {
 

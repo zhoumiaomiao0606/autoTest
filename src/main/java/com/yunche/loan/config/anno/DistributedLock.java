@@ -20,16 +20,7 @@ public @interface DistributedLock {
      *
      * @return
      */
-    String key() default "lock:key";
-
-    /**
-     * 当前锁的：随机val
-     * <p>
-     * 默认取：注解标注的-当前方法名
-     *
-     * @return
-     */
-    String val() default "lock:val:random";
+    String key() default "lock:key:";
 
     /**
      * 当前锁的：自动过期时间  （单位：微秒）默认值：1000
