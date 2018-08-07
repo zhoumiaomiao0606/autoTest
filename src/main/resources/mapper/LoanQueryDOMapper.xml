@@ -461,6 +461,7 @@
             brand.name                                                              AS car_brand_name,
             financial.car_price                                                     AS car_price,
             useGetCarName(car.car_detail_id)                                        AS car_name,
+            detail.name                                                             AS car_detail_name,
             car.vehicle_property                                                    AS car_vehicle_property,
             car.car_type                                                            AS car_type,
             car.car_category                                                        AS car_category,
@@ -1307,12 +1308,15 @@
              f.principal_interest_sum             AS principal_interest_sum,
              f.first_month_repay                  AS first_month_repay,
              f.each_month_repay                   AS each_month_repay,
+             f.appraisal                          AS appraisal,
              useCalculateStagingRatio(product.formula_id,f.loan_amount,f.sign_rate,useGetBankRate(f.financial_product_id,f.loan_time),f.car_price)
                                                   AS financial_bank_staging_ratio,
              p.bank_rate                          AS bank_base_rate,
-             applay_quota(f.bank_period_principal,f.bank_fee)                              AS applayQuota
+             applay_quota(f.bank_period_principal,f.bank_fee)                              AS applayQuota,
+             product.category_superior            AS category_superior
 
-    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
     left join loan_customer c on o.loan_customer_id= c.id
 

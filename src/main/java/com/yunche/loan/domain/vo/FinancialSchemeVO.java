@@ -32,4 +32,7 @@ public class FinancialSchemeVO {
     private String bank_base_rate;//银行基准利率
 
     private BigDecimal applayQuota;//申请本币额度
+
+    private String category_superior;//产品大类
+    private String appraisal;//基准评估价
 }

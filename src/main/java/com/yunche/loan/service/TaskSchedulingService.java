@@ -6,10 +6,13 @@ import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.AppTaskVO;
 import com.yunche.loan.domain.vo.ScheduleTaskVO;
 import com.yunche.loan.domain.vo.TaskListVO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface TaskSchedulingService {
+
+    boolean selectRejectTask(Long orderId);
 
     ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize);
 

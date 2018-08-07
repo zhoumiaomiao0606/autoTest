@@ -2,6 +2,7 @@ package com.yunche.loan.domain.param;
 
 import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.entity.BankRelaQuestionDO;
+import com.yunche.loan.domain.vo.CascadeAreaVO;
 import lombok.Data;
 
 import java.util.Collection;
@@ -26,7 +27,4 @@ public class BankParam {
      * 机器面签问卷列表
      */
     private List<BankRelaQuestionDO> machineQuestionList = Collections.EMPTY_LIST;
-
-    //绑定上牌地list
-    private List<Long> bankCarLicenseLocationList = Collections.EMPTY_LIST;
 }

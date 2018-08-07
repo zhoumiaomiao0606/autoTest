@@ -2,10 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanBaseInfoDO;
-import com.yunche.loan.domain.entity.LoanCarInfoDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.VehicleInformationDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.LoanInfoRegisterParam;
 import com.yunche.loan.domain.vo.FinancialSchemeVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -14,6 +11,7 @@ import com.yunche.loan.domain.vo.UniversalInfoVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanFinancialPlanService;
 import com.yunche.loan.service.LoanInfoRegisterService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -111,6 +109,7 @@ public class LoanInfoRegisterServiceImpl  implements LoanInfoRegisterService{
         vehicleInformationDO.setId(vehicleInformationId);
         vehicleInformationDO.setColor(loanInfoRegisterParam.getColor());
         if(vehicleInformationId!=null){
+            vehicleInformationDO.setId(vehicleInformationId);
             int count = vehicleInformationDOMapper.updateByPrimaryKeySelective(vehicleInformationDO);
             Preconditions.checkArgument(count>0,"提车资料信息更新失败");
         }else{
@@ -121,9 +120,21 @@ public class LoanInfoRegisterServiceImpl  implements LoanInfoRegisterService{
             Preconditions.checkArgument(count2>0,"提车资料信息更新失败");
         }
 
-        if(loanInfoRegisterParam.getLoanFinancialPlanParam()!=null){
-            ResultBean<Long> loanFinancialPlan = loanFinancialPlanService.createOrUpdateLoanFinancialPlan(loanInfoRegisterParam.getLoanFinancialPlanParam());
-            Preconditions.checkArgument(loanFinancialPlan.getSuccess(),loanFinancialPlan.getMsg());
+        Long loanFinancialPlanId = loanOrderDO.getLoanFinancialPlanId();
+
+        LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
+        BeanUtils.copyProperties(loanInfoRegisterParam.getLoanFinancialPlanParam(), loanFinancialPlanDO);
+        if(loanFinancialPlanId!=null){
+            loanFinancialPlanDO.setId(loanFinancialPlanId);
+            int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
+            Preconditions.checkArgument(count>0,"插入金融方案计划失败");
+        }else{
+            int count = loanFinancialPlanDOMapper.insertSelective(loanFinancialPlanDO);
+            Preconditions.checkArgument(count>0,"插入金融方案计划失败");
+            Long id = loanFinancialPlanDO.getId();
+            loanOrderDO.setLoanFinancialPlanId(id);
+            int lines =loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            Preconditions.checkArgument(count>0,"插入金融方案计划失败");
         }
         return ResultBean.ofSuccess(null,"保存成功");
     }

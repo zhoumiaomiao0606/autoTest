@@ -22,6 +22,8 @@ public interface TaskSchedulingDOMapper {
 
     List<TaskListVO> selectTaskList(@Validated TaskListQuery query);
 
+    boolean selectRejectTask(@Param("orderId") Long orderId);
+
     /**
      * 资料流转 列表查询
      *

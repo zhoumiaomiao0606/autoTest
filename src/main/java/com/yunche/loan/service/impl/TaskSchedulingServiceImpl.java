@@ -87,6 +87,16 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
 
     @Override
+    public boolean selectRejectTask(Long orderId) {
+        // 节点校验
+        if(orderId == null){
+            throw new BizException("无订单");
+        }
+
+        return taskSchedulingDOMapper.selectRejectTask(orderId);
+    }
+
+    @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
@@ -466,18 +476,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                             e.setTaskTypeText("待邮寄");
                         }
                     }
-
-                    // 3   - 打回原因
-                    else if (TASK_STATUS_3_REJECT.equals(Integer.valueOf(e.getTaskStatus()))) {
-
-                        String code = kCodeMap.get(e.getDataFlowType());
-                        LoanRejectLogDO loanRejectLogDO = loanRejectLogService.rejectLog(Long.valueOf(e.getId()), code);
-
-                        if (null != loanRejectLogDO) {
-                            e.setRejectReason(loanRejectLogDO.getReason());
-                        }
-                    }
-
                     // type -> taskKey
                     String taskKey = kCodeMap.get(e.getDataFlowType());
                     e.setTaskKey(taskKey);
