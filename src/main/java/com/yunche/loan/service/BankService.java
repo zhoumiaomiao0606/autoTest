@@ -5,6 +5,7 @@ import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.param.BankParam;
 import com.yunche.loan.domain.query.BankQuery;
 import com.yunche.loan.domain.vo.BankVO;
+import com.yunche.loan.domain.vo.CascadeAreaVO;
 
 import java.util.List;
 
@@ -27,5 +28,9 @@ public interface BankService {
 
     ResultBean<List<Long>> areaListByBankName(String bankName);
 
+<<<<<<< HEAD
     List<BankDO> lists();
+=======
+    ResultBean<List<CascadeAreaVO>> areaNameListByBankName(String bankName);
+>>>>>>> ab335c9de8ddc56e7b05122b177ddccbcee54067
 }

@@ -178,7 +178,9 @@ public class BaseAreaServiceImpl implements BaseAreaService {
 
 
         List<CascadeAreaVO> ableAreaList = Lists.newArrayList();
+        //根据父areaid获取所有子区域id
         List<Long> areaIdList = partnerRelaAreaDOMapper.getAreaIdListByPartnerId(partnerId);
+        //根据子区域id获取所有子区域信息
         List<BaseAreaDO> hasBindArea = areaIdList.parallelStream().map(e->{
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
             return baseAreaDO;
