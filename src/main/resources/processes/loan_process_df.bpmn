@@ -425,15 +425,15 @@
     <sequenceFlow id="flow275" name="反审" sourceRef="exclusivegateway9" targetRef="parallelgateway5">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == -1 && target == '' }]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask1" name="贷款信息登记"></userTask>
+    <userTask id="usertask_loan_info_record" name="贷款信息登记"></userTask>
     <parallelGateway id="parallelgateway14" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow276" name="贷款额 &lt; 13W" sourceRef="exclusivegateway2" targetRef="parallelgateway14">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount == 1}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow277" sourceRef="parallelgateway14" targetRef="usertask1"></sequenceFlow>
-    <sequenceFlow id="flow278" sourceRef="parallelgateway1" targetRef="usertask1"></sequenceFlow>
+    <sequenceFlow id="flow277" sourceRef="parallelgateway14" targetRef="usertask_loan_info_record"></sequenceFlow>
+    <sequenceFlow id="flow278" sourceRef="parallelgateway1" targetRef="usertask_loan_info_record"></sequenceFlow>
     <endEvent id="endevent38" name="End"></endEvent>
-    <sequenceFlow id="flow279" sourceRef="usertask1" targetRef="endevent38"></sequenceFlow>
+    <sequenceFlow id="flow279" sourceRef="usertask_loan_info_record" targetRef="endevent38"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -773,7 +773,7 @@
       <bpmndi:BPMNShape bpmnElement="parallelgateway13" id="BPMNShape_parallelgateway13">
         <omgdc:Bounds height="40.0" width="40.0" x="6832.0" y="863.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+      <bpmndi:BPMNShape bpmnElement="usertask_loan_info_record" id="BPMNShape_usertask_loan_info_record">
         <omgdc:Bounds height="55.0" width="105.0" x="1286.0" y="725.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="parallelgateway14" id="BPMNShape_parallelgateway14">
@@ -1595,7 +1595,7 @@
         <omgdi:waypoint x="730.0" y="852.0"></omgdi:waypoint>
         <omgdi:waypoint x="850.0" y="854.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="703.0" y="979.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="69.0" x="703.0" y="979.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow277" id="BPMNEdge_flow277">

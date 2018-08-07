@@ -121,4 +121,45 @@ public class BizAreaController {
                                            @RequestParam("areaIds") String areaIds) {
         return bizAreaService.unbindArea(id, areaIds);
     }
+
+
+    /**
+     * 关联合伙人列表
+     *
+     * @param query id、pageIndex、pageSize
+     * @return
+     */
+    @PostMapping(value = "/listPartner", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<CascadeAreaVO.Prov>> listPartner(@RequestBody BizAreaQuery query) {
+        return null;
+    }
+
+    /**
+     * 绑定关联的合伙人
+     *
+     * @param id
+     * @param partnerId
+     * @return
+     */
+    @GetMapping(value = "/bindPartner")
+    public ResultBean<Void> bindPartner(@RequestParam("id") Long id,
+                                     @RequestParam("partnerId") Long partnerId) {
+        return null;
+    }
+
+    /**
+     * 解绑关联的合伙人
+     *
+     * @param id
+     * @param partnerId
+     * @return
+     */
+    @GetMapping(value = "/unbindPartner")
+    public ResultBean<Void> unbindPartner(@RequestParam("id") Long id,
+                                           @RequestParam("partnerId") Long partnerId) {
+        return null;
+    }
+
+
+
 }

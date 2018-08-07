@@ -48,8 +48,8 @@ public class BankController {
         return bankService.listAll();
     }
 
-    @GetMapping(value = "/detatil")
-    public ResultBean<BankReturnVO> detatil(@RequestParam Long bankId) {
+    @GetMapping(value = "/detail")
+    public ResultBean<BankReturnVO> detail(@RequestParam Long bankId) {
         return ResultBean.ofSuccess(bankService.detail(bankId));
     }
 
