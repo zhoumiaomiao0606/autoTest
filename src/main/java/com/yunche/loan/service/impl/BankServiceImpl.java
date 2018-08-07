@@ -316,19 +316,12 @@ public class BankServiceImpl implements BankService
      * @param areaMap
      */
     private List<CascadeAreaVO> fillInfo( List<CascadeAreaVO> ableAreaList ,HashMap<Long, Set<Long>> areaMap) {
-        List<CascadeAreaVO> voList = areaCache.get();
-      /*  List<CascadeAreaVO> voList= Lists.newArrayList();*/
-        voList.parallelStream().filter(Objects::nonNull).map(e->{
 
-            return null;
-        }).collect(Collectors.toList());
         areaMap.keySet().parallelStream().filter(Objects::nonNull).forEach(e->{
             CascadeAreaVO baseArea = new CascadeAreaVO();
             BaseAreaDO prov = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);//省
             baseArea.setId(prov.getAreaId());
             baseArea.setName(prov.getAreaName());
-//            baseArea.setProvAreaId(prov.getAreaId());
-//            baseArea.setProvName(prov.getAreaName());
 
             List<Long> list1 = new ArrayList(areaMap.get(e));
             List<BaseAreaDO> cityList = baseAreaDOMapper.selectByIdList(list1, VALID_STATUS);
