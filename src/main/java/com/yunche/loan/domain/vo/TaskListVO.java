@@ -23,7 +23,6 @@ public class TaskListVO {
     private String orderGmtCreate;
     private String idCard;
     private String mobile;
-    private String creditGmtCreate;
     private String remitGmtCreate;
     private String bank;
     private String departmentName;
@@ -69,10 +68,7 @@ public class TaskListVO {
     private String dataFlowId;
     private String dataFlowType;
     private String dataFlowTypeText;
-
-
     // 未加
-
     /**
      * 任务类型：1-已提交;  2-未提交;  3-打回;
      */
@@ -81,21 +77,10 @@ public class TaskListVO {
      * 任务类型文本：1-已提交;  2-未提交;  3-打回;
      */
     private String taskTypeText;
-
-    /**
-     * 打回原因
-     */
-    private String rejectReason;
-    /**
+    /*
      * 订单总状态：1-进行中;2-结单;3-已弃单;
      */
     private String orderStatus;
-
-    /**
-     * 是否可以编辑金融方案   -> 当 rejectOriginTask = "usertask_material_review"时，为false(不能编辑)
-     */
-    private Boolean canUpdateLoanApply = true;
-
     /**
      * [金融方案修改申请单] ID
      */

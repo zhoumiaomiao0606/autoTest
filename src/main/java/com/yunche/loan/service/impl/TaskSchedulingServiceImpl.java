@@ -87,21 +87,13 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
 
     @Override
-    public boolean selectRejectTask(Long orderId, String taskDefinitionKey) {
+    public boolean selectRejectTask(Long orderId) {
         // 节点校验
-        if (!LoanProcessEnum.havingCode(taskDefinitionKey)) {
-            throw new BizException("错误的任务节点key");
-        }
-
-        if(StringUtils.isBlank(taskDefinitionKey)){
-            throw new BizException("无key");
-        }
-
         if(orderId == null){
             throw new BizException("无订单");
         }
 
-        return taskSchedulingDOMapper.selectRejectTask(orderId,taskDefinitionKey);
+        return taskSchedulingDOMapper.selectRejectTask(orderId);
     }
 
     @Override
@@ -484,18 +476,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                             e.setTaskTypeText("待邮寄");
                         }
                     }
-
-                    // 3   - 打回原因
-                    else if (TASK_STATUS_3_REJECT.equals(Integer.valueOf(e.getTaskStatus()))) {
-
-                        String code = kCodeMap.get(e.getDataFlowType());
-                        LoanRejectLogDO loanRejectLogDO = loanRejectLogService.rejectLog(Long.valueOf(e.getId()), code);
-
-                        if (null != loanRejectLogDO) {
-                            e.setRejectReason(loanRejectLogDO.getReason());
-                        }
-                    }
-
                     // type -> taskKey
                     String taskKey = kCodeMap.get(e.getDataFlowType());
                     e.setTaskKey(taskKey);

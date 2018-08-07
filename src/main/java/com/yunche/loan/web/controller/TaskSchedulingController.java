@@ -37,8 +37,8 @@ public class TaskSchedulingController {
      * 是否属于银行单子
      */
     @GetMapping(value = "/canUpdateLoanApply")
-    public ResultBean<Boolean> canUpdateLoanApply(@RequestParam Long orderId,@RequestParam String transCode) {
-        return ResultBean.ofSuccess(taskSchedulingService.selectRejectTask(orderId,transCode));
+    public ResultBean<Boolean> canUpdateLoanApply(@RequestParam Long orderId) {
+        return ResultBean.ofSuccess(taskSchedulingService.selectRejectTask(orderId));
     }
 
     /**
