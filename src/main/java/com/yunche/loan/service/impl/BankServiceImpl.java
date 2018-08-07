@@ -90,10 +90,15 @@ public class BankServiceImpl implements BankService
     public BankReturnVO detail(Long bankId) {
         Preconditions.checkNotNull(bankId, "银行ID不能为空");
         BankReturnVO bankReturnVO = new BankReturnVO();
+        List<Long> list = Lists.newArrayList();
+        List<BankCarLicenseLocationDO> licenseLocationDOS = bankCarLicenseLocationDOMapper.listByBankId(bankId);
+        for(BankCarLicenseLocationDO bankCarLicenseLocationDO:licenseLocationDOS){
+            list.add(bankCarLicenseLocationDO.getAreaId());
+        }
         // 银行
         BankDO bankDO = bankDOMapper.selectByPrimaryKey(bankId);
         bankReturnVO.setInfo(bankDO);
-        bankReturnVO.setList(areaList(bankId));
+        bankReturnVO.setList(list);
         return bankReturnVO;
     }
 
