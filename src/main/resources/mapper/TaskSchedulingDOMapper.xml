@@ -208,6 +208,38 @@
           </choose>
     </select>
 
+    <select id="selectRejectTask" resultType="java.lang.Boolean">
+				            select
+							CASE WHEN b.order_status = 1  AND b.loan_apply = 3  AND b.reject_origin_task = 'usertask_material_review'
+                            THEN  0 ELSE 1 END AS canUpdateLoanApply
+							from
+							(
+							select
+								temp.id,t.*
+							from
+							(
+								select
+									process.order_status,
+									process.loan_apply,
+									main_rej_log.reject_origin_task,
+									main_rej_log.reject_to_task
+								from loan_reject_log main_rej_log
+								inner join
+								(
+									select SUBSTRING_INDEX(GROUP_CONCAT(id order by gmt_create desc separator ','),',',1) as id
+									from loan_reject_log GROUP BY reject_to_task,reject_origin_task,order_id
+								) inner_rej_log on inner_rej_log.id = main_rej_log.id
+									and main_rej_log.reject_to_task = 'usertask_loan_apply' and reject_origin_task = 'usertask_material_review'
+
+								left join loan_process process on process.order_id = main_rej_log.order_id
+								left join loan_order orders on orders.id = main_rej_log.order_id
+								where
+									main_rej_log.order_id = #{orderId} and 'usertask_loan_apply' = #{taskDefinitionKey}
+							) t
+							right join (select ts.id from (select 1 as id) ts ) temp on 1=1
+							) b
+    </select>
+
     <select id="selectAppTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO">
         select complex.* from
         (

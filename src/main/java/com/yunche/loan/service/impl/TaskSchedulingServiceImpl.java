@@ -87,6 +87,24 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
 
     @Override
+    public boolean selectRejectTask(Long orderId, String taskDefinitionKey) {
+        // 节点校验
+        if (!LoanProcessEnum.havingCode(taskDefinitionKey)) {
+            throw new BizException("错误的任务节点key");
+        }
+
+        if(StringUtils.isBlank(taskDefinitionKey)){
+            throw new BizException("无key");
+        }
+
+        if(orderId == null){
+            throw new BizException("无订单");
+        }
+
+        return taskSchedulingDOMapper.selectRejectTask(orderId,taskDefinitionKey);
+    }
+
+    @Override
     public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
