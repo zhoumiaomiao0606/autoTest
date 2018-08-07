@@ -58,6 +58,11 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
+    public List<BankDO> lists() {
+        return bankDOMapper.listAll(new Byte("0"));
+    }
+
+    @Override
     public ResultBean<List<BankDO>> query(BankQuery query) {
 
         int totalNum = bankDOMapper.count(query);
@@ -165,6 +170,7 @@ public class BankServiceImpl implements BankService {
         }
         return ResultBean.ofSuccess(longs);
     }
+
 
 
     /**

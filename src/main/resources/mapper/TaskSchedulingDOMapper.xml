@@ -227,14 +227,14 @@
 								inner join
 								(
 									select SUBSTRING_INDEX(GROUP_CONCAT(id order by gmt_create desc separator ','),',',1) as id
-									from loan_reject_log GROUP BY reject_to_task,reject_origin_task,order_id
+									from loan_reject_log GROUP BY reject_origin_task,reject_to_task,order_id
 								) inner_rej_log on inner_rej_log.id = main_rej_log.id
 									and main_rej_log.reject_to_task = 'usertask_loan_apply' and reject_origin_task = 'usertask_material_review'
 
 								left join loan_process process on process.order_id = main_rej_log.order_id
 								left join loan_order orders on orders.id = main_rej_log.order_id
 								where
-									main_rej_log.order_id = #{orderId} and 'usertask_loan_apply' = #{taskDefinitionKey}
+									main_rej_log.order_id = #{orderId}
 							) t
 							right join (select ts.id from (select 1 as id) ts ) temp on 1=1
 							) b
@@ -390,17 +390,10 @@
 
         <select id="selectTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
             select complex.*,
-            complex_log.user_name                                      AS creditMan,
-            DATE_FORMAT(complex_log.create_time, '%Y-%m-%d %H:%i:%S' ) AS creditDate,
-            CASE  WHEN complex.taskStatus = 3
-                  THEN complex_rej_log.reason
-                  ELSE NULL END                                        AS rejectReason,
-            CASE
-                  WHEN complex.orderStatus = 1  AND complex.taskStatus = 3  AND complex_rej_log.reject_origin_task = 'usertask_material_review'
-                  THEN  FALSE ELSE TRUE END                                  AS canUpdateLoanApply,
-            DATE_FORMAT(complex_credit_log.create_time,'%Y-%m-%d %H:%i:%S')  AS creditGmtCreate,
-            DATE_FORMAT(complex_remit_log.create_time,'%Y-%m-%d %H:%i:%S')   AS remitGmtCreate,
-            DATE_FORMAT(complex_loan_log.create_time,'%Y-%m-%d %H:%i:%S')    AS loanGmtCreate
+            complex_log.credit_user_name                                      AS creditMan,
+            DATE_FORMAT(complex_log.credit_create_time, '%Y-%m-%d %H:%i:%S' ) AS creditDate,
+            DATE_FORMAT(complex_log.remit_create_time,'%Y-%m-%d %H:%i:%S')    AS remitGmtCreate,
+            DATE_FORMAT(complex_log.loan_create_time,'%Y-%m-%d %H:%i:%S')     AS loanGmtCreate
             from
             (
             select task.*,
@@ -1064,50 +1057,7 @@
             </if>
             ) complex
             left JOIN
-            (
-              select main_log.* from loan_process_log main_log
-              inner join
-              (
-                select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1) as id
-                from loan_process_log GROUP BY task_definition_key,order_id
-              ) inner_log on inner_log.id = main_log.id and main_log.task_definition_key = #{taskDefinitionKey}
-            ) complex_log on complex_log.order_id = complex.id
-            left JOIN
-            (
-              select main_log.* from loan_process_log main_log
-              inner join
-              (
-                select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1) as id
-                from loan_process_log GROUP BY task_definition_key,order_id
-              ) inner_log on inner_log.id = main_log.id and main_log.task_definition_key = 'usertask_credit_apply'
-            ) complex_credit_log on complex_credit_log.order_id = complex.id
-            left JOIN
-            (
-              select main_log.* from loan_process_log main_log
-              inner join
-              (
-                select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1) as id
-                from loan_process_log GROUP BY task_definition_key,order_id
-              ) inner_log on inner_log.id = main_log.id and main_log.task_definition_key = 'usertask_remit_review'
-            ) complex_remit_log on complex_remit_log.order_id = complex.id
-            left JOIN
-            (
-              select main_log.* from loan_process_log main_log
-              inner join
-              (
-                select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1) as id
-                from loan_process_log GROUP BY task_definition_key,order_id
-              ) inner_log on inner_log.id = main_log.id and main_log.task_definition_key = 'usertask_loan_apply'
-            ) complex_loan_log on complex_loan_log.order_id = complex.id
-            left join
-            (
-              select main_rej_log.* from loan_reject_log main_rej_log
-              inner join
-              (
-                select SUBSTRING_INDEX(GROUP_CONCAT(id order by gmt_create desc separator ','),',',1) as id
-                from loan_reject_log GROUP BY reject_to_task,order_id
-              ) inner_rej_log on inner_rej_log.id = main_rej_log.id and main_rej_log.reject_to_task = #{taskDefinitionKey}
-            ) complex_rej_log on complex_rej_log.order_id = complex.id
+            current_node_manager complex_log on complex_log.order_id = complex.id
             where 1=1
             and
             case when #{maxGroupLevel} = 3 then 1=1
@@ -1128,16 +1078,16 @@
             </if>
             end
             <if test="startLoanGmtCreate != null">
-                AND TO_DAYS(complex_loan_log.create_time) &gt;= TO_DAYS(#{startLoanGmtCreate})
+                AND TO_DAYS(complex_log.loan_create_time) &gt;= TO_DAYS(#{startLoanGmtCreate})
             </if>
             <if test="endLoanGmtCreate != null">
-                AND TO_DAYS(complex_loan_log.create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
+                AND TO_DAYS(complex_log.loan_create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
             </if>
             <if test="startCreditGmtCreate != null">
-                AND TO_DAYS(complex_credit_log.create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+                AND TO_DAYS(complex_log.credit_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
             </if>
             <if test="endCreditGmtCreate != null">
-                AND TO_DAYS(complex_credit_log.create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+                AND TO_DAYS(complex_log.credit_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
             </if>
 
             <choose>

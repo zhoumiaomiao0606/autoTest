@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface TaskSchedulingService {
 
-    boolean selectRejectTask(Long orderId,String taskDefinitionKey);
+    boolean selectRejectTask(Long orderId);
 
     ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize);
 

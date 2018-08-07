@@ -45,6 +45,17 @@ public class BankController {
         return bankService.listAll();
     }
 
+
+    /**
+     * 获取银行列表
+     *
+     * @return
+     */
+    @GetMapping(value = "/lists")
+    public ResultBean<List<BankDO>> lists() {
+        return ResultBean.ofSuccess(bankService.lists());
+    }
+
     @GetMapping(value = "/areaListByBankName")
     public ResultBean<List<Long>> areaListByBankName(@RequestParam String bankName) {
         return bankService.areaListByBankName(bankName);
