@@ -56,12 +56,6 @@ public class BankController {
     public ResultBean<List<BankDO>> lists() {
         return ResultBean.ofSuccess(bankService.lists());
     }
-
-    @GetMapping(value = "/areaListByBankName")
-    public ResultBean<List<Long>> areaListByBankName(@RequestParam String bankName) {
-        return bankService.areaListByBankName(bankName);
-    }
-
     /**
     * @Author: ZhongMingxiao
     * @Param:
@@ -69,11 +63,9 @@ public class BankController {
     * @Date:
     * @Description:  根据bankName 查询银行关联省市名
     */
-    @GetMapping(value = "/areaNameListByBankName")
-    public ResultBean<List<CascadeAreaVO>> areaNameListByBankName(@RequestParam String bankName)
-    {
-
-        return bankService.areaNameListByBankName(bankName);
+    @GetMapping(value = "/areaListByBankName")
+    public ResultBean<List<CascadeAreaVO>> areaListByBankName(@RequestParam String bankName) {
+        return ResultBean.ofSuccess(bankService.areaListByBankName(bankName));
     }
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

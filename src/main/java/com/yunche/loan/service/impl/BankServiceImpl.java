@@ -158,32 +158,74 @@ public class BankServiceImpl implements BankService
         // 问卷
         List<BankRelaQuestionDO> bankQuestionList = bankRelaQuestionDOMapper.listByBankIdAndType(id, QUESTION_BANK);
         List<BankRelaQuestionDO> machineQuestionList = bankRelaQuestionDOMapper.listByBankIdAndType(id, QUESTION_MACHINE);
-        List<BankCarLicenseLocationDO> bankCarLicenseLocationList = bankCarLicenseLocationDOMapper.listByBankId(id);
-        List<Long> longs = Lists.newArrayList();
-        for(BankCarLicenseLocationDO v:bankCarLicenseLocationList){
-            longs.add(v.getAreaId());
-        }
         bankVO.setBankQuestionList(bankQuestionList);
         bankVO.setMachineQuestionList(machineQuestionList);
-        bankVO.setBankCarLicenseLocationList(longs);
+        bankVO.setReturnBankCarLicenseLocationList(areaList(bankDO.getId()));
         return ResultBean.ofSuccess(bankVO);
     }
 
-    @Override
-    public ResultBean<List<Long>> areaListByBankName(String bankName) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(bankName),"银行名称不能为空");
-        Long bankId = bankDOMapper.selectIdByName(bankName);
+    private List<CascadeAreaVO> areaList(Long bankId) {
+        Preconditions.checkArgument(bankId!=null,"银行名称不能为空");
         List<BankCarLicenseLocationDO> list = bankCarLicenseLocationDOMapper.listByBankId(bankId);
-        List<Long> longs = Lists.newArrayList();
+        List<Long> bank_areaids = Lists.newArrayList();
         for(BankCarLicenseLocationDO v:list){
-            longs.add(v.getAreaId());
+            bank_areaids.add(v.getAreaId());
         }
-        return ResultBean.ofSuccess(longs);
+
+        List<CascadeAreaVO> ableAreaList = Lists.newArrayList();
+
+        //根据管辖区域id获取管辖区域信息
+        List<BaseAreaDO> baseBindArea = bank_areaids.parallelStream().map(e->{
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
+            return baseAreaDO;
+        }).distinct().collect(Collectors.toList());
+
+        List<CascadeAreaVO.City> baseAreaDOS = Lists.newArrayList();
+
+        HashMap<Long, Set<Long>> areaMap = Maps.newHashMap();
+
+        baseBindArea.stream().forEach(hasArea->{
+            switch(hasArea.getLevel()){
+
+                case 0:
+                    ableAreaList.addAll(areaCache.get());
+                    break;
+                case 1:
+                    List<Long> citys = baseAreaDOMapper.selectCityIdByProvenceId(hasArea.getAreaId());
+                    if(areaMap.keySet().contains(hasArea.getAreaId())){
+                        Set<Long> aaa = areaMap.get(hasArea.getAreaId());
+                        aaa.addAll(citys);
+                        areaMap.put(hasArea.getAreaId(),aaa);
+                    }else{
+                        Set<Long> tmp =  Sets.newHashSet();
+                        tmp.addAll(citys);
+                        areaMap.put(hasArea.getAreaId(),tmp);
+                    }
+                    break;
+                case 2:
+                    if(areaMap.keySet().contains(hasArea.getParentAreaId())){
+                        Set<Long> aaa = areaMap.get(hasArea.getParentAreaId());
+                        aaa.add(hasArea.getAreaId());
+                    }else{
+                        Set<Long> tmp =  Sets.newHashSet();
+                        tmp.add(hasArea.getAreaId());
+                        areaMap.put(hasArea.getParentAreaId(),tmp);
+                    }
+                    break;
+
+            }
+        });
+
+        //根据银行管辖区域获取管辖区域的省市
+        List<CascadeAreaVO> cascadeAreaVOS = fillInfo(ableAreaList,areaMap);
+
+
+        return cascadeAreaVOS;
+
     }
 
     @Override
-    public ResultBean<List<CascadeAreaVO>> areaNameListByBankName(String bankName)
-    {
+    public List<CascadeAreaVO> areaListByBankName(String bankName) {
         Preconditions.checkArgument(StringUtils.isNotBlank(bankName),"银行名称不能为空");
         Long bankId = bankDOMapper.selectIdByName(bankName);
         List<BankCarLicenseLocationDO> list = bankCarLicenseLocationDOMapper.listByBankId(bankId);
@@ -240,7 +282,7 @@ public class BankServiceImpl implements BankService
         List<CascadeAreaVO> cascadeAreaVOS = fillInfo(ableAreaList,areaMap);
 
 
-        return ResultBean.ofSuccess(cascadeAreaVOS);
+        return cascadeAreaVOS;
 
     }
 

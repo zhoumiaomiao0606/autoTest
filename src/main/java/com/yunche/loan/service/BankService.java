@@ -26,11 +26,7 @@ public interface BankService {
 
     ResultBean<BankVO> getById(Long id);
 
-    ResultBean<List<Long>> areaListByBankName(String bankName);
-
-<<<<<<< HEAD
     List<BankDO> lists();
-=======
-    ResultBean<List<CascadeAreaVO>> areaNameListByBankName(String bankName);
->>>>>>> ab335c9de8ddc56e7b05122b177ddccbcee54067
+
+    List<CascadeAreaVO> areaListByBankName(String bankName);
 }
