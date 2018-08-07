@@ -121,4 +121,8 @@ public class BizAreaController {
                                            @RequestParam("areaIds") String areaIds) {
         return bizAreaService.unbindArea(id, areaIds);
     }
+
+
+
+
 }

@@ -105,7 +105,7 @@ public class BankServiceImpl implements BankService
 
     @Override
     public List<BankDO> lists() {
-        return bankDOMapper.listAll(new Byte("0"));
+        return bankDOMapper.listAll(null);
     }
 
     @Override
