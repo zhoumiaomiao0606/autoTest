@@ -10,6 +10,7 @@ public class UniversalCarInfoVO {
     private String car_brand_name;
     private String car_price;
     private String car_name;
+    private String car_detail_name;
     private String car_vehicle_property;
     private String car_type;
     private String vehicle_vehicle_identification_number;
