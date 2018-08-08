@@ -180,7 +180,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeDO.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
-
+        bindBizArea(employeeDO.getId(),employeeDO.getBizAreaIds());
         // 刷新缓存
         employeeCache.refresh();
 
@@ -258,6 +258,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         fillDepartment(employeeDO.getDepartmentId(), employeeVO);
         // 填充所属合伙人信息
         fillPartner(employeeVO);
+
+        employeeVO.setBizAreaIdList(listBizArea(id));
 
         return ResultBean.ofSuccess(employeeVO);
     }
