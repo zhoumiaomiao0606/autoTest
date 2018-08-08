@@ -233,14 +233,14 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
         List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(customerId);
 
-        // upload_type聚合  ==>  正常上传 & 增补上传
+        // type聚合  ==>  正常上传 & 增补上传
         List<UniversalCustomerFileVO> files_ = convert(files);
 
         return files_;
     }
 
     /**
-     * 根据文件upload_type -> 作聚合
+     * 根据文件type -> 作聚合  (原始files 包含了所有的upload_type，所以会有重复type的情况)
      *
      * @param files
      * @return
