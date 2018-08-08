@@ -240,7 +240,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     }
 
     /**
-     * 根据文件type -> 作聚合
+     * 根据文件upload_type -> 作聚合
      *
      * @param files
      * @return
