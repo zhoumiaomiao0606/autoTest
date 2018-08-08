@@ -380,16 +380,16 @@
     sum_number, sum_amount, reminders, is_customer, batch_date)
     VALUES
     <foreach collection="list" item="item" index="index" separator=",">
-      (#{bankFileListId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT},
-      #{areaId,jdbcType=VARCHAR}, #{platNo,jdbcType=VARCHAR}, #{guarantyUnit,jdbcType=VARCHAR},
-      #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
-      #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR},
-      #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP},
-      #{status,jdbcType=TINYINT}, #{cardBalance,jdbcType=DECIMAL}, #{optimalReturn,jdbcType=DECIMAL},
-      #{cumulativeBreachNumber,jdbcType=INTEGER}, #{consecutiveBreachNumber,jdbcType=INTEGER},
-      #{runBank,jdbcType=VARCHAR}, #{instalmentTypes,jdbcType=VARCHAR}, #{instalmentAmount,jdbcType=DECIMAL},
-      #{sumNumber,jdbcType=INTEGER}, #{sumAmount,jdbcType=DECIMAL}, #{reminders,jdbcType=VARCHAR},
-      #{isCustomer,jdbcType=TINYINT}, #{batchDate,jdbcType=TIMESTAMP})
+      (#{item.bankFileListId,jdbcType=BIGINT}, #{item.customerId,jdbcType=BIGINT}, #{item.orderId,jdbcType=BIGINT},
+      #{item.areaId,jdbcType=VARCHAR}, #{item.platNo,jdbcType=VARCHAR}, #{item.guarantyUnit,jdbcType=VARCHAR},
+      #{item.opencardDate,jdbcType=TIMESTAMP}, #{item.cardNumber,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR},
+      #{item.cardType,jdbcType=VARCHAR}, #{item.credentialNo,jdbcType=VARCHAR}, #{item.hairpinFlag,jdbcType=VARCHAR},
+      #{item.accountStatement,jdbcType=VARCHAR}, #{item.repayDate,jdbcType=VARCHAR}, #{item.gmtGreate,jdbcType=TIMESTAMP},
+      #{item.status,jdbcType=TINYINT}, #{item.cardBalance,jdbcType=DECIMAL}, #{item.optimalReturn,jdbcType=DECIMAL},
+      #{item.cumulativeBreachNumber,jdbcType=INTEGER}, #{item.consecutiveBreachNumber,jdbcType=INTEGER},
+      #{item.runBank,jdbcType=VARCHAR}, #{item.instalmentTypes,jdbcType=VARCHAR}, #{item.instalmentAmount,jdbcType=DECIMAL},
+      #{item.sumNumber,jdbcType=INTEGER}, #{item.sumAmount,jdbcType=DECIMAL}, #{item.reminders,jdbcType=VARCHAR},
+      #{item.isCustomer,jdbcType=TINYINT}, #{item.batchDate,jdbcType=TIMESTAMP})
     </foreach >
   </insert>
   <select id="selectNewestByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
