@@ -31,10 +31,6 @@ public class LoanInfoRegisterParam {
      */
     private LoanFinancialPlanParam loanFinancialPlanParam;
 
-    /**
-     *产品ID
-     */
-    private Long prodId;
 
     /**
      * 产品大类
