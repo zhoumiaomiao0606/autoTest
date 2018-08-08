@@ -349,7 +349,7 @@
 
 -->
 
-        <table tableName="biz_area_rela_partner" domainObjectName="BizAreaRelaPartnerDO"
+        <table tableName="employee_rela_biz_area" domainObjectName="EmployeeRelaBizAreaDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

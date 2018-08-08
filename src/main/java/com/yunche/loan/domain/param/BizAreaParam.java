@@ -11,8 +11,5 @@ import java.util.List;
  */
 @Data
 public class BizAreaParam extends BizAreaDO {
-    /**
-     * 绑定的城市列表
-     */
-    private List<Long> areaIdList;
+    private List<Long> partnerIds;
 }

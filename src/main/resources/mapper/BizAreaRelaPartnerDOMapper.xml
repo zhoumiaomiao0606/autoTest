@@ -21,7 +21,7 @@
   <select id="selectByAreaId" resultType="com.yunche.loan.domain.vo.BizAreaPartnerVO">
 
     select
-		partner.id as partner_id,partner.name as partner_name
+		biz_area_rela_partner.biz_area_id as biz_area_id,partner.id as partner_id,partner.name as partner_name
     from biz_area_rela_partner biz_area_rela_partner
     left join partner partner on biz_area_rela_partner.partner_id = partner.id
     where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
