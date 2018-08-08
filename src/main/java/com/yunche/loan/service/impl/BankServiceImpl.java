@@ -14,9 +14,7 @@ import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.param.BankParam;
 import com.yunche.loan.domain.param.BankSaveParam;
 import com.yunche.loan.domain.query.BankQuery;
-import com.yunche.loan.domain.vo.BankReturnVO;
-import com.yunche.loan.domain.vo.BankVO;
-import com.yunche.loan.domain.vo.CascadeAreaVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.BankCarLicenseLocationDOMapper;
 import com.yunche.loan.mapper.BankDOMapper;
 import com.yunche.loan.mapper.BankRelaQuestionDOMapper;
@@ -24,11 +22,13 @@ import com.yunche.loan.mapper.BaseAreaDOMapper;
 import com.yunche.loan.service.BankService;
 import org.activiti.engine.impl.util.CollectionUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.docx4j.wml.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,6 +61,9 @@ public class BankServiceImpl implements BankService
 
     @Autowired
     private BankCarLicenseLocationDOMapper bankCarLicenseLocationDOMapper;
+
+
+
 
 
     @Override
@@ -98,7 +101,29 @@ public class BankServiceImpl implements BankService
         // 银行
         BankDO bankDO = bankDOMapper.selectByPrimaryKey(bankId);
         bankReturnVO.setInfo(bankDO);
-        bankReturnVO.setList(list);
+        List<AreaRVO> result = Lists.newArrayList();
+        List<CascadeAreaVO> areaList = areaList(bankId);
+            for(Long areaId:list){
+                BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId,new Byte("0"));
+                if(baseAreaDO!=null){
+                    if(Integer.valueOf(baseAreaDO.getLevel()).intValue()<2){
+                        AreaRVO R = new AreaRVO();
+                        R.setPId(baseAreaDO.getAreaId().toString());
+                        R.setPName(baseAreaDO.getAreaName());
+                        result.add(R);
+                        continue;
+                    }else{
+                        AreaRVO R = new AreaRVO();
+                        R.setPId(baseAreaDO.getParentAreaId().toString());
+                        R.setPName(baseAreaDO.getParentAreaName());
+                        R.setCId(baseAreaDO.getAreaId().toString());
+                        R.setCName(baseAreaDO.getAreaName());
+                        result.add(R);
+                        continue;
+                    }
+                }
+            }
+        bankReturnVO.setList(result);
         return bankReturnVO;
     }
 

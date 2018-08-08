@@ -3,6 +3,7 @@ package com.yunche.loan.web.aop;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.util.LockUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -48,14 +49,24 @@ public class DistributedLockAop {
         String key = annotation.key();
         long timeOut = annotation.timeOut();
 
+        // key
         Object defaultValue_key = methodName_DefaultValue_Map.get("key");
         if (defaultValue_key.equals(key) || StringUtils.isBlank(key)) {
-            key = defaultValue_key + method.getName();
+
+            // methodName
+            String fullMethodName = getFullMethodName(method);
+
+            // hashCode
+            int fullMethodNameHashCode = fullMethodName.hashCode();
+
+            // prefix + methodName + hashCode
+            key = defaultValue_key + method.getName() + ":" + fullMethodNameHashCode;
         }
 
         // 生成一个随机数：作为当前🔐的val
         long randomNum = new Random().nextInt(1000000000);
         String val = System.currentTimeMillis() + String.valueOf(randomNum);
+
 
         try {
 
@@ -82,6 +93,35 @@ public class DistributedLockAop {
         }
 
         return null;
+    }
+
+    /**
+     * method的全方法名
+     *
+     * @param method
+     * @return
+     */
+    private static String getFullMethodName(Method method) {
+
+        String fullMethodName = "";
+
+        String clazzName = method.getDeclaringClass().getName();
+        String methodName = method.getName();
+
+        fullMethodName += clazzName;
+        fullMethodName += methodName;
+
+        Class<?>[] parameterTypes = method.getParameterTypes();
+
+        if (ArrayUtils.isNotEmpty(parameterTypes)) {
+
+            for (int i = 0; i < parameterTypes.length; i++) {
+
+                fullMethodName += parameterTypes[i].getName();
+            }
+        }
+
+        return fullMethodName;
     }
 
     /**
