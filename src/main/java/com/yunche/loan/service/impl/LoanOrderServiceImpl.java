@@ -125,6 +125,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private LoanQueryService loanQueryService;
+
 
     @Override
     public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(Long orderId) {
@@ -238,9 +241,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
         // insert
         LoanOrderDO loanOrder = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
-        if(loanOrder.getLoanCarInfoId()!=null){
+        if (loanOrder.getLoanCarInfoId() != null) {
             ResultBean<Void> update = loanCarInfoService.update(loanCarInfoDO);
-        }else{
+        } else {
             ResultBean<Long> createResultBean = loanCarInfoService.create(loanCarInfoDO);
             Preconditions.checkArgument(createResultBean.getSuccess(), createResultBean.getMsg());
             // 关联
@@ -479,7 +482,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
 
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
 
             // 主贷人 文件回填

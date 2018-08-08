@@ -169,7 +169,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
     @Override
     public ResultBean<UniversalInfoSupplementVO> detail(Long infoSupplementId) {
 
-        UniversalInfoSupplementVO detail = loanQueryService.detail(infoSupplementId);
+        UniversalInfoSupplementVO detail = loanQueryService.selectUniversalInfoSupplementDetail(infoSupplementId);
 
         return ResultBean.ofSuccess(detail);
     }
@@ -177,7 +177,7 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
     @Override
     public ResultBean<List<UniversalInfoSupplementVO>> history(Long orderId) {
 
-        List<UniversalInfoSupplementVO> history = loanQueryService.history(orderId);
+        List<UniversalInfoSupplementVO> history = loanQueryService.selectUniversalInfoSupplementHistory(orderId);
 
         return ResultBean.ofSuccess(history);
     }

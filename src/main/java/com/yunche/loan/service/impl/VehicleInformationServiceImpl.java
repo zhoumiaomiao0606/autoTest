@@ -13,6 +13,7 @@ import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.domain.vo.VehicleInformationVO;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.VehicleInformationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,10 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Autowired
+    private LoanQueryService loanQueryService;
+
+
     @Override
     public RecombinationVO detail(Long orderId) {
         VehicleInformationVO vehicleInformationVO = loanQueryDOMapper.selectVehicleInformation(orderId);
@@ -53,11 +58,11 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
 
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
 
-        if(vehicleInformationVO!=null) {
+        if (vehicleInformationVO != null) {
 
             if (vehicleInformationVO.getApply_license_plate_area() != null) {
                 BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationVO.getApply_license_plate_area()), VALID_STATUS);
@@ -80,8 +85,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         types.add(new Byte("21"));
         types.add(new Byte("21"));
         types.add(new Byte("22"));
-        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId,types));
-
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, types));
 
 
         return recombinationVO;
@@ -124,7 +128,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
             if (param.getFiles() != null) {
                 if (!param.getFiles().isEmpty()) {
                     for (UniversalFileParam universalFileParam : param.getFiles()) {
-                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId,new Byte(universalFileParam.getType()), null);
+                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte(universalFileParam.getType()), null);
                         for (LoanFileDO loanFileDO : uploadList) {
                             loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
                         }

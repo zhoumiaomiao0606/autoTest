@@ -163,7 +163,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
 
-        UniversalInfoSupplementVO data = loanQueryService.detail(supplementOrderId);
+        UniversalInfoSupplementVO data = loanQueryService.selectUniversalInfoSupplementDetail(supplementOrderId);
 
         AppInfoSupplementVO appInfoSupplementVO = new AppInfoSupplementVO();
         BeanUtils.copyProperties(data, appInfoSupplementVO);
@@ -439,7 +439,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         }
 
         // file
-        List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(loanSimpleInfoVO.getCustomerId()));
+        List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(loanSimpleInfoVO.getCustomerId()));
         if (!CollectionUtils.isEmpty(files)) {
 
             List<FileVO> homeVisitFiles = Lists.newArrayList();

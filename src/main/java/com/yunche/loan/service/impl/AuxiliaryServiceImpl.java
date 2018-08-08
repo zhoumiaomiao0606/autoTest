@@ -14,6 +14,7 @@ import com.yunche.loan.domain.param.InstallUpdateParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.AuxiliaryService;
+import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,8 @@ import java.util.Map;
 public class AuxiliaryServiceImpl implements AuxiliaryService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuxiliaryServiceImpl.class);
+
+
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
 
@@ -44,6 +47,9 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
 
     @Autowired
     private TokenCache tokenCache;
+
+    @Autowired
+    private LoanQueryService loanQueryService;
 
     @Resource
     private PartnerDOMapper partnerDOMapper;
@@ -93,14 +99,14 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                             if ((map1.get("activationTime") != null || !"".equals(map1.get("activationTime")))
                                     && (map1.get("vehicleName") == null || "".equals(map1.get("vehicleName")))
                                     && (map1.get("driverName") == null || "".equals(map1.get("driverName")))) {
-                                String account = (String)map1.get("account");
-                                if(account != null && !"".equals(account)){
-                                    if(partnerDO.getLeaderName().trim().equals(account.trim())){
+                                String account = (String) map1.get("account");
+                                if (account != null && !"".equals(account)) {
+                                    if (partnerDO.getLeaderName().trim().equals(account.trim())) {
                                         falg = true;
-                                    }else{
+                                    } else {
                                         throw new BizException("第三方该gps所属人与本地合伙人不符");
                                     }
-                                }else{
+                                } else {
                                     throw new BizException("第三方该gps不属于该合伙人");
                                 }
 
@@ -167,7 +173,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
     public GpsDetailTotalVO detail(Long orderId) {
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
 
@@ -176,7 +182,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
 
         GpsDetailVO gpsDetail = new GpsDetailVO();
         gpsDetail = loanQueryDOMapper.selectGpsDetailByOrderId(orderId);
-        if(gpsDetail.getLicensePlateNymber() == null){
+        if (gpsDetail.getLicensePlateNymber() == null) {
             gpsDetail.setLicensePlateNymber("");
         }
         gpsDetailTotal.setGpsDetail(gpsDetail);
@@ -208,7 +214,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
         GpsDetailTotalVO gpsDetailTotal = new GpsDetailTotalVO();
         GpsDetailVO gpsDetail = new GpsDetailVO();
         gpsDetail = loanQueryDOMapper.selectGpsDetailByOrderId(orderId);
-        if(gpsDetail.getLicensePlateNymber() == null){
+        if (gpsDetail.getLicensePlateNymber() == null) {
             gpsDetail.setLicensePlateNymber("");
         }
         gpsDetailTotal.setGpsDetail(gpsDetail);

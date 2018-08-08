@@ -5,7 +5,9 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.FinanceService;
 import com.yunche.loan.service.LoanProcessLogService;
+import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,13 +23,16 @@ public class FinanceServiceImpl implements FinanceService {
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
 
+    @Autowired
+    private LoanQueryService loanQueryService;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
 
