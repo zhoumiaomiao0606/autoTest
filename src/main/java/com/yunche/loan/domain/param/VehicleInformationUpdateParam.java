@@ -19,7 +19,7 @@ public class VehicleInformationUpdateParam {
     //车辆颜色
     private String color;
 
-    //合格证号
+    //合格证号==车辆型号
     @NotBlank
     private String qualified_certificate_number;
 
@@ -57,6 +57,7 @@ public class VehicleInformationUpdateParam {
     @NotBlank
     private String engine_number;
 
+    @NotBlank
     //登记书号
     private String registration_certificate_number;
 
@@ -82,6 +83,7 @@ public class VehicleInformationUpdateParam {
 
     private String retrieve_key;
 
+    @NotBlank
     //汽车品牌
     private String customize_brand;
 
