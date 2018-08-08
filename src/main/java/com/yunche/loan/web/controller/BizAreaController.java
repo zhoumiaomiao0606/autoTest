@@ -126,12 +126,12 @@ public class BizAreaController {
     /**
      * 关联合伙人列表
      *
-     * @param query id、pageIndex、pageSize
+     * @param  id、pageIndex、pageSize
      * @return
      */
     @PostMapping(value = "/listPartner", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<CascadeAreaVO.Prov>> listPartner(@RequestBody BizAreaQuery query) {
-        return null;
+    public ResultBean<List<CascadeAreaVO.Partner>> listPartner(@RequestParam Long id) {
+        return bizAreaService.listPartner(id);
     }
 
     /**

@@ -32,4 +32,11 @@ public interface BizAreaService {
     ResultBean<Void> bindArea(Long id, String areaIds);
 
     ResultBean<Void> unbindArea(Long id, String areaIds);
+
+
+    ResultBean<List<CascadeAreaVO.Partner>> listPartner(Long id);
+
+    ResultBean<Void> bindPartner(Long id, List<Long> partnerIds);
+
+    ResultBean<Void> unbinPartner(Long id, List<Long> partnerIds);
 }

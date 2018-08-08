@@ -23,6 +23,7 @@ public class CascadeAreaVO {
 
     private List<City> cityList = Collections.EMPTY_LIST;
 
+    private List<Partner> partnerList =  Collections.EMPTY_LIST;
 
 
 
@@ -38,6 +39,15 @@ public class CascadeAreaVO {
 
         private City city;
 
+
+    }
+
+    @Data
+    public static class Partner {
+
+        private Long partnerId;
+
+        private String partnerName;
 
     }
 
