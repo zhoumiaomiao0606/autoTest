@@ -95,7 +95,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                                     && (map1.get("driverName") == null || "".equals(map1.get("driverName")))) {
                                 String account = (String)map1.get("account");
                                 if(account != null && !"".equals(account)){
-                                    if(partnerDO.getLeaderName().trim().equals(account.trim())){
+                                    if(partnerDO.getGpsAccount().trim().equals(account.trim())){
                                         falg = true;
                                     }else{
                                         throw new BizException("第三方该gps所属人与本地合伙人不符");
@@ -124,7 +124,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                     try {
                         boolean flag = CarLoanHttpUtil.getGpsStatus(obj.getGps_number());
                         if (flag) {
-                            /*PartnerCusInfoVO partnerCusInfoVO = installGpsDOMapper.selectPartnerAndCusByOrderId(Long.valueOf(param.getOrder_id()));
+                            PartnerCusInfoVO partnerCusInfoVO = installGpsDOMapper.selectPartnerAndCusByOrderId(Long.valueOf(param.getOrder_id()));
                             boolean cusFlag = CarLoanHttpUtil.modifyCustomer(String.valueOf(partnerCusInfoVO.getPId()),String.valueOf(partnerCusInfoVO.getCusId()),param.getDriverName(),param.getVehicleName());
                             if(cusFlag){
                                 boolean gpsFlag = CarLoanHttpUtil.bindGps(obj.getGps_number(),String.valueOf(partnerCusInfoVO.getCusId()));
@@ -133,7 +133,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                                 }
                             }else{
                                 throw new BizException("该客户:" + param.getDriverName() + "无法登记");
-                            }*/
+                            }
                         } else {
                             throw new BizException("该GPS:" + obj.getGps_number() + "无法登记");
                         }

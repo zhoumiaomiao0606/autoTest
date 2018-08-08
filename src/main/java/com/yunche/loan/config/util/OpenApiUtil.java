@@ -191,6 +191,7 @@ public class OpenApiUtil {
 		paramMap.put("imeis", imeis);
 		getSign(paramMap);
 		String returnStr = sendPost(paramMap);
+		logger.info("康凯斯返回："+returnStr);
 		if(!StringUtil.isEmpty(returnStr)){
 			getTokenVO = formJson2Obj(returnStr,GetTokenVO.class);
 			if("0".equals(getTokenVO.getCode())){

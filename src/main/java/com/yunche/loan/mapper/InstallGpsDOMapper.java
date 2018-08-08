@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.InstallGpsDO;
+import com.yunche.loan.domain.vo.PartnerCusInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,4 +20,6 @@ public interface InstallGpsDOMapper {
     int updateByPrimaryKeySelective(InstallGpsDO record);
 
     int selectBygpsNumber(@Param("gps_number") String gps_number);
+
+    PartnerCusInfoVO selectPartnerAndCusByOrderId(@Param("order_id")Long order_id);
 }

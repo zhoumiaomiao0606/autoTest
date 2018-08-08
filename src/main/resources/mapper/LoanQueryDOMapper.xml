@@ -541,6 +541,26 @@
 
     </select>
 
+
+    <!--app打款信息-->
+    <select id="selectAppUniversalRemitDetails" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.vo.UniversalRemitDetails">
+      select
+            remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
+            remit.beneficiary_account                                                               AS remit_beneficiary_account,
+            remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
+            remit.remit_amount                                                                      AS remit_amount,
+            remit.return_rate_amount                                                                AS remit_return_rate_amount,
+            remit.insurance_situation                                                               AS remit_insurance_situation,
+            remit.payment_organization                                                              AS remit_payment_organization,
+            DATE_FORMAT(remit.application_date,'%Y-%m-%d')                                          AS remit_application_date,
+            remit.remark
+
+      from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
+      left join remit_details remit on main_order.remit_details_id = remit.id
+
+    </select>
+
     <!--费用明细-->
     <select id="selectUniversalCostDetails" parameterType="java.lang.Long"
             resultType="com.yunche.loan.domain.vo.UniversalCostDetailsVO">

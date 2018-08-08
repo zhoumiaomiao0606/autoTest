@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/businesspayment")
+@RequestMapping(value = {"/api/v1/loanorder/businesspayment", "/api/v1/app/loanorder/businesspayment"})
 public class LoanBusinessPaymentController {
 
 
@@ -45,5 +45,10 @@ public class LoanBusinessPaymentController {
     @GetMapping(value = "/detail")
     public ResultBean<RecombinationVO> businessPaymentDetail(@RequestParam("orderId") Long orderId){
         return loanBusinessPaymentService.detail(orderId);
+    }
+
+    @GetMapping(value = "/appdetail")
+    public ResultBean<RecombinationVO> appBusinessPaymentDetail(@RequestParam("orderId") Long orderId){
+        return loanBusinessPaymentService.appDetail(orderId);
     }
 }
