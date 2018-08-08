@@ -8,10 +8,8 @@ import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.POIUtil;
-import com.yunche.loan.domain.entity.LoanCarInfoDO;
-import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.VideoFaceLogDO;
+import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.query.VideoFaceQuery;
 import com.yunche.loan.domain.vo.CustomerVO;
 import com.yunche.loan.domain.vo.VideoFaceLogVO;
@@ -122,6 +120,10 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     @Override
     public ResultBean<List<VideoFaceLogVO>> listLog(VideoFaceQuery videoFaceQuery) {
 
+        // checkPermission
+        Preconditions.checkNotNull(SessionUtils.getLoginUser().getBankId(), "您无权操作[视频面签]");
+
+        // export
         if (null != videoFaceQuery.getPageIndex() && null != videoFaceQuery.getPageSize()) {
             PageHelper.startPage(videoFaceQuery.getPageIndex(), videoFaceQuery.getPageSize(), true);
         }

@@ -164,13 +164,13 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         }
 
         // TODO 担保人中，当担保人为内部担保时，不显示与主担保人关系；当担保人为银行担保时，显示与主担保人关系
-        // 逻辑判断变更：当担保人为银行担保的时候，与主担保人关系有且只有一个
-        Byte guaranteeType = loanCustomerDO.getGuaranteeType();
-        if (GUARANTEE_TYPE_INSIDE.equals(guaranteeType)) {
-            Preconditions.checkArgument(StringUtils.isBlank(loanCustomerDO.getGuaranteeRela()), "内部担保，无担保人关系");
-        } else if (GUARANTEE_TYPE_BANK.equals(guaranteeType)) {
-
-        }
+//        // 逻辑判断变更：当担保人为银行担保的时候，与主担保人关系有且只有一个
+//        Byte guaranteeType = loanCustomerDO.getGuaranteeType();
+//        if (GUARANTEE_TYPE_INSIDE.equals(guaranteeType)) {
+//            Preconditions.checkArgument(StringUtils.isBlank(loanCustomerDO.getGuaranteeRela()), "内部担保，无担保人关系");
+//        } else if (GUARANTEE_TYPE_BANK.equals(guaranteeType)) {
+//
+//        }
 
         if (CUST_TYPE_GUARANTOR.equals(loanCustomerDO.getCustType())) {
             List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getPrincipalCustId(), CUST_TYPE_GUARANTOR, VALID_STATUS);
