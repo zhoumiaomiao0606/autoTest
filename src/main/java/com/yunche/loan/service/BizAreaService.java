@@ -38,5 +38,4 @@ public interface BizAreaService {
 
     ResultBean<Void> bindPartner(Long id, List<Long> partnerIds);
 
-    ResultBean<Void> unbinPartner(Long id, List<Long> partnerIds);
 }

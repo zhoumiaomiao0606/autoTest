@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
@@ -259,23 +260,51 @@ public class BizAreaServiceImpl implements BizAreaService {
         List<CascadeAreaVO.Partner> result = Lists.newArrayList();
         List<BizAreaPartnerVO> list = bizAreaRelaPartnerDOMapper.selectByAreaId(id);
         for(BizAreaPartnerVO bizAreaPartnerVO : list){
-            CascadeAreaVO.Partner partner = new CascadeAreaVO.Partner();
-            partner.setPartnerId(StringUtils.isBlank(bizAreaPartnerVO.getId())?null:Long.valueOf(bizAreaPartnerVO.getId()));
-            partner.setPartnerName(partner.getPartnerName());
-            result.add(partner);
+            if(bizAreaPartnerVO != null){
+                CascadeAreaVO.Partner partner = new CascadeAreaVO.Partner();
+                partner.setPartnerId(StringUtils.isBlank(bizAreaPartnerVO.getPartner_id())?null:Long.valueOf(bizAreaPartnerVO.getPartner_id()));
+                partner.setPartnerName(bizAreaPartnerVO.getPartner_name());
+                result.add(partner);
+            }
         }
         return ResultBean.ofSuccess(result);
     }
 
     @Override
     public ResultBean<Void> bindPartner(Long id, List<Long> partnerIds) {
-        return null;
+        if(id == null){
+            throw new BizException("缺少大区ID");
+        }
+        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id,new Byte("0"));
+        if(bizAreaDO == null){
+            throw new BizException("大区不存在");
+        }
+
+
+        bizAreaRelaPartnerDOMapper.deleteByBizAreaId(id);
+
+        for(Long partnerId:partnerIds){
+            if(partnerId!=null){
+                BizAreaRelaPartnerDOKey key = new BizAreaRelaPartnerDOKey();
+                key.setPartnerId(partnerId);
+                key.setBizAreaId(id);
+                BizAreaRelaPartnerDO DO = bizAreaRelaPartnerDOMapper.selectByPrimaryKey(key);
+                if(DO == null){
+                    BizAreaRelaPartnerDO bizAreaRelaPartnerDO = new BizAreaRelaPartnerDO();
+                    bizAreaRelaPartnerDO.setBizAreaId(id);
+                    bizAreaRelaPartnerDO.setPartnerId(partnerId);
+                    bizAreaRelaPartnerDOMapper.insertSelective(bizAreaRelaPartnerDO);
+                }else{
+                    BizAreaRelaPartnerDO bizAreaRelaPartnerDO = new BizAreaRelaPartnerDO();
+                    bizAreaRelaPartnerDO.setBizAreaId(id);
+                    bizAreaRelaPartnerDO.setPartnerId(partnerId);
+                    bizAreaRelaPartnerDOMapper.updateByPrimaryKey(bizAreaRelaPartnerDO);
+                }
+            }
+        }
+        return ResultBean.ofSuccess(null,"编辑成功");
     }
 
-    @Override
-    public ResultBean<Void> unbinPartner(Long id, List<Long> partnerIds) {
-        return null;
-    }
 
     @Override
     public ResultBean<List<CascadeVO>> listAll() {
