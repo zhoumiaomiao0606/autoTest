@@ -16,6 +16,7 @@ import com.yunche.loan.domain.query.InsuranceListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.InsuranceUrgeService;
+import com.yunche.loan.service.LoanQueryService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,11 +29,10 @@ import java.util.List;
  * 催保
  */
 @Service
-public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
+public class InsuranceUrgeServiceImpl implements InsuranceUrgeService {
 
     @Autowired
     private BankRecordQueryDOMapper bankRecordQueryDOMapper;
-
 
     @Autowired
     private InsuranceDistributeRecordDOMapper insuranceDistributeRecordDOMapper;
@@ -56,10 +56,8 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
     private LoanCustomerDOMapper loanCustomerDOMapper;
 
     @Autowired
-    private SysConfig sysConfig;
+    private LoanQueryService loanQueryService;
 
-    @Autowired
-    private EmployeeDOMapper employeeDOMapper;
 
     @Override
     public List list(InsuranceListQuery insuranceListQuery) {
@@ -77,7 +75,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
             RecombinationVO recombinationVO = new RecombinationVO<>();
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
 
-            Preconditions.checkNotNull(loanOrderDO,"订单不存在");
+            Preconditions.checkNotNull(loanOrderDO, "订单不存在");
 
             UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
 
@@ -89,7 +87,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
             List<InsuranceInfoDO> insuranceInfoDOS = insuranceInfoDOMapper.listByOrderId(orderId);
 
             List<UniversalInsuranceVO> insuranceDetail = Lists.newArrayList();
-            insuranceInfoDOS.stream().forEach(e->{
+            insuranceInfoDOS.stream().forEach(e -> {
                 UniversalInsuranceVO universalInsuranceVO = new UniversalInsuranceVO();
                 Byte year = e.getInsurance_year();
                 List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.listByInsuranceInfoId(e.getId());
@@ -100,7 +98,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
 
             List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
             for (UniversalCustomerVO universalCustomerVO : customers) {
-                List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+                List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
                 universalCustomerVO.setFiles(files);
             }
             List<RenewInsuranceDO> renewInsurList = renewInsuranceDOMapper.selectByOrderId(orderId);
@@ -117,27 +115,30 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
 
     /**
      * 新催保记录
+     *
      * @return
      */
     @Override
     public Void renew(RenewInsuranceParam renewInsuranceParam) {
-        Preconditions.checkNotNull(renewInsuranceParam,"新催保记录不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam, "新催保记录不能为空");
         RenewInsuranceDO renewInsuranceDO = new RenewInsuranceDO();
-        BeanUtils.copyProperties(renewInsuranceParam,renewInsuranceDO);
+        BeanUtils.copyProperties(renewInsuranceParam, renewInsuranceDO);
         renewInsuranceDO.setOmbudsman(renewInsuranceParam.getEmployeeName());
         RenewInsuranceDO insuranceDO = renewInsuranceDOMapper.selectByPrimaryKey(renewInsuranceParam.getId());
-        if(insuranceDO == null){
+        if (insuranceDO == null) {
             int count = renewInsuranceDOMapper.insert(renewInsuranceDO);
-            Preconditions.checkArgument(count>0,"新催保记录保存失败");
-        }else{
+            Preconditions.checkArgument(count > 0, "新催保记录保存失败");
+        } else {
             int count = renewInsuranceDOMapper.updateByPrimaryKeySelective(renewInsuranceDO);
-            Preconditions.checkArgument(count>0,"更新新催保记录保存失败");
+            Preconditions.checkArgument(count > 0, "更新新催保记录保存失败");
         }
 
         return null;
     }
+
     /**
      * 新催保记录详情页面
+     *
      * @param id
      * @return
      */
@@ -145,16 +146,16 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
     public ResultBean renewDetail(Long id, Long orderId) {
 
         RenewDetailVO renewDetailVO = new RenewDetailVO();
-        if(id==null){
-            Preconditions.checkNotNull(orderId,"业务单号不能为空");
+        if (id == null) {
+            Preconditions.checkNotNull(orderId, "业务单号不能为空");
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
             LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), BaseConst.VALID_STATUS);
             renewDetailVO.setCustomerName(loanCustomerDO.getName());
             renewDetailVO.setMobile(loanCustomerDO.getMobile());
-        }else{
+        } else {
             RenewInsuranceDO renewInsuranceDO = renewInsuranceDOMapper.selectByPrimaryKey(id);
-            Preconditions.checkNotNull(renewInsuranceDO,"新催保记录不存在");
-            BeanUtils.copyProperties(renewInsuranceDO,renewDetailVO);
+            Preconditions.checkNotNull(renewInsuranceDO, "新催保记录不存在");
+            BeanUtils.copyProperties(renewInsuranceDO, renewDetailVO);
         }
 
         return ResultBean.ofSuccess(renewDetailVO);
@@ -162,13 +163,14 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
 
     /**
      * 生成短信内容
+     *
      * @param renewInsuranceParam
      * @return
      */
     @Override
     public String generateSms(RenewInsuranceParam renewInsuranceParam) {
         Preconditions.checkNotNull(renewInsuranceParam);
-        String tempSms="您好:{}(先生/女士)," +
+        String tempSms = "您好:{}(先生/女士)," +
                 "这里是中顺汽车有限公司(你车子担保公司)的车险专员:{}。 你的车子保险金额已经核算好:" +
                 "车损险:{}元、保费:{}元," +
                 "三者{}万元,保费:{}元," +
@@ -186,38 +188,38 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
                 "不然保证金会将受到影响,谢谢.）【云车金融】";
         ArrayList<Object> objects = Lists.newArrayList();
 
-        Preconditions.checkNotNull(renewInsuranceParam.getCustomerName(),"客户姓名不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getAutoInsuEmployee(),"车险专员不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getDamageInsur(),"车损险不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getDamageInsurFee(),"车损险保费不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getThirdDutyInsur(),"三者费用不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getThirdDutyInsurFee(),"三者费用保费不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getPersLiabilityInsur(),"车上人员责任险不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getPersLiabilityInsurFee(),"车上人员责任险保费不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getRobberyInsur(),"盗抢险不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getAutoignitionInsur(),"自燃险不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getGlassInsur(),"玻璃险不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getNotDeductInsur(),"不计免赔特约险不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getStrongInsur(),"交强险不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getVesselTax(),"车船税不能为空");
-        Preconditions.checkNotNull(renewInsuranceParam.getTotalPremium(),"共计总额不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getCustomerName(), "客户姓名不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getAutoInsuEmployee(), "车险专员不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getDamageInsur(), "车损险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getDamageInsurFee(), "车损险保费不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getThirdDutyInsur(), "三者费用不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getThirdDutyInsurFee(), "三者费用保费不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getPersLiabilityInsur(), "车上人员责任险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getPersLiabilityInsurFee(), "车上人员责任险保费不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getRobberyInsur(), "盗抢险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getAutoignitionInsur(), "自燃险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getGlassInsur(), "玻璃险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getNotDeductInsur(), "不计免赔特约险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getStrongInsur(), "交强险不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getVesselTax(), "车船税不能为空");
+        Preconditions.checkNotNull(renewInsuranceParam.getTotalPremium(), "共计总额不能为空");
 
 
         objects.add(renewInsuranceParam.getCustomerName());
         objects.add(renewInsuranceParam.getAutoInsuEmployee());
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getDamageInsur(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getDamageInsurFee(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getThirdDutyInsur(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getThirdDutyInsurFee(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getPersLiabilityInsur(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getPersLiabilityInsurFee(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getRobberyInsur(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getAutoignitionInsur(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getGlassInsur(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getNotDeductInsur(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getStrongInsur(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getVesselTax(),2));
-        objects.add(BigDecimalUtil.format(renewInsuranceParam.getTotalPremium(),2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getDamageInsur(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getDamageInsurFee(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getThirdDutyInsur(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getThirdDutyInsurFee(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getPersLiabilityInsur(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getPersLiabilityInsurFee(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getRobberyInsur(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getAutoignitionInsur(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getGlassInsur(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getNotDeductInsur(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getStrongInsur(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getVesselTax(), 2));
+        objects.add(BigDecimalUtil.format(renewInsuranceParam.getTotalPremium(), 2));
 
 
         tempSms = parse("{", "}", tempSms, objects);
@@ -227,48 +229,47 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
     }
 
     @Override
-    public ResultBean  sendSms(RenewInsuranceParam param) {
+    public ResultBean sendSms(RenewInsuranceParam param) {
 
-        Preconditions.checkNotNull(param,"参数有误");
-        Preconditions.checkNotNull(param.getMessage(),"短信内容为空");
-        Preconditions.checkNotNull(param.getTelphone(),"电话号码必输*");
+        Preconditions.checkNotNull(param, "参数有误");
+        Preconditions.checkNotNull(param.getMessage(), "短信内容为空");
+        Preconditions.checkNotNull(param.getTelphone(), "电话号码必输*");
 
-        String url="https://sh2.ipyy.com/smsJson.aspx";
+        String url = "https://sh2.ipyy.com/smsJson.aspx";
         HashMap<String, String> headers = Maps.newHashMap();
         HashMap<String, String> querys = Maps.newHashMap();
-        querys.put("action","send");
+        querys.put("action", "send");
         querys.put("userid", GeneratorIDUtil.execute());
-        querys.put("account","hxwl0049");
-        querys.put("password","780565");
-        querys.put("mobile",param.getTelphone());
-        querys.put("content",param.getMessage());
-        querys.put("sendTime","");
+        querys.put("account", "hxwl0049");
+        querys.put("password", "780565");
+        querys.put("mobile", param.getTelphone());
+        querys.put("content", param.getMessage());
+        querys.put("sendTime", "");
         querys.put("extno", "");
         try {
-            HttpUtils.doGet("https://sh2.ipyy.com/","smsJson.aspx","GET",null,querys);
+            HttpUtils.doGet("https://sh2.ipyy.com/", "smsJson.aspx", "GET", null, querys);
         } catch (Exception e) {
-           throw new BizException(e.getMessage());
+            throw new BizException(e.getMessage());
         }
-        return ResultBean.ofSuccess(null,"发送成功");
+        return ResultBean.ofSuccess(null, "发送成功");
     }
 
     /**
-     *
      * @param orderId
      * @return
      */
     @Override
     public ResultBean approval(Long orderId) {
-        Preconditions.checkNotNull(orderId,"参数有误");
+        Preconditions.checkNotNull(orderId, "参数有误");
         InsuranceDistributeRecordDO recordDO = insuranceDistributeRecordDOMapper.selectRenewInsurLimit(orderId);
-        int nextInsurYear = recordDO.getInsuranceYear()+1;
+        int nextInsurYear = recordDO.getInsuranceYear() + 1;
         InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(orderId, new Byte(String.valueOf(nextInsurYear)));
-        if(insuranceInfoDO == null){
-            return  ResultBean.ofError("续保信息未录入");
-        }else{
+        if (insuranceInfoDO == null) {
+            return ResultBean.ofError("续保信息未录入");
+        } else {
             recordDO.setStatus(BaseConst.VALID_STATUS);
             int count = insuranceDistributeRecordDOMapper.updateByPrimaryKeySelective(recordDO);
-            Preconditions.checkArgument(count>0,"催保记录更新失败");
+            Preconditions.checkArgument(count > 0, "催保记录更新失败");
         }
         return ResultBean.ofSuccess("提交成功");
     }
@@ -276,9 +277,9 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
     @Override
     public ResultBean insurQuery(Long orderId, Byte year) {
         InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(orderId, year);
-        List<InsuranceRelevanceDO> currInsurRele=Lists.newArrayList();
-        if(insuranceInfoDO!=null){
-           currInsurRele = insuranceRelevanceDOMapper.listByInsuranceInfoId(insuranceInfoDO.getId());
+        List<InsuranceRelevanceDO> currInsurRele = Lists.newArrayList();
+        if (insuranceInfoDO != null) {
+            currInsurRele = insuranceRelevanceDOMapper.listByInsuranceInfoId(insuranceInfoDO.getId());
         }
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(currInsurRele);
@@ -286,16 +287,15 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
     }
 
     /**
-     *
      * @param openToken
      * @param closeToken
      * @param text
      * @param args
      * @return
      */
-    public static String parse(String openToken, String closeToken, String text, ArrayList<Object> args ) {
+    public static String parse(String openToken, String closeToken, String text, ArrayList<Object> args) {
         final StringBuilder builder = new StringBuilder();
-        try{
+        try {
             if (args == null || args.size() <= 0) {
                 return text;
             }
@@ -358,7 +358,7 @@ public class InsuranceUrgeServiceImpl implements InsuranceUrgeService{
                 builder.append(src, offset, src.length - offset);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return builder.toString();

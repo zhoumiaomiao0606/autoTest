@@ -25,7 +25,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 @Service
 @Transactional
-public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlateDepositInfoService  {
+public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlateDepositInfoService {
 
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -40,10 +40,7 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
     private VehicleInformationService vehicleInformationService;
 
     @Autowired
-    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
-
-    @Autowired
-    private PartnerRelaAreaDOMapper partnerRelaAreaDOMapper;
+    private LoanQueryServiceImpl loanQueryService;
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
@@ -53,22 +50,21 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
     public RecombinationVO detail(Long orderId) {
         ApplyLicensePlateDepositInfoVO applyLicensePlateDepositInfoVO = loanQueryDOMapper.selectApplyLicensePlateDepositInfo(orderId);
 
-        List<UniversalCustomerVO> customers =  loanQueryDOMapper.selectUniversalCustomer(orderId);
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
 
-        for(UniversalCustomerVO universalCustomerVO:customers){
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
 
 
-
-        if(applyLicensePlateDepositInfoVO.getApply_license_plate_area()!=null){
+        if (applyLicensePlateDepositInfoVO.getApply_license_plate_area() != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(applyLicensePlateDepositInfoVO.getApply_license_plate_area()), VALID_STATUS);
             applyLicensePlateDepositInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
-            String tmpApplyLicensePlateArea=null;
-            if(baseAreaDO.getParentAreaName()!=null){
-                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName()+baseAreaDO.getAreaName();
-            }else{
+            String tmpApplyLicensePlateArea = null;
+            if (baseAreaDO.getParentAreaName() != null) {
+                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+            } else {
                 tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
             }
             applyLicensePlateDepositInfoVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
@@ -81,39 +77,39 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
     }
 
     @Override
-    public void update(ApplyLicensePlateDepositInfoUpdateParam param){
+    public void update(ApplyLicensePlateDepositInfoUpdateParam param) {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
-        if(loanOrderDO == null){
+        if (loanOrderDO == null) {
             throw new BizException("此业务单不存在");
         }
 
-        Long foundationId  = loanOrderDO.getApplyLicensePlateDepositInfoId();//关联ID
-        if(foundationId == null){
+        Long foundationId = loanOrderDO.getApplyLicensePlateDepositInfoId();//关联ID
+        if (foundationId == null) {
             //新增提交
-            ApplyLicensePlateDepositInfoDO V =  BeanPlasticityUtills.copy(ApplyLicensePlateDepositInfoDO.class,param);
+            ApplyLicensePlateDepositInfoDO V = BeanPlasticityUtills.copy(ApplyLicensePlateDepositInfoDO.class, param);
             applyLicensePlateDepositInfoDOMapper.insertSelective(V);
             //进行绑定
             Long id = V.getId();
             loanOrderDO.setApplyLicensePlateDepositInfoId(id);
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        }else{
-            if(applyLicensePlateDepositInfoDOMapper.selectByPrimaryKey(foundationId) == null){
+        } else {
+            if (applyLicensePlateDepositInfoDOMapper.selectByPrimaryKey(foundationId) == null) {
                 //那order表中是脏数据
                 //进行新增 但是id得用order_id表中存在的id
-                ApplyLicensePlateDepositInfoDO V= BeanPlasticityUtills.copy(ApplyLicensePlateDepositInfoDO.class,param);
+                ApplyLicensePlateDepositInfoDO V = BeanPlasticityUtills.copy(ApplyLicensePlateDepositInfoDO.class, param);
                 V.setId(foundationId);
                 applyLicensePlateDepositInfoDOMapper.insertSelective(V);
                 //但是不用更新loanOrder 因为已经存在
-            }else {
+            } else {
                 //代表存在
                 //进行更新
-                ApplyLicensePlateDepositInfoDO V= BeanPlasticityUtills.copy(ApplyLicensePlateDepositInfoDO.class,param);
+                ApplyLicensePlateDepositInfoDO V = BeanPlasticityUtills.copy(ApplyLicensePlateDepositInfoDO.class, param);
                 V.setId(foundationId);
                 applyLicensePlateDepositInfoDOMapper.updateByPrimaryKeySelective(V);
 
             }
         }
 
-        vehicleInformationService.update(BeanPlasticityUtills.copy(VehicleInformationUpdateParam.class,param));
+        vehicleInformationService.update(BeanPlasticityUtills.copy(VehicleInformationUpdateParam.class, param));
     }
 }

@@ -15,9 +15,11 @@ import com.yunche.loan.domain.query.RiskQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.InsuranceService;
+import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +51,10 @@ public class InsuranceServiceImpl implements InsuranceService {
     @Resource
     private InsuranceRiskDOMapper insuranceRiskDOMapper;
 
+    @Autowired
+    private LoanQueryService loanQueryService;
+
+
     @Override
     public InsuranceDetailVO riskDetail(Long orderId, Byte insuranceYear) {
 
@@ -68,7 +74,7 @@ public class InsuranceServiceImpl implements InsuranceService {
 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
         insuranceDetailVO.setCustomers(customers);

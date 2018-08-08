@@ -61,7 +61,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
 
@@ -71,7 +71,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
         recombinationVO.setMaterialAudit(loanQueryDOMapper.selectUniversalMaterialAudit(orderId));
-        recombinationVO.setSupplement(loanQueryService.history(orderId));
+        recombinationVO.setSupplement(loanQueryService.selectUniversalInfoSupplementHistory(orderId));
         return recombinationVO;
     }
 
@@ -80,7 +80,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
 

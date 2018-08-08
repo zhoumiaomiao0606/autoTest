@@ -10,6 +10,7 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanBusinessPaymentService;
 import com.yunche.loan.service.LoanFileService;
+import com.yunche.loan.service.LoanQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,9 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
 
     @Autowired
     private LoanFileService loanFileService;
+
+    @Autowired
+    private LoanQueryService loanQueryService;
 
 
     @Override
@@ -135,7 +139,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
         //共贷人信息
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
         recombinationVO.setCustomers(customers);

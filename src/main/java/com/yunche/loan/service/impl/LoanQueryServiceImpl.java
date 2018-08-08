@@ -191,7 +191,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     }
 
     @Override
-    public UniversalInfoSupplementVO detail(Long infoSupplementId) {
+    public UniversalInfoSupplementVO selectUniversalInfoSupplementDetail(Long infoSupplementId) {
         Preconditions.checkNotNull(infoSupplementId, "增补单ID不能为空");
 
         // getAll
@@ -207,7 +207,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     }
 
     @Override
-    public List<UniversalInfoSupplementVO> history(Long orderId) {
+    public List<UniversalInfoSupplementVO> selectUniversalInfoSupplementHistory(Long orderId) {
         Preconditions.checkNotNull(orderId, "订单号不能为空");
 
         // getAll
@@ -220,6 +220,63 @@ public class LoanQueryServiceImpl implements LoanQueryService {
         List<UniversalInfoSupplementVO> sortList = sortByEndTime(infoSupplementVOList);
 
         return sortList;
+    }
+
+    /**
+     * 当前客户的 文件列表  （包含：正常上传 & 增补上传，且已根据upload_type作了聚合）
+     *
+     * @param customerId
+     * @return
+     */
+    @Override
+    public List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId) {
+
+        List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(customerId);
+
+        // type聚合  ==>  正常上传 & 增补上传
+        List<UniversalCustomerFileVO> files_ = convert(files);
+
+        return files_;
+    }
+
+    /**
+     * 根据文件type -> 作聚合  (原始files 包含了所有的upload_type，所以会有重复type的情况)
+     *
+     * @param files
+     * @return
+     */
+    private List<UniversalCustomerFileVO> convert(List<UniversalCustomerFileVO> files) {
+
+        if (CollectionUtils.isEmpty(files)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        Map<String, UniversalCustomerFileVO> typeFilesMap = Maps.newHashMap();
+
+        files.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    String type = e.getType();
+
+                    if (typeFilesMap.containsKey(type)) {
+
+                        UniversalCustomerFileVO universalCustomerFileVO = typeFilesMap.get(type);
+
+                        List<String> urls = universalCustomerFileVO.getUrls();
+
+                        urls.addAll(e.getUrls());
+
+                    } else {
+
+                        typeFilesMap.put(type, e);
+                    }
+
+                });
+
+
+        List<UniversalCustomerFileVO> universalCustomerFileVOList = Lists.newArrayList(typeFilesMap.values());
+        return universalCustomerFileVOList;
     }
 
     private List<UniversalInfoSupplementVO> groupByInfoSupplementId(List<UniversalInfoSupplementVO> infoSupplementVOList) {

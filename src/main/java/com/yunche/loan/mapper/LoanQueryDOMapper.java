@@ -8,7 +8,7 @@ import java.util.Set;
 
 public interface LoanQueryDOMapper {
 
-    boolean selectCheckOrderInBankInterfaceSerial(@Param("orderId") Long orderId,@Param("transCode")  String transCode);
+    boolean selectCheckOrderInBankInterfaceSerial(@Param("orderId") Long orderId, @Param("transCode") String transCode);
 
     List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId, @Param("transCode") String transCode);
 
@@ -79,6 +79,21 @@ public interface LoanQueryDOMapper {
 
     UniversalCustomerDetailVO selectUniversalCustomerDetail(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
 
+    /**
+     * 当前客户的 文件列表  （包含：正常上传 & 增补上传，未根据upload_type作聚合）
+     *
+     * tips：不能直接用此方法，请用LoanQueryService！！！
+     * tips：不能直接用此方法，请用LoanQueryService！！！
+     * tips：不能直接用此方法，请用LoanQueryService！！！
+     *
+     * 请使用：
+     * @see com.yunche.loan.service.LoanQueryService#selectUniversalCustomerFile
+     * @see com.yunche.loan.service.LoanQueryService#selectUniversalCustomerFile
+     * @see com.yunche.loan.service.LoanQueryService#selectUniversalCustomerFile
+     *
+     * @param customerId
+     * @return
+     */
     List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId);
 
     List<UniversalMaterialRecordVO> selectUniversalCustomerFileByTypes(@Param("orderId") Long orderId, @Param("types") Set<Byte> types);
@@ -140,13 +155,31 @@ public interface LoanQueryDOMapper {
     /**
      * 资料增补单 详情
      *
+     * tips：不能直接使用当前方法！！！
+     * tips：不能直接使用当前方法！！！
+     * tips：不能直接使用当前方法！！！
+     *
+     * 请使用：
+     * @see com.yunche.loan.service.LoanQueryService#selectUniversalInfoSupplementDetail
+     * @see com.yunche.loan.service.LoanQueryService#selectUniversalInfoSupplementDetail
+     * @see com.yunche.loan.service.LoanQueryService#selectUniversalInfoSupplementDetail
+     *
      * @param infoSupplementId 资料增补单ID
      * @return
      */
     List<UniversalInfoSupplementVO> selectUniversalInfoSupplement(Long infoSupplementId);
 
     /**
-     * 资料增补 历史列表   -已提交的
+     * 单个订单 -的所有增补历史   -已提交的
+     *
+     * tips：不能直接使用当前方法！！！
+     * tips：不能直接使用当前方法！！！
+     * tips：不能直接使用当前方法！！！
+     *
+     * 请使用：
+     * @see com.yunche.loan.service.LoanQueryService#selectUniversalInfoSupplementHistory
+     * @see com.yunche.loan.service.LoanQueryService#selectUniversalInfoSupplementHistory
+     * @see com.yunche.loan.service.LoanQueryService#selectUniversalInfoSupplementHistory
      *
      * @param orderId 订单ID
      * @return
@@ -156,12 +189,24 @@ public interface LoanQueryDOMapper {
     /**
      * 资料增补  文件列表（最新一次增补）
      *
+     * 已废弃！！！
+     * 已废弃！！！
+     * 已废弃！！！
+     *
      * @param orderId
      * @return
      */
     @Deprecated
     List<UniversalMaterialRecordVO> selectUniversalMaterialRecord(Long orderId);
 
+    /**
+     * 已废弃！！！
+     * 已废弃！！！
+     * 已废弃！！！
+     *
+     * @param orderId
+     * @return
+     */
     @Deprecated
     UniversalSupplementInfoVO selectUniversalSupplementInfo(Long orderId);
 
@@ -191,7 +236,6 @@ public interface LoanQueryDOMapper {
     BankCardRecordVO selectBankCardRecordDetail(Long orderId);
 
     boolean checkCustomerHavingCreditON14Day(String idCard);
-
 
     List<UniversalTelephoneCollectionEmployee> selectUniversalInsuranceUrgeEmployee();
 }

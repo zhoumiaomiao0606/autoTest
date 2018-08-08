@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.entity.LoanRefundApplyDO;
@@ -15,8 +14,10 @@ import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.LoanRefundApplyDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.EmployeeService;
+import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.LoanRefundApplyService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,6 @@ import java.util.Set;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_INIT;
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
-import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_TODO;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REFUND;
 
@@ -43,12 +43,14 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
     @Resource
     private LoanProcessDOMapper loanProcessDOMapper;
 
+    @Resource
+    private TaskSchedulingDOMapper taskSchedulingDOMapper;
 
     @Resource
     private EmployeeService employeeService;
 
-    @Resource
-    private TaskSchedulingDOMapper taskSchedulingDOMapper;
+    @Autowired
+    private LoanQueryService loanQueryService;
 
 
     @Override
@@ -57,7 +59,7 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
 
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
 
@@ -105,7 +107,7 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
         Long loginUserId = SessionUtils.getLoginUser().getId();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
-        return loanQueryDOMapper.selectUniversalRefundCustomerOrder(SessionUtils.getLoginUser().getId(), StringUtils.isBlank(name)?null:name,maxGroupLevel == null?new Long(0):maxGroupLevel,juniorIds);
+        return loanQueryDOMapper.selectUniversalRefundCustomerOrder(SessionUtils.getLoginUser().getId(), StringUtils.isBlank(name) ? null : name, maxGroupLevel == null ? new Long(0) : maxGroupLevel, juniorIds);
     }
 
     /**

@@ -51,7 +51,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
 
@@ -62,7 +62,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
         recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
-        recombinationVO.setSupplement(loanQueryService.history(orderId));
+        recombinationVO.setSupplement(loanQueryService.selectUniversalInfoSupplementHistory(orderId));
         recombinationVO.setCustomers(customers);
         return recombinationVO;
     }
