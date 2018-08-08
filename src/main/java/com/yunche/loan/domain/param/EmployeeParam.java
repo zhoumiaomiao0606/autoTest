@@ -41,4 +41,6 @@ public class EmployeeParam extends EmployeeDO {
      * 记住我  -单位：天
      */
     private Integer rememberMe;
+
+    private List<Long> bizAreaIds;
 }

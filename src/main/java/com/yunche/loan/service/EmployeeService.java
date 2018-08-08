@@ -5,10 +5,7 @@ import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.query.RelaQuery;
-import com.yunche.loan.domain.vo.EmployeeVO;
-import com.yunche.loan.domain.vo.CascadeVO;
-import com.yunche.loan.domain.vo.LoginVO;
-import com.yunche.loan.domain.vo.UserGroupVO;
+import com.yunche.loan.domain.vo.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,4 +53,9 @@ public interface EmployeeService {
      * @return
      */
     Set<String> getSelfAndCascadeChildIdList(Long parentId);
+
+
+    List<List<Long>> listBizArea(Long id);
+
+    void bindBizArea(Long id,List<Long> bizAreaIds);
 }

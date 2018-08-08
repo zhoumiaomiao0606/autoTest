@@ -64,7 +64,9 @@ public class BizAreaServiceImpl implements BizAreaService {
         Long id = insertAndGetId(bizAreaParam);
 
         // 绑定城市列表  
-        bindAreas(id, bizAreaParam.getAreaIdList());
+        //bindAreas(id, bizAreaParam.getAreaIdList());
+
+        bindPartner(id,bizAreaParam.getPartnerIds());
 
         return ResultBean.ofSuccess(id, "创建成功");
     }
@@ -78,6 +80,8 @@ public class BizAreaServiceImpl implements BizAreaService {
 
         // del
         int count = bizAreaDOMapper.deleteByPrimaryKey(id);
+        bizAreaRelaPartnerDOMapper.deleteByBizAreaId(id);
+
         Preconditions.checkArgument(count > 0, "删除失败");
 
         return ResultBean.ofSuccess(null, "删除成功");
@@ -305,6 +309,29 @@ public class BizAreaServiceImpl implements BizAreaService {
         return ResultBean.ofSuccess(null,"编辑成功");
     }
 
+    @Override
+    public ResultBean<Void> unbindPartner(Long id, Long partnerId) {
+
+        if(id == null){
+            throw new BizException("缺少大区ID");
+        }
+        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id,new Byte("0"));
+        if(bizAreaDO == null){
+            throw new BizException("大区不存在");
+        }
+
+        if(partnerId == null){
+            throw new BizException("缺少合伙人ID");
+        }
+
+        BizAreaRelaPartnerDOKey key = new BizAreaRelaPartnerDOKey();
+        key.setBizAreaId(id);
+        key.setPartnerId(partnerId);
+        bizAreaRelaPartnerDOMapper.deleteByPrimaryKey(key);
+
+        return ResultBean.ofSuccess(null,"编辑成功");
+    }
+
 
     @Override
     public ResultBean<List<CascadeVO>> listAll() {
@@ -321,7 +348,41 @@ public class BizAreaServiceImpl implements BizAreaService {
         return ResultBean.ofSuccess(topLevelList);
     }
 
+    //根据选择对区域回显
+    public List<List<Long>> selectedList(List<Long> bizAreaIds){
+        if(bizAreaIds == null || CollectionUtils.isEmpty(bizAreaIds)){
+            return Lists.newArrayList();
+        }
 
+        if(bizAreaIds.size() == 0){
+            return Lists.newArrayList();
+        }
+
+        List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getAll(VALID_STATUS);
+//        Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "无有效业务区域数据");
+        List<List<Long>> reuslt = Lists.newLinkedList();
+        for(Long str:bizAreaIds){
+            List<Long> supper = getAllSuperAreaIdList(str,bizAreaDOS);
+            Collections.reverse(supper);
+            supper.add(str);
+            reuslt.add(supper);
+        }
+
+        return reuslt;
+    }
+
+    private List<Long> getAllSuperAreaIdList(Long childBizAreaId,List<BizAreaDO> list) {
+        List<Long> allSuperAreaIdList = Lists.newLinkedList();
+        list.parallelStream().filter(e -> null != e && childBizAreaId.equals(e.getId()) && null != e.getParentId())
+                .forEach(e -> {
+                        Long cAreaId = e.getParentId();
+                        // 递归调用
+                        List<Long> superAreaIdList = getAllSuperAreaIdList(cAreaId, list);
+                        superAreaIdList.add(cAreaId);
+                        allSuperAreaIdList.addAll(superAreaIdList);
+                });
+        return allSuperAreaIdList;
+    }
     /**
      * 创建实体，并返回ID
      *
@@ -532,6 +593,7 @@ public class BizAreaServiceImpl implements BizAreaService {
         return parentIdDOMap;
     }
 
+
     /**
      * 分级递归解析
      *
@@ -581,7 +643,7 @@ public class BizAreaServiceImpl implements BizAreaService {
                     child.setValue(c.getId());
                     child.setLabel(c.getName());
                     child.setLevel(c.getLevel());
-
+                    child.setParentId(c.getParentId());
                     List<CascadeVO> childList = parent.getChildren();
                     if (CollectionUtils.isEmpty(childList)) {
                         parent.setChildren(Lists.newArrayList(child));

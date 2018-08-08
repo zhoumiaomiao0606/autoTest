@@ -2,21 +2,21 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.BindBizAreaParam;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.param.EmployeeParam;
 import com.yunche.loan.domain.query.RelaQuery;
-import com.yunche.loan.domain.vo.EmployeeVO;
-import com.yunche.loan.domain.vo.CascadeVO;
-import com.yunche.loan.domain.vo.LoginVO;
-import com.yunche.loan.domain.vo.UserGroupVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -171,4 +171,18 @@ public class EmployeeController {
     public ResultBean<Void> resetPassword(@RequestParam("email") Long id) {
         return employeeService.resetPassword(id);
     }
+
+
+    @GetMapping(value = "/listBizArea")
+    public ResultBean<List<List<Long>>> listBizArea(@RequestParam("id") Long id) {
+        return ResultBean.ofSuccess(employeeService.listBizArea(id));
+    }
+
+
+    @PostMapping(value = "/bindBizArea", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> bindBizArea(@RequestBody @Validated @Valid BindBizAreaParam param) {
+        employeeService.bindBizArea(param.getId(),param.getBizAreaIds());
+        return ResultBean.ofSuccess(null,"编辑成功");
+    }
+
 }

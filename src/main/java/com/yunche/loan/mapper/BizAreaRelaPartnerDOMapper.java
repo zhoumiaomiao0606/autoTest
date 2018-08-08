@@ -3,9 +3,11 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.BizAreaRelaPartnerDO;
 import com.yunche.loan.domain.entity.BizAreaRelaPartnerDOKey;
 import com.yunche.loan.domain.vo.BizAreaPartnerVO;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+@Mapper
 public interface BizAreaRelaPartnerDOMapper {
     List<BizAreaPartnerVO> selectByAreaId(Long bizAreaId);
 

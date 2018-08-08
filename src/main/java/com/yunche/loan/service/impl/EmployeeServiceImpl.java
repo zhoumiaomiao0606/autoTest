@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.config.util.SessionUtils;
@@ -15,6 +16,7 @@ import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.query.RelaQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.BizAreaService;
 import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.PermissionService;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -105,6 +108,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private PermissionService permissionService;
 
 
+    @Resource
+    private EmployeeRelaBizAreaDOMapper employeeRelaBizAreaDOMapper;
+
+
+    @Resource
+    private BizAreaService bizAreaService;
+
+
     @Override
     @Transactional
     public ResultBean<Long> create(EmployeeParam employeeParam) {
@@ -140,6 +151,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 绑定用户组(角色)列表
         doBindUserGroup(id, employeeParam.getUserGroupIdList());
+
+        bindBizArea(id,employeeParam.getBizAreaIds());
 
         // 发送账号密码到邮箱
 //        executorService.execute(() -> {
@@ -596,6 +609,55 @@ public class EmployeeServiceImpl implements EmployeeService {
         selfAndCascadeChildIdList.removeAll(Collections.singleton(null));
 
         return selfAndCascadeChildIdList;
+    }
+
+    @Override
+    public List<List<Long>> listBizArea(Long id) {
+        List<EmployeeRelaBizAreaVO> ids = employeeRelaBizAreaDOMapper.selectByEmployeeId(id);
+        List<Long> result = Lists.newArrayList();
+        for(EmployeeRelaBizAreaVO employeeRelaBizAreaVO : ids){
+            if(ids != null){
+                if(StringUtils.isNotBlank(employeeRelaBizAreaVO.getBizAreaId())){
+                    result.add(Long.valueOf(employeeRelaBizAreaVO.getBizAreaId()));
+                }
+            }
+        }
+        return bizAreaService.selectedList(result);
+    }
+
+    @Override
+    public void bindBizArea(Long id, List<Long> bizAreaIds) {
+
+        if(id == null){
+            throw new BizException("缺少员工ID");
+        }
+        EmployeeDO  employeeDO = employeeDOMapper.selectByPrimaryKey(id,new Byte("0"));
+        if(employeeDO == null){
+            throw new BizException("缺少员工ID");
+        }
+
+        employeeRelaBizAreaDOMapper.deleteByEmployeeId(id);
+
+        for(Long bizAreaId:bizAreaIds){
+            if(bizAreaId!=null){
+                EmployeeRelaBizAreaDOKey key = new EmployeeRelaBizAreaDOKey();
+                key.setEmployeeId(id);
+                key.setBizAreaId(bizAreaId);
+
+                EmployeeRelaBizAreaDO DO = employeeRelaBizAreaDOMapper.selectByPrimaryKey(key);
+                if(DO == null){
+                    EmployeeRelaBizAreaDO employeeRelaBizAreaDO = new EmployeeRelaBizAreaDO();
+                    employeeRelaBizAreaDO.setBizAreaId(bizAreaId);
+                    employeeRelaBizAreaDO.setEmployeeId(id);
+                    employeeRelaBizAreaDOMapper.insertSelective(employeeRelaBizAreaDO);
+                }else{
+                    EmployeeRelaBizAreaDO employeeRelaBizAreaDO = new EmployeeRelaBizAreaDO();
+                    employeeRelaBizAreaDO.setBizAreaId(bizAreaId);
+                    employeeRelaBizAreaDO.setEmployeeId(id);
+                    employeeRelaBizAreaDOMapper.updateByPrimaryKeySelective(employeeRelaBizAreaDO);
+                }
+            }
+        }
     }
 
     /**

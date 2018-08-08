@@ -30,6 +30,8 @@ public class CascadeVO {
 
     private boolean hasChild;
 
+    private Long parentId;
+
     private List<CascadeVO> children;
 
     public boolean getHasChild() {

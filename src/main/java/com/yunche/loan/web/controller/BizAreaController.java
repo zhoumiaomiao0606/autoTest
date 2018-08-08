@@ -143,4 +143,9 @@ public class BizAreaController {
         return bizAreaService.bindPartner(param.getId(),param.getPartnerIds());
     }
 
+    @GetMapping(value = "/unbindPartner")
+    public ResultBean<Void> unbindPartner(@RequestParam Long id,Long partnerId) {
+        return bizAreaService.unbindPartner(id,partnerId);
+    }
+
 }

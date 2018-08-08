@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.EmployeeRelaBizAreaDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.EmployeeRelaBizAreaDO" >
+    <id column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <id column="biz_area_id" property="bizAreaId" jdbcType="BIGINT" />
+    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+    <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    employee_id, biz_area_id, gmt_create, gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.yunche.loan.domain.entity.EmployeeRelaBizAreaDOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from employee_rela_biz_area
+    where employee_id = #{employeeId,jdbcType=BIGINT}
+      and biz_area_id = #{bizAreaId,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByEmployeeId" resultType="com.yunche.loan.domain.vo.EmployeeRelaBizAreaVO" >
+        select
+		a.id as bizAreaId,a.name as bizAreaName
+        from employee_rela_biz_area e
+	    LEFT JOIN biz_area a ON a.id = e.biz_area_id
+		where e.employee_id = #{employeeId,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.EmployeeRelaBizAreaDOKey" >
+    delete from employee_rela_biz_area
+    where employee_id = #{employeeId,jdbcType=BIGINT}
+      and biz_area_id = #{bizAreaId,jdbcType=BIGINT}
+  </delete>
+
+  <delete id="deleteByEmployeeId" >
+    delete from employee_rela_biz_area
+    where employee_id = #{employeeId,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.EmployeeRelaBizAreaDO" >
+    insert into employee_rela_biz_area
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="employeeId != null" >
+        employee_id,
+      </if>
+      <if test="bizAreaId != null" >
+        biz_area_id,
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create,
+      </if>
+      <if test="gmtModify != null" >
+        gmt_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="employeeId != null" >
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="bizAreaId != null" >
+        #{bizAreaId,jdbcType=BIGINT},
+      </if>
+      <if test="gmtCreate != null" >
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null" >
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.EmployeeRelaBizAreaDO" >
+    update employee_rela_biz_area
+    <set >
+      <if test="gmtCreate != null" >
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null" >
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where employee_id = #{employeeId,jdbcType=BIGINT}
+      and biz_area_id = #{bizAreaId,jdbcType=BIGINT}
+  </update>
+</mapper>
