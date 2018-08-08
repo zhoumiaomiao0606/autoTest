@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.BindPartnerParam;
 import com.yunche.loan.domain.query.BizAreaQuery;
 import com.yunche.loan.domain.entity.BizAreaDO;
 import com.yunche.loan.domain.param.BizAreaParam;
@@ -10,8 +11,10 @@ import com.yunche.loan.domain.vo.CascadeVO;
 import com.yunche.loan.service.BizAreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -129,37 +132,15 @@ public class BizAreaController {
      * @param  id、pageIndex、pageSize
      * @return
      */
-    @PostMapping(value = "/listPartner", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/listPartner")
     public ResultBean<List<CascadeAreaVO.Partner>> listPartner(@RequestParam Long id) {
         return bizAreaService.listPartner(id);
     }
 
-    /**
-     * 绑定关联的合伙人
-     *
-     * @param id
-     * @param partnerId
-     * @return
-     */
-    @GetMapping(value = "/bindPartner")
-    public ResultBean<Void> bindPartner(@RequestParam("id") Long id,
-                                     @RequestParam("partnerId") Long partnerId) {
-        return null;
+
+    @PostMapping(value = "/bindPartner")
+    public ResultBean<Void> bindPartner(@RequestBody @Validated @Valid  BindPartnerParam param) {
+        return bizAreaService.bindPartner(param.getId(),param.getPartnerIds());
     }
-
-    /**
-     * 解绑关联的合伙人
-     *
-     * @param id
-     * @param partnerId
-     * @return
-     */
-    @GetMapping(value = "/unbindPartner")
-    public ResultBean<Void> unbindPartner(@RequestParam("id") Long id,
-                                           @RequestParam("partnerId") Long partnerId) {
-        return null;
-    }
-
-
 
 }

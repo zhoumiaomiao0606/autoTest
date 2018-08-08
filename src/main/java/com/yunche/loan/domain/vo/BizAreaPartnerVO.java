@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class BizAreaPartnerVO {
-    String name;
-    String id;
+    String partner_name;
+    String partner_id;
 }

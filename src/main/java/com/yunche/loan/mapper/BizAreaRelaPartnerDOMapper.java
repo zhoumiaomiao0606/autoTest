@@ -9,6 +9,8 @@ import java.util.List;
 public interface BizAreaRelaPartnerDOMapper {
     List<BizAreaPartnerVO> selectByAreaId(Long bizAreaId);
 
+    void deleteByBizAreaId(Long bizAreaId);
+
     int deleteByPrimaryKey(BizAreaRelaPartnerDOKey key);
 
     int insert(BizAreaRelaPartnerDO record);

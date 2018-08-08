@@ -21,7 +21,7 @@
   <select id="selectByAreaId" resultType="com.yunche.loan.domain.vo.BizAreaPartnerVO">
 
     select
-		partner.id,partner.name
+		partner.id as partner_id,partner.name as partner_name
     from biz_area_rela_partner biz_area_rela_partner
     left join partner partner on biz_area_rela_partner.partner_id = partner.id
     where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
@@ -32,6 +32,10 @@
     delete from biz_area_rela_partner
     where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
       and partner_id = #{partnerId,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByBizAreaId" >
+    delete from biz_area_rela_partner
+    where biz_area_id = #{bizAreaId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.BizAreaRelaPartnerDO" >
     insert into biz_area_rela_partner (biz_area_id, partner_id, gmt_create, 
