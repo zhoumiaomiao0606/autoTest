@@ -183,7 +183,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanProcessDO loanProcessDO = getLoanProcess(approval.getOrderId());
 
         // 贷款基本信息
-        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(approval.getOrderId());
+        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
         checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
