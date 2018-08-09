@@ -80,6 +80,7 @@ public class UniversalInfoVO {
     private String financial_bank_staging_ratio;
     private String financial_cash_deposit;
     private String financial_car_price;
+    private String financial_actual_car_price;
     private String financial_down_payment_money;
     private String financial_bank_period_principal;
     private String financial_each_month_repay;

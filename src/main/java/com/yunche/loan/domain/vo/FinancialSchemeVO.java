@@ -18,6 +18,7 @@ public class FinancialSchemeVO {
     private String apply_license_plate_deposit_date;//抵押办理日期
     private String loan_time;//按揭期限
     private String car_price;//车辆价格
+    private String actual_car_price;//实际成交价格
     private String bank;//贷款银行
     private String sign_rate;//签约利率
     private String down_payment_money;//首付额

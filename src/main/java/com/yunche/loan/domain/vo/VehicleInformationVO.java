@@ -17,15 +17,17 @@ public class VehicleInformationVO {
     //主贷人
     private String cname;
 
-    //车辆类别 -- 1.新车  2.二手车  3.不限
+    // 车辆类别 -- 1.新车  2.二手车  3.不限
     private String car_type;
 
-    //车辆属性
+    // 车辆属性
     private String vehicle_property;
-    //车价格
+    // 车价格
     private String car_price;
+    // 实际成交价格
+    private String actual_car_price;
 
-    //基准评估价
+    // 基准评估价
     private String assess_price;
 
     //车型  例如 奥迪
@@ -110,12 +112,6 @@ public class VehicleInformationVO {
 
     //车辆型号  --- 合格证号
     private String qualified_certificate_number;
-
-
-
-
-
-
 
 
     private String retrieve_key;

@@ -15,5 +15,4 @@ public class GpsConfig {
     private String jimiSecret;
     private String carLoanUrl;
     private String carLoanKey;
-
 }

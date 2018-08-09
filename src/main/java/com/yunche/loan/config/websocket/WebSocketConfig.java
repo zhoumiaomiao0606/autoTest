@@ -122,7 +122,6 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
          *
          *      不设置            则：send路径为：/call
          */
-//        registry.setApplicationDestinationPrefixes("/ws");
         registry.setApplicationDestinationPrefixes("/api/v1/ws");
 
 
@@ -162,18 +161,8 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
         public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
             StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-//            StompCommand command = accessor.getCommand();
-//            String destination = accessor.getDestination();
-//
-//            Principal user = accessor.getUser();
-//            String sessionId = accessor.getSessionId();
-//
-//            String headerJSON = JSON.toJSONString(accessor.getMessageHeaders());
 
             if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-
-                // webSocketSessionId
-//                String webSocketSessionId = SessionUtils.getWebSocketSessionId();
 
                 // webSocketSessionId
                 Object simpSessionId = message.getHeaders().get(SimpMessageHeaderAccessor.SESSION_ID_HEADER);

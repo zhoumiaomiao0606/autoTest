@@ -57,7 +57,6 @@ public class TokenCache {
 
         boundValueOpsAcc.set(accessToken, 7200, TimeUnit.SECONDS);
         boundValueOpsRef.set(refreshToken);
-        boundValueOpsRef.set(refreshToken);
         boundValueOpsForeverAcc.set(accessToken);
     }
 }

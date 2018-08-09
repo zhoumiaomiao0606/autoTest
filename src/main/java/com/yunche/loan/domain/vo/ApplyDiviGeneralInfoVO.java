@@ -13,6 +13,7 @@ public class ApplyDiviGeneralInfoVO {
     private String customer_income_certificate_company_name;//收入证明单位
     private String car_name;//车辆名称
     private String financial_car_price;//车价
+    private String financial_actual_car_price;//实际成交价格
     private String vehicle_identification_number;//车架号
     private String vehicle_registration_certificate_number;//注册登记号
     private String vehicle_license_plate_number;//车牌号

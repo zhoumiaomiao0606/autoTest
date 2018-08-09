@@ -2,13 +2,13 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
-
 @Data
 public class UniversalCarInfoVO {
 
     private String car_assess_price;
-    private String car_brand_name;//车辆品牌
-    private String car_price;
+    private String car_brand_name;    //车辆品牌
+    private String car_price;         // 车辆价格
+    private String actual_car_price;  // 实际成交价格
     private String car_name;//车系
     private String car_detail_name;//车型
     private String car_vehicle_property;//车辆属性

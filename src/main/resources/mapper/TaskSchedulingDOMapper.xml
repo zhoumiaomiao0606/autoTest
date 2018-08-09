@@ -1215,11 +1215,9 @@
         else null end AS taskKey,
         DATE_FORMAT(
         case when his.status = 3 then
-        (select gmt_create from loan_reject_log where reject_to_task = 'usertask_financial_scheme_modify_apply' order by
-        gmt_create desc limit 1 )
+        current_reject.financial_review_create_time
         when his.status !=1 and his.status !=3 then
-        (select create_time from loan_process_log where task_definition_key = 'usertask_financial_scheme_modify_apply'
-        order by create_time desc limit 1)
+        current.financial_create_time
         else null end
         ,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
         NULL AS taskDescription,
@@ -1258,6 +1256,8 @@
         LEFT JOIN loan_customer jc ON jc.id = jorder.loan_customer_id
         LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
         LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
+        LEFT JOIN current_node_manager current on jorder.id = current.order_id
+        LEFT JOIN current_node_manager_reject current_reject on jorder.id = current_reject.order_id
         INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
         where his.status = 2 or his.status = 3
         having filtration = 2 and
@@ -1276,11 +1276,9 @@
         else null end AS taskKey,
         DATE_FORMAT(
         case when refund.status = 3 then
-        (select gmt_create from loan_reject_log where reject_to_task = 'usertask_refund_apply' order by gmt_create desc
-        limit 1 )
+        current_reject.refund_review_create_time
         when refund.status = 2 then
-        (select create_time from loan_process_log where task_definition_key = 'usertask_refund_apply' order by
-        create_time desc limit 1)
+        current.refund_create_time
         else null end
         ,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
         NULL AS taskDescription,
@@ -1317,6 +1315,8 @@
         LEFT JOIN loan_customer jc ON jc.id = jorder.loan_customer_id
         LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
         LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
+        LEFT JOIN current_node_manager current on jorder.id = current.order_id
+        LEFT JOIN current_node_manager_reject current_reject on jorder.id = current_reject.order_id
         INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
         where refund.status = 2 or refund.status = 3
         having filtration = 2 and
@@ -1376,11 +1376,7 @@
         else false end
         )
         task
-        left join
-        (
-        select * from task_distribution
-        )
-        taskdis
+        left join task_distribution taskdis
         on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
         having true
         and case when #{maxGroupLevel} = 0 then false

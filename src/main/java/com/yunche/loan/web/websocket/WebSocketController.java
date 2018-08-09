@@ -1,17 +1,10 @@
 package com.yunche.loan.web.websocket;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.param.WebSocketParam;
 import com.yunche.loan.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.MethodParameter;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.*;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +29,7 @@ public class WebSocketController {
     /**
      * 加入排队/心跳消息    client -> server
      * <p>
-     * path： websocket://localhost:8001/websocket/queue/wait
+     * path： ws://localhost:8001/api/v1/ws/team/wait
      *
      * @param webSocketParam 前端参数：以JSON格式发送，即可自动映射
      * @MessageMapping client -> server    发送消息的path      若有设置前缀,则还需加上前缀
@@ -50,7 +43,7 @@ public class WebSocketController {
     /**
      * 退出排队     client -> server
      * <p>
-     * path： websocket://localhost:8001/websocket/queue/exit
+     * path： ws://localhost:8001/api/v1/ws/team/exit
      *
      * @param webSocketParam
      */
@@ -106,107 +99,6 @@ public class WebSocketController {
         webSocketService.network(webSocketParam);
     }
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    @MessageMapping("/queue/wait/sendToUser")
-    @SendToUser("/queue/addQueue/sendToUser")
-    @ResponseBody
-    public String sendToUser(/*WebSocketSession socketSession,*/
-                             WebSocketParam webSocketParam) {
-
-        JSONObject jObj = new JSONObject();
-        jObj.put("name", "sendToUser");
-        jObj.put("sex", "1");
-        jObj.put("age", "16");
-
-        simpMessagingTemplate.convertAndSend("/queue/addQueue/sendTo", JSON.toJSONString(webSocketParam));
-
-
-        SimpAttributes simpAttributes = SimpAttributesContextHolder.currentAttributes();
-        String sessionId = simpAttributes.getSessionId();
-        System.out.println("webSocketSessionId - " + sessionId);
-        System.out.println("simpAttributes - " + JSON.toJSONString(simpAttributes));
-
-
-        String user = "EmployeeDO(id=1, name=admin, password=41a55b32184ef50d4f93f27f04757572ed8fa13f44060d4d, idCard=null, mobile=null, email=admin@yunche.com, dingDing=admin, departmentId=null, parentId=215, title=null, entryDate=null, type=1, level=1, gmtCreate=Wed Apr 11 12:31:25 CST 2018, gmtModify=Mon Jun 04 15:37:26 CST 2018, status=0, feature=null, machineId=null)";
-
-        simpMessagingTemplate.convertAndSendToUser(user,
-                "/queue/addQueue/sendToUser",
-                "来自：convertAndSendToUser   -EmployeeDO"/*,
-                createHeaders(sessionId, new InvocableHandlerMethod.AsyncResultMethodParameter(returnValue))*/);
-
-        simpMessagingTemplate.convertAndSendToUser("admin",
-                "/queue/addQueue/sendToUser",
-                "来自：convertAndSendToUser   -username");
-
-        simpMessagingTemplate.convertAndSendToUser(sessionId,
-                "/queue/addQueue/sendToUser",
-                "来自：convertAndSendToUser   -sessionId");
-
-        simpMessagingTemplate.convertAndSendToUser(SessionUtils.getLoginUser().toString(),
-                "/queue/addQueue/sendToUser",
-                "来自：convertAndSendToUser");
-
-        return JSON.toJSONString(jObj);
-    }
-
-
-    private MessageHeaders createHeaders(String sessionId, MethodParameter returnType) {
-
-//        SendToMethodReturnValueHandler sendToMethodReturnValueHandler = new SendToMethodReturnValueHandler();
-
-        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-//        if (sendToMethodReturnValueHandler.getHeaderInitializer() != null) {
-//            sendToMethodReturnValueHandler.getHeaderInitializer().initHeaders(headerAccessor);
-//        }
-        if (sessionId != null) {
-            headerAccessor.setSessionId(sessionId);
-        }
-        headerAccessor.setHeader(SimpMessagingTemplate.CONVERSION_HINT_HEADER, returnType);
-        headerAccessor.setLeaveMutable(true);
-        return headerAccessor.getMessageHeaders();
-    }
-
-    @MessageMapping("/queue/wait/sendTo")
-    @SendTo("/queue/addQueue/sendTo")
-    @ResponseBody
-    public JSONObject sendTo(/*WebSocketClientSockJsSession sockJsSession,*/ WebSocketParam webSocketParam) {
-
-        JSONObject jObj = new JSONObject();
-        jObj.put("name", "sendTo");
-        jObj.put("sex", "2");
-        jObj.put("age", "17");
-
-        simpMessagingTemplate.convertAndSend("/queue/addQueue/sendTo", JSON.toJSONString(webSocketParam));
-
-
-        SimpAttributes simpAttributes = SimpAttributesContextHolder.currentAttributes();
-        String sessionId = simpAttributes.getSessionId();
-        System.out.println("webSocketSessionId - " + sessionId);
-        System.out.println("simpAttributes - " + JSON.toJSONString(simpAttributes));
-
-
-        simpMessagingTemplate.convertAndSendToUser(sessionId, "/queue/addQueue/sendToUser", JSON.toJSONString("来自：convertAndSendToUser"));
-
-        return jObj;
-    }
-
-    @GetMapping("/queue/wait")
-    public void wait_(@RequestParam Byte type,
-                      @RequestParam Long bankId,
-                      @RequestParam Long userId) {
-
-        WebSocketParam webSocketParam = new WebSocketParam();
-        webSocketParam.setType(type);
-        webSocketParam.setBankId(bankId);
-        webSocketParam.setUserId(userId);
-
-        webSocketService.waitTeam(webSocketParam);
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
