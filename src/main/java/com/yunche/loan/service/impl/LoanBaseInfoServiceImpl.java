@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.vo.BaseVO;
@@ -46,6 +47,10 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
 
     @Autowired
     private DepartmentDOMapper departmentDOMapper;
+
+    @Autowired
+    private BankCache bankCache;
+
 
     @Override
     public ResultBean<Long> create(LoanBaseInfoDO loanBaseInfoDO) {
@@ -174,15 +179,11 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
      */
     @Override
     public Long getBankId(Long orderId) {
-        Preconditions.checkNotNull(orderId, "订单号不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoByOrderId(orderId);
 
-        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-        Preconditions.checkNotNull(loanBaseInfoDO, "订单基本信息不存在");
+        Long bankId = bankCache.getIdByName(loanBaseInfoDO.getBank());
 
-        Long bankId = loanBaseInfoDO.getBankId();
         return bankId;
     }
 }

@@ -182,6 +182,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 节点实时状态
         LoanProcessDO loanProcessDO = getLoanProcess(approval.getOrderId());
 
+        // 贷款基本信息
+        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(approval.getOrderId());
+
         // 校验审核前提条件
         checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
@@ -243,7 +246,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         execTask(task, variables, approval, loanOrderDO, loanProcessDO);
 
         // 流程数据同步
-        syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval, loanProcessDO);
+        syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval, loanProcessDO, loanBaseInfoDO);
 
         // 生成客户还款计划
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
@@ -1035,8 +1038,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param processInstId
      * @param approval
      * @param currentLoanProcessDO
+     * @param loanBaseInfoDO
      */
-    private void syncProcess(List<String> startTaskIdList, String processInstId, ApprovalParam approval, LoanProcessDO currentLoanProcessDO) {
+    private void syncProcess(List<String> startTaskIdList, String processInstId, ApprovalParam approval,
+                             LoanProcessDO currentLoanProcessDO, LoanBaseInfoDO loanBaseInfoDO) {
 
         // 更新状态
         LoanProcessDO loanProcessDO = new LoanProcessDO();
@@ -1073,7 +1078,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskIdList, approval.getAction(), approval.getTaskDefinitionKey(), approval.getInfo(), currentLoanProcessDO);
 
         // 特殊处理：部分节点的同步  !!!
-        special_syncProcess(approval, loanProcessDO, currentLoanProcessDO);
+        special_syncProcess(approval, loanProcessDO, currentLoanProcessDO, loanBaseInfoDO);
 
         // 更新本地流程记录
         updateLoanProcess(loanProcessDO);
@@ -1085,29 +1090,36 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param loanProcessDO
      * @param currentLoanProcessDO
+     * @param loanBaseInfoDO
      */
-    private void special_syncProcess(ApprovalParam approval, LoanProcessDO loanProcessDO, LoanProcessDO currentLoanProcessDO) {
+    private void special_syncProcess(ApprovalParam approval, LoanProcessDO loanProcessDO,
+                                     LoanProcessDO currentLoanProcessDO, LoanBaseInfoDO loanBaseInfoDO) {
 
         // [征信申请] - PASS   ==>  [贷款信息登记] task_process 特殊处理
         boolean is_credit_apply_task__and__action_pass = is_credit_apply_task_pass(approval);
 
         if (is_credit_apply_task__and__action_pass) {
 
-            // [贷款信息登记] 是否已存在
-            Byte loanInfoRecordStatus = currentLoanProcessDO.getLoanInfoRecord();
+            // 中国工商银行杭州城站支行
+            if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())) {
 
-            // 不存在
-            if (TASK_PROCESS_INIT.equals(loanInfoRecordStatus)) {
+                // [贷款信息登记] 是否已存在
+                Byte loanInfoRecordStatus = currentLoanProcessDO.getLoanInfoRecord();
 
-                // 0-未到此   --> 即为：第一次生成
-                loanProcessDO.setLoanInfoRecord(TASK_PROCESS_TODO);
+                // 不存在
+                if (TASK_PROCESS_INIT.equals(loanInfoRecordStatus)) {
 
-            } else {
+                    // 0-未到此   --> 即为：第一次生成
+                    loanProcessDO.setLoanInfoRecord(TASK_PROCESS_TODO);
 
-                // 已存在  -> 存在： 2-未提交 / 1-已提交
+                } else {
 
-                // nothing
+                    // 已存在  -> 存在： 2-未提交 / 1-已提交
+
+                    // nothing
+                }
             }
+
         }
     }
 
