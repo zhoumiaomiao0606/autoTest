@@ -62,4 +62,6 @@ public class PartnerQuery extends BaseQuery {
     private List<Long> cascadeChildAreaIdList;
 
     private String gpsCompany;
+
+    private String gpsAccount;
 }
