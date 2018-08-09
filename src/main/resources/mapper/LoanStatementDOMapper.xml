@@ -249,6 +249,14 @@
         ELSE
         NULL
         END AS credit_result,
+        CASE
+        WHEN customer.guarantee_type = 1 THEN
+        '银行担保'
+        WHEN customer.guarantee_type = 2 THEN
+        '内部担保'
+        ELSE
+        NULL
+        END  AS guaranteeType,
         (
         SELECT
         create_time

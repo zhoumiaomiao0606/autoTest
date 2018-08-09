@@ -25,6 +25,9 @@ public class ExportBankCreditQueryVO
     //贷款银行
     private String bank;
 
+    //担保类型
+    private String guaranteeType;
+
     //业务团队
     private String partner_name;
 

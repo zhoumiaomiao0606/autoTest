@@ -50,3 +50,5 @@ nbdist/
 /.metadata/
 /bin/
 *.log
+
+application.properties
