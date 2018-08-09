@@ -27,14 +27,12 @@
         <result column="appraisal" property="appraisal" jdbcType="DECIMAL"/>
         <result column="padding_company" property="paddingCompany" jdbcType="VARCHAR"/>
         <result column="play_company" property="playCompany" jdbcType="VARCHAR"/>
-        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, car_price, actual_car_price, financial_product_id, financial_product_name, bank,
         sign_rate, loan_amount, loan_time, down_payment_ratio, down_payment_money, bank_period_principal,
         bank_fee, principal_interest_sum, first_month_repay, each_month_repay, status, gmt_create,
-        gmt_modify, feature, cash_deposit, extra_fee, appraisal, padding_company, play_company,
-        order_id
+        gmt_modify, feature, cash_deposit, extra_fee, appraisal, padding_company, play_company
     </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
@@ -59,8 +57,7 @@
         first_month_repay, each_month_repay, status,
         gmt_create, gmt_modify, feature,
         cash_deposit, extra_fee, appraisal,
-        padding_company, play_company, order_id
-        )
+        padding_company, play_company)
         values (#{id,jdbcType=BIGINT}, #{carPrice,jdbcType=DECIMAL}, #{actualCarPrice,jdbcType=DECIMAL},
         #{financialProductId,jdbcType=BIGINT}, #{financialProductName,jdbcType=VARCHAR},
         #{bank,jdbcType=VARCHAR}, #{signRate,jdbcType=DECIMAL}, #{loanAmount,jdbcType=DECIMAL},
@@ -69,8 +66,7 @@
         #{firstMonthRepay,jdbcType=DECIMAL}, #{eachMonthRepay,jdbcType=DECIMAL}, #{status,jdbcType=TINYINT},
         #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
         #{cashDeposit,jdbcType=DECIMAL}, #{extraFee,jdbcType=DECIMAL}, #{appraisal,jdbcType=DECIMAL},
-        #{paddingCompany,jdbcType=VARCHAR}, #{playCompany,jdbcType=VARCHAR}, #{orderId,jdbcType=BIGINT}
-        )
+        #{paddingCompany,jdbcType=VARCHAR}, #{playCompany,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
@@ -154,9 +150,6 @@
             <if test="playCompany != null">
                 play_company,
             </if>
-            <if test="orderId != null">
-                order_id,
-            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -233,9 +226,6 @@
             </if>
             <if test="playCompany != null">
                 #{playCompany,jdbcType=VARCHAR},
-            </if>
-            <if test="orderId != null">
-                #{orderId,jdbcType=BIGINT},
             </if>
         </trim>
     </insert>
@@ -314,39 +304,35 @@
             <if test="playCompany != null">
                 play_company = #{playCompany,jdbcType=VARCHAR},
             </if>
-            <if test="orderId != null">
-                order_id = #{orderId,jdbcType=BIGINT},
-            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
-        update loan_financial_plan
-        set car_price = #{carPrice,jdbcType=DECIMAL},
-        actual_car_price = #{actualCarPrice,jdbcType=DECIMAL},
-        financial_product_id = #{financialProductId,jdbcType=BIGINT},
-        financial_product_name = #{financialProductName,jdbcType=VARCHAR},
-        bank = #{bank,jdbcType=VARCHAR},
-        sign_rate = #{signRate,jdbcType=DECIMAL},
-        loan_amount = #{loanAmount,jdbcType=DECIMAL},
-        loan_time = #{loanTime,jdbcType=INTEGER},
-        down_payment_ratio = #{downPaymentRatio,jdbcType=DECIMAL},
-        down_payment_money = #{downPaymentMoney,jdbcType=DECIMAL},
-        bank_period_principal = #{bankPeriodPrincipal,jdbcType=DECIMAL},
-        bank_fee = #{bankFee,jdbcType=DECIMAL},
-        principal_interest_sum = #{principalInterestSum,jdbcType=DECIMAL},
-        first_month_repay = #{firstMonthRepay,jdbcType=DECIMAL},
-        each_month_repay = #{eachMonthRepay,jdbcType=DECIMAL},
-        status = #{status,jdbcType=TINYINT},
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        feature = #{feature,jdbcType=VARCHAR},
-        cash_deposit = #{cashDeposit,jdbcType=DECIMAL},
-        extra_fee = #{extraFee,jdbcType=DECIMAL},
-        appraisal = #{appraisal,jdbcType=DECIMAL},
-        padding_company = #{paddingCompany,jdbcType=VARCHAR},
-        play_company = #{playCompany,jdbcType=VARCHAR},
-        order_id = #{orderId,jdbcType=BIGINT}
-        where id = #{id,jdbcType=BIGINT}
-    </update>
+    update loan_financial_plan
+    set car_price = #{carPrice,jdbcType=DECIMAL},
+      actual_car_price = #{actualCarPrice,jdbcType=DECIMAL},
+      financial_product_id = #{financialProductId,jdbcType=BIGINT},
+      financial_product_name = #{financialProductName,jdbcType=VARCHAR},
+      bank = #{bank,jdbcType=VARCHAR},
+      sign_rate = #{signRate,jdbcType=DECIMAL},
+      loan_amount = #{loanAmount,jdbcType=DECIMAL},
+      loan_time = #{loanTime,jdbcType=INTEGER},
+      down_payment_ratio = #{downPaymentRatio,jdbcType=DECIMAL},
+      down_payment_money = #{downPaymentMoney,jdbcType=DECIMAL},
+      bank_period_principal = #{bankPeriodPrincipal,jdbcType=DECIMAL},
+      bank_fee = #{bankFee,jdbcType=DECIMAL},
+      principal_interest_sum = #{principalInterestSum,jdbcType=DECIMAL},
+      first_month_repay = #{firstMonthRepay,jdbcType=DECIMAL},
+      each_month_repay = #{eachMonthRepay,jdbcType=DECIMAL},
+      status = #{status,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      feature = #{feature,jdbcType=VARCHAR},
+      cash_deposit = #{cashDeposit,jdbcType=DECIMAL},
+      extra_fee = #{extraFee,jdbcType=DECIMAL},
+      appraisal = #{appraisal,jdbcType=DECIMAL},
+      padding_company = #{paddingCompany,jdbcType=VARCHAR},
+      play_company = #{playCompany,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 </mapper>

@@ -16,6 +16,8 @@ public class AppLoanFinancialPlanVO {
 
     private BigDecimal carPrice;
 
+    private BigDecimal actualCarPrice;
+
     private Long financialProductId;
 
     private String financialProductName;
@@ -67,7 +69,7 @@ public class AppLoanFinancialPlanVO {
      */
     private String categorySuperior;
 
-    private  BigDecimal bankRate;
+    private BigDecimal bankRate;
 
 
     private String paddingCompany;//垫资平台
