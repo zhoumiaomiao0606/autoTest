@@ -45,6 +45,10 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into loan_financial_plan (id, car_price, actual_car_price,
         financial_product_id, financial_product_name,
         bank, sign_rate, loan_amount,
@@ -65,6 +69,10 @@
         #{paddingCompany,jdbcType=VARCHAR}, #{playCompany,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanFinancialPlanDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into loan_financial_plan
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
