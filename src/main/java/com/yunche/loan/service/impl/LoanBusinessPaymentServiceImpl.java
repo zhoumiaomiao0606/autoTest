@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
@@ -149,6 +150,44 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
         recombinationVO.setFinancial(financialSchemeVO);
 
 
+        return ResultBean.ofSuccess(recombinationVO);
+    }
+
+    @Override
+    public ResultBean<RecombinationVO> appDetail(Long orderId) {
+
+        RecombinationVO recombinationVO = new RecombinationVO();
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO, "订单不存在");
+        //客户基本信息
+        recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+
+        UniversalRemitDetails universalRemitDetails = loanQueryDOMapper.selectAppUniversalRemitDetails(orderId);
+        if (universalRemitDetails == null) {
+            universalRemitDetails = new UniversalRemitDetails();
+        }
+        if (TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())) {
+            universalRemitDetails.setRemit_is_sendback(String.valueOf(K_YORN_YES));
+        } else {
+            universalRemitDetails.setRemit_is_sendback(String.valueOf(K_YORN_NO));
+        }
+        recombinationVO.setRemit(universalRemitDetails);
+        //共贷人信息
+        List<UniversalCustomerFileVO> totalFiles = new ArrayList<UniversalCustomerFileVO>();
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            if("1".equals(universalCustomerVO.getCust_type())){
+                List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+                for(UniversalCustomerFileVO file:files){
+                    if("57".equals(file.getType())){
+                        totalFiles.add(file);
+                    }
+                }
+                universalCustomerVO.setFiles(totalFiles);
+                break;
+            }
+        }
+        recombinationVO.setCustomers(customers);
         return ResultBean.ofSuccess(recombinationVO);
     }
 }

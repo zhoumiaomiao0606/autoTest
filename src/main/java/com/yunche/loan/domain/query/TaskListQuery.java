@@ -119,7 +119,7 @@ public class TaskListQuery {
     private String sendee;
     private String isRepayment;
 
-    private List<Long> areaIdList = Lists.newArrayList();//区域ID列表
+    private List<Long> bizAreaIdList = Lists.newArrayList();//区域ID列表
     private List<String> bankList = Lists.newArrayList();//银行ID列表
 
     private List<Long> bankInterfaceSerialOrderidList = Lists.newArrayList();

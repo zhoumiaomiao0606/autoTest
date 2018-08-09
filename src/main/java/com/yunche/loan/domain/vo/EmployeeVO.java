@@ -57,4 +57,6 @@ public class EmployeeVO {
      * 合伙人名称
      */
     private String partnerName;
+
+    List<List<Long>> bizAreaIdList;
 }

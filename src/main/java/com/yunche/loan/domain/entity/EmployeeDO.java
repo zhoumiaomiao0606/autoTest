@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class EmployeeDO implements Serializable {
@@ -58,4 +59,6 @@ public class EmployeeDO implements Serializable {
      * 视频面签 对应权限的银行ID
      */
     private Long bankId;
+
+    private List<Long> bizAreaIds;
 }

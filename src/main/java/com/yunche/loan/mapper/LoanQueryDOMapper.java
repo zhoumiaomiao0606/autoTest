@@ -8,6 +8,8 @@ import java.util.Set;
 
 public interface LoanQueryDOMapper {
 
+    List<Long> selectEmpBizAreaPartnerIds(Long employeeId);
+
     boolean selectCheckOrderInBankInterfaceSerial(@Param("orderId") Long orderId, @Param("transCode") String transCode);
 
     List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId, @Param("transCode") String transCode);
@@ -68,6 +70,8 @@ public interface LoanQueryDOMapper {
     List<String> selectUniversalRelevanceOrderIdByCustomerId(@Param("orderId") Long orderId, @Param("customerId") Long customerId);
 
     UniversalRemitDetails selectUniversalRemitDetails(Long orderId);
+
+    UniversalRemitDetails selectAppUniversalRemitDetails(Long orderId);
 
     UniversalCostDetailsVO selectUniversalCostDetails(Long orderId);
 

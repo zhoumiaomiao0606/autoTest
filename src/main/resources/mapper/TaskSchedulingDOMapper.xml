@@ -51,6 +51,7 @@
         FROM
         ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{employeeId} ) t
     </select>
+
     <select id="selectBankInterfaceSerialOrderidList" resultType="java.lang.Long" parameterType="com.yunche.loan.domain.query.TaskListQuery">
      <choose>
           <when test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply' or taskDefinitionKey == 'usertask_bank_open_card' or taskDefinitionKey == 'usertask_apply_instalment'">
@@ -256,35 +257,13 @@
         join_c.id_card AS idCard,
         join_c.mobile AS mobile,
         join_e.name AS salesman,
-        (select
-        case when
-        END_TIME_ = null
-        then null
-        else
-        DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
-        end
-        from act_hi_taskinst
-        where PROC_INST_ID_ = main.process_inst_id
-        and TASK_DEF_KEY_ = 'usertask_credit_apply'
-        order by START_TIME_
-        desc limit 1) AS creditGmtCreate,
+        DATE_FORMAT(complex_log.credit_create_time, '%Y-%m-%d %H:%i:%S' ) AS creditGmtCreate,
         join_b.bank AS bank,
         join_d.name AS departmentName,
         join_f.loan_amount AS loanAmount,
         join_f.bank_period_principal AS bankPeriodPrincipal,
         join_f.sign_rate AS signRate,
-        (select
-        case when
-        END_TIME_ = null
-        then null
-        else
-        DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
-        end
-        from act_hi_taskinst
-        where PROC_INST_ID_ = main.process_inst_id
-        and TASK_DEF_KEY_ = 'usertask_loan_apply'
-        order by START_TIME_
-        desc limit 1) AS loanGmtCreate,
+        DATE_FORMAT(complex_log.loan_create_time,'%Y-%m-%d %H:%i:%S')     AS loanGmtCreate,
         join_i.car_type AS carType,
         join_h.license_plate_number AS licensePlateNumber,
         join_p.name AS partner,
@@ -303,6 +282,7 @@
         left join employee join_e on join_e.id = join_b.salesman_id
         left join department join_d on join_d.id = join_p.department_id
         left join vehicle_information join_h on join_h.id = main.vehicle_information_id
+        left join current_node_manager complex_log on main.id = complex_log.order_id
         where 1=1 and deputy.order_status = 1
         /**
         * 多节点查询类型：
@@ -369,10 +349,10 @@
         and
         case when #{maxGroupLevel} = 3 then 1=1
         else 1=1
-        <if test="areaIdList != null and areaIdList.size() > 0">
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
             and
-            complex.bizAreaId in
-            <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
+            complex.partnerId in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
@@ -1063,10 +1043,10 @@
             and
             case when #{maxGroupLevel} = 3 then 1=1
             else 1=1
-            <if test="areaIdList != null and areaIdList.size() > 0">
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
                 and
-                complex.bizAreaId in
-                <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
+                complex.partnerId in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
@@ -1440,10 +1420,10 @@
         and
         case when #{maxGroupLevel} = 3 then 1=1
         else 1=1
-        <if test="areaIdList != null and areaIdList.size() > 0">
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
             and
-            complex.bizAreaId in
-            <foreach item="item" index="index" collection="areaIdList" open="(" separator="," close=")">
+            complex.partnerId in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>

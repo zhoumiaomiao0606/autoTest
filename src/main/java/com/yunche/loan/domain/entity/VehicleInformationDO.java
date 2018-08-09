@@ -55,11 +55,14 @@ public class VehicleInformationDO {
 
     private String feature;
 
+    //订单号
     private Long order_id;
 
     private String assess_org;
 
+    //使用年限
     private String assess_use_year;
 
+    //车辆类型
     private String car_category;
 }

@@ -52,4 +52,6 @@ public class PartnerDO {
     private String disableBankList;
 
     private String gpsCompany;
+
+    private String gpsAccount;
 }
