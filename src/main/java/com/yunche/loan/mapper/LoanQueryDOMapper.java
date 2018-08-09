@@ -71,6 +71,8 @@ public interface LoanQueryDOMapper {
 
     UniversalRemitDetails selectUniversalRemitDetails(Long orderId);
 
+    UniversalRemitDetails selectAppUniversalRemitDetails(Long orderId);
+
     UniversalCostDetailsVO selectUniversalCostDetails(Long orderId);
 
     List<UniversalCreditInfoVO> selectUniversalCreditInfo(Long orderId);

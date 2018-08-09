@@ -13,10 +13,14 @@ public interface LoanBusinessPaymentService {
     ResultBean save(LoanBusinessPaymentParam loanBusinessPaymentParam);
 
 
+
+
     /**
      * 业务申请单详情页
      * @param orderId
      * @return
      */
     ResultBean detail(Long orderId);
+
+    ResultBean appDetail(Long orderId);
 }

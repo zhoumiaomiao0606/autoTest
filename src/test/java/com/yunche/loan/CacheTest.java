@@ -4,7 +4,9 @@ import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.cache.TokenCache;
 import com.yunche.loan.config.util.CarLoanHttpUtil;
 import com.yunche.loan.config.util.OpenApiUtil;
+import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.vo.GpsDetailTotalVO;
+import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.AuxiliaryService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class CacheTest extends BaseTest {
     @Resource
     private AuxiliaryService auxiliaryService;
 
+    @Resource
+    PartnerDOMapper partnerDOMapper;
+
 
 
     public void getToken() throws Exception {
@@ -38,7 +43,7 @@ public class CacheTest extends BaseTest {
     }
    //@Test
     public void doA(){
-        auxiliaryService.queryJimi("yy团队");
+        auxiliaryService.queryJimi("浙江杭州测试张三团队");
     }
    // @Test
     public void doB(){
@@ -62,6 +67,11 @@ public class CacheTest extends BaseTest {
         }catch(Exception e){
             System.out.println(e);
         }
+    }
+    @Test
+    public void doA1(){
+        PartnerDO partnerDO = partnerDOMapper.queryLeaderNameById(Long.valueOf("1805041826416031160"));
+        System.out.println(partnerDO.getGpsAccount());
     }
     //@Test
     public void getchild(){
@@ -87,14 +97,22 @@ public class CacheTest extends BaseTest {
     public void carLoanUpdateGpsInfo() throws Exception {
         CarLoanHttpUtil.getGpsStatus("39182250606");
     }
+    //@Test
+    public void createCus()throws Exception {
+       // CarLoanHttpUtil.modifyCustomer("111111","808","志飞","奥迪");
+        CarLoanHttpUtil.bindGps("39182250606","808");
+    }
+    //@Test
+    public void unBind()throws Exception{
+        CarLoanHttpUtil.unbindGps("39182250606","808");
+    }
 
 
-
-   @Test
+   //@Test
     public void getDetail(){
         try {
             String accToken=getAccToken();
-            OpenApiUtil.getGpsDetailInfo(accToken,"868120182173432");
+            OpenApiUtil.getGpsDetailInfo(accToken,"868120191493086");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,7 +126,6 @@ public class CacheTest extends BaseTest {
         tokens[1]="";
         tokens[2]="";*/
         String accToken="";
-
         if("".equals(tokens[0])){
             String[] tokenStr = OpenApiUtil.getToken();
             if("1006".equals(tokenStr[0])){
