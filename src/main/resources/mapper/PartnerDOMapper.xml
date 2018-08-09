@@ -24,12 +24,13 @@
         <result column="feature" property="feature" jdbcType="VARCHAR"/>
         <result column="disable_bank_list" property="disableBankList" jdbcType="VARCHAR"/>
         <result column="gps_company" property="gpsCompany" jdbcType="VARCHAR"/>
+        <result column="gps_account" property="gpsAccount" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id, name, department_id, leader_id, leader_name, leader_mobile, tel, fax, area_id,
         biz_type, sign, cooperation_scale, exec_rate, cooperation_insurance_company, pay_month,
-        risk_bear_rate, gmt_create, gmt_modify, status, feature, disable_bank_list,gps_company
+        risk_bear_rate, gmt_create, gmt_modify, status, feature, disable_bank_list,gps_company,gps_account
     </sql>
 
     <sql id="Base_Query_List">
@@ -80,6 +81,9 @@
         </if>
         <if test="gpsCompany != null">
             AND gps_company = #{gpsCompany}
+        </if>
+        <if test="gpsAccount != null">
+            AND gps_account = #{gpsAccount}
         </if>
     </sql>
 
@@ -181,7 +185,7 @@
         sign, cooperation_scale, exec_rate,
         cooperation_insurance_company, pay_month,
         risk_bear_rate, gmt_create, gmt_modify,
-        status, feature, disable_bank_list, gps_company
+        status, feature, disable_bank_list, gps_company,gps_account
         )
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{departmentId,jdbcType=BIGINT},
         #{leaderId,jdbcType=BIGINT}, #{leaderName,jdbcType=VARCHAR}, #{leaderMobile,jdbcType=VARCHAR},
@@ -189,7 +193,7 @@
         #{sign,jdbcType=TINYINT}, #{cooperationScale,jdbcType=VARCHAR}, #{execRate,jdbcType=DECIMAL},
         #{cooperationInsuranceCompany,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
         #{riskBearRate,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, #{disableBankList,jdbcType=VARCHAR}, #{gpsCompany,jdbcType=VARCHAR}
+        #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, #{disableBankList,jdbcType=VARCHAR},#{gpsCompany,jdbcType=VARCHAR}, #{gpsAccount,jdbcType=VARCHAR}
         )
     </insert>
 
@@ -266,6 +270,9 @@
             <if test="gpsCompany != null">
                 gps_company,
             </if>
+            <if test="gpsAccount != null">
+                gps_account,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -333,6 +340,9 @@
             </if>
             <if test="gpsCompany != null">
                 #{gpsCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="gpsAccount != null">
+                #{gpsAccount,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -403,6 +413,9 @@
             <if test="gpsCompany != null">
                 gps_company = #{gpsCompany,jdbcType=VARCHAR},
             </if>
+            <if test="gpsAccount != null">
+                gps_account = #{gpsAccount,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -428,7 +441,7 @@
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
       status = #{status,jdbcType=TINYINT},
       feature = #{feature,jdbcType=VARCHAR},
-      disable_bank_list = #{disableBankList,jdbcType=VARCHAR},gps_company = #{gpsCompany,jdbcType=VARCHAR}
+      disable_bank_list = #{disableBankList,jdbcType=VARCHAR},gps_company = #{gpsCompany,jdbcType=VARCHAR},gps_account = #{gpsAccount,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 

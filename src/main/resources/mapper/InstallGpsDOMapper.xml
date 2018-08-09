@@ -21,6 +21,18 @@
     from install_gps
     where id = #{id,jdbcType=BIGINT}
   </select>
+  <select id="selectPartnerAndCusByOrderId" resultType="com.yunche.loan.domain.vo.PartnerCusInfoVO" parameterType="java.lang.Long">
+    SELECT
+	a.id AS id,
+	b.id AS cusId,
+	c.partner_id AS pId
+FROM
+	loan_order a
+	LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
+	LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
+WHERE
+	a.id = #{order_id,jdbcType=BIGINT}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from install_gps
     where id = #{id,jdbcType=BIGINT}

@@ -107,18 +107,23 @@ public class CarLoanHttpUtil {
 	}
 
 	//客户新建修改
-	public static void modifyCustomer(String cId,String orderId,String customerName,String vehicleNo) throws Exception {
+	public static boolean modifyCustomer(String cId,String orderId,String customerName,String vehicleNo) throws Exception {
+		boolean flag = false;
 		String url = openapi_url+"/api/modifyCustomer";
 		String sign =MD5Utils.md5Hex(orderId+app_key);
-		url +="cid="+cId+"&orderId="+orderId+"&customerName="+customerName+"&vehicleNo="+vehicleNo
+		url +="?cid="+cId+"&orderId="+orderId+"&customerName="+customerName+"&vehicleNo="+vehicleNo
 				+"&sp=9&sign="+sign;
+		System.out.println(url);
 		String returnInfo = sendGet(url);
 		if(!StringUtil.isEmpty(returnInfo)){
 			carLoanResultVO = formJson2Obj(returnInfo,CarLoanResultVO.class);
 			if("true".equals(carLoanResultVO.getSuccess())){
-
+				flag = true;
+			}else{
+				logger.error("该客户:"+customerName+"创建失败，原因:"+carLoanResultVO.getMsg());
 			}
 		}
+		return flag;
 	}
 
 	//客户删除
@@ -152,6 +157,24 @@ public class CarLoanHttpUtil {
 				flag = true;
 			}else{
 				logger.error("该GPS:"+gpsCode+"绑定失败，原因:"+carLoanResultVO.getMsg());
+			}
+		}
+		return flag;
+	}
+	//解绑gps
+	public static boolean unbindGps(String gpsCode,String orderId) throws Exception {
+		boolean flag = false;
+		String url = openapi_url+"/api/unbindGps";
+		String sign =MD5Utils.md5Hex(gpsCode+app_key);
+		url += "?orderId="+orderId+"&gprsCode="+gpsCode+"&sp=9&sign="+sign;
+
+		String returnInfo = sendPost(url);
+		if(!StringUtil.isEmpty(returnInfo)){
+			carLoanResultVO = formJson2Obj(returnInfo,CarLoanResultVO.class);
+			if("true".equals(carLoanResultVO.getSuccess())){
+				flag = true;
+			}else{
+				logger.error("该GPS:"+gpsCode+"解绑失败，原因:"+carLoanResultVO.getMsg());
 			}
 		}
 		return flag;
@@ -212,7 +235,7 @@ public class CarLoanHttpUtil {
 			response = httpClient.execute(post);
 			HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, "utf-8");
-            System.out.println(result);
+			logger.info("车贷管家:"+result);
 		} catch (IOException e) {
 			logger.error("系统链接失败",e);
 		}finally {
@@ -243,7 +266,7 @@ public class CarLoanHttpUtil {
 			response = httpClient.execute(get);
 			HttpEntity entity = response.getEntity();
 			result = EntityUtils.toString(entity, "utf-8");
-			System.out.println("返回json:"+result);
+			logger.info("车贷管家:"+result);
 		} catch (IOException e) {
 			logger.error("系统链接失败",e);
 		}finally {
