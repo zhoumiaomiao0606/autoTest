@@ -1530,6 +1530,15 @@
               ) ss GROUP BY  ss.order_id having order_id = #{orderId}
     </select>
 
+
+    <select id="selectEmpBizAreaPartnerIds" resultType="java.lang.Long">
+        select DISTINCT b.partner_id
+        from employee_rela_biz_area e
+        left join biz_area_rela_partner b on e.biz_area_id = b.biz_area_id
+        where employee_id = #{employeeId}
+        HAVING partner_id is not null
+    </select>
+
     <select id="selectVideoFacePath" resultType="java.lang.String">
         select path from video_face_log where order_id = #{orderId}  order by gmt_create desc limit 1
     </select>

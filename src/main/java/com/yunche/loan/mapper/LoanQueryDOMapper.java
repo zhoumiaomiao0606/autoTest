@@ -8,6 +8,8 @@ import java.util.Set;
 
 public interface LoanQueryDOMapper {
 
+    List<Long> selectEmpBizAreaPartnerIds(Long employeeId);
+
     boolean selectCheckOrderInBankInterfaceSerial(@Param("orderId") Long orderId, @Param("transCode") String transCode);
 
     List<BankInterFaceSerialOrderStatusVO> selectBankInterFaceSerialOrderStatusByOrderId(@Param("orderId") Long orderId, @Param("transCode") String transCode);

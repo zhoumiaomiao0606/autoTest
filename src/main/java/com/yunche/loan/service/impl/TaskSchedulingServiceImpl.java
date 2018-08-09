@@ -24,6 +24,7 @@ import com.yunche.loan.domain.vo.TaskListVO;
 import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
+import org.activiti.engine.impl.util.CollectionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Autowired
     private LoanRejectLogService loanRejectLogService;
 
+    @Resource
+    private LoanQueryDOMapper loanQueryDOMapper;
+
 
     @Override
     public boolean selectRejectTask(Long orderId) {
@@ -120,7 +124,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setRefundApplyLevel(refundApplyLevel);
         query.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        query.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
 
@@ -156,7 +160,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setRefundApplyLevel(refundApplyLevel);
         query.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        query.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
 
@@ -203,7 +207,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setRefundApplyLevel(refundApplyLevel);
         taskListQuery.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        taskListQuery.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
         taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
@@ -246,7 +250,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setRefundApplyLevel(refundApplyLevel);
         taskListQuery.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        taskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        taskListQuery.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
         taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
@@ -282,7 +286,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         appTaskListQuery.setRefundApplyLevel(refundApplyLevel);
         appTaskListQuery.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        appTaskListQuery.setAreaIdList(getUserHaveArea(loginUser.getId()));
+        appTaskListQuery.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
         //获取用户可见的银行
         appTaskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
 
@@ -644,32 +648,15 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
      *
      * @param id
      */
-    private List<Long> getUserHaveArea(Long id) {
-        List<Long> groupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(id);
-        List<Long> userAreaList = Lists.newArrayList();
-        groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId -> {
-
-            List<Long> tmpUserAreaList = userGroupRelaAreaDOMapper.getAreaIdListByUserGroupId(groupId);
-            if (tmpUserAreaList.size() > 0) {
-                List<BaseAreaDO> baseAreaDOS = baseAreaDOMapper.selectByIdList(tmpUserAreaList, BaseConst.VALID_STATUS);
-                baseAreaDOS.parallelStream().filter(Objects::nonNull).forEach(e -> {
-
-                    switch (e.getLevel()) {
-                        case 0:
-                            break;
-                        case 1:
-                            List<Long> idByProvenceId = baseAreaDOMapper.selectCityIdByProvenceId(e.getAreaId());
-                            userAreaList.addAll(idByProvenceId);
-                            break;
-                        case 2:
-                            userAreaList.add(e.getAreaId());
-                            break;
-                    }
-                });
-            }
-        });
-
-        return userAreaList.parallelStream().distinct().collect(Collectors.toList());
+    private List<Long> getUserHaveBizArea(Long id) {
+        List<Long> longs = loanQueryDOMapper.selectEmpBizAreaPartnerIds(SessionUtils.getLoginUser().getId());
+        if(CollectionUtils.isEmpty(longs)){
+            return null;
+        }
+        if(longs.get(0) == null){
+            return null;
+        }
+        return longs;
     }
 
 }
