@@ -75,7 +75,7 @@
             c.id                              AS customer_id,
             c.name                            AS cname,
             c.id_card                         AS id_card,
-            c.mobile                          AS mobilenumber
+            c.mobile                          AS mobilenumber,
             e.name                            AS ename,
             p.name                            AS pname,
             useGetCarName(i.car_detail_id)    AS car_name,
