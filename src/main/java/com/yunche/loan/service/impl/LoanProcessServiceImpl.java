@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.constant.VideoFaceConst;
 import com.yunche.loan.config.exception.BizException;
@@ -251,7 +252,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
+        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
@@ -1273,15 +1274,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
         }
 
-        // TODO [业务付款申请]
-        else if (BUSINESS_PAY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+        // [业务付款申请]
+        else if (BUSINESS_PAY.getCode().equals(taskDefinitionKey)) {
 
-            // 前置校验
-            boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
+            // PASS
+            if (ACTION_PASS.equals(action)) {
 
-            if (is_match_condition_bank) {
+                // 前置校验
+                boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
 
-                String s = loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(1L, "");
+                if (is_match_condition_bank) {
+
+                    // 若未开卡，提交业务付款申请单时候，提示：请先提交开卡申请
+                    String lastBankInterfaceSerialStatus = loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+                    Preconditions.checkArgument("1".equals(lastBankInterfaceSerialStatus) || "2".equals(lastBankInterfaceSerialStatus),
+                            "请先提交开卡申请");
+                }
             }
         }
     }

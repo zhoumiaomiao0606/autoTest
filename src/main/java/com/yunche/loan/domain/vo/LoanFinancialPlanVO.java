@@ -16,6 +16,8 @@ public class LoanFinancialPlanVO {
 
     private BigDecimal carPrice;
 
+    private BigDecimal actualCarPrice;
+
     private Long financialProductId;
 
     private String financialProductName;
@@ -66,7 +68,7 @@ public class LoanFinancialPlanVO {
      */
     private String categorySuperior;
 
-    private  BigDecimal bankRate;
+    private BigDecimal bankRate;
     /**
      * 金融手续费：贷款利息
      */

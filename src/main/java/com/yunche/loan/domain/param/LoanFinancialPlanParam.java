@@ -24,6 +24,8 @@ public class LoanFinancialPlanParam {
 
     private BigDecimal carPrice;
 
+    private BigDecimal actualCarPrice;
+
     private Long financialProductId;
 
     private String financialProductName;

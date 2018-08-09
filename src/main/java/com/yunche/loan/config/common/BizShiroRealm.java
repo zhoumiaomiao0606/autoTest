@@ -1,6 +1,5 @@
 package com.yunche.loan.config.common;
 
-import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.AuthCache;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.mapper.EmployeeDOMapper;
@@ -38,10 +37,13 @@ public class BizShiroRealm extends AuthorizingRealm {
 
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
+
     @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
+
     @Autowired
     private UserGroupRelaAreaAuthDOMapper userGroupRelaAreaAuthDOMapper;
+
     @Autowired
     private AuthCache authCache;
 

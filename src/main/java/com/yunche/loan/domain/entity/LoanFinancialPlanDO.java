@@ -7,9 +7,12 @@ import java.util.Date;
 
 @Data
 public class LoanFinancialPlanDO {
+
     private Long id;
 
     private BigDecimal carPrice;
+
+    private BigDecimal actualCarPrice;
 
     private Long financialProductId;
 
