@@ -94,12 +94,12 @@ public enum LoanProcessEnum {
     DATA_FLOW_MORTGAGE_C2P("usertask_data_flow_mortgage_c2p", "011-抵押资料公司至合伙人"),
     DATA_FLOW_MORTGAGE_C2P_REVIEW("usertask_data_flow_mortgage_c2p_review", "012-抵押资料公司至合伙人-确认接收"),
 
-    // 登记证书
-    DATA_FLOW_REGISTER_P2C("usertask_data_flow_register_p2c", "013-登记证书合伙人至公司"),
-    DATA_FLOW_REGISTER_P2C_REVIEW("usertask_data_flow_register_p2c_review", "014-登记证书合伙人至公司-确认接收"),
+    // 权证资料
+    DATA_FLOW_REGISTER_P2C("usertask_data_flow_register_p2c", "013-权证资料合伙人至公司"),
+    DATA_FLOW_REGISTER_P2C_REVIEW("usertask_data_flow_register_p2c_review", "014-权证资料合伙人至公司-确认接收"),
 
-    DATA_FLOW_REGISTER_C2B("usertask_data_flow_register_c2b", "015-登记证书公司至银行"),
-    DATA_FLOW_REGISTER_C2B_REVIEW("usertask_data_flow_register_c2b_review", "016-登记证书公司至银行-确认接收");
+    DATA_FLOW_REGISTER_C2B("usertask_data_flow_register_c2b", "015-权证资料公司至银行"),
+    DATA_FLOW_REGISTER_C2B_REVIEW("usertask_data_flow_register_c2b_review", "016-权证资料公司至银行-确认接收");
     ////////////////////////////////////////// ↑↑↑↑↑--资料流转--↑↑↑↑↑ ///////////////////////////////////////////////////
 
 

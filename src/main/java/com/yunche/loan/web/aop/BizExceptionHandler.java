@@ -93,23 +93,22 @@ public class BizExceptionHandler {
         String ip = request.getHeader("X-Forwarded-For");
 
         if (ipIsBlank(ip)) {
-
             ip = request.getHeader("Proxy-Client-IP");
 
             if (ipIsBlank(ip)) {
                 ip = request.getHeader("WL-Proxy-Client-IP");
-            }
 
-            if (ipIsBlank(ip)) {
-                ip = request.getHeader("HTTP_CLIENT_IP");
-            }
+                if (ipIsBlank(ip)) {
+                    ip = request.getHeader("HTTP_CLIENT_IP");
 
-            if (ipIsBlank(ip)) {
-                ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-            }
+                    if (ipIsBlank(ip)) {
+                        ip = request.getHeader("HTTP_X_FORWARDED_FOR");
 
-            if (ipIsBlank(ip)) {
-                ip = request.getRemoteAddr();
+                        if (ipIsBlank(ip)) {
+                            ip = request.getRemoteAddr();
+                        }
+                    }
+                }
             }
 
         } else if (ip.length() > 15) {

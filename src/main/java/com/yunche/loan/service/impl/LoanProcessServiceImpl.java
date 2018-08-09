@@ -123,6 +123,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private TaskDistributionDOMapper taskDistributionDOMapper;
 
     @Autowired
+    private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Autowired
     private RuntimeService runtimeService;
 
     @Autowired
@@ -197,6 +200,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             execDataFlowMortgageP2cNewFilterTask(approval);
         }
 
+
+        // 【贷款信息登记】
+        if (isLoanInfoRecordTask(approval)) {
+            return execLoanInfoRecordTask(approval, loanProcessDO);
+        }
+
         // 【资料增补】
         if (isInfoSupplementTask(approval)) {
             return execInfoSupplementTask(approval, loanProcessDO);
@@ -233,10 +242,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         execTask(task, variables, approval, loanOrderDO, loanProcessDO);
 
         // 流程数据同步
-        syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval);
-
-        // 自动提交  新产生的[贷款信息登记]
-        autoCompleteLoanInfoRecordTask(approval, loanProcessDO);
+        syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval, loanProcessDO);
 
         // 生成客户还款计划
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
@@ -245,7 +251,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-        creditAutomaticCommit(approval);
+//        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
@@ -257,25 +263,93 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * [贷款信息登记] 如果已存在  =则=>  自动提交  新产生的[贷款信息登记]
+     * 是否为：[贷款信息登记]任务
      *
      * @param approval
-     * @param loanProcessDO
+     * @return
      */
-    private void autoCompleteLoanInfoRecordTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+    private boolean isLoanInfoRecordTask(ApprovalParam approval) {
 
-        // 【征信申请】
-        if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+        boolean isLoanInfoRecordTask = LOAN_INFO_RECORD.getCode().equals(approval.getTaskDefinitionKey());
 
-            // [贷款信息登记] 是否已存在
-            Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
-            // 已存在
-            if (!TASK_PROCESS_INIT.equals(loanInfoRecordStatus)) {
+        return isLoanInfoRecordTask;
+    }
 
-                // 自动提交 新[贷款信息登记]
-                autoCompleteTask_(approval.getOrderId(), LOAN_INFO_RECORD.getCode(), ACTION_PASS);
+    /**
+     * 执行 - [贷款信息登记]任务
+     *
+     * @param approval
+     * @param currentLoanProcessDO
+     * @return
+     */
+    private ResultBean<Void> execLoanInfoRecordTask(ApprovalParam approval, LoanProcessDO currentLoanProcessDO) {
+
+        Byte loanInfoRecordStatus = currentLoanProcessDO.getLoanInfoRecord();
+
+        Byte action = approval.getAction();
+
+        // pass
+        if (ACTION_PASS.equals(action)) {
+
+            // task_process -> 0   ==> 任务不存在
+            if (TASK_PROCESS_INIT.equals(loanInfoRecordStatus)) {
+                throw new BizException("当前任务不存在");
             }
+
+            // task_process -> 1   ==> 任务已提交
+            else if (TASK_PROCESS_DONE.equals(loanInfoRecordStatus)) {
+
+                throw new BizException("当前任务已提交，请勿重复审核！");
+            }
+
+            // task_process -> 2   ==> 任务未提交
+            else if (TASK_PROCESS_TODO.equals(loanInfoRecordStatus)) {
+
+                LoanProcessDO loanProcessDO = new LoanProcessDO();
+                loanProcessDO.setOrderId(currentLoanProcessDO.getOrderId());
+                // done
+                loanProcessDO.setLoanInfoRecord(TASK_PROCESS_DONE);
+
+                updateLoanProcess(loanProcessDO);
+            }
+
+            // task_process -> other   ==> 任务状态异常
+            else {
+
+                throw new BizException("当前任务状态异常");
+            }
+
+
+        } else {
+
+            // action只能为：PASS
+            throw new BizException("流程审核参数有误");
         }
+
+        return ResultBean.ofSuccess(null, "[贷款信息登记]任务执行成功");
+    }
+
+    /**
+     * 执行  -->   自动提交  （重复）新产生的[贷款信息登记]
+     *
+     * @param loanInfoRecordTaskList
+     */
+    private void doAutoCompleteLoanInfoRecordTask(List<Task> loanInfoRecordTaskList) {
+
+        if (CollectionUtils.isEmpty(loanInfoRecordTaskList)) {
+            return;
+        }
+
+        Map<String, Object> passVariables = Maps.newHashMap();
+        passVariables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
+
+        // 剩下的（新产生的）  ==>  全直接在activiti中完成
+        loanInfoRecordTaskList.stream()
+                .forEach(task -> {
+
+                    // 在activiti中完成
+                    completeTask(task.getId(), passVariables);
+                });
     }
 
 
@@ -302,12 +376,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // [业务申请]
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
 
+            // [业务申请] 必须已提交
+            Byte loanApplyStatus = loanProcessDO.getLoanApply();
+            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanApplyStatus), "操作错误：[业务申请]还未提交,不能发起[反审]");
+
             // [电审]任务状态
             Byte telephoneVerifyStatus = loanProcessDO.getTelephoneVerify();
 
             // 1
             if (TASK_PROCESS_DONE.equals(telephoneVerifyStatus)) {
-                throw new BizException("[电审]任务已完成，无法发起[反审]");
+                throw new BizException("[电审]已完成，无法发起[业务申请-反审]");
             }
 
             // 3   -不存在该状态
@@ -318,7 +396,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     || TASK_PROCESS_TELEPHONE_VERIFY_MANAGER.equals(telephoneVerifyStatus)
                     || TASK_PROCESS_TELEPHONE_VERIFY_DIRECTOR.equals(telephoneVerifyStatus)) {
 
-                throw new BizException("[电审]任务已领取，无法发起[反审]");
+                throw new BizException("[电审]任务已领取，无法发起[业务申请-反审]");
             }
 
             // 2     -[电审]中
@@ -328,12 +406,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(approval.getOrderId(), TELEPHONE_VERIFY.getCode());
 
                 if (null != taskDistributionDO) {
-                    Preconditions.checkArgument(TASK_STATUS_DOING.equals(taskDistributionDO.getStatus()), "[电审]任务已领取，无法发起[反审]");
-                    Preconditions.checkArgument(TASK_STATUS_DONE.equals(taskDistributionDO.getStatus()), "[电审]任务已完成，无法发起[反审]");
+                    Preconditions.checkArgument(TASK_STATUS_DOING.equals(taskDistributionDO.getStatus()), "[电审]任务已领取，无法发起[业务申请-反审]");
+                    Preconditions.checkArgument(TASK_STATUS_DONE.equals(taskDistributionDO.getStatus()), "[电审]任务已完成，无法发起[业务申请-反审]");
                 }
 
                 // [电审]-反审 自动打回至[贷款申请]和[上门调查]
-                autoCompleteTask_(approval.getOrderId(), TELEPHONE_VERIFY.getCode(), ACTION_REJECT_AUTO);
+                autoPassTask(approval.getOrderId(), TELEPHONE_VERIFY.getCode(), ACTION_REJECT_AUTO);
 
                 // update process
                 LoanProcessDO loanProcessDO_ = new LoanProcessDO();
@@ -359,8 +437,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             } else {
 
-                throw new BizException("[反审]发起异常");
+                throw new BizException("[业务申请-反审]发起异常");
             }
+
+        } else {
+
+            throw new BizException("发起[反审]节点错误：" + LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey()));
         }
 
         return ResultBean.ofSuccess(null, "[反审]发起成功");
@@ -948,11 +1030,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 流程数据同步： 同步activiti与本地流程数据
      *
-     * @param startTaskIdList 起始任务ID列表
+     * @param startTaskIdList      起始任务ID列表
      * @param processInstId
      * @param approval
+     * @param currentLoanProcessDO
      */
-    private void syncProcess(List<String> startTaskIdList, String processInstId, ApprovalParam approval) {
+    private void syncProcess(List<String> startTaskIdList, String processInstId, ApprovalParam approval, LoanProcessDO currentLoanProcessDO) {
 
         // 更新状态
         LoanProcessDO loanProcessDO = new LoanProcessDO();
@@ -986,10 +1069,60 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), taskProcessStatus);
 
         // 更新新产生的任务状态
-        updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskIdList, approval.getAction(), approval.getTaskDefinitionKey(), approval.getInfo());
+        updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskIdList, approval.getAction(), approval.getTaskDefinitionKey(), approval.getInfo(), currentLoanProcessDO);
+
+        // 特殊处理：部分节点的同步  !!!
+        special_syncProcess(approval, loanProcessDO, currentLoanProcessDO);
 
         // 更新本地流程记录
         updateLoanProcess(loanProcessDO);
+    }
+
+    /**
+     * 特殊处理：部分节点的同步
+     *
+     * @param approval
+     * @param loanProcessDO
+     * @param currentLoanProcessDO
+     */
+    private void special_syncProcess(ApprovalParam approval, LoanProcessDO loanProcessDO, LoanProcessDO currentLoanProcessDO) {
+
+        // [征信申请] - PASS   ==>  [贷款信息登记] task_process 特殊处理
+        boolean is_credit_apply_task__and__action_pass = is_credit_apply_task_pass(approval);
+
+        if (is_credit_apply_task__and__action_pass) {
+
+            // [贷款信息登记] 是否已存在
+            Byte loanInfoRecordStatus = currentLoanProcessDO.getLoanInfoRecord();
+
+            // 不存在
+            if (TASK_PROCESS_INIT.equals(loanInfoRecordStatus)) {
+
+                // 0-未到此   --> 即为：第一次生成
+                loanProcessDO.setLoanInfoRecord(TASK_PROCESS_TODO);
+
+            } else {
+
+                // 已存在  -> 存在： 2-未提交 / 1-已提交
+
+                // nothing
+            }
+        }
+    }
+
+    /**
+     * [征信申请] - PASS
+     *
+     * @param approval
+     * @return
+     */
+    private boolean is_credit_apply_task_pass(ApprovalParam approval) {
+
+        // credit_apply   &&   pass
+        boolean is_credit_apply_task__and__action_pass = CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey())
+                && ACTION_PASS.equals(approval.getAction());
+
+        return is_credit_apply_task__and__action_pass;
     }
 
     /**
@@ -1140,6 +1273,17 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
         }
 
+        // TODO [业务付款申请]
+        else if (BUSINESS_PAY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+
+            // 前置校验
+            boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
+
+            if (is_match_condition_bank) {
+
+                String s = loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(1L, "");
+            }
+        }
     }
 
     /**
@@ -1405,7 +1549,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 完成任务
+     * 完成任务   ==>   在activiti中完成
      *
      * @param taskId
      * @param variables
@@ -1424,8 +1568,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param action
      * @param taskDefinitionKey
      * @param info
+     * @param currentLoanProcessDO
      */
-    private void updateNextTaskProcessStatus(LoanProcessDO loanProcessDO, String processInstanceId, List<String> startTaskIdList, Byte action, String taskDefinitionKey, String info) {
+    private void updateNextTaskProcessStatus(LoanProcessDO loanProcessDO, String processInstanceId, List<String> startTaskIdList,
+                                             Byte action, String taskDefinitionKey, String info, LoanProcessDO currentLoanProcessDO) {
 
         // 获取提交之后的待执行任务列表
         List<Task> endTaskList = getCurrentTaskList(processInstanceId);
@@ -1455,9 +1601,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         } else if (ACTION_REJECT_MANUAL.equals(action)) {
             // new  -> REJECT   old -> INIT
             updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT);
-
-            LoanProcessDO currentLoanProcessDO = loanProcessDOMapper.selectByPrimaryKey(loanProcessDO.getOrderId());
-            Preconditions.checkNotNull(currentLoanProcessDO, "流程记录丢失");
 
             // 是否已过电审
             if (!TASK_PROCESS_DONE.equals(currentLoanProcessDO.getTelephoneVerify())) {
@@ -2081,7 +2224,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param taskDefinitionKey
      * @param action
      */
-    private void autoCompleteTask_(Long orderId, String taskDefinitionKey, Byte action) {
+    private void autoPassTask(Long orderId, String taskDefinitionKey, Byte action) {
 
         ApprovalParam approvalParam = new ApprovalParam();
         approvalParam.setOrderId(orderId);
@@ -2404,11 +2547,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // PASS
             if (ACTION_PASS.equals(approval.getAction())) {
-                dealPassTask(currentTask, tasks);
+                dealCreditRecordTask_pass(currentTask, tasks);
             }
             // REJECT
             else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
-                dealRejectTask(currentTask, tasks, approval);
+                dealCreditRecordTask_reject(currentTask, tasks);
             }
             // CANCEL
             else if (ACTION_CANCEL.equals(approval.getAction())) {
@@ -2416,7 +2559,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
             // AUTO_REJECT
             else if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
-                dealCreditRecordAutoRejectTask(currentTask, tasks, approval);
+                dealCreditRecordTask_autoReject(currentTask, tasks, approval);
             }
         }
 
@@ -2426,7 +2569,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
 
                 // 提交【征信申请】
-                passCreditApply(approval);
+                dealCreditApplyTask_pass(approval);
             }
         }
     }
@@ -2439,12 +2582,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approvalParam
      */
 
-    private void dealCreditRecordAutoRejectTask(Task currentTask, List<Task> tasks, ApprovalParam approvalParam) {
+    private void dealCreditRecordTask_autoReject(Task currentTask, List<Task> tasks, ApprovalParam approvalParam) {
         // 打回到原点【征信申请】
-        dealRejectTask(currentTask, tasks, approvalParam);
+        dealCreditRecordTask_reject(currentTask, tasks);
 
         // 提交【征信申请】
-        passCreditApply(approvalParam);
+        dealCreditApplyTask_pass(approvalParam);
     }
 
     /**
@@ -2452,7 +2595,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param approval
      */
-    private void passCreditApply(ApprovalParam approval) {
+    private void dealCreditApplyTask_pass(ApprovalParam approval) {
         // update process
         LoanProcessDO loanProcessDO = new LoanProcessDO();
         loanProcessDO.setOrderId(approval.getOrderId());
@@ -3147,7 +3290,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param currentTask
      * @param tasks
      */
-    private void dealPassTask(Task currentTask, List<Task> tasks) {
+    private void dealCreditRecordTask_pass(Task currentTask, List<Task> tasks) {
 
         // 是否都通过了    -> 既非BANK，也非SOCIAL
         if (!CollectionUtils.isEmpty(tasks)) {
@@ -3173,10 +3316,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                             // 拿到当前"主任务"
                             if (currentTask.getExecutionId().equals(task.getExecutionId())) {
+
                                 // "主任务"  ->  通过
                                 completeTask(task.getId(), passVariables);
+
                             } else if (BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(task.getTaskDefinitionKey())
                                     && !currentTask.getExecutionId().equals(task.getExecutionId())) {
+
                                 // 其他filter"子任务"全部弃掉
                                 taskService.complete(task.getId(), cancelVariables);
                             }
@@ -3188,13 +3334,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 并行任务 -打回
+     * [银行&社会-征信] 并行任务 -打回
      *
      * @param currentTask
      * @param tasks
-     * @param approval
      */
-    private void dealRejectTask(Task currentTask, List<Task> tasks, ApprovalParam approval) {
+    private void dealCreditRecordTask_reject(Task currentTask, List<Task> tasks) {
 
         // 打回 -> 结束掉其他子任务，然后打回
         if (!CollectionUtils.isEmpty(tasks)) {
@@ -3209,6 +3354,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                 tasks.stream()
                         .filter(Objects::nonNull)
+                        .filter(e -> BANK_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey())
+                                || SOCIAL_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey())
+                                || BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(e.getTaskDefinitionKey())
+                        )
                         .forEach((Task task) -> {
 
                             if (currentTask.getExecutionId().equals(task.getExecutionId())) {

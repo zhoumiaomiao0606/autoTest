@@ -2,7 +2,6 @@ package com.yunche.loan.web.websocket;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.param.WebSocketParam;
 import com.yunche.loan.service.WebSocketService;
@@ -150,17 +149,7 @@ public class WebSocketController {
 
         simpMessagingTemplate.convertAndSendToUser(SessionUtils.getLoginUser().toString(),
                 "/queue/addQueue/sendToUser",
-                "来自：convertAndSendToUser"/*,
-                createHeaders(sessionId, new InvocableHandlerMethod.AsyncResultMethodParameter(returnValue))*/);
-
-//        HandlerMethod handlerMethod = handlerMethod.createWithResolvedBean();
-//        InvocableHandlerMethod invocable = new InvocableHandlerMethod(handlerMethod);
-////        invocable.setMessageMethodArgumentResolvers(this.argumentResolvers);
-//        invocable.setMessageMethodArgumentResolvers(new HandlerMethodArgumentResolverComposite());
-//        MethodParameter returnType = handlerMethod.getReturnType();
-
-
-//        simpleBrokerMessageHandler.
+                "来自：convertAndSendToUser");
 
         return JSON.toJSONString(jObj);
     }
@@ -221,37 +210,6 @@ public class WebSocketController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //    @GetMapping("/videoFace/info")
-    @ResponseBody
-    public JSONObject info() {
-        JSONObject info = new JSONObject();
-        info.put("origins", Lists.newArrayList("*"));
-        info.put("cookie_needed", true);
-        info.put("websocket", true);
-        info.put("entropy", 278083309);
-        return info;
-    }
-
-    @GetMapping("/hello")
-    public String hello() {
-        return "hello";
-    }
-
-    //    @GetMapping("/sockjs.min.js")
-    public String sockjs() {
-        return "sockjs.min.js";
-    }
-
-    //    @GetMapping("/stomp.min.js")
-    public String stomp() {
-        return "sockjs.min.js";
-    }
-
-    //    @GetMapping("/jquery.js")
-    public String jquery() {
-        return "jquery.js";
-    }
-
     @GetMapping("/chat_app")
     public String chat_app() {
         return "chat_app";
@@ -300,115 +258,4 @@ public class WebSocketController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-//    @MessageMapping("/queue")
-////  @SendTo("/topic/queue")  // 等同于 convertAndSend          -> 会把方法的返回值广播到指定主题（“主题”这个词并不合适）
-//    public void toTopic(String bankId) {
-//
-//        videoFaceRoomService.sendMsgToQueueUser(bankId);
-//
-//
-//        System.out.println(msg.getName() + "," + msg.getMsg());
-//        simpMessagingTemplate.convertAndSend("/topic/queue/" + bankId, msg.getName() + "," + msg.getMsg());
-////      return "消息内容："+ msg.getName()+"--"+msg.getMsg();
-//
-//
-//        // 向用户发送一条消息            第一个参数是：浏览器中订阅消息的地址；第二个参数是：消息本身；
-//        simpMessagingTemplate.convertAndSend("/message", "发送的消息");
-//    }
-//
-//    @MessageMapping("/message")
-////  @SendToUser("/message") // 等同于 convertAndSendToUser     -> 把返回值发到指定队列（“队列”实际不是队列，而是跟上面“主题”类似的东西，只是spring在SendTo的基础上加了用户的内容而已）
-//    public void toUser(SocketMessageVo msg) {
-//
-//
-//        simpMessagingTemplate.convertAndSendToUser("123", "/message", msg.getName() + msg.getMsg());
-//
-//
-//        // 向用户发送一条消息            第一个参数是：目标用户用户名；第二个参数是：浏览器中订阅消息的地址；第三个参数是：消息本身；
-//        simpMessagingTemplate.convertAndSendToUser("userId", "/message", "要发送的消息");
-//    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//    /**
-//     * 广播
-//     * <p>
-//     * SendTo 发送至 Broker 下的指定订阅路径
-//     *
-//     * @param clientMessage
-//     * @return
-//     */
-//    // @MessageMapping注解和我们之前使用的@RequestMapping类似
-//    @MessageMapping("/welcome")
-//    // @SendTo注解表示当服务器有消息需要推送的时候，会对订阅了@SendTo中路径的浏览器发送消息
-//    @SendTo("/topic/getResponse")
-//    public ServerMessage say(ClientMessage clientMessage) {
-//
-//        System.out.println("clientMessage.getName() = " + clientMessage.getName());
-//
-//        return new ServerMessage("Welcome , " + clientMessage.getName() + " !");
-//    }
-//
-//
-//    /**
-//     * 注入SimpMessagingTemplate 用于向浏览器点对点消息发送
-//     */
-//    @Autowired
-//    private SimpMessageSendingOperations simpMessagingTemplate;
-//
-//    /**
-//     * 点对点
-//     *
-//     * @param toUserMessage
-//     */
-//    @MessageMapping("/cheat")
-//    // 发送的订阅路径为/user/{userId}/message
-//    // /user/路径是默认的一个，如果想要改变，必须在config 中setUserDestinationPrefix
-//    public void cheatTo(ToUserMessage toUserMessage) {
-//
-//
-//        System.out.println("toUserMessage.getMessage() = " + toUserMessage.getMessage());
-//        System.out.println("toUserMessage.getUserId() = " + toUserMessage.getUserId());
-//
-//        // 向用户发送一条消息，第一个参数是目标用户用户名，第二个参数是浏览器中订阅消息的地址，第三个参数是消息本身
-//        simpMessagingTemplate.convertAndSendToUser(toUserMessage.getUserId(), "/message", "发送的消息");
-//
-//    }
-
-
-//    @MessageMapping("/chat")
-//    //在springmvc 中可以直接获得principal,principal 中包含当前用户的信息
-//    public void handleChat(Principal principal, Message message) {
-//
-//        /**
-//         * 此处是一段硬编码。如果发送人是abel 则发送给 admin，  如果发送人是admin 就发送给 abel。
-//         * 通过当前用户,然后查找消息,如果查找到未读消息,则发送给当前用户。
-//         */
-//        if (principal.getName().equals("admin")) {
-//            //通过convertAndSendToUser 向用户发送信息,
-//            // 第一个参数是接收消息的用户,第二个参数是浏览器订阅的地址,第三个参数是消息本身
-//
-//            messagingTemplate.convertAndSendToUser("abel",
-//                    "/queue/notifications", principal.getName() + "-send:"
-//                            + message.getName());
-//            /**
-//             * 72 行操作相等于
-//             * messagingTemplate.convertAndSend("/user/abel/queue/notifications",principal.getName() + "-send:"
-//             + message.getName());
-//             */
-//        } else {
-//            messagingTemplate.convertAndSendToUser("admin",
-//                    "/queue/notifications", principal.getName() + "-send:"
-//                            + message.getName());
-//        }
-//
-//        // 发送到topic     订阅了该topic的人都将收到消息
-//        messagingTemplate.convertAndSend("destination", "payload");
-//
-//        // 发送到个人       点对点
-//        messagingTemplate.convertAndSendToUser("userId", "destination", "payload");
-//    }
 }

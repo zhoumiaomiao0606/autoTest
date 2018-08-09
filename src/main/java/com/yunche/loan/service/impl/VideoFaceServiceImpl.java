@@ -87,9 +87,11 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         // APP端  车型名称
         if (TYPE_APP.equals(videoFaceLogDO.getType())) {
-            String carName = carService.getName(videoFaceLogDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
-            if (StringUtils.isNotBlank(carName)) {
-                videoFaceLogDO.setCarName(carName);
+            if (null != videoFaceLogDO.getCarDetailId()) {
+                String carName = carService.getName(videoFaceLogDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
+                if (StringUtils.isNotBlank(carName)) {
+                    videoFaceLogDO.setCarName(carName);
+                }
             }
         }
 
