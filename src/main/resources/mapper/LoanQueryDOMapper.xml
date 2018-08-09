@@ -85,6 +85,7 @@
             f.loan_amount                     AS loan_amount,
             d.price                           AS assess_price,
             i.vehicle_property                AS production_type,
+            i.vehicle_property                AS vehicle_property,
             i.car_type                        AS car_type,
             v.license_plate_type              AS license_plate_type,
             v.color                           AS color,

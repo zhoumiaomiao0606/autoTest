@@ -114,6 +114,7 @@ public class LoanInfoRegisterServiceImpl  implements LoanInfoRegisterService{
             Preconditions.checkArgument(count>0,"提车资料信息更新失败");
         }else{
             int count1 = vehicleInformationDOMapper.insertSelective(vehicleInformationDO);
+            Preconditions.checkArgument(count1>0,"提车资料信息更新失败");
             Long id = vehicleInformationDO.getId();
             loanOrderDO.setVehicleInformationId(id);
             int count2 = loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
