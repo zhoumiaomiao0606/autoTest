@@ -6,15 +6,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.BankCache;
-import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
-import com.yunche.loan.domain.entity.LoanRejectLogDO;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
@@ -24,7 +21,6 @@ import com.yunche.loan.domain.vo.TaskListVO;
 import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
-import org.activiti.engine.impl.util.CollectionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,42 +97,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     @Override
-    public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(Integer pageIndex, Integer pageSize) {
-
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
-        Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
-        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
-        Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
-        Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
-        Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
-        Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
-        Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
-
-        ScheduleTaskQuery query = new ScheduleTaskQuery();
-        query.setJuniorIds(juniorIds);
-        query.setEmployeeId(loginUser.getId());
-        query.setTelephoneVerifyLevel(telephoneVerifyLevel);
-        query.setFinanceLevel(financeLevel);
-        query.setCollectionLevel(collectionLevel);
-        query.setMaxGroupLevel(maxGroupLevel);
-        query.setFinanceApplyLevel(financeApplyLevel);
-        query.setRefundApplyLevel(refundApplyLevel);
-        query.setMaterialSupplementLevel(materialSupplementLevel);
-        //获取用户可见的区域
-        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
-        //获取用户可见的银行
-        query.setBankList(getUserHaveBank(loginUser.getId()));
-
-        PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
-        PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
-
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
-    }
-
-    @Override
-    public ResultBean<List<ScheduleTaskVO>> scheduleTaskListBykey(String key, Integer pageIndex, Integer pageSize) {
+    public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(String key,Integer pageIndex, Integer pageSize) {
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
@@ -170,6 +131,43 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
+
+    @Override
+    public ResultBean<Long> countScheduletasklist(String key, Integer pageIndex, Integer pageSize) {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        Long financeLevel = taskSchedulingDOMapper.selectFinanceLevel(loginUser.getId());
+        Long collectionLevel = taskSchedulingDOMapper.selectCollectionLevel(loginUser.getId());
+        Long financeApplyLevel = taskSchedulingDOMapper.selectFinanceApplyLevel(loginUser.getId());
+        Long refundApplyLevel = taskSchedulingDOMapper.selectRefundApplyLevel(loginUser.getId());
+        Long materialSupplementLevel = taskSchedulingDOMapper.selectMaterialSupplementLevel(loginUser.getId());
+
+        ScheduleTaskQuery query = new ScheduleTaskQuery();
+        query.setJuniorIds(juniorIds);
+        query.setKey(key);
+        query.setEmployeeId(loginUser.getId());
+        query.setTelephoneVerifyLevel(telephoneVerifyLevel);
+        query.setFinanceLevel(financeLevel);
+        query.setCollectionLevel(collectionLevel);
+        query.setMaxGroupLevel(maxGroupLevel);
+        query.setFinanceApplyLevel(financeApplyLevel);
+        query.setRefundApplyLevel(refundApplyLevel);
+        query.setMaterialSupplementLevel(materialSupplementLevel);
+        //获取用户可见的区域
+        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        //获取用户可见的银行
+        query.setBankList(getUserHaveBank(loginUser.getId()));
+
+        long count = PageHelper.count(() -> {
+            taskSchedulingDOMapper.selectScheduleTaskList(query);
+        });
+
+        return ResultBean.ofSuccess(count);
+    }
+
+
 
     @Override
     public ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery) {

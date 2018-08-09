@@ -1135,12 +1135,7 @@
         null AS supplementTypeText,
         null AS his_id,
         null AS refund_id,
-        null AS sendee,
-
-        case when lp.order_status = 1 and lp.loan_apply = 3 and
-        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
-        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-        then false else true end AS canUpdateLoanApply
+        null AS sendee
         from
         (
         SELECT DISTINCT RES.* FROM ACT_RU_TASK RES
@@ -1196,12 +1191,8 @@
         useSupplementTypeTxt(supplement.type) AS supplementTypeText,
         null AS his_id,
         null AS refund_id,
-        null AS sendee,
-        case when lp.order_status = 1 and lp.loan_apply = 3 and
-        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
-        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-        then false else true end AS canUpdateLoanApply
-        from (select * from loan_info_supplement where status = 2 ) supplement
+        null AS sendee
+        from loan_info_supplement supplement
         INNER JOIN loan_order jorder ON jorder.id = supplement.order_id
         LEFT JOIN loan_base_info jb ON jb.id = jorder.loan_base_info_id
         LEFT JOIN partner jp ON jp.id = jb.partner_id
@@ -1210,6 +1201,7 @@
         LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
         LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
         INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
+        where supplement.status = 2
         having filtration = 2
         and
         case when #{materialSupplementLevel} <![CDATA[>=]]> 1 then true else false end
@@ -1223,11 +1215,9 @@
         else null end AS taskKey,
         DATE_FORMAT(
         case when his.status = 3 then
-        (select gmt_create from loan_reject_log where reject_to_task = 'usertask_financial_scheme_modify_apply' order by
-        gmt_create desc limit 1 )
+        current_reject.financial_review_create_time
         when his.status !=1 and his.status !=3 then
-        (select create_time from loan_process_log where task_definition_key = 'usertask_financial_scheme_modify_apply'
-        order by create_time desc limit 1)
+        current.financial_create_time
         else null end
         ,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
         NULL AS taskDescription,
@@ -1257,12 +1247,8 @@
         null AS supplementTypeText,
         his.id AS his_id,
         null AS refund_id,
-        null AS sendee,
-        case when lp.order_status = 1 and lp.loan_apply = 3 and
-        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
-        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-        then false else true end AS canUpdateLoanApply
-        from (select * from loan_financial_plan_temp_his where status = 2 or status = 3 ) his
+        null AS sendee
+        from loan_financial_plan_temp_his his
         INNER JOIN loan_order jorder ON jorder.id = his.order_id
         LEFT JOIN loan_base_info jb ON jb.id = jorder.loan_base_info_id
         LEFT JOIN partner jp ON jp.id = jb.partner_id
@@ -1270,7 +1256,10 @@
         LEFT JOIN loan_customer jc ON jc.id = jorder.loan_customer_id
         LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
         LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
+        LEFT JOIN current_node_manager current on jorder.id = current.order_id
+        LEFT JOIN current_node_manager_reject current_reject on jorder.id = current_reject.order_id
         INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
+        where his.status = 2 or his.status = 3
         having filtration = 2 and
         case when taskKey = 'usertask_financial_scheme_modify_apply_review' then
         case when #{telephoneVerifyLevel} <![CDATA[>=]]> 4 then true else false end
@@ -1287,11 +1276,9 @@
         else null end AS taskKey,
         DATE_FORMAT(
         case when refund.status = 3 then
-        (select gmt_create from loan_reject_log where reject_to_task = 'usertask_refund_apply' order by gmt_create desc
-        limit 1 )
+        current_reject.refund_review_create_time
         when refund.status = 2 then
-        (select create_time from loan_process_log where task_definition_key = 'usertask_refund_apply' order by
-        create_time desc limit 1)
+        current.refund_create_time
         else null end
         ,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
         NULL AS taskDescription,
@@ -1319,12 +1306,8 @@
         null AS supplementTypeText,
         null AS his_id,
         refund.id AS refund_id,
-        null AS sendee,
-        case when lp.order_status = 1 and lp.loan_apply = 3 and
-        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
-        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-        then false else true end AS canUpdateLoanApply
-        from (select * from loan_refund_apply where status = 2 or status = 3 ) refund
+        null AS sendee
+        from loan_refund_apply refund
         INNER JOIN loan_order jorder ON jorder.id = refund.order_id
         LEFT JOIN loan_base_info jb ON jb.id = jorder.loan_base_info_id
         LEFT JOIN partner jp ON jp.id = jb.partner_id
@@ -1332,7 +1315,10 @@
         LEFT JOIN loan_customer jc ON jc.id = jorder.loan_customer_id
         LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
         LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
+        LEFT JOIN current_node_manager current on jorder.id = current.order_id
+        LEFT JOIN current_node_manager_reject current_reject on jorder.id = current_reject.order_id
         INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
+        where refund.status = 2 or refund.status = 3
         having filtration = 2 and
         case when taskKey = 'usertask_refund_apply_review' then
         case when #{financeLevel} <![CDATA[>=]]> 4 then true else false end
@@ -1372,12 +1358,8 @@
         null AS supplementTypeText,
         null AS his_id,
         null AS refund_id,
-        urge.sendee AS sendee,
-        case when lp.order_status = 1 and lp.loan_apply = 3 and
-        (select reject_origin_task from loan_reject_log where order_id = jorder.id and reject_to_task =
-        'usertask_loan_apply' order by gmt_create DESC limit 1) = 'usertask_material_review'
-        then false else true end AS canUpdateLoanApply
-        from (select * from bank_urge_record where urge_status = 2) urge
+        urge.sendee AS sendee
+        from bank_urge_record urge
         INNER JOIN loan_order jorder ON jorder.id = urge.order_id
         LEFT JOIN loan_base_info jb ON jb.id = jorder.loan_base_info_id
         LEFT JOIN partner jp ON jp.id = jb.partner_id
@@ -1386,6 +1368,7 @@
         LEFT JOIN loan_car_info ji ON ji.id = jorder.loan_car_info_id
         LEFT JOIN loan_financial_plan jf ON jf.id = jorder.loan_financial_plan_id
         INNER JOIN loan_process lp ON jorder.id = lp.order_id and lp.order_status = 1
+        where urge.urge_status = 2
         having filtration = 2
         AND
         case when #{collectionLevel} = 7 then true
@@ -1393,11 +1376,7 @@
         else false end
         )
         task
-        left join
-        (
-        select * from task_distribution
-        )
-        taskdis
+        left join task_distribution taskdis
         on task.taskId = taskdis.task_id and task.taskKey = taskdis.task_key
         having true
         and case when #{maxGroupLevel} = 0 then false
