@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.BankCache;
+import com.yunche.loan.config.constant.AreaConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankCarLicenseLocationDO;
 import com.yunche.loan.domain.entity.BankDO;
@@ -20,18 +21,17 @@ import com.yunche.loan.mapper.BankDOMapper;
 import com.yunche.loan.mapper.BankRelaQuestionDOMapper;
 import com.yunche.loan.mapper.BaseAreaDOMapper;
 import com.yunche.loan.service.BankService;
-import org.activiti.engine.impl.util.CollectionUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.docx4j.wml.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_AREA;
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.BankConst.QUESTION_BANK;
 import static com.yunche.loan.config.constant.BankConst.QUESTION_MACHINE;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
@@ -42,8 +42,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  * @date 2018/5/15
  */
 @Service
-public class BankServiceImpl implements BankService
-{
+public class BankServiceImpl implements BankService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
@@ -63,27 +62,24 @@ public class BankServiceImpl implements BankService
     private BankCarLicenseLocationDOMapper bankCarLicenseLocationDOMapper;
 
 
-
-
-
     @Override
     public void save(BankSaveParam param) {
-
         Preconditions.checkNotNull(param, "银行不能为空");
         Preconditions.checkNotNull(param.getBank(), "银行不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(param.getBank().getName()), "银行不能为空");
         Preconditions.checkNotNull(param.getBank().getStatus(), "状态不能为空");
         Preconditions.checkArgument(VALID_STATUS.equals(param.getBank().getStatus()) || INVALID_STATUS.equals(param.getBank().getStatus()), "状态非法");
-        Preconditions.checkArgument(CollectionUtil.isNotEmpty(param.getBankCarLicenseLocationList()), "上牌地列表为空");
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(param.getBankCarLicenseLocationList()), "上牌地列表为空");
+
         Long bankId = param.getBank().getId();
-        if(bankId!=null){
+        if (bankId != null) {
             Preconditions.checkNotNull(param.getBank().getId(), "银行不能为空");
-            bindBankCarLicenseLocation(param.getBank().getId(),param.getBankCarLicenseLocationList());
+            bindBankCarLicenseLocation(param.getBank().getId(), param.getBankCarLicenseLocationList());
             updateBank(param.getBank());
-        }else{
+        } else {
             // 插入银行
             bankId = insertAndGetBank(param.getBank());
-            bindBankCarLicenseLocation(bankId,param.getBankCarLicenseLocationList());
+            bindBankCarLicenseLocation(bankId, param.getBankCarLicenseLocationList());
         }
         // 刷新缓存
         bankCache.refresh();
@@ -92,37 +88,64 @@ public class BankServiceImpl implements BankService
     @Override
     public BankReturnVO detail(Long bankId) {
         Preconditions.checkNotNull(bankId, "银行ID不能为空");
+
         BankReturnVO bankReturnVO = new BankReturnVO();
-        List<Long> list = Lists.newArrayList();
+
+        // 市/区ID
+        List<Long> city_or_area_ids = Lists.newArrayList();
         List<BankCarLicenseLocationDO> licenseLocationDOS = bankCarLicenseLocationDOMapper.listByBankId(bankId);
-        for(BankCarLicenseLocationDO bankCarLicenseLocationDO:licenseLocationDOS){
-            list.add(bankCarLicenseLocationDO.getAreaId());
+        for (BankCarLicenseLocationDO bankCarLicenseLocationDO : licenseLocationDOS) {
+            city_or_area_ids.add(bankCarLicenseLocationDO.getAreaId());
         }
+
         // 银行
         BankDO bankDO = bankDOMapper.selectByPrimaryKey(bankId);
         bankReturnVO.setInfo(bankDO);
+
         List<AreaRVO> result = Lists.newArrayList();
-        List<CascadeAreaVO> areaList = areaList(bankId);
-            for(Long areaId:list){
-                BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId,new Byte("0"));
-                if(baseAreaDO!=null){
-                    if(Integer.valueOf(baseAreaDO.getLevel()).intValue()<2){
-                        AreaRVO R = new AreaRVO();
-                        R.setPId(baseAreaDO.getAreaId().toString());
-                        R.setPName(baseAreaDO.getAreaName());
-                        result.add(R);
-                        continue;
-                    }else{
-                        AreaRVO R = new AreaRVO();
-                        R.setPId(baseAreaDO.getParentAreaId().toString());
-                        R.setPName(baseAreaDO.getParentAreaName());
-                        R.setCId(baseAreaDO.getAreaId().toString());
-                        R.setCName(baseAreaDO.getAreaName());
-                        result.add(R);
-                        continue;
-                    }
+
+        for (Long city_or_area_id : city_or_area_ids) {
+
+            BaseAreaDO city_or_area_DO = baseAreaDOMapper.selectByPrimaryKey(city_or_area_id, VALID_STATUS);
+
+            if (null != city_or_area_DO) {
+
+                Byte level = city_or_area_DO.getLevel();
+                // 市
+                if (LEVEL_CITY.equals(level)) {
+
+                    AreaRVO areaRVO = new AreaRVO();
+
+                    Long pId = city_or_area_DO.getParentAreaId();
+                    areaRVO.setPId(pId);
+                    areaRVO.setPName(areaCache.getAreaName(String.valueOf(pId)));
+
+                    areaRVO.setCId(city_or_area_DO.getAreaId());
+                    areaRVO.setCName(city_or_area_DO.getAreaName());
+
+                    result.add(areaRVO);
+                }
+                // 区
+                else if (LEVEL_AREA.equals(level)) {
+
+                    AreaRVO areaRVO = new AreaRVO();
+
+                    Long cId = city_or_area_DO.getParentAreaId();
+                    BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(cId, VALID_STATUS);
+
+                    areaRVO.setPId(cityDO.getParentAreaId());
+                    areaRVO.setPName(areaCache.getAreaName(String.valueOf(cityDO.getParentAreaId())));
+
+                    areaRVO.setCId(cId);
+                    areaRVO.setCName(cityDO.getAreaName());
+
+                    areaRVO.setAId(city_or_area_DO.getAreaId());
+                    areaRVO.setAName(city_or_area_DO.getAreaName());
+
+                    result.add(areaRVO);
                 }
             }
+        }
         bankReturnVO.setList(result);
         return bankReturnVO;
     }
@@ -219,17 +242,17 @@ public class BankServiceImpl implements BankService
     }
 
     private List<CascadeAreaVO> areaList(Long bankId) {
-        Preconditions.checkArgument(bankId!=null,"银行名称不能为空");
+        Preconditions.checkArgument(bankId != null, "银行名称不能为空");
         List<BankCarLicenseLocationDO> list = bankCarLicenseLocationDOMapper.listByBankId(bankId);
         List<Long> bank_areaids = Lists.newArrayList();
-        for(BankCarLicenseLocationDO v:list){
+        for (BankCarLicenseLocationDO v : list) {
             bank_areaids.add(v.getAreaId());
         }
 
         List<CascadeAreaVO> ableAreaList = Lists.newArrayList();
 
         //根据管辖区域id获取管辖区域信息
-        List<BaseAreaDO> baseBindArea = bank_areaids.parallelStream().map(e->{
+        List<BaseAreaDO> baseBindArea = bank_areaids.parallelStream().map(e -> {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
             return baseAreaDO;
         }).distinct().collect(Collectors.toList());
@@ -238,139 +261,170 @@ public class BankServiceImpl implements BankService
 
         HashMap<Long, Set<Long>> areaMap = Maps.newHashMap();
 
-        baseBindArea.stream().forEach(hasArea->{
-            switch(hasArea.getLevel()){
+        baseBindArea.stream().forEach(hasArea -> {
+            switch (hasArea.getLevel()) {
 
                 case 0:
                     ableAreaList.addAll(areaCache.get());
                     break;
                 case 1:
                     List<Long> citys = baseAreaDOMapper.selectCityIdByProvenceId(hasArea.getAreaId());
-                    if(areaMap.keySet().contains(hasArea.getAreaId())){
+                    if (areaMap.keySet().contains(hasArea.getAreaId())) {
                         Set<Long> aaa = areaMap.get(hasArea.getAreaId());
                         aaa.addAll(citys);
-                        areaMap.put(hasArea.getAreaId(),aaa);
-                    }else{
-                        Set<Long> tmp =  Sets.newHashSet();
+                        areaMap.put(hasArea.getAreaId(), aaa);
+                    } else {
+                        Set<Long> tmp = Sets.newHashSet();
                         tmp.addAll(citys);
-                        areaMap.put(hasArea.getAreaId(),tmp);
+                        areaMap.put(hasArea.getAreaId(), tmp);
                     }
                     break;
                 case 2:
-                    if(areaMap.keySet().contains(hasArea.getParentAreaId())){
+                    if (areaMap.keySet().contains(hasArea.getParentAreaId())) {
                         Set<Long> aaa = areaMap.get(hasArea.getParentAreaId());
                         aaa.add(hasArea.getAreaId());
-                    }else{
-                        Set<Long> tmp =  Sets.newHashSet();
+                    } else {
+                        Set<Long> tmp = Sets.newHashSet();
                         tmp.add(hasArea.getAreaId());
-                        areaMap.put(hasArea.getParentAreaId(),tmp);
+                        areaMap.put(hasArea.getParentAreaId(), tmp);
                     }
                     break;
 
             }
         });
 
-        //根据银行管辖区域获取管辖区域的省市
-        List<CascadeAreaVO> cascadeAreaVOS = fillInfo(ableAreaList,areaMap);
-
+        // 根据银行管辖区域获取管辖区域的省市
+        List<CascadeAreaVO> cascadeAreaVOS = fillInfo(ableAreaList, areaMap);
 
         return cascadeAreaVOS;
-
     }
 
     @Override
     public List<CascadeAreaVO> areaListByBankName(String bankName) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(bankName),"银行名称不能为空");
-        Long bankId = bankDOMapper.selectIdByName(bankName);
+        Preconditions.checkArgument(StringUtils.isNotBlank(bankName), "银行名称不能为空");
+
+        Long bankId = bankCache.getIdByName(bankName);
+
         List<BankCarLicenseLocationDO> list = bankCarLicenseLocationDOMapper.listByBankId(bankId);
         List<Long> bank_areaids = Lists.newArrayList();
-        for(BankCarLicenseLocationDO v:list){
+        for (BankCarLicenseLocationDO v : list) {
             bank_areaids.add(v.getAreaId());
         }
 
         List<CascadeAreaVO> ableAreaList = Lists.newArrayList();
 
         //根据管辖区域id获取管辖区域信息
-        List<BaseAreaDO> baseBindArea = bank_areaids.parallelStream().map(e->{
+        List<BaseAreaDO> baseBindArea = bank_areaids.parallelStream().map(e -> {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
             return baseAreaDO;
         }).distinct().collect(Collectors.toList());
 
-        List<CascadeAreaVO.City> baseAreaDOS = Lists.newArrayList();
+        Map<Long, Set<Long>> areaMap = Maps.newHashMap();
 
-        HashMap<Long, Set<Long>> areaMap = Maps.newHashMap();
+        baseBindArea.stream().forEach(hasArea -> {
 
-        baseBindArea.stream().forEach(hasArea->{
-            switch(hasArea.getLevel()){
+            switch (hasArea.getLevel()) {
 
                 case 0:
                     ableAreaList.addAll(areaCache.get());
                     break;
+
                 case 1:
-                    List<Long> citys = baseAreaDOMapper.selectCityIdByProvenceId(hasArea.getAreaId());
-                    if(areaMap.keySet().contains(hasArea.getAreaId())){
-                        Set<Long> aaa = areaMap.get(hasArea.getAreaId());
+                    Long provinceId = hasArea.getAreaId();
+                    List<Long> citys = baseAreaDOMapper.selectCityIdByProvenceId(provinceId);
+
+                    if (areaMap.containsKey(provinceId)) {
+                        Set<Long> aaa = areaMap.get(provinceId);
                         aaa.addAll(citys);
-                        areaMap.put(hasArea.getAreaId(),aaa);
-                    }else{
-                        Set<Long> tmp =  Sets.newHashSet();
-                        tmp.addAll(citys);
-                        areaMap.put(hasArea.getAreaId(),tmp);
-                    }
-                    break;
-                case 2:
-                    if(areaMap.keySet().contains(hasArea.getParentAreaId())){
-                        Set<Long> aaa = areaMap.get(hasArea.getParentAreaId());
-                        aaa.add(hasArea.getAreaId());
-                    }else{
-                        Set<Long> tmp =  Sets.newHashSet();
-                        tmp.add(hasArea.getAreaId());
-                        areaMap.put(hasArea.getParentAreaId(),tmp);
+                        areaMap.put(provinceId, aaa);
+                    } else {
+                        Set<Long> tmp = Sets.newHashSet(citys);
+                        areaMap.put(provinceId, tmp);
                     }
                     break;
 
+                case 2:
+                    Long cityId_ = hasArea.getAreaId();
+                    Long provinceId_ = hasArea.getParentAreaId();
+                    if (areaMap.containsKey(provinceId_)) {
+                        Set<Long> aaa = areaMap.get(provinceId_);
+                        aaa.add(cityId_);
+                    } else {
+                        Set<Long> tmp = Sets.newHashSet(cityId_);
+                        areaMap.put(provinceId_, tmp);
+                    }
+                    break;
+
+                case 3:
+                    Long areaId__ = hasArea.getAreaId();
+                    Long cityId__ = hasArea.getParentAreaId();
+                    BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(cityId__, null);
+                    Long provinceId__ = cityDO.getParentAreaId();
+
+                    if (areaMap.containsKey(provinceId__)) {
+                        Set<Long> aaa = areaMap.get(provinceId__);
+                        aaa.add(areaId__);
+                    } else {
+                        Set<Long> tmp = Sets.newHashSet(areaId__);
+                        areaMap.put(provinceId__, tmp);
+                    }
+                    break;
             }
         });
 
         //根据银行管辖区域获取管辖区域的省市
-        List<CascadeAreaVO> cascadeAreaVOS = fillInfo(ableAreaList,areaMap);
-
+        List<CascadeAreaVO> cascadeAreaVOS = fillInfo(ableAreaList, areaMap);
 
         return cascadeAreaVOS;
-
     }
 
 
     /**
      * 填充信息
+     *
      * @param areaMap
      */
-    private List<CascadeAreaVO> fillInfo( List<CascadeAreaVO> ableAreaList ,HashMap<Long, Set<Long>> areaMap) {
+    private List<CascadeAreaVO> fillInfo(List<CascadeAreaVO> ableAreaList, Map<Long, Set<Long>> areaMap) {
 
-        areaMap.keySet().parallelStream().filter(Objects::nonNull).forEach(e->{
-            CascadeAreaVO baseArea = new CascadeAreaVO();
-            BaseAreaDO prov = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);//省
-            baseArea.setId(prov.getAreaId());
-            baseArea.setName(prov.getAreaName());
+        areaMap.keySet().parallelStream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
 
-            List<Long> list1 = new ArrayList(areaMap.get(e));
-            List<BaseAreaDO> cityList = baseAreaDOMapper.selectByIdList(list1, VALID_STATUS);
-            List citys = cityList.parallelStream().map(f->{
-                CascadeAreaVO.City city = new CascadeAreaVO.City();
-                city.setId(f.getAreaId());
-                city.setName(f.getAreaName());
-                city.setLevel(f.getLevel());
-                return city;
-            }).collect(Collectors.toList());
+                    CascadeAreaVO cascadeAreaVO = new CascadeAreaVO();
 
-            baseArea.setCityList(citys);
+                    // 省
+                    BaseAreaDO prov = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
+                    cascadeAreaVO.setId(prov.getAreaId());
+                    cascadeAreaVO.setName(prov.getAreaName());
 
-            ableAreaList.add(baseArea);
-        });
+                    // 市/区
+                    Set<Long> city_or_area_ids = areaMap.get(e);
+                    if (!CollectionUtils.isEmpty(city_or_area_ids)) {
+
+                        List<CascadeAreaVO.City> city_or_area_DOS = city_or_area_ids.stream()
+                                .filter(Objects::nonNull)
+                                .map(city_or_area_id -> {
+
+                                    BaseAreaDO city_or_area_DO = baseAreaDOMapper.selectByPrimaryKey(city_or_area_id, null);
+
+                                    CascadeAreaVO.City city = new CascadeAreaVO.City();
+                                    city.setId(city_or_area_DO.getAreaId());
+                                    city.setName(city_or_area_DO.getAreaName());
+                                    city.setLevel(city_or_area_DO.getLevel());
+                                    return city;
+                                })
+                                .collect(Collectors.toList());
+
+                        // 市/区
+                        cascadeAreaVO.setCityList(city_or_area_DOS);
+                        // 省
+                        ableAreaList.add(cascadeAreaVO);
+                    }
+
+                });
 
         return ableAreaList;
     }
-
 
 
     /**
@@ -440,9 +494,12 @@ public class BankServiceImpl implements BankService
         bindQuestion(bankId, questionList);
     }
 
-    private void bindBankCarLicenseLocation(Long bankId, List<Long> bankCarLicenseLocationList){
+    private void bindBankCarLicenseLocation(Long bankId, List<Long> bankCarLicenseLocationList) {
+        // deleteAll-Old
         bankCarLicenseLocationDOMapper.deleteByBankId(bankId);
-        for(Long areaId:bankCarLicenseLocationList){
+
+        // bindNow
+        for (Long areaId : bankCarLicenseLocationList) {
             BankCarLicenseLocationDO save = new BankCarLicenseLocationDO();
             save.setBankId(bankId);
             save.setAreaId(areaId);

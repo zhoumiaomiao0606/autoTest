@@ -2,13 +2,12 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.query.BaseAreaQuery;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
 public interface BaseAreaDOMapper {
+
     int deleteByPrimaryKey(Long areaId);
 
     int insert(BaseAreaDO record);

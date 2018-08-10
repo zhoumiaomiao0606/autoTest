@@ -4,8 +4,12 @@ import lombok.Data;
 
 @Data
 public class AreaRVO {
-    private String pId;
-    private String cId;
+
+    private Long pId;
+    private Long cId;
+    private Long aId;
+
     private String pName;
     private String cName;
+    private String aName;
 }

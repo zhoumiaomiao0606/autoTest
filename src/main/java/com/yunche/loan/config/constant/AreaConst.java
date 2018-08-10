@@ -21,7 +21,7 @@ public class AreaConst {
     /**
      * 区、县
      */
-    public static final Byte LEVEL_COUNTY = 3;
+    public static final Byte LEVEL_AREA = 3;
     /**
      * 全国
      */
