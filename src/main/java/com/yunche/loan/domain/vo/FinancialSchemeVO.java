@@ -12,6 +12,7 @@ public class FinancialSchemeVO {
     private String cname;//主贷人姓名
     private String id_card;//身份证
     private String financial_product_name;//业务产品
+    private String financial_product_id;//产品ID
     private String license_plate_number;//车牌号
     private String registration_certificate_number;//登记证号
     private String apply_license_plate_date;//上牌日期
