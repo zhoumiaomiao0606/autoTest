@@ -308,6 +308,7 @@
                     #{item}
                 </foreach>
             </if>
+            AND customer.cust_type  in  (1,2,3) and customer.status = 0
         </where>
         <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
             having(
@@ -441,6 +442,7 @@
                     #{item}
                 </foreach>
             </if>
+            AND customer.cust_type  in  (1,2,3) and customer.status = 0
         </where>
         <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
             having(
