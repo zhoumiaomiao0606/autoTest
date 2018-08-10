@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.BankCache;
-import com.yunche.loan.config.constant.AreaConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankCarLicenseLocationDO;
 import com.yunche.loan.domain.entity.BankDO;
@@ -43,11 +42,9 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  */
 @Service
 public class BankServiceImpl implements BankService {
-    @Autowired
-    private BaseAreaDOMapper baseAreaDOMapper;
 
     @Autowired
-    private AreaCache areaCache;
+    private BaseAreaDOMapper baseAreaDOMapper;
 
     @Autowired
     private BankDOMapper bankDOMapper;
@@ -56,10 +53,13 @@ public class BankServiceImpl implements BankService {
     private BankRelaQuestionDOMapper bankRelaQuestionDOMapper;
 
     @Autowired
-    private BankCache bankCache;
+    private BankCarLicenseLocationDOMapper bankCarLicenseLocationDOMapper;
 
     @Autowired
-    private BankCarLicenseLocationDOMapper bankCarLicenseLocationDOMapper;
+    private AreaCache areaCache;
+
+    @Autowired
+    private BankCache bankCache;
 
 
     @Override
