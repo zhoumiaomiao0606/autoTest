@@ -8,8 +8,13 @@ import java.util.List;
 @Data
 public class ExportBankCreditQueryVerifyParam
 {
+    //银行审核时间
     private  String startDate;
     private  String endDate;
+
+    //征信申请时间
+    private String startCreditGmtCreate;
+    private String endCreditGmtCreate;
 
     //合伙人团队列表
     private List<Long> partnerList;

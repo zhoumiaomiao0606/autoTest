@@ -11,6 +11,7 @@ public class UniversalCarInfoVO {
     private String actual_car_price;  // 实际成交价格
     private String car_name;//车系
     private String car_detail_name;//车型
+    private String car_detail_id;//车型ID
     private String car_vehicle_property;//车辆属性
     private String car_type;//车辆类别
     private String vehicle_vehicle_identification_number;

@@ -283,8 +283,8 @@
         LIMIT 1
         ) AS gmt_user
         FROM
-        loan_credit_info credit_info
-        LEFT JOIN loan_customer customer ON credit_info.customer_id = customer.id
+        loan_customer customer
+        LEFT JOIN loan_credit_info credit_info ON credit_info.customer_id = customer.id
         LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
         LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
         LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
@@ -309,6 +309,12 @@
                 </foreach>
             </if>
         </where>
+        <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
+            having(
+            TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+            AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+            )
+        </if>
         order by credit_info.gmt_modify desc
     </select>
 
@@ -377,6 +383,14 @@
         ELSE
         NULL
         END AS credit_result,
+        CASE
+        WHEN customer.guarantee_type = 1 THEN
+        '银行担保'
+        WHEN customer.guarantee_type = 2 THEN
+        '内部担保'
+        ELSE
+        NULL
+        END  AS guaranteeType,
         (
         SELECT
         create_time
@@ -403,8 +417,8 @@
         LIMIT 1
         ) AS gmt_user
         FROM
-        loan_credit_info credit_info
-        LEFT JOIN loan_customer customer ON credit_info.customer_id = customer.id
+        loan_customer customer
+        LEFT JOIN loan_credit_info credit_info ON credit_info.customer_id = customer.id
         LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
         LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
         LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
@@ -428,6 +442,12 @@
                 </foreach>
             </if>
         </where>
+        <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
+            having(
+            TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+            AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+            )
+        </if>
         order by credit_info.gmt_modify desc
     </select>
     <!--=======================================导出 EXCEL 财务垫款明细查询=========================================-->

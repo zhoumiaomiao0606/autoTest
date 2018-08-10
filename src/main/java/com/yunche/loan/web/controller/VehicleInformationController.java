@@ -5,8 +5,8 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
 import com.yunche.loan.service.VehicleInformationService;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import javax.annotation.Resource;
 
 @CrossOrigin
@@ -30,7 +30,7 @@ public class VehicleInformationController {
      * 提车资料录入
      */
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> update(@RequestBody @Validated VehicleInformationUpdateParam param) {
+    public ResultBean<Void> update(@RequestBody  VehicleInformationUpdateParam param) {
         vehicleInformationService.update(param);
         return ResultBean.ofSuccess(null,"保存成功");
     }

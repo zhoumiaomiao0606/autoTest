@@ -84,7 +84,7 @@ public class ImageTest {
     }
     @Test
     public void func3(){
-        ImageUtil.compress("/tmp/6666.doc","/tmp/7777.doc");
+        ImageUtil.compress("/tmp/4545.png","/tmp/9999.png");
         return ;
     }
     @Test
