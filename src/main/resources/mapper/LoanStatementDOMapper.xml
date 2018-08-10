@@ -309,14 +309,12 @@
                 </foreach>
             </if>
         </where>
-        having(
-        <if test="startCreditGmtCreate != null">
-             TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
-        </if>
-        <if test="endCreditGmtCreate != null">
+        <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
+            having(
+            TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
             AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+            )
         </if>
-        )
         order by credit_info.gmt_modify desc
     </select>
 
@@ -436,14 +434,12 @@
                 </foreach>
             </if>
         </where>
-        having(
-        <if test="startCreditGmtCreate != null">
+        <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
+            having(
             TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
-        </if>
-        <if test="endCreditGmtCreate != null">
             AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+            )
         </if>
-        )
         order by credit_info.gmt_modify desc
     </select>
     <!--=======================================导出 EXCEL 财务垫款明细查询=========================================-->
