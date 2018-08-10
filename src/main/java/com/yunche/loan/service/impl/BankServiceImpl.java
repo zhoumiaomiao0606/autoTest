@@ -494,7 +494,7 @@ public class BankServiceImpl implements BankService {
         bindQuestion(bankId, questionList);
     }
 
-    private void bindBankCarLicenseLocation(Long bankId, List<Long> bankCarLicenseLocationList) {
+    private void bindBankCarLicenseLocation(Long bankId, Set<Long> bankCarLicenseLocationList) {
         // deleteAll-Old
         bankCarLicenseLocationDOMapper.deleteByBankId(bankId);
 
