@@ -256,7 +256,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
+        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
@@ -422,8 +422,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 LoanProcessDO loanProcessDO_ = new LoanProcessDO();
                 loanProcessDO_.setOrderId(approval.getOrderId());
                 loanProcessDO_.setTelephoneVerify(TASK_PROCESS_INIT);
-                loanProcessDO_.setLoanApply(TASK_PROCESS_INIT);
-                loanProcessDO_.setVisitVerify(TASK_PROCESS_INIT);
+                loanProcessDO_.setLoanApply(TASK_PROCESS_TODO);
+                loanProcessDO_.setVisitVerify(TASK_PROCESS_TODO);
                 updateLoanProcess(loanProcessDO_);
             }
 
