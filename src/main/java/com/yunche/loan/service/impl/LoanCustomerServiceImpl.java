@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.LoanCustomerConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
@@ -32,8 +33,8 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.GuaranteeRelaConst.GUARANTOR_PERSONAL;
+import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
 
@@ -171,8 +172,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 //        } else if (GUARANTEE_TYPE_BANK.equals(guaranteeType)) {
 //
 //        }
-
-        if (CUST_TYPE_GUARANTOR.equals(loanCustomerDO.getCustType())) {
+        //如果是银行担保的 && 是担保人时校验担保人关系
+        if (CUST_TYPE_GUARANTOR.equals(loanCustomerDO.getCustType())
+                && loanCustomerDO.getGuaranteeType().equals(LoanCustomerConst.GUARANTEE_TYPE_BANK)) {
             List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getPrincipalCustId(), CUST_TYPE_GUARANTOR, VALID_STATUS);
             if (CollectionUtils.isEmpty(loanCustomerDOS)) {
                 if (!String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())) {
