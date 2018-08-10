@@ -30,8 +30,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_BANK;
-import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_SOCIAL;
+import static com.yunche.loan.config.constant.GuaranteeRelaConst.GUARANTOR_PERSONAL;
+import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.INFO_SUPPLEMENT;
@@ -1020,7 +1020,14 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         List<CustomerParam> emergencyContactList = param.getEmergencyContactList();
 
         createLoanCustomerList(principalLenderId, commonLenderList);
-        createLoanCustomerList(principalLenderId, guarantorList);
+
+
+        if(checkGuarantor(principalLenderId,guarantorList)){
+            createLoanCustomerList(principalLenderId, guarantorList);
+        }else{
+            Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
+        }
+
         createLoanCustomerList(principalLenderId, emergencyContactList);
 
         return principalLenderId;
@@ -1031,6 +1038,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * @param relaCustomerList
      */
     private void createLoanCustomerList(Long principalLenderId, List<CustomerParam> relaCustomerList) {
+
+
         if (!CollectionUtils.isEmpty(relaCustomerList)) {
             relaCustomerList.parallelStream()
                     .filter(Objects::nonNull)
@@ -1040,6 +1049,33 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                     });
         }
     }
+
+    /**
+     *
+     * @param relaCustomerList
+     * @return
+     */
+    private boolean checkGuarantor(Long principalLenderId,List<CustomerParam> relaCustomerList) {
+
+        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalLenderId, CUST_TYPE_GUARANTOR, VALID_STATUS);
+
+        //统计 是 银行担保 && 与担保人关系为本人的数据
+        List collect = relaCustomerList.stream().filter(Objects::nonNull)
+                .filter(e-> e.getGuaranteeType().equals(GUARANTEE_TYPE_BANK) &&e.getGuaranteeRela().equals(String.valueOf(GUARANTOR_PERSONAL)))
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(loanCustomerDOS)) {
+            if(!CollectionUtils.isEmpty(collect) && collect.size()!=1){
+                return false;
+            }
+        }else{
+            if(!CollectionUtils.isEmpty(collect)){
+                return false;
+            }
+        }
+        return true;
+
+    }
+
 
     private Long createLoanCustomer(CustomerParam customerParam) {
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();

@@ -2,7 +2,6 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.constant.LoanCustomerConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.GuaranteeRelaConst.GUARANTOR_PERSONAL;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
@@ -162,25 +160,6 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
             if (null != custRelation) {
                 Preconditions.checkArgument(CUST_RELATION_pei_ou.equals(custRelation), "共贷人与主贷人关系只能为[配偶]");
             }
-        }
-
-        // TODO 担保人中，当担保人为内部担保时，不显示与主担保人关系；当担保人为银行担保时，显示与主担保人关系
-        //如果是银行担保的 && 是担保人时校验担保人关系
-        if (CUST_TYPE_GUARANTOR.equals(loanCustomerDO.getCustType())) {
-            Preconditions.checkNotNull(loanCustomerDO.getGuaranteeType(),"担保人担保类型不能为空");
-            if(loanCustomerDO.getGuaranteeType().equals(LoanCustomerConst.GUARANTEE_TYPE_BANK)){
-                List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getPrincipalCustId(), CUST_TYPE_GUARANTOR, VALID_STATUS);
-                if (CollectionUtils.isEmpty(loanCustomerDOS)) {
-                    if (!String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())) {
-                        Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
-                    }
-                } else {
-                    if (String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())) {
-                        Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
-                    }
-                }
-            }
-
         }
 
         loanCustomerDO.setStatus(VALID_STATUS);
