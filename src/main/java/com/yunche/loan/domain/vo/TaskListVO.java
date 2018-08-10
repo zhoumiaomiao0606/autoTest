@@ -25,6 +25,7 @@ public class TaskListVO {
     private String idCard;
     private String mobile;
     private String remitGmtCreate;
+    private String bankId;
     private String bank;
     private String departmentName;
     private String loanAmount;
