@@ -48,7 +48,6 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C_NEW_FILTER;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;
 
-
 /**
  * @author liuzhe
  * @date 2018/7/4
@@ -483,9 +482,38 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
                 })
                 .collect(Collectors.toList());
 
+        // [接收人信息] - 批量填充
         int count = batchInsert(loanDataFlowDOList);
 
+        // [节点] - 批量PASS
+        batchApproval_pass(loanDataFlowDOList);
+
         return ResultBean.ofSuccess(count);
+    }
+
+    /**
+     * 批量提交
+     *
+     * @param loanDataFlowDOList
+     */
+    private void batchApproval_pass(List<LoanDataFlowDO> loanDataFlowDOList) {
+
+        if (CollectionUtils.isEmpty(loanDataFlowDOList)) {
+            return;
+        }
+
+        // getAll  ==>    orderId / type
+        List<LoanDataFlowDO> loanDataFlowDOS = loanDataFlowDOList.stream()
+                .filter(Objects::nonNull)
+                .map(e -> {
+
+                    LoanDataFlowDO loanDataFlowDO = loanDataFlowDOMapper.selectByPrimaryKey(e.getId());
+
+                    return loanDataFlowDO;
+                })
+                .collect(Collectors.toList());
+
+        autoCompleteTask(loanDataFlowDOS);
     }
 
     /**

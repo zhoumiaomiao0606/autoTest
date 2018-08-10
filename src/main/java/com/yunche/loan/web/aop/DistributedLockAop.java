@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,8 @@ import java.util.Random;
 @Aspect
 @Component
 public class DistributedLockAop {
+
+    private static final Logger logger = LoggerFactory.getLogger(DistributedLockAop.class);
 
     /**
      * @see com.yunche.loan.config.anno.DistributedLock
@@ -71,6 +75,7 @@ public class DistributedLockAop {
 
             // 获取锁
             boolean getLock = lockUtils.lock(key, val, timeOut);
+            logger.info(getLock ? "获取锁成功！KEY：" + key + " , VAL：" + val : "获取锁失败！KEY：" + key + " , VAL：" + val);
 
             // 获取到锁
             if (getLock) {
@@ -89,6 +94,7 @@ public class DistributedLockAop {
 
             // 释放锁
             boolean releaseLock = lockUtils.releaseLock(key, val);
+            logger.info(releaseLock ? "释放锁成功！KEY：" + key + " , VAL：" + val : "释放锁失败！KEY：" + key + " , VAL：" + val);
         }
 
         return null;

@@ -55,6 +55,7 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
+import static com.yunche.loan.config.constant.LoanRefundApplyConst.REFUND_REASON_3;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
 import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_DOING;
 import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_DONE;
@@ -255,7 +256,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-        creditAutomaticCommit(approval);
+//        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
@@ -659,6 +660,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     /**
      * 执行 -【金融方案修改申请】
+     * <p>
+     * 能发起 - 【金融方案修改申请】的节点：
+     * [业务付款申请]-未提交 || [业务审批]-未提交  ||  [放款审批]-未提交        || [放款确认]-已退款
      *
      * @param approval
      * @param loanOrderDO
@@ -672,11 +676,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 提交
             Preconditions.checkArgument(ACTION_PASS.equals(approval.getAction()), "流程审核参数有误");
 
+            // 操作锁定 (退款申请中/金融方案修改申请中);
+            lockProcess(loanProcessDO);
+
             // 更新申请单状态
             updateFinancialSchemeModifyApply(approval, APPLY_ORDER_TODO);
-
-            // 锁定操作 -更新流程状态
-            lockProcess(loanProcessDO);
 
             // [领取]完成
             finishTask_(approval);
@@ -726,7 +730,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 锁定操作
+     * 锁定操作(退款申请中/金融方案修改申请中)
+     * <p>
+     * 锁定操作 ===>  [打款确认 - REMIT_REVIEW] --> 22
      *
      * @param loanProcessDO
      */
@@ -852,12 +858,26 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         updateFinancialPlan(loanFinancialPlanId, approval.getSupplementOrderId());
 
         // 自动打回 ->【业务付款】 （重走【业务付款】）
+        autoReject2BusinessPay_passFinancialSchemeModifyApplyReviewTask(loanProcessDO);
+    }
+
+    /**
+     * 自动打回 ->【业务付款】 （重走【业务付款】）
+     *
+     * @param loanProcessDO
+     */
+    private void autoReject2BusinessPay_passFinancialSchemeModifyApplyReviewTask(LoanProcessDO loanProcessDO) {
+        // BUSINESS_REVIEW -> [BUSINESS_PAY]
         if (TASK_PROCESS_TODO.equals(loanProcessDO.getBusinessReview())) {
-            autoReject2BusinessPay(approval.getOrderId(), BUSINESS_REVIEW.getCode(), loanProcessDO);
-        } else if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
-            autoReject2BusinessPay(approval.getOrderId(), LOAN_REVIEW.getCode(), loanProcessDO);
-        } else if (TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())) {
-            autoReject2BusinessPay(approval.getOrderId(), REMIT_REVIEW_FILTER.getCode(), loanProcessDO);
+            autoReject2BusinessPay(loanProcessDO.getOrderId(), BUSINESS_REVIEW.getCode(), loanProcessDO);
+        }
+        // LOAN_REVIEW -> [BUSINESS_PAY]
+        else if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
+            autoReject2BusinessPay(loanProcessDO.getOrderId(), LOAN_REVIEW.getCode(), loanProcessDO);
+        }
+        // REMIT_REVIEW_FILTER -> [BUSINESS_PAY]
+        else if (TASK_PROCESS_REFUND.equals(loanProcessDO.getRemitReview())) {
+            autoReject2BusinessPay(loanProcessDO.getOrderId(), REMIT_REVIEW_FILTER.getCode(), loanProcessDO);
         }
     }
 
@@ -871,12 +891,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void autoReject2BusinessPay(Long orderId, String autoRejectOriginTaskDefinitionKey, LoanProcessDO loanProcessDO) {
 
         ApprovalParam approvalParam = new ApprovalParam();
+
         approvalParam.setOrderId(orderId);
         approvalParam.setTaskDefinitionKey(autoRejectOriginTaskDefinitionKey);
         approvalParam.setAction(ACTION_REJECT_AUTO);
+
         approvalParam.setCheckPermission(false);
         approvalParam.setNeedLog(false);
         approvalParam.setNeedPush(false);
+
         approval(approvalParam);
 
         loanProcessDO.setBusinessPay(TASK_PROCESS_TODO);
@@ -952,6 +975,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     /**
      * 执行 -【退款申请】
+     * <p>
+     * 能发起[退款申请]的节点：[打款确认]-已提交
      *
      * @param approval
      * @param loanProcessDO
@@ -964,6 +989,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 提交
             Preconditions.checkArgument(ACTION_PASS.equals(approval.getAction()), "流程审核参数有误");
 
+            // check
+            Preconditions.checkArgument(!TASK_PROCESS_INIT.equals(loanProcessDO.getLoanReview()), "[打款确认]未提交，无法发起退款申请");
+            Preconditions.checkArgument(!TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview()), "[打款确认]未提交，无法发起退款申请");
+
+            // 锁定操作 (退款申请中/金融方案修改申请中)
+            lockProcess(loanProcessDO);
+
             // 更新申请单状态
             updateRefundApply(approval, APPLY_ORDER_TODO);
 
@@ -975,6 +1007,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 通过/打回
             if (ACTION_PASS.equals(approval.getAction())) {
+
+                // 退款原因(类型)：3-业务审批重审     ===>   自动打回 ->【业务付款】
+                LoanRefundApplyDO loanRefundApplyDO = getLoanRefundApply(approval.getOrderId());
+                if (REFUND_REASON_3.equals(loanRefundApplyDO.getRefund_reason())) {
+
+                    // 自动打回   [退款申请-已提交] ->【业务付款】 （重走【业务付款】）
+                    if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview())) {
+
+                        // 能发起[退款申请]的节点：[打款确认]-已提交
+                        autoReject2BusinessPay(loanProcessDO.getOrderId(), REMIT_REVIEW_FILTER.getCode(), loanProcessDO);
+                    }
+                }
 
                 // 更新申请单状态
                 updateRefundApply(approval, APPLY_ORDER_PASS);
@@ -1300,7 +1344,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     // 若未开卡，提交业务付款申请单时候，提示：请先提交开卡申请
                     String lastBankInterfaceSerialStatus = loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
                     Preconditions.checkArgument("1".equals(lastBankInterfaceSerialStatus) || "2".equals(lastBankInterfaceSerialStatus),
-                            "请先提交开卡申请");
+                            "请先提交[开卡申请]");
                 }
             }
         }
@@ -2066,6 +2110,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(loanCustomerDO, "数据异常，主贷人信息为空");
 
         return loanCustomerDO;
+    }
+
+    /**
+     * 获取 LoanRefundApplyDO
+     *
+     * @param orderId
+     * @return
+     */
+    private LoanRefundApplyDO getLoanRefundApply(Long orderId) {
+        LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(orderId);
+        Preconditions.checkNotNull(loanRefundApplyDO, "[退款申请单]不存在");
+
+        return loanRefundApplyDO;
     }
 
     /**
