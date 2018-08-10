@@ -4,6 +4,8 @@ package com.yunche.loan.domain.param;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
+import java.util.List;
+
 
 @Data
 public class ApplyLicensePlateDepositInfoUpdateParam{
@@ -22,4 +24,6 @@ public class ApplyLicensePlateDepositInfoUpdateParam{
     @NotBlank
     private String registration_certificate_number;
 
+    //附件路径
+    private List<UniversalFileParam> files;
 }

@@ -1,11 +1,14 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO;
 import com.yunche.loan.domain.entity.BaseAreaDO;
+import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.ApplyLicensePlateDepositInfoUpdateParam;
+import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
 import com.yunche.loan.domain.vo.ApplyLicensePlateDepositInfoVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -19,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
@@ -44,6 +50,9 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+
+    @Resource
+    private LoanFileDOMapper loanFileDOMapper;
 
 
     @Override
@@ -73,6 +82,10 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
         RecombinationVO<ApplyLicensePlateDepositInfoVO> recombinationVO = new RecombinationVO<ApplyLicensePlateDepositInfoVO>();
         recombinationVO.setInfo(applyLicensePlateDepositInfoVO);
         recombinationVO.setCustomers(customers);
+        Set<Byte> types = new HashSet<Byte>();
+        types.add(new Byte("23"));
+        types.add(new Byte("20"));
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, types));
         return recombinationVO;
     }
 
@@ -111,5 +124,30 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
         }
 
         vehicleInformationService.update(BeanPlasticityUtills.copy(VehicleInformationUpdateParam.class, param));
+
+
+        Long customerId = loanOrderDO.getLoanCustomerId();
+
+        if (customerId != null) {
+            if (param.getFiles() != null) {
+                if (!param.getFiles().isEmpty()) {
+                    for (UniversalFileParam universalFileParam : param.getFiles()) {
+                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte(universalFileParam.getType()), null);
+                        for (LoanFileDO loanFileDO : uploadList) {
+                            loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
+                        }
+                        LoanFileDO loanFileDO = new LoanFileDO();
+                        loanFileDO.setCustomerId(customerId);
+                        loanFileDO.setPath(JSON.toJSONString(universalFileParam.getUrls()));
+                        loanFileDO.setType(new Byte(universalFileParam.getType()));
+                        loanFileDO.setUploadType(new Byte("1"));
+                        loanFileDO.setGmtCreate(new Date());
+                        loanFileDO.setGmtModify(new Date());
+                        loanFileDO.setStatus(new Byte("0"));
+                        loanFileDOMapper.insertSelective(loanFileDO);
+                    }
+                }
+            }
+        }
     }
 }
