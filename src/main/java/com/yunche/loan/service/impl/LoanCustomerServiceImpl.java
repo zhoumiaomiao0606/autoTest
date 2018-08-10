@@ -165,26 +165,22 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         }
 
         // TODO 担保人中，当担保人为内部担保时，不显示与主担保人关系；当担保人为银行担保时，显示与主担保人关系
-//        // 逻辑判断变更：当担保人为银行担保的时候，与主担保人关系有且只有一个
-//        Byte guaranteeType = loanCustomerDO.getGuaranteeType();
-//        if (GUARANTEE_TYPE_INSIDE.equals(guaranteeType)) {
-//            Preconditions.checkArgument(StringUtils.isBlank(loanCustomerDO.getGuaranteeRela()), "内部担保，无担保人关系");
-//        } else if (GUARANTEE_TYPE_BANK.equals(guaranteeType)) {
-//
-//        }
         //如果是银行担保的 && 是担保人时校验担保人关系
-        if (CUST_TYPE_GUARANTOR.equals(loanCustomerDO.getCustType())
-                && loanCustomerDO.getGuaranteeType().equals(LoanCustomerConst.GUARANTEE_TYPE_BANK)) {
-            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getPrincipalCustId(), CUST_TYPE_GUARANTOR, VALID_STATUS);
-            if (CollectionUtils.isEmpty(loanCustomerDOS)) {
-                if (!String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())) {
-                    Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
-                }
-            } else {
-                if (String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())) {
-                    Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
+        if (CUST_TYPE_GUARANTOR.equals(loanCustomerDO.getCustType())) {
+            Preconditions.checkNotNull(loanCustomerDO.getGuaranteeType(),"担保人担保类型不能为空");
+            if(loanCustomerDO.getGuaranteeType().equals(LoanCustomerConst.GUARANTEE_TYPE_BANK)){
+                List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(loanCustomerDO.getPrincipalCustId(), CUST_TYPE_GUARANTOR, VALID_STATUS);
+                if (CollectionUtils.isEmpty(loanCustomerDOS)) {
+                    if (!String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())) {
+                        Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
+                    }
+                } else {
+                    if (String.valueOf(GUARANTOR_PERSONAL).equals(loanCustomerDO.getGuaranteeRela())) {
+                        Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
+                    }
                 }
             }
+
         }
 
         loanCustomerDO.setStatus(VALID_STATUS);
