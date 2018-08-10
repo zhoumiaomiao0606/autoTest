@@ -294,12 +294,6 @@
 
         <where>
             and credit_info.type = 1  and credit_info.gmt_modify between #{startDate} and #{endDate}
-            <if test="startCreditGmtCreate != null">
-                AND TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
-            </if>
-            <if test="endCreditGmtCreate != null">
-                AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
-            </if>
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 principal_base.partner_id in
@@ -315,6 +309,14 @@
                 </foreach>
             </if>
         </where>
+        having(
+        <if test="startCreditGmtCreate != null">
+             TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+        </if>
+        )
         order by credit_info.gmt_modify desc
     </select>
 
@@ -419,12 +421,6 @@
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
         <where>
             and credit_info.type = 2  and credit_info.gmt_modify between #{startDate} and #{endDate}
-            <if test="startCreditGmtCreate != null">
-                AND TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
-            </if>
-            <if test="endCreditGmtCreate != null">
-                AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
-            </if>
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 principal_base.partner_id in
@@ -440,6 +436,14 @@
                 </foreach>
             </if>
         </where>
+        having(
+        <if test="startCreditGmtCreate != null">
+            TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+        </if>
+        )
         order by credit_info.gmt_modify desc
     </select>
     <!--=======================================导出 EXCEL 财务垫款明细查询=========================================-->
