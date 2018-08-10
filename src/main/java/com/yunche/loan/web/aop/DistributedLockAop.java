@@ -56,6 +56,10 @@ public class DistributedLockAop {
 
             // prefix + methodName + hashCode
             key = LOCK_KEY_PREFIX + method.getName() + ":" + fullMethodNameHashCode;
+
+        } else {
+
+            key = LOCK_KEY_PREFIX + key;
         }
 
         // 生成一个随机数：作为当前🔐的val
