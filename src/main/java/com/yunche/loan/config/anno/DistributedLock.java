@@ -20,7 +20,7 @@ public @interface DistributedLock {
      *
      * @return
      */
-    String key() default "lock:key:";
+    String key() default "";
 
     /**
      * 当前锁的：自动过期时间  （单位：微秒）默认值：1000

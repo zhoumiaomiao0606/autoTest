@@ -1,6 +1,5 @@
 package com.yunche.loan.web.aop;
 
-import com.google.common.collect.Maps;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.util.LockUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -11,9 +10,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -31,8 +28,7 @@ public class DistributedLockAop {
      * <p>
      * methodName - DefaultValue   Map
      */
-    private static Map<String, Object> methodName_DefaultValue_Map = Maps.newHashMap();
-
+    private static final String LOCK_KEY_PREFIX = "lock:key:";
 
     @Autowired
     private LockUtils lockUtils;
@@ -50,8 +46,7 @@ public class DistributedLockAop {
         long timeOut = annotation.timeOut();
 
         // key
-        Object defaultValue_key = methodName_DefaultValue_Map.get("key");
-        if (defaultValue_key.equals(key) || StringUtils.isBlank(key)) {
+        if (StringUtils.isBlank(key)) {
 
             // methodName
             String fullMethodName = getFullMethodName(method);
@@ -60,7 +55,7 @@ public class DistributedLockAop {
             int fullMethodNameHashCode = fullMethodName.hashCode();
 
             // prefix + methodName + hashCode
-            key = defaultValue_key + method.getName() + ":" + fullMethodNameHashCode;
+            key = LOCK_KEY_PREFIX + method.getName() + ":" + fullMethodNameHashCode;
         }
 
         // 生成一个随机数：作为当前🔐的val
@@ -122,29 +117,6 @@ public class DistributedLockAop {
         }
 
         return fullMethodName;
-    }
-
-    /**
-     * 初始化：methodName_DefaultValue_Map
-     *
-     * @throws NoSuchFieldException
-     */
-    @PostConstruct
-    public static void init() {
-
-        Class<DistributedLock> clazz = DistributedLock.class;
-
-        Method[] methods = clazz.getDeclaredMethods();
-
-        for (int i = 0; i < methods.length; i++) {
-
-            Method method = methods[i];
-
-            String methodName = method.getName();
-            Object defaultValue = method.getDefaultValue();
-
-            methodName_DefaultValue_Map.put(methodName, defaultValue);
-        }
     }
 
 }
