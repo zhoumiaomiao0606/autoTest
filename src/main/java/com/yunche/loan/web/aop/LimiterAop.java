@@ -46,7 +46,7 @@ public class LimiterAop {
         String obj = SecurityUtils.getSubject().getSession().getId().toString() + ":" + JSON.toJSONString(point.getArgs());
 
         if (!distributedLimiter.execute(route, limit, obj)) {
-            throw new BizException("访问太过频繁，请稍后再试！");
+            throw new BizException("操作太过频繁，请勿重复点击！");
         }
 
         return point.proceed();
