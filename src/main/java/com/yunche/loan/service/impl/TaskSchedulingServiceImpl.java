@@ -89,7 +89,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public boolean selectRejectTask(Long orderId) {
         // 节点校验
-        if(orderId == null){
+        if (orderId == null) {
             throw new BizException("无订单");
         }
 
@@ -97,7 +97,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     @Override
-    public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(String key,Integer pageIndex, Integer pageSize) {
+    public ResultBean<List<ScheduleTaskVO>> scheduleTaskList(String key, Integer pageIndex, Integer pageSize) {
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
@@ -166,7 +166,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         return ResultBean.ofSuccess(count);
     }
-
 
 
     @Override
@@ -497,19 +496,14 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     appTaskVO.setCarPrice(e.getCar_price());
                     appTaskVO.setCarDetailId(e.getCar_detail_id());
 
-                    // bankId  convert
-                    if (StringUtils.isNotBlank(appTaskVO.getBankName())) {
-                        appTaskVO.setBankId(String.valueOf(bankCache.getIdByName(e.getBank())));
-                    }
-
                     // taskStatus
                     fillTaskStatus(appTaskVO);
 
                     // can [征信增补]
                     canCreditSupplement(Long.valueOf(e.getId()), appTaskVO);
 
-                    // 面签客户查询时，才需要车型
-                    if (null == multipartType) {
+                    // 视频面签列表查询时   ==>  才需要车型
+                    if (multipartType == 7) {
                         // carName
                         if (StringUtils.isNotBlank(appTaskVO.getCarDetailId())) {
                             appTaskVO.setCarName(carService.getFullName(Long.valueOf(appTaskVO.getCarDetailId()), CAR_DETAIL));
@@ -648,10 +642,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
      */
     private List<Long> getUserHaveBizArea(Long id) {
         List<Long> longs = loanQueryDOMapper.selectEmpBizAreaPartnerIds(SessionUtils.getLoginUser().getId());
-        if(CollectionUtils.isEmpty(longs)){
+        if (CollectionUtils.isEmpty(longs)) {
             return null;
         }
-        if(longs.get(0) == null){
+        if (longs.get(0) == null) {
             return null;
         }
         return longs;

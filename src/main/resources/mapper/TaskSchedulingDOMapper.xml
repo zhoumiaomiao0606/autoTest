@@ -258,8 +258,9 @@
         join_c.mobile AS mobile,
         join_e.name AS salesman,
         DATE_FORMAT(complex_log.credit_create_time, '%Y-%m-%d %H:%i:%S' ) AS creditGmtCreate,
-        join_b.bank AS bank,
-        join_d.name AS departmentName,
+        join_bk.id   AS bankId,
+        join_bk.name AS bank,
+        join_d.name  AS departmentName,
         join_f.loan_amount AS loanAmount,
         join_f.bank_period_principal AS bankPeriodPrincipal,
         join_f.sign_rate AS signRate,
@@ -271,18 +272,20 @@
         join_f.down_payment_money AS downPaymentMoney,
         join_car.car_detail_id,
         join_f.car_price
-        from loan_order main
-        inner join loan_process deputy on main.id = deputy.order_id
-        left join loan_customer join_c on join_c.id = main.loan_customer_id
-        left join loan_base_info join_b on join_b.id = main.loan_base_info_id
-        left join loan_financial_plan join_f on join_f.id = main.loan_financial_plan_id
-        left join loan_car_info join_car on join_car.id = main.loan_car_info_id
-        left join loan_car_info join_i on join_i.id = main.loan_car_info_id
-        left join partner join_p on join_p.id = join_b.partner_id
-        left join employee join_e on join_e.id = join_b.salesman_id
-        left join department join_d on join_d.id = join_p.department_id
-        left join vehicle_information join_h on join_h.id = main.vehicle_information_id
-        left join current_node_manager complex_log on main.id = complex_log.order_id
+
+        FROM        loan_order main
+        INNER JOIN  loan_process              deputy                on main.id = deputy.order_id
+        left join   loan_customer             join_c                on join_c.id = main.loan_customer_id
+        left join   loan_base_info            join_b                on join_b.id = main.loan_base_info_id
+        left join   loan_financial_plan       join_f                on join_f.id = main.loan_financial_plan_id
+        left join   loan_car_info             join_car              on join_car.id = main.loan_car_info_id
+        left join   loan_car_info             join_i                on join_i.id = main.loan_car_info_id
+        left join   bank                      join_bk               on join_bk.name = join_b.bank
+        left join   partner                   join_p                on join_p.id = join_b.partner_id
+        left join   employee                  join_e                on join_e.id = join_b.salesman_id
+        left join   department                join_d                on join_d.id = join_p.department_id
+        left join   vehicle_information       join_h                on join_h.id = main.vehicle_information_id
+        left join   current_node_manager      complex_log           on main.id = complex_log.order_id
         where 1=1 and deputy.order_status = 1
         /**
         * 多节点查询类型：
@@ -292,6 +295,7 @@
         * 4-贷款申请列表【已审核： [电审通过后 , end] 】;
         * 5-客户查询列表【在贷客户： [提交征信申请单后 , 未放款) 】;
         * 6-客户查询列表【已贷客户： [已放款 , end] 】;
+        * 7-视频面签列表【所有客户-无节点限制】;
         */
         <choose>
             <when test="multipartType == 1">
@@ -322,8 +326,19 @@
             <when test="multipartType == 6">
                 AND deputy.remit_review = 1
             </when>
+            <when test="multipartType == 7">
+                AND
+                    CASE
+                        <!-- 杭州城站 - [贷款信息登记]-已提交-->
+                        WHEN join_bk.id = 1 THEN
+                            deputy.loan_info_record = 1
+                        <!-- 其他银行 - [征信申请]-即单子生成即可 ==> 无需控制-->
+                        ELSE
+                            1=1
+                    END
+            </when>
             <otherwise>
-                AND 1=1
+                AND 1=2
             </otherwise>
         </choose>
         ) tab

@@ -85,18 +85,18 @@ public class TaskSchedulingController {
      * 待办任务列表-all
      */
     @GetMapping(value = "/scheduletasklist")
-    public ResultBean<List<ScheduleTaskVO>> scheduletasklist(@RequestParam(required = false) String key,@RequestParam Integer pageIndex,
+    public ResultBean<List<ScheduleTaskVO>> scheduletasklist(@RequestParam(required = false) String key, @RequestParam Integer pageIndex,
                                                              @RequestParam Integer pageSize) {
-        return taskSchedulingService.scheduleTaskList(key,pageIndex, pageSize);
+        return taskSchedulingService.scheduleTaskList(key, pageIndex, pageSize);
     }
 
     /**
      * 待办任务列表-all
      */
     @GetMapping(value = "/countScheduletasklist")
-    public ResultBean<Long> countScheduletasklist(@RequestParam(required = false) String key,@RequestParam Integer pageIndex,
-                                                             @RequestParam Integer pageSize) {
-        return taskSchedulingService.countScheduletasklist(key,pageIndex, pageSize);
+    public ResultBean<Long> countScheduletasklist(@RequestParam(required = false) String key, @RequestParam Integer pageIndex,
+                                                  @RequestParam Integer pageSize) {
+        return taskSchedulingService.countScheduletasklist(key, pageIndex, pageSize);
     }
 
 
