@@ -83,6 +83,7 @@ spring:
       max-wait: 10000
       max-idle: 1000
       max-active: 1000
+
       test-on-borrow: true
 
   redis:

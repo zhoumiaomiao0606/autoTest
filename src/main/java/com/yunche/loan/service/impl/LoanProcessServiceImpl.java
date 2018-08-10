@@ -3021,7 +3021,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 actionText = "新建";
                 break;
             case 5:
-                actionText = "中止支线";
+                actionText = "反审";
                 break;
             default:
                 actionText = "-";
