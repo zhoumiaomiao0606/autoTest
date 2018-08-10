@@ -75,14 +75,15 @@ spring:
 spring:
   profiles: pub
   datasource:
-    url: jdbc:mysql://rm-bp1uk11f20h4i65u9ao.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://rm-bp1uk11f20h4i65u9rw.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
     username: yuncheadmin
     password: Yunche_2018
     driver-class-name: com.mysql.jdbc.Driver
     tomcat:
       max-wait: 10000
-      max-idle: 600
-      max-active: 600
+      max-idle: 1000
+      max-active: 1000
+
       test-on-borrow: true
 
   redis:
