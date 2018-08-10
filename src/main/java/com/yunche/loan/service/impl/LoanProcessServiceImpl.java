@@ -436,8 +436,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // update process
                 LoanProcessDO loanProcessDO_ = new LoanProcessDO();
                 loanProcessDO_.setOrderId(approval.getOrderId());
-                loanProcessDO_.setLoanApply(TASK_PROCESS_INIT);
-                loanProcessDO_.setVisitVerify(TASK_PROCESS_INIT);
+                loanProcessDO_.setLoanApply(TASK_PROCESS_TODO);
+                loanProcessDO_.setVisitVerify(TASK_PROCESS_TODO);
                 updateLoanProcess(loanProcessDO_);
 
             } else {
