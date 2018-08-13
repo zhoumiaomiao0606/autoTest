@@ -14,6 +14,7 @@ import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.query.RelaQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.BizAreaService;
 import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.PartnerService;
 import org.apache.commons.lang3.StringUtils;
@@ -87,6 +88,11 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private DepartmentCache departmentCache;
 
+    @Autowired
+    private EmployeeRelaBizAreaDOMapper employeeRelaBizAreaDOMapper;
+
+    @Autowired
+    private BizAreaService bizAreaService;
 
     @Override
     @Transactional
@@ -508,7 +514,7 @@ public class PartnerServiceImpl implements PartnerService {
 
                             // 填充直接上级信息
                             fillParent(employeeDO.getParentId(), employeeVO);
-
+                            employeeVO.setBizAreaIdList(listBizArea(employeeDO.getId()));
                             return employeeVO;
                         })
                         .sorted(Comparator.comparing(EmployeeVO::getGmtModify))
@@ -516,10 +522,24 @@ public class PartnerServiceImpl implements PartnerService {
 
                 return ResultBean.ofSuccess(employeeVOList, totalNum, query.getPageIndex(), query.getPageSize());
             }
+
         }
         return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
     }
 
+
+    public List<List<Long>> listBizArea(Long id) {
+        List<EmployeeRelaBizAreaVO> ids = employeeRelaBizAreaDOMapper.selectByEmployeeId(id);
+        List<Long> result = Lists.newArrayList();
+        for(EmployeeRelaBizAreaVO employeeRelaBizAreaVO : ids){
+            if(ids != null){
+                if(StringUtils.isNotBlank(employeeRelaBizAreaVO.getBizAreaId())){
+                    result.add(Long.valueOf(employeeRelaBizAreaVO.getBizAreaId()));
+                }
+            }
+        }
+        return bizAreaService.selectedList(result);
+    }
     @Override
     @Transactional
     public ResultBean<Void> bindEmployee(Long id, String employeeIds) {
