@@ -123,7 +123,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     public ResultBean<List<VideoFaceLogVO>> listLog(VideoFaceQuery videoFaceQuery) {
 
         // checkPermission
-        Preconditions.checkNotNull(SessionUtils.getLoginUser().getBankId(), "您无权操作[视频面签]");
+        checkPermission(videoFaceQuery);
 
         // export
         if (null != videoFaceQuery.getPageIndex() && null != videoFaceQuery.getPageSize()) {
@@ -440,5 +440,32 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         return redText;
     }
 
+    /**
+     * checkPermission
+     *
+     * @param videoFaceQuery
+     */
+    private void checkPermission(VideoFaceQuery videoFaceQuery) {
+
+        // checkPermission
+        Long loginUserBankId = SessionUtils.getLoginUser().getBankId();
+        Preconditions.checkNotNull(loginUserBankId, "您无权操作[视频面签]");
+
+        Long queryBankId = videoFaceQuery.getBankId();
+
+        // 仅管理员  拥有所有银行权限 -->  -1
+        if (!ADMIN_VIDEO_FACE_BANK_ID.equals(loginUserBankId)) {
+
+            // 不能穿空
+            if (null == queryBankId) {
+                videoFaceQuery.setBankId(loginUserBankId);
+            } else {
+
+                // 不能查自身以外的银行数据
+                Preconditions.checkArgument(loginUserBankId.equals(queryBankId), "您无权操作：" + bankCache.getNameById(queryBankId));
+            }
+
+        }
+    }
 
 }
