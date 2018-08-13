@@ -20,13 +20,13 @@
         delete from material_audit
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO"  keyProperty="id" keyColumn="id">
         insert into material_audit (id, complete_material_date, remark,
         contract_num)
         values (#{id,jdbcType=BIGINT}, #{complete_material_date,jdbcType=DATE}, #{remark,jdbcType=VARCHAR},
         #{contractNum,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO"  keyProperty="id" keyColumn="id">
         insert into material_audit
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
