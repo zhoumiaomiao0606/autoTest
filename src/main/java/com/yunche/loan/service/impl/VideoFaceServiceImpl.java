@@ -318,7 +318,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_11 = "11、Q8您所购买车辆是什么颜色？   （面签人员无法核实）";
         String question_12 = "12、Q9你现在所处位置？   参考答案：" + redText(address);
         String question_13 = "13、请问您购买的是什么品牌的汽车？购买车辆是否自用？   （参考答案）是  车辆品牌：" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
-        String question_14 = "14、您了解该笔贷款是由浙江鑫宝行担保有限公司提供担保的吗？   参考答案：了解";
+        String question_14 = "14、您了解该笔贷款是由浙江鑫宝行融资担保有限公司提供担保的吗？   参考答案：了解";
         String question_15 = "15、请您务必在合同上填写正确的手机号码和联系地址";
         String question_16 = "16、请您现在在信用卡申请书、分期付款合同以及客户告知书上签名";
         String question_17 = "17、银行：请您认真仔细阅读担保方签署相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，" +
