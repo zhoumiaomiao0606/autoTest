@@ -3522,7 +3522,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Task currentFilterTask = onlyAsMainTask[0];
             Map<String, Object> autuRejectVariables = Maps.newHashMap();
             autuRejectVariables.put(PROCESS_VARIABLE_ACTION, ACTION_REJECT_AUTO);
-            autuRejectVariables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY.getCode());
+            autuRejectVariables.put(PROCESS_VARIABLE_TARGET, CREDIT_APPLY.getCode());
             taskService.complete(currentFilterTask.getId(), autuRejectVariables);
         }
     }
