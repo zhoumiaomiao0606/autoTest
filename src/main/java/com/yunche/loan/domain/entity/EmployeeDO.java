@@ -3,6 +3,7 @@ package com.yunche.loan.domain.entity;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -60,5 +61,5 @@ public class EmployeeDO implements Serializable {
      */
     private Long bankId;
 
-    private List<Long> bizAreaIds;
+    private List<Long> bizAreaIds = Collections.EMPTY_LIST;
 }
