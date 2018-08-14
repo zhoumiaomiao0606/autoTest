@@ -742,4 +742,226 @@
 
 
 
+
+    <select id="exportOrders" resultType="com.yunche.loan.domain.vo.ExportOrdersVO" parameterType="com.yunche.loan.domain.param.ExportOrdersParam">
+            select
+             orders.id 																		    as order_id,
+             customer.name 																	    as customer_name,
+             customer.id_card 																    as customer_id_card,
+             customer.mobile 																    as customer_mobile,
+             saleman.name 																	    as saleman,
+             partner.name 																	    as partner_name,
+             plan.car_price 																	as car_price,
+             plan.bank 																		    as plan_bank,
+             plan.appraisal 																	as plan_appraisal,
+             plan.loan_amount 																    as plan_loan_amount,
+             plan.bank_period_principal 														as plan_bank_period_principal,
+             remit.remit_amount 																as remit_amount,
+             plan.loan_time 																	as plan_loan_time,
+             useGetCarName(car.car_detail_id)  												    as car_name,
+             case when car.car_type = 0 then '新车'
+                  when car.car_type = 1 then '二手车'
+             else '其他' end 																    as car_type,
+             vehicle.license_plate_number 														as vehicle_license_plate_number,
+             vehicle.engine_number 																as vehicle_engine_number,
+             vehicle.vehicle_identification_number 												as vehicle_identification_number,
+             vehicle.register_date																as vehicle_register_date,
+             vehicle.color 																		as vehicle_color,
+             vehicle.displacement																as vehicle_displacement,
+             TIMESTAMPDIFF(MONTH,now(),vehicle.register_date) 							        as vehicle_use_year,
+             current.usertask_credit_apply_create_time											as usertask_credit_apply_create_time,
+             current.usertask_bank_credit_record_create_time								    as usertask_bank_credit_record_create_time,
+             current.usertask_social_credit_record_create_time							        as usertask_social_credit_record_create_time,
+             current.usertask_loan_apply_create_time											as usertask_loan_apply_create_time,
+             current.usertask_visit_verify_create_time											as usertask_visit_verify_create_time,
+             current.usertask_telephone_verify_create_time									    as usertask_telephone_verify_create_time,
+             current.usertask_vehicle_information_create_time								    as usertask_vehicle_information_create_time,
+             current.usertask_material_review_create_time										as usertask_material_review_create_time,
+             current.usertask_material_print_review_create_time							        as usertask_material_print_review_create_time,
+             current.usertask_install_gps_create_time											as usertask_install_gps_create_time,
+             current.usertask_apply_license_plate_deposit_info_create_time	                    as usertask_apply_license_plate_deposit_info_create_time,
+             current.usertask_car_insurance_create_time											as usertask_car_insurance_create_time,
+             current.usertask_business_pay_create_time											as usertask_business_pay_create_time,
+             current.usertask_business_review_create_time										as usertask_business_review_create_time,
+             current.usertask_loan_review_create_time											as usertask_loan_review_create_time,
+             current.usertask_remit_review_create_time											as usertask_remit_review_create_time,
+             current.usertask_material_manage_create_time										as usertask_material_manage_create_time,
+             lend.lend_date																		as usertask_bank_lend_record_create_time,
+             send.express_send_date																as usertask_bank_card_send_create_time
+
+
+        FROM
+        loan_order orders
+        LEFT JOIN loan_process process ON orders.id = process.order_id
+        LEFT JOIN loan_base_info baseinfo ON orders.loan_base_info_id = baseinfo.id
+        LEFT JOIN loan_customer customer ON customer.id = orders.loan_customer_id
+        LEFT JOIN loan_financial_plan plan ON plan.id = orders.loan_financial_plan_id
+        LEFT JOIN remit_details remit on orders.remit_details_id = remit.id
+        LEFT JOIN loan_car_info car on car.id = orders.loan_car_info_id
+        LEFT JOIN vehicle_information vehicle on vehicle.id = orders.vehicle_information_id
+        LEFT JOIN current_node_manager current on orders.id = current.order_id
+        LEFT JOIN bank_lend_record lend on lend.id = orders.bank_lend_record_id
+        LEFT JOIN loan_bank_card_send send on send.order_id = orders.id
+        LEFT JOIN partner partner ON baseinfo.partner_id = partner.id
+        LEFT JOIN employee saleman ON baseinfo.salesman_id = saleman.id
+        LEFT JOIN department department ON saleman.department_id = department.id
+        where 1=1
+            <if test="partnerList != null and partnerList.size() > 0">
+                and
+                baseinfo.partner_id in
+                <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                baseinfo.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="car_type!=null and car_type!=''">
+                and car.car_type = #{car_type}
+            </if>
+        having 1=1
+        <if test="order_id!=null and order_id!=''">
+            AND  order_id LIKE CONCAT('%', #{order_id} ,'%')
+        </if>
+        <if test="customer_name!=null and customer_name!=''">
+            AND  customer_name LIKE CONCAT('%', #{customer_name} ,'%')
+        </if>
+        <if test="customer_id_card!=null and customer_id_card!=''">
+            AND  customer_id_card LIKE CONCAT('%', #{customer_id_card} ,'%')
+        </if>
+        <if test="customer_mobile!=null and customer_mobile!=''">
+            AND  customer_mobile LIKE CONCAT('%', #{customer_mobile} ,'%')
+        </if>
+        <if test="saleman!=null and saleman!=''">
+            AND  saleman LIKE CONCAT('%', #{saleman} ,'%')
+        </if>
+        <if test="partner_name!=null and partner_name!=''">
+            AND  partner_name LIKE CONCAT('%', #{partner_name} ,'%')
+        </if>
+        <if test="car_price_start!=null and car_price_start!='' and car_price_end!=null and car_price_end!=''">
+            AND car_price &gt;= #{car_price_start} and car_price &lt;= #{car_price_end}
+        </if>
+        <if test="plan_bank!=null and plan_bank!=''">
+            AND  plan_bank LIKE CONCAT('%', #{plan_bank} ,'%')
+        </if>
+        <if test="plan_appraisal_start!=null and plan_appraisal_start!='' and plan_appraisal_end!=null and plan_appraisal_end!=''">
+            AND plan_appraisal &gt;= #{plan_appraisal_start} and plan_appraisal &lt;= #{plan_appraisal_end}
+        </if>
+        <if test="plan_loan_amount_start!=null and plan_loan_amount_start!='' and plan_loan_amount_end!=null and plan_loan_amount_end!=''">
+            AND plan_loan_amount &gt;= #{plan_loan_amount_start} and plan_loan_amount &lt;= #{plan_loan_amount_end}
+        </if>
+        <if test="plan_bank_period_principal_start!=null and plan_bank_period_principal_start!='' and plan_bank_period_principal_end!=null and plan_bank_period_principal_end!='' ">
+            AND plan_bank_period_principal &gt;= #{plan_bank_period_principal_start} and plan_bank_period_principal &lt;= #{plan_bank_period_principal_end}
+        </if>
+        <if test="remit_amount_start!=null and remit_amount_start!='' and remit_amount_end!=null and remit_amount_end!=''">
+            AND remit_amount &gt;= #{remit_amount_start} and remit_amount &lt;= #{remit_amount_end}
+        </if>
+        <if test="plan_loan_time_start!=null and plan_loan_time_start!='' and plan_loan_time_end!=null and plan_loan_time_end!=''">
+            AND plan_loan_time &gt;= #{plan_loan_time_start} and plan_loan_time &lt;= #{plan_loan_time_end}
+        </if>
+        <if test="car_name!=null and car_name!=''">
+            AND  car_name LIKE CONCAT('%', #{car_name} ,'%')
+        </if>
+        <if test="vehicle_license_plate_number!=null and vehicle_license_plate_number!=''">
+            AND  vehicle_license_plate_number LIKE CONCAT('%', #{vehicle_license_plate_number} ,'%')
+        </if>
+        <if test="vehicle_engine_number!=null and vehicle_engine_number!=''">
+            AND  vehicle_engine_number LIKE CONCAT('%', #{vehicle_engine_number} ,'%')
+        </if>
+        <if test="vehicle_identification_number!=null and vehicle_identification_number!=''">
+            AND  vehicle_identification_number LIKE CONCAT('%', #{vehicle_identification_number} ,'%')
+        </if>
+        <if test="vehicle_register_date_start!=null and vehicle_register_date_start!='' and vehicle_register_date_end!=null and vehicle_register_date_end!=''">
+            AND TO_DAYS(vehicle_register_date) &gt;= TO_DAYS(#{vehicle_register_date_start}) and TO_DAYS(vehicle_register_date) &lt;= TO_DAYS(#{vehicle_register_date_end})
+        </if>
+        <if test="vehicle_color!=null and vehicle_color!=''">
+            AND  vehicle_color LIKE CONCAT('%', #{vehicle_color} ,'%')
+        </if>
+        <if test="vehicle_displacement!=null and vehicle_displacement!=''">
+            AND  vehicle_displacement LIKE CONCAT('%', #{vehicle_displacement} ,'%')
+        </if>
+        <if test="vehicle_use_year_start!=null and vehicle_use_year_start!='' and vehicle_use_year_end!=null and vehicle_use_year_end!=''">
+            AND vehicle_use_year &gt;= #{vehicle_use_year_start} and vehicle_use_year &lt;= #{vehicle_use_year_end}
+        </if>
+        <if test="usertask_credit_apply_create_time_start!=null and usertask_credit_apply_create_time_start!='' and usertask_credit_apply_create_time_end!=null and usertask_credit_apply_create_time_end!='' ">
+            AND TO_DAYS(usertask_credit_apply_create_time) &gt;= TO_DAYS(#{usertask_credit_apply_create_time_start})
+            AND TO_DAYS(usertask_credit_apply_create_time) &lt;= TO_DAYS(#{usertask_credit_apply_create_time_end})
+        </if>
+        <if test="usertask_bank_credit_record_create_time_start!=null and usertask_bank_credit_record_create_time_start!='' and usertask_bank_credit_record_create_time_end!=null and usertask_bank_credit_record_create_time_end!=''">
+            AND TO_DAYS(usertask_bank_credit_record_create_time) &gt;= TO_DAYS(#{usertask_bank_credit_record_create_time_start})
+            AND TO_DAYS(usertask_bank_credit_record_create_time) &lt;= TO_DAYS(#{usertask_bank_credit_record_create_time_end})
+        </if>
+        <if test="usertask_social_credit_record_create_time_start!=null and usertask_social_credit_record_create_time_start!='' and usertask_social_credit_record_create_time_end!=null and usertask_social_credit_record_create_time_end!=''">
+            AND TO_DAYS(usertask_social_credit_record_create_time) &gt;= TO_DAYS(#{usertask_social_credit_record_create_time_start})
+            AND TO_DAYS(usertask_social_credit_record_create_time) &lt;= TO_DAYS(#{usertask_social_credit_record_create_time_end})
+        </if>
+        <if test="usertask_loan_apply_create_time_start!=null and usertask_loan_apply_create_time_start!='' and usertask_loan_apply_create_time_end!=null and usertask_loan_apply_create_time_end!=''">
+            AND TO_DAYS(usertask_loan_apply_create_time) &gt;= TO_DAYS(#{usertask_loan_apply_create_time_start})
+            AND TO_DAYS(usertask_loan_apply_create_time) &lt;= TO_DAYS(#{usertask_loan_apply_create_time_end})
+        </if>
+        <if test="usertask_visit_verify_create_time_start!=null and usertask_visit_verify_create_time_start!='' and usertask_visit_verify_create_time_end!=null and usertask_visit_verify_create_time_end!=''">
+            AND TO_DAYS(usertask_visit_verify_create_time) &gt;= TO_DAYS(#{usertask_visit_verify_create_time_start})
+            AND TO_DAYS(usertask_visit_verify_create_time) &lt;= TO_DAYS(#{usertask_visit_verify_create_time_end})
+        </if>
+        <if test="usertask_telephone_verify_create_time_start!=null and usertask_telephone_verify_create_time_start!='' and usertask_telephone_verify_create_time_end!=null and usertask_telephone_verify_create_time_end!=''">
+            AND TO_DAYS(usertask_telephone_verify_create_time) &gt;= TO_DAYS(#{usertask_telephone_verify_create_time_start})
+            AND TO_DAYS(usertask_telephone_verify_create_time) &lt;= TO_DAYS(#{usertask_telephone_verify_create_time_end})
+        </if>
+        <if test="usertask_vehicle_information_create_time_start!=null and usertask_vehicle_information_create_time_start!='' and usertask_vehicle_information_create_time_end!=null and usertask_vehicle_information_create_time_end!=''">
+            AND TO_DAYS(usertask_vehicle_information_create_time) &gt;= TO_DAYS(#{usertask_vehicle_information_create_time_start})
+            AND TO_DAYS(usertask_vehicle_information_create_time) &lt;= TO_DAYS(#{usertask_vehicle_information_create_time_end})
+        </if>
+        <if test="usertask_material_review_create_time_start!=null and usertask_material_review_create_time_start!='' and usertask_material_review_create_time_end!=null and usertask_material_review_create_time_end!=''">
+            AND TO_DAYS(usertask_material_review_create_time) &gt;= TO_DAYS(#{usertask_material_review_create_time_start})
+            AND TO_DAYS(usertask_material_review_create_time) &lt;= TO_DAYS(#{usertask_material_review_create_time_end})
+        </if>
+        <if test="usertask_material_print_review_create_time_start!=null and usertask_material_print_review_create_time_start!='' and usertask_material_print_review_create_time_end!=null and usertask_material_print_review_create_time_end!=''">
+            AND TO_DAYS(usertask_material_print_review_create_time) &gt;= TO_DAYS(#{usertask_material_print_review_create_time_start})
+            AND TO_DAYS(usertask_material_print_review_create_time) &lt;= TO_DAYS(#{usertask_material_print_review_create_time_end})
+        </if>
+        <if test="usertask_install_gps_create_time_start!=null and usertask_install_gps_create_time_start!='' and usertask_install_gps_create_time_end!=null and usertask_install_gps_create_time_end!=''">
+            AND TO_DAYS(usertask_install_gps_create_time) &gt;= TO_DAYS(#{usertask_install_gps_create_time_start})
+            AND TO_DAYS(usertask_install_gps_create_time) &lt;= TO_DAYS(#{usertask_install_gps_create_time_end})
+        </if>
+        <if test="usertask_apply_license_plate_deposit_info_create_time_start!=null and usertask_apply_license_plate_deposit_info_create_time_start!='' and usertask_apply_license_plate_deposit_info_create_time_end!=null and usertask_apply_license_plate_deposit_info_create_time_end!=''">
+            AND TO_DAYS(usertask_apply_license_plate_deposit_info_create_time) &gt;= TO_DAYS(#{usertask_apply_license_plate_deposit_info_create_time_start})
+            AND TO_DAYS(usertask_apply_license_plate_deposit_info_create_time) &lt;= TO_DAYS(#{usertask_apply_license_plate_deposit_info_create_time_end})
+        </if>
+        <if test="usertask_car_insurance_create_time_start!=null and usertask_car_insurance_create_time_start!='' and usertask_car_insurance_create_time_end!=null and usertask_car_insurance_create_time_end!=''">
+            AND TO_DAYS(usertask_car_insurance_create_time) &gt;= TO_DAYS(#{usertask_car_insurance_create_time_start})
+            AND TO_DAYS(usertask_car_insurance_create_time) &lt;= TO_DAYS(#{usertask_car_insurance_create_time_end})
+        </if>
+        <if test="usertask_business_pay_create_time_start!=null and usertask_business_pay_create_time_start!='' and usertask_business_pay_create_time_end!=null and usertask_business_pay_create_time_end!=''">
+            AND TO_DAYS(usertask_business_pay_create_time) &gt;= TO_DAYS(#{usertask_business_pay_create_time_start})
+            AND TO_DAYS(usertask_business_pay_create_time) &lt;= TO_DAYS(#{usertask_business_pay_create_time_end})
+        </if>
+        <if test="usertask_business_review_create_time_start!=null and usertask_business_review_create_time_start!='' and usertask_business_review_create_time_end!=null and usertask_business_review_create_time_end!=''">
+            AND TO_DAYS(usertask_business_review_create_time) &gt;= TO_DAYS(#{usertask_business_review_create_time_start})
+            AND TO_DAYS(usertask_business_review_create_time) &lt;= TO_DAYS(#{usertask_business_review_create_time_end})
+        </if>
+        <if test="usertask_loan_review_create_time_start!=null and usertask_loan_review_create_time_start!='' and usertask_loan_review_create_time_end!=null and usertask_loan_review_create_time_end!=''">
+            AND TO_DAYS(usertask_loan_review_create_time) &gt;= TO_DAYS(#{usertask_loan_review_create_time_start})
+            AND TO_DAYS(usertask_loan_review_create_time) &lt;= TO_DAYS(#{usertask_loan_review_create_time_end})
+        </if>
+        <if test="usertask_remit_review_create_time_start!=null and usertask_remit_review_create_time_start!='' and usertask_remit_review_create_time_end!=null and usertask_remit_review_create_time_end!=''">
+            AND TO_DAYS(usertask_remit_review_create_time) &gt;= TO_DAYS(#{usertask_remit_review_create_time_start})
+            AND TO_DAYS(usertask_remit_review_create_time) &lt;= TO_DAYS(#{usertask_remit_review_create_time_end})
+        </if>
+        <if test="usertask_material_manage_create_time_start!=null and usertask_material_manage_create_time_start!='' and usertask_material_manage_create_time_end!=null and usertask_material_manage_create_time_end!=''">
+            AND TO_DAYS(usertask_material_manage_create_time) &gt;= TO_DAYS(#{usertask_material_manage_create_time_start})
+            AND TO_DAYS(usertask_material_manage_create_time) &lt;= TO_DAYS(#{usertask_material_manage_create_time_end})
+        </if>
+        <if test="usertask_bank_lend_record_create_time_start!=null and usertask_bank_lend_record_create_time_start!='' and usertask_bank_lend_record_create_time_end!=null and usertask_bank_lend_record_create_time_end!=''">
+            AND TO_DAYS(usertask_bank_lend_record_create_time) &gt;= TO_DAYS(#{usertask_bank_lend_record_create_time_start})
+            AND TO_DAYS(usertask_bank_lend_record_create_time) &lt;= TO_DAYS(#{usertask_bank_lend_record_create_time_end})
+        </if>
+        <if test="usertask_bank_card_send_create_time_start!=null and usertask_bank_card_send_create_time_start!='' and usertask_bank_card_send_create_time_end!=null and usertask_bank_card_send_create_time_end!=''">
+            AND TO_DAYS(usertask_bank_card_send_create_time) &gt;= TO_DAYS(#{usertask_bank_card_send_create_time_start})
+            AND TO_DAYS(usertask_bank_card_send_create_time) &lt;= TO_DAYS(#{usertask_bank_card_send_create_time_end})
+        </if>
+    </select>
 </mapper>

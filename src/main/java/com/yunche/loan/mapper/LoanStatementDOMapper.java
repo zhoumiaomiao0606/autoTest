@@ -22,4 +22,6 @@ public interface LoanStatementDOMapper {
     List<ExportMaterialReviewDetailQueryVO> exportMaterialReviewQuerys(ExportMaterialReviewQueryVerifyParam exportMaterialReviewQueryVerifyParam);
 
     List<ExportMortgageOverdueQueryVO> exportMortgageOverdueQuerys(ExportMortgageOverdueQueryVerifyParam exportMortgageOverdueQueryVerifyParam);
+
+    List<ExportOrdersVO> exportOrders(ExportOrdersParam exportOrdersParam);
 }

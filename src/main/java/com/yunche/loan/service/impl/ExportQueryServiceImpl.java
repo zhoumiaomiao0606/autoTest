@@ -147,6 +147,58 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
+    @Override
+    public String exportOrders(ExportOrdersParam exportOrdersParam) {
+
+        List<ExportOrdersVO> list = loanStatementDOMapper.exportOrders(exportOrdersParam);
+
+        ArrayList<String> header = Lists.newArrayList(
+                "业务编号"
+                ,"客户姓名"
+                ,"身份证"
+                ,"手机号"
+                ,"业务员"
+                ,"合伙人"
+                ,"车价"
+                ,"贷款银行"
+                ,"基准品估计"
+                ,"贷款金额"
+                ,"银行分期本金"
+                ,"打款金额"
+                ,"期数"
+                ,"车型"
+                ,"车辆类型"
+                ,"车牌号"
+                ,"车辆引擎编号"
+                ,"车架号"
+                ,"车辆注册日期"
+                ,"车辆颜色"
+                ,"车排量"
+                ,"车辆使用年限"
+                ,"征信申请时间"
+                ,"银行征信申请时间"
+                ,"社会征信申请时间"
+                ,"贷款申请时间"
+                ,"上门家访时间"
+                ,"电审时间"
+                ,"提车资料录入时间"
+                ,"资料审核时间"
+                ,"合同套打时间"
+                ,"gps安装时间"
+                ,"上牌抵押时间"
+                ,"车辆保险录入时间"
+                ,"业务付款时间"
+                ,"业务审批时间"
+                ,"放款审核时间"
+                ,"打款审核时间"
+                ,"资料归档时间"
+                ,"银行放款时间"
+                ,"银行卡寄送时间"
+        );
+        String ossResultKey = POIUtil.createExcelFile("MortgageOrders",list,header,ExportOrdersVO.class,ossConfig);
+        return ossResultKey;
+    }
+
     /**
      * 导出文件
      *

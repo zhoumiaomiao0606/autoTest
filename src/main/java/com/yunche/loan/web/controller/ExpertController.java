@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 @CrossOrigin
 @RestController
 @RequestMapping(value = {"/api/v1/export"})
-public class ExpertBankCreditQueryController
+public class ExpertController
 {
     @Resource
     private ExportQueryService exportQueryService;
@@ -71,4 +71,12 @@ public class ExpertBankCreditQueryController
         return ResultBean.ofSuccess(exportQueryService.expertMortgageOverdueQuery(exportMortgageOverdueQueryVerifyParam));
     }
 
+    /**
+     * EXCEl导出抵押超期天数
+     */
+    @PostMapping(value = "/exportOrders")
+    public ResultBean exportOrders(@RequestBody ExportOrdersParam exportOrdersParam)
+    {
+        return ResultBean.ofSuccess(exportQueryService.exportOrders(exportOrdersParam));
+    }
 }
