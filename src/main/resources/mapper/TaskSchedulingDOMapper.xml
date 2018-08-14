@@ -1232,7 +1232,7 @@
         case when his.status = 3 then
         current_reject.financial_review_create_time
         when his.status !=1 and his.status !=3 then
-        current.financial_create_time
+        current.usertask_financial_scheme_modify_apply_create_time
         else null end
         ,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
         NULL AS taskDescription,
@@ -1293,7 +1293,7 @@
         case when refund.status = 3 then
         current_reject.refund_review_create_time
         when refund.status = 2 then
-        current.refund_create_time
+        current.usertask_refund_apply_create_time
         else null end
         ,'%Y-%m-%d %H:%i:%S') AS createScheduleDate,
         NULL AS taskDescription,
