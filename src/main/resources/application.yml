@@ -38,7 +38,7 @@ spring:
 spring:
   profiles: prepub
   datasource:
-    url: jdbc:mysql://rm-bp1uk11f20h4i65u9ao.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://rm-bp1uk11f20h4i65u90o.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
     username: yuncheadmin
     password: Yunche_2018
     driver-class-name: com.mysql.jdbc.Driver
