@@ -257,14 +257,14 @@
         join_c.id_card AS idCard,
         join_c.mobile AS mobile,
         join_e.name AS salesman,
-        DATE_FORMAT(complex_log.credit_create_time, '%Y-%m-%d %H:%i:%S' ) AS creditGmtCreate,
+        DATE_FORMAT(complex_log.usertask_credit_apply_create_time, '%Y-%m-%d %H:%i:%S' ) AS creditGmtCreate,
         join_bk.id   AS bankId,
         join_bk.name AS bank,
         join_d.name  AS departmentName,
         join_f.loan_amount AS loanAmount,
         join_f.bank_period_principal AS bankPeriodPrincipal,
         join_f.sign_rate AS signRate,
-        DATE_FORMAT(complex_log.loan_create_time,'%Y-%m-%d %H:%i:%S')     AS loanGmtCreate,
+        DATE_FORMAT(complex_log.usertask_loan_apply_create_time,'%Y-%m-%d %H:%i:%S')     AS loanGmtCreate,
         join_i.car_type AS carType,
         join_h.license_plate_number AS licensePlateNumber,
         join_p.name AS partner,
@@ -385,11 +385,11 @@
 
         <select id="selectTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
             select complex.*,
-            complex_log.credit_user_name                                      AS creditMan,
-            DATE_FORMAT(complex_log.credit_create_time, '%Y-%m-%d %H:%i:%S' ) AS creditDate,
-            DATE_FORMAT(complex_log.remit_create_time,'%Y-%m-%d %H:%i:%S')    AS remitGmtCreate,
-            DATE_FORMAT(complex_log.loan_create_time,'%Y-%m-%d %H:%i:%S')     AS loanGmtCreate,
-            DATE_FORMAT(complex_log.telephone_create_time,'%Y-%m-%d %H:%i:%S') AS telephoneGmtCreate
+            complex_log.usertask_credit_apply_gmt_user_name                                    AS creditMan,
+            DATE_FORMAT(complex_log.usertask_credit_apply_create_time, '%Y-%m-%d %H:%i:%S' )   AS creditDate,
+            DATE_FORMAT(complex_log.usertask_remit_review_create_time,'%Y-%m-%d %H:%i:%S')     AS remitGmtCreate,
+            DATE_FORMAT(complex_log.usertask_loan_apply_create_time,'%Y-%m-%d %H:%i:%S')       AS loanGmtCreate,
+            DATE_FORMAT(complex_log.usertask_telephone_verify_create_time,'%Y-%m-%d %H:%i:%S') AS telephoneGmtCreate
             from
             (
             select task.*,
@@ -1074,16 +1074,16 @@
             </if>
             end
             <if test="startLoanGmtCreate != null">
-                AND TO_DAYS(complex_log.loan_create_time) &gt;= TO_DAYS(#{startLoanGmtCreate})
+                AND TO_DAYS(complex_log.usertask_loan_apply_create_time) &gt;= TO_DAYS(#{startLoanGmtCreate})
             </if>
             <if test="endLoanGmtCreate != null">
-                AND TO_DAYS(complex_log.loan_create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
+                AND TO_DAYS(complex_log.usertask_loan_apply_create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
             </if>
             <if test="startCreditGmtCreate != null">
-                AND TO_DAYS(complex_log.credit_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+                AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
             </if>
             <if test="endCreditGmtCreate != null">
-                AND TO_DAYS(complex_log.credit_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+                AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
             </if>
 
             <choose>
