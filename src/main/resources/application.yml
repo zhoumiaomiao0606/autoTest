@@ -3,7 +3,7 @@ spring:
   datasource:
     url: jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&characterEncoding=utf-8
     username: yunche
-    password: 123456
+    password: yc_123
     driver-class-name: com.mysql.jdbc.Driver
     tomcat:
       max-wait: 10000
