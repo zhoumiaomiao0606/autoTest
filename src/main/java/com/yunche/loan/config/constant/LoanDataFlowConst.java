@@ -14,4 +14,6 @@ public class LoanDataFlowConst {
      * 资料流转 —— review-节点 KEY后缀
      */
     public static final String DATA_FLOW_TASK_KEY_REVIEW_SUFFIX = "_review";
+
+    public static final Byte DATA_FLOW_MORTGAGE_P2C_TASK = 5;
 }
