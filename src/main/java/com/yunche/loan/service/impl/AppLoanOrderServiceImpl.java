@@ -352,17 +352,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     @Override
-    public ResultBean<AppCustDetailVO> customerDetail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "业务单ID不能为空");
-
-        // 根据主贷人ID获取客户详情列表
-        ResultBean<CustDetailVO> resultBean = loanCustomerService.detailAll(orderId, null);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-
-        AppCustDetailVO appCustDetailVO = new AppCustDetailVO();
-        BeanUtils.copyProperties(resultBean.getData(), appCustDetailVO);
-
-        return ResultBean.ofSuccess(appCustDetailVO);
+    public ResultBean<CustDetailVO> customerDetail(Long orderId) {
+        return loanCustomerService.detailAll(orderId, null);
     }
 
     @Override

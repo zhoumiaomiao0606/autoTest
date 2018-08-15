@@ -81,7 +81,7 @@ public class AppLoanOrderController {
      * @return
      */
     @GetMapping(value = "/customer/detail")
-    public ResultBean<AppCustDetailVO> customerDetail(@RequestParam("orderId") Long orderId) {
+    public ResultBean<CustDetailVO> customerDetail(@RequestParam("orderId") Long orderId) {
         return appLoanOrderService.customerDetail(orderId);
     }
 
