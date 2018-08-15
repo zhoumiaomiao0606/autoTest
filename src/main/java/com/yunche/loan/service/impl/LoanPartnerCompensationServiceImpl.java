@@ -19,6 +19,7 @@ import com.yunche.loan.service.LoanFileService;
 import com.yunche.loan.service.LoanPartnerCompensationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -49,6 +50,7 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
      * @return
      */
     @Override
+    @Transactional
     public Void save(UniversalCompensationParam universalCompensationParam) {
         Preconditions.checkNotNull(universalCompensationParam,"参数有误");
         Preconditions.checkNotNull(universalCompensationParam.getOrderId(),"业务单号不能为空");
@@ -75,8 +77,7 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
         Preconditions.checkNotNull(query.getOrderId(),"业务单号不能为空");
         Preconditions.checkNotNull(query.getApplyCompensationDate(),"代偿申请日期不能为空");
 
-        //返回数据
-        RecombinationVO<Object> recombinationVO = new RecombinationVO<>();
+
         //数据查询
         LoanApplyCompensationDOKey doKey = new LoanApplyCompensationDOKey();
         doKey.setOrderId(query.getOrderId());
@@ -84,7 +85,7 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
         LoanApplyCompensationDO applyCompensation = loanApplyCompensationDOMapper.selectByPrimaryKey(doKey);
         if(applyCompensation.getPartnerCompensationAmount()==null){
             BigDecimal amount = applyCompensation.getCompensationAmount();//代偿金额
-            BigDecimal ratio = applyCompensation.getRiskTakingRatio();//比例
+            BigDecimal ratio = applyCompensation.getRiskTakingRatio().divide(new BigDecimal("100"));//比例
 
             //合伙人代偿金额 = 代偿金额*风险承担比例
             BigDecimal partnerCompensationAmount = amount.multiply(ratio).setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -98,7 +99,8 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
         types.add(LoanFileEnum.COMPENSATION_PAYMENT_VOUCHER.getType());
         List<UniversalMaterialRecordVO> materialRecord = loanQueryDOMapper.selectUniversalCustomerFileByTypes(query.getOrderId(), types);
 
-
+        //返回数据
+        RecombinationVO<Object> recombinationVO = new RecombinationVO<>();
         recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setMaterials(materialRecord);
