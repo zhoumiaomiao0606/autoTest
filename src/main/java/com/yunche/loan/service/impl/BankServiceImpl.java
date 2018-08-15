@@ -63,6 +63,7 @@ public class BankServiceImpl implements BankService {
 
 
     @Override
+    @Transactional
     public void save(BankSaveParam param) {
         Preconditions.checkNotNull(param, "银行不能为空");
         Preconditions.checkNotNull(param.getBank(), "银行不能为空");
