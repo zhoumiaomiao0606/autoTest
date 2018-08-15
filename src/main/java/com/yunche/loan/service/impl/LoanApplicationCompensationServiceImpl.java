@@ -21,6 +21,7 @@ import com.yunche.loan.service.LoanApplicationCompensationService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -53,6 +54,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
      * @return
      */
     @Override
+    @Transactional
     public void batchInsert(String key) {
         Preconditions.checkNotNull(key,"文件key不能为空");
         List<LoanApplyCompensationDO> loanApplyCompensationDOList= Lists.newArrayList();
@@ -170,6 +172,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
      * @return
      */
     @Override
+    @Transactional
     public void manualInsert(LoanApplyCompensationDO loanApplyCompensationDO) {
         Preconditions.checkNotNull(loanApplyCompensationDO,"参数有误");
         LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByPrimaryKey(loanApplyCompensationDO);

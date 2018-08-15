@@ -7,6 +7,7 @@ import java.util.Date;
 
 @Data
 public class LoanApplyCompensationDO extends LoanApplyCompensationDOKey {
+
     private BigDecimal currArrears;
 
     private BigDecimal loanBanlance;
@@ -40,6 +41,10 @@ public class LoanApplyCompensationDO extends LoanApplyCompensationDOKey {
     private Date partnerOperationDate;
 
     private BigDecimal partnerCompensationAmount;
+
+    private String partnerDcReviewOperator;
+
+    private Date partnerDcReviewDate;
 
     private Byte status;
 

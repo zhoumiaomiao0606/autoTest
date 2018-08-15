@@ -13,6 +13,7 @@ import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanCompensationReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 财务代偿确认
@@ -32,6 +33,7 @@ public class LoanCompensationReviewServiceImpl implements LoanCompensationReview
      * @return
      */
     @Override
+    @Transactional
     public Void save(LoanApplyCompensationDO applyReviewDO) {
         Preconditions.checkNotNull(applyReviewDO,"参数有误");
 
