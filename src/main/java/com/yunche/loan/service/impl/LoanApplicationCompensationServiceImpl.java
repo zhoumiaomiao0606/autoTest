@@ -2,15 +2,19 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
+import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.BankUrgeRecordDO;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDOKey;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.domain.vo.FinancialSchemeVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalInfoVO;
+import com.yunche.loan.mapper.BankUrgeRecordDOMapper;
 import com.yunche.loan.mapper.LoanApplyCompensationDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanApplicationCompensationService;
@@ -26,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.yunche.loan.config.constant.BankUrgeConst.URGE_NO;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 
@@ -40,6 +45,8 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
     @Autowired
     LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
+    @Autowired
+    BankUrgeRecordDOMapper bankUrgeRecordDOMapper;
     /**
      * 导入文件
      * @param key oss key
@@ -145,10 +152,11 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                                 int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(e);
                                 Preconditions.checkArgument(count>0,"更新记录出错");
                             }
-
+                            //客户逾期
+                            if(IDict.K_DCYY.K_DCYY_A.equals(e.getCompensationCause())){
+                                dealBankUrgeRecord(e.getOrderId());
+                            }
                         });
-
-                //TODO 催收代办
             }
 
         } catch (IOException e) {
@@ -215,9 +223,14 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
     }
 
     /**
-     *
+     * 催保原因为 A:客户逾期 生成待催收记录
      */
-    public void  dealBankUrgeRecord(){
-
+    public void  dealBankUrgeRecord(Long orderId){
+        BankUrgeRecordDO newUrge = new BankUrgeRecordDO();
+        newUrge.setOrderId(orderId);
+        newUrge.setOperator(SessionUtils.getLoginUser().getName());
+        newUrge.setUrgeStatus(URGE_NO);
+        bankUrgeRecordDOMapper.insertSelective(newUrge);
     }
+
 }

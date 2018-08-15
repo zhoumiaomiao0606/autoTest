@@ -332,5 +332,16 @@ public class IDict {
 
     }
 
+    //A.客户逾期；B.车辆回收后余额代偿结清；C.替客户偿还；D.拿车前代偿
+
+    /**
+     * 代偿原因
+     */
+    public static abstract interface K_DCYY {
+        public static final String K_DCYY_A = "客户逾期";
+        public static final String K_DCYY_B = "车辆回收后余额代偿结清";
+        public static final String K_DCYY_C = "替客户偿还";
+        public static final String K_DCYY_D = "拿车前代偿";
+    }
 
 }
