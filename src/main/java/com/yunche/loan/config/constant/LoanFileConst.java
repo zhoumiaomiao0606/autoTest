@@ -63,5 +63,8 @@ public class LoanFileConst {
         TYPE_NAME_MAP.put((byte) 56, "问话视频");
         TYPE_NAME_MAP.put((byte) 57, "垫款资料");
         TYPE_NAME_MAP.put((byte) 58, "资产包");
+
+
+        TYPE_NAME_MAP.put((byte) 87, "代偿打款凭证");
     }
 }

@@ -66,14 +66,24 @@ public class DateUtil {
     }
 
     public static String getDateTo8(Date date){
-        SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMdd");
-        String dateString = dataFormat.format(date);
+        String dateString=null;
+        try{
+            SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMdd");
+            dateString = dataFormat.format(date);
+        }catch (Exception e){
+            throw new BizException("日期格式错误");
+        }
         return dateString;
     }
 
     public static String getDateTo6(Date date){
-        SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMM");
-        String dateString = dataFormat.format(date);
+        String dateString=null;
+        try{
+            SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMM");
+            dateString = dataFormat.format(date);
+        }catch (Exception e){
+            throw new BizException("日期格式错误");
+        }
         return dateString;
     }
 
