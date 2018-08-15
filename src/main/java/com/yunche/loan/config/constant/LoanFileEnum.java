@@ -139,7 +139,11 @@ public enum LoanFileEnum {
     //代领委托授权书（三合一）
     S9021((byte)85,"代领委托授权书（三合一）"),
     //购车分期付款手续费委托代扣授权书
-    S9022((byte)86,"购车分期付款手续费委托代扣授权书");
+    S9022((byte)86,"购车分期付款手续费委托代扣授权书"),
+    //合伙人代偿打款凭证
+    COMPENSATION_PAYMENT_VOUCHER((byte)87,"代偿打款凭证");
+
+
 
     @Getter
     @Setter
