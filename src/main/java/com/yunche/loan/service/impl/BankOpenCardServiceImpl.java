@@ -219,6 +219,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
     public boolean importFile(String ossKey) {
 
         try {
+            //读取文件
             InputStream in = OSSUnit.getOSS2InputStream(ossKey);
             InputStreamReader inReader = new InputStreamReader(in, "UTF-8");
             BufferedReader bufReader = new BufferedReader(inReader);
@@ -234,7 +235,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
             bankFileListDO.setFileType(IDict.K_WJLX.WJLX_0);
             bankFileListDO.setGmtCreate(new Date());
             bankFileListDO.setOperator("auto");
-            int bankFileListId = bankFileListDOMapper.insertSelective(bankFileListDO);
+            bankFileListDOMapper.insertSelective(bankFileListDO);
 
             String line = "";
             BankFileListRecordDOKey bankFileListRecordDOKey = new BankFileListRecordDOKey();
@@ -244,27 +245,32 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
              * 地区号、平台编号、担保单位编号、订单号、开卡日期、卡号、姓名、证件类型、
              * 证件号码、发卡标志[0：开卡失败 1：开卡成功]、对账单日、还款日
              */
+            //开卡文件清单数据
             List<BankFileListRecordDO> recordLists = Lists.newArrayList();
             while ((line = bufReader.readLine()) != null) {
                 String[] split = line.split("\\|");
                 if (split.length >= 12) {
                     BankFileListRecordDO bankFileListRecordDO = packObject(split);
-                    bankFileListRecordDO.setBankFileListId(Long.valueOf(bankFileListId));
+                    bankFileListRecordDO.setBankFileListId(bankFileListDO.getId());
                     recordLists.add(bankFileListRecordDO);
                 }
 
             }
+            //过滤非系统客户
             List<BankFileListRecordDO> list = recordLists.parallelStream().filter(e -> e.getIsCustomer().equals(K_YORN_YES)).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(list)) {
                 int count = bankFileListRecordDOMapper.insertBatch(list);
                 Preconditions.checkArgument(count == list.size(), "批量插入失败");
             }
+            //更新客户表中对应记录中的卡号 （lend_card）
             list.stream().filter(Objects::nonNull).forEach(e->{
                 LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
                 LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), BaseConst.VALID_STATUS);
                 loanCustomerDO.setLendCard(e.getCardNumber());
                 loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
             });
+
+            //批量提交申请单
             list.parallelStream().filter(Objects::nonNull).forEach(e -> {
 
                 LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
@@ -278,6 +284,11 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                     approvalParam.setCheckPermission(false);
                     ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                     LOG.info(e.getOrderId() + approvalResultBean.getMsg());
+
+                    LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
+                    BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+                    bankInterfaceSerialDO.setStatus(IDict.K_JYZT.SUCCESS);
+                    bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
                 }
             });
         } catch (UnsupportedEncodingException e) {
