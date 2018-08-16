@@ -131,7 +131,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                         boolean flag = CarLoanHttpUtil.getGpsStatus(obj.getGps_number());
                         if (flag) {
                             PartnerCusInfoVO partnerCusInfoVO = installGpsDOMapper.selectPartnerAndCusByOrderId(Long.valueOf(param.getOrder_id()));
-                            boolean cusFlag = CarLoanHttpUtil.modifyCustomer(String.valueOf(partnerCusInfoVO.getPId()),String.valueOf(partnerCusInfoVO.getCusId()),param.getDriverName(),param.getVehicleName());
+                            boolean cusFlag = CarLoanHttpUtil.modifyCustomer(String.valueOf(partnerCusInfoVO.getPId()),String.valueOf(partnerCusInfoVO.getCusId()),param.getDriverName(),param.getVehicleName().replaceAll(" ",""));
                             if(cusFlag){
                                 boolean gpsFlag = CarLoanHttpUtil.bindGps(obj.getGps_number(),String.valueOf(partnerCusInfoVO.getCusId()));
                                 if(!gpsFlag){
