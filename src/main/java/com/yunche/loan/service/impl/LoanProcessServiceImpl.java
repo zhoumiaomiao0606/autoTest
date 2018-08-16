@@ -1571,7 +1571,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 DO.setTitle(title);
                 DO.setPrompt(prompt);
                 DO.setMsg(msg);
-                DO.setSender(SessionUtils.getLoginUser().getName());
+                EmployeeDO loginUser = null;
+                try {
+
+                    loginUser = SessionUtils.getLoginUser();
+                } catch (Exception ex) {
+                    logger.info("自动任务 || 未登录");
+                }
+
+                if (null == loginUser) {
+
+                    // 自动任务
+                    DO.setSender("auto");
+
+                } else {
+
+                    String loginUserName = loginUser.getName();
+                    DO.setSender(loginUserName);
+                }
                 DO.setProcessKey(taskDefinitionKey);
                 DO.setSendDate(new Date());
                 DO.setReadStatus(new Byte("0"));
