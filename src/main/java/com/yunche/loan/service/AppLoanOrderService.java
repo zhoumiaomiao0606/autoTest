@@ -20,7 +20,7 @@ public interface AppLoanOrderService {
 
     ResultBean<AppCreditApplyVO> createCreditApplyOrder(AppCustomerParam creditApplyOrderVO);
 
-    ResultBean<AppCustDetailVO> customerDetail(Long orderId);
+    ResultBean<CustDetailVO> customerDetail(Long orderId);
 
     ResultBean<Void> faceOff(Long orderId, Long principalLenderId, Long commonLenderId);
 
