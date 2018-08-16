@@ -1,7 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
+import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 
 public interface LoanApplicationCompensationService {
@@ -14,10 +14,10 @@ public interface LoanApplicationCompensationService {
 
     /**
      * 手工导入
-     * @param loanApplyCompensationDO
+     * @param param
      * @return
      */
-    void manualInsert(LoanApplyCompensationDO loanApplyCompensationDO);
+    void manualInsert(UniversalCompensationParam param);
 
 
     ResultBean detail(UniversalCompensationQuery applicationCompensationQuery);

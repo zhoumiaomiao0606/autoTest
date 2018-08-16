@@ -5,11 +5,13 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BankUrgeRecordDO;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDOKey;
+import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.domain.vo.FinancialSchemeVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -123,12 +125,12 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                             throw new BizException("第" + rowNum + "行，第15列格式有误：" + row[14]);
                         }
                         try {
-                            compensationDO.setCompensationCause(row[15].trim());//申请代偿时间
+                            compensationDO.setApplyCompensationDate(DateUtil.getDate10(row[15].trim()));//申请代偿时间
                         } catch (Exception e) {
                             throw new BizException("第" + rowNum + "行，第16列格式有误：" + row[15]);
                         }
                         try {
-                            compensationDO.setCompensationCause(row[16].trim());//备注
+                            compensationDO.setRemark(row[16].trim());//备注
                         } catch (Exception e) {
                             throw new BizException("第" + rowNum + "行，第17列格式有误：" + row[16]);
                         }
@@ -151,6 +153,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                                 int count = loanApplyCompensationDOMapper.insertSelective(e);
                                 Preconditions.checkArgument(count>0,"插入记录出错");
                             } else if(!tmpDO.getStatus().equals(TASK_PROCESS_DONE)){
+                                e.setGmtModify(new Date());
                                 int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(e);
                                 Preconditions.checkArgument(count>0,"更新记录出错");
                             }
@@ -168,20 +171,20 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
 
     /**
      * 手工录入
-     * @param loanApplyCompensationDO
+     * @param param
      * @return
      */
     @Override
     @Transactional
-    public void manualInsert(LoanApplyCompensationDO loanApplyCompensationDO) {
-        Preconditions.checkNotNull(loanApplyCompensationDO,"参数有误");
-        LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByPrimaryKey(loanApplyCompensationDO);
+    public void manualInsert(UniversalCompensationParam param) {
+        Preconditions.checkNotNull(param,"参数有误");
+        LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByPrimaryKey(param);
         if(tmpDO !=null){
             Preconditions.checkArgument(tmpDO.getStatus().equals(TASK_PROCESS_TODO),"订单已提交，禁止修改");
-            int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(loanApplyCompensationDO);
+            int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
         }else {
-            int count = loanApplyCompensationDOMapper.insertSelective(loanApplyCompensationDO);
+            int count = loanApplyCompensationDOMapper.insertSelective(param);
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
         }
     }

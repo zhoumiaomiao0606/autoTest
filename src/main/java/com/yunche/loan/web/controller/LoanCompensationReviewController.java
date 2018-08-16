@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 代偿确认
+ * 财务代偿确认
  */
 @CrossOrigin
 @RestController
