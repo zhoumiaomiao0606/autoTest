@@ -4,20 +4,27 @@ import com.google.common.collect.Maps;
 import com.yunche.loan.domain.entity.DictMapDO;
 import com.yunche.loan.mapper.DictMapDOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class DictMapCache {
 
-    public static Map<String, String> map = Maps.newHashMap();
+    private static final String DICT_2_BANK = "area:cache:dict2bank";
+
+
 
     @Autowired
     DictMapDOMapper dictMapDOMapper;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
 
     /**
@@ -32,19 +39,26 @@ public class DictMapCache {
         if (CollectionUtils.isEmpty(allDictMap)) {
             return;
         }
+
+         Map<String, String> map = Maps.newHashMap();
         allDictMap.parallelStream().forEach(e -> {
             String key = e.getItemKey() + "_" + e.getSource();
             String value = e.getTarget();
             map.put(key, value);
         });
+        stringRedisTemplate.opsForHash().putAll(DICT_2_BANK, map);
+
 
     }
 
+    /**
+     *
+     * @param key
+     * @param source
+     * @return
+     */
     public String getValue(String key, String source) {
-        if (map.containsKey(key + "_" + source)) {
-            return map.get(key + "_" + source);
-        } else {
-            return source;
-        }
+
+        return stringRedisTemplate.opsForHash().get(DICT_2_BANK, key.trim()+"_"+source.trim()).toString();
     }
 }

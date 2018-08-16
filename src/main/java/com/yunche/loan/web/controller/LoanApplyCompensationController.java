@@ -2,7 +2,7 @@ package com.yunche.loan.web.controller;
 
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
+import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.service.LoanApplicationCompensationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +33,12 @@ public class LoanApplyCompensationController {
 
     /**
      * 手工添加
-     * @param loanApplyCompensationDO
+     * @param param
      * @return
      */
     @PostMapping(value = "/manualInsert" ,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean manualInsert(@RequestBody LoanApplyCompensationDO loanApplyCompensationDO){
-        loanApplicationCompensationService.manualInsert(loanApplyCompensationDO);
+    public ResultBean manualInsert(@RequestBody UniversalCompensationParam param){
+        loanApplicationCompensationService.manualInsert(param);
         return ResultBean.ofSuccess(null,"保存成功");
     }
 

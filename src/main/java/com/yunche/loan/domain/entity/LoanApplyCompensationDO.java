@@ -32,6 +32,12 @@ public class LoanApplyCompensationDO extends LoanApplyCompensationDOKey {
 
     private String outAccount;
 
+    private String receiveBank;
+
+    private String receiveCarNumber;
+
+    private String receiveAccount;
+
     private Date reviewDate;
 
     private String reviewOperator;
