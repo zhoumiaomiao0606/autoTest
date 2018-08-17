@@ -339,6 +339,13 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/lib/api_client.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.zhongan.scorpoin</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/zaOpenapiSdk.jar</systemPath>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
         <dependency>
