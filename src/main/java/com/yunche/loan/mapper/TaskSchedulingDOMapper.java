@@ -1,10 +1,12 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.domain.param.SubimitVisitDoorParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 
 import com.yunche.loan.domain.vo.ScheduleTaskVO;
+import com.yunche.loan.domain.vo.SubimitVisitDoorVO;
 import com.yunche.loan.domain.vo.TaskListVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +25,8 @@ public interface TaskSchedulingDOMapper {
     List<TaskListVO> selectTaskList(@Validated TaskListQuery query);
 
     boolean selectRejectTask(@Param("orderId") Long orderId);
+
+    List<SubimitVisitDoorVO> subimitVisitDoorList(SubimitVisitDoorParam param);
 
     /**
      * 资料流转 列表查询

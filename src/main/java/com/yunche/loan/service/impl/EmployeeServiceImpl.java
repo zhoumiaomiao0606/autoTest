@@ -173,14 +173,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 更新Parent
         updateParent(employeeDO.getId(), employeeDO.getParentId());
-
+        bindBizArea(employeeDO.getId(),employeeDO.getBizAreaIds());
         // 禁止通过update更新密码
         employeeDO.setEmail(employeeDO.getEmail().trim());
         employeeDO.setPassword(null);
         employeeDO.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
-        bindBizArea(employeeDO.getId(),employeeDO.getBizAreaIds());
+
         // 刷新缓存
         employeeCache.refresh();
 

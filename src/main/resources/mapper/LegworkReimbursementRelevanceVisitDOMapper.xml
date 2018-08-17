@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LegworkReimbursementRelevanceVisitDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LegworkReimbursementRelevanceVisitDO" >
+    <id column="legwork_reimbursement_id" property="legworkReimbursementId" jdbcType="BIGINT" />
+    <id column="visit_door_id" property="visitDoorId" jdbcType="BIGINT" />
+    <result column="gmt_create_time" property="gmtCreateTime" jdbcType="TIMESTAMP" />
+    <result column="gmt_update_time" property="gmtUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    legwork_reimbursement_id, visit_door_id, gmt_create_time, gmt_update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementRelevanceVisitDOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from legwork_reimbursement_relevance_visit
+    where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+      and visit_door_id = #{visitDoorId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByLegworkReimbursementId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from legwork_reimbursement_relevance_visit
+    where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementRelevanceVisitDOKey" >
+    delete from legwork_reimbursement_relevance_visit
+    where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+      and visit_door_id = #{visitDoorId,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByLegworkReimbursementId" parameterType="java.lang.Long" >
+    delete from legwork_reimbursement_relevance_visit
+    where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementRelevanceVisitDO" >
+    insert into legwork_reimbursement_relevance_visit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="legworkReimbursementId != null" >
+        legwork_reimbursement_id,
+      </if>
+      <if test="visitDoorId != null" >
+        visit_door_id,
+      </if>
+      <if test="gmtCreateTime != null" >
+        gmt_create_time,
+      </if>
+      <if test="gmtUpdateTime != null" >
+        gmt_update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="legworkReimbursementId != null" >
+        #{legworkReimbursementId,jdbcType=BIGINT},
+      </if>
+      <if test="visitDoorId != null" >
+        #{visitDoorId,jdbcType=BIGINT},
+      </if>
+      <if test="gmtCreateTime != null" >
+        #{gmtCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtUpdateTime != null" >
+        #{gmtUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementRelevanceVisitDO" >
+    update legwork_reimbursement_relevance_visit
+    <set >
+      <if test="gmtCreateTime != null" >
+        gmt_create_time = #{gmtCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtUpdateTime != null" >
+        gmt_update_time = #{gmtUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+      and visit_door_id = #{visitDoorId,jdbcType=BIGINT}
+  </update>
+  <select id="checkHaving" resultType="java.lang.Boolean">
+    select count(1) from legwork_reimbursement_relevance_visit where visit_door_id = #{visitDoorId}
+  </select>
+</mapper>

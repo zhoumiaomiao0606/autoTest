@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.VisitDoorDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VisitDoorDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="dispatched_staff_id" property="dispatchedStaffId" jdbcType="BIGINT" />
+    <result column="dispatched_staff_name" property="dispatchedStaffName" jdbcType="VARCHAR" />
+    <result column="dispatched_date" property="dispatchedDate" jdbcType="DATE" />
+    <result column="receiver_id" property="receiverId" jdbcType="BIGINT" />
+    <result column="receiver_name" property="receiverName" jdbcType="VARCHAR" />
+    <result column="visit_people_name" property="visitPeopleName" jdbcType="VARCHAR" />
+    <result column="visit_date" property="visitDate" jdbcType="DATE" />
+    <result column="traffic" property="traffic" jdbcType="VARCHAR" />
+    <result column="feed_back" property="feedBack" jdbcType="VARCHAR" />
+    <result column="visit_address" property="visitAddress" jdbcType="VARCHAR" />
+    <result column="visit_detail" property="visitDetail" jdbcType="VARCHAR" />
+    <result column="gps_detail" property="gpsDetail" jdbcType="VARCHAR" />
+    <result column="people_detail" property="peopleDetail" jdbcType="VARCHAR" />
+    <result column="next_plan" property="nextPlan" jdbcType="VARCHAR" />
+    <result column="visit_result" property="visitResult" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="car_detail" property="carDetail" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="visit_people_id" property="visitPeopleId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, dispatched_staff_id, dispatched_staff_name, dispatched_date, receiver_id, receiver_name, 
+    visit_people_name, visit_date, traffic, feed_back, visit_address, visit_detail, gps_detail, 
+    people_detail, next_plan, visit_result, remarks, car_detail, order_id, visit_people_id
+  </sql>
+  <select id="selectGpsInfo" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.query.GpsInfoQuery">
+    select a.id AS id,c.gps_company AS gps_company,d.gps_number AS gps_number
+     from loan_order a
+	left join loan_base_info b on a.loan_base_info_id = b.id
+	left join partner c on b.partner_id = c.id
+	left join install_gps d on a.id = d.order_id
+	where a.id = #{orderid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from visit_door
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from visit_door
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.VisitDoorDO" >
+    insert into visit_door (id, dispatched_staff_id, dispatched_staff_name, 
+      dispatched_date, receiver_id, receiver_name, 
+      visit_people_name, visit_date, traffic, 
+      feed_back, visit_address, visit_detail, 
+      gps_detail, people_detail, next_plan, 
+      visit_result, remarks, car_detail, 
+      order_id, visit_people_id)
+    values (#{id,jdbcType=BIGINT}, #{dispatchedStaffId,jdbcType=BIGINT}, #{dispatchedStaffName,jdbcType=VARCHAR}, 
+      #{dispatchedDate,jdbcType=DATE}, #{receiverId,jdbcType=BIGINT}, #{receiverName,jdbcType=VARCHAR}, 
+      #{visitPeopleName,jdbcType=VARCHAR}, #{visitDate,jdbcType=DATE}, #{traffic,jdbcType=VARCHAR}, 
+      #{feedBack,jdbcType=VARCHAR}, #{visitAddress,jdbcType=VARCHAR}, #{visitDetail,jdbcType=VARCHAR}, 
+      #{gpsDetail,jdbcType=VARCHAR}, #{peopleDetail,jdbcType=VARCHAR}, #{nextPlan,jdbcType=VARCHAR}, 
+      #{visitResult,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, #{carDetail,jdbcType=VARCHAR}, 
+      #{orderId,jdbcType=BIGINT}, #{visitPeopleId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VisitDoorDO" >
+    insert into visit_door
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="dispatchedStaffId != null" >
+        dispatched_staff_id,
+      </if>
+      <if test="dispatchedStaffName != null" >
+        dispatched_staff_name,
+      </if>
+      <if test="dispatchedDate != null" >
+        dispatched_date,
+      </if>
+      <if test="receiverId != null" >
+        receiver_id,
+      </if>
+      <if test="receiverName != null" >
+        receiver_name,
+      </if>
+      <if test="visitPeopleName != null" >
+        visit_people_name,
+      </if>
+      <if test="visitDate != null" >
+        visit_date,
+      </if>
+      <if test="traffic != null" >
+        traffic,
+      </if>
+      <if test="feedBack != null" >
+        feed_back,
+      </if>
+      <if test="visitAddress != null" >
+        visit_address,
+      </if>
+      <if test="visitDetail != null" >
+        visit_detail,
+      </if>
+      <if test="gpsDetail != null" >
+        gps_detail,
+      </if>
+      <if test="peopleDetail != null" >
+        people_detail,
+      </if>
+      <if test="nextPlan != null" >
+        next_plan,
+      </if>
+      <if test="visitResult != null" >
+        visit_result,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="carDetail != null" >
+        car_detail,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="visitPeopleId != null" >
+        visit_people_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="dispatchedStaffId != null" >
+        #{dispatchedStaffId,jdbcType=BIGINT},
+      </if>
+      <if test="dispatchedStaffName != null" >
+        #{dispatchedStaffName,jdbcType=VARCHAR},
+      </if>
+      <if test="dispatchedDate != null" >
+        #{dispatchedDate,jdbcType=DATE},
+      </if>
+      <if test="receiverId != null" >
+        #{receiverId,jdbcType=BIGINT},
+      </if>
+      <if test="receiverName != null" >
+        #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="visitPeopleName != null" >
+        #{visitPeopleName,jdbcType=VARCHAR},
+      </if>
+      <if test="visitDate != null" >
+        #{visitDate,jdbcType=DATE},
+      </if>
+      <if test="traffic != null" >
+        #{traffic,jdbcType=VARCHAR},
+      </if>
+      <if test="feedBack != null" >
+        #{feedBack,jdbcType=VARCHAR},
+      </if>
+      <if test="visitAddress != null" >
+        #{visitAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="visitDetail != null" >
+        #{visitDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="gpsDetail != null" >
+        #{gpsDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="peopleDetail != null" >
+        #{peopleDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="nextPlan != null" >
+        #{nextPlan,jdbcType=VARCHAR},
+      </if>
+      <if test="visitResult != null" >
+        #{visitResult,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="carDetail != null" >
+        #{carDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="visitPeopleId != null" >
+        #{visitPeopleId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.VisitDoorDO" >
+    update visit_door
+    <set >
+      <if test="dispatchedStaffId != null" >
+        dispatched_staff_id = #{dispatchedStaffId,jdbcType=BIGINT},
+      </if>
+      <if test="dispatchedStaffName != null" >
+        dispatched_staff_name = #{dispatchedStaffName,jdbcType=VARCHAR},
+      </if>
+      <if test="dispatchedDate != null" >
+        dispatched_date = #{dispatchedDate,jdbcType=DATE},
+      </if>
+      <if test="receiverId != null" >
+        receiver_id = #{receiverId,jdbcType=BIGINT},
+      </if>
+      <if test="receiverName != null" >
+        receiver_name = #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="visitPeopleName != null" >
+        visit_people_name = #{visitPeopleName,jdbcType=VARCHAR},
+      </if>
+      <if test="visitDate != null" >
+        visit_date = #{visitDate,jdbcType=DATE},
+      </if>
+      <if test="traffic != null" >
+        traffic = #{traffic,jdbcType=VARCHAR},
+      </if>
+      <if test="feedBack != null" >
+        feed_back = #{feedBack,jdbcType=VARCHAR},
+      </if>
+      <if test="visitAddress != null" >
+        visit_address = #{visitAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="visitDetail != null" >
+        visit_detail = #{visitDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="gpsDetail != null" >
+        gps_detail = #{gpsDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="peopleDetail != null" >
+        people_detail = #{peopleDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="nextPlan != null" >
+        next_plan = #{nextPlan,jdbcType=VARCHAR},
+      </if>
+      <if test="visitResult != null" >
+        visit_result = #{visitResult,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="carDetail != null" >
+        car_detail = #{carDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="visitPeopleId != null" >
+        visit_people_id = #{visitPeopleId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VisitDoorDO" >
+    update visit_door
+    set dispatched_staff_id = #{dispatchedStaffId,jdbcType=BIGINT},
+      dispatched_staff_name = #{dispatchedStaffName,jdbcType=VARCHAR},
+      dispatched_date = #{dispatchedDate,jdbcType=DATE},
+      receiver_id = #{receiverId,jdbcType=BIGINT},
+      receiver_name = #{receiverName,jdbcType=VARCHAR},
+      visit_people_name = #{visitPeopleName,jdbcType=VARCHAR},
+      visit_date = #{visitDate,jdbcType=DATE},
+      traffic = #{traffic,jdbcType=VARCHAR},
+      feed_back = #{feedBack,jdbcType=VARCHAR},
+      visit_address = #{visitAddress,jdbcType=VARCHAR},
+      visit_detail = #{visitDetail,jdbcType=VARCHAR},
+      gps_detail = #{gpsDetail,jdbcType=VARCHAR},
+      people_detail = #{peopleDetail,jdbcType=VARCHAR},
+      next_plan = #{nextPlan,jdbcType=VARCHAR},
+      visit_result = #{visitResult,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      car_detail = #{carDetail,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=BIGINT},
+      visit_people_id = #{visitPeopleId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

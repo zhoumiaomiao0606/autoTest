@@ -334,6 +334,7 @@
             customer.hprovince                                                                      AS customer_hprovince,
             customer.hcity                                                                          AS customer_hcity,
             customer.hcounty                                                                        AS customer_hcounty,
+            customer.lend_card                                                                      AS customer_lend_card,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
@@ -1455,29 +1456,29 @@
 
     <select id="selectOrderIdByIDCard" resultType="java.lang.Long">
         SELECT
-        e.orderId
+            e.orderId
         FROM
         (
-        SELECT
-        count(t.id_card) AS id_card_num,
-        t.orderId
-        FROM
-        (
-        SELECT
-        a.id AS orderId,
-        c.id_card
-        FROM
-        loan_order a
-        LEFT JOIN loan_process b ON a.id = b.order_id
-        LEFT JOIN loan_customer c ON a.loan_customer_id = c.id
-        WHERE
-        c.id_card = #{idCard}
-        AND (b.bank_lend_record = 2 or b.bank_card_record=2)
-        ) t
-        GROUP BY
-        t.id_card
-        HAVING
-        id_card_num = 1
+            SELECT
+                count(t.id_card) AS id_card_num,
+                t.orderId
+            FROM
+            (
+                SELECT
+                    a.id AS orderId,
+                    c.id_card
+                FROM
+                    loan_order a
+                    LEFT JOIN loan_process b ON a.id = b.order_id
+                    LEFT JOIN loan_customer c ON a.loan_customer_id = c.id
+                WHERE
+                    c.id_card = #{idCard}
+                    AND (b.bank_lend_record = 2 or b.bank_card_record=2)
+            ) t
+            GROUP BY
+                t.id_card
+            HAVING
+                id_card_num = 1
         ) e
     </select>
 
@@ -1970,6 +1971,10 @@
 
     </select>
 
-
-
+    <select id="selectUniversalFileByLegworkReimbursementId" resultType="com.yunche.loan.domain.vo.UniversalLegworkReimbursement" parameterType="java.lang.Long" >
+        select
+        urls
+        from legwork_reimbursement_file
+        where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+    </select>
 </mapper>

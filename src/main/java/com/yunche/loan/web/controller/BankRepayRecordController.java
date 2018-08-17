@@ -26,7 +26,7 @@ public class BankRepayRecordController {
 
     @GetMapping(value = "/list")
     public ResultBean query(@RequestParam("pageIndex") Integer pageIndex, @RequestParam("pageSize") Integer pageSize,
-                            @RequestParam(value = "fileType",required = false) String fileType,
+                            @RequestParam(value = "fileType") String fileType,
                             @RequestParam(value = "fileName",required = false) String fileName,
                             @RequestParam(value = "startDate",required = false)String startDate,
                             @RequestParam(value = "endDate",required = false)String endDate) {

@@ -8,6 +8,7 @@ import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.AppLoanOrderService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,26 @@ public class AppLoanOrderController {
     @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<AppCreditApplyVO> createCreditApplyOrder(@RequestBody AppCustomerParam appCustomerParam) {
         return appLoanOrderService.createCreditApplyOrder(appCustomerParam);
+    }
+
+
+    /**
+     * 众安接口
+     */
+    @PostMapping(value = "/zhonganquery")
+    public ResultBean zhongAnQuery(@RequestBody ZhongAnQueryParam zhongAnQueryParam){
+        appLoanOrderService.zhongAnQuery(zhongAnQueryParam);
+        return ResultBean.ofSuccess(null,"查询成功");
+
+    }
+
+    /**
+     * 众安接口详情
+     */
+    @PostMapping(value = "/zhongandetail")
+    public ResultBean zhongAnDetail(@RequestParam ("orderId") Long orderId,@RequestParam ("customerName") String customerName){
+        return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(orderId,customerName));
+
     }
 
     /**
@@ -81,7 +102,7 @@ public class AppLoanOrderController {
      * @return
      */
     @GetMapping(value = "/customer/detail")
-    public ResultBean<AppCustDetailVO> customerDetail(@RequestParam("orderId") Long orderId) {
+    public ResultBean<CustDetailVO> customerDetail(@RequestParam("orderId") Long orderId) {
         return appLoanOrderService.customerDetail(orderId);
     }
 

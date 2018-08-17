@@ -12,6 +12,10 @@ import java.util.List;
 @Data
 public class CustDetailVO {
     /**
+     * 视频面签文件-是否上传保存成功
+     */
+    private Boolean saveVideoFace = false;
+    /**
      * 主贷人
      */
     private CustomerVO principalLender;

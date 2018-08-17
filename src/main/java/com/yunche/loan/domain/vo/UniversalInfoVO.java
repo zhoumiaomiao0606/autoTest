@@ -42,6 +42,8 @@ public class UniversalInfoVO {
     private String customer_hprovince;
     private String customer_hcity;
     private String customer_hcounty;
+    private String customer_lend_card;
+    private String customer_signature_type;
     private String partner_id;
     private String partner_name;
     private String partner_biz_area;

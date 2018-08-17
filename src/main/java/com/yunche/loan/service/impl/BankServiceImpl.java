@@ -63,6 +63,7 @@ public class BankServiceImpl implements BankService {
 
 
     @Override
+    @Transactional
     public void save(BankSaveParam param) {
         Preconditions.checkNotNull(param, "银行不能为空");
         Preconditions.checkNotNull(param.getBank(), "银行不能为空");
@@ -327,57 +328,60 @@ public class BankServiceImpl implements BankService {
         List<CascadeAreaVO> ableAreaList = Lists.newArrayList();
         Map<Long, Set<Long>> areaMap = Maps.newHashMap();
 
-        baseBindArea.stream()
-                .forEach(hasArea -> {
+        if (!CollectionUtils.isEmpty(baseBindArea)) {
 
-                    switch (hasArea.getLevel()) {
+            baseBindArea.stream()
+                    .forEach(hasArea -> {
 
-                        case 0:
-                            ableAreaList.addAll(areaCache.get());
-                            break;
+                        switch (hasArea.getLevel()) {
 
-                        case 1:
-                            Long provinceId = hasArea.getAreaId();
-                            List<Long> citys = baseAreaDOMapper.selectCityIdByProvenceId(provinceId);
+                            case 0:
+                                ableAreaList.addAll(areaCache.get());
+                                break;
 
-                            if (areaMap.containsKey(provinceId)) {
-                                Set<Long> aaa = areaMap.get(provinceId);
-                                aaa.addAll(citys);
-                                areaMap.put(provinceId, aaa);
-                            } else {
-                                Set<Long> tmp = Sets.newHashSet(citys);
-                                areaMap.put(provinceId, tmp);
-                            }
-                            break;
+                            case 1:
+                                Long provinceId = hasArea.getAreaId();
+                                List<Long> citys = baseAreaDOMapper.selectCityIdByProvenceId(provinceId);
 
-                        case 2:
-                            Long cityId_ = hasArea.getAreaId();
-                            Long provinceId_ = hasArea.getParentAreaId();
-                            if (areaMap.containsKey(provinceId_)) {
-                                Set<Long> aaa = areaMap.get(provinceId_);
-                                aaa.add(cityId_);
-                            } else {
-                                Set<Long> tmp = Sets.newHashSet(cityId_);
-                                areaMap.put(provinceId_, tmp);
-                            }
-                            break;
+                                if (areaMap.containsKey(provinceId)) {
+                                    Set<Long> aaa = areaMap.get(provinceId);
+                                    aaa.addAll(citys);
+                                    areaMap.put(provinceId, aaa);
+                                } else {
+                                    Set<Long> tmp = Sets.newHashSet(citys);
+                                    areaMap.put(provinceId, tmp);
+                                }
+                                break;
 
-                        case 3:
-                            Long areaId__ = hasArea.getAreaId();
-                            Long cityId__ = hasArea.getParentAreaId();
-                            BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(cityId__, null);
-                            Long provinceId__ = cityDO.getParentAreaId();
+                            case 2:
+                                Long cityId_ = hasArea.getAreaId();
+                                Long provinceId_ = hasArea.getParentAreaId();
+                                if (areaMap.containsKey(provinceId_)) {
+                                    Set<Long> aaa = areaMap.get(provinceId_);
+                                    aaa.add(cityId_);
+                                } else {
+                                    Set<Long> tmp = Sets.newHashSet(cityId_);
+                                    areaMap.put(provinceId_, tmp);
+                                }
+                                break;
 
-                            if (areaMap.containsKey(provinceId__)) {
-                                Set<Long> aaa = areaMap.get(provinceId__);
-                                aaa.add(areaId__);
-                            } else {
-                                Set<Long> tmp = Sets.newHashSet(areaId__);
-                                areaMap.put(provinceId__, tmp);
-                            }
-                            break;
-                    }
-                });
+                            case 3:
+                                Long areaId__ = hasArea.getAreaId();
+                                Long cityId__ = hasArea.getParentAreaId();
+                                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(cityId__, null);
+                                Long provinceId__ = cityDO.getParentAreaId();
+
+                                if (areaMap.containsKey(provinceId__)) {
+                                    Set<Long> aaa = areaMap.get(provinceId__);
+                                    aaa.add(areaId__);
+                                } else {
+                                    Set<Long> tmp = Sets.newHashSet(areaId__);
+                                    areaMap.put(provinceId__, tmp);
+                                }
+                                break;
+                        }
+                    });
+        }
 
         //根据银行管辖区域获取管辖区域的省市
         List<CascadeAreaVO> cascadeAreaVOS = fillInfo(ableAreaList, areaMap);
@@ -392,6 +396,10 @@ public class BankServiceImpl implements BankService {
      * @param areaMap
      */
     private List<CascadeAreaVO> fillInfo(List<CascadeAreaVO> ableAreaList, Map<Long, Set<Long>> areaMap) {
+
+        if (CollectionUtils.isEmpty(areaMap)) {
+            return ableAreaList;
+        }
 
         areaMap.keySet().parallelStream()
                 .filter(Objects::nonNull)

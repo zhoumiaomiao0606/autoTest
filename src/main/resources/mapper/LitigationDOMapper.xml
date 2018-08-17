@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LitigationDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LitigationDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="register_date" property="registerDate" jdbcType="DATE" />
+    <result column="register_id" property="registerId" jdbcType="VARCHAR" />
+    <result column="plaintiff" property="plaintiff" jdbcType="VARCHAR" />
+    <result column="defendant" property="defendant" jdbcType="VARCHAR" />
+    <result column="rule_court" property="ruleCourt" jdbcType="VARCHAR" />
+    <result column="litigation_total" property="litigationTotal" jdbcType="VARCHAR" />
+    <result column="litigation_money" property="litigationMoney" jdbcType="VARCHAR" />
+    <result column="undertake_court" property="undertakeCourt" jdbcType="VARCHAR" />
+    <result column="undertake_court_tel" property="undertakeCourtTel" jdbcType="VARCHAR" />
+    <result column="clerk" property="clerk" jdbcType="VARCHAR" />
+    <result column="clerk_tel" property="clerkTel" jdbcType="VARCHAR" />
+    <result column="sitting_date" property="sittingDate" jdbcType="DATE" />
+    <result column="publication_fee" property="publicationFee" jdbcType="VARCHAR" />
+    <result column="sentence" property="sentence" jdbcType="VARCHAR" />
+    <result column="preservation_date" property="preservationDate" jdbcType="DATE" />
+    <result column="preservation_money" property="preservationMoney" jdbcType="VARCHAR" />
+    <result column="preservation_fee" property="preservationFee" jdbcType="VARCHAR" />
+    <result column="preservation_judge" property="preservationJudge" jdbcType="VARCHAR" />
+    <result column="effect_date" property="effectDate" jdbcType="DATE" />
+    <result column="preservation_judge_tel" property="preservationJudgeTel" jdbcType="VARCHAR" />
+    <result column="return_date" property="returnDate" jdbcType="DATE" />
+    <result column="return_money" property="returnMoney" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="litigation_no" property="litigationNo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_id, register_date, register_id, plaintiff, defendant, rule_court, litigation_total, 
+    litigation_money, undertake_court, undertake_court_tel, clerk, clerk_tel, sitting_date, 
+    publication_fee, sentence, preservation_date, preservation_money, preservation_fee, 
+    preservation_judge, effect_date, preservation_judge_tel, return_date, return_money, 
+    remarks, litigation_no
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from litigation
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from litigation
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LitigationDO" >
+    insert into litigation (id, order_id, register_date, 
+      register_id, plaintiff, defendant, 
+      rule_court, litigation_total, litigation_money, 
+      undertake_court, undertake_court_tel, clerk, 
+      clerk_tel, sitting_date, publication_fee, 
+      sentence, preservation_date, preservation_money, 
+      preservation_fee, preservation_judge, effect_date, 
+      preservation_judge_tel, return_date, return_money, 
+      remarks, litigation_no)
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{registerDate,jdbcType=DATE}, 
+      #{registerId,jdbcType=VARCHAR}, #{plaintiff,jdbcType=VARCHAR}, #{defendant,jdbcType=VARCHAR}, 
+      #{ruleCourt,jdbcType=VARCHAR}, #{litigationTotal,jdbcType=VARCHAR}, #{litigationMoney,jdbcType=VARCHAR}, 
+      #{undertakeCourt,jdbcType=VARCHAR}, #{undertakeCourtTel,jdbcType=VARCHAR}, #{clerk,jdbcType=VARCHAR}, 
+      #{clerkTel,jdbcType=VARCHAR}, #{sittingDate,jdbcType=DATE}, #{publicationFee,jdbcType=VARCHAR}, 
+      #{sentence,jdbcType=VARCHAR}, #{preservationDate,jdbcType=DATE}, #{preservationMoney,jdbcType=VARCHAR}, 
+      #{preservationFee,jdbcType=VARCHAR}, #{preservationJudge,jdbcType=VARCHAR}, #{effectDate,jdbcType=DATE}, 
+      #{preservationJudgeTel,jdbcType=VARCHAR}, #{returnDate,jdbcType=DATE}, #{returnMoney,jdbcType=VARCHAR}, 
+      #{remarks,jdbcType=VARCHAR}, #{litigationNo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LitigationDO" >
+    insert into litigation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="registerDate != null" >
+        register_date,
+      </if>
+      <if test="registerId != null" >
+        register_id,
+      </if>
+      <if test="plaintiff != null" >
+        plaintiff,
+      </if>
+      <if test="defendant != null" >
+        defendant,
+      </if>
+      <if test="ruleCourt != null" >
+        rule_court,
+      </if>
+      <if test="litigationTotal != null" >
+        litigation_total,
+      </if>
+      <if test="litigationMoney != null" >
+        litigation_money,
+      </if>
+      <if test="undertakeCourt != null" >
+        undertake_court,
+      </if>
+      <if test="undertakeCourtTel != null" >
+        undertake_court_tel,
+      </if>
+      <if test="clerk != null" >
+        clerk,
+      </if>
+      <if test="clerkTel != null" >
+        clerk_tel,
+      </if>
+      <if test="sittingDate != null" >
+        sitting_date,
+      </if>
+      <if test="publicationFee != null" >
+        publication_fee,
+      </if>
+      <if test="sentence != null" >
+        sentence,
+      </if>
+      <if test="preservationDate != null" >
+        preservation_date,
+      </if>
+      <if test="preservationMoney != null" >
+        preservation_money,
+      </if>
+      <if test="preservationFee != null" >
+        preservation_fee,
+      </if>
+      <if test="preservationJudge != null" >
+        preservation_judge,
+      </if>
+      <if test="effectDate != null" >
+        effect_date,
+      </if>
+      <if test="preservationJudgeTel != null" >
+        preservation_judge_tel,
+      </if>
+      <if test="returnDate != null" >
+        return_date,
+      </if>
+      <if test="returnMoney != null" >
+        return_money,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="litigationNo != null" >
+        litigation_no,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="registerDate != null" >
+        #{registerDate,jdbcType=DATE},
+      </if>
+      <if test="registerId != null" >
+        #{registerId,jdbcType=VARCHAR},
+      </if>
+      <if test="plaintiff != null" >
+        #{plaintiff,jdbcType=VARCHAR},
+      </if>
+      <if test="defendant != null" >
+        #{defendant,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleCourt != null" >
+        #{ruleCourt,jdbcType=VARCHAR},
+      </if>
+      <if test="litigationTotal != null" >
+        #{litigationTotal,jdbcType=VARCHAR},
+      </if>
+      <if test="litigationMoney != null" >
+        #{litigationMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeCourt != null" >
+        #{undertakeCourt,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeCourtTel != null" >
+        #{undertakeCourtTel,jdbcType=VARCHAR},
+      </if>
+      <if test="clerk != null" >
+        #{clerk,jdbcType=VARCHAR},
+      </if>
+      <if test="clerkTel != null" >
+        #{clerkTel,jdbcType=VARCHAR},
+      </if>
+      <if test="sittingDate != null" >
+        #{sittingDate,jdbcType=DATE},
+      </if>
+      <if test="publicationFee != null" >
+        #{publicationFee,jdbcType=VARCHAR},
+      </if>
+      <if test="sentence != null" >
+        #{sentence,jdbcType=VARCHAR},
+      </if>
+      <if test="preservationDate != null" >
+        #{preservationDate,jdbcType=DATE},
+      </if>
+      <if test="preservationMoney != null" >
+        #{preservationMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="preservationFee != null" >
+        #{preservationFee,jdbcType=VARCHAR},
+      </if>
+      <if test="preservationJudge != null" >
+        #{preservationJudge,jdbcType=VARCHAR},
+      </if>
+      <if test="effectDate != null" >
+        #{effectDate,jdbcType=DATE},
+      </if>
+      <if test="preservationJudgeTel != null" >
+        #{preservationJudgeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="returnDate != null" >
+        #{returnDate,jdbcType=DATE},
+      </if>
+      <if test="returnMoney != null" >
+        #{returnMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="litigationNo != null" >
+        #{litigationNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LitigationDO" >
+    update litigation
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="registerDate != null" >
+        register_date = #{registerDate,jdbcType=DATE},
+      </if>
+      <if test="registerId != null" >
+        register_id = #{registerId,jdbcType=VARCHAR},
+      </if>
+      <if test="plaintiff != null" >
+        plaintiff = #{plaintiff,jdbcType=VARCHAR},
+      </if>
+      <if test="defendant != null" >
+        defendant = #{defendant,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleCourt != null" >
+        rule_court = #{ruleCourt,jdbcType=VARCHAR},
+      </if>
+      <if test="litigationTotal != null" >
+        litigation_total = #{litigationTotal,jdbcType=VARCHAR},
+      </if>
+      <if test="litigationMoney != null" >
+        litigation_money = #{litigationMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeCourt != null" >
+        undertake_court = #{undertakeCourt,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeCourtTel != null" >
+        undertake_court_tel = #{undertakeCourtTel,jdbcType=VARCHAR},
+      </if>
+      <if test="clerk != null" >
+        clerk = #{clerk,jdbcType=VARCHAR},
+      </if>
+      <if test="clerkTel != null" >
+        clerk_tel = #{clerkTel,jdbcType=VARCHAR},
+      </if>
+      <if test="sittingDate != null" >
+        sitting_date = #{sittingDate,jdbcType=DATE},
+      </if>
+      <if test="publicationFee != null" >
+        publication_fee = #{publicationFee,jdbcType=VARCHAR},
+      </if>
+      <if test="sentence != null" >
+        sentence = #{sentence,jdbcType=VARCHAR},
+      </if>
+      <if test="preservationDate != null" >
+        preservation_date = #{preservationDate,jdbcType=DATE},
+      </if>
+      <if test="preservationMoney != null" >
+        preservation_money = #{preservationMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="preservationFee != null" >
+        preservation_fee = #{preservationFee,jdbcType=VARCHAR},
+      </if>
+      <if test="preservationJudge != null" >
+        preservation_judge = #{preservationJudge,jdbcType=VARCHAR},
+      </if>
+      <if test="effectDate != null" >
+        effect_date = #{effectDate,jdbcType=DATE},
+      </if>
+      <if test="preservationJudgeTel != null" >
+        preservation_judge_tel = #{preservationJudgeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="returnDate != null" >
+        return_date = #{returnDate,jdbcType=DATE},
+      </if>
+      <if test="returnMoney != null" >
+        return_money = #{returnMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="litigationNo != null" >
+        litigation_no = #{litigationNo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LitigationDO" >
+    update litigation
+    set order_id = #{orderId,jdbcType=BIGINT},
+      register_date = #{registerDate,jdbcType=DATE},
+      register_id = #{registerId,jdbcType=VARCHAR},
+      plaintiff = #{plaintiff,jdbcType=VARCHAR},
+      defendant = #{defendant,jdbcType=VARCHAR},
+      rule_court = #{ruleCourt,jdbcType=VARCHAR},
+      litigation_total = #{litigationTotal,jdbcType=VARCHAR},
+      litigation_money = #{litigationMoney,jdbcType=VARCHAR},
+      undertake_court = #{undertakeCourt,jdbcType=VARCHAR},
+      undertake_court_tel = #{undertakeCourtTel,jdbcType=VARCHAR},
+      clerk = #{clerk,jdbcType=VARCHAR},
+      clerk_tel = #{clerkTel,jdbcType=VARCHAR},
+      sitting_date = #{sittingDate,jdbcType=DATE},
+      publication_fee = #{publicationFee,jdbcType=VARCHAR},
+      sentence = #{sentence,jdbcType=VARCHAR},
+      preservation_date = #{preservationDate,jdbcType=DATE},
+      preservation_money = #{preservationMoney,jdbcType=VARCHAR},
+      preservation_fee = #{preservationFee,jdbcType=VARCHAR},
+      preservation_judge = #{preservationJudge,jdbcType=VARCHAR},
+      effect_date = #{effectDate,jdbcType=DATE},
+      preservation_judge_tel = #{preservationJudgeTel,jdbcType=VARCHAR},
+      return_date = #{returnDate,jdbcType=DATE},
+      return_money = #{returnMoney,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      litigation_no = #{litigationNo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectLawWorkInfo" resultType="com.yunche.loan.domain.query.LawWorkQuery" parameterType="java.lang.Long">
+    SELECT
+	a.id          				AS id,
+	b.NAME        				AS cname,
+	b.mobile      				AS mobile,
+	b.id_card     				AS idcard,
+	b.address     				AS address,
+	b.identity_address 		AS identityaddress,
+	b.company_name  			AS companyname,
+	b.company_address  		AS companyaddress,
+	b.company_phone  			AS companyphone,
+	b.reserve_mobile  		AS reservemobile,
+	d.`name`       				AS sname,
+	e.`name`       				AS pname,
+	g.`name`       				AS gname,
+	f.area_name    				AS aname,
+	e.biz_type     				AS biztype,
+	b.cprovince                 AS cprovince,
+	b.ccity                     AS ccity,
+	b.ccounty                   AS ccounty,
+	b.hprovince                 AS hprovince,
+	b.hcity                     AS hcity,
+	b.hcounty                     AS hcounty
+    FROM
+	loan_order a
+	LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
+	LEFT JOIN loan_base_info c on a.loan_base_info_id = c.id
+	LEFT JOIN employee d on c.salesman_id = d.id
+	LEFT JOIN partner e on c.partner_id = e.id
+
+	LEFT JOIN department g on d.department_id = g.id
+	LEFT JOIN loan_base_info h on a.loan_base_info_id = h.id
+	LEFT JOIN base_area f on h.area_id = f.area_id
+    WHERE
+	b.cust_type = 1 and a.id = #{orderid,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from litigation
+    where order_id = #{orderid,jdbcType=BIGINT}
+  </select>
+</mapper>

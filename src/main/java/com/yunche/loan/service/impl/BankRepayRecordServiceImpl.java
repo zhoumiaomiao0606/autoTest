@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -183,7 +184,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
         try {
             InputStream in = OSSUnit.getOSS2InputStream(ossKey);
             InputStreamReader inReader = null;
-            inReader = new InputStreamReader(in, "UTF-8");
+            inReader = new InputStreamReader(in, "GBK");
 
 
             BufferedReader bufReader = new BufferedReader(inReader);
@@ -196,8 +197,13 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
             String line="";
             while((line = bufReader.readLine()) != null){
                 String[] split = line.split("\\|");
+                if(split.length!=15){
+                    continue;
+                }
                 BankFileListRecordDO bankFileListRecordDO = packObject(bankFileListId.intValue(),split);
-                recordLists.add(bankFileListRecordDO);
+                if(bankFileListRecordDO!=null){
+                    recordLists.add(bankFileListRecordDO);
+                }
             }
             if (!CollectionUtils.isEmpty(recordLists)) {
                 int count = bankFileListRecordDOMapper.insertBatch(recordLists);
@@ -245,7 +251,15 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
         bankFileListRecordDO.setAreaId(split[1].trim());//地区号
         bankFileListRecordDO.setPlatNo(split[2].trim());//平台编号
         bankFileListRecordDO.setGuarantyUnit(split[3].trim());;//担保单位编号
-        bankFileListRecordDO.setOrderId(Long.valueOf(split[4].trim()));;//订单号
+        if(StringUtils.isEmpty(split[4].trim())){
+            Long orderId  = loanQueryDOMapper.selectOrderIdByIDCard(split[7].trim());
+            if(orderId==null){
+                return null;
+            }
+            bankFileListRecordDO.setOrderId(orderId);//订单号
+        }else{
+            bankFileListRecordDO.setOrderId(Long.valueOf(split[4].trim()));//订单号
+        }
         bankFileListRecordDO.setCardNumber(split[5].trim());//卡号
         bankFileListRecordDO.setName(split[6].trim());//姓名
         bankFileListRecordDO.setCardType(split[7].trim());//证件类型
