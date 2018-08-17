@@ -7,6 +7,7 @@ import com.yunche.loan.domain.entity.LitigationStateDO;
 import com.yunche.loan.domain.entity.VisitDoorDO;
 import com.yunche.loan.domain.query.GpsInfoQuery;
 import com.yunche.loan.domain.query.LawWorkQuery;
+import com.yunche.loan.domain.vo.CollectionRecordVO;
 import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.domain.vo.VisitDoorVO;
@@ -54,11 +55,11 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
 
-        CollectionRecordDO collectionRecordDO = collectionRecordDOMapper.selectNewest(orderId);
+        CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
         int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
 
         VisitDoorVO visitDoorVO = new VisitDoorVO();
-        visitDoorVO.setCollectionRecordDO(collectionRecordDO);
+        visitDoorVO.setCollectionRecordVO(collectionRecordVO);
         visitDoorVO.setCollectionNum(num);
         visitDoorVO.setResult(lawWorkQuery);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
@@ -83,11 +84,11 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
 
-        CollectionRecordDO collectionRecordDO = collectionRecordDOMapper.selectNewest(orderId);
+        CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
         int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
 
         VisitDoorVO visitDoorVO = new VisitDoorVO();
-        visitDoorVO.setCollectionRecordDO(collectionRecordDO);
+        visitDoorVO.setCollectionRecordVO(collectionRecordVO);
         visitDoorVO.setCollectionNum(num);
         visitDoorVO.setResult(lawWorkQuery);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
