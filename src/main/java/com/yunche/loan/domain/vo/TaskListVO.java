@@ -38,6 +38,7 @@ public class TaskListVO {
     private String downPaymentMoney;
     private String overdueNum;
     private String telephoneVerifyStatus;
+    private String bankRepayImpRecordId;
     // 未加
     private String taskStatus;
     private String supplementOrderId;
