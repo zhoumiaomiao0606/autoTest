@@ -271,7 +271,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Override
     public ResultBean<Integer> imp(String ossKey) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(ossKey), "ossKey不能为空");
+            Preconditions.checkArgument(StringUtils.isNotBlank(ossKey), "ossKey不能为空");
 
         // 收集数据
         List<LoanDataFlowDO> loanDataFlowDOList = Lists.newArrayList();

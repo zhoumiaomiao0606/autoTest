@@ -77,6 +77,6 @@ public class ExportOrdersParam {
 
     List<Long> partnerList;
 
-    List<Long> bankList;
+    List<String> bankList;
 
 }

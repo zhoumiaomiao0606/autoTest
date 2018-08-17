@@ -1,6 +1,7 @@
 package com.yunche.loan.domain.vo;
 
 import com.google.common.collect.Lists;
+import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import lombok.Data;
@@ -39,6 +40,8 @@ public class RecombinationVO<T> {
     private UniversalRemitDetails remit;
 
     private UniversalHomeVisitInfoVO home;
+
+    private LoanApplyCompensationDO applyCompensation;
     /**
      * 增补单
      */

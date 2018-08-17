@@ -3,10 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanCreditInfoDO;
-import com.yunche.loan.domain.entity.LoanCustomerDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.domain.vo.CustDetailVO;
@@ -53,6 +50,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     @Autowired
     private LoanFileService loanFileService;
+
+    @Autowired
+    private VideoFaceLogDOMapper videoFaceLogDOMapper;
 
     @Autowired
     LoanProcessDOMapper loanProcessDOMapper;
@@ -128,6 +128,22 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
             // 填充客户详情信息
             fillCustInfo(custDetailVO, loanCustomerDOList, fileUploadType);
         }
+
+        // 视频面签是否上传成功
+        VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(orderId);
+        if (null != videoFaceLogDO) {
+
+            String path = videoFaceLogDO.getPath();
+            if (StringUtils.isNotBlank(path)) {
+
+                // http://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/video/2018/201808/20180814/11-06-00-128_宋绍兰_57.mp4
+                // https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/MP4/2018/201808/20180813/1808131023390914733/1534130255581.364990.mp4
+                if (path.contains("://yunche-videosign.oss-cn-hangzhou.aliyuncs.com")) {
+                    custDetailVO.setSaveVideoFace(true);
+                }
+            }
+        }
+        custDetailVO.setSaveVideoFace(false);
 
         return ResultBean.ofSuccess(custDetailVO);
     }
