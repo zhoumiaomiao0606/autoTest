@@ -24,6 +24,16 @@
       where i.order_id = #{orderId,jdbcType=BIGINT} and i.insurance_year = #{insuranceYear,jdbcType=TINYINT}
       )
   </select>
+
+  <select id="allRiskInfoByOrderId"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from insurance_risk  r where r.insurance_number in
+    (
+    select a.insurance_number from insurance_info i left join insurance_relevance a on i.id = a.insurance_info_id
+    where i.order_id = #{orderId,jdbcType=BIGINT}
+    )
+  </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

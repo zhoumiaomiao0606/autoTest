@@ -13,7 +13,7 @@
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&amp;characterEncoding=utf-8&amp;tinyInt1isBit=false"
                         userId="yunche"
-                        password="123456">
+                        password="yc_123">
         </jdbcConnection>
 
 
@@ -349,7 +349,12 @@
 
 -->
 
-        <table tableName="loan_financial_plan" domainObjectName="LoanFinancialPlanDO"
+       <!-- <table tableName="loan_financial_plan" domainObjectName="LoanFinancialPlanDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>-->
+
+        <table tableName="vehicle_outbound" domainObjectName="VehicleOutboundDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

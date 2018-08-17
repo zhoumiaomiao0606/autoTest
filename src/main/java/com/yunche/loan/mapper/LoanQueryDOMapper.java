@@ -242,4 +242,17 @@ public interface LoanQueryDOMapper {
     boolean checkCustomerHavingCreditON14Day(String idCard);
 
     List<UniversalTelephoneCollectionEmployee> selectUniversalInsuranceUrgeEmployee();
+
+    BaseCustomerInfoVO selectBaseCustomerInfoInfo(Long orderId);
+
+    VehicleInfoVO selectVehicleInfo(Long orderId);
+
+    /** 
+    * @Author: ZhongMingxiao 
+    * @Param:
+    * @return:  
+    * @Date:  
+    * @Description:  根据订单id查询抵押情况
+    */ 
+    MortgageInfoVO selectMortgageInfo(Long orderId);
 }

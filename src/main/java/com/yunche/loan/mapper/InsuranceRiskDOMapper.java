@@ -30,4 +30,13 @@ public interface InsuranceRiskDOMapper {
     int insuranceRiskCount(RiskQuery query);
 
     List<newInsuranceVO> newInsuranceByOrderId(@Param("orderId") Long orderId);
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:  根据订单id查询所有的出险信息
+    */
+    List<InsuranceRiskDO> allRiskInfoByOrderId(@Param("orderId") Long orderId);
 }

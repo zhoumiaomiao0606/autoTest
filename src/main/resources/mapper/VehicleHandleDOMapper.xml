@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.VehicleHandleDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VehicleHandleDO">
+    <id column="orderid" jdbcType="BIGINT" property="orderid" />
+    <result column="handdle_person" jdbcType="BIGINT" property="handdlePerson" />
+    <result column="trail_vehicle_date" jdbcType="TIMESTAMP" property="trailVehicleDate" />
+    <result column="trail_vehicle_address" jdbcType="VARCHAR" property="trailVehicleAddress" />
+    <result column="vehicle_inbound_date" jdbcType="TIMESTAMP" property="vehicleInboundDate" />
+    <result column="vehicle_inbound_address" jdbcType="VARCHAR" property="vehicleInboundAddress" />
+    <result column="vehicle_inbound_address_detail" jdbcType="VARCHAR" property="vehicleInboundAddressDetail" />
+    <result column="customer_condition" jdbcType="VARCHAR" property="customerCondition" />
+    <result column="chassis_number" jdbcType="VARCHAR" property="chassisNumber" />
+    <result column="driver_kilometers" jdbcType="VARCHAR" property="driverKilometers" />
+    <result column="vehichle_surface" jdbcType="VARCHAR" property="vehichleSurface" />
+    <result column="vehicle_key" jdbcType="TINYINT" property="vehicleKey" />
+    <result column="vehicle_othermaterial" jdbcType="VARCHAR" property="vehicleOthermaterial" />
+    <result column="vehicle_otherthings" jdbcType="VARCHAR" property="vehicleOtherthings" />
+    <result column="purchase_tax" jdbcType="DECIMAL" property="purchaseTax" />
+    <result column="road_maintenance_costs" jdbcType="DECIMAL" property="roadMaintenanceCosts" />
+    <result column="road_maintenance_costs_statement" jdbcType="VARCHAR" property="roadMaintenanceCostsStatement" />
+    <result column="break_rules_costs" jdbcType="DECIMAL" property="breakRulesCosts" />
+    <result column="break_rules_costs_statement" jdbcType="VARCHAR" property="breakRulesCostsStatement" />
+    <result column="vehicle_statement" jdbcType="VARCHAR" property="vehicleStatement" />
+    <result column="trail_vehicle_costs" jdbcType="DECIMAL" property="trailVehicleCosts" />
+    <result column="vehicle_maintenance_costs" jdbcType="DECIMAL" property="vehicleMaintenanceCosts" />
+    <result column="other_costs" jdbcType="DECIMAL" property="otherCosts" />
+    <result column="final_costs" jdbcType="DECIMAL" property="finalCosts" />
+    <result column="relation_material_url1" jdbcType="VARCHAR" property="relationMaterialUrl1" />
+    <result column="relation_material_url2" jdbcType="VARCHAR" property="relationMaterialUrl2" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    orderid, handdle_person, trail_vehicle_date, trail_vehicle_address, vehicle_inbound_date, 
+    vehicle_inbound_address, vehicle_inbound_address_detail, customer_condition, chassis_number, 
+    driver_kilometers, vehichle_surface, vehicle_key, vehicle_othermaterial, vehicle_otherthings, 
+    purchase_tax, road_maintenance_costs, road_maintenance_costs_statement, break_rules_costs, 
+    break_rules_costs_statement, vehicle_statement, trail_vehicle_costs, vehicle_maintenance_costs, 
+    other_costs, final_costs, relation_material_url1, relation_material_url2
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vehicle_handle
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from vehicle_handle
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.VehicleHandleDO">
+    insert into vehicle_handle (orderid, handdle_person, trail_vehicle_date, 
+      trail_vehicle_address, vehicle_inbound_date, 
+      vehicle_inbound_address, vehicle_inbound_address_detail, 
+      customer_condition, chassis_number, driver_kilometers, 
+      vehichle_surface, vehicle_key, vehicle_othermaterial, 
+      vehicle_otherthings, purchase_tax, road_maintenance_costs, 
+      road_maintenance_costs_statement, break_rules_costs, 
+      break_rules_costs_statement, vehicle_statement, 
+      trail_vehicle_costs, vehicle_maintenance_costs, 
+      other_costs, final_costs, relation_material_url1, 
+      relation_material_url2)
+    values (#{orderid,jdbcType=BIGINT}, #{handdlePerson,jdbcType=BIGINT}, #{trailVehicleDate,jdbcType=TIMESTAMP}, 
+      #{trailVehicleAddress,jdbcType=VARCHAR}, #{vehicleInboundDate,jdbcType=TIMESTAMP}, 
+      #{vehicleInboundAddress,jdbcType=VARCHAR}, #{vehicleInboundAddressDetail,jdbcType=VARCHAR}, 
+      #{customerCondition,jdbcType=VARCHAR}, #{chassisNumber,jdbcType=VARCHAR}, #{driverKilometers,jdbcType=VARCHAR}, 
+      #{vehichleSurface,jdbcType=VARCHAR}, #{vehicleKey,jdbcType=TINYINT}, #{vehicleOthermaterial,jdbcType=VARCHAR}, 
+      #{vehicleOtherthings,jdbcType=VARCHAR}, #{purchaseTax,jdbcType=DECIMAL}, #{roadMaintenanceCosts,jdbcType=DECIMAL}, 
+      #{roadMaintenanceCostsStatement,jdbcType=VARCHAR}, #{breakRulesCosts,jdbcType=DECIMAL}, 
+      #{breakRulesCostsStatement,jdbcType=VARCHAR}, #{vehicleStatement,jdbcType=VARCHAR}, 
+      #{trailVehicleCosts,jdbcType=DECIMAL}, #{vehicleMaintenanceCosts,jdbcType=DECIMAL}, 
+      #{otherCosts,jdbcType=DECIMAL}, #{finalCosts,jdbcType=DECIMAL}, #{relationMaterialUrl1,jdbcType=VARCHAR}, 
+      #{relationMaterialUrl2,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VehicleHandleDO">
+    insert into vehicle_handle
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderid != null">
+        orderid,
+      </if>
+      <if test="handdlePerson != null">
+        handdle_person,
+      </if>
+      <if test="trailVehicleDate != null">
+        trail_vehicle_date,
+      </if>
+      <if test="trailVehicleAddress != null">
+        trail_vehicle_address,
+      </if>
+      <if test="vehicleInboundDate != null">
+        vehicle_inbound_date,
+      </if>
+      <if test="vehicleInboundAddress != null">
+        vehicle_inbound_address,
+      </if>
+      <if test="vehicleInboundAddressDetail != null">
+        vehicle_inbound_address_detail,
+      </if>
+      <if test="customerCondition != null">
+        customer_condition,
+      </if>
+      <if test="chassisNumber != null">
+        chassis_number,
+      </if>
+      <if test="driverKilometers != null">
+        driver_kilometers,
+      </if>
+      <if test="vehichleSurface != null">
+        vehichle_surface,
+      </if>
+      <if test="vehicleKey != null">
+        vehicle_key,
+      </if>
+      <if test="vehicleOthermaterial != null">
+        vehicle_othermaterial,
+      </if>
+      <if test="vehicleOtherthings != null">
+        vehicle_otherthings,
+      </if>
+      <if test="purchaseTax != null">
+        purchase_tax,
+      </if>
+      <if test="roadMaintenanceCosts != null">
+        road_maintenance_costs,
+      </if>
+      <if test="roadMaintenanceCostsStatement != null">
+        road_maintenance_costs_statement,
+      </if>
+      <if test="breakRulesCosts != null">
+        break_rules_costs,
+      </if>
+      <if test="breakRulesCostsStatement != null">
+        break_rules_costs_statement,
+      </if>
+      <if test="vehicleStatement != null">
+        vehicle_statement,
+      </if>
+      <if test="trailVehicleCosts != null">
+        trail_vehicle_costs,
+      </if>
+      <if test="vehicleMaintenanceCosts != null">
+        vehicle_maintenance_costs,
+      </if>
+      <if test="otherCosts != null">
+        other_costs,
+      </if>
+      <if test="finalCosts != null">
+        final_costs,
+      </if>
+      <if test="relationMaterialUrl1 != null">
+        relation_material_url1,
+      </if>
+      <if test="relationMaterialUrl2 != null">
+        relation_material_url2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderid != null">
+        #{orderid,jdbcType=BIGINT},
+      </if>
+      <if test="handdlePerson != null">
+        #{handdlePerson,jdbcType=BIGINT},
+      </if>
+      <if test="trailVehicleDate != null">
+        #{trailVehicleDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="trailVehicleAddress != null">
+        #{trailVehicleAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleInboundDate != null">
+        #{vehicleInboundDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="vehicleInboundAddress != null">
+        #{vehicleInboundAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleInboundAddressDetail != null">
+        #{vehicleInboundAddressDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="customerCondition != null">
+        #{customerCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="chassisNumber != null">
+        #{chassisNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="driverKilometers != null">
+        #{driverKilometers,jdbcType=VARCHAR},
+      </if>
+      <if test="vehichleSurface != null">
+        #{vehichleSurface,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleKey != null">
+        #{vehicleKey,jdbcType=TINYINT},
+      </if>
+      <if test="vehicleOthermaterial != null">
+        #{vehicleOthermaterial,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleOtherthings != null">
+        #{vehicleOtherthings,jdbcType=VARCHAR},
+      </if>
+      <if test="purchaseTax != null">
+        #{purchaseTax,jdbcType=DECIMAL},
+      </if>
+      <if test="roadMaintenanceCosts != null">
+        #{roadMaintenanceCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="roadMaintenanceCostsStatement != null">
+        #{roadMaintenanceCostsStatement,jdbcType=VARCHAR},
+      </if>
+      <if test="breakRulesCosts != null">
+        #{breakRulesCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="breakRulesCostsStatement != null">
+        #{breakRulesCostsStatement,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleStatement != null">
+        #{vehicleStatement,jdbcType=VARCHAR},
+      </if>
+      <if test="trailVehicleCosts != null">
+        #{trailVehicleCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="vehicleMaintenanceCosts != null">
+        #{vehicleMaintenanceCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="otherCosts != null">
+        #{otherCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="finalCosts != null">
+        #{finalCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="relationMaterialUrl1 != null">
+        #{relationMaterialUrl1,jdbcType=VARCHAR},
+      </if>
+      <if test="relationMaterialUrl2 != null">
+        #{relationMaterialUrl2,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.VehicleHandleDO">
+    update vehicle_handle
+    <set>
+      <if test="handdlePerson != null">
+        handdle_person = #{handdlePerson,jdbcType=BIGINT},
+      </if>
+      <if test="trailVehicleDate != null">
+        trail_vehicle_date = #{trailVehicleDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="trailVehicleAddress != null">
+        trail_vehicle_address = #{trailVehicleAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleInboundDate != null">
+        vehicle_inbound_date = #{vehicleInboundDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="vehicleInboundAddress != null">
+        vehicle_inbound_address = #{vehicleInboundAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleInboundAddressDetail != null">
+        vehicle_inbound_address_detail = #{vehicleInboundAddressDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="customerCondition != null">
+        customer_condition = #{customerCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="chassisNumber != null">
+        chassis_number = #{chassisNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="driverKilometers != null">
+        driver_kilometers = #{driverKilometers,jdbcType=VARCHAR},
+      </if>
+      <if test="vehichleSurface != null">
+        vehichle_surface = #{vehichleSurface,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleKey != null">
+        vehicle_key = #{vehicleKey,jdbcType=TINYINT},
+      </if>
+      <if test="vehicleOthermaterial != null">
+        vehicle_othermaterial = #{vehicleOthermaterial,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleOtherthings != null">
+        vehicle_otherthings = #{vehicleOtherthings,jdbcType=VARCHAR},
+      </if>
+      <if test="purchaseTax != null">
+        purchase_tax = #{purchaseTax,jdbcType=DECIMAL},
+      </if>
+      <if test="roadMaintenanceCosts != null">
+        road_maintenance_costs = #{roadMaintenanceCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="roadMaintenanceCostsStatement != null">
+        road_maintenance_costs_statement = #{roadMaintenanceCostsStatement,jdbcType=VARCHAR},
+      </if>
+      <if test="breakRulesCosts != null">
+        break_rules_costs = #{breakRulesCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="breakRulesCostsStatement != null">
+        break_rules_costs_statement = #{breakRulesCostsStatement,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicleStatement != null">
+        vehicle_statement = #{vehicleStatement,jdbcType=VARCHAR},
+      </if>
+      <if test="trailVehicleCosts != null">
+        trail_vehicle_costs = #{trailVehicleCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="vehicleMaintenanceCosts != null">
+        vehicle_maintenance_costs = #{vehicleMaintenanceCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="otherCosts != null">
+        other_costs = #{otherCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="finalCosts != null">
+        final_costs = #{finalCosts,jdbcType=DECIMAL},
+      </if>
+      <if test="relationMaterialUrl1 != null">
+        relation_material_url1 = #{relationMaterialUrl1,jdbcType=VARCHAR},
+      </if>
+      <if test="relationMaterialUrl2 != null">
+        relation_material_url2 = #{relationMaterialUrl2,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VehicleHandleDO">
+    update vehicle_handle
+    set handdle_person = #{handdlePerson,jdbcType=BIGINT},
+      trail_vehicle_date = #{trailVehicleDate,jdbcType=TIMESTAMP},
+      trail_vehicle_address = #{trailVehicleAddress,jdbcType=VARCHAR},
+      vehicle_inbound_date = #{vehicleInboundDate,jdbcType=TIMESTAMP},
+      vehicle_inbound_address = #{vehicleInboundAddress,jdbcType=VARCHAR},
+      vehicle_inbound_address_detail = #{vehicleInboundAddressDetail,jdbcType=VARCHAR},
+      customer_condition = #{customerCondition,jdbcType=VARCHAR},
+      chassis_number = #{chassisNumber,jdbcType=VARCHAR},
+      driver_kilometers = #{driverKilometers,jdbcType=VARCHAR},
+      vehichle_surface = #{vehichleSurface,jdbcType=VARCHAR},
+      vehicle_key = #{vehicleKey,jdbcType=TINYINT},
+      vehicle_othermaterial = #{vehicleOthermaterial,jdbcType=VARCHAR},
+      vehicle_otherthings = #{vehicleOtherthings,jdbcType=VARCHAR},
+      purchase_tax = #{purchaseTax,jdbcType=DECIMAL},
+      road_maintenance_costs = #{roadMaintenanceCosts,jdbcType=DECIMAL},
+      road_maintenance_costs_statement = #{roadMaintenanceCostsStatement,jdbcType=VARCHAR},
+      break_rules_costs = #{breakRulesCosts,jdbcType=DECIMAL},
+      break_rules_costs_statement = #{breakRulesCostsStatement,jdbcType=VARCHAR},
+      vehicle_statement = #{vehicleStatement,jdbcType=VARCHAR},
+      trail_vehicle_costs = #{trailVehicleCosts,jdbcType=DECIMAL},
+      vehicle_maintenance_costs = #{vehicleMaintenanceCosts,jdbcType=DECIMAL},
+      other_costs = #{otherCosts,jdbcType=DECIMAL},
+      final_costs = #{finalCosts,jdbcType=DECIMAL},
+      relation_material_url1 = #{relationMaterialUrl1,jdbcType=VARCHAR},
+      relation_material_url2 = #{relationMaterialUrl2,jdbcType=VARCHAR}
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -26,6 +26,13 @@
         where insurance_info_id = #{insuranceInfoId,jdbcType=BIGINT}
     </select>
 
+    <select id="selectInsuranceInfoByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from insurance_relevance
+        where insurance_info_id IN (SELECT id FROM insurance_info WHERE order_id =#{orderId,jdbcType=BIGINT} AND STATUS = 0)
+    </select>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>

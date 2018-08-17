@@ -20,7 +20,7 @@ public class VehicleInformationVO {
     // 车辆类别 -- 1.新车  2.二手车  3.不限
     private String car_type;
 
-    // 车辆属性
+    // 车辆属性 --国产
     private String vehicle_property;
     // 车价格
     private String car_price;
