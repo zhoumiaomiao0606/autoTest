@@ -322,7 +322,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                asyncUpload.upload(serNo,MultimediaUploadEnum.VIDEO_INTERVIEW.getKey(),picName,path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/",""));
+                String str = "yunche-videosign.oss-cn-hangzhou.aliyuncs.com";
+                int x = path.indexOf(str);
+                String rpath = path.substring(x+str.length()+1,path.length());
+                asyncUpload.upload(serNo,MultimediaUploadEnum.VIDEO_INTERVIEW.getKey(),picName,rpath);
                 icbcFeignClient.multimediaUpload(multimediaUpload);
             }
         });
