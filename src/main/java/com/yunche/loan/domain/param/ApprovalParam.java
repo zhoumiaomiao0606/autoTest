@@ -21,12 +21,19 @@ public class ApprovalParam {
      * 任务key
      */
     private String taskDefinitionKey;
-    private String taskDefinitionKey_;
+    /**
+     * 保存参数中-初始传入的key值
+     */
+    private String originalTaskDefinitionKey;
 
     /**
      * 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补  / 4-新增任务  / 5-反审
      */
     private Byte action;
+    /**
+     * 保存参数中-初始传入的action值
+     */
+    private Byte originalAction;
     /**
      * 审核备注信息
      */
@@ -98,12 +105,21 @@ public class ApprovalParam {
     ///////////////////////////////////////////////////// 征信审核 //////////////////////////////////////////////////////
 
 
-    public String getTaskDefinitionKey_() {
-        if (null != taskDefinitionKey_) {
-            return taskDefinitionKey_;
+    public String getOriginalTaskDefinitionKey() {
+        if (null != originalTaskDefinitionKey) {
+            return originalTaskDefinitionKey;
         }
 
-        this.taskDefinitionKey_ = taskDefinitionKey;
-        return taskDefinitionKey;
+        this.originalTaskDefinitionKey = taskDefinitionKey;
+        return originalTaskDefinitionKey;
+    }
+
+    public Byte getOriginalAction() {
+        if (null != originalAction) {
+            return originalAction;
+        }
+
+        this.originalAction = action;
+        return originalAction;
     }
 }

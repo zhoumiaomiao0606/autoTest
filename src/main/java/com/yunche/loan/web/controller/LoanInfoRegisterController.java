@@ -1,6 +1,5 @@
 package com.yunche.loan.web.controller;
 
-
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.LoanInfoRegisterParam;
 import com.yunche.loan.service.LoanInfoRegisterService;
@@ -17,12 +16,12 @@ public class LoanInfoRegisterController {
     LoanInfoRegisterService loanInfoRegisterService;
 
     @GetMapping("/detail")
-    ResultBean detail(@RequestParam("orderId") Long orderId){
+    ResultBean detail(@RequestParam("orderId") Long orderId) {
         return loanInfoRegisterService.detail(orderId);
     }
 
-    @PostMapping(value = "/update",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    ResultBean update(@RequestBody LoanInfoRegisterParam loanInfoRegisterParam){
+    @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean update(@RequestBody LoanInfoRegisterParam loanInfoRegisterParam) {
         return loanInfoRegisterService.update(loanInfoRegisterParam);
     }
 }

@@ -66,7 +66,7 @@ public class BizAreaServiceImpl implements BizAreaService {
         // 绑定城市列表  
         //bindAreas(id, bizAreaParam.getAreaIdList());
 
-        bindPartner(id,bizAreaParam.getPartnerIds());
+        bindPartner(id, bizAreaParam.getPartnerIds());
 
         return ResultBean.ofSuccess(id, "创建成功");
     }
@@ -263,10 +263,10 @@ public class BizAreaServiceImpl implements BizAreaService {
     public ResultBean<List<CascadeAreaVO.Partner>> listPartner(Long id) {
         List<CascadeAreaVO.Partner> result = Lists.newArrayList();
         List<BizAreaPartnerVO> list = bizAreaRelaPartnerDOMapper.selectByAreaId(id);
-        for(BizAreaPartnerVO bizAreaPartnerVO : list){
-            if(bizAreaPartnerVO != null){
+        for (BizAreaPartnerVO bizAreaPartnerVO : list) {
+            if (bizAreaPartnerVO != null) {
                 CascadeAreaVO.Partner partner = new CascadeAreaVO.Partner();
-                partner.setPartnerId(StringUtils.isBlank(bizAreaPartnerVO.getPartner_id())?null:Long.valueOf(bizAreaPartnerVO.getPartner_id()));
+                partner.setPartnerId(StringUtils.isBlank(bizAreaPartnerVO.getPartner_id()) ? null : Long.valueOf(bizAreaPartnerVO.getPartner_id()));
                 partner.setPartnerName(bizAreaPartnerVO.getPartner_name());
                 result.add(partner);
             }
@@ -276,29 +276,29 @@ public class BizAreaServiceImpl implements BizAreaService {
 
     @Override
     public ResultBean<Void> bindPartner(Long id, List<Long> partnerIds) {
-        if(id == null){
+        if (id == null) {
             throw new BizException("缺少大区ID");
         }
-        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id,new Byte("0"));
-        if(bizAreaDO == null){
+        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id, new Byte("0"));
+        if (bizAreaDO == null) {
             throw new BizException("大区不存在");
         }
 
 
         bizAreaRelaPartnerDOMapper.deleteByBizAreaId(id);
 
-        for(Long partnerId:partnerIds){
-            if(partnerId!=null){
+        for (Long partnerId : partnerIds) {
+            if (partnerId != null) {
                 BizAreaRelaPartnerDOKey key = new BizAreaRelaPartnerDOKey();
                 key.setPartnerId(partnerId);
                 key.setBizAreaId(id);
                 BizAreaRelaPartnerDO DO = bizAreaRelaPartnerDOMapper.selectByPrimaryKey(key);
-                if(DO == null){
+                if (DO == null) {
                     BizAreaRelaPartnerDO bizAreaRelaPartnerDO = new BizAreaRelaPartnerDO();
                     bizAreaRelaPartnerDO.setBizAreaId(id);
                     bizAreaRelaPartnerDO.setPartnerId(partnerId);
                     bizAreaRelaPartnerDOMapper.insertSelective(bizAreaRelaPartnerDO);
-                }else{
+                } else {
                     BizAreaRelaPartnerDO bizAreaRelaPartnerDO = new BizAreaRelaPartnerDO();
                     bizAreaRelaPartnerDO.setBizAreaId(id);
                     bizAreaRelaPartnerDO.setPartnerId(partnerId);
@@ -306,21 +306,21 @@ public class BizAreaServiceImpl implements BizAreaService {
                 }
             }
         }
-        return ResultBean.ofSuccess(null,"编辑成功");
+        return ResultBean.ofSuccess(null, "编辑成功");
     }
 
     @Override
     public ResultBean<Void> unbindPartner(Long id, Long partnerId) {
 
-        if(id == null){
+        if (id == null) {
             throw new BizException("缺少大区ID");
         }
-        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id,new Byte("0"));
-        if(bizAreaDO == null){
+        BizAreaDO bizAreaDO = bizAreaDOMapper.selectByPrimaryKey(id, new Byte("0"));
+        if (bizAreaDO == null) {
             throw new BizException("大区不存在");
         }
 
-        if(partnerId == null){
+        if (partnerId == null) {
             throw new BizException("缺少合伙人ID");
         }
 
@@ -329,7 +329,7 @@ public class BizAreaServiceImpl implements BizAreaService {
         key.setPartnerId(partnerId);
         bizAreaRelaPartnerDOMapper.deleteByPrimaryKey(key);
 
-        return ResultBean.ofSuccess(null,"编辑成功");
+        return ResultBean.ofSuccess(null, "编辑成功");
     }
 
 
@@ -349,20 +349,20 @@ public class BizAreaServiceImpl implements BizAreaService {
     }
 
     //根据选择对区域回显
-    public List<List<Long>> selectedList(List<Long> bizAreaIds){
-        if(bizAreaIds == null || CollectionUtils.isEmpty(bizAreaIds)){
+    public List<List<Long>> selectedList(List<Long> bizAreaIds) {
+        if (bizAreaIds == null || CollectionUtils.isEmpty(bizAreaIds)) {
             return Lists.newArrayList();
         }
 
-        if(bizAreaIds.size() == 0){
+        if (bizAreaIds.size() == 0) {
             return Lists.newArrayList();
         }
 
         List<BizAreaDO> bizAreaDOS = bizAreaDOMapper.getAll(VALID_STATUS);
 //        Preconditions.checkArgument(!CollectionUtils.isEmpty(bizAreaDOS), "无有效业务区域数据");
         List<List<Long>> reuslt = Lists.newLinkedList();
-        for(Long str:bizAreaIds){
-            List<Long> supper = getAllSuperAreaIdList(str,bizAreaDOS);
+        for (Long str : bizAreaIds) {
+            List<Long> supper = getAllSuperAreaIdList(str, bizAreaDOS);
             Collections.reverse(supper);
             supper.add(str);
             reuslt.add(supper);
@@ -371,18 +371,19 @@ public class BizAreaServiceImpl implements BizAreaService {
         return reuslt;
     }
 
-    private List<Long> getAllSuperAreaIdList(Long childBizAreaId,List<BizAreaDO> list) {
+    private List<Long> getAllSuperAreaIdList(Long childBizAreaId, List<BizAreaDO> list) {
         List<Long> allSuperAreaIdList = Lists.newLinkedList();
         list.parallelStream().filter(e -> null != e && childBizAreaId.equals(e.getId()) && null != e.getParentId())
                 .forEach(e -> {
-                        Long cAreaId = e.getParentId();
-                        // 递归调用
-                        List<Long> superAreaIdList = getAllSuperAreaIdList(cAreaId, list);
-                        superAreaIdList.add(cAreaId);
-                        allSuperAreaIdList.addAll(superAreaIdList);
+                    Long cAreaId = e.getParentId();
+                    // 递归调用
+                    List<Long> superAreaIdList = getAllSuperAreaIdList(cAreaId, list);
+                    superAreaIdList.add(cAreaId);
+                    allSuperAreaIdList.addAll(superAreaIdList);
                 });
         return allSuperAreaIdList;
     }
+
     /**
      * 创建实体，并返回ID
      *
@@ -536,7 +537,7 @@ public class BizAreaServiceImpl implements BizAreaService {
                 BaseVO parentEmployee = new BaseVO();
                 BeanUtils.copyProperties(employeeDO, parentEmployee);
                 // 递归填充父级负责人
-                fillSuperLeader(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), bizAreaVO);
+                fillSuperLeader(employeeDO.getParentId(), Lists.newArrayList(parentEmployee), bizAreaVO, 50);
             }
         }
     }
@@ -547,15 +548,22 @@ public class BizAreaServiceImpl implements BizAreaService {
      * @param parentId
      * @param superLeaderList
      * @param bizAreaVO
+     * @param limit
      */
-    private void fillSuperLeader(Long parentId, List<BaseVO> superLeaderList, BizAreaVO bizAreaVO) {
+    private void fillSuperLeader(Long parentId, List<BaseVO> superLeaderList, BizAreaVO bizAreaVO, Integer limit) {
+
+        limit--;
+        if (limit < 0) {
+            return;
+        }
+
         if (null != parentId) {
             EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(parentId, VALID_STATUS);
             if (null != employeeDO) {
                 BaseVO parentEmployee = new BaseVO();
                 BeanUtils.copyProperties(employeeDO, parentEmployee);
                 superLeaderList.add(parentEmployee);
-                fillSuperLeader(employeeDO.getParentId(), superLeaderList, bizAreaVO);
+                fillSuperLeader(employeeDO.getParentId(), superLeaderList, bizAreaVO, limit);
             }
         } else {
             Collections.reverse(superLeaderList);

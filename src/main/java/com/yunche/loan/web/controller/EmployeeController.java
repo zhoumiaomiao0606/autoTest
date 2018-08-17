@@ -2,7 +2,6 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.param.BindBizAreaParam;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.entity.EmployeeDO;
@@ -63,7 +62,6 @@ public class EmployeeController {
      *
      * @return
      */
-//    @RequiresPermissions("/employee/list")
     @GetMapping("/list")
     public ResultBean<List<CascadeVO>> listAll() {
         return employeeService.listAll();

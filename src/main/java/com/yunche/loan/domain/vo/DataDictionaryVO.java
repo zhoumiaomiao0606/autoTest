@@ -36,6 +36,10 @@ public class DataDictionaryVO {
      * 资料流转-资料增补类型
      */
     private Detail infoSupplementType;
+    /**
+     * 视频面签-机器面签- 银行->语音文件path
+     */
+    private Detail videoFaceVoicePath;
 
 
     /**

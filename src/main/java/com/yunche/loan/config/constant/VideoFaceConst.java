@@ -41,4 +41,10 @@ public class VideoFaceConst {
     public static final Long GUARANTEE_COMPANY_ID = 1L;
     public static final String GUARANTEE_COMPANY_NAME = "浙江鑫宝行融资担保有限公司";
 
+
+    /**
+     * 管理员能查看所有银行的面签数据
+     */
+    public static final Long ADMIN_VIDEO_FACE_BANK_ID = -1L;
+
 }

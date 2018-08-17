@@ -28,13 +28,13 @@ public class LoanCustomerConst {
 
     ////////////////////////////////////////////////// 担保类型 /////////////////////////////////////////////////////////
     /**
-     * 担保类型：1-银行担保
+     * 担保类型：2-银行担保
      */
-    public static final Byte GUARANTEE_TYPE_BANK = 1;
+    public static final Byte GUARANTEE_TYPE_BANK = 2;
     /**
-     * 担保类型：2-内部担保
+     * 担保类型：1-内部担保
      */
-    public static final Byte GUARANTEE_TYPE_INSIDE = 2;
+    public static final Byte GUARANTEE_TYPE_INSIDE = 1;
     ////////////////////////////////////////////////// 担保类型 /////////////////////////////////////////////////////////
 
 

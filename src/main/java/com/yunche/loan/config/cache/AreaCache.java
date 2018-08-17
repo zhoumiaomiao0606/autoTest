@@ -50,7 +50,6 @@ public class AreaCache {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
-    
 
     /**
      * 获取CASCADE_AREA缓存
@@ -91,8 +90,8 @@ public class AreaCache {
 
         Map<Long, String> allAreaMap = allArea.parallelStream().collect(Collectors.toMap(BaseAreaDO::getAreaId, BaseAreaDO::getAreaName));
         HashMap<String, String> objectObjectHashMap = Maps.newHashMap();
-        allAreaMap.forEach((k,v) ->{
-            objectObjectHashMap.put(String.valueOf(k),String.valueOf(v));
+        allAreaMap.forEach((k, v) -> {
+            objectObjectHashMap.put(String.valueOf(k), String.valueOf(v));
         });
         // 附带刷新所有
         refreshAll(allArea);
@@ -110,9 +109,8 @@ public class AreaCache {
         // 刷新缓存
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(CASCADE_CACHE_AREA_KEY);
         boundValueOps.set(JSON.toJSONString(cascadeAreaVOList));
-        stringRedisTemplate.opsForHash().putAll(ONE_BY_ONE_CACHE_AREA_KEY,objectObjectHashMap);
+        stringRedisTemplate.opsForHash().putAll(ONE_BY_ONE_CACHE_AREA_KEY, objectObjectHashMap);
     }
-
 
 
     /**
@@ -301,10 +299,10 @@ public class AreaCache {
                                 .filter(c -> null != c && null != c.getParentAreaId() && c.getParentAreaId().equals(city.getId()))
                                 .forEach(c -> {
                                     CascadeAreaVO.County county = new CascadeAreaVO.County();
-                                        county.setId(c.getAreaId());
-                                        county.setName(c.getAreaName());
-                                        county.setLevel(c.getLevel());
-                                        city.getCountyList().add(county);
+                                    county.setId(c.getAreaId());
+                                    county.setName(c.getAreaName());
+                                    county.setLevel(c.getLevel());
+                                    city.getCountyList().add(county);
 
                                 });
                         provCityMap.get(e.getParentAreaId()).getCityList().add(city);
@@ -343,13 +341,14 @@ public class AreaCache {
 
     /**
      * 获取区域名称
+     *
      * @param areaId
      * @return
      */
-    public String getAreaName(String areaId){
-        try{
-            return  stringRedisTemplate.opsForHash().get(ONE_BY_ONE_CACHE_AREA_KEY,areaId.trim()).toString();
-        }catch (Exception e){
+    public String getAreaName(String areaId) {
+        try {
+            return stringRedisTemplate.opsForHash().get(ONE_BY_ONE_CACHE_AREA_KEY, areaId.trim()).toString();
+        } catch (Exception e) {
             return "未知";
         }
     }

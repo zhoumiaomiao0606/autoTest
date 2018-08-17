@@ -35,6 +35,8 @@ public class LoanFinancialPlanTempHisDO {
 
     private BigDecimal financial_car_price;
 
+    private BigDecimal financial_actual_car_price;
+
     private BigDecimal financial_down_payment_money;
 
     private BigDecimal financial_bank_period_principal;

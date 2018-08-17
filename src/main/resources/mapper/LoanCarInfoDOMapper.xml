@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.LoanCarInfoDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanCarInfoDO" >
-        <id column="id" property="id" jdbcType="BIGINT" />
-        <result column="car_detail_id" property="carDetailId" jdbcType="BIGINT" />
-        <result column="car_detail_name" property="carDetailName" jdbcType="VARCHAR" />
-        <result column="car_type" property="carType" jdbcType="TINYINT" />
-        <result column="gps_num" property="gpsNum" jdbcType="INTEGER" />
-        <result column="car_key" property="carKey" jdbcType="TINYINT" />
-        <result column="partner_id" property="partnerId" jdbcType="BIGINT" />
-        <result column="partner_name" property="partnerName" jdbcType="VARCHAR" />
-        <result column="open_bank" property="openBank" jdbcType="VARCHAR" />
-        <result column="account_name" property="accountName" jdbcType="VARCHAR" />
-        <result column="bank_account" property="bankAccount" jdbcType="VARCHAR" />
-        <result column="pay_month" property="payMonth" jdbcType="TINYINT" />
-        <result column="info" property="info" jdbcType="VARCHAR" />
-        <result column="status" property="status" jdbcType="TINYINT" />
-        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
-        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
-        <result column="feature" property="feature" jdbcType="VARCHAR" />
-        <result column="first_register_date" property="firstRegisterDate" jdbcType="DATE" />
-        <result column="business_source" property="businessSource" jdbcType="TINYINT" />
-        <result column="cooperation_dealer" property="cooperationDealer" jdbcType="TINYINT" />
-        <result column="vehicle_property" property="vehicleProperty" jdbcType="TINYINT" />
-        <result column="car_category" property="carCategory" jdbcType="VARCHAR" />
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanCarInfoDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="car_detail_id" property="carDetailId" jdbcType="BIGINT"/>
+        <result column="car_detail_name" property="carDetailName" jdbcType="VARCHAR"/>
+        <result column="car_type" property="carType" jdbcType="TINYINT"/>
+        <result column="gps_num" property="gpsNum" jdbcType="INTEGER"/>
+        <result column="car_key" property="carKey" jdbcType="TINYINT"/>
+        <result column="partner_id" property="partnerId" jdbcType="BIGINT"/>
+        <result column="partner_name" property="partnerName" jdbcType="VARCHAR"/>
+        <result column="open_bank" property="openBank" jdbcType="VARCHAR"/>
+        <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
+        <result column="bank_account" property="bankAccount" jdbcType="VARCHAR"/>
+        <result column="pay_month" property="payMonth" jdbcType="TINYINT"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+        <result column="feature" property="feature" jdbcType="VARCHAR"/>
+        <result column="first_register_date" property="firstRegisterDate" jdbcType="DATE"/>
+        <result column="business_source" property="businessSource" jdbcType="TINYINT"/>
+        <result column="cooperation_dealer" property="cooperationDealer" jdbcType="TINYINT"/>
+        <result column="vehicle_property" property="vehicleProperty" jdbcType="TINYINT"/>
+        <result column="car_category" property="carCategory" jdbcType="VARCHAR"/>
     </resultMap>
-    <sql id="Base_Column_List" >
+    <sql id="Base_Column_List">
     id, car_detail_id, car_detail_name, car_type, gps_num, car_key, partner_id, partner_name,
     open_bank, account_name, bank_account, pay_month, info, status, gmt_create, gmt_modify,
     feature, first_register_date, business_source, cooperation_dealer, vehicle_property,car_category
@@ -40,7 +40,8 @@
         delete from loan_car_info
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO" >
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id"
+            parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
     insert into loan_car_info (id, car_detail_id, car_detail_name,
       car_type, gps_num, car_key,
       partner_id, partner_name, open_bank,
@@ -58,215 +59,216 @@
       #{businessSource,jdbcType=TINYINT}, #{cooperationDealer,jdbcType=TINYINT}, #{vehicleProperty,jdbcType=TINYINT}
       )
   </insert>
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO" >
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" keyColumn="id"
+            parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
         insert into loan_car_info
-        <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="id != null" >
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
                 id,
             </if>
-            <if test="carDetailId != null" >
+            <if test="carDetailId != null">
                 car_detail_id,
             </if>
-            <if test="carDetailName != null" >
+            <if test="carDetailName != null">
                 car_detail_name,
             </if>
-            <if test="carType != null" >
+            <if test="carType != null">
                 car_type,
             </if>
-            <if test="gpsNum != null" >
+            <if test="gpsNum != null">
                 gps_num,
             </if>
-            <if test="carKey != null" >
+            <if test="carKey != null">
                 car_key,
             </if>
-            <if test="partnerId != null" >
+            <if test="partnerId != null">
                 partner_id,
             </if>
-            <if test="partnerName != null" >
+            <if test="partnerName != null">
                 partner_name,
             </if>
-            <if test="openBank != null" >
+            <if test="openBank != null">
                 open_bank,
             </if>
-            <if test="accountName != null" >
+            <if test="accountName != null">
                 account_name,
             </if>
-            <if test="bankAccount != null" >
+            <if test="bankAccount != null">
                 bank_account,
             </if>
-            <if test="payMonth != null" >
+            <if test="payMonth != null">
                 pay_month,
             </if>
-            <if test="info != null" >
+            <if test="info != null">
                 info,
             </if>
-            <if test="status != null" >
+            <if test="status != null">
                 status,
             </if>
-            <if test="gmtCreate != null" >
+            <if test="gmtCreate != null">
                 gmt_create,
             </if>
-            <if test="gmtModify != null" >
+            <if test="gmtModify != null">
                 gmt_modify,
             </if>
-            <if test="feature != null" >
+            <if test="feature != null">
                 feature,
             </if>
-            <if test="firstRegisterDate != null" >
+            <if test="firstRegisterDate != null">
                 first_register_date,
             </if>
-            <if test="businessSource != null" >
+            <if test="businessSource != null">
                 business_source,
             </if>
-            <if test="cooperationDealer != null" >
+            <if test="cooperationDealer != null">
                 cooperation_dealer,
             </if>
-            <if test="vehicleProperty != null" >
+            <if test="vehicleProperty != null">
                 vehicle_property,
             </if>
-            <if test="carCategory != null" >
+            <if test="carCategory != null">
                 car_category,
             </if>
         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="id != null" >
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
-            <if test="carDetailId != null" >
+            <if test="carDetailId != null">
                 #{carDetailId,jdbcType=BIGINT},
             </if>
-            <if test="carDetailName != null" >
+            <if test="carDetailName != null">
                 #{carDetailName,jdbcType=VARCHAR},
             </if>
-            <if test="carType != null" >
+            <if test="carType != null">
                 #{carType,jdbcType=TINYINT},
             </if>
-            <if test="gpsNum != null" >
+            <if test="gpsNum != null">
                 #{gpsNum,jdbcType=INTEGER},
             </if>
-            <if test="carKey != null" >
+            <if test="carKey != null">
                 #{carKey,jdbcType=TINYINT},
             </if>
-            <if test="partnerId != null" >
+            <if test="partnerId != null">
                 #{partnerId,jdbcType=BIGINT},
             </if>
-            <if test="partnerName != null" >
+            <if test="partnerName != null">
                 #{partnerName,jdbcType=VARCHAR},
             </if>
-            <if test="openBank != null" >
+            <if test="openBank != null">
                 #{openBank,jdbcType=VARCHAR},
             </if>
-            <if test="accountName != null" >
+            <if test="accountName != null">
                 #{accountName,jdbcType=VARCHAR},
             </if>
-            <if test="bankAccount != null" >
+            <if test="bankAccount != null">
                 #{bankAccount,jdbcType=VARCHAR},
             </if>
-            <if test="payMonth != null" >
+            <if test="payMonth != null">
                 #{payMonth,jdbcType=TINYINT},
             </if>
-            <if test="info != null" >
+            <if test="info != null">
                 #{info,jdbcType=VARCHAR},
             </if>
-            <if test="status != null" >
+            <if test="status != null">
                 #{status,jdbcType=TINYINT},
             </if>
-            <if test="gmtCreate != null" >
+            <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
-            <if test="gmtModify != null" >
+            <if test="gmtModify != null">
                 #{gmtModify,jdbcType=TIMESTAMP},
             </if>
-            <if test="feature != null" >
+            <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
             </if>
-            <if test="firstRegisterDate != null" >
+            <if test="firstRegisterDate != null">
                 #{firstRegisterDate,jdbcType=DATE},
             </if>
-            <if test="businessSource != null" >
+            <if test="businessSource != null">
                 #{businessSource,jdbcType=TINYINT},
             </if>
-            <if test="cooperationDealer != null" >
+            <if test="cooperationDealer != null">
                 #{cooperationDealer,jdbcType=TINYINT},
             </if>
-            <if test="vehicleProperty != null" >
+            <if test="vehicleProperty != null">
                 #{vehicleProperty,jdbcType=TINYINT},
             </if>
-            <if test="carCategory != null" >
+            <if test="carCategory != null">
                 #{carCategory,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO" >
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
         update loan_car_info
-        <set >
-            <if test="carDetailId != null" >
+        <set>
+            <if test="carDetailId != null">
                 car_detail_id = #{carDetailId,jdbcType=BIGINT},
             </if>
-            <if test="carDetailName != null" >
+            <if test="carDetailName != null">
                 car_detail_name = #{carDetailName,jdbcType=VARCHAR},
             </if>
-            <if test="carType != null" >
+            <if test="carType != null">
                 car_type = #{carType,jdbcType=TINYINT},
             </if>
-            <if test="gpsNum != null" >
+            <if test="gpsNum != null">
                 gps_num = #{gpsNum,jdbcType=INTEGER},
             </if>
-            <if test="carKey != null" >
+            <if test="carKey != null">
                 car_key = #{carKey,jdbcType=TINYINT},
             </if>
-            <if test="partnerId != null" >
+            <if test="partnerId != null">
                 partner_id = #{partnerId,jdbcType=BIGINT},
             </if>
-            <if test="partnerName != null" >
+            <if test="partnerName != null">
                 partner_name = #{partnerName,jdbcType=VARCHAR},
             </if>
-            <if test="openBank != null" >
+            <if test="openBank != null">
                 open_bank = #{openBank,jdbcType=VARCHAR},
             </if>
-            <if test="accountName != null" >
+            <if test="accountName != null">
                 account_name = #{accountName,jdbcType=VARCHAR},
             </if>
-            <if test="bankAccount != null" >
+            <if test="bankAccount != null">
                 bank_account = #{bankAccount,jdbcType=VARCHAR},
             </if>
-            <if test="payMonth != null" >
+            <if test="payMonth != null">
                 pay_month = #{payMonth,jdbcType=TINYINT},
             </if>
-            <if test="info != null" >
+            <if test="info != null">
                 info = #{info,jdbcType=VARCHAR},
             </if>
-            <if test="status != null" >
+            <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
-            <if test="gmtCreate != null" >
+            <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
-            <if test="gmtModify != null" >
+            <if test="gmtModify != null">
                 gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
             </if>
-            <if test="feature != null" >
+            <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
-            <if test="firstRegisterDate != null" >
+            <if test="firstRegisterDate != null">
                 first_register_date = #{firstRegisterDate,jdbcType=DATE},
             </if>
-            <if test="businessSource != null" >
+            <if test="businessSource != null">
                 business_source = #{businessSource,jdbcType=TINYINT},
             </if>
-            <if test="cooperationDealer != null" >
+            <if test="cooperationDealer != null">
                 cooperation_dealer = #{cooperationDealer,jdbcType=TINYINT},
             </if>
-            <if test="vehicleProperty != null" >
+            <if test="vehicleProperty != null">
                 vehicle_property = #{vehicleProperty,jdbcType=TINYINT},
             </if>
-            <if test="carCategory != null" >
+            <if test="carCategory != null">
                 car_category = #{carCategory,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO" >
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
     update loan_car_info
     set car_detail_id = #{carDetailId,jdbcType=BIGINT},
       car_detail_name = #{carDetailName,jdbcType=VARCHAR},

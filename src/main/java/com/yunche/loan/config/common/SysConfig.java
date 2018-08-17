@@ -24,6 +24,4 @@ public class SysConfig {
     private String fileServerpath;
     private String tempDir;
     private String serverRecvPath;
-
-    private String tempSms;
 }

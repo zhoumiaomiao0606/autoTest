@@ -308,6 +308,7 @@
                     #{item}
                 </foreach>
             </if>
+            AND customer.cust_type  in  (1,2,3) and customer.status = 0
         </where>
         <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
             having(
@@ -383,6 +384,14 @@
         ELSE
         NULL
         END AS credit_result,
+        CASE
+        WHEN customer.guarantee_type = 1 THEN
+        '银行担保'
+        WHEN customer.guarantee_type = 2 THEN
+        '内部担保'
+        ELSE
+        NULL
+        END  AS guaranteeType,
         (
         SELECT
         create_time
@@ -433,6 +442,7 @@
                     #{item}
                 </foreach>
             </if>
+            AND customer.cust_type  in  (1,2,3) and customer.status = 0
         </where>
         <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
             having(

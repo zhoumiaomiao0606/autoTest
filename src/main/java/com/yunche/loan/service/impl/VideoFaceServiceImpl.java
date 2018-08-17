@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.BankCache;
+import com.yunche.loan.config.constant.VideoFaceConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.POIUtil;
@@ -85,14 +86,18 @@ public class VideoFaceServiceImpl implements VideoFaceService {
             videoFaceLogDO.setBankName(bankCache.getNameById(videoFaceLogDO.getBankId()));
         }
 
-        // APP端  车型名称
-        if (TYPE_APP.equals(videoFaceLogDO.getType())) {
+        // 机器面签
+        if (FACE_SIGN_TYPE_MACHINE.equals(videoFaceLogDO.getType())) {
+            //  车型名称
             if (null != videoFaceLogDO.getCarDetailId()) {
                 String carName = carService.getName(videoFaceLogDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
                 if (StringUtils.isNotBlank(carName)) {
                     videoFaceLogDO.setCarName(carName);
                 }
             }
+
+            // action 默认：PASS（机器面签不审核，默认通过！）
+            videoFaceLogDO.setAction(VideoFaceConst.ACTION_PASS);
         }
 
         // 担保公司  就一个   写死
@@ -123,7 +128,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     public ResultBean<List<VideoFaceLogVO>> listLog(VideoFaceQuery videoFaceQuery) {
 
         // checkPermission
-        Preconditions.checkNotNull(SessionUtils.getLoginUser().getBankId(), "您无权操作[视频面签]");
+        checkPermission(videoFaceQuery);
 
         // export
         if (null != videoFaceQuery.getPageIndex() && null != videoFaceQuery.getPageSize()) {
@@ -318,7 +323,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_11 = "11、Q8您所购买车辆是什么颜色？   （面签人员无法核实）";
         String question_12 = "12、Q9你现在所处位置？   参考答案：" + redText(address);
         String question_13 = "13、请问您购买的是什么品牌的汽车？购买车辆是否自用？   （参考答案）是  车辆品牌：" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
-        String question_14 = "14、您了解该笔贷款是由浙江鑫宝行担保有限公司提供担保的吗？   参考答案：了解";
+        String question_14 = "14、您了解该笔贷款是由浙江鑫宝行融资担保有限公司提供担保的吗？   参考答案：了解";
         String question_15 = "15、请您务必在合同上填写正确的手机号码和联系地址";
         String question_16 = "16、请您现在在信用卡申请书、分期付款合同以及客户告知书上签名";
         String question_17 = "17、银行：请您认真仔细阅读担保方签署相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，" +
@@ -440,5 +445,32 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         return redText;
     }
 
+    /**
+     * checkPermission
+     *
+     * @param videoFaceQuery
+     */
+    private void checkPermission(VideoFaceQuery videoFaceQuery) {
+
+        // checkPermission
+        Long loginUserBankId = SessionUtils.getLoginUser().getBankId();
+        Preconditions.checkNotNull(loginUserBankId, "您无权操作[视频面签]");
+
+        Long queryBankId = videoFaceQuery.getBankId();
+
+        // 仅管理员  拥有所有银行权限 -->  -1
+        if (!ADMIN_VIDEO_FACE_BANK_ID.equals(loginUserBankId)) {
+
+            // 不能穿空
+            if (null == queryBankId) {
+                videoFaceQuery.setBankId(loginUserBankId);
+            } else {
+
+                // 不能查自身以外的银行数据
+                Preconditions.checkArgument(loginUserBankId.equals(queryBankId), "您无权操作：" + bankCache.getNameById(queryBankId));
+            }
+
+        }
+    }
 
 }
