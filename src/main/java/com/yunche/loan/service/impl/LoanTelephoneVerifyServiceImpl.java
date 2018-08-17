@@ -4,9 +4,13 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import com.yunche.loan.domain.param.LoanTelephoneVerifyParam;
 import com.yunche.loan.mapper.EmployeeDOMapper;
+import com.yunche.loan.mapper.LoanCustomerDOMapper;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanTelephoneVerifyDOMapper;
 import com.yunche.loan.service.LoanTelephoneVerifyService;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +33,12 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
 
     @Resource
     private EmployeeDOMapper employeeDOMapper;
+
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
 
     @Override
     @Transactional
@@ -53,7 +63,12 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
             int count = loanTelephoneVerifyDOMapper.updateByPrimaryKeySelective(loanTelephoneVerifyDO);
             Preconditions.checkArgument(count > 0, "保存失败");
         }
-
+        //更新客户信息 签单类型
+        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(loanTelephoneVerifyDO.getOrderId()));
+        LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(orderDO.getLoanCustomerId(), null);
+        customerDO.setSignatureType(loanTelephoneVerifyParam.getSignatureType());
+        int count = loanCustomerDOMapper.updateByPrimaryKeySelective(customerDO);
+        Preconditions.checkArgument(count > 0, "保存失败");
         return ResultBean.ofSuccess(null);
     }
 }

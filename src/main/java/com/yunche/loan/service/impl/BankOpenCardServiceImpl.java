@@ -221,7 +221,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
         try {
             //读取文件
             InputStream in = OSSUnit.getOSS2InputStream(ossKey);
-            InputStreamReader inReader = new InputStreamReader(in, "UTF-8");
+            InputStreamReader inReader = new InputStreamReader(in, "GBK");
             BufferedReader bufReader = new BufferedReader(inReader);
 
             BankFileListDO bankFileListDO = new BankFileListDO();

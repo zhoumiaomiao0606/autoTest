@@ -187,4 +187,6 @@ public class LoanCustomerDO {
 
     // 单位电话区号 默认'0'
     private String ctelzone;
+
+    private Byte signatureType;
 }

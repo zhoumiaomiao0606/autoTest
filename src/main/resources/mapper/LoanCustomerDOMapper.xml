@@ -90,6 +90,8 @@
         <result column="hcounty" property="hcounty" jdbcType="VARCHAR"/>
         <result column="open_card_order" property="openCardOrder" jdbcType="VARCHAR"/>
         <result column="ctelzone" property="ctelzone" jdbcType="VARCHAR"/>
+        <result column="signature_type" property="signatureType" jdbcType="TINYINT"/>
+
     </resultMap>
     <sql id="Base_Column_List">
         id, name, nation, birth, identity_validity, lend_card, id_card, mobile, age, sex,
@@ -106,7 +108,7 @@
         card_send_addr_type, balance_change_remind, open_email, email, occupation, issuing_department,
         master_card_tel, bell_tel, balance_change_tel, open_card_status, open_card_curr_status,
         bill_send_type, bill_send_addr, cprovince, ccity, ccounty, hprovince, hcity, hcounty,
-        open_card_order, ctelzone
+        open_card_order, ctelzone, signature_type
     </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
@@ -149,7 +151,7 @@
         open_card_curr_status, bill_send_type, bill_send_addr,
         cprovince, ccity, ccounty,
         hprovince, hcity, hcounty,
-        open_card_order, ctelzone)
+        open_card_order, ctelzone, signature_type)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
         #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR},
         #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT},
@@ -179,7 +181,7 @@
         #{openCardCurrStatus,jdbcType=VARCHAR}, #{billSendType,jdbcType=VARCHAR}, #{billSendAddr,jdbcType=VARCHAR},
         #{cprovince,jdbcType=VARCHAR}, #{ccity,jdbcType=VARCHAR}, #{ccounty,jdbcType=VARCHAR},
         #{hprovince,jdbcType=VARCHAR}, #{hcity,jdbcType=VARCHAR}, #{hcounty,jdbcType=VARCHAR},
-        #{openCardOrder,jdbcType=VARCHAR}, #{ctelzone,jdbcType=VARCHAR})
+        #{openCardOrder,jdbcType=VARCHAR}, #{ctelzone,jdbcType=VARCHAR},#{signatureType,jdbcType=TINYINT})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
@@ -446,6 +448,10 @@
             <if test="ctelzone != null">
                 ctelzone,
             </if>
+            <if test="signatureType != null">
+                signature_type,
+            </if>
+
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -709,6 +715,10 @@
             <if test="ctelzone != null">
                 #{ctelzone,jdbcType=VARCHAR},
             </if>
+            <if test="signatureType != null">
+                #{signatureType,jdbcType=TINYINT},
+            </if>
+
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
@@ -972,6 +982,10 @@
             <if test="ctelzone != null">
                 ctelzone = #{ctelzone,jdbcType=VARCHAR},
             </if>
+            <if test="signatureType != null">
+                signature_type = #{signatureType,jdbcType=VARCHAR},
+            </if>
+
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -1062,7 +1076,8 @@
         hcity = #{hcity,jdbcType=VARCHAR},
         hcounty = #{hcounty,jdbcType=VARCHAR},
         open_card_order = #{openCardOrder,jdbcType=VARCHAR},
-        ctelzone = #{ctelzone,jdbcType=VARCHAR}
+        ctelzone = #{ctelzone,jdbcType=VARCHAR},
+        signature_type = #{signatureType,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
 
