@@ -39,6 +39,12 @@
     partner_compensation_amount, partner_dc_review_operator, partner_dc_review_date, 
     status, remark, gmt_create, gmt_modify
   </sql>
+  <select id="selectByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from loan_apply_compensation
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
   <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDOKey" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

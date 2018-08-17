@@ -1,10 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.util.CarLoanHttpUtil;
-import com.yunche.loan.domain.entity.CollectionNewInfoDO;
-import com.yunche.loan.domain.entity.CollectionRecordDO;
-import com.yunche.loan.domain.entity.LitigationStateDO;
-import com.yunche.loan.domain.entity.VisitDoorDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.query.GpsInfoQuery;
 import com.yunche.loan.domain.query.LawWorkQuery;
 import com.yunche.loan.domain.vo.CollectionRecordVO;
@@ -47,12 +44,18 @@ public class VisitDoorServiceImpl implements VisitDoorService {
     @Autowired
     private AuxiliaryService auxiliaryService;
 
+    @Autowired
+    private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
+
     @Override
     public VisitDoorVO detail(Long orderId,Long id) {
-
+        List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
 
 
         CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        if(collectionNewInfoDO ==  null){
+            collectionNewInfoDO = new CollectionNewInfoDO();
+        }
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
 
         CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
@@ -75,13 +78,16 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         visitDoorVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         visitDoorVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));
         visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId,"1"));
-
+        visitDoorVO.setLoanApplyCompensation(list);
         return visitDoorVO;
     }
 
     @Override
     public VisitDoorVO cusInfoDetatil(Long orderId, Long id) {
         CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        if(collectionNewInfoDO ==  null){
+            collectionNewInfoDO = new CollectionNewInfoDO();
+        }
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
 
         CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
@@ -99,6 +105,9 @@ public class VisitDoorServiceImpl implements VisitDoorService {
     @Override
     public VisitDoorVO visitDoorDetatil(Long orderId, Long id) {
         CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        if(collectionNewInfoDO ==  null){
+            collectionNewInfoDO = new CollectionNewInfoDO();
+        }
         VisitDoorVO visitDoorVO =new VisitDoorVO();
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
         if(id != null){

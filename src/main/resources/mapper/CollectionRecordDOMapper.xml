@@ -25,8 +25,18 @@
   </select>
 
   <select id="selectNewest" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.CollectionRecordVO">
-    select
-    id,order_id,collection_date,collection_man_id,employee.name AS collectionname,is_repayment,repayment_date,permit_repayment_date,cause,remark,gmt_create
+    SELECT
+	t.id        AS id,
+	t.order_id  AS order_id,
+	t.collection_date AS collection_date,
+	t.collection_man_id AS collection_man_id,
+	employee.NAME AS collectionname,
+	t.is_repayment AS is_repayment,
+	t.repayment_date AS repayment_date,
+	t.permit_repayment_date AS permit_repayment_date,
+	t.cause AS cause,
+	t.remark AS remark,
+	t.gmt_create  AS gmt_create
     from collection_record t
     left join employee employee on employee.id = t.collection_man_id
     where t.order_id = #{orderId,jdbcType=BIGINT}
