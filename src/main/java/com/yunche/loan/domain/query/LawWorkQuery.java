@@ -1,7 +1,6 @@
 package com.yunche.loan.domain.query;
 
 import lombok.Data;
-
 @Data
 public class LawWorkQuery {
 
@@ -34,4 +33,16 @@ public class LawWorkQuery {
     private String aname;
 
     private byte biztype;
+
+    private String cprovince;
+
+    private String ccity;
+
+    private String ccounty;
+
+    private String hprovince;
+
+    private String hcity;
+
+    private String hcounty;
 }

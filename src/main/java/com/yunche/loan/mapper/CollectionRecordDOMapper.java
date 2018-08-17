@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.CollectionRecordDO;
 import com.yunche.loan.domain.param.RecordCollectionParam;
+import com.yunche.loan.domain.vo.CollectionRecordVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface CollectionRecordDOMapper {
 
     CollectionRecordDO selectByPrimaryKey(Long id);
 
-    CollectionRecordDO selectNewest(Long orderId);
+    CollectionRecordVO selectNewest(Long orderId);
 
     List<CollectionRecordDO> selectNewestTotal(Long orderId);
 

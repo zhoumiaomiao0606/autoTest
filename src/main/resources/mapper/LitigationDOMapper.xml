@@ -355,15 +355,23 @@
 	e.`name`       				AS pname,
 	g.`name`       				AS gname,
 	f.area_name    				AS aname,
-	e.biz_type     				AS biztype
+	e.biz_type     				AS biztype,
+	b.cprovince                 AS cprovince,
+	b.ccity                     AS ccity,
+	b.ccounty                   AS ccounty,
+	b.hprovince                 AS hprovince,
+	b.hcity                     AS hcity,
+	b.hcounty                     AS hcounty
     FROM
 	loan_order a
 	LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
 	LEFT JOIN loan_base_info c on a.loan_base_info_id = c.id
 	LEFT JOIN employee d on c.salesman_id = d.id
 	LEFT JOIN partner e on c.partner_id = e.id
-	LEFT JOIN base_area f on e.area_id = f.area_id
+
 	LEFT JOIN department g on d.department_id = g.id
+	LEFT JOIN loan_base_info h on a.loan_base_info_id = h.id
+	LEFT JOIN base_area f on h.area_id = f.area_id
     WHERE
 	b.cust_type = 1 and a.id = #{orderid,jdbcType=BIGINT}
   </select>

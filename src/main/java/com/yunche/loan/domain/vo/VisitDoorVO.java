@@ -21,7 +21,7 @@ public class VisitDoorVO<T> {
 
     private VisitDoorDO visitDoorDO;
 
-    private CollectionRecordDO collectionRecordDO;
+    private CollectionRecordVO collectionRecordVO;
 
     private int collectionNum;
 

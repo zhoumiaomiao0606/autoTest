@@ -24,10 +24,12 @@
     where id = #{id,jdbcType=BIGINT}
   </select>
 
-  <select id="selectNewest" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectNewest" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.CollectionRecordVO">
     select
-    <include refid="Base_Column_List" />
-    from collection_record t where t.order_id = #{orderId,jdbcType=BIGINT}
+    id,order_id,collection_date,collection_man_id,employee.name AS collectionname,is_repayment,repayment_date,permit_repayment_date,cause,remark,gmt_create
+    from collection_record t
+    left join employee employee on employee.id = t.collection_man_id
+    where t.order_id = #{orderId,jdbcType=BIGINT}
     ORDER BY t.id desc limit 1
   </select>
 

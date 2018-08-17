@@ -71,9 +71,13 @@ public class CollectionServiceImpl implements CollectionService {
     public VisitDoorVO isCollectionDetail(Long orderId) {
 
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
-        CollectionRecordDO collectionRecordDO = collectionRecordDOMapper.selectNewest(orderId);
+        CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
         int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
-        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        CollectionNewInfoDO collectionNewInfoDO = new CollectionNewInfoDO();
+        collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        if(collectionNewInfoDO ==  null){
+            collectionNewInfoDO = new CollectionNewInfoDO();
+        }
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
@@ -86,8 +90,10 @@ public class CollectionServiceImpl implements CollectionService {
         visitDoorVO.setRepayments(loanQueryDOMapper.selectUniversalLoanRepaymentPlan(orderId));
         visitDoorVO.setCustomers(customers);
         visitDoorVO.setResult(lawWorkQuery);
-        visitDoorVO.setCollectionRecordDO(collectionRecordDO);
+        visitDoorVO.setCollectionRecordVO(collectionRecordVO);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
+        visitDoorVO.setCollectionNum(num);
+
         return visitDoorVO;
     }
 
