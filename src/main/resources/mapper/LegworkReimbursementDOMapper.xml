@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LegworkReimbursementDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LegworkReimbursementDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="trans_fee" property="transFee" jdbcType="VARCHAR" />
+    <result column="hotel_fee" property="hotelFee" jdbcType="VARCHAR" />
+    <result column="eat_fee" property="eatFee" jdbcType="VARCHAR" />
+    <result column="busi_fee" property="busiFee" jdbcType="VARCHAR" />
+    <result column="other_fee" property="otherFee" jdbcType="VARCHAR" />
+    <result column="gmt_user" property="gmtUser" jdbcType="BIGINT" />
+    <result column="gmt_user_name" property="gmtUserName" jdbcType="VARCHAR" />
+    <result column="gmt_create_time" property="gmtCreateTime" jdbcType="TIMESTAMP" />
+    <result column="gmt_update_time" property="gmtUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, trans_fee, hotel_fee, eat_fee, busi_fee, other_fee, gmt_user, gmt_user_name, 
+    gmt_create_time, gmt_update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from legwork_reimbursement
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from legwork_reimbursement
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO" >
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into legwork_reimbursement
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="transFee != null" >
+        trans_fee,
+      </if>
+      <if test="hotelFee != null" >
+        hotel_fee,
+      </if>
+      <if test="eatFee != null" >
+        eat_fee,
+      </if>
+      <if test="busiFee != null" >
+        busi_fee,
+      </if>
+      <if test="otherFee != null" >
+        other_fee,
+      </if>
+      <if test="gmtUser != null" >
+        gmt_user,
+      </if>
+      <if test="gmtUserName != null" >
+        gmt_user_name,
+      </if>
+      <if test="gmtCreateTime != null" >
+        gmt_create_time,
+      </if>
+      <if test="gmtUpdateTime != null" >
+        gmt_update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="transFee != null" >
+        #{transFee,jdbcType=VARCHAR},
+      </if>
+      <if test="hotelFee != null" >
+        #{hotelFee,jdbcType=VARCHAR},
+      </if>
+      <if test="eatFee != null" >
+        #{eatFee,jdbcType=VARCHAR},
+      </if>
+      <if test="busiFee != null" >
+        #{busiFee,jdbcType=VARCHAR},
+      </if>
+      <if test="otherFee != null" >
+        #{otherFee,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtUser != null" >
+        #{gmtUser,jdbcType=BIGINT},
+      </if>
+      <if test="gmtUserName != null" >
+        #{gmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreateTime != null" >
+        #{gmtCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtUpdateTime != null" >
+        #{gmtUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO" >
+    update legwork_reimbursement
+    <set >
+      <if test="transFee != null" >
+        trans_fee = #{transFee,jdbcType=VARCHAR},
+      </if>
+      <if test="hotelFee != null" >
+        hotel_fee = #{hotelFee,jdbcType=VARCHAR},
+      </if>
+      <if test="eatFee != null" >
+        eat_fee = #{eatFee,jdbcType=VARCHAR},
+      </if>
+      <if test="busiFee != null" >
+        busi_fee = #{busiFee,jdbcType=VARCHAR},
+      </if>
+      <if test="otherFee != null" >
+        other_fee = #{otherFee,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtUser != null" >
+        gmt_user = #{gmtUser,jdbcType=BIGINT},
+      </if>
+      <if test="gmtUserName != null" >
+        gmt_user_name = #{gmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreateTime != null" >
+        gmt_create_time = #{gmtCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtUpdateTime != null" >
+        gmt_update_time = #{gmtUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

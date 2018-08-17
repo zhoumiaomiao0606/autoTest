@@ -98,4 +98,7 @@ public class RecombinationVO<T> {
      */
     private List<UniversalInfoSupplementVO> supplement = Lists.newArrayList();
 
+
+    private  List<UniversalLegworkReimbursement> legworkReimbursementFiles;
+
 }

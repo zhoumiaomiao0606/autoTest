@@ -349,7 +349,7 @@
 
 -->
 
-        <table tableName="loan_apply_compensation" domainObjectName="LoanApplyCompensationDO"
+        <table tableName="legwork_reimbursement_file" domainObjectName="LegworkReimbursementFileDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

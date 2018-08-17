@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LegworkReimbursementFileDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LegworkReimbursementFileDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="legwork_reimbursement_id" property="legworkReimbursementId" jdbcType="BIGINT" />
+    <result column="urls" property="urls" jdbcType="VARCHAR" />
+    <result column="gmt_create_time" property="gmtCreateTime" jdbcType="TIMESTAMP" />
+    <result column="gmt_update_time" property="gmtUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, legwork_reimbursement_id, urls, gmt_create_time, gmt_update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from legwork_reimbursement_file
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByLegworkReimbursementId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from legwork_reimbursement_file
+    where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from legwork_reimbursement_file
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByLegworkReimbursementId" parameterType="java.lang.Long" >
+    delete from legwork_reimbursement_file
+    where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementFileDO" >
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into legwork_reimbursement_file
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="legworkReimbursementId != null" >
+        legwork_reimbursement_id,
+      </if>
+      <if test="urls != null" >
+        urls,
+      </if>
+      <if test="gmtCreateTime != null" >
+        gmt_create_time,
+      </if>
+      <if test="gmtUpdateTime != null" >
+        gmt_update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="legworkReimbursementId != null" >
+        #{legworkReimbursementId,jdbcType=BIGINT},
+      </if>
+      <if test="urls != null" >
+        #{urls,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreateTime != null" >
+        #{gmtCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtUpdateTime != null" >
+        #{gmtUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementFileDO" >
+    update legwork_reimbursement_file
+    <set >
+      <if test="legworkReimbursementId != null" >
+        legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT},
+      </if>
+      <if test="urls != null" >
+        urls = #{urls,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreateTime != null" >
+        gmt_create_time = #{gmtCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtUpdateTime != null" >
+        gmt_update_time = #{gmtUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

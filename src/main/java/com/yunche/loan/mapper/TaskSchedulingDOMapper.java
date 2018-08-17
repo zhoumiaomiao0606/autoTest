@@ -26,7 +26,7 @@ public interface TaskSchedulingDOMapper {
 
     boolean selectRejectTask(@Param("orderId") Long orderId);
 
-    SubimitVisitDoorVO subimitVisitDoorList(SubimitVisitDoorParam param);
+    List<SubimitVisitDoorVO> subimitVisitDoorList(SubimitVisitDoorParam param);
 
     /**
      * 资料流转 列表查询

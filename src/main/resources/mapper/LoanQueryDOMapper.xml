@@ -1878,6 +1878,10 @@
     </select>
 
 
-
-
+    <select id="selectUniversalFileByLegworkReimbursementId" resultType="com.yunche.loan.domain.vo.UniversalLegworkReimbursement" parameterType="java.lang.Long" >
+        select
+        urls
+        from legwork_reimbursement_file
+        where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+    </select>
 </mapper>

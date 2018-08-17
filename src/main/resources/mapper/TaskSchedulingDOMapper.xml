@@ -1726,14 +1726,15 @@
 
     <select id="subimitVisitDoorList" resultType="com.yunche.loan.domain.vo.SubimitVisitDoorVO" parameterType="com.yunche.loan.domain.param.SubimitVisitDoorParam">
       select
-            orders.id 									     as order_id,
-            customer.name 									 as customer_name,
-            customer.id_card  							     as customer_id_card,
-            car.car_type 									 as car_type,
-            vehicle.apply_license_plate_area                 as vehicle_apply_license_plate_area,
-            financial.bank 									 as financial_bank,
-            partner.name   									 as partner_name,
-            employee.name  									 as salesman_name
+            door.id                                          as id,
+            orders.id 									     as orderId,
+            customer.name 									 as customerName,
+            customer.id_card  							     as customerIdCard,
+            car.car_type 									 as carType,
+            vehicle.apply_license_plate_area                 as vehicleApplyLicensePlateArea,
+            financial.bank 									 as financialBank,
+            partner.name   									 as partnerName,
+            employee.name  									 as salesmanName
         from
         visit_door door
         left join loan_order orders on door.order_id = orders.id
@@ -1748,6 +1749,10 @@
       where
       case when 3 = #{maxGroupLevel} then true
       else door.receiver_id = #{loginUserId} end
+      and door.id not in (select visit_door_id from legwork_reimbursement_relevance_visit )
+      <if test="userName != null">
+          and customer.name LIKE CONCAT('%', #{userName} ,'%')
+      </if>
     </select>
 
 </mapper>
