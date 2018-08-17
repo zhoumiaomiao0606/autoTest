@@ -20,4 +20,6 @@ public interface VisitDoorDOMapper {
     int updateByPrimaryKey(VisitDoorDO record);
 
     List<GpsInfoQuery> selectGpsInfo(@Param("orderid")Long orderid);
+
+    List<VisitDoorDO> selectByOrderId(Long orderId);
 }

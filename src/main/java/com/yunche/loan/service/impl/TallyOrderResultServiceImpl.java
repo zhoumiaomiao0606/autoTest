@@ -1,15 +1,10 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
-import com.yunche.loan.domain.entity.InsuranceRiskDO;
-import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.TallyOrderResultUpdateParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.InsuranceInfoDOMapper;
-import com.yunche.loan.mapper.InsuranceRelevanceDOMapper;
-import com.yunche.loan.mapper.InsuranceRiskDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TallyOrderResultService;
 import org.springframework.beans.BeanUtils;
@@ -43,6 +38,12 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     @Autowired
     private InsuranceRiskDOMapper insuranceRiskDOMapper;
 
+    @Autowired
+    private CollectionNewInfoDOMapper collectionNewInfoDOMapper;
+
+    @Autowired
+    private VisitDoorDOMapper visitDoorDOMapper;
+
     @Override
     public TallyOrderResultVO detail(Long orderId)
     {
@@ -69,7 +70,12 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
         List<InsuranceRiskDO> insuranceRiskDOS = insuranceRiskDOMapper.allRiskInfoByOrderId(orderId);
         //逾期代偿
 
-        //拖车概况
+        //拖车概况---相关费用报销单里取
+        TrailVehicleDetailVO trailVehicleDetailVO =new TrailVehicleDetailVO();
+
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        List<VisitDoorDO> visitDoorDO = visitDoorDOMapper.selectByOrderId(orderId);
+
 
         //贷款业务详细信息
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
