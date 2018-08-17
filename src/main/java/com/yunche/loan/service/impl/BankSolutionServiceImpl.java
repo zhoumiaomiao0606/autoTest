@@ -981,6 +981,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyBankOpenCard.setCustomer(customer);
         applyBankOpenCard.setPictures(bankOpenCardParam.getPictures());
 
+        violationUtil.violation(customer);
 
         asyncUpload.execute(new Process() {
 
