@@ -14,7 +14,9 @@ import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.client.ICBCFeignNormal;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.request.group.*;
-import com.yunche.loan.config.feign.response.*;
+import com.yunche.loan.config.feign.response.ApplyStatusResponse;
+import com.yunche.loan.config.feign.response.ApplycreditstatusResponse;
+import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.config.util.Process;
 import com.yunche.loan.domain.entity.*;
@@ -983,7 +985,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         applyBankOpenCard.setCustomer(customer);
         applyBankOpenCard.setPictures(bankOpenCardParam.getPictures());
-
+        //参数校验
+        violationUtil.violation(applyBankOpenCard, ICBCApiRequest.ApplyBankOpenCard.class);
 
         asyncUpload.execute(new Process() {
 

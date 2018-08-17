@@ -87,8 +87,12 @@ public class ICBCApiRequest {
     @Data
     public static class ApplyBankOpenCard extends Pub{
 
+        @NotNull
+        @Valid
         private ApplyBankOpenCardCustomer customer;
 
+        @NotNull
+        @Valid
         private List<Picture> pictures= Lists.newArrayList();//客户照片资料
 
     }
@@ -233,65 +237,123 @@ public class ICBCApiRequest {
 
     @Data
     public static class ApplyBankOpenCardCustomer {
+        @NotEmpty(message = "手续费不能为空")
         private String  feeamount;
+        @NotEmpty(message = "申请分期金额不能为空")
         private String  loanamount;
+        @NotEmpty(message = "贷款期限不能为空")
         private String  term;
+        @NotEmpty(message = "贷款成数不能为空")
         private String  loanratio;
+        @NotEmpty(message = "车辆价格不能为空")
         private String  carprice;
+        @NotEmpty(message = "手续费率不能为空")
         private String  feeratio;
-
+        @NotEmpty(message = "姓名拼音不能为空")
         private String  engname;
+        @NotEmpty(message = "联系人二联系电话号不能为空")
         private String  rtcophon2;
+        @NotEmpty(message = "出生日期不能为空")
         private String  birthdate;
+        @NotEmpty(message = "单位地址省份不能为空")
         private String  cprovince;
+        @NotEmpty(message = "卡片寄送地址类型不能为空")
         private String  drawaddr;
+        @NotEmpty(message = "联系人一联系电话号不能为空")
         private String  relaphone1;
+        @NotEmpty(message = "证件有效期不能为空")
         private String  statdate;
+        @NotEmpty(message = "工作单位不能为空")
         private String  unitname;
+        @NotEmpty(message = "对帐单寄送方式不能为空")
         private String  accgetm;
+        @NotEmpty(message = "手机号码不能为空")
         private String  mvblno;
+        @NotEmpty(message = "")
         private String  caddress;
+        @NotEmpty(message = "工作单位地址不能为空")
         private String  authref;
+        @NotEmpty(message = "住宅地址不能为空")
         private String  haddress;
+        @NotEmpty(message = "主卡开通余额变动提醒不能为空")
         private String  machgf;
+        @NotEmpty(message = "主卡余额提醒发送手机号码不能为空")
         private String  machgmobile;
+        @NotEmpty(message = "进入单位时间不能为空")
         private String  joindate;
+        @NotEmpty(message = "卡片领取方式不能为空")
         private String  drawmode;
+        @NotEmpty(message = "单位地址县不能为空")
         private String  ccounty;
+        @NotEmpty(message = "姓名不能为空")
         private String  chnsname;
+        @NotEmpty(message = "婚姻状况不能为空")
         private String  mrtlstat;
+        @NotEmpty(message = "联系人一与主卡申请关系不能为空")
         private String  reltship1;
+        @NotEmpty(message = "联系人二与主卡申请关系不能为空")
         private String  reltship2;
+        @NotEmpty(message = "单位性质不能为空")
         private String  modelcode;
+        @NotEmpty(message = "何时入住现址不能为空")
         private String  indate;
+        @NotEmpty(message = "住宅地址市不能为空")
         private String  hcity;
+        @NotEmpty(message = "单位地址选择不能为空")
         private String  cadrchoic;
+        @NotEmpty(message = "联系人二手机不能为空")
         private String  reltmobl2;
+        @NotEmpty(message = "住宅电话号码不能为空")
         private String  hphoneno;
+        @NotEmpty(message = "联系人一手机不能为空")
         private String  reltmobl1;
+        @NotEmpty(message = "住宅邮编不能为空")
         private String  homezip;
+        @NotEmpty(message = "主卡发送移动电话不能为空")
         private String  mamobile;
+        @NotEmpty(message = "证件类型不能为空")
         private String  custsort;
+        @NotEmpty(message = "单位电话号码不能为空")
         private String  cophoneno;
+        @NotEmpty(message = "单位邮编不能为空")
         private String  corpzip;
+        @NotEmpty(message = "证件号码不能为空")
         private String  custcode;
+        @NotEmpty(message = "手机选择不能为空")
         private String  mblchoic;
+        @NotEmpty(message = "单位电话区号不能为空")
         private String  cophozono;
+        @NotEmpty(message = "单位电话分机不能为空")
         private String  cophonext;
+        @NotEmpty(message = "联系人一性别不能为空")
         private String  sex;
+        @NotEmpty(message = "住宅地址选择不能为空")
         private String  hadrchoic;
+        @NotEmpty(message = "住宅地址省份不能为空")
         private String  hprovince;
+        @NotEmpty(message = "单位地址市不能为空")
         private String  ccity;
+        @NotEmpty(message = "职业不能为空")
         private String  occptn;
+        @NotEmpty(message = "联系人二姓名不能为空")
         private String  reltname2;
+        @NotEmpty(message = "发送短信帐单手机号码不能为空")
         private String  smsphone;
+        @NotEmpty(message = "联系人一姓名不能为空")
         private String  reltname1;
+        @NotEmpty(message = "住宅地址县不能为空")
         private String  hcounty;
+        @NotEmpty(message = "联系人二性别不能为空")
         private String  reltsex2;
+        @NotEmpty(message = "联系人一性别不能为空")
         private String  reltsex1;
+        @NotEmpty(message = "开通email对账单不能为空")
         private String  emladdrf;
+        @NotEmpty(message = "币种不能为空")
         private String  fcurrtyp;
+        @NotEmpty(message = "对帐单寄送地址不能为空")
         private String  accaddrf;
+        @NotEmpty(message = "教育程度不能为空")
         private String  edulvl;
     }
 
