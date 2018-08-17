@@ -1755,4 +1755,91 @@
       </if>
     </select>
 
+    <select id="legworkReimbursementList" parameterType="com.yunche.loan.domain.param.LegworkReimbursementParam" resultType="com.yunche.loan.domain.vo.LegworkReimbursementVO">
+        select
+            id              as id,
+            trans_fee       as transFee,
+            hotel_fee       as hotelFee,
+            eat_fee         as eatFee,
+            busi_fee        as busiFee,
+            other_fee       as otherFee,
+            gmt_user        as gmtUser,
+            gmt_user_name   as gmtUserName,
+            gmt_create_time as gmtCreate,
+            gmt_update_time as gmtUpdateTime,
+            status          as taskStatus
+        from legwork_reimbursement
+            where 1=1
+            and case when 3 = #{maxGroupLevel} then true
+            else gmt_user = #{loginUserId} end
+            and
+            case when #{taskDefinitionKey} = 'usertask_outworker_cost_apply' then
+                      case
+                           when #{taskStatus} = 0 then true
+                           when #{taskStatus} = 1 then status = #{taskStatus}
+                           when #{taskStatus} = 2 then status = #{taskStatus}
+                           when #{taskStatus} = 3 then status = #{taskStatus}
+                           when #{taskStatus} = 4 then status = #{taskStatus}
+                      else false end
+                 when #{taskDefinitionKey} = 'usertask_outworker_cost_apply_review' then
+                      case
+                           when #{taskStatus} = 0 then true
+                           when #{taskStatus} = 1 then status = #{taskStatus}
+                           when #{taskStatus} = 2 then status = #{taskStatus}
+                           when #{taskStatus} = 3 then status = #{taskStatus}
+                           when #{taskStatus} = 4 then status = #{taskStatus}
+                      else false end
+                 else false end
+        <if test="customerName!=null and customerName!=''">
+                and
+                case when #{customerName} in
+                (
+                select customer.name
+                from legwork_reimbursement_relevance_visit relevance
+                left join visit_door door on door.id = relevance.visit_door_id
+                left join loan_order orders on orders.id = door.order_id
+                left join loan_customer customer on customer.id = orders.loan_customer_id
+                )
+                then true else false end
+            </if>
+            <if test="bank !=null and bank!=''">
+                and
+                case when #{bank} in
+                (
+                select plan.bank
+                from legwork_reimbursement_relevance_visit relevance
+                left join visit_door door on door.id = relevance.visit_door_id
+                left join loan_order orders on orders.id = door.order_id
+                left join loan_financial_plan plan on orders.loan_financial_plan_id = plan.id
+                )
+                then true else false end
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                and
+                case when #{partnerId} in
+                (
+                select partner.id
+                from legwork_reimbursement_relevance_visit relevance
+                left join visit_door door on door.id = relevance.visit_door_id
+                left join loan_order orders on orders.id = door.order_id
+                left join loan_base_info base on base.id = orders.loan_base_info_id
+                left join partner partner on base.partner_id = partner.id
+                )
+                then true else false end
+            </if>
+            <if test="salesmanName != null and salesmanName != ''">
+                and
+                case when #{salesmanName} in
+                (
+                select employee.name
+                from legwork_reimbursement_relevance_visit relevance
+                left join visit_door door on door.id = relevance.visit_door_id
+                left join loan_order orders on orders.id = door.order_id
+                left join loan_base_info base on base.id = orders.loan_base_info_id
+                left join employee employee on employee.id = base.salesman_id
+                )
+                then true else false end
+            </if>
+    </select>
+
 </mapper>
