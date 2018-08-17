@@ -1724,6 +1724,30 @@
             else true end
     </select>
 
-
+    <select id="subimitVisitDoorList" resultType="com.yunche.loan.domain.vo.SubimitVisitDoorVO" parameterType="com.yunche.loan.domain.param.SubimitVisitDoorParam">
+      select
+            orders.id 									     as order_id,
+            customer.name 									 as customer_name,
+            customer.id_card  							     as customer_id_card,
+            car.car_type 									 as car_type,
+            vehicle.apply_license_plate_area                 as vehicle_apply_license_plate_area,
+            financial.bank 									 as financial_bank,
+            partner.name   									 as partner_name,
+            employee.name  									 as salesman_name
+        from
+        visit_door door
+        left join loan_order orders on door.order_id = orders.id
+        left join loan_process process on orders.id = process.order_id
+        left join loan_customer customer on customer.id = orders.loan_customer_id
+        left join loan_car_info car on orders.loan_car_info_id = car.id
+        left join vehicle_information vehicle on vehicle.id = orders.vehicle_information_id
+        left join loan_financial_plan financial on financial.id = orders.loan_financial_plan_id
+        left join loan_base_info base on base.id = orders.loan_base_info_id
+        left join partner partner on partner.id = base.partner_id
+        left join employee employee on employee.id = base.salesman_id
+      where
+      case when 3 = #{maxGroupLevel} then true
+      else door.receiver_id = #{loginUserId} end
+    </select>
 
 </mapper>

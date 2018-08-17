@@ -1,12 +1,16 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.EmployeeCache;
 import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.config.util.ZhongAnHttpUtil;
+import com.yunche.loan.domain.query.ZhongAnDetailQuery;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
 import com.yunche.loan.domain.vo.AppCustomerInfoVO;
 import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
@@ -15,10 +19,13 @@ import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
+import net.sf.json.JSONObject;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -158,6 +165,20 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanInfoSupplementService loanInfoSupplementService;
+
+    private static final Logger logger = LoggerFactory.getLogger(AppLoanOrderServiceImpl.class);
+
+    @Autowired
+    private ZhonganInfoDOMapper zhongAnInfoDOMapper;
+
+    @Autowired
+    private RspCreditDOMapper rspCreditDOMapper;
+
+    @Autowired
+    private RspLawsuitDOMapper rspLawSuitDOMapper;
+
+    @Autowired
+    private ZhonganOverdueDOMapper zhongAnOverDueDOMapper;
 
 
     @Override
@@ -828,6 +849,115 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         fillProcessMsg(appOrderProcessVO, loanOrderDO);
 
         return ResultBean.ofSuccess(appOrderProcessVO);
+    }
+
+    @Override
+    @Transactional
+    public void zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam) {
+        List<ZhongAnCusParam> customers = zhongAnQueryParam.getCustomers();
+        try{
+
+            for(ZhongAnCusParam zhongAnCusParam:customers){
+                Random random = new Random();
+                Map map = ZhongAnHttpUtil.queryInfo(zhongAnCusParam.getName(),zhongAnCusParam.getTel(),zhongAnCusParam.getIdcard(),
+                        zhongAnQueryParam.getOrderid(),zhongAnCusParam.getLoanmoney(),zhongAnCusParam.getCustomertype(),zhongAnCusParam.getRalationship(),
+                        System.currentTimeMillis()+""+random.nextInt(10000));
+                if((boolean)map.get("success")){
+                    JSONObject myJson = JSONObject.fromObject(map.get("creditResult"));
+                    Map creditResultMap = myJson;
+                        String qcqlInfo = (String)creditResultMap.get("qcqlInfo");
+                        Map qcqlInfoMap = new HashMap();
+                        if(qcqlInfo.contains("高危行为")){
+                            qcqlInfoMap = (Map)JSON.parse(qcqlInfo);
+                        }
+                    ZhonganInfoDO zhongAnInfoDO = new ZhonganInfoDO();
+                    zhongAnInfoDO.setOrderId(Long.valueOf(zhongAnQueryParam.getOrderid()));
+                    zhongAnInfoDO.setAge((String)creditResultMap.get("age"));
+                    zhongAnInfoDO.setGender((String)creditResultMap.get("gender"));
+                    zhongAnInfoDO.setMobileCity((String)creditResultMap.get("mobileCity"));
+                    zhongAnInfoDO.setMobileCommDuration((String)creditResultMap.get("mobileCommDuration"));
+                    zhongAnInfoDO.setMobileCommSts((String)creditResultMap.get("mobileCommSts"));
+                    zhongAnInfoDO.setPhoneidNameCheck((String)creditResultMap.get("PhoneIdNameCheck"));
+                    zhongAnInfoDO.setHighRiskBehavior((String)qcqlInfoMap.get("高危行为"));
+                    zhongAnInfoDO.setHighRiskRecord((String)qcqlInfoMap.get("风险记录"));
+                    zhongAnInfoDO.setRsnHighRisk((String)creditResultMap.get("rsnHighRisk"));
+                    zhongAnInfoDO.setRsnLongOverdue((String)creditResultMap.get("rsnLongOverdue"));
+                    zhongAnInfoDO.setRsnMultiLoan((String)creditResultMap.get("rsnMultiLoan"));
+                    zhongAnInfoDO.setRsnPolicyRestrict((String)creditResultMap.get("rsnPolicyRestrict"));
+                    zhongAnInfoDO.setRsnRiskRec((String)creditResultMap.get("rsnRiskRec"));
+                    zhongAnInfoDO.setRspLawsuitAlllist((String)creditResultMap.get("rspLawsuit_details"));
+                    zhongAnInfoDO.setRspSpeclistInblacklist((String)creditResultMap.get("rspSpecList_inBlacklist"));
+                    zhongAnInfoDO.setRspSpeclistMaxdftlevel((String)creditResultMap.get("rspSpecList_maxDftLevel"));
+                    zhongAnInfoDO.setRspWatchlistDetail((String)creditResultMap.get("rspWatchList_detail"));
+
+                    zhongAnInfoDO.setCustomerName(zhongAnCusParam.getName());
+                    zhongAnInfoDOMapper.insertSelective(zhongAnInfoDO);
+
+                    String listString = (String)creditResultMap.get("rspLawsuit_allList");
+                    if(listString != null && !"".equals(listString)){
+                        List<Map> map1= (List<Map>)JSON.parse(listString);
+                        for(Map mapx:map1){
+                            RspLawsuitDO rspLawSuitDO = new RspLawsuitDO();
+                            rspLawSuitDO.setBody((String)mapx.get("body"));
+                            rspLawSuitDO.setDataType((String)mapx.get("dataType"));
+                            rspLawSuitDO.setId(zhongAnInfoDO.getId());
+                            rspLawSuitDO.setSortTimeString((String)mapx.get("sortTimeString"));
+                            rspLawSuitDO.setTitle((String)mapx.get("title"));
+                            rspLawSuitDOMapper.insertSelective(rspLawSuitDO);
+                        }
+                    }
+                    String creditString = (String)creditResultMap.get("rspCreditBehavier_application");
+                    if(!"[]".equals(creditString)){
+                        List<Map> map2= (List<Map>)JSON.parse(creditString);
+                        for(Map mapx:map2){
+                            RspCreditDO rspCreditDO = new RspCreditDO();
+                            rspCreditDO.setApplicationMoney((String)mapx.get("application_money"));
+                            rspCreditDO.setApplicationResult((String)mapx.get("application_result"));
+                            rspCreditDO.setApplicationTime((String)mapx.get("application_time"));
+                            rspCreditDO.setId(zhongAnInfoDO.getId());
+                            rspCreditDO.setPlatform((String)mapx.get("platform"));
+                            rspCreditDO.setPlatformCode((String)mapx.get("platform_code"));
+                            rspCreditDOMapper.insertSelective(rspCreditDO);
+                        }
+                    }
+                    if(!"[]".equals(creditString)){
+                        String overdueString = (String)creditResultMap.get("rspCreditBehavier_overdue");
+                        List<Map> map3= (List<Map>)JSON.parse(overdueString);
+                        for(Map mapx:map3){
+                            ZhonganOverdueDO zhongAnOverDueDO = new ZhonganOverdueDO();
+                            zhongAnOverDueDO.setId(zhongAnInfoDO.getId());
+                            zhongAnOverDueDO.setOverdueCounts((String)mapx.get("overdue_counts"));
+                            zhongAnOverDueDO.setOverdueMoney((String)mapx.get("overdue_money"));
+                            zhongAnOverDueDO.setOverdueTime((String)mapx.get("overdue_time"));
+                            zhongAnOverDueDO.setPlatformCode((String)mapx.get("platform_code"));
+                            zhongAnOverDueDOMapper.insertSelective(zhongAnOverDueDO);
+                        }
+                    }
+                }else{
+                    throw new BizException("该客户:"+zhongAnCusParam.getName()+","+map.get("message"));
+                }
+            }
+        } catch(Exception e){
+            logger.error("大数据风控查询失败",e);
+            throw new BizException("大数据风控查询失败");
+        }
+
+    }
+
+    @Override
+    public ZhongAnDetailQuery zhongAnDetail(Long orderId,String customerName) {
+        ZhongAnDetailQuery zhongAnDetailQuery = new ZhongAnDetailQuery();
+        List<ZhonganInfoDO> list = zhongAnInfoDOMapper.selectByOrderId(orderId,customerName);
+        for(ZhonganInfoDO zhongAnInfoDO:list){
+            List<ZhonganOverdueDO> overDueList = zhongAnOverDueDOMapper.selectById(zhongAnInfoDO.getId());
+            List<RspCreditDO> creditList = rspCreditDOMapper.selectById(zhongAnInfoDO.getId());
+            List<RspLawsuitDO> lawSuitList = rspLawSuitDOMapper.selectById(zhongAnInfoDO.getId());
+            zhongAnInfoDO.setOverDueList(overDueList);
+            zhongAnInfoDO.setCreditList(creditList);
+            zhongAnInfoDO.setLawSuitList(lawSuitList);
+        }
+        zhongAnDetailQuery.setList(list);
+        return zhongAnDetailQuery;
     }
 
     @Override

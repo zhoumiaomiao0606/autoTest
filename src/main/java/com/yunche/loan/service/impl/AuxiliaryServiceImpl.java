@@ -70,6 +70,22 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
         loanCarInfoDO.setCarKey(new Byte("1"));
         loanCarInfoDOMapper.updateByPrimaryKey(loanCarInfoDO);
     }
+    @Override
+    public String getGpsAddress(String gpsCode){
+        String result ="";
+        try{
+            String accToken = getAccToken();
+            result = OpenApiUtil.getGpsAddress(accToken,gpsCode);
+            while("1004".equals(result)){
+                result = OpenApiUtil.getGpsAddress(getAccToken(),gpsCode);
+            }
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            throw new BizException(e.getMessage());
+        }
+        return result;
+    }
+
 
     @Override
     @Transactional
@@ -124,7 +140,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                         }
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
-                        throw new BizException(e.getMessage());
+                        throw new BizException("与第三方系统通讯异常");
                     }
                 } else if ("CARLOAN".equals(param.getGpsCompany())) {
                     try {

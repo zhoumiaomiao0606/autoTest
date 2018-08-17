@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ForceDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ForceDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="register_date" property="registerDate" jdbcType="DATE" />
+    <result column="register_id" property="registerId" jdbcType="VARCHAR" />
+    <result column="summary" property="summary" jdbcType="VARCHAR" />
+    <result column="rule_court" property="ruleCourt" jdbcType="VARCHAR" />
+    <result column="execution_applicant" property="executionApplicant" jdbcType="VARCHAR" />
+    <result column="executor" property="executor" jdbcType="VARCHAR" />
+    <result column="undertake_judge" property="undertakeJudge" jdbcType="VARCHAR" />
+    <result column="undertake_target" property="undertakeTarget" jdbcType="VARCHAR" />
+    <result column="property_clues" property="propertyClues" jdbcType="VARCHAR" />
+    <result column="suspension_date" property="suspensionDate" jdbcType="DATE" />
+    <result column="end_date" property="endDate" jdbcType="DATE" />
+    <result column="court_accept_target" property="courtAcceptTarget" jdbcType="VARCHAR" />
+    <result column="undertake_remarks" property="undertakeRemarks" jdbcType="VARCHAR" />
+    <result column="repaid_num" property="repaidNum" jdbcType="VARCHAR" />
+    <result column="repaid_money" property="repaidMoney" jdbcType="VARCHAR" />
+    <result column="repaid_interest" property="repaidInterest" jdbcType="VARCHAR" />
+    <result column="surplus_num" property="surplusNum" jdbcType="VARCHAR" />
+    <result column="surplus_money" property="surplusMoney" jdbcType="VARCHAR" />
+    <result column="surplus_interest" property="surplusInterest" jdbcType="VARCHAR" />
+    <result column="second_date" property="secondDate" jdbcType="DATE" />
+    <result column="second_target" property="secondTarget" jdbcType="VARCHAR" />
+    <result column="second_remarks" property="secondRemarks" jdbcType="VARCHAR" />
+    <result column="force_remarks" property="forceRemarks" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, register_date, register_id, summary, rule_court, execution_applicant, executor, 
+    undertake_judge, undertake_target, property_clues, suspension_date, end_date, court_accept_target, 
+    undertake_remarks, repaid_num, repaid_money, repaid_interest, surplus_num, surplus_money, 
+    surplus_interest, second_date, second_target, second_remarks, force_remarks, order_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from force
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from force
+    where order_id = #{orderid,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from force
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.ForceDO" >
+    insert into force (id, register_date, register_id, 
+      summary, rule_court, execution_applicant, 
+      executor, undertake_judge, undertake_target, 
+      property_clues, suspension_date, end_date, 
+      court_accept_target, undertake_remarks, repaid_num, 
+      repaid_money, repaid_interest, surplus_num, 
+      surplus_money, surplus_interest, second_date, 
+      second_target, second_remarks, force_remarks, 
+      order_id)
+    values (#{id,jdbcType=BIGINT}, #{registerDate,jdbcType=DATE}, #{registerId,jdbcType=VARCHAR}, 
+      #{summary,jdbcType=VARCHAR}, #{ruleCourt,jdbcType=VARCHAR}, #{executionApplicant,jdbcType=VARCHAR}, 
+      #{executor,jdbcType=VARCHAR}, #{undertakeJudge,jdbcType=VARCHAR}, #{undertakeTarget,jdbcType=VARCHAR}, 
+      #{propertyClues,jdbcType=VARCHAR}, #{suspensionDate,jdbcType=DATE}, #{endDate,jdbcType=DATE}, 
+      #{courtAcceptTarget,jdbcType=VARCHAR}, #{undertakeRemarks,jdbcType=VARCHAR}, #{repaidNum,jdbcType=VARCHAR}, 
+      #{repaidMoney,jdbcType=VARCHAR}, #{repaidInterest,jdbcType=VARCHAR}, #{surplusNum,jdbcType=VARCHAR}, 
+      #{surplusMoney,jdbcType=VARCHAR}, #{surplusInterest,jdbcType=VARCHAR}, #{secondDate,jdbcType=DATE}, 
+      #{secondTarget,jdbcType=VARCHAR}, #{secondRemarks,jdbcType=VARCHAR}, #{forceRemarks,jdbcType=VARCHAR}, 
+      #{orderId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ForceDO" >
+    insert into force
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="registerDate != null" >
+        register_date,
+      </if>
+      <if test="registerId != null" >
+        register_id,
+      </if>
+      <if test="summary != null" >
+        summary,
+      </if>
+      <if test="ruleCourt != null" >
+        rule_court,
+      </if>
+      <if test="executionApplicant != null" >
+        execution_applicant,
+      </if>
+      <if test="executor != null" >
+        executor,
+      </if>
+      <if test="undertakeJudge != null" >
+        undertake_judge,
+      </if>
+      <if test="undertakeTarget != null" >
+        undertake_target,
+      </if>
+      <if test="propertyClues != null" >
+        property_clues,
+      </if>
+      <if test="suspensionDate != null" >
+        suspension_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="courtAcceptTarget != null" >
+        court_accept_target,
+      </if>
+      <if test="undertakeRemarks != null" >
+        undertake_remarks,
+      </if>
+      <if test="repaidNum != null" >
+        repaid_num,
+      </if>
+      <if test="repaidMoney != null" >
+        repaid_money,
+      </if>
+      <if test="repaidInterest != null" >
+        repaid_interest,
+      </if>
+      <if test="surplusNum != null" >
+        surplus_num,
+      </if>
+      <if test="surplusMoney != null" >
+        surplus_money,
+      </if>
+      <if test="surplusInterest != null" >
+        surplus_interest,
+      </if>
+      <if test="secondDate != null" >
+        second_date,
+      </if>
+      <if test="secondTarget != null" >
+        second_target,
+      </if>
+      <if test="secondRemarks != null" >
+        second_remarks,
+      </if>
+      <if test="forceRemarks != null" >
+        force_remarks,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="registerDate != null" >
+        #{registerDate,jdbcType=DATE},
+      </if>
+      <if test="registerId != null" >
+        #{registerId,jdbcType=VARCHAR},
+      </if>
+      <if test="summary != null" >
+        #{summary,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleCourt != null" >
+        #{ruleCourt,jdbcType=VARCHAR},
+      </if>
+      <if test="executionApplicant != null" >
+        #{executionApplicant,jdbcType=VARCHAR},
+      </if>
+      <if test="executor != null" >
+        #{executor,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeJudge != null" >
+        #{undertakeJudge,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeTarget != null" >
+        #{undertakeTarget,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyClues != null" >
+        #{propertyClues,jdbcType=VARCHAR},
+      </if>
+      <if test="suspensionDate != null" >
+        #{suspensionDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=DATE},
+      </if>
+      <if test="courtAcceptTarget != null" >
+        #{courtAcceptTarget,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeRemarks != null" >
+        #{undertakeRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="repaidNum != null" >
+        #{repaidNum,jdbcType=VARCHAR},
+      </if>
+      <if test="repaidMoney != null" >
+        #{repaidMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="repaidInterest != null" >
+        #{repaidInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="surplusNum != null" >
+        #{surplusNum,jdbcType=VARCHAR},
+      </if>
+      <if test="surplusMoney != null" >
+        #{surplusMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="surplusInterest != null" >
+        #{surplusInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="secondDate != null" >
+        #{secondDate,jdbcType=DATE},
+      </if>
+      <if test="secondTarget != null" >
+        #{secondTarget,jdbcType=VARCHAR},
+      </if>
+      <if test="secondRemarks != null" >
+        #{secondRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="forceRemarks != null" >
+        #{forceRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ForceDO" >
+    update force
+    <set >
+      <if test="registerDate != null" >
+        register_date = #{registerDate,jdbcType=DATE},
+      </if>
+      <if test="registerId != null" >
+        register_id = #{registerId,jdbcType=VARCHAR},
+      </if>
+      <if test="summary != null" >
+        summary = #{summary,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleCourt != null" >
+        rule_court = #{ruleCourt,jdbcType=VARCHAR},
+      </if>
+      <if test="executionApplicant != null" >
+        execution_applicant = #{executionApplicant,jdbcType=VARCHAR},
+      </if>
+      <if test="executor != null" >
+        executor = #{executor,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeJudge != null" >
+        undertake_judge = #{undertakeJudge,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeTarget != null" >
+        undertake_target = #{undertakeTarget,jdbcType=VARCHAR},
+      </if>
+      <if test="propertyClues != null" >
+        property_clues = #{propertyClues,jdbcType=VARCHAR},
+      </if>
+      <if test="suspensionDate != null" >
+        suspension_date = #{suspensionDate,jdbcType=DATE},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=DATE},
+      </if>
+      <if test="courtAcceptTarget != null" >
+        court_accept_target = #{courtAcceptTarget,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeRemarks != null" >
+        undertake_remarks = #{undertakeRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="repaidNum != null" >
+        repaid_num = #{repaidNum,jdbcType=VARCHAR},
+      </if>
+      <if test="repaidMoney != null" >
+        repaid_money = #{repaidMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="repaidInterest != null" >
+        repaid_interest = #{repaidInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="surplusNum != null" >
+        surplus_num = #{surplusNum,jdbcType=VARCHAR},
+      </if>
+      <if test="surplusMoney != null" >
+        surplus_money = #{surplusMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="surplusInterest != null" >
+        surplus_interest = #{surplusInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="secondDate != null" >
+        second_date = #{secondDate,jdbcType=DATE},
+      </if>
+      <if test="secondTarget != null" >
+        second_target = #{secondTarget,jdbcType=VARCHAR},
+      </if>
+      <if test="secondRemarks != null" >
+        second_remarks = #{secondRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="forceRemarks != null" >
+        force_remarks = #{forceRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ForceDO" >
+    update force
+    set register_date = #{registerDate,jdbcType=DATE},
+      register_id = #{registerId,jdbcType=VARCHAR},
+      summary = #{summary,jdbcType=VARCHAR},
+      rule_court = #{ruleCourt,jdbcType=VARCHAR},
+      execution_applicant = #{executionApplicant,jdbcType=VARCHAR},
+      executor = #{executor,jdbcType=VARCHAR},
+      undertake_judge = #{undertakeJudge,jdbcType=VARCHAR},
+      undertake_target = #{undertakeTarget,jdbcType=VARCHAR},
+      property_clues = #{propertyClues,jdbcType=VARCHAR},
+      suspension_date = #{suspensionDate,jdbcType=DATE},
+      end_date = #{endDate,jdbcType=DATE},
+      court_accept_target = #{courtAcceptTarget,jdbcType=VARCHAR},
+      undertake_remarks = #{undertakeRemarks,jdbcType=VARCHAR},
+      repaid_num = #{repaidNum,jdbcType=VARCHAR},
+      repaid_money = #{repaidMoney,jdbcType=VARCHAR},
+      repaid_interest = #{repaidInterest,jdbcType=VARCHAR},
+      surplus_num = #{surplusNum,jdbcType=VARCHAR},
+      surplus_money = #{surplusMoney,jdbcType=VARCHAR},
+      surplus_interest = #{surplusInterest,jdbcType=VARCHAR},
+      second_date = #{secondDate,jdbcType=DATE},
+      second_target = #{secondTarget,jdbcType=VARCHAR},
+      second_remarks = #{secondRemarks,jdbcType=VARCHAR},
+      force_remarks = #{forceRemarks,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
