@@ -3,16 +3,18 @@ package com.yunche.loan.service.impl;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BankUrgeRecordDO;
+import com.yunche.loan.domain.entity.CollectionNewInfoDO;
 import com.yunche.loan.domain.entity.CollectionRecordDO;
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
 import com.yunche.loan.domain.param.ManualDistributionParam;
+import com.yunche.loan.domain.param.RecordCollectionParam;
+import com.yunche.loan.domain.query.LawWorkQuery;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.BankUrgeRecordDOMapper;
-import com.yunche.loan.mapper.CollectionRecordDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.CollectionService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,12 @@ public class CollectionServiceImpl implements CollectionService {
     @Autowired
     private LoanQueryService loanQueryService;
 
+    @Autowired
+    private CollectionNewInfoDOMapper collectionNewInfoDOMapper;
+
+    @Autowired
+    private LitigationDOMapper litigationDOMapper;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -60,6 +68,30 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
+    public VisitDoorVO isCollectionDetail(Long orderId) {
+
+        LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
+        CollectionRecordDO collectionRecordDO = collectionRecordDOMapper.selectNewest(orderId);
+        int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+        VisitDoorVO visitDoorVO = new VisitDoorVO();
+        visitDoorVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));
+        visitDoorVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
+        visitDoorVO.setCollections(loanQueryDOMapper.selectUniversalCollectionRecord(orderId));
+        visitDoorVO.setRepayments(loanQueryDOMapper.selectUniversalLoanRepaymentPlan(orderId));
+        visitDoorVO.setCustomers(customers);
+        visitDoorVO.setResult(lawWorkQuery);
+        visitDoorVO.setCollectionRecordDO(collectionRecordDO);
+        visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
+        return visitDoorVO;
+    }
+
+    @Override
     public UniversalCollectionRecordDetail recordDetail(Long collectionId) {
         return loanQueryDOMapper.selectUniversalCollectionRecordDetail(collectionId);
     }
@@ -74,6 +106,23 @@ public class CollectionServiceImpl implements CollectionService {
             CollectionRecordDO V = BeanPlasticityUtills.copy(CollectionRecordDO.class, param);
             V.setId(Long.parseLong(param.getId()));
             collectionRecordDOMapper.updateByPrimaryKeySelective(V);
+        }
+    }
+
+    @Override
+    public void recordCollection(RecordCollectionParam recordCollectionParam) {
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(recordCollectionParam.getId());
+        CollectionNewInfoDO collectionNewInfoDO1 = new CollectionNewInfoDO();
+        if(collectionNewInfoDO !=null){
+            BeanUtils.copyProperties(recordCollectionParam,collectionNewInfoDO1);
+            collectionNewInfoDO1.setDispatchedDate(new Date());
+            collectionNewInfoDO1.setDispatchedStaff(SessionUtils.getLoginUser().getName());
+            collectionNewInfoDOMapper.updateByPrimaryKeySelective(collectionNewInfoDO1);
+        }else{
+            BeanUtils.copyProperties(recordCollectionParam,collectionNewInfoDO1);
+            collectionNewInfoDO1.setDispatchedDate(new Date());
+            collectionNewInfoDO1.setDispatchedStaff(SessionUtils.getLoginUser().getName());
+            collectionNewInfoDOMapper.insertSelective(collectionNewInfoDO1);
         }
     }
 
@@ -139,4 +188,6 @@ public class CollectionServiceImpl implements CollectionService {
     public boolean checkCollectionUserRole() {
         return loanQueryDOMapper.checkCollectionUserRole(SessionUtils.getLoginUser().getId());
     }
+
+
 }

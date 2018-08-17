@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ZhonganOverdueDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ZhonganOverdueDO" >
+    <result column="id" property="id" jdbcType="BIGINT" />
+    <result column="overdue_counts" property="overdueCounts" jdbcType="VARCHAR" />
+    <result column="overdue_money" property="overdueMoney" jdbcType="VARCHAR" />
+    <result column="platform_code" property="platformCode" jdbcType="VARCHAR" />
+    <result column="overdue_time" property="overdueTime" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, overdueCounts,overdueMoney,platformCode,overdueTime
+  </sql>
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from zhongan_overdue
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.ZhonganOverdueDO" >
+    insert into zhongan_overdue (id, overdue_counts, overdue_money, 
+      platform_code, overdue_time)
+    values (#{id,jdbcType=BIGINT}, #{overdueCounts,jdbcType=VARCHAR}, #{overdueMoney,jdbcType=VARCHAR}, 
+      #{platformCode,jdbcType=VARCHAR}, #{overdueTime,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ZhonganOverdueDO" >
+    insert into zhongan_overdue
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="overdueCounts != null" >
+        overdue_counts,
+      </if>
+      <if test="overdueMoney != null" >
+        overdue_money,
+      </if>
+      <if test="platformCode != null" >
+        platform_code,
+      </if>
+      <if test="overdueTime != null" >
+        overdue_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="overdueCounts != null" >
+        #{overdueCounts,jdbcType=VARCHAR},
+      </if>
+      <if test="overdueMoney != null" >
+        #{overdueMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="platformCode != null" >
+        #{platformCode,jdbcType=VARCHAR},
+      </if>
+      <if test="overdueTime != null" >
+        #{overdueTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

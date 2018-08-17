@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.query.ZhongAnDetailQuery;
 import com.yunche.loan.domain.vo.AppBusinessInfoVO;
 import com.yunche.loan.domain.vo.AppCustomerInfoVO;
 import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
@@ -63,4 +64,8 @@ public interface AppLoanOrderService {
     ResultBean<List<AppInsuranceInfoVO>> insuranceInfo(Long orderId);
 
     ResultBean<AppOrderProcessVO> orderProcess(Long orderId);
+
+    void zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam);
+
+    ZhongAnDetailQuery zhongAnDetail(Long orderId,String customerName);
 }

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ZhonganInfoDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ZhonganInfoDO" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="age" property="age" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="VARCHAR" />
+    <result column="mobile_city" property="mobileCity" jdbcType="VARCHAR" />
+    <result column="mobile_comm_duration" property="mobileCommDuration" jdbcType="VARCHAR" />
+    <result column="mobile_comm_sts" property="mobileCommSts" jdbcType="VARCHAR" />
+    <result column="phoneid_name_check" property="phoneidNameCheck" jdbcType="VARCHAR" />
+    <result column="high_risk_behavior" property="highRiskBehavior" jdbcType="VARCHAR" />
+    <result column="rsn_high_risk" property="rsnHighRisk" jdbcType="VARCHAR" />
+    <result column="rsn_long_overdue" property="rsnLongOverdue" jdbcType="VARCHAR" />
+    <result column="rsn_multi_loan" property="rsnMultiLoan" jdbcType="VARCHAR" />
+    <result column="rsn_policy_restrict" property="rsnPolicyRestrict" jdbcType="VARCHAR" />
+    <result column="rsn_risk_rec" property="rsnRiskRec" jdbcType="VARCHAR" />
+    <result column="rsp_lawsuit_alllist" property="rspLawsuitAlllist" jdbcType="VARCHAR" />
+    <result column="rsp_speclist_inblacklist" property="rspSpeclistInblacklist" jdbcType="VARCHAR" />
+    <result column="rsp_speclist_maxdftlevel" property="rspSpeclistMaxdftlevel" jdbcType="VARCHAR" />
+    <result column="rsp_watchlist_detail" property="rspWatchlistDetail" jdbcType="VARCHAR" />
+    <result column="high_risk_record" property="highRiskRecord" jdbcType="VARCHAR" />
+    <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_id, age, gender, mobile_city, mobile_comm_duration, mobile_comm_sts, phoneid_name_check, 
+    high_risk_behavior, rsn_high_risk, rsn_long_overdue, rsn_multi_loan, rsn_policy_restrict, 
+    rsn_risk_rec, rsp_lawsuit_alllist, rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
+    rsp_watchlist_detail, high_risk_record, customer_name
+  </sql>
+  <select id="selectByOrderId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from zhongan_info
+    where orderid = #{orderid,jdbcType=BIGINT} and customer_name = #{customername,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from zhongan_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from zhongan_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" useGeneratedKeys="true" keyProperty="id">
+    insert into zhongan_info (id, order_id, age, 
+      gender, mobile_city, mobile_comm_duration, 
+      mobile_comm_sts, phoneid_name_check, high_risk_behavior, 
+      rsn_high_risk, rsn_long_overdue, rsn_multi_loan, 
+      rsn_policy_restrict, rsn_risk_rec, rsp_lawsuit_alllist, 
+      rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
+      rsp_watchlist_detail, high_risk_record, customer_name
+      )
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{age,jdbcType=VARCHAR}, 
+      #{gender,jdbcType=VARCHAR}, #{mobileCity,jdbcType=VARCHAR}, #{mobileCommDuration,jdbcType=VARCHAR}, 
+      #{mobileCommSts,jdbcType=VARCHAR}, #{phoneidNameCheck,jdbcType=VARCHAR}, #{highRiskBehavior,jdbcType=VARCHAR}, 
+      #{rsnHighRisk,jdbcType=VARCHAR}, #{rsnLongOverdue,jdbcType=VARCHAR}, #{rsnMultiLoan,jdbcType=VARCHAR}, 
+      #{rsnPolicyRestrict,jdbcType=VARCHAR}, #{rsnRiskRec,jdbcType=VARCHAR}, #{rspLawsuitAlllist,jdbcType=VARCHAR}, 
+      #{rspSpeclistInblacklist,jdbcType=VARCHAR}, #{rspSpeclistMaxdftlevel,jdbcType=VARCHAR}, 
+      #{rspWatchlistDetail,jdbcType=VARCHAR}, #{highRiskRecord,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" useGeneratedKeys="true" keyProperty="id">
+    insert into zhongan_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="age != null" >
+        age,
+      </if>
+      <if test="gender != null" >
+        gender,
+      </if>
+      <if test="mobileCity != null" >
+        mobile_city,
+      </if>
+      <if test="mobileCommDuration != null" >
+        mobile_comm_duration,
+      </if>
+      <if test="mobileCommSts != null" >
+        mobile_comm_sts,
+      </if>
+      <if test="phoneidNameCheck != null" >
+        phoneid_name_check,
+      </if>
+      <if test="highRiskBehavior != null" >
+        high_risk_behavior,
+      </if>
+      <if test="rsnHighRisk != null" >
+        rsn_high_risk,
+      </if>
+      <if test="rsnLongOverdue != null" >
+        rsn_long_overdue,
+      </if>
+      <if test="rsnMultiLoan != null" >
+        rsn_multi_loan,
+      </if>
+      <if test="rsnPolicyRestrict != null" >
+        rsn_policy_restrict,
+      </if>
+      <if test="rsnRiskRec != null" >
+        rsn_risk_rec,
+      </if>
+      <if test="rspLawsuitAlllist != null" >
+        rsp_lawsuit_alllist,
+      </if>
+      <if test="rspSpeclistInblacklist != null" >
+        rsp_speclist_inblacklist,
+      </if>
+      <if test="rspSpeclistMaxdftlevel != null" >
+        rsp_speclist_maxdftlevel,
+      </if>
+      <if test="rspWatchlistDetail != null" >
+        rsp_watchlist_detail,
+      </if>
+      <if test="highRiskRecord != null" >
+        high_risk_record,
+      </if>
+      <if test="customerName != null" >
+        customer_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileCity != null" >
+        #{mobileCity,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileCommDuration != null" >
+        #{mobileCommDuration,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileCommSts != null" >
+        #{mobileCommSts,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneidNameCheck != null" >
+        #{phoneidNameCheck,jdbcType=VARCHAR},
+      </if>
+      <if test="highRiskBehavior != null" >
+        #{highRiskBehavior,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnHighRisk != null" >
+        #{rsnHighRisk,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnLongOverdue != null" >
+        #{rsnLongOverdue,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnMultiLoan != null" >
+        #{rsnMultiLoan,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnPolicyRestrict != null" >
+        #{rsnPolicyRestrict,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnRiskRec != null" >
+        #{rsnRiskRec,jdbcType=VARCHAR},
+      </if>
+      <if test="rspLawsuitAlllist != null" >
+        #{rspLawsuitAlllist,jdbcType=VARCHAR},
+      </if>
+      <if test="rspSpeclistInblacklist != null" >
+        #{rspSpeclistInblacklist,jdbcType=VARCHAR},
+      </if>
+      <if test="rspSpeclistMaxdftlevel != null" >
+        #{rspSpeclistMaxdftlevel,jdbcType=VARCHAR},
+      </if>
+      <if test="rspWatchlistDetail != null" >
+        #{rspWatchlistDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="highRiskRecord != null" >
+        #{highRiskRecord,jdbcType=VARCHAR},
+      </if>
+      <if test="customerName != null" >
+        #{customerName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" >
+    update zhongan_info
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        gender = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileCity != null" >
+        mobile_city = #{mobileCity,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileCommDuration != null" >
+        mobile_comm_duration = #{mobileCommDuration,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileCommSts != null" >
+        mobile_comm_sts = #{mobileCommSts,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneidNameCheck != null" >
+        phoneid_name_check = #{phoneidNameCheck,jdbcType=VARCHAR},
+      </if>
+      <if test="highRiskBehavior != null" >
+        high_risk_behavior = #{highRiskBehavior,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnHighRisk != null" >
+        rsn_high_risk = #{rsnHighRisk,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnLongOverdue != null" >
+        rsn_long_overdue = #{rsnLongOverdue,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnMultiLoan != null" >
+        rsn_multi_loan = #{rsnMultiLoan,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnPolicyRestrict != null" >
+        rsn_policy_restrict = #{rsnPolicyRestrict,jdbcType=VARCHAR},
+      </if>
+      <if test="rsnRiskRec != null" >
+        rsn_risk_rec = #{rsnRiskRec,jdbcType=VARCHAR},
+      </if>
+      <if test="rspLawsuitAlllist != null" >
+        rsp_lawsuit_alllist = #{rspLawsuitAlllist,jdbcType=VARCHAR},
+      </if>
+      <if test="rspSpeclistInblacklist != null" >
+        rsp_speclist_inblacklist = #{rspSpeclistInblacklist,jdbcType=VARCHAR},
+      </if>
+      <if test="rspSpeclistMaxdftlevel != null" >
+        rsp_speclist_maxdftlevel = #{rspSpeclistMaxdftlevel,jdbcType=VARCHAR},
+      </if>
+      <if test="rspWatchlistDetail != null" >
+        rsp_watchlist_detail = #{rspWatchlistDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="highRiskRecord != null" >
+        high_risk_record = #{highRiskRecord,jdbcType=VARCHAR},
+      </if>
+      <if test="customerName != null" >
+        customer_name = #{customerName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" >
+    update zhongan_info
+    set order_id = #{orderId,jdbcType=BIGINT},
+      age = #{age,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=VARCHAR},
+      mobile_city = #{mobileCity,jdbcType=VARCHAR},
+      mobile_comm_duration = #{mobileCommDuration,jdbcType=VARCHAR},
+      mobile_comm_sts = #{mobileCommSts,jdbcType=VARCHAR},
+      phoneid_name_check = #{phoneidNameCheck,jdbcType=VARCHAR},
+      high_risk_behavior = #{highRiskBehavior,jdbcType=VARCHAR},
+      rsn_high_risk = #{rsnHighRisk,jdbcType=VARCHAR},
+      rsn_long_overdue = #{rsnLongOverdue,jdbcType=VARCHAR},
+      rsn_multi_loan = #{rsnMultiLoan,jdbcType=VARCHAR},
+      rsn_policy_restrict = #{rsnPolicyRestrict,jdbcType=VARCHAR},
+      rsn_risk_rec = #{rsnRiskRec,jdbcType=VARCHAR},
+      rsp_lawsuit_alllist = #{rspLawsuitAlllist,jdbcType=VARCHAR},
+      rsp_speclist_inblacklist = #{rspSpeclistInblacklist,jdbcType=VARCHAR},
+      rsp_speclist_maxdftlevel = #{rspSpeclistMaxdftlevel,jdbcType=VARCHAR},
+      rsp_watchlist_detail = #{rspWatchlistDetail,jdbcType=VARCHAR},
+      high_risk_record = #{highRiskRecord,jdbcType=VARCHAR},
+      customer_name = #{customerName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

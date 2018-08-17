@@ -4,6 +4,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
 import com.yunche.loan.domain.param.ManualDistributionBaseParam;
 import com.yunche.loan.domain.param.ManualDistributionParam;
+import com.yunche.loan.domain.param.RecordCollectionParam;
 import com.yunche.loan.service.CollectionService;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
@@ -60,5 +61,23 @@ public class CollectionController {
     @GetMapping(value = "/checkCollectionUserRole")
     public ResultBean checkCollectionUserRole() {
         return ResultBean.ofSuccess(collectionService.checkCollectionUserRole());
+    }
+
+    /**
+     * 录入上门法务催收
+     * @param recordCollectionParam
+     * @return
+     */
+    @PostMapping(value = "/recordcollection")
+    public ResultBean recordCollection(@RequestBody @Validated RecordCollectionParam recordCollectionParam){
+        collectionService.recordCollection(recordCollectionParam);
+        return ResultBean.ofSuccess(null,"催收录入成功");
+    }
+    /**
+     * 是否上门法务detail
+     */
+    @GetMapping(value = "/iscollectiondetail")
+    public ResultBean isCollectionDetail(@RequestParam String order_id) {
+        return ResultBean.ofSuccess(collectionService.isCollectionDetail(Long.valueOf(order_id)));
     }
 }

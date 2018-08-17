@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.RspCreditDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.RspCreditDO" >
+    <result column="id" property="id" jdbcType="BIGINT" />
+    <result column="platform_code" property="platformCode" jdbcType="VARCHAR" />
+    <result column="application_result" property="applicationResult" jdbcType="VARCHAR" />
+    <result column="application_time" property="applicationTime" jdbcType="VARCHAR" />
+    <result column="platform" property="platform" jdbcType="VARCHAR" />
+    <result column="application_money" property="applicationMoney" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+      id,platform_code,application_result,application_time,platform,application_money
+    from rsp_credit
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.RspCreditDO" >
+    insert into rsp_credit (id, platform_code, application_result, 
+      application_time, platform, application_money
+      )
+    values (#{id,jdbcType=BIGINT}, #{platformCode,jdbcType=VARCHAR}, #{applicationResult,jdbcType=VARCHAR}, 
+      #{applicationTime,jdbcType=VARCHAR}, #{platform,jdbcType=VARCHAR}, #{applicationMoney,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RspCreditDO" >
+    insert into rsp_credit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="platformCode != null" >
+        platform_code,
+      </if>
+      <if test="applicationResult != null" >
+        application_result,
+      </if>
+      <if test="applicationTime != null" >
+        application_time,
+      </if>
+      <if test="platform != null" >
+        platform,
+      </if>
+      <if test="applicationMoney != null" >
+        application_money,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="platformCode != null" >
+        #{platformCode,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationResult != null" >
+        #{applicationResult,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationTime != null" >
+        #{applicationTime,jdbcType=VARCHAR},
+      </if>
+      <if test="platform != null" >
+        #{platform,jdbcType=VARCHAR},
+      </if>
+      <if test="applicationMoney != null" >
+        #{applicationMoney,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

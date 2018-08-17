@@ -23,5 +23,7 @@ public interface AuxiliaryService {
     public List<GpsJimiInfoVO> queryJimi(String partnerName);
 
     public List<GpsJimiInfoVO> queryOther(String partnerName);
+
+    String getGpsAddress(String gpsCode);
 }
 

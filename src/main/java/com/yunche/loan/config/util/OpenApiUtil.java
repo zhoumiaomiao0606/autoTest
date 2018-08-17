@@ -241,6 +241,39 @@ public class OpenApiUtil {
 		}
 		return result;
 	}
+	//获取gps地址
+	public static String getGpsAddress(String accToken,String imei)throws Exception {
+		Map<String, String> paramMap = new HashMap<String, String>();
+		List<Map<String,Object>> result1 = new ArrayList<Map<String,Object>>();
+		paramMap = getCommonMap();
+		String result ="";
+		paramMap.put("method", "jimi.device.location.get");
+		paramMap.put("access_token", accToken);
+		paramMap.put("imeis", imei);
+
+		getSign(paramMap);
+		String returnStr = sendPost(paramMap);
+		if(!StringUtil.isEmpty(returnStr)){
+			getTokenVO = formJson2Obj(returnStr,GetTokenVO.class);
+			if("0".equals(getTokenVO.getCode())){
+				if(getTokenVO.getResult() instanceof Map){
+					result1.add((Map<String,Object>)getTokenVO.getResult());
+				}else if (getTokenVO.getResult() instanceof List){
+					result1 = (List<Map<String,Object>>)getTokenVO.getResult();
+				}
+				for(Map<String,Object> map:result1){
+					result+="经度:"+map.get("lat")+",纬度:"+map.get("lng");
+				}
+			}else if("1004".equals(getTokenVO.getCode())){
+				result = "1004";
+			}else{
+				throw new Exception("更新GPS地址异常："+getTokenVO.getCode()+" "+getTokenVO.getMessage());
+			}
+		}else{
+			throw new Exception("获取GPS地址时通讯异常");
+		}
+		return result;
+	}
 	//获取子账户
 	public static List<Map<String,Object>> getChildTarget(String accToken) throws Exception {
 		List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
