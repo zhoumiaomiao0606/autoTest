@@ -8,6 +8,7 @@ import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.CreateExpensesDetailParam;
+import com.yunche.loan.domain.param.LegworkReimbursementParam;
 import com.yunche.loan.domain.param.SubimitVisitDoorParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
@@ -58,6 +59,17 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
                 List<SubimitVisitDoorVO> list = taskSchedulingDOMapper.subimitVisitDoorList(param);
                 PageInfo<TaskListVO> pageInfo = new PageInfo(list);
                 return pageInfo;
+    }
+
+    @Override
+    public PageInfo list(LegworkReimbursementParam param) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        param.setLoginUserId(loginUserId);
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+        PageHelper.startPage(param.getPageIndex(),param.getPageSize(), true);
+        List list = taskSchedulingDOMapper.legworkReimbursementList(param);
+        PageInfo<TaskListVO> pageInfo = new PageInfo(list);
+        return pageInfo;
     }
 
 
@@ -143,6 +155,7 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
             throw new BizException("id is null");
         }
         LegworkReimbursementDO legworkReimbursementDO = BeanPlasticityUtills.copy(LegworkReimbursementDO.class,param);
+        legworkReimbursementDO.setStatus(new Byte("2"));
         legworkReimbursementDOMapper.updateByPrimaryKeySelective(legworkReimbursementDO);
 
         if(CollectionUtil.isNotEmpty(param.getFiles())){

@@ -5,6 +5,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BankUrgeRecordDO;
 import com.yunche.loan.domain.entity.CollectionNewInfoDO;
 import com.yunche.loan.domain.entity.CollectionRecordDO;
+import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
 import com.yunche.loan.domain.param.ManualDistributionParam;
 import com.yunche.loan.domain.param.RecordCollectionParam;
@@ -47,9 +48,13 @@ public class CollectionServiceImpl implements CollectionService {
     @Autowired
     private LitigationDOMapper litigationDOMapper;
 
+    @Autowired
+    private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
+        List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
@@ -64,6 +69,7 @@ public class CollectionServiceImpl implements CollectionService {
         recombinationVO.setCollections(loanQueryDOMapper.selectUniversalCollectionRecord(orderId));
         recombinationVO.setRepayments(loanQueryDOMapper.selectUniversalLoanRepaymentPlan(orderId));
         recombinationVO.setCustomers(customers);
+        recombinationVO.setLoanApplyCompensation(list);
         return recombinationVO;
     }
 
@@ -72,9 +78,9 @@ public class CollectionServiceImpl implements CollectionService {
 
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
         CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
+        List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
         int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
-        CollectionNewInfoDO collectionNewInfoDO = new CollectionNewInfoDO();
-        collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
         if(collectionNewInfoDO ==  null){
             collectionNewInfoDO = new CollectionNewInfoDO();
         }
@@ -93,6 +99,7 @@ public class CollectionServiceImpl implements CollectionService {
         visitDoorVO.setCollectionRecordVO(collectionRecordVO);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
         visitDoorVO.setCollectionNum(num);
+        visitDoorVO.setLoanApplyCompensation(list);
 
         return visitDoorVO;
     }

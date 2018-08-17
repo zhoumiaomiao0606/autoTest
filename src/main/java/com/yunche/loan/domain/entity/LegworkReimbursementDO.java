@@ -25,4 +25,8 @@ public class LegworkReimbursementDO {
     private Date gmtCreateTime;
 
     private Date gmtUpdateTime;
+
+    private Byte status;
+
+
 }
