@@ -5,16 +5,28 @@ import lombok.Data;
 @Data
 public class UniversalCostDetailsVO {
 
+    //服务费
     private String cost_service_fee;
+    //上牌押金
     private String cost_apply_license_plate_deposit_fee;
+    //履约金
     private String cost_performance_fee;
+    //安装gps费用
     private String cost_install_gps_fee;
+    //风险费用
     private String cost_risk_fee;
+    //公正评估费
     private String cost_fair_assess_fee;
+    //上省外拍照费
     private String cost_apply_license_plate_out_province_fee;
+    //基础保证金
     private String cost_based_margin_fee;
+    //额外费用
     private String cost_extra_fee;
+    //其他费用
     private String cost_other_fee;
+
+    //1.打款内扣  2.返利内扣  3.实收
     private String cost_service_fee_type;
     private String cost_apply_license_plate_deposit_fee_type;
     private String cost_performance_fee_type;

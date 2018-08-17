@@ -349,7 +349,12 @@
 
 -->
 
-        <table tableName="legwork_reimbursement_file" domainObjectName="LegworkReimbursementFileDO"
+       <!-- <table tableName="loan_financial_plan" domainObjectName="LoanFinancialPlanDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>-->
+
+        <table tableName="vehicle_outbound" domainObjectName="VehicleOutboundDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

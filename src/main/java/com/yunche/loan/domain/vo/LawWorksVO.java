@@ -26,4 +26,6 @@ public class LawWorksVO<T> {
     private FinancialSchemeVO financial;
 
     private LitigationStateDO litigationStateDO;
+
+    private List<LoanApplyCompensationDO> loanApplyCompensation = Lists.newArrayList();
 }

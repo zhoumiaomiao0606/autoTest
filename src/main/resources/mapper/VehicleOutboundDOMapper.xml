@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.VehicleOutboundDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VehicleOutboundDO">
+    <id column="orderid" jdbcType="BIGINT" property="orderid" />
+    <result column="reason" jdbcType="VARCHAR" property="reason" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="specific_address" jdbcType="VARCHAR" property="specificAddress" />
+    <result column="customer_condition" jdbcType="VARCHAR" property="customerCondition" />
+    <result column="progress" jdbcType="VARCHAR" property="progress" />
+    <result column="result" jdbcType="TINYINT" property="result" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="balance" jdbcType="VARCHAR" property="balance" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    orderid, reason, address, specific_address, customer_condition, progress, result, 
+    remarks, balance
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vehicle_outbound
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from vehicle_outbound
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDO">
+    insert into vehicle_outbound (orderid, reason, address, 
+      specific_address, customer_condition, progress, 
+      result, remarks, balance
+      )
+    values (#{orderid,jdbcType=BIGINT}, #{reason,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{specificAddress,jdbcType=VARCHAR}, #{customerCondition,jdbcType=VARCHAR}, #{progress,jdbcType=VARCHAR}, 
+      #{result,jdbcType=TINYINT}, #{remarks,jdbcType=VARCHAR}, #{balance,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDO">
+    insert into vehicle_outbound
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderid != null">
+        orderid,
+      </if>
+      <if test="reason != null">
+        reason,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="specificAddress != null">
+        specific_address,
+      </if>
+      <if test="customerCondition != null">
+        customer_condition,
+      </if>
+      <if test="progress != null">
+        progress,
+      </if>
+      <if test="result != null">
+        result,
+      </if>
+      <if test="remarks != null">
+        remarks,
+      </if>
+      <if test="balance != null">
+        balance,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderid != null">
+        #{orderid,jdbcType=BIGINT},
+      </if>
+      <if test="reason != null">
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="specificAddress != null">
+        #{specificAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="customerCondition != null">
+        #{customerCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="progress != null">
+        #{progress,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null">
+        #{result,jdbcType=TINYINT},
+      </if>
+      <if test="remarks != null">
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null">
+        #{balance,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDO">
+    update vehicle_outbound
+    <set>
+      <if test="reason != null">
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="specificAddress != null">
+        specific_address = #{specificAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="customerCondition != null">
+        customer_condition = #{customerCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="progress != null">
+        progress = #{progress,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null">
+        result = #{result,jdbcType=TINYINT},
+      </if>
+      <if test="remarks != null">
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null">
+        balance = #{balance,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDO">
+    update vehicle_outbound
+    set reason = #{reason,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      specific_address = #{specificAddress,jdbcType=VARCHAR},
+      customer_condition = #{customerCondition,jdbcType=VARCHAR},
+      progress = #{progress,jdbcType=VARCHAR},
+      result = #{result,jdbcType=TINYINT},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      balance = #{balance,jdbcType=VARCHAR}
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </update>
+</mapper>

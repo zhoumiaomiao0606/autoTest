@@ -12,16 +12,23 @@
     <result column="gmt_user_name" property="gmtUserName" jdbcType="VARCHAR" />
     <result column="gmt_create_time" property="gmtCreateTime" jdbcType="TIMESTAMP" />
     <result column="gmt_update_time" property="gmtUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, trans_fee, hotel_fee, eat_fee, busi_fee, other_fee, gmt_user, gmt_user_name, 
-    gmt_create_time, gmt_update_time
+    gmt_create_time, gmt_update_time, status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
     from legwork_reimbursement
     where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="list" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from legwork_reimbursement
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from legwork_reimbursement
@@ -64,6 +71,9 @@
       <if test="gmtUpdateTime != null" >
         gmt_update_time,
       </if>
+      <if test="status != null" >
+        status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -96,6 +106,9 @@
       <if test="gmtUpdateTime != null" >
         #{gmtUpdateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO" >
@@ -127,6 +140,9 @@
       </if>
       <if test="gmtUpdateTime != null" >
         gmt_update_time = #{gmtUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

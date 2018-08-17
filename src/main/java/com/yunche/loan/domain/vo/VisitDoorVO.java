@@ -1,10 +1,7 @@
 package com.yunche.loan.domain.vo;
 
 import com.google.common.collect.Lists;
-import com.yunche.loan.domain.entity.CollectionNewInfoDO;
-import com.yunche.loan.domain.entity.CollectionRecordDO;
-import com.yunche.loan.domain.entity.LitigationStateDO;
-import com.yunche.loan.domain.entity.VisitDoorDO;
+import com.yunche.loan.domain.entity.*;
 import lombok.Data;
 
 import java.util.List;
@@ -32,4 +29,6 @@ public class VisitDoorVO<T> {
     private List<UniversalCollectionRecord> collections = Lists.newArrayList();
 
     private List<UniversalLoanRepaymentPlan> repayments = Lists.newArrayList();
+
+    private List<LoanApplyCompensationDO> loanApplyCompensation = Lists.newArrayList();
 }

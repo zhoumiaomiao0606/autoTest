@@ -4,8 +4,10 @@ package com.yunche.loan.web.controller;
 import com.github.pagehelper.PageInfo;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CreateExpensesDetailParam;
+import com.yunche.loan.domain.param.LegworkReimbursementParam;
 import com.yunche.loan.domain.param.SubimitVisitDoorParam;
 import com.yunche.loan.domain.vo.LegworkReimbursementUpdateParam;
+import com.yunche.loan.domain.vo.LegworkReimbursementVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.SubimitVisitDoorVO;
 import com.yunche.loan.service.LegworkReimbursementService;
@@ -52,7 +54,7 @@ public class LegworkReimbursementController {
     /**
      * 拖车关联订单详情
      */
-    @PostMapping(value = "/expensesUpdate")
+    @PostMapping(value = "/ ")
     public ResultBean<Void> expensesUpdate(@RequestBody @Validated @Valid LegworkReimbursementUpdateParam param) {
         legworkReimbursementService.expensesUpdate(param);
         return ResultBean.ofSuccess(null,"编辑成功");
@@ -60,4 +62,13 @@ public class LegworkReimbursementController {
 
 
 
+    /**
+     * 拖车关联订单详情
+     */
+    @PostMapping(value = "/legworkReimbursementList")
+    public ResultBean<List<LegworkReimbursementVO>> list(@RequestBody @Validated @Valid LegworkReimbursementParam param) {
+        PageInfo pageInfo = legworkReimbursementService.list(param);
+        return ResultBean.ofSuccess(pageInfo == null ? null : pageInfo.getList(), new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+
+    }
 }

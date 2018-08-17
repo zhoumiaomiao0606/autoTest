@@ -1,10 +1,12 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.domain.param.LegworkReimbursementParam;
 import com.yunche.loan.domain.param.SubimitVisitDoorParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 
+import com.yunche.loan.domain.vo.LegworkReimbursementVO;
 import com.yunche.loan.domain.vo.ScheduleTaskVO;
 import com.yunche.loan.domain.vo.SubimitVisitDoorVO;
 import com.yunche.loan.domain.vo.TaskListVO;
@@ -15,6 +17,8 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 public interface TaskSchedulingDOMapper {
+
+    List<LegworkReimbursementVO> legworkReimbursementList(LegworkReimbursementParam param);
 
     List<Long> selectBankInterfaceSerialOrderidList(@Validated TaskListQuery taskListQuery);
 

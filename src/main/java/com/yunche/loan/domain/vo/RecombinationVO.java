@@ -99,6 +99,10 @@ public class RecombinationVO<T> {
     private List<UniversalInfoSupplementVO> supplement = Lists.newArrayList();
 
 
+
     private  List<UniversalLegworkReimbursement> legworkReimbursementFiles;
+
+    private List<LoanApplyCompensationDO> loanApplyCompensation = Lists.newArrayList();
+
 
 }

@@ -109,7 +109,8 @@ public class TaskSchedulingController {
      */
     @Limiter(route = "/api/v1/taskscheduling/queryTaskList", limit = 1)
     @PostMapping(value = "/queryTaskList")
-    public ResultBean<List<TaskListVO>> scheduleTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
+    public ResultBean<List<TaskListVO>> scheduleTaskList(@RequestBody @Validated TaskListQuery taskListQuery)
+    {
         return taskSchedulingService.queryTaskList(taskListQuery);
     }
 

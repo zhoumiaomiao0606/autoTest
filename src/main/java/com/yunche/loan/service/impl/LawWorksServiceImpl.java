@@ -45,8 +45,12 @@ public class LawWorksServiceImpl implements LawWorksService {
     @Resource
     private LitigationStateDOMapper litigationStateDOMapper;
 
+    @Resource
+    private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
+
     @Override
     public LawWorksVO detail(Long orderid) {
+        List<LoanApplyCompensationDO> list1 = loanApplyCompensationDOMapper.selectByOrderId(orderid);
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderid);
 
         LawWorksVO lawWorksVO = new LawWorksVO();
@@ -60,7 +64,7 @@ public class LawWorksServiceImpl implements LawWorksService {
         lawWorksVO.setFileInfoDO(fileInfoDO);
         lawWorksVO.setForceDO(forceDO);
         lawWorksVO.setList(list);
-
+        lawWorksVO.setLoanApplyCompensation(list1);
 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderid);
         for (UniversalCustomerVO universalCustomerVO : customers) {

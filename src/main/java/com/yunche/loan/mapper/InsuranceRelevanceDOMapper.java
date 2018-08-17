@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
+import com.yunche.loan.domain.vo.InsuranceInfoToTallyOrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +30,14 @@ public interface InsuranceRelevanceDOMapper {
     int deleteByInsuranceInfoIdAndType(@Param("insuranceInfoId") Long insuranceInfoId, @Param("insuranceType") Byte insuranceType);
 
     List<InsuranceRelevanceDO> selectCompanyByNum(String insurance_number);
+
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:  根据订单id查询保单相关信息
+    */
+    List<InsuranceRelevanceDO> selectInsuranceInfoByOrderId(Long orderId);
 }

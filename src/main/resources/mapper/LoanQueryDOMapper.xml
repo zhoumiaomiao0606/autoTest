@@ -417,6 +417,36 @@
 
   </select>
 
+    <!--贷后通用客户主要信息info-->
+    <select id="selectBaseCustomerInfoInfo" resultType="com.yunche.loan.domain.vo.BaseCustomerInfoVO"
+            parameterType="java.lang.Long">
+        select
+        main_order.id                                                                           AS order_id,
+        customer.id_card                                                                        AS customer_id_card,
+        customer.name                                                                           AS customer_name,
+        customer.address                                                                        AS customer_address,
+        customer.company_name                                                                   AS customer_company_name,
+        customer.company_address                                                                AS customer_company_address,
+        customer.mobile                                                                         AS customer_mobile,
+        customer.company_phone                                                                  AS customer_company_phone,
+        customer.identity_address                                                               AS customer_identity_address,
+        customer.reserve_mobile                                                                 AS customer_reserve_mobile,
+        partner.name                                                                            AS partner_name,
+        useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
+        salesman.name                                                                           AS salesman_name,
+        car.business_source                                                                     AS car_business_source
+
+        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
+        left join loan_process process on main_order.id = process.order_id
+        left join loan_customer customer on main_order.loan_customer_id = customer.id
+        left join loan_base_info loan on main_order.loan_base_info_id = loan.id
+        left join loan_car_info car on main_order.loan_car_info_id = car.id
+        left join employee salesman on loan.salesman_id = salesman.id
+        left join partner partner on loan.partner_id = partner.id
+
+
+    </select>
+
     <!--贷款信息-->
     <select id="selectUniversalLoanInfo" parameterType="java.lang.Long"
             resultType="com.yunche.loan.domain.vo.UniversalLoanInfoVO">
@@ -499,6 +529,31 @@
         left join car_detail detail on car.car_detail_id = detail.id
         left join car_model model on detail.model_id = model.id
         left join car_brand brand on model.brand_id = brand.id
+    </select>
+
+    <!--贷后-贷款车辆信息-->
+    <select id="selectVehicleInfo" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.vo.VehicleInfoVO">
+  select
+
+           useGetCarName(i.car_detail_id)    AS car_name,
+           v.now_driving_license_owner       AS now_driving_license_owner,
+           i.vehicle_property                AS vehicle_property,
+           i.car_type                        AS car_type,
+           v.color                           AS color,
+           v.license_plate_type              AS license_plate_type,
+           CONCAT(area.parent_area_name,area.area_name)                            AS vehicle_apply_license_plate_area,
+           v.engine_number                   AS engine_number,
+           v.registration_certificate_number AS registration_certificate_number,
+           v.vehicle_identification_number   AS vehicle_identification_number,
+           v.qualified_certificate_number    AS qualified_certificate_number,
+           v.purchase_car_invoice_price      AS purchase_car_invoice_price
+
+            from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+            left join vehicle_information v on o.vehicle_information_id = v.id
+            left join loan_base_info b on o.loan_base_info_id = b.id
+            left join loan_car_info i on o.loan_car_info_id  = i.id
+            left join base_area area on v.apply_license_plate_area = area.area_id
     </select>
 
     <!--共贷人信息-->
@@ -1877,6 +1932,44 @@
 
     </select>
 
+    <select id="selectMortgageInfo" resultType="com.yunche.loan.domain.vo.MortgageInfoVO"
+            parameterType="java.lang.Long">
+ select
+             i.car_type                         AS car_type,
+             b.bank                             AS bank,
+             h.license_plate_number             AS license_plate_number,
+             h.transfer_ownership_date          AS transfer_ownership_date,
+
+             a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
+             h.registration_certificate_number  AS registration_certificate_number,
+             (SELECT create_time
+		FROM
+			loan_process_log
+		WHERE
+			o.id = loan_process_log.order_id
+		AND loan_process_log.task_definition_key = 'usertask_remit_review'
+		ORDER BY id DESC LIMIT 1 ) AS remitdate,
+	bank_lend_record.lend_date
+
+    from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+    left join loan_customer c on o.loan_customer_id= c.id
+
+    left join loan_base_info b on o.loan_base_info_id = b.id
+
+    left join loan_car_info i on o.loan_car_info_id = i.id
+
+    left join vehicle_information h on o.vehicle_information_id = h.id
+
+    left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
+
+    left join partner p on b.partner_id = p.id
+
+    left join employee e on b.salesman_id = e.id
+
+    LEFT JOIN bank_lend_record ON o.bank_lend_record_id = bank_lend_record.id
+
+    </select>
 
     <select id="selectUniversalFileByLegworkReimbursementId" resultType="com.yunche.loan.domain.vo.UniversalLegworkReimbursement" parameterType="java.lang.Long" >
         select
