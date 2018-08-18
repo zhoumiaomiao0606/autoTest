@@ -167,7 +167,7 @@
     <sequenceFlow id="flow159" name="&lt;13W 手动OR自动打回修改" sourceRef="exclusivegateway3" targetRef="usertask_credit_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount == 1 && (action == -1 || action == 0) }]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_card_record" name="银行卡接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,财务经理,客服,银行驻点,南京江宁支行驻点,杭州城站支行驻点,台州路桥支行驻点,哈尔滨启卡放款组"></userTask>
+    <userTask id="usertask_bank_card_record" name="银行卡接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,财务经理,客服,银行驻点,南京江宁支行驻点,杭州城站支行驻点,台州路桥支行驻点,哈尔滨启卡放款组,台州银行卡管理专员"></userTask>
     <parallelGateway id="parallelgateway8" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow160" name="提交" sourceRef="usertask_bank_lend_record" targetRef="usertask_bank_card_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
@@ -381,7 +381,7 @@
     <sequenceFlow id="flow256" sourceRef="exclusivegateway30" targetRef="usertask_data_flow_mortgage_b2c">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == 'usertask_data_flow_mortgage_b2c'}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_card_send" name="银行卡寄送" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨工行寄卡,南京工行寄卡,台州工行寄卡,杭州城站工行寄卡"></userTask>
+    <userTask id="usertask_bank_card_send" name="银行卡寄送" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨工行寄卡,南京工行寄卡,台州工行寄卡,杭州城站工行寄卡,台州银行卡管理专员"></userTask>
     <sequenceFlow id="flow258" sourceRef="parallelgateway13" targetRef="usertask_bank_card_send"></sequenceFlow>
     <endEvent id="endevent35" name="End"></endEvent>
     <sequenceFlow id="flow259" name="提交" sourceRef="usertask_bank_card_send" targetRef="endevent35">

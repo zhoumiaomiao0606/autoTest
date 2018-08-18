@@ -61,6 +61,7 @@ import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_
 import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_DONE;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by zhouguoliang on 2018/1/30.
@@ -479,22 +480,26 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // PASS
             if (ACTION_PASS.equals(approval.getAction())) {
+
+                // pass-当前task
                 taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
+
+                // open-新产生的任务    如果新任务是：过去已存在(被打回过)，一律OPEN
+                List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
+                // open-被打回过的Tasks
+                taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
             }
 
-            // 手动_REJECT
-            else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+            // REJECT
+            else if (ACTION_REJECT_MANUAL.equals(approval.getAction()) || ACTION_REJECT_AUTO.equals(approval.getAction())) {
 
-                List<Task> newTaskList = getNewTaskList(processInstId, startTaskIdList);
+                List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
 
-                List<String> taskDefinitionKeyList = newTaskList.stream()
-                        .filter(Objects::nonNull)
-                        .map(e -> {
-                            return e.getTaskDefinitionKey();
-                        })
-                        .collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(newTaskKeyList)) {
 
-                taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), taskDefinitionKeyList);
+                    // open-reject2Tasks
+                    taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
+                }
             }
         }
     }
@@ -1698,7 +1703,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
     }
 
-    private List<Task> getNewTaskList(String processInstanceId, List<String> startTaskIdList) {
+    private List<String> getNewTaskKeyList(String processInstanceId, List<String> startTaskIdList) {
 
         // 获取提交之后的待执行任务列表
         List<Task> endTaskList = getCurrentTaskList(processInstanceId);
@@ -1707,22 +1712,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return null;
         }
 
-        // 筛选出新产生和旧有的任务
-        List<Task> newTaskList = Lists.newArrayList();
-        List<Task> oldTaskList = Lists.newArrayList();
+        // 筛选出新产生的任务Key
+        List<String> newTaskKeyList = Lists.newArrayList();
+
         endTaskList.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
+
                     if (!startTaskIdList.contains(e.getId())) {
                         // 不存在：新产生的任务
-                        newTaskList.add(e);
-                    } else {
-                        // 存在：旧有的任务
-                        oldTaskList.add(e);
+                        newTaskKeyList.add(e.getTaskDefinitionKey());
                     }
+
                 });
 
-        return newTaskList;
+        return newTaskKeyList;
     }
 
     /**
@@ -2371,7 +2375,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         final Byte[] maxLevel = {0};
 
         userGroupNameSet.stream()
-                .filter(e -> StringUtils.isNotBlank(e))
+                .filter(StringUtils::isNotBlank)
                 .forEach(e -> {
 
                     Byte level = TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.get(e);
@@ -2745,7 +2749,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                         return taskStateVO;
                     })
-                    .collect(Collectors.toList());
+                    .collect(toList());
         }
 
         // TODO 还要加上资料增补任务 ？？？
@@ -3594,7 +3598,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     .map(e -> {
                         return e.getId();
                     })
-                    .collect(Collectors.toList());
+                    .collect(toList());
 
             return currentTaskIdList;
         }
