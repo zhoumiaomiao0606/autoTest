@@ -40,6 +40,31 @@ public class ResultBean<T> implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer totalPage;
 
+    public static <T> ResultBean<T> ofSuccess(T data) {
+        return of(data, true, BaseExceptionEnum.EC00000200);
+    }
+
+    public static <T> ResultBean<T> ofSuccess(T data, String msg) {
+        return of(data, true, BaseExceptionEnum.EC00000200.getCode(), msg);
+    }
+
+    public static <T> ResultBean<T> ofSuccess(T data, BaseExceptionEnum baseExceptionEnum) {
+        return of(data, true, baseExceptionEnum);
+    }
+
+    public static <T> ResultBean<T> ofSuccess(T data, Integer totalNum, Integer pageIndex, Integer pageSize) {
+        return of(data, true, BaseExceptionEnum.EC00000200, totalNum, pageIndex, pageSize);
+    }
+
+    public static <T> ResultBean<T> ofSuccess(T data, Integer totalNum, Integer pageIndex, Integer pageSize, String msg) {
+        return of(data, true, BaseExceptionEnum.EC00000200, totalNum, pageIndex, pageSize, msg);
+    }
+
+    public static <T> ResultBean<T> of(T data, boolean success, BaseExceptionEnum baseExceptionEnum,
+                                       Integer totalNum, Integer pageIndex, Integer pageSize) {
+        return of(data, success, baseExceptionEnum, totalNum, pageIndex, pageSize, null);
+    }
+
     public static <T> ResultBean of(T data, boolean success, BaseExceptionEnum baseExceptionEnum) {
         if (null != baseExceptionEnum) {
             return of(data, success, baseExceptionEnum.getCode(), baseExceptionEnum.getMessage());
@@ -60,11 +85,9 @@ public class ResultBean<T> implements Serializable {
         return resultBean;
     }
 
-    public static <T> ResultBean<T> of(T data, boolean success, BaseExceptionEnum baseExceptionEnum, Integer totalNum, Integer pageIndex, Integer pageSize) {
-        return of(data, success, baseExceptionEnum, totalNum, pageIndex, pageSize, null);
-    }
+    public static <T> ResultBean<T> of(T data, boolean success, BaseExceptionEnum baseExceptionEnum,
+                                       Integer totalNum, Integer pageIndex, Integer pageSize, String msg) {
 
-    public static <T> ResultBean<T> of(T data, boolean success, BaseExceptionEnum baseExceptionEnum, Integer totalNum, Integer pageIndex, Integer pageSize, String msg) {
         ResultBean resultBean = new ResultBean();
         resultBean.setData(data);
         resultBean.setSuccess(success);
@@ -83,41 +106,19 @@ public class ResultBean<T> implements Serializable {
         return resultBean;
     }
 
-    public static <T> ResultBean<T> ofSuccess(T data) {
-        return of(data, true, BaseExceptionEnum.EC00000200);
-    }
-
-    public static <T> ResultBean<T> ofSuccess(T data, Integer totalNum, Integer pageIndex, Integer pageSize, String msg) {
-        return of(data, true, BaseExceptionEnum.EC00000200, totalNum, pageIndex, pageSize, msg);
-    }
-
-    public static <T> ResultBean<T> ofSuccess(T data, Integer totalNum, Integer pageIndex, Integer pageSize) {
-        return of(data, true, BaseExceptionEnum.EC00000200, totalNum, pageIndex, pageSize);
-    }
-
-    public static <T> ResultBean<T> ofSuccess(T data, BaseExceptionEnum baseExceptionEnum) {
-        return of(data, true, baseExceptionEnum);
-    }
-
-    public static <T> ResultBean<T> ofSuccess(T data, String msg) {
-        return of(data, true, BaseExceptionEnum.EC00000200.getCode(), msg);
-    }
 
     public static ResultBean ofError(BaseExceptionEnum baseExceptionEnum) {
-        ResultBean resultBean = new ResultBean();
-        resultBean.setSuccess(false);
-        if (null != baseExceptionEnum) {
-            resultBean.setCode(baseExceptionEnum.getCode());
-            resultBean.setMsg(baseExceptionEnum.getMessage());
-        }
-        resultBean.setData(null);
-        return resultBean;
+        return ofError(baseExceptionEnum.getCode(), baseExceptionEnum.getCode());
     }
 
     public static ResultBean ofError(String msg) {
+        return ofError(BaseExceptionEnum.EC00000500.getCode(), msg);
+    }
+
+    public static ResultBean ofError(String code, String msg) {
         ResultBean resultBean = new ResultBean();
         resultBean.setSuccess(false);
-        resultBean.setCode(BaseExceptionEnum.EC00000500.getCode());
+        resultBean.setCode(code);
         resultBean.setMsg(msg);
         resultBean.setData(null);
         return resultBean;
