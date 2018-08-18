@@ -152,7 +152,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 绑定用户组(角色)列表
         doBindUserGroup(id, employeeParam.getUserGroupIdList());
 
-        bindBizArea(id,employeeParam.getBizAreaIds());
+        bindBizArea(id, employeeParam.getBizAreaIds());
 
         // 发送账号密码到邮箱
 //        executorService.execute(() -> {
@@ -180,7 +180,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeDO.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
-        bindBizArea(employeeDO.getId(),employeeDO.getBizAreaIds());
+        bindBizArea(employeeDO.getId(), employeeDO.getBizAreaIds());
         // 刷新缓存
         employeeCache.refresh();
 
@@ -560,16 +560,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public ResultBean<Void> logout() {
 
+        Long userId = null;
         try {
-            // APP清空machineId
-            Long userId = SessionUtils.getLoginUser().getId();
-            employeeDOMapper.setMachineIdForNull(userId);
+            userId = SessionUtils.getLoginUser().getId();
         } catch (Exception ex) {
             logger.error("getLoginUser error", ex);
         }
 
+        // APP清空machineId
+        if (null != userId) {
+            employeeDOMapper.setMachineIdForNull(userId);
+        }
+
         // 清空shiro会话
         SecurityUtils.getSubject().logout();
+
         return ResultBean.ofSuccess(null, "登出成功");
     }
 
@@ -617,9 +622,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<List<Long>> listBizArea(Long id) {
         List<EmployeeRelaBizAreaVO> ids = employeeRelaBizAreaDOMapper.selectByEmployeeId(id);
         List<Long> result = Lists.newArrayList();
-        for(EmployeeRelaBizAreaVO employeeRelaBizAreaVO : ids){
-            if(ids != null){
-                if(StringUtils.isNotBlank(employeeRelaBizAreaVO.getBizAreaId())){
+        for (EmployeeRelaBizAreaVO employeeRelaBizAreaVO : ids) {
+            if (ids != null) {
+                if (StringUtils.isNotBlank(employeeRelaBizAreaVO.getBizAreaId())) {
                     result.add(Long.valueOf(employeeRelaBizAreaVO.getBizAreaId()));
                 }
             }
@@ -630,29 +635,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void bindBizArea(Long id, List<Long> bizAreaIds) {
 
-        if(id == null){
+        if (id == null) {
             throw new BizException("缺少员工ID");
         }
-        EmployeeDO  employeeDO = employeeDOMapper.selectByPrimaryKey(id,new Byte("0"));
-        if(employeeDO == null){
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id, new Byte("0"));
+        if (employeeDO == null) {
             throw new BizException("缺少员工ID");
         }
 
         employeeRelaBizAreaDOMapper.deleteByEmployeeId(id);
 
-        for(Long bizAreaId:bizAreaIds){
-            if(bizAreaId!=null){
+        for (Long bizAreaId : bizAreaIds) {
+            if (bizAreaId != null) {
                 EmployeeRelaBizAreaDOKey key = new EmployeeRelaBizAreaDOKey();
                 key.setEmployeeId(id);
                 key.setBizAreaId(bizAreaId);
 
                 EmployeeRelaBizAreaDO DO = employeeRelaBizAreaDOMapper.selectByPrimaryKey(key);
-                if(DO == null){
+                if (DO == null) {
                     EmployeeRelaBizAreaDO employeeRelaBizAreaDO = new EmployeeRelaBizAreaDO();
                     employeeRelaBizAreaDO.setBizAreaId(bizAreaId);
                     employeeRelaBizAreaDO.setEmployeeId(id);
                     employeeRelaBizAreaDOMapper.insertSelective(employeeRelaBizAreaDO);
-                }else{
+                } else {
                     EmployeeRelaBizAreaDO employeeRelaBizAreaDO = new EmployeeRelaBizAreaDO();
                     employeeRelaBizAreaDO.setBizAreaId(bizAreaId);
                     employeeRelaBizAreaDO.setEmployeeId(id);
