@@ -429,18 +429,18 @@
     <exclusiveGateway id="exclusivegateway39" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow277" sourceRef="exclusivegateway39" targetRef="parallelgateway5"></sequenceFlow>
     <userTask id="usertask1" name="下边界"></userTask>
-    <userTask id="usertask_apply_replace_pay" name="申请代偿"></userTask>
-    <sequenceFlow id="flow298" sourceRef="parallelgateway3" targetRef="filter_apply_replace_pay"></sequenceFlow>
-    <userTask id="filter_apply_replace_pay" name="申请代偿-开始-拦截任务"></userTask>
-    <sequenceFlow id="flow299" sourceRef="filter_apply_replace_pay" targetRef="usertask_apply_replace_pay">
+    <userTask id="usertask_apply_instead_pay" name="申请代偿"></userTask>
+    <sequenceFlow id="flow298" sourceRef="parallelgateway3" targetRef="filter_apply_instead_pay"></sequenceFlow>
+    <userTask id="filter_apply_instead_pay" name="申请代偿-开始-拦截任务"></userTask>
+    <sequenceFlow id="flow299" sourceRef="filter_apply_instead_pay" targetRef="usertask_apply_instead_pay">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_finance_replace_pay_review" name="财务代偿-确认"></userTask>
+    <userTask id="usertask_finance_instead_pay_review" name="财务代偿-确认"></userTask>
     <exclusiveGateway id="exclusivegateway42" name="Exclusive Gateway"></exclusiveGateway>
-    <userTask id="usertask_partner_replace_pay" name="合伙人代偿"></userTask>
-    <userTask id="usertask_partner_replace_pay_review" name="合伙人代偿-确认"></userTask>
+    <userTask id="usertask_partner_instead_pay" name="合伙人代偿"></userTask>
+    <userTask id="usertask_partner_instead_pay_review" name="合伙人代偿-确认"></userTask>
     <exclusiveGateway id="exclusivegateway43" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="flow305" sourceRef="usertask_partner_replace_pay" targetRef="usertask_partner_replace_pay_review">
+    <sequenceFlow id="flow305" sourceRef="usertask_partner_instead_pay" targetRef="usertask_partner_instead_pay_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <endEvent id="endevent38" name="End"></endEvent>
@@ -449,18 +449,18 @@
     </sequenceFlow>
     <userTask id="usertask_outworker_cost_apply" name="外勤费用申报"></userTask>
     <userTask id="usertask_outworker_cost_apply_review" name="财务报销"></userTask>
-    <sequenceFlow id="flow332" sourceRef="usertask_finance_replace_pay_review" targetRef="exclusivegateway42"></sequenceFlow>
-    <sequenceFlow id="flow333" sourceRef="usertask_partner_replace_pay_review" targetRef="exclusivegateway43"></sequenceFlow>
-    <sequenceFlow id="flow334" name="打回" sourceRef="exclusivegateway43" targetRef="usertask_partner_replace_pay">
+    <sequenceFlow id="flow332" sourceRef="usertask_finance_instead_pay_review" targetRef="exclusivegateway42"></sequenceFlow>
+    <sequenceFlow id="flow333" sourceRef="usertask_partner_instead_pay_review" targetRef="exclusivegateway43"></sequenceFlow>
+    <sequenceFlow id="flow334" name="打回" sourceRef="exclusivegateway43" targetRef="usertask_partner_instead_pay">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow335" sourceRef="usertask_apply_replace_pay" targetRef="usertask_finance_replace_pay_review">
+    <sequenceFlow id="flow335" sourceRef="usertask_apply_instead_pay" targetRef="usertask_finance_instead_pay_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow336" name="打回" sourceRef="exclusivegateway42" targetRef="usertask_apply_replace_pay">
+    <sequenceFlow id="flow336" name="打回" sourceRef="exclusivegateway42" targetRef="usertask_apply_instead_pay">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow337" sourceRef="exclusivegateway42" targetRef="usertask_partner_replace_pay">
+    <sequenceFlow id="flow337" sourceRef="exclusivegateway42" targetRef="usertask_partner_instead_pay">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
   </process>
@@ -808,22 +808,22 @@
       <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
         <omgdc:Bounds height="55.0" width="105.0" x="4416.0" y="4000.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_apply_replace_pay" id="BPMNShape_usertask_apply_replace_pay">
+      <bpmndi:BPMNShape bpmnElement="usertask_apply_instead_pay" id="BPMNShape_usertask_apply_instead_pay">
         <omgdc:Bounds height="55.0" width="105.0" x="4266.0" y="2480.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="filter_apply_replace_pay" id="BPMNShape_filter_apply_replace_pay">
+      <bpmndi:BPMNShape bpmnElement="filter_apply_instead_pay" id="BPMNShape_filter_apply_instead_pay">
         <omgdc:Bounds height="55.0" width="105.0" x="3947.0" y="2480.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_finance_replace_pay_review" id="BPMNShape_usertask_finance_replace_pay_review">
+      <bpmndi:BPMNShape bpmnElement="usertask_finance_instead_pay_review" id="BPMNShape_usertask_finance_instead_pay_review">
         <omgdc:Bounds height="55.0" width="105.0" x="4540.0" y="2480.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway42" id="BPMNShape_exclusivegateway42">
         <omgdc:Bounds height="40.0" width="40.0" x="4767.0" y="2487.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_partner_replace_pay" id="BPMNShape_usertask_partner_replace_pay">
+      <bpmndi:BPMNShape bpmnElement="usertask_partner_instead_pay" id="BPMNShape_usertask_partner_instead_pay">
         <omgdc:Bounds height="55.0" width="105.0" x="4965.0" y="2480.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask_partner_replace_pay_review" id="BPMNShape_usertask_partner_replace_pay_review">
+      <bpmndi:BPMNShape bpmnElement="usertask_partner_instead_pay_review" id="BPMNShape_usertask_partner_instead_pay_review">
         <omgdc:Bounds height="55.0" width="105.0" x="5245.0" y="2480.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway43" id="BPMNShape_exclusivegateway43">
