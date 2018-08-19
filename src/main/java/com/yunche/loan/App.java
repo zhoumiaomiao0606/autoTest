@@ -79,11 +79,14 @@ public class App {
                 // 部署
                 deploy("processes/loan_process_dc.bpmn", "消费贷流程");
 
+                deploy("processes/loan_process_instead_pay.bpmn", "代偿流程");
+
                 deploy("processes/loan_process_collection.bpmn", "催收工作台流程");
             }
 
             /**
              * 部署新流程
+             *
              * @param processClassPathResource
              * @param processName
              */
