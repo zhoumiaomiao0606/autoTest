@@ -55,7 +55,7 @@ public class ICBCApiRequest {
     }
 
     @Data
-    public static class ApplyDiviGeneralInfo{
+    public static class ApplyDiviGeneralInfo {
         @NotEmpty
         @Valid
         private String resubmit;
@@ -85,7 +85,7 @@ public class ICBCApiRequest {
      * 专项卡开卡
      */
     @Data
-    public static class ApplyBankOpenCard extends Pub{
+    public static class ApplyBankOpenCard extends Pub {
 
         @NotNull
         @Valid
@@ -93,8 +93,7 @@ public class ICBCApiRequest {
 
         @NotNull
         @Valid
-        private List<Picture> pictures= Lists.newArrayList();//客户照片资料
-
+        private List<Picture> pictures = Lists.newArrayList(); // 客户照片资料
     }
 
 
@@ -102,7 +101,7 @@ public class ICBCApiRequest {
      * 文件清单生成通知接口
      */
     @Data
-    public static class FileNotice{
+    public static class FileNotice {
         private Pub pub;
         private FileNoticeReq req;
 
@@ -112,22 +111,23 @@ public class ICBCApiRequest {
      * 查询申请进度
      */
     @Data
-    public static class Applystatus extends Pub{
+    public static class Applystatus extends Pub {
 
     }
 
     /**
-     *查询专项卡开卡进度
+     * 查询专项卡开卡进度
      */
-    public static class Applycreditstatus extends  Pub{
+    public static class Applycreditstatus extends Pub {
 
     }
+
     @Data
-    public static class ReturnMsg{
+    public static class ReturnMsg {
         ReturnPub pub;
 
         @Data
-        public static class ReturnPub{
+        public static class ReturnPub {
             private String retcode;
             private String retmsg;
         }
@@ -136,9 +136,9 @@ public class ICBCApiRequest {
 
     @Data
     public static class FileNoticeReq {
-        private String  filetype;
-        private String  filesrc;
-        private String  datadt;
+        private String filetype;
+        private String filesrc;
+        private String datadt;
     }
 
     @Data
@@ -156,7 +156,7 @@ public class ICBCApiRequest {
     //---------------------------------------car-----------------------------------------------------
 
     @Data
-    public static class ApplyDiviGeneralCar{
+    public static class ApplyDiviGeneralCar {
         @NotEmpty
         private String carType;
         @NotEmpty
@@ -180,7 +180,7 @@ public class ICBCApiRequest {
     }
 
     @Data
-    public static class  ApplyDiviGeneralDivi{
+    public static class ApplyDiviGeneralDivi {
         @NotEmpty
         private String PaidAmt;
         @NotEmpty
@@ -204,9 +204,10 @@ public class ICBCApiRequest {
         @NotEmpty(groups = {NewValidated.class})
         private String tiexiRate;
     }
+
     //---------------------------------------customer-----------------------------------------------------
     @Data
-    public static class ApplyDiviGeneralCustomer{
+    public static class ApplyDiviGeneralCustomer {
         @NotEmpty
         private String CustName;
         @NotEmpty
@@ -238,123 +239,123 @@ public class ICBCApiRequest {
     @Data
     public static class ApplyBankOpenCardCustomer {
         @NotEmpty(message = "手续费不能为空")
-        private String  feeamount;
+        private String feeamount;
         @NotEmpty(message = "申请分期金额不能为空")
-        private String  loanamount;
+        private String loanamount;
         @NotEmpty(message = "贷款期限不能为空")
-        private String  term;
+        private String term;
         @NotEmpty(message = "贷款成数不能为空")
-        private String  loanratio;
+        private String loanratio;
         @NotEmpty(message = "车辆价格不能为空")
-        private String  carprice;
+        private String carprice;
         @NotEmpty(message = "手续费率不能为空")
-        private String  feeratio;
+        private String feeratio;
         @NotEmpty(message = "姓名拼音不能为空")
-        private String  engname;
+        private String engname;
         @NotEmpty(message = "联系人二联系电话号不能为空")
-        private String  rtcophon2;
+        private String rtcophon2;
         @NotEmpty(message = "出生日期不能为空")
-        private String  birthdate;
+        private String birthdate;
         @NotEmpty(message = "单位地址省份不能为空")
-        private String  cprovince;
+        private String cprovince;
         @NotEmpty(message = "卡片寄送地址类型不能为空")
-        private String  drawaddr;
+        private String drawaddr;
         @NotEmpty(message = "联系人一联系电话号不能为空")
-        private String  relaphone1;
+        private String relaphone1;
         @NotEmpty(message = "证件有效期不能为空")
-        private String  statdate;
+        private String statdate;
         @NotEmpty(message = "工作单位不能为空")
-        private String  unitname;
+        private String unitname;
         @NotEmpty(message = "对帐单寄送方式不能为空")
-        private String  accgetm;
+        private String accgetm;
         @NotEmpty(message = "手机号码不能为空")
-        private String  mvblno;
+        private String mvblno;
         @NotEmpty(message = "")
-        private String  caddress;
+        private String caddress;
         @NotEmpty(message = "工作单位地址不能为空")
-        private String  authref;
+        private String authref;
         @NotEmpty(message = "住宅地址不能为空")
-        private String  haddress;
+        private String haddress;
         @NotEmpty(message = "主卡开通余额变动提醒不能为空")
-        private String  machgf;
+        private String machgf;
         @NotEmpty(message = "主卡余额提醒发送手机号码不能为空")
-        private String  machgmobile;
+        private String machgmobile;
         @NotEmpty(message = "进入单位时间不能为空")
-        private String  joindate;
+        private String joindate;
         @NotEmpty(message = "卡片领取方式不能为空")
-        private String  drawmode;
+        private String drawmode;
         @NotEmpty(message = "单位地址县不能为空")
-        private String  ccounty;
+        private String ccounty;
         @NotEmpty(message = "姓名不能为空")
-        private String  chnsname;
+        private String chnsname;
         @NotEmpty(message = "婚姻状况不能为空")
-        private String  mrtlstat;
+        private String mrtlstat;
         @NotEmpty(message = "联系人一与主卡申请关系不能为空")
-        private String  reltship1;
+        private String reltship1;
         @NotEmpty(message = "联系人二与主卡申请关系不能为空")
-        private String  reltship2;
+        private String reltship2;
         @NotEmpty(message = "单位性质不能为空")
-        private String  modelcode;
+        private String modelcode;
         @NotEmpty(message = "何时入住现址不能为空")
-        private String  indate;
+        private String indate;
         @NotEmpty(message = "住宅地址市不能为空")
-        private String  hcity;
+        private String hcity;
         @NotEmpty(message = "单位地址选择不能为空")
-        private String  cadrchoic;
+        private String cadrchoic;
         @NotEmpty(message = "联系人二手机不能为空")
-        private String  reltmobl2;
+        private String reltmobl2;
         @NotEmpty(message = "住宅电话号码不能为空")
-        private String  hphoneno;
+        private String hphoneno;
         @NotEmpty(message = "联系人一手机不能为空")
-        private String  reltmobl1;
+        private String reltmobl1;
         @NotEmpty(message = "住宅邮编不能为空")
-        private String  homezip;
+        private String homezip;
         @NotEmpty(message = "主卡发送移动电话不能为空")
-        private String  mamobile;
+        private String mamobile;
         @NotEmpty(message = "证件类型不能为空")
-        private String  custsort;
+        private String custsort;
         @NotEmpty(message = "单位电话号码不能为空")
-        private String  cophoneno;
+        private String cophoneno;
         @NotEmpty(message = "单位邮编不能为空")
-        private String  corpzip;
+        private String corpzip;
         @NotEmpty(message = "证件号码不能为空")
-        private String  custcode;
+        private String custcode;
         @NotEmpty(message = "手机选择不能为空")
-        private String  mblchoic;
+        private String mblchoic;
         @NotEmpty(message = "单位电话区号不能为空")
-        private String  cophozono;
+        private String cophozono;
         @NotEmpty(message = "单位电话分机不能为空")
-        private String  cophonext;
+        private String cophonext;
         @NotEmpty(message = "联系人一性别不能为空")
-        private String  sex;
+        private String sex;
         @NotEmpty(message = "住宅地址选择不能为空")
-        private String  hadrchoic;
+        private String hadrchoic;
         @NotEmpty(message = "住宅地址省份不能为空")
-        private String  hprovince;
+        private String hprovince;
         @NotEmpty(message = "单位地址市不能为空")
-        private String  ccity;
+        private String ccity;
         @NotEmpty(message = "职业不能为空")
-        private String  occptn;
+        private String occptn;
         @NotEmpty(message = "联系人二姓名不能为空")
-        private String  reltname2;
+        private String reltname2;
         @NotEmpty(message = "发送短信帐单手机号码不能为空")
-        private String  smsphone;
+        private String smsphone;
         @NotEmpty(message = "联系人一姓名不能为空")
-        private String  reltname1;
+        private String reltname1;
         @NotEmpty(message = "住宅地址县不能为空")
-        private String  hcounty;
+        private String hcounty;
         @NotEmpty(message = "联系人二性别不能为空")
-        private String  reltsex2;
+        private String reltsex2;
         @NotEmpty(message = "联系人一性别不能为空")
-        private String  reltsex1;
+        private String reltsex1;
         @NotEmpty(message = "开通email对账单不能为空")
-        private String  emladdrf;
+        private String emladdrf;
         @NotEmpty(message = "币种不能为空")
-        private String  fcurrtyp;
+        private String fcurrtyp;
         @NotEmpty(message = "对帐单寄送地址不能为空")
-        private String  accaddrf;
+        private String accaddrf;
         @NotEmpty(message = "教育程度不能为空")
-        private String  edulvl;
+        private String edulvl;
     }
 
     //pub
@@ -401,4 +402,4 @@ public class ICBCApiRequest {
     }
 
 
-    }
+}

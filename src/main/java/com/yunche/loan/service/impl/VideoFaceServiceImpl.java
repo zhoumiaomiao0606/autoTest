@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.BankCache;
+import com.yunche.loan.config.constant.VideoFaceConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.POIUtil;
@@ -85,14 +86,18 @@ public class VideoFaceServiceImpl implements VideoFaceService {
             videoFaceLogDO.setBankName(bankCache.getNameById(videoFaceLogDO.getBankId()));
         }
 
-        // APP端  车型名称
-        if (TYPE_APP.equals(videoFaceLogDO.getType())) {
+        // 机器面签
+        if (FACE_SIGN_TYPE_MACHINE.equals(videoFaceLogDO.getType())) {
+            //  车型名称
             if (null != videoFaceLogDO.getCarDetailId()) {
                 String carName = carService.getName(videoFaceLogDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
                 if (StringUtils.isNotBlank(carName)) {
                     videoFaceLogDO.setCarName(carName);
                 }
             }
+
+            // action 默认：PASS（机器面签不审核，默认通过！）
+            videoFaceLogDO.setAction(VideoFaceConst.ACTION_PASS);
         }
 
         // 担保公司  就一个   写死

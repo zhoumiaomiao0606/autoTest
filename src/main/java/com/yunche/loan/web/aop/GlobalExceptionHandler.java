@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
             if (null == code) {
                 return ResultBean.ofError(msg);
             } else {
-                return ResultBean.of(null, false, code, msg);
+                return ResultBean.ofError(code, msg);
             }
         } else if (e instanceof MissingServletRequestParameterException) {
             return ResultBean.ofError("必入参数未填写");
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof DecodeException) {
             return ResultBean.ofError(e.getMessage());
-        }else if (e instanceof ConstraintViolationException) {
+        } else if (e instanceof ConstraintViolationException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof IllegalArgumentException) {
             return ResultBean.ofError(e.getMessage());
