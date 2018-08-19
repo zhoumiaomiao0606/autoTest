@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @SpringBootApplication
@@ -72,19 +73,32 @@ public class App {
 
             @Override
             @DistributedLock(timeOut = 60 * 5 * 1000)
+            @Transactional(rollbackFor = Exception.class)
             public void run(String... args) throws Exception {
 
                 // 部署
+                deploy("processes/loan_process_dc.bpmn", "消费贷流程");
+
+                deploy("processes/loan_process_collection.bpmn", "催收工作台流程");
+            }
+
+            /**
+             * 部署新流程
+             * @param processClassPathResource
+             * @param processName
+             */
+            private void deploy(String processClassPathResource, String processName) {
+
                 repositoryService.createDeployment()
-                        .name("消费贷流程")
-                        .addClasspathResource("processes/loan_process_df.bpmn")
+                        .addClasspathResource(processClassPathResource)
+                        .name(processName)
                         .deploy();
+
+                // 流程替换
+                activitiVersionService.replaceActivitiVersion(processClassPathResource);
 
                 // 刷新activiti缓存数据
                 activitiCache.refresh();
-
-                // 流程替换
-                activitiVersionService.replaceActivitiVersion();
             }
         };
 

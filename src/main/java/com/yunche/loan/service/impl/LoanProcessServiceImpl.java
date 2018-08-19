@@ -485,9 +485,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 手动_REJECT
             else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
 
-                List<Task> newTaskList = getNewTaskList(processInstId, startTaskIdList);
+                List<Task> newAndDoneTaskList = getNewAndDoneTaskList(processInstId, startTaskIdList);
 
-                List<String> taskDefinitionKeyList = newTaskList.stream()
+                List<String> taskDefinitionKeyList = newAndDoneTaskList.stream()
                         .filter(Objects::nonNull)
                         .map(e -> {
                             return e.getTaskDefinitionKey();
@@ -1314,7 +1314,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())) {
                 VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(loanOrderDO.getId());
                 Preconditions.checkNotNull(videoFaceLogDO, "当前订单未进行[视频面签]");
-                Preconditions.checkArgument(VideoFaceConst.ACTION_PASS.equals(videoFaceLogDO.getAction()), "当前订单[视频面签]未通过");
+                Preconditions.checkArgument(VideoFaceConst.ACTION_PASS.equals(videoFaceLogDO.getAction()), "当前订单[视频面签]审核未通过");
             }
         }
 
@@ -1701,7 +1701,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
     }
 
-    private List<Task> getNewTaskList(String processInstanceId, List<String> startTaskIdList) {
+    private List<Task> getNewAndDoneTaskList(String processInstanceId, List<String> startTaskIdList) {
 
         // 获取提交之后的待执行任务列表
         List<Task> endTaskList = getCurrentTaskList(processInstanceId);
@@ -1710,9 +1710,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return null;
         }
 
-        // 筛选出新产生和旧有的任务
+        // 筛选出新产生、旧有、已完成的任务
         List<Task> newTaskList = Lists.newArrayList();
         List<Task> oldTaskList = Lists.newArrayList();
+        List<Task> doneTaskList = Lists.newArrayList();
+        Map<String, Task> endKeyTaskMap = Maps.newHashMap();
+
         endTaskList.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
@@ -1723,8 +1726,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                         // 存在：旧有的任务
                         oldTaskList.add(e);
                     }
+
+                    // key - Task
+                    endKeyTaskMap.put(e.getTaskDefinitionKey(), e);
                 });
 
+        Set<String> endTaskKeyList = endKeyTaskMap.keySet();
+        startTaskIdList.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    if (!endTaskKeyList.contains(e)) {
+                        // 不存在：已完成的任务
+                        doneTaskList.add(endKeyTaskMap.get(e));
+                    }
+                });
+
+        newTaskList.addAll(doneTaskList);
         return newTaskList;
     }
 
@@ -2558,7 +2576,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             if (currentTask.getExecutionId().equals(task.getExecutionId())) {
 
                                 // 是否会走 [银行开卡]
-                                yes_or_not_goBankOpenCardTask(passVariables, loanOrderDO, loanProcessDO);
+                                yes_or_not_go_bankOpenCardTask(passVariables, loanOrderDO, loanProcessDO);
 
                                 // "主任务"  ->  执行通过
                                 completeTask(task.getId(), passVariables);
@@ -2586,7 +2604,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanOrderDO
      * @param loanProcessDO
      */
-    private void yes_or_not_goBankOpenCardTask(Map<String, Object> passVariables, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+    private void yes_or_not_go_bankOpenCardTask(Map<String, Object> passVariables, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 是否 走[银行开卡]
         boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());

@@ -9,9 +9,11 @@ import java.util.Set;
 public interface ActivitiVersionService {
 
     /**
-     * 更新Activiti版本
+     * 更新Activiti指定流程的版本
+     *
+     * @param resourceName
      */
-    void replaceActivitiVersion();
+    void replaceActivitiVersion(String resourceName);
 
     /**
      * 获取登录用户->角色->有权操作的：资料流转节点

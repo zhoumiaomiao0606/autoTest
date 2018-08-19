@@ -1,7 +1,6 @@
 package com.yunche.loan.config.queue;
 
 import com.google.common.collect.Maps;
-import com.yunche.loan.service.LoanCustomerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
@@ -34,9 +33,6 @@ public class VideoFaceQueue {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
-
-    @Autowired
-    private LoanCustomerService loanCustomerService;
 
 
     /**
