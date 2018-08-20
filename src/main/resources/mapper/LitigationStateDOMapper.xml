@@ -6,17 +6,24 @@
     <result column="isstop" property="isstop" jdbcType="VARCHAR" />
     <result column="stop_reason" property="stopReason" jdbcType="VARCHAR" />
     <result column="collection_type" property="collectionType" jdbcType="VARCHAR" />
+    <result column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT" />
   </resultMap>
   <select id="selectByIdAndType" resultType="com.yunche.loan.domain.entity.LitigationStateDO">
     select
         id,isstop,stop_reason,collection_type
     from litigation_state where id = #{id,jdbcType=BIGINT} and collection_type = #{type,jdbcType=VARCHAR}
+     and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByIdAndBankRepayImpRecordId" resultType="com.yunche.loan.domain.entity.LitigationStateDO">
+    select
+        id,isstop,stop_reason,collection_type
+    from litigation_state where id = #{id,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </select>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.LitigationStateDO" >
     insert into litigation_state (id, isstop, stop_reason, 
-      collection_type)
+      collection_type,bank_repay_imp_record_id)
     values (#{id,jdbcType=BIGINT}, #{isstop,jdbcType=VARCHAR}, #{stopReason,jdbcType=VARCHAR}, 
-      #{collectionType,jdbcType=VARCHAR})
+      #{collectionType,jdbcType=VARCHAR},#{bankRepayImpRecordId,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LitigationStateDO" >
     insert into litigation_state
@@ -33,6 +40,9 @@
       <if test="collectionType != null" >
         collection_type,
       </if>
+      <if test="bankRepayImpRecordId != null" >
+        bank_repay_imp_record_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -46,6 +56,9 @@
       </if>
       <if test="collectionType != null" >
         #{collectionType,jdbcType=VARCHAR},
+      </if>
+      <if test="bankRepayImpRecordId != null" >
+        #{bankRepayImpRecordId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

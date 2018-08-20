@@ -56,4 +56,6 @@ public class LitigationDO {
     private String remarks;
 
     private String litigationNo;
+
+    private Long bankRepayImpRecordId;
 }

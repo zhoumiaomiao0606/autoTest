@@ -2,10 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.BankUrgeRecordDO;
-import com.yunche.loan.domain.entity.CollectionNewInfoDO;
-import com.yunche.loan.domain.entity.CollectionRecordDO;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.CollectionRecordUpdateParam;
 import com.yunche.loan.domain.param.ManualDistributionParam;
 import com.yunche.loan.domain.param.RecordCollectionParam;
@@ -51,14 +48,24 @@ public class CollectionServiceImpl implements CollectionService {
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
+    @Autowired
+    private LitigationStateDOMapper litigationStateDOMapper;
+
 
     @Override
-    public RecombinationVO detail(Long orderId) {
+    public RecombinationVO detail(Long orderId,Long bankRepayImpRecordId) {
         List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
+        }
+        CollectionNewInfoDOKey collectionNewInfoDOKey = new CollectionNewInfoDOKey();
+        collectionNewInfoDOKey.setId(orderId);
+        collectionNewInfoDOKey.setBankRepayImpRecordId(bankRepayImpRecordId);
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(collectionNewInfoDOKey);
+        if(collectionNewInfoDO == null){
+            collectionNewInfoDO = new CollectionNewInfoDO();
         }
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
@@ -70,17 +77,21 @@ public class CollectionServiceImpl implements CollectionService {
         recombinationVO.setRepayments(loanQueryDOMapper.selectUniversalLoanRepaymentPlan(orderId));
         recombinationVO.setCustomers(customers);
         recombinationVO.setLoanApplyCompensation(list);
+        recombinationVO.setCollectionNewInfoDO(collectionNewInfoDO);
         return recombinationVO;
     }
 
     @Override
-    public VisitDoorVO isCollectionDetail(Long orderId) {
+    public VisitDoorVO isCollectionDetail(Long orderId,Long bankRepayImpRecordId) {
 
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
         CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
         List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
         int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
-        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        CollectionNewInfoDOKey collectionNewInfoDOKey = new CollectionNewInfoDOKey();
+        collectionNewInfoDOKey.setId(orderId);
+        collectionNewInfoDOKey.setBankRepayImpRecordId(bankRepayImpRecordId);
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(collectionNewInfoDOKey);
         if(collectionNewInfoDO ==  null){
             collectionNewInfoDO = new CollectionNewInfoDO();
         }
@@ -124,17 +135,23 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     public void recordCollection(RecordCollectionParam recordCollectionParam) {
-        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(recordCollectionParam.getId());
+        CollectionNewInfoDOKey collectionNewInfoDOKey = new CollectionNewInfoDOKey();
+        collectionNewInfoDOKey.setId(recordCollectionParam.getId());
+        collectionNewInfoDOKey.setBankRepayImpRecordId(recordCollectionParam.getBankRepayImpRecordId());
+
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(collectionNewInfoDOKey);
         CollectionNewInfoDO collectionNewInfoDO1 = new CollectionNewInfoDO();
-        if(collectionNewInfoDO !=null){
+        if(collectionNewInfoDO != null){
             BeanUtils.copyProperties(recordCollectionParam,collectionNewInfoDO1);
             collectionNewInfoDO1.setDispatchedDate(new Date());
             collectionNewInfoDO1.setDispatchedStaff(SessionUtils.getLoginUser().getName());
+            collectionNewInfoDO1.setBankRepayImpRecordId(recordCollectionParam.getBankRepayImpRecordId());
             collectionNewInfoDOMapper.updateByPrimaryKeySelective(collectionNewInfoDO1);
         }else{
             BeanUtils.copyProperties(recordCollectionParam,collectionNewInfoDO1);
             collectionNewInfoDO1.setDispatchedDate(new Date());
             collectionNewInfoDO1.setDispatchedStaff(SessionUtils.getLoginUser().getName());
+            collectionNewInfoDO1.setBankRepayImpRecordId(recordCollectionParam.getBankRepayImpRecordId());
             collectionNewInfoDOMapper.insertSelective(collectionNewInfoDO1);
         }
     }

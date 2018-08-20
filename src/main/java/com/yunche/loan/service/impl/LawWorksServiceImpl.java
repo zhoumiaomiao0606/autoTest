@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 //缺逾期信息，车辆金融调原来的
@@ -49,20 +50,23 @@ public class LawWorksServiceImpl implements LawWorksService {
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
     @Override
-    public LawWorksVO detail(Long orderid) {
+    public LawWorksVO detail(Long orderid,Long bankRepayImpRecordId) {
         List<LoanApplyCompensationDO> list1 = loanApplyCompensationDOMapper.selectByOrderId(orderid);
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderid);
 
         LawWorksVO lawWorksVO = new LawWorksVO();
         lawWorksVO.setResult(lawWorkQuery);
-        lawWorksVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderid,"0"));
-        List<LitigationDO> list = litigationDOMapper.selectByOrderId(orderid);
-        ForceDO forceDO = forceDOMapper.selectByOrderId(orderid);
-        FeeRegisterDO feeRegisterDO = feeRegisterDOMapper.selectByOrderId(orderid);
-        FileInfoDO fileInfoDO = fileInfoDOMapper.selectByOrderId(orderid);
-        lawWorksVO.setFeeRegisterDO(feeRegisterDO);
-        lawWorksVO.setFileInfoDO(fileInfoDO);
-        lawWorksVO.setForceDO(forceDO);
+        lawWorksVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderid,"0",bankRepayImpRecordId));
+        List<LitigationDO> list = litigationDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
+        if(list == null){
+            list = new ArrayList<LitigationDO>();
+        }
+        ForceDO forceDO = forceDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
+        FeeRegisterDO feeRegisterDO = feeRegisterDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
+        FileInfoDO fileInfoDO = fileInfoDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
+        lawWorksVO.setFeeRegisterDO(feeRegisterDO == null ? new FeeRegisterDO():feeRegisterDO);
+        lawWorksVO.setFileInfoDO(fileInfoDO == null ? new FileInfoDO():fileInfoDO);
+        lawWorksVO.setForceDO(forceDO == null ? new ForceDO():forceDO);
         lawWorksVO.setList(list);
         lawWorksVO.setLoanApplyCompensation(list1);
 

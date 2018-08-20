@@ -54,4 +54,6 @@ public class ForceDO {
     private String forceRemarks;
 
     private Long orderId;
+
+    private Long bankRepayImpRecordId;
 }

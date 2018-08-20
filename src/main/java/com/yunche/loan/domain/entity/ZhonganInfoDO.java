@@ -8,7 +8,7 @@ import java.util.List;
 public class ZhonganInfoDO {
     private Long id;
 
-    private Long orderId;
+    private String idCard;
 
     private String age;
 

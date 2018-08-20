@@ -4,9 +4,7 @@ import lombok.Data;
 
 import java.util.Date;
 @Data
-public class CollectionNewInfoDO {
-    private Long id;
-
+public class CollectionNewInfoDO extends CollectionNewInfoDOKey {
     private String isvisit;
 
     private String circumstances;

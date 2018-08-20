@@ -57,4 +57,6 @@ public class LitigationParam {
     private String remarks;
 
     private String litigationNo;
+
+    private Long bankRepayImpRecordId;
 }
