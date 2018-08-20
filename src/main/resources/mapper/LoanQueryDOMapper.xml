@@ -85,6 +85,7 @@
             f.bank                            AS bank,
             f.bank_period_principal           AS bank_period_principal,
             f.loan_amount                     AS loan_amount,
+            f.appraisal                       AS appraisal,
             d.price                           AS assess_price,
             i.vehicle_property                AS production_type,
             i.vehicle_property                AS vehicle_property,

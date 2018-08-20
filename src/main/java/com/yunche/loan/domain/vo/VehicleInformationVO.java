@@ -122,4 +122,6 @@ public class VehicleInformationVO {
 
     private String assess_org;
 
+    private String appraisal;
+
 }

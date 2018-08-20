@@ -60,6 +60,7 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
         int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(universalCompensationParam);
         Preconditions.checkArgument(count>0,"合伙人代偿保存失败");
 
+        //保存图片
         ResultBean<Void> resultBean = loanFileService.batchInsert(loanOrderDO.getLoanCustomerId(), universalCompensationParam.getFiles());
         Preconditions.checkArgument(resultBean.getSuccess(),"合伙人代偿打款凭证保存失败");
 
