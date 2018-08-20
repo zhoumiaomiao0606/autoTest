@@ -27,31 +27,32 @@
     <result column="second_remarks" property="secondRemarks" jdbcType="VARCHAR" />
     <result column="force_remarks" property="forceRemarks" jdbcType="VARCHAR" />
     <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, register_date, register_id, summary, rule_court, execution_applicant, executor, 
     undertake_judge, undertake_target, property_clues, suspension_date, end_date, court_accept_target, 
     undertake_remarks, repaid_num, repaid_money, repaid_interest, surplus_num, surplus_money, 
-    surplus_interest, second_date, second_target, second_remarks, force_remarks, order_id
+    surplus_interest, second_date, second_target, second_remarks, force_remarks, order_id,bank_repay_imp_record_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
-    from force
+    from forces
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <select id="selectByOrderId" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from force
-    where order_id = #{orderid,jdbcType=BIGINT}
+    from forces
+    where order_id = #{orderid,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
-    delete from force
+    delete from forces
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.ForceDO" >
-    insert into force (id, register_date, register_id, 
+    insert into forces (id, register_date, register_id,
       summary, rule_court, execution_applicant, 
       executor, undertake_judge, undertake_target, 
       property_clues, suspension_date, end_date, 
@@ -59,7 +60,7 @@
       repaid_money, repaid_interest, surplus_num, 
       surplus_money, surplus_interest, second_date, 
       second_target, second_remarks, force_remarks, 
-      order_id)
+      order_id,bank_repay_imp_record_id)
     values (#{id,jdbcType=BIGINT}, #{registerDate,jdbcType=DATE}, #{registerId,jdbcType=VARCHAR}, 
       #{summary,jdbcType=VARCHAR}, #{ruleCourt,jdbcType=VARCHAR}, #{executionApplicant,jdbcType=VARCHAR}, 
       #{executor,jdbcType=VARCHAR}, #{undertakeJudge,jdbcType=VARCHAR}, #{undertakeTarget,jdbcType=VARCHAR}, 
@@ -68,10 +69,10 @@
       #{repaidMoney,jdbcType=VARCHAR}, #{repaidInterest,jdbcType=VARCHAR}, #{surplusNum,jdbcType=VARCHAR}, 
       #{surplusMoney,jdbcType=VARCHAR}, #{surplusInterest,jdbcType=VARCHAR}, #{secondDate,jdbcType=DATE}, 
       #{secondTarget,jdbcType=VARCHAR}, #{secondRemarks,jdbcType=VARCHAR}, #{forceRemarks,jdbcType=VARCHAR}, 
-      #{orderId,jdbcType=BIGINT})
+      #{orderId,jdbcType=BIGINT},#{bankRepayImpRecordId,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ForceDO" >
-    insert into force
+    insert into forces
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
@@ -147,6 +148,9 @@
       </if>
       <if test="orderId != null" >
         order_id,
+      </if>
+      <if test="bankRepayImpRecordId != null" >
+        bank_repay_imp_record_id,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -225,10 +229,13 @@
       <if test="orderId != null" >
         #{orderId,jdbcType=BIGINT},
       </if>
+      <if test="bankRepayImpRecordId != null" >
+        #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ForceDO" >
-    update force
+    update forces
     <set >
       <if test="registerDate != null" >
         register_date = #{registerDate,jdbcType=DATE},
@@ -302,11 +309,14 @@
       <if test="orderId != null" >
         order_id = #{orderId,jdbcType=BIGINT},
       </if>
+      <if test="bankRepayImpRecordId != null" >
+        bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ForceDO" >
-    update force
+    update forces
     set register_date = #{registerDate,jdbcType=DATE},
       register_id = #{registerId,jdbcType=VARCHAR},
       summary = #{summary,jdbcType=VARCHAR},
@@ -330,7 +340,8 @@
       second_target = #{secondTarget,jdbcType=VARCHAR},
       second_remarks = #{secondRemarks,jdbcType=VARCHAR},
       force_remarks = #{forceRemarks,jdbcType=VARCHAR},
-      order_id = #{orderId,jdbcType=BIGINT}
+      order_id = #{orderId,jdbcType=BIGINT},
+      bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

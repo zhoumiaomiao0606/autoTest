@@ -56,8 +56,8 @@ public class AppLoanOrderController {
      * 众安接口详情
      */
     @PostMapping(value = "/zhongandetail")
-    public ResultBean zhongAnDetail(@RequestParam ("orderId") Long orderId,@RequestParam ("customerName") String customerName){
-        return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(orderId,customerName));
+    public ResultBean zhongAnDetail(@RequestParam ("idcard") String idCard,@RequestParam ("customerName") String customerName){
+        return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(idCard,customerName));
 
     }
 

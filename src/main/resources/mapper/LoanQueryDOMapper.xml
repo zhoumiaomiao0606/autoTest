@@ -1127,7 +1127,9 @@
                 repay.is_overdue                                    AS repay_is_overdue,
                 repay.overdue_amount                                AS repay_overdue_amount,
                 DATE_FORMAT(repay.check_date,'%Y-%m-%d')            AS repay_check_date
-            from loan_repay_plan repay,(select @row:=0) r where repay.order_id = #{orderId,jdbcType=BIGINT} order by repay.repay_date asc
+            from loan_repay_plan repay,(select @row:=0) r
+            where repay.order_id = #{orderId,jdbcType=BIGINT}
+            order by repay.repay_date asc
 
     </select>
 

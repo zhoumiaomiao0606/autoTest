@@ -860,7 +860,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             for(ZhongAnCusParam zhongAnCusParam:customers){
                 Random random = new Random();
                 Map map = ZhongAnHttpUtil.queryInfo(zhongAnCusParam.getName(),zhongAnCusParam.getTel(),zhongAnCusParam.getIdcard(),
-                        zhongAnQueryParam.getOrderid(),zhongAnCusParam.getLoanmoney(),zhongAnCusParam.getCustomertype(),zhongAnCusParam.getRalationship(),
+                        zhongAnCusParam.getIdcard(),zhongAnCusParam.getLoanmoney(),zhongAnCusParam.getCustomertype(),zhongAnCusParam.getRalationship(),
                         System.currentTimeMillis()+""+random.nextInt(10000));
                 if((boolean)map.get("success")){
                     JSONObject myJson = JSONObject.fromObject(map.get("creditResult"));
@@ -871,7 +871,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                             qcqlInfoMap = (Map)JSON.parse(qcqlInfo);
                         }
                     ZhonganInfoDO zhongAnInfoDO = new ZhonganInfoDO();
-                    zhongAnInfoDO.setOrderId(Long.valueOf(zhongAnQueryParam.getOrderid()));
+                    zhongAnInfoDO.setIdCard(zhongAnCusParam.getIdcard());
                     zhongAnInfoDO.setAge((String)creditResultMap.get("age"));
                     zhongAnInfoDO.setGender((String)creditResultMap.get("gender"));
                     zhongAnInfoDO.setMobileCity((String)creditResultMap.get("mobileCity"));
@@ -945,9 +945,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     }
 
     @Override
-    public ZhongAnDetailQuery zhongAnDetail(Long orderId,String customerName) {
+    public ZhongAnDetailQuery zhongAnDetail(String idCard,String customerName) {
         ZhongAnDetailQuery zhongAnDetailQuery = new ZhongAnDetailQuery();
-        List<ZhonganInfoDO> list = zhongAnInfoDOMapper.selectByOrderId(orderId,customerName);
+        List<ZhonganInfoDO> list = zhongAnInfoDOMapper.selectByOrderId(idCard,customerName);
         for(ZhonganInfoDO zhongAnInfoDO:list){
             List<ZhonganOverdueDO> overDueList = zhongAnOverDueDOMapper.selectById(zhongAnInfoDO.getId());
             List<RspCreditDO> creditList = rspCreditDOMapper.selectById(zhongAnInfoDO.getId());

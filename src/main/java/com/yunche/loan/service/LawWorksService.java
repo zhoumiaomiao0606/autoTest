@@ -8,7 +8,7 @@ import com.yunche.loan.domain.param.LitigationParam;
 import com.yunche.loan.domain.vo.LawWorksVO;
 
 public interface LawWorksService {
-    public LawWorksVO detail(Long orderid);
+    public LawWorksVO detail(Long orderid,Long bankRepayImpRecordId);
 
     public void litigationInstall(LitigationParam param);
 

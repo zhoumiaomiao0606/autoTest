@@ -1,9 +1,7 @@
 package com.yunche.loan.domain.vo;
 
 import com.google.common.collect.Lists;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
-import com.yunche.loan.domain.entity.LoanCustomerDO;
-import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
+import com.yunche.loan.domain.entity.*;
 import lombok.Data;
 
 import java.util.List;
@@ -104,5 +102,5 @@ public class RecombinationVO<T> {
 
     private List<LoanApplyCompensationDO> loanApplyCompensation = Lists.newArrayList();
 
-
+    private CollectionNewInfoDO collectionNewInfoDO;
 }

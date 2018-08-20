@@ -28,13 +28,14 @@
     <result column="return_money" property="returnMoney" jdbcType="VARCHAR" />
     <result column="remarks" property="remarks" jdbcType="VARCHAR" />
     <result column="litigation_no" property="litigationNo" jdbcType="VARCHAR" />
+    <result column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, order_id, register_date, register_id, plaintiff, defendant, rule_court, litigation_total, 
     litigation_money, undertake_court, undertake_court_tel, clerk, clerk_tel, sitting_date, 
     publication_fee, sentence, preservation_date, preservation_money, preservation_fee, 
     preservation_judge, effect_date, preservation_judge_tel, return_date, return_money, 
-    remarks, litigation_no
+    remarks, litigation_no,bank_repay_imp_record_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -46,7 +47,7 @@
     delete from litigation
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LitigationDO" >
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LitigationDO" useGeneratedKeys="true" keyProperty="id">
     insert into litigation (id, order_id, register_date, 
       register_id, plaintiff, defendant, 
       rule_court, litigation_total, litigation_money, 
@@ -55,7 +56,7 @@
       sentence, preservation_date, preservation_money, 
       preservation_fee, preservation_judge, effect_date, 
       preservation_judge_tel, return_date, return_money, 
-      remarks, litigation_no)
+      remarks, litigation_no,bank_repay_imp_record_id)
     values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{registerDate,jdbcType=DATE}, 
       #{registerId,jdbcType=VARCHAR}, #{plaintiff,jdbcType=VARCHAR}, #{defendant,jdbcType=VARCHAR}, 
       #{ruleCourt,jdbcType=VARCHAR}, #{litigationTotal,jdbcType=VARCHAR}, #{litigationMoney,jdbcType=VARCHAR}, 
@@ -64,9 +65,9 @@
       #{sentence,jdbcType=VARCHAR}, #{preservationDate,jdbcType=DATE}, #{preservationMoney,jdbcType=VARCHAR}, 
       #{preservationFee,jdbcType=VARCHAR}, #{preservationJudge,jdbcType=VARCHAR}, #{effectDate,jdbcType=DATE}, 
       #{preservationJudgeTel,jdbcType=VARCHAR}, #{returnDate,jdbcType=DATE}, #{returnMoney,jdbcType=VARCHAR}, 
-      #{remarks,jdbcType=VARCHAR}, #{litigationNo,jdbcType=VARCHAR})
+      #{remarks,jdbcType=VARCHAR}, #{litigationNo,jdbcType=VARCHAR},#{bankRepayImpRecordId,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LitigationDO" >
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LitigationDO" useGeneratedKeys="true" keyProperty="id" >
     insert into litigation
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -146,6 +147,9 @@
       </if>
       <if test="litigationNo != null" >
         litigation_no,
+      </if>
+      <if test="bankRepayImpRecordId != null" >
+        bank_repay_imp_record_id,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -227,6 +231,9 @@
       <if test="litigationNo != null" >
         #{litigationNo,jdbcType=VARCHAR},
       </if>
+      <if test="bankRepayImpRecordId != null" >
+        #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LitigationDO" >
@@ -307,6 +314,9 @@
       <if test="litigationNo != null" >
         litigation_no = #{litigationNo,jdbcType=VARCHAR},
       </if>
+      <if test="bankRepayImpRecordId != null" >
+        bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -336,7 +346,8 @@
       return_date = #{returnDate,jdbcType=DATE},
       return_money = #{returnMoney,jdbcType=VARCHAR},
       remarks = #{remarks,jdbcType=VARCHAR},
-      litigation_no = #{litigationNo,jdbcType=VARCHAR}
+      litigation_no = #{litigationNo,jdbcType=VARCHAR},
+      bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectLawWorkInfo" resultType="com.yunche.loan.domain.query.LawWorkQuery" parameterType="java.lang.Long">
@@ -376,10 +387,10 @@
 	b.cust_type = 1 and a.id = #{orderid,jdbcType=BIGINT}
   </select>
 
-  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <select id="selectByOrderId" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from litigation
-    where order_id = #{orderid,jdbcType=BIGINT}
+    where order_id = #{orderid,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </select>
 </mapper>

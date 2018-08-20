@@ -6,6 +6,7 @@ import com.yunche.loan.domain.param.ManualDistributionBaseParam;
 import com.yunche.loan.domain.param.ManualDistributionParam;
 import com.yunche.loan.domain.param.RecordCollectionParam;
 import com.yunche.loan.service.CollectionService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -24,8 +25,8 @@ public class CollectionController {
     private CollectionService collectionService;
 
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String order_id) {
-        return ResultBean.ofSuccess(collectionService.detail(Long.valueOf(order_id)));
+    public ResultBean detail(@RequestParam String order_id,@RequestParam String bank_repay_imp_record_id) {
+        return ResultBean.ofSuccess(collectionService.detail(Long.valueOf(order_id),Long.valueOf(bank_repay_imp_record_id)));
     }
 
     @GetMapping(value = "/recordDetail")
@@ -77,7 +78,7 @@ public class CollectionController {
      * 是否上门法务detail
      */
     @GetMapping(value = "/iscollectiondetail")
-    public ResultBean isCollectionDetail(@RequestParam String order_id) {
-        return ResultBean.ofSuccess(collectionService.isCollectionDetail(Long.valueOf(order_id)));
+    public ResultBean isCollectionDetail(@RequestParam String order_id, @RequestParam String bank_repay_imp_record_id) {
+        return ResultBean.ofSuccess(collectionService.isCollectionDetail(Long.valueOf(order_id),Long.valueOf(bank_repay_imp_record_id)));
     }
 }

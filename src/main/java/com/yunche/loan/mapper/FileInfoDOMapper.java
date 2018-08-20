@@ -20,5 +20,5 @@ public interface FileInfoDOMapper {
 
     int updateByPrimaryKey(FileInfoDO record);
 
-    FileInfoDO selectByOrderId(@Param("orderid")Long orderid);
+    FileInfoDO selectByOrderId(@Param("orderid")Long orderid,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
 }

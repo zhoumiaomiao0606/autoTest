@@ -22,9 +22,9 @@ public class LawWorksController {
      * 法务详情
      */
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String order_id) {
+    public ResultBean detail(@RequestParam String order_id,@RequestParam String bank_repay_imp_record_id) {
 
-        return ResultBean.ofSuccess(lawWorksService.detail(Long.valueOf(order_id)));
+        return ResultBean.ofSuccess(lawWorksService.detail(Long.valueOf(order_id),Long.valueOf(bank_repay_imp_record_id)));
     }
     /*
     *撤销诉讼

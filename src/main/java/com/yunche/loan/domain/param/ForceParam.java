@@ -55,4 +55,6 @@ public class ForceParam {
     private String forceRemarks;
 
     private Long orderId;
+
+    private Long bankRepayImpRecordId;
 }

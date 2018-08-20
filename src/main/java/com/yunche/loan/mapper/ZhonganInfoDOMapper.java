@@ -19,5 +19,5 @@ public interface ZhonganInfoDOMapper {
 
     int updateByPrimaryKey(ZhonganInfoDO record);
 
-    List<ZhonganInfoDO> selectByOrderId(@Param("orderid") Long orderid, @Param("customername") String customername);
+    List<ZhonganInfoDO> selectByOrderId(@Param("idcard") String idCard, @Param("customername") String customername);
 }
