@@ -4,6 +4,7 @@ import cn.jiguang.common.utils.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.VehicleHandleDO;
 import com.yunche.loan.domain.entity.VehicleOutboundDO;
+import com.yunche.loan.domain.entity.VehicleOutboundDOKey;
 import com.yunche.loan.domain.param.VehicleOutboundUpdateParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
@@ -37,14 +38,17 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
     @Autowired
     private VehicleOutboundDOMapper vehicleOutboundDOMapper;
     @Override
-    public VehicleOutboundVO detail(Long orderId)
+    public VehicleOutboundVO detail(Long orderId,Long bank_repay_imp_record_id)
     {
         VehicleOutboundVO vehicleOutboundVO =new VehicleOutboundVO();
         // TODO
         //客户主要信息
         BaseCustomerInfoVO baseCustomerInfoVO = loanQueryDOMapper.selectBaseCustomerInfoInfo(orderId);
         //车辆出库登记
-        VehicleOutboundDO vehicleOutboundDO = vehicleOutboundDOMapper.selectByPrimaryKey(orderId);
+        VehicleOutboundDOKey vehicleOutboundDOKey =new VehicleOutboundDOKey();
+        vehicleOutboundDOKey.setOrderid(orderId);
+        vehicleOutboundDOKey.setBankRepayImpRecordId(bank_repay_imp_record_id);
+        VehicleOutboundDO vehicleOutboundDO = vehicleOutboundDOMapper.selectByPrimaryKey(vehicleOutboundDOKey);
         //车辆信息
         VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
         //贷款业务详细信息
@@ -67,7 +71,11 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
     {
         Preconditions.checkNotNull(param.getOrderid(), "订单号不能为空");
 
-        VehicleOutboundDO  existDO = vehicleOutboundDOMapper.selectByPrimaryKey(param.getOrderid());
+        VehicleOutboundDOKey vehicleOutboundDOKey =new VehicleOutboundDOKey();
+        vehicleOutboundDOKey.setOrderid(param.getOrderid());
+        vehicleOutboundDOKey.setBankRepayImpRecordId(param.getBankRepayImpRecordId());
+
+        VehicleOutboundDO  existDO = vehicleOutboundDOMapper.selectByPrimaryKey(vehicleOutboundDOKey);
 
         VehicleOutboundDO vehicleOutboundDO =new VehicleOutboundDO();
         BeanUtils.copyProperties(param, vehicleOutboundDO);

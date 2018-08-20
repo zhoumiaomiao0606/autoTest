@@ -1,8 +1,6 @@
 package com.yunche.loan.domain.entity;
 
-public class VehicleOutboundDO {
-    private Long orderid;
-
+public class VehicleOutboundDO extends VehicleOutboundDOKey {
     private String reason;
 
     private String address;
@@ -18,14 +16,6 @@ public class VehicleOutboundDO {
     private String remarks;
 
     private String balance;
-
-    public Long getOrderid() {
-        return orderid;
-    }
-
-    public void setOrderid(Long orderid) {
-        this.orderid = orderid;
-    }
 
     public String getReason() {
         return reason;
