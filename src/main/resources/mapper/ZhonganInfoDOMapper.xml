@@ -3,7 +3,7 @@
 <mapper namespace="com.yunche.loan.mapper.ZhonganInfoDOMapper" >
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ZhonganInfoDO" >
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
     <result column="age" property="age" jdbcType="VARCHAR" />
     <result column="gender" property="gender" jdbcType="VARCHAR" />
     <result column="mobile_city" property="mobileCity" jdbcType="VARCHAR" />
@@ -24,7 +24,7 @@
     <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, order_id, age, gender, mobile_city, mobile_comm_duration, mobile_comm_sts, phoneid_name_check, 
+    id, id_card, age, gender, mobile_city, mobile_comm_duration, mobile_comm_sts, phoneid_name_check,
     high_risk_behavior, rsn_high_risk, rsn_long_overdue, rsn_multi_loan, rsn_policy_restrict, 
     rsn_risk_rec, rsp_lawsuit_alllist, rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
     rsp_watchlist_detail, high_risk_record, customer_name
@@ -33,7 +33,7 @@
     select
     <include refid="Base_Column_List" />
     from zhongan_info
-    where orderid = #{orderid,jdbcType=BIGINT} and customer_name = #{customername,jdbcType=VARCHAR}
+    where id_card = #{idcard,jdbcType=BIGINT} and customer_name = #{customername,jdbcType=VARCHAR}
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -46,7 +46,7 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" useGeneratedKeys="true" keyProperty="id">
-    insert into zhongan_info (id, order_id, age, 
+    insert into zhongan_info (id, id_card, age,
       gender, mobile_city, mobile_comm_duration, 
       mobile_comm_sts, phoneid_name_check, high_risk_behavior, 
       rsn_high_risk, rsn_long_overdue, rsn_multi_loan, 
@@ -54,7 +54,7 @@
       rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
       rsp_watchlist_detail, high_risk_record, customer_name
       )
-    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{age,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=BIGINT}, #{idCard,jdbcType=BIGINT}, #{age,jdbcType=VARCHAR},
       #{gender,jdbcType=VARCHAR}, #{mobileCity,jdbcType=VARCHAR}, #{mobileCommDuration,jdbcType=VARCHAR}, 
       #{mobileCommSts,jdbcType=VARCHAR}, #{phoneidNameCheck,jdbcType=VARCHAR}, #{highRiskBehavior,jdbcType=VARCHAR}, 
       #{rsnHighRisk,jdbcType=VARCHAR}, #{rsnLongOverdue,jdbcType=VARCHAR}, #{rsnMultiLoan,jdbcType=VARCHAR}, 
@@ -69,8 +69,8 @@
       <if test="id != null" >
         id,
       </if>
-      <if test="orderId != null" >
-        order_id,
+      <if test="idCard != null" >
+        id_card,
       </if>
       <if test="age != null" >
         age,
@@ -131,8 +131,8 @@
       <if test="id != null" >
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="orderId != null" >
-        #{orderId,jdbcType=BIGINT},
+      <if test="idCard != null" >
+        #{idCard,jdbcType=BIGINT},
       </if>
       <if test="age != null" >
         #{age,jdbcType=VARCHAR},
@@ -193,8 +193,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" >
     update zhongan_info
     <set >
-      <if test="orderId != null" >
-        order_id = #{orderId,jdbcType=BIGINT},
+      <if test="idCard != null" >
+        id_card = #{idCard,jdbcType=BIGINT},
       </if>
       <if test="age != null" >
         age = #{age,jdbcType=VARCHAR},
@@ -255,7 +255,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" >
     update zhongan_info
-    set order_id = #{orderId,jdbcType=BIGINT},
+    set id_card = #{idCard,jdbcType=BIGINT},
       age = #{age,jdbcType=VARCHAR},
       gender = #{gender,jdbcType=VARCHAR},
       mobile_city = #{mobileCity,jdbcType=VARCHAR},

@@ -46,7 +46,7 @@
     delete from visit_door
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.VisitDoorDO" >
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.VisitDoorDO" useGeneratedKeys="true" keyProperty="id">
     insert into visit_door (id, dispatched_staff_id, dispatched_staff_name, 
       dispatched_date, receiver_id, receiver_name, 
       visit_people_name, visit_date, traffic, 
@@ -62,7 +62,7 @@
       #{visitResult,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, #{carDetail,jdbcType=VARCHAR}, 
       #{orderId,jdbcType=BIGINT}, #{visitPeopleId,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VisitDoorDO" >
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VisitDoorDO" useGeneratedKeys="true" keyProperty="id">
     insert into visit_door
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

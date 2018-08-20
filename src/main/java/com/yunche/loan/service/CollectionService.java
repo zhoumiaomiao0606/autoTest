@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface CollectionService {
 
-    RecombinationVO detail(Long orderId);
+    RecombinationVO detail(Long orderId,Long bankRepayImpRecordId);
 
-    VisitDoorVO isCollectionDetail(Long orderId);
+    VisitDoorVO isCollectionDetail(Long orderId,Long bankRepayImpRecordId);
 
     UniversalCollectionRecordDetail recordDetail(Long collectionId);
 

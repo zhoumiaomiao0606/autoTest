@@ -48,11 +48,13 @@ public class VisitDoorServiceImpl implements VisitDoorService {
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
     @Override
-    public VisitDoorVO detail(Long orderId,Long id) {
+    public VisitDoorVO detail(Long orderId,Long id,Long bankRepayImpRecordId) {
         List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
 
-
-        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+        CollectionNewInfoDOKey collectionNewInfoDOKey = new CollectionNewInfoDOKey();
+        collectionNewInfoDOKey.setId(orderId);
+        collectionNewInfoDOKey.setBankRepayImpRecordId(bankRepayImpRecordId);
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(collectionNewInfoDOKey);
         if(collectionNewInfoDO ==  null){
             collectionNewInfoDO = new CollectionNewInfoDO();
         }
@@ -68,6 +70,8 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
         if(id != null){
             visitDoorVO.setVisitDoorDO(visitDoorDOMapper.selectByPrimaryKey(id));
+        }else{
+            visitDoorVO.setVisitDoorDO(new VisitDoorDO());
         }
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
@@ -77,17 +81,22 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         visitDoorVO.setCustomers(customers);
         visitDoorVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         visitDoorVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));
-        visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId,"1"));
+        visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId,"1",bankRepayImpRecordId));
         visitDoorVO.setLoanApplyCompensation(list);
         return visitDoorVO;
     }
 
     @Override
-    public VisitDoorVO cusInfoDetatil(Long orderId, Long id) {
-        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+    public VisitDoorVO cusInfoDetatil(Long orderId, Long id,Long bankRepayImpRecordId) {
+        CollectionNewInfoDOKey collectionNewInfoDOKey = new CollectionNewInfoDOKey();
+        collectionNewInfoDOKey.setId(orderId);
+        collectionNewInfoDOKey.setBankRepayImpRecordId(bankRepayImpRecordId);
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(collectionNewInfoDOKey);
         if(collectionNewInfoDO ==  null){
             collectionNewInfoDO = new CollectionNewInfoDO();
         }
+        List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
+
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
 
         CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
@@ -98,13 +107,17 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         visitDoorVO.setCollectionNum(num);
         visitDoorVO.setResult(lawWorkQuery);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
-        visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId,"1"));
+        visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId,"1",bankRepayImpRecordId));
+        visitDoorVO.setLoanApplyCompensation(list);
         return visitDoorVO;
     }
 
     @Override
-    public VisitDoorVO visitDoorDetatil(Long orderId, Long id) {
-        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
+    public VisitDoorVO visitDoorDetatil(Long orderId, Long id,Long bankRepayImpRecordId) {
+        CollectionNewInfoDOKey collectionNewInfoDOKey = new CollectionNewInfoDOKey();
+        collectionNewInfoDOKey.setId(orderId);
+        collectionNewInfoDOKey.setBankRepayImpRecordId(bankRepayImpRecordId);
+        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(collectionNewInfoDOKey);
         if(collectionNewInfoDO ==  null){
             collectionNewInfoDO = new CollectionNewInfoDO();
         }

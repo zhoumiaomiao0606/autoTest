@@ -11,4 +11,6 @@ public class LitigationStateDO {
     private String stopReason;
 
     private String collectionType;
+
+    private String bankRepayImpRecordId;
 }

@@ -17,4 +17,6 @@ public class FileInfoDO {
     private String undertakeTotal;
 
     private Long orderId;
+
+    private Long bankRepayImpRecordId;
 }

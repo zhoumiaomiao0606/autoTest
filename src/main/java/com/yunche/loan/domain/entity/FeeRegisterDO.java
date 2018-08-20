@@ -17,4 +17,6 @@ public class FeeRegisterDO {
     private String undertakeTotal;
 
     private Long orderId;
+
+    private Long bankRepayImpRecordId;
 }

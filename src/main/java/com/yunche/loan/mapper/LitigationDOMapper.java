@@ -21,7 +21,7 @@ public interface LitigationDOMapper {
 
     int updateByPrimaryKey(LitigationDO record);
 
-    List<LitigationDO> selectByOrderId(@Param("orderid")Long orderid);
+    List<LitigationDO> selectByOrderId(@Param("orderid")Long orderid,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
 
     LawWorkQuery selectLawWorkInfo(@Param("orderid")Long orderid);
 }

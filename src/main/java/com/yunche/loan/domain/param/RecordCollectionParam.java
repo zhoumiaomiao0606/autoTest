@@ -21,4 +21,6 @@ public class RecordCollectionParam {
 
     private String islaw;
 
+    private Long bankRepayImpRecordId;
+
 }
