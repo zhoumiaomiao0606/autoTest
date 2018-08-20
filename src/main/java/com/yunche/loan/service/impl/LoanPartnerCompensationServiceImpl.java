@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
+
 /**
  * 合伙人代偿
  */
@@ -61,7 +63,7 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
         Preconditions.checkArgument(count>0,"合伙人代偿保存失败");
 
         //保存图片
-        ResultBean<Void> resultBean = loanFileService.batchInsert(loanOrderDO.getLoanCustomerId(), universalCompensationParam.getFiles());
+        ResultBean<Void> resultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), universalCompensationParam.getFiles(),UPLOAD_TYPE_NORMAL );
         Preconditions.checkArgument(resultBean.getSuccess(),"合伙人代偿打款凭证保存失败");
 
         return null;
