@@ -20,6 +20,12 @@ public class BaseCustomerInfoVO
     private String customer_id_card;
     //现住地址
     private String customer_address;
+    //省、市、区
+    private String customer_hprovince;
+
+    private String customer_hcity;
+
+    private String customer_hcounty;
     //身份证地址
     private String customer_identity_address;
     //单位名称

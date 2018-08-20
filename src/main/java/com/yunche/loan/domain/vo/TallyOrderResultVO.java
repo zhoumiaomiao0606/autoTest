@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
 import com.yunche.loan.domain.entity.InsuranceRiskDO;
+import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import lombok.Data;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public class TallyOrderResultVO
     private UniversalCostDetailsVO universalCostDetailsVO;
 
     private MortgageInfoVO mortgageInfoVO;
+
+    private List<LoanApplyCompensationDO> loanApplyCompensationDOS;
 
     private List<InsuranceRelevanceDO> insuranceRelevanceDOS;
 

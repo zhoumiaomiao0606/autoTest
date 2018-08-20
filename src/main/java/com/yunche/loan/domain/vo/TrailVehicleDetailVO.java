@@ -11,11 +11,11 @@ public class TrailVehicleDetailVO
     private String applyTrailVehicleDate;
 
     //拖车时间
-
+    private String trailVehicleDate;
     //拖车结果
-
+    private String trailVehicleResult;
     //相关费用
-
+    private String relationFee;
     //总代偿额-车辆回收金融
 
 
