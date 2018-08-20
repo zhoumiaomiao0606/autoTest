@@ -6,6 +6,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.VehicleHandleDO;
+import com.yunche.loan.domain.entity.VehicleHandleDOKey;
 import com.yunche.loan.domain.param.VehicleHandleUpdateParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
@@ -44,14 +45,14 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
 
 
     @Override
-    public VehicleHandleVO detail(Long orderId)
+    public VehicleHandleVO detail(Long orderId,Long bankRepayImpRecordId)
     {
         VehicleHandleVO vehicleHandleVO =new VehicleHandleVO();
         // TODO
         //客户主要信息
         BaseCustomerInfoVO baseCustomerInfoVO = loanQueryDOMapper.selectBaseCustomerInfoInfo(orderId);
         //车辆处理登记
-        VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(orderId);
+        VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(orderId,bankRepayImpRecordId));
 
         //车辆信息
         VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
@@ -73,8 +74,9 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
     public ResultBean<Void>  update(VehicleHandleUpdateParam param)
     {
         Preconditions.checkNotNull(param.getOrderid(), "订单号不能为空");
+        Preconditions.checkNotNull(param.getBankRepayImpRecordId(), "版本号不能为空");
 
-        VehicleHandleDO  existDO = vehicleHandleDOMapper.selectByPrimaryKey(param.getOrderid());
+        VehicleHandleDO  existDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(param.getOrderid(),param.getBankRepayImpRecordId()));
 
         VehicleHandleDO vehicleHandleDO =new VehicleHandleDO();
         BeanUtils.copyProperties(param, vehicleHandleDO);

@@ -23,7 +23,8 @@ public class VehicleOutboundController
     private VehicleOutboundService vehicleOutboundService;
 
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String orderId,String bank_repay_imp_record_id) {
+    public ResultBean detail(@RequestParam String orderId,String bank_repay_imp_record_id)
+    {
         return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
     }
 

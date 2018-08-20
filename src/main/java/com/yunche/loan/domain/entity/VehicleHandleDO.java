@@ -3,9 +3,7 @@ package com.yunche.loan.domain.entity;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class VehicleHandleDO {
-    private Long orderid;
-
+public class VehicleHandleDO extends VehicleHandleDOKey {
     private Long handdlePerson;
 
     private Date trailVehicleDate;
@@ -55,14 +53,6 @@ public class VehicleHandleDO {
     private String relationMaterialUrl1;
 
     private String relationMaterialUrl2;
-
-    public Long getOrderid() {
-        return orderid;
-    }
-
-    public void setOrderid(Long orderid) {
-        this.orderid = orderid;
-    }
 
     public Long getHanddlePerson() {
         return handdlePerson;

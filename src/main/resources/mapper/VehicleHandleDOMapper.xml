@@ -3,6 +3,7 @@
 <mapper namespace="com.yunche.loan.mapper.VehicleHandleDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VehicleHandleDO">
     <id column="orderid" jdbcType="BIGINT" property="orderid" />
+    <id column="bank_repay_imp_record_id" jdbcType="BIGINT" property="bankRepayImpRecordId" />
     <result column="handdle_person" jdbcType="BIGINT" property="handdlePerson" />
     <result column="trail_vehicle_date" jdbcType="TIMESTAMP" property="trailVehicleDate" />
     <result column="trail_vehicle_address" jdbcType="VARCHAR" property="trailVehicleAddress" />
@@ -30,44 +31,46 @@
     <result column="relation_material_url2" jdbcType="VARCHAR" property="relationMaterialUrl2" />
   </resultMap>
   <sql id="Base_Column_List">
-    orderid, handdle_person, trail_vehicle_date, trail_vehicle_address, vehicle_inbound_date, 
-    vehicle_inbound_address, vehicle_inbound_address_detail, customer_condition, chassis_number, 
-    driver_kilometers, vehichle_surface, vehicle_key, vehicle_othermaterial, vehicle_otherthings, 
-    purchase_tax, road_maintenance_costs, road_maintenance_costs_statement, break_rules_costs, 
-    break_rules_costs_statement, vehicle_statement, trail_vehicle_costs, vehicle_maintenance_costs, 
-    other_costs, final_costs, relation_material_url1, relation_material_url2
+    orderid, bank_repay_imp_record_id, handdle_person, trail_vehicle_date, trail_vehicle_address, 
+    vehicle_inbound_date, vehicle_inbound_address, vehicle_inbound_address_detail, customer_condition, 
+    chassis_number, driver_kilometers, vehichle_surface, vehicle_key, vehicle_othermaterial, 
+    vehicle_otherthings, purchase_tax, road_maintenance_costs, road_maintenance_costs_statement, 
+    break_rules_costs, break_rules_costs_statement, vehicle_statement, trail_vehicle_costs, 
+    vehicle_maintenance_costs, other_costs, final_costs, relation_material_url1, relation_material_url2
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VehicleHandleDOKey" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from vehicle_handle
     where orderid = #{orderid,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VehicleHandleDOKey">
     delete from vehicle_handle
     where orderid = #{orderid,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.VehicleHandleDO">
-    insert into vehicle_handle (orderid, handdle_person, trail_vehicle_date, 
-      trail_vehicle_address, vehicle_inbound_date, 
-      vehicle_inbound_address, vehicle_inbound_address_detail, 
-      customer_condition, chassis_number, driver_kilometers, 
-      vehichle_surface, vehicle_key, vehicle_othermaterial, 
-      vehicle_otherthings, purchase_tax, road_maintenance_costs, 
-      road_maintenance_costs_statement, break_rules_costs, 
-      break_rules_costs_statement, vehicle_statement, 
-      trail_vehicle_costs, vehicle_maintenance_costs, 
+    insert into vehicle_handle (orderid, bank_repay_imp_record_id, handdle_person, 
+      trail_vehicle_date, trail_vehicle_address, 
+      vehicle_inbound_date, vehicle_inbound_address, 
+      vehicle_inbound_address_detail, customer_condition, 
+      chassis_number, driver_kilometers, vehichle_surface, 
+      vehicle_key, vehicle_othermaterial, vehicle_otherthings, 
+      purchase_tax, road_maintenance_costs, road_maintenance_costs_statement, 
+      break_rules_costs, break_rules_costs_statement, 
+      vehicle_statement, trail_vehicle_costs, vehicle_maintenance_costs, 
       other_costs, final_costs, relation_material_url1, 
       relation_material_url2)
-    values (#{orderid,jdbcType=BIGINT}, #{handdlePerson,jdbcType=BIGINT}, #{trailVehicleDate,jdbcType=TIMESTAMP}, 
-      #{trailVehicleAddress,jdbcType=VARCHAR}, #{vehicleInboundDate,jdbcType=TIMESTAMP}, 
-      #{vehicleInboundAddress,jdbcType=VARCHAR}, #{vehicleInboundAddressDetail,jdbcType=VARCHAR}, 
-      #{customerCondition,jdbcType=VARCHAR}, #{chassisNumber,jdbcType=VARCHAR}, #{driverKilometers,jdbcType=VARCHAR}, 
-      #{vehichleSurface,jdbcType=VARCHAR}, #{vehicleKey,jdbcType=TINYINT}, #{vehicleOthermaterial,jdbcType=VARCHAR}, 
-      #{vehicleOtherthings,jdbcType=VARCHAR}, #{purchaseTax,jdbcType=DECIMAL}, #{roadMaintenanceCosts,jdbcType=DECIMAL}, 
-      #{roadMaintenanceCostsStatement,jdbcType=VARCHAR}, #{breakRulesCosts,jdbcType=DECIMAL}, 
-      #{breakRulesCostsStatement,jdbcType=VARCHAR}, #{vehicleStatement,jdbcType=VARCHAR}, 
-      #{trailVehicleCosts,jdbcType=DECIMAL}, #{vehicleMaintenanceCosts,jdbcType=DECIMAL}, 
+    values (#{orderid,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT}, #{handdlePerson,jdbcType=BIGINT}, 
+      #{trailVehicleDate,jdbcType=TIMESTAMP}, #{trailVehicleAddress,jdbcType=VARCHAR}, 
+      #{vehicleInboundDate,jdbcType=TIMESTAMP}, #{vehicleInboundAddress,jdbcType=VARCHAR}, 
+      #{vehicleInboundAddressDetail,jdbcType=VARCHAR}, #{customerCondition,jdbcType=VARCHAR}, 
+      #{chassisNumber,jdbcType=VARCHAR}, #{driverKilometers,jdbcType=VARCHAR}, #{vehichleSurface,jdbcType=VARCHAR}, 
+      #{vehicleKey,jdbcType=TINYINT}, #{vehicleOthermaterial,jdbcType=VARCHAR}, #{vehicleOtherthings,jdbcType=VARCHAR}, 
+      #{purchaseTax,jdbcType=DECIMAL}, #{roadMaintenanceCosts,jdbcType=DECIMAL}, #{roadMaintenanceCostsStatement,jdbcType=VARCHAR}, 
+      #{breakRulesCosts,jdbcType=DECIMAL}, #{breakRulesCostsStatement,jdbcType=VARCHAR}, 
+      #{vehicleStatement,jdbcType=VARCHAR}, #{trailVehicleCosts,jdbcType=DECIMAL}, #{vehicleMaintenanceCosts,jdbcType=DECIMAL}, 
       #{otherCosts,jdbcType=DECIMAL}, #{finalCosts,jdbcType=DECIMAL}, #{relationMaterialUrl1,jdbcType=VARCHAR}, 
       #{relationMaterialUrl2,jdbcType=VARCHAR})
   </insert>
@@ -76,6 +79,9 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="orderid != null">
         orderid,
+      </if>
+      <if test="bankRepayImpRecordId != null">
+        bank_repay_imp_record_id,
       </if>
       <if test="handdlePerson != null">
         handdle_person,
@@ -156,6 +162,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="orderid != null">
         #{orderid,jdbcType=BIGINT},
+      </if>
+      <if test="bankRepayImpRecordId != null">
+        #{bankRepayImpRecordId,jdbcType=BIGINT},
       </if>
       <if test="handdlePerson != null">
         #{handdlePerson,jdbcType=BIGINT},
@@ -314,6 +323,7 @@
       </if>
     </set>
     where orderid = #{orderid,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VehicleHandleDO">
     update vehicle_handle
@@ -343,5 +353,6 @@
       relation_material_url1 = #{relationMaterialUrl1,jdbcType=VARCHAR},
       relation_material_url2 = #{relationMaterialUrl2,jdbcType=VARCHAR}
     where orderid = #{orderid,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
 </mapper>

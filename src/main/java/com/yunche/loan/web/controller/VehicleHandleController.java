@@ -22,8 +22,8 @@ public class VehicleHandleController
     private VehicleHandleService vehicleHandleService;
 
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String orderId) {
-        return ResultBean.ofSuccess(vehicleHandleService.detail(Long.valueOf(orderId)));
+    public ResultBean detail(@RequestParam String orderId,Long bankRepayImpRecordId) {
+        return ResultBean.ofSuccess(vehicleHandleService.detail(Long.valueOf(orderId),bankRepayImpRecordId));
     }
 
 

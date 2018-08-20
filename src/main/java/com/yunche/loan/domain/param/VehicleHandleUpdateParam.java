@@ -13,6 +13,8 @@ import java.util.Date;
 @Data
 public class VehicleHandleUpdateParam
 {
+    private Long bankRepayImpRecordId;
+
     private Long orderid;
 
     private Long handdlePerson;
