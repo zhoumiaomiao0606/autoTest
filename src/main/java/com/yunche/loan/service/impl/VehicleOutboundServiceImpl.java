@@ -49,6 +49,12 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         vehicleOutboundDOKey.setOrderid(orderId);
         vehicleOutboundDOKey.setBankRepayImpRecordId(bank_repay_imp_record_id);
         VehicleOutboundDO vehicleOutboundDO = vehicleOutboundDOMapper.selectByPrimaryKey(vehicleOutboundDOKey);
+
+        VehicleOutboundInfo vehicleOutboundInfo =new VehicleOutboundInfo();
+        BeanUtils.copyProperties(vehicleOutboundDO, vehicleOutboundInfo);
+
+        //贷款金额  代偿金额  清收成本
+
         //车辆信息
         VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
         //贷款业务详细信息
@@ -59,7 +65,7 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         }
         //本业务操作日志
         vehicleOutboundVO.setBaseCustomerInfoVO(baseCustomerInfoVO);
-        vehicleOutboundVO.setVehicleOutboundDO(vehicleOutboundDO);
+        vehicleOutboundVO.setVehicleOutboundInfo(vehicleOutboundInfo);
         vehicleOutboundVO.setVehicleInfoVO(vehicleInfoVO);
         vehicleOutboundVO.setCustomers(customers);
 

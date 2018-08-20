@@ -9,7 +9,7 @@
     <result column="specific_address" jdbcType="VARCHAR" property="specificAddress" />
     <result column="customer_condition" jdbcType="VARCHAR" property="customerCondition" />
     <result column="progress" jdbcType="VARCHAR" property="progress" />
-    <result column="result" jdbcType="TINYINT" property="result" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
     <result column="remarks" jdbcType="VARCHAR" property="remarks" />
     <result column="balance" jdbcType="VARCHAR" property="balance" />
   </resultMap>
@@ -36,7 +36,7 @@
       balance)
     values (#{orderid,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT}, #{reason,jdbcType=VARCHAR}, 
       #{address,jdbcType=VARCHAR}, #{specificAddress,jdbcType=VARCHAR}, #{customerCondition,jdbcType=VARCHAR}, 
-      #{progress,jdbcType=VARCHAR}, #{result,jdbcType=TINYINT}, #{remarks,jdbcType=VARCHAR}, 
+      #{progress,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, 
       #{balance,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDO">
@@ -96,7 +96,7 @@
         #{progress,jdbcType=VARCHAR},
       </if>
       <if test="result != null">
-        #{result,jdbcType=TINYINT},
+        #{result,jdbcType=VARCHAR},
       </if>
       <if test="remarks != null">
         #{remarks,jdbcType=VARCHAR},
@@ -125,7 +125,7 @@
         progress = #{progress,jdbcType=VARCHAR},
       </if>
       <if test="result != null">
-        result = #{result,jdbcType=TINYINT},
+        result = #{result,jdbcType=VARCHAR},
       </if>
       <if test="remarks != null">
         remarks = #{remarks,jdbcType=VARCHAR},
@@ -144,7 +144,7 @@
       specific_address = #{specificAddress,jdbcType=VARCHAR},
       customer_condition = #{customerCondition,jdbcType=VARCHAR},
       progress = #{progress,jdbcType=VARCHAR},
-      result = #{result,jdbcType=TINYINT},
+      result = #{result,jdbcType=VARCHAR},
       remarks = #{remarks,jdbcType=VARCHAR},
       balance = #{balance,jdbcType=VARCHAR}
     where orderid = #{orderid,jdbcType=BIGINT}

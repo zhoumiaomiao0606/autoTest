@@ -15,7 +15,7 @@ public class VehicleOutboundVO
 {
     private BaseCustomerInfoVO baseCustomerInfoVO;
 
-    private VehicleOutboundDO vehicleOutboundDO;
+    private VehicleOutboundInfo vehicleOutboundInfo;
 
     private VehicleInfoVO vehicleInfoVO;
 

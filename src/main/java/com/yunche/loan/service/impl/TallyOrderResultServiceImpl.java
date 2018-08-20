@@ -43,6 +43,9 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
 
     @Autowired
     private VisitDoorDOMapper visitDoorDOMapper;
+    
+    @Autowired
+    private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
     @Override
     public TallyOrderResultVO detail(Long orderId)
@@ -68,7 +71,9 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
         List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.selectInsuranceInfoByOrderId(orderId);
         //出险记录
         List<InsuranceRiskDO> insuranceRiskDOS = insuranceRiskDOMapper.allRiskInfoByOrderId(orderId);
-        //逾期代偿
+        //逾期代偿---repayment_record
+        List<LoanApplyCompensationDO> loanApplyCompensationDOS = loanApplyCompensationDOMapper.selectByOrderId(orderId);
+
 
         //拖车概况---相关费用报销单里取
         TrailVehicleDetailVO trailVehicleDetailVO =new TrailVehicleDetailVO();
