@@ -44,4 +44,10 @@ public class VideoFaceQuestionAnswerVO {
      * 总还款        -> 本息合计
      */
     private BigDecimal principalInterestSum;
+
+    private BigDecimal downPaymentMoney;
+
+
+    private BigDecimal bankFee;
+
 }

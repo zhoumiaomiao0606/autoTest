@@ -9,10 +9,11 @@
     <result column="undertake_interest" property="undertakeInterest" jdbcType="VARCHAR" />
     <result column="undertake_total" property="undertakeTotal" jdbcType="VARCHAR" />
     <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, undertake_money, undertake_fine, undertake_fee, undertake_interest, undertake_total, 
-    order_id
+    order_id,bank_repay_imp_record_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -33,10 +34,10 @@
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.FeeRegisterDO" >
     insert into fee_register (id, undertake_money, undertake_fine, 
       undertake_fee, undertake_interest, undertake_total, 
-      order_id)
+      order_id,bank_repay_imp_record_id)
     values (#{id,jdbcType=BIGINT}, #{undertakeMoney,jdbcType=VARCHAR}, #{undertakeFine,jdbcType=VARCHAR}, 
       #{undertakeFee,jdbcType=VARCHAR}, #{undertakeInterest,jdbcType=VARCHAR}, #{undertakeTotal,jdbcType=VARCHAR}, 
-      #{orderId,jdbcType=BIGINT})
+      #{orderId,jdbcType=BIGINT},#{bankRepayImpRecordId,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.FeeRegisterDO" >
     insert into fee_register
@@ -62,6 +63,9 @@
       <if test="orderId != null" >
         order_id,
       </if>
+      <if test="bankRepayImpRecordId != null" >
+        bank_repay_imp_record_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -84,6 +88,9 @@
       </if>
       <if test="orderId != null" >
         #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="bankRepayImpRecordId != null" >
+        #{bankRepayImpRecordId,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -108,6 +115,9 @@
       <if test="orderId != null" >
         order_id = #{orderId,jdbcType=BIGINT},
       </if>
+      <if test="bankRepayImpRecordId != null" >
+        bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -118,7 +128,8 @@
       undertake_fee = #{undertakeFee,jdbcType=VARCHAR},
       undertake_interest = #{undertakeInterest,jdbcType=VARCHAR},
       undertake_total = #{undertakeTotal,jdbcType=VARCHAR},
-      order_id = #{orderId,jdbcType=BIGINT}
+      order_id = #{orderId,jdbcType=BIGINT},
+      bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

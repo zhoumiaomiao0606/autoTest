@@ -19,10 +19,21 @@
     collection_manId, islaw, dispatched_staff, dispatched_date
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDOKey" >
-    select 
-    <include refid="Base_Column_List" />
-    from collection_new_info
-    where id = #{id,jdbcType=BIGINT}
+    SELECT
+	a.id    AS id ,
+	bank_repay_imp_record_id,
+	isvisit,
+	circumstances,
+	police,
+	notarization,
+	second_mortgage,
+	b.`name`   AS collection_manId,
+	islaw,
+	dispatched_staff,
+	dispatched_date
+    FROM
+	collection_new_info a left join employee b on a.collection_manId = b.id
+    where a.id = #{id,jdbcType=BIGINT}
       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDOKey" >

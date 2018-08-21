@@ -1,124 +1,133 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.FileInfoDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.FileInfoDO" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="undertake_money" property="undertakeMoney" jdbcType="VARCHAR" />
-    <result column="undertake_fine" property="undertakeFine" jdbcType="VARCHAR" />
-    <result column="undertake_fee" property="undertakeFee" jdbcType="VARCHAR" />
-    <result column="undertake_interest" property="undertakeInterest" jdbcType="VARCHAR" />
-    <result column="undertake_total" property="undertakeTotal" jdbcType="VARCHAR" />
-    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.FileInfoDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.FileInfoDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="bank_repay_imp_record_id" jdbcType="BIGINT" property="bankRepayImpRecordId" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    id, undertake_money, undertake_fine, undertake_fee, undertake_interest, undertake_total, 
-    order_id
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.FileInfoDO">
+    <result column="path" jdbcType="LONGVARCHAR" property="path" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, type, order_id, bank_repay_imp_record_id, remark
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <sql id="Blob_Column_List">
+    path
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from file_info
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectByOrderId" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from file_info
-    where order_id = #{orderid,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from file_info
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.FileInfoDO" >
-    insert into file_info (id, undertake_money, undertake_fine, 
-      undertake_fee, undertake_interest, undertake_total, 
-      order_id)
-    values (#{id,jdbcType=BIGINT}, #{undertakeMoney,jdbcType=VARCHAR}, #{undertakeFine,jdbcType=VARCHAR}, 
-      #{undertakeFee,jdbcType=VARCHAR}, #{undertakeInterest,jdbcType=VARCHAR}, #{undertakeTotal,jdbcType=VARCHAR}, 
-      #{orderId,jdbcType=BIGINT})
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.FileInfoDO">
+    insert into file_info (id, type, order_id, 
+      bank_repay_imp_record_id, remark, path
+      )
+    values (#{id,jdbcType=BIGINT}, #{type,jdbcType=VARCHAR}, #{orderId,jdbcType=BIGINT}, 
+      #{bankRepayImpRecordId,jdbcType=BIGINT}, #{remark,jdbcType=VARCHAR}, #{path,jdbcType=LONGVARCHAR}
+      )
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.FileInfoDO" >
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.FileInfoDO">
     insert into file_info
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
         id,
       </if>
-      <if test="undertakeMoney != null" >
-        undertake_money,
+      <if test="type != null">
+        type,
       </if>
-      <if test="undertakeFine != null" >
-        undertake_fine,
-      </if>
-      <if test="undertakeFee != null" >
-        undertake_fee,
-      </if>
-      <if test="undertakeInterest != null" >
-        undertake_interest,
-      </if>
-      <if test="undertakeTotal != null" >
-        undertake_total,
-      </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         order_id,
       </if>
+      <if test="bankRepayImpRecordId != null">
+        bank_repay_imp_record_id,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="path != null">
+        path,
+      </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="undertakeMoney != null" >
-        #{undertakeMoney,jdbcType=VARCHAR},
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
       </if>
-      <if test="undertakeFine != null" >
-        #{undertakeFine,jdbcType=VARCHAR},
-      </if>
-      <if test="undertakeFee != null" >
-        #{undertakeFee,jdbcType=VARCHAR},
-      </if>
-      <if test="undertakeInterest != null" >
-        #{undertakeInterest,jdbcType=VARCHAR},
-      </if>
-      <if test="undertakeTotal != null" >
-        #{undertakeTotal,jdbcType=VARCHAR},
-      </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="bankRepayImpRecordId != null">
+        #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null">
+        #{path,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.FileInfoDO" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.FileInfoDO">
     update file_info
-    <set >
-      <if test="undertakeMoney != null" >
-        undertake_money = #{undertakeMoney,jdbcType=VARCHAR},
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
       </if>
-      <if test="undertakeFine != null" >
-        undertake_fine = #{undertakeFine,jdbcType=VARCHAR},
-      </if>
-      <if test="undertakeFee != null" >
-        undertake_fee = #{undertakeFee,jdbcType=VARCHAR},
-      </if>
-      <if test="undertakeInterest != null" >
-        undertake_interest = #{undertakeInterest,jdbcType=VARCHAR},
-      </if>
-      <if test="undertakeTotal != null" >
-        undertake_total = #{undertakeTotal,jdbcType=VARCHAR},
-      </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="bankRepayImpRecordId != null">
+        bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null">
+        path = #{path,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.FileInfoDO" >
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.entity.FileInfoDO">
     update file_info
-    set undertake_money = #{undertakeMoney,jdbcType=VARCHAR},
-      undertake_fine = #{undertakeFine,jdbcType=VARCHAR},
-      undertake_fee = #{undertakeFee,jdbcType=VARCHAR},
-      undertake_interest = #{undertakeInterest,jdbcType=VARCHAR},
-      undertake_total = #{undertakeTotal,jdbcType=VARCHAR},
-      order_id = #{orderId,jdbcType=BIGINT}
+    set type = #{type,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=BIGINT},
+      bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      path = #{path,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.FileInfoDO">
+    update file_info
+    set type = #{type,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=BIGINT},
+      bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByOrderId" resultMap="ResultMapWithBLOBs">
+      select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from file_info
+      where bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT} and order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByOrderIdAndRecordId">
+    delete from file_info
+    where bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT} and order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
 </mapper>

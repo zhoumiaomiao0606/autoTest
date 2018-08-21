@@ -49,15 +49,22 @@ public class AppLoanOrderController {
     public ResultBean zhongAnQuery(@RequestBody ZhongAnQueryParam zhongAnQueryParam){
         appLoanOrderService.zhongAnQuery(zhongAnQueryParam);
         return ResultBean.ofSuccess(null,"查询成功");
-
+    }
+    /**
+     * 获取团队及业务员
+     */
+    @GetMapping(value = "/zhonganname")
+    public ResultBean zhonganName(@RequestParam("orderid") String orderid){
+        return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(Long.valueOf(orderid)));
     }
 
     /**
      * 众安接口详情
      */
-    @PostMapping(value = "/zhongandetail")
-    public ResultBean zhongAnDetail(@RequestParam ("idcard") String idCard,@RequestParam ("customerName") String customerName){
-        return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(idCard,customerName));
+    @GetMapping(value = "/zhongandetail")
+   // public ResultBean zhongAnDetail(@RequestParam (value = "idcard",required = false) String idcard,@RequestParam (value = "customername",required = false) String customername){
+    public ResultBean zhongAnDetail(@RequestParam (value = "orderid",required = false) String orderId){
+        return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(Long.valueOf(orderId)));
 
     }
 
