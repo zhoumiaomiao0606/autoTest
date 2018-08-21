@@ -579,15 +579,19 @@
                           deputy.bank_card_send                   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
+                          deputy_.id                              AS augmentId,
                           deputy_.apply_instead_pay               AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
+                          deputy_.id                              AS augmentId,
                           deputy_.finance_instead_pay_review      AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
+                          deputy_.id                              AS augmentId,
                           deputy_.partner_instead_pay             AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
+                          deputy_.id                              AS augmentId,
                           deputy_.partner_instead_pay_review      AS taskStatus
                       </when>
                       <otherwise>

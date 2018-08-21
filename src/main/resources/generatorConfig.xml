@@ -354,12 +354,17 @@
                 enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
          </table>-->
 
-        <table tableName="loan_process_instead_pay" domainObjectName="LoanProcessInsteadPayDO"
+<!--        <table tableName="loan_process_instead_pay" domainObjectName="LoanProcessInsteadPayDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
         <table tableName="loan_process_collection" domainObjectName="LoanProcessCollectionDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>-->
+
+        <table tableName="legwork_reimbursement" domainObjectName="LegworkReimbursementDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
