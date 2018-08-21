@@ -15,4 +15,7 @@ public interface LoanProcessInsteadPayDOMapper {
     int updateByPrimaryKeySelective(LoanProcessInsteadPayDO record);
 
     int updateByPrimaryKey(LoanProcessInsteadPayDO record);
+
+    LoanProcessInsteadPayDO selectByOrderIdAndInsteadPayOrderId(Long orderId,Long insteadPayOrderId);
+
 }
