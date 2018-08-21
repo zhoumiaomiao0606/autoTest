@@ -896,6 +896,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     zhongAnInfoDO.setOrderId(Long.valueOf(zhongAnQueryParam.getOrder_id()));
                     zhongAnInfoDO.setCustomerType(zhongAnCusParam.getCustomertype());
                     zhongAnInfoDO.setResultMessage((String)map.get("message"));
+                    zhongAnInfoDO.setTel(zhongAnCusParam.getTel());
                     zhongAnInfoDOMapper.insertSelective(zhongAnInfoDO);
 
                     String listString = (String)creditResultMap.get("rspLawsuit_allList");
@@ -908,6 +909,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                             rspLawSuitDO.setId(zhongAnInfoDO.getId());
                             rspLawSuitDO.setSortTimeString((String)mapx.get("sortTimeString"));
                             rspLawSuitDO.setTitle((String)mapx.get("title"));
+                            zhongAnInfoDO.setTel(zhongAnCusParam.getTel());
                             rspLawSuitDOMapper.insertSelective(rspLawSuitDO);
                         }
                     }
