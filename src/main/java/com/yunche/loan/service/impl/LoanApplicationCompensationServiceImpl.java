@@ -162,10 +162,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                             if(tmpDO==null){
                                 int count = loanApplyCompensationDOMapper.insertSelective(e);
                                 Preconditions.checkArgument(count>0,"插入记录出错");
-                            } else {
-                                e.setGmtModify(new Date());
-                                int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(e);
-                                Preconditions.checkArgument(count>0,"更新记录出错");
+                                loanProcessInsteadPayService.startProcess(e.getOrderId(),e.getId());
                             }
 
                             //
@@ -202,6 +199,8 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
             int count = loanApplyCompensationDOMapper.insertSelective(param);
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
         }
+        //流程
+        loanProcessInsteadPayService.startProcess(param.getOrderId(),param.getId());
     }
 
     /**
