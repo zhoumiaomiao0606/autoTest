@@ -1948,12 +1948,15 @@
             orders.id 									     as orderId,
             customer.name 									 as customerName,
             customer.id_card  							     as customerIdCard,
+            customer.mobile                                  as customerMobile,
             car.car_type 									 as carType,
             vehicle.apply_license_plate_area                 as vehicleApplyLicensePlateArea,
             area.area_name                                   as vehicleApplyLicensePlateAreaName,
             financial.bank 									 as financialBank,
             partner.name   									 as partnerName,
-            employee.name  									 as salesmanName
+            employee.name  									 as salesmanName,
+            useGetSmallCarName(car.car_detail_id)            as carName,
+            door.visit_date                                  as visitDate
         from
         visit_door door
         left join loan_order orders on door.order_id = orders.id
@@ -1985,7 +1988,7 @@
             other_fee       as otherFee,
             apply_user_id   as gmtUser,
             apply_user_name as gmtUserName,
-            gmt_create_time as gmtCreate,
+            DATE_FORMAT(gmt_create_time,'%Y-%m-%d %H:%i:%S') as gmtCreate,
             gmt_update_time as gmtUpdateTime,
             status          as taskStatus
         from legwork_reimbursement
