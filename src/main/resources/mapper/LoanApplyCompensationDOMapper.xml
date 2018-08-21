@@ -50,7 +50,7 @@
     delete from loan_apply_compensation
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO">
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into loan_apply_compensation (id, order_id, curr_arrears, 
       loan_banlance, advances_banlance, overdue_days, 
       overdue_number, advances_number, risk_taking_ratio, 
@@ -76,7 +76,7 @@
       #{status,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
       #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into loan_apply_compensation
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

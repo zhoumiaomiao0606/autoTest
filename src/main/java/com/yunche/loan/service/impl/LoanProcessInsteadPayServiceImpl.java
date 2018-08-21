@@ -30,7 +30,7 @@ import java.util.Objects;
 
 import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_COLLECTION_KEY;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
-import static com.yunche.loan.config.constant.LoanProcessConst.*;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 
@@ -155,6 +155,8 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         loanProcessInsteadPayDO.setOrderId(orderId);
         loanProcessInsteadPayDO.setInsteadPayOrderId(insteadPayOrderId);
         loanProcessInsteadPayDO.setProcessInstId(processInstId);
+
+        loanProcessInsteadPayDO.setApplyInsteadPay(TASK_PROCESS_TODO);
 
         loanProcessInsteadPayDO.setGmtCreate(new Date());
         loanProcessInsteadPayDO.setGmtModify(new Date());

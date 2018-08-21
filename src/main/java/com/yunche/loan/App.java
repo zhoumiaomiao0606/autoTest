@@ -77,7 +77,7 @@ public class App {
             public void run(String... args) throws Exception {
 
                 // 部署
-                deploy("processes/loan_process_dc.bpmn", "消费贷流程");
+                deploy("processes/loan_process.bpmn", "消费贷流程");
 
                 deploy("processes/loan_process_instead_pay.bpmn", "代偿流程");
 

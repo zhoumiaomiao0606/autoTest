@@ -162,10 +162,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                             if(tmpDO==null){
                                 int count = loanApplyCompensationDOMapper.insertSelective(e);
                                 Preconditions.checkArgument(count>0,"插入记录出错");
-                            } else {
-                                e.setGmtModify(new Date());
-                                int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(e);
-                                Preconditions.checkArgument(count>0,"更新记录出错");
+                                loanProcessInsteadPayService.startProcess(e.getOrderId(),e.getId());
                             }
 
                             //
@@ -187,9 +184,12 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
      * @return
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void manualInsert(UniversalCompensationParam param) {
         Preconditions.checkNotNull(param,"参数有误");
+        Preconditions.checkNotNull(param.getApplyCompensationDate(),"申请日期不能为空");
+        Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
+
 
         if(param.getId() !=null){
             LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderId(param.getOrderId(), param.getId());
@@ -198,10 +198,19 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
             }
             int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
+            return;
         }else {
-            int count = loanApplyCompensationDOMapper.insertSelective(param);
-            Preconditions.checkArgument(count>0,"参数错误，保存失败");
+            LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByOrderIdAndDate(param.getOrderId(),param.getApplyCompensationDate());
+            if(tmpDO==null){
+                int count = loanApplyCompensationDOMapper.insertSelective(param);
+                Preconditions.checkArgument(count>0,"参数错误，保存失败");
+                //流程
+                loanProcessInsteadPayService.startProcess(param.getOrderId(),param.getId());
+            }else{
+                loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
+            }
         }
+
     }
 
     /**

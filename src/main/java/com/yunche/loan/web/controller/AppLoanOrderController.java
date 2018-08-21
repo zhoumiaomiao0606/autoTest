@@ -56,7 +56,7 @@ public class AppLoanOrderController {
      */
     @GetMapping(value = "/zhonganname")
     public ResultBean zhonganName(@RequestParam("orderid") String orderid){
-        return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(Long.valueOf(orderid)));
+        return ResultBean.ofSuccess(appLoanOrderService.zhonganName(Long.valueOf(orderid)));
     }
 
     /**

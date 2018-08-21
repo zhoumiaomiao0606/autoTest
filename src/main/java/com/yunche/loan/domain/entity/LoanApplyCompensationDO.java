@@ -8,6 +8,7 @@ public class LoanApplyCompensationDO {
 
     private Long orderId;
 
+    //逾期金额
     private BigDecimal currArrears;
 
     private BigDecimal loanBanlance;
@@ -22,6 +23,7 @@ public class LoanApplyCompensationDO {
 
     private BigDecimal riskTakingRatio;
 
+    //财务代偿金额
     private BigDecimal compensationAmount;
 
     private String compensationCause;
@@ -52,6 +54,7 @@ public class LoanApplyCompensationDO {
 
     private String partnerDcReviewOperator;
 
+    //合伙人代偿确认经办时间
     private Date partnerDcReviewDate;
 
     private Byte status;

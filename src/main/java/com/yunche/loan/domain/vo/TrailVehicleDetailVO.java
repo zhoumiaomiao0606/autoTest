@@ -5,13 +5,18 @@
  **/
 package com.yunche.loan.domain.vo;
 
+import lombok.Data;
+
+import java.util.Date;
+
+@Data
 public class TrailVehicleDetailVO
 {
     //申请上门拖车时间
-    private String applyTrailVehicleDate;
+    private Date applyTrailVehicleDate;
 
     //拖车时间
-    private String trailVehicleDate;
+    private Date trailVehicleDate;
     //拖车结果
     private String trailVehicleResult;
     //相关费用

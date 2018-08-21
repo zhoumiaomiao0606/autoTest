@@ -26,12 +26,13 @@
     <result column="order_id" property="orderId" jdbcType="BIGINT" />
     <result column="customer_type" property="customerType" jdbcType="VARCHAR" />
     <result column="result_message" property="resultMessage" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, id_card, age, gender, mobile_city, mobile_comm_duration, mobile_comm_sts, phoneid_name_check,
     high_risk_behavior, rsn_high_risk, rsn_long_overdue, rsn_multi_loan, rsn_policy_restrict, 
     rsn_risk_rec, rsp_lawsuit_alllist, rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
-    rsp_watchlist_detail, high_risk_record, customer_name ,create_date,order_id,customer_type,result_message
+    rsp_watchlist_detail, high_risk_record, customer_name ,create_date,order_id,customer_type,result_message,tel
   </sql>
   <select id="selectByOrderId" resultMap="BaseResultMap">
     select
@@ -57,7 +58,7 @@
       rsn_high_risk, rsn_long_overdue, rsn_multi_loan, 
       rsn_policy_restrict, rsn_risk_rec, rsp_lawsuit_alllist, 
       rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
-      rsp_watchlist_detail, high_risk_record, customer_name,create_date,order_id,customer_type,result_message
+      rsp_watchlist_detail, high_risk_record, customer_name,create_date,order_id,customer_type,result_message,tel
       )
     values (#{id,jdbcType=BIGINT}, #{idCard,jdbcType=BIGINT}, #{age,jdbcType=VARCHAR},
       #{gender,jdbcType=VARCHAR}, #{mobileCity,jdbcType=VARCHAR}, #{mobileCommDuration,jdbcType=VARCHAR}, 
@@ -66,7 +67,8 @@
       #{rsnPolicyRestrict,jdbcType=VARCHAR}, #{rsnRiskRec,jdbcType=VARCHAR}, #{rspLawsuitAlllist,jdbcType=VARCHAR}, 
       #{rspSpeclistInblacklist,jdbcType=VARCHAR}, #{rspSpeclistMaxdftlevel,jdbcType=VARCHAR}, 
       #{rspWatchlistDetail,jdbcType=VARCHAR}, #{highRiskRecord,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR},
-      #{createDate,jdbcType=TIMESTAMP},#{orderId,jdbcType=BIGINT},#{customerType,jdbcType=VARCHAR},#{resultMessage,jdbcType=VARCHAR})
+      #{createDate,jdbcType=TIMESTAMP},#{orderId,jdbcType=BIGINT},#{customerType,jdbcType=VARCHAR},#{resultMessage,jdbcType=VARCHAR}
+      ,#{tel,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" useGeneratedKeys="true" keyProperty="id">
     insert into zhongan_info
@@ -143,6 +145,9 @@
       <if test="resultMessage != null" >
         result_message,
       </if>
+      <if test="tel != null" >
+        tel,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -216,6 +221,9 @@
       </if>
       <if test="resultMessage != null" >
         #{resultMessage,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -291,6 +299,9 @@
       <if test="resultMessage != null" >
         result_message = #{resultMessage,jdbcType=VARCHAR},
       </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -318,7 +329,8 @@
       create_date = #{createDate,jdbcType=TIMESTAMP},
       order_id = #{orderId,jdbcType=BIGINT},
       customer_type = #{customerType,jdbcType=VARCHAR},
-      result_message = #{resultMessage,jdbcType=VARCHAR}
+      result_message = #{resultMessage,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectByCreaditOrderId" resultMap="BaseResultMap">
@@ -328,9 +340,9 @@
   </select>
   <select id="selectZhonganName" resultType="com.yunche.loan.domain.vo.ZhonganNameVO" parameterType="java.lang.Long">
   SELECT
-	a.id    	AS id,
-	c.`name`  AS sname,
-	d.`name`  AS pname
+	a.id    	AS orderId,
+	c.`name`  AS salemanName,
+	d.`name`  AS partnerName
     FROM
 	loan_order a
 	LEFT JOIN loan_base_info b ON a.loan_base_info_id = b.id
