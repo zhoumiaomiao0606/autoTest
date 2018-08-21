@@ -6,8 +6,8 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanProcessDOMapper;
+import com.yunche.loan.service.ActivitiService;
 import com.yunche.loan.service.LoanProcessOrderService;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_KEY;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
@@ -35,7 +36,7 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
     private LoanProcessDOMapper loanProcessDOMapper;
 
     @Autowired
-    private RuntimeService runtimeService;
+    private ActivitiService activitiService;
 
 
     @Override
@@ -55,9 +56,7 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
     public ResultBean<Long> createLoanOrder(Long baseInfoId, Long customerId) {
 
         // 开启activiti流程
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("loan_process");
-        Preconditions.checkNotNull(processInstance, "开启流程实例异常");
-        Preconditions.checkNotNull(processInstance.getProcessInstanceId(), "开启流程实例异常");
+        ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_KEY);
 
         // 插入
         LoanOrderDO loanOrderDO = new LoanOrderDO();

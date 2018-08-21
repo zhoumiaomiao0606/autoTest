@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.LoanProcessInsteadPayDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="order_id" property="orderId" jdbcType="BIGINT" />
-    <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR" />
-    <result column="apply_instead_pay" property="applyInsteadPay" jdbcType="TINYINT" />
-    <result column="finance_instead_pay_review" property="financeInsteadPayReview" jdbcType="TINYINT" />
-    <result column="partner_instead_pay" property="partnerInsteadPay" jdbcType="TINYINT" />
-    <result column="partner_instead_pay_review" property="partnerInsteadPayReview" jdbcType="TINYINT" />
-    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
-    <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.yunche.loan.mapper.LoanProcessInsteadPayDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR"/>
+        <result column="apply_instead_pay" property="applyInsteadPay" jdbcType="TINYINT"/>
+        <result column="finance_instead_pay_review" property="financeInsteadPayReview" jdbcType="TINYINT"/>
+        <result column="partner_instead_pay" property="partnerInsteadPay" jdbcType="TINYINT"/>
+        <result column="partner_instead_pay_review" property="partnerInsteadPayReview" jdbcType="TINYINT"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, order_id, process_inst_id, apply_instead_pay, finance_instead_pay_review, partner_instead_pay, 
     partner_instead_pay_review, gmt_create, gmt_modify
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    from loan_process_instead_pay
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_instead_pay
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from loan_process_instead_pay
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO" >
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO"
+            useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
     insert into loan_process_instead_pay (id, order_id, process_inst_id, 
       apply_instead_pay, finance_instead_pay_review, 
       partner_instead_pay, partner_instead_pay_review, 
@@ -36,98 +38,100 @@
       #{partnerInsteadPay,jdbcType=TINYINT}, #{partnerInsteadPayReview,jdbcType=TINYINT}, 
       #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO" >
-    insert into loan_process_instead_pay
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="orderId != null" >
-        order_id,
-      </if>
-      <if test="processInstId != null" >
-        process_inst_id,
-      </if>
-      <if test="applyInsteadPay != null" >
-        apply_instead_pay,
-      </if>
-      <if test="financeInsteadPayReview != null" >
-        finance_instead_pay_review,
-      </if>
-      <if test="partnerInsteadPay != null" >
-        partner_instead_pay,
-      </if>
-      <if test="partnerInsteadPayReview != null" >
-        partner_instead_pay_review,
-      </if>
-      <if test="gmtCreate != null" >
-        gmt_create,
-      </if>
-      <if test="gmtModify != null" >
-        gmt_modify,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="orderId != null" >
-        #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="processInstId != null" >
-        #{processInstId,jdbcType=VARCHAR},
-      </if>
-      <if test="applyInsteadPay != null" >
-        #{applyInsteadPay,jdbcType=TINYINT},
-      </if>
-      <if test="financeInsteadPayReview != null" >
-        #{financeInsteadPayReview,jdbcType=TINYINT},
-      </if>
-      <if test="partnerInsteadPay != null" >
-        #{partnerInsteadPay,jdbcType=TINYINT},
-      </if>
-      <if test="partnerInsteadPayReview != null" >
-        #{partnerInsteadPayReview,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null" >
-        #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null" >
-        #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO" >
-    update loan_process_instead_pay
-    <set >
-      <if test="orderId != null" >
-        order_id = #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="processInstId != null" >
-        process_inst_id = #{processInstId,jdbcType=VARCHAR},
-      </if>
-      <if test="applyInsteadPay != null" >
-        apply_instead_pay = #{applyInsteadPay,jdbcType=TINYINT},
-      </if>
-      <if test="financeInsteadPayReview != null" >
-        finance_instead_pay_review = #{financeInsteadPayReview,jdbcType=TINYINT},
-      </if>
-      <if test="partnerInsteadPay != null" >
-        partner_instead_pay = #{partnerInsteadPay,jdbcType=TINYINT},
-      </if>
-      <if test="partnerInsteadPayReview != null" >
-        partner_instead_pay_review = #{partnerInsteadPayReview,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null" >
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null" >
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO" >
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO"
+            useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
+        insert into loan_process_instead_pay
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="processInstId != null">
+                process_inst_id,
+            </if>
+            <if test="applyInsteadPay != null">
+                apply_instead_pay,
+            </if>
+            <if test="financeInsteadPayReview != null">
+                finance_instead_pay_review,
+            </if>
+            <if test="partnerInsteadPay != null">
+                partner_instead_pay,
+            </if>
+            <if test="partnerInsteadPayReview != null">
+                partner_instead_pay_review,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="processInstId != null">
+                #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="applyInsteadPay != null">
+                #{applyInsteadPay,jdbcType=TINYINT},
+            </if>
+            <if test="financeInsteadPayReview != null">
+                #{financeInsteadPayReview,jdbcType=TINYINT},
+            </if>
+            <if test="partnerInsteadPay != null">
+                #{partnerInsteadPay,jdbcType=TINYINT},
+            </if>
+            <if test="partnerInsteadPayReview != null">
+                #{partnerInsteadPayReview,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO">
+        update loan_process_instead_pay
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="processInstId != null">
+                process_inst_id = #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="applyInsteadPay != null">
+                apply_instead_pay = #{applyInsteadPay,jdbcType=TINYINT},
+            </if>
+            <if test="financeInsteadPayReview != null">
+                finance_instead_pay_review = #{financeInsteadPayReview,jdbcType=TINYINT},
+            </if>
+            <if test="partnerInsteadPay != null">
+                partner_instead_pay = #{partnerInsteadPay,jdbcType=TINYINT},
+            </if>
+            <if test="partnerInsteadPayReview != null">
+                partner_instead_pay_review = #{partnerInsteadPayReview,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO">
     update loan_process_instead_pay
     set order_id = #{orderId,jdbcType=BIGINT},
       process_inst_id = #{processInstId,jdbcType=VARCHAR},

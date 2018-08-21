@@ -12,7 +12,9 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_COLLECTION_KEY;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
@@ -68,6 +71,9 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
     private TaskService taskService;
 
     @Autowired
+    private RuntimeService runtimeService;
+
+    @Autowired
     private JpushService jpushService;
 
     @Autowired
@@ -75,6 +81,9 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
 
     @Autowired
     private TaskDistributionService taskDistributionService;
+
+    @Autowired
+    private ActivitiService activitiService;
 
 
     @Override
@@ -143,6 +152,59 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long startProcess(Long orderId) {
+
+        ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_COLLECTION_KEY);
+
+        // 创建流程记录
+        Long processId = create(orderId, processInstance.getProcessInstanceId());
+
+        return processId;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchStartProcess(List<Long> orderIdList) {
+
+        if (CollectionUtils.isEmpty(orderIdList)) {
+            return;
+        }
+
+        Preconditions.checkArgument(orderIdList.size() <= 2000, "最大支持2000条");
+
+        orderIdList.stream()
+                .filter(Objects::nonNull)
+                .forEach(orderId -> {
+
+                    startProcess(orderId);
+                });
+    }
+
+    /**
+     * 创建[催收工作台]流程记录
+     *
+     * @param orderId
+     * @param processInstId
+     * @return
+     */
+    private Long create(Long orderId, String processInstId) {
+
+        LoanProcessInsteadPayDO loanProcessInsteadPayDO = new LoanProcessInsteadPayDO();
+
+        loanProcessInsteadPayDO.setOrderId(orderId);
+        loanProcessInsteadPayDO.setProcessInstId(processInstId);
+
+        loanProcessInsteadPayDO.setGmtCreate(new Date());
+        loanProcessInsteadPayDO.setGmtModify(new Date());
+
+        int count = loanProcessInsteadPayDOMapper.insertSelective(loanProcessInsteadPayDO);
+        Preconditions.checkArgument(count > 0, "创建失败");
+
+        return loanProcessInsteadPayDO.getId();
     }
 
     /**
