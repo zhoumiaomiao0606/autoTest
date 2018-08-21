@@ -1,7 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.constant.LoanProcessConst;
+import com.yunche.loan.config.constant.ProcessApprovalConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
@@ -137,7 +137,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 ApprovalParam approvalParam = new ApprovalParam();
                 approvalParam.setOrderId(orderId);
                 approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
-                approvalParam.setAction(LoanProcessConst.ACTION_PASS);
+                approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
                 ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                 Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             }

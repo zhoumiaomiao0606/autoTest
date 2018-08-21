@@ -28,9 +28,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.yunche.loan.config.constant.LoanProcessConst.ACTION_PASS;
-import static com.yunche.loan.config.constant.LoanProcessConst.ACTION_REJECT_AUTO;
-import static com.yunche.loan.config.constant.LoanProcessConst.ACTION_REJECT_MANUAL;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_AUTO;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_MANUAL;
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_SOCIAL_CREDIT_RECORD_FILTER;
 import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
