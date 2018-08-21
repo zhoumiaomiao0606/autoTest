@@ -13,8 +13,6 @@ public interface LoanProcessService {
 
     ResultBean<Void> approval(ApprovalParam approval);
 
-    ResultBean<Void> creaditApproval(ApprovalParam approval);
-
     ResultBean<List<TaskStateVO>> currentTask(Long orderId);
 
     ResultBean<TaskStateVO> taskStatus(Long orderId, String taskDefinitionKey);
