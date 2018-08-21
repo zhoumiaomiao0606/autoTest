@@ -190,11 +190,12 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
     @Transactional
     public void manualInsert(UniversalCompensationParam param) {
         Preconditions.checkNotNull(param,"参数有误");
-        LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByOrderIdAndDate(param.getOrderId(),param.getApplyCompensationDate());
 
-        if(tmpDO !=null){
-            LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderId(param.getOrderId(), tmpDO.getId());
-            Preconditions.checkArgument(insteadPayDO.getApplyInsteadPay().equals(TASK_PROCESS_TODO),"订单已提交，禁止修改");
+        if(param.getId() !=null){
+            LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderId(param.getOrderId(), param.getId());
+            if(insteadPayDO!=null){
+                Preconditions.checkArgument(insteadPayDO.getApplyInsteadPay().equals(TASK_PROCESS_TODO),"订单已提交，禁止修改");
+            }
             int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
         }else {

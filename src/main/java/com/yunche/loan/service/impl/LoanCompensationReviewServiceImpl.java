@@ -38,6 +38,7 @@ public class LoanCompensationReviewServiceImpl implements LoanCompensationReview
     @Transactional
     public Void save(UniversalCompensationParam param) {
         Preconditions.checkNotNull(param,"参数有误");
+        Preconditions.checkNotNull(param.getId(),"代偿ID不能为空");
         int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
         Preconditions.checkArgument(count>0,"保存失败");
 

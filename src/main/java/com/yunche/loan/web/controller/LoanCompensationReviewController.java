@@ -1,7 +1,8 @@
 package com.yunche.loan.web.controller;
 
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
+import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.service.LoanCompensationReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,12 @@ public class LoanCompensationReviewController {
 
     /**
      * 代偿确认保存
-     * @param applyReviewDO
+     * @param param
      * @return
      */
     @PostMapping(value = "/update",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean save(@RequestBody LoanApplyCompensationDO applyReviewDO){
-        loanCompensationReviewService.save(applyReviewDO);
+    public ResultBean save(@RequestBody UniversalCompensationParam param){
+        loanCompensationReviewService.save(param);
         return ResultBean.ofSuccess(null,"保存成功");
     }
 
