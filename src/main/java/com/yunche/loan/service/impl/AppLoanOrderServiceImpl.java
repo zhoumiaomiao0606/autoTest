@@ -954,7 +954,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             }
         } catch(Exception e){
             logger.error("大数据风控查询失败",e);
-            throw new BizException("大数据风控查询失败");
+            throw new BizException("大数据风控查询延误，请再次查询");
         }
 
     }

@@ -14,6 +14,8 @@ public class LawWorkQuery {
 
     private String address;
 
+    private String bank;
+
     private String identityaddress;
 
     private String companyname;
@@ -45,4 +47,8 @@ public class LawWorkQuery {
     private String hcity;
 
     private String hcounty;
+
+    private String licenseplatenumber;
+
+    private String carname;
 }
