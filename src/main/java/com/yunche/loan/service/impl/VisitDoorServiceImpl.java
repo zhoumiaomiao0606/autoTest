@@ -155,12 +155,15 @@ public class VisitDoorServiceImpl implements VisitDoorService {
     }
 
     @Override
-    public void update(VisitDoorDO visitDoorDO) {
+    public VisitDoorUpdateVO update(VisitDoorDO visitDoorDO) {
+        VisitDoorUpdateVO visitDoorUpdateVO = new VisitDoorUpdateVO();
          if(visitDoorDO.getId() !=null&&!"".equals(visitDoorDO.getId())){
            visitDoorDOMapper.updateByPrimaryKeySelective(visitDoorDO);
         }else{
             visitDoorDOMapper.insertSelective(visitDoorDO);
         }
+        visitDoorUpdateVO.setId(visitDoorDO.getId());
+         return visitDoorUpdateVO;
     }
 
     @Override
