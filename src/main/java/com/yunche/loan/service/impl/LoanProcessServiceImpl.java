@@ -21,6 +21,7 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.persistence.entity.TaskEntityImpl;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +82,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
+    private LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
+
+    @Autowired
+    private LoanProcessCollectionDOMapper loanProcessCollectionDOMapper;
+
+    @Autowired
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
 
     @Autowired
@@ -127,6 +134,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Autowired
+    private ActivitiDeploymentMapper activitiDeploymentMapper;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -1684,15 +1694,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Byte action = approval.getAction();
         if (ACTION_PASS.equals(action)) {
             // new  -> TO_DO   old -> 不变
-            updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_TODO, approval);
+            doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_TODO, approval);
         } else if (ACTION_REJECT_MANUAL.equals(action)) {
             // new  -> REJECT   old -> INIT
-            updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT, approval);
+            doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT, approval);
 
             // 是否已过电审
             if (!TASK_PROCESS_DONE.equals(currentLoanProcessDO.getTelephoneVerify())) {
                 // 没过电审
-                updateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT, approval);
+                doUpdateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT, approval);
             } else {
                 // 过了电审，则不是真正的全部打回      nothing
             }
@@ -1776,7 +1786,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param taskProcessStatus 未提交/打回
      * @param approval
      */
-    private void updateNextTaskProcessStatus(List<Task> nextTaskList, LoanProcessDO loanProcessDO, Byte taskProcessStatus, ApprovalParam approval) {
+    private void doUpdateNextTaskProcessStatus(List<Task> nextTaskList, LoanProcessDO loanProcessDO, Byte taskProcessStatus, ApprovalParam approval) {
 
         if (!CollectionUtils.isEmpty(nextTaskList)) {
             nextTaskList.stream()
@@ -2727,23 +2737,28 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
-        List<Task> runTaskList = taskService.createTaskQuery()
+        List<Task> loanProcessTaskList = taskService.createTaskQuery()
                 .processInstanceId(loanOrderDO.getProcessInstId())
                 .list();
+
+        List<TaskEntityImpl> insteadPayTaskList = activitiDeploymentMapper.listInsteadPayTaskByOrderId(orderId);
+        List<TaskEntityImpl> collectionTaskList = activitiDeploymentMapper.listCollectionTaskByOrderId(orderId);
+
+        List<Task> runTaskList = Lists.newArrayList();
+        runTaskList.addAll(insteadPayTaskList);
+        runTaskList.addAll(collectionTaskList);
+        runTaskList.addAll(loanProcessTaskList);
 
         List<TaskStateVO> taskStateVOS = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(runTaskList)) {
             taskStateVOS = runTaskList.stream()
                     .filter(Objects::nonNull)
-                    .filter(task -> !BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                            && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                            && !REMIT_REVIEW_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                            && !DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                    )
+                    .filter(task -> !task.getTaskDefinitionKey().startsWith("filter"))
                     .map(task -> {
 
                         TaskStateVO taskStateVO = new TaskStateVO();
                         taskStateVO.setTaskDefinitionKey(task.getTaskDefinitionKey());
+                        taskStateVO.setTaskId(task.getId());
                         taskStateVO.setTaskName(task.getName());
                         taskStateVO.setTaskStatus(TASK_PROCESS_TODO);
                         taskStateVO.setTaskStatusText(getTaskStatusText(TASK_PROCESS_TODO));
@@ -3155,7 +3170,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 流程变量：action
         variables.put(PROCESS_VARIABLE_ACTION, approval.getAction());
-        variables.put(PROCESS_VARIABLE_TARGET, approval.getTarget());
+//        variables.put(PROCESS_VARIABLE_TARGET, approval.getTarget());
 
         // 添加流程变量-贷款金额
         fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanOrderDO);

@@ -34,7 +34,7 @@ public class LoanProcessController {
 
 
     /**
-     * 通用审核接口      action： 0-打回 / 1-提交 / 2-弃单 / 3-资料增补 / 4-新增任务
+     * 通用审核接口      action： 0-打回 / 1-提交 / 2-弃单 / 3-资料增补 / 4-新增任务 / 5-反审
      * <p>
      *
      * @return
@@ -47,6 +47,7 @@ public class LoanProcessController {
         approval.setNeedPush(true);
         return loanProcessService.approval(approval);
     }
+
 
     /**
      * 当前业务单的当前任务节点

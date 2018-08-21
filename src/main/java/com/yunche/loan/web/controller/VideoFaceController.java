@@ -76,8 +76,8 @@ public class VideoFaceController {
      * @return
      */
     @GetMapping(value = "/question/list")
-    public ResultBean<List<String>> listQuestion(@RequestParam @NotNull Long bankId,
-                                                 @RequestParam @NotNull Long orderId,
+    public ResultBean<List<String>> listQuestion(@RequestParam @NotNull(message = "bankId不能为空") Long bankId,
+                                                 @RequestParam @NotNull(message = "orderId不能为空") Long orderId,
                                                  @RequestParam String address) {
 
         return videoFaceService.listQuestion(bankId, orderId, address);

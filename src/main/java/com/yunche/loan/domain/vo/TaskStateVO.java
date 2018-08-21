@@ -11,6 +11,8 @@ public class TaskStateVO {
 
     private String taskDefinitionKey;
 
+    private String taskId;
+
     private String taskName;
     /**
      * 1-已提交;2-未提交;3-打回修改;   4/5/6-未提交([电审]等级);
