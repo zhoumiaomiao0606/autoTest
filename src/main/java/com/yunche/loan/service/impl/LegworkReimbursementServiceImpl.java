@@ -55,10 +55,10 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
         Long loginUserId = SessionUtils.getLoginUser().getId();
         param.setLoginUserId(loginUserId);
         param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
-                PageHelper.startPage(param.getPageIndex(),param.getPageSize(), true);
-                List<SubimitVisitDoorVO> list = taskSchedulingDOMapper.subimitVisitDoorList(param);
-                PageInfo<TaskListVO> pageInfo = new PageInfo(list);
-                return pageInfo;
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List<SubimitVisitDoorVO> list = taskSchedulingDOMapper.subimitVisitDoorList(param);
+        PageInfo<TaskListVO> pageInfo = new PageInfo(list);
+        return pageInfo;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
         Long loginUserId = SessionUtils.getLoginUser().getId();
         param.setLoginUserId(loginUserId);
         param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
-        PageHelper.startPage(param.getPageIndex(),param.getPageSize(), true);
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
         List list = taskSchedulingDOMapper.legworkReimbursementList(param);
         PageInfo<TaskListVO> pageInfo = new PageInfo(list);
         return pageInfo;
@@ -75,33 +75,33 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
 
     @Override
     public Long createExpensesDetail(CreateExpensesDetailParam param) {
-        if(CollectionUtils.isEmpty(param.getIds())){
+        if (CollectionUtils.isEmpty(param.getIds())) {
             throw new BizException("请选择");
         }
 
-        if(param.getIds() == null){
+        if (param.getIds() == null) {
             throw new BizException("请选择");
         }
 
-        if(param.getIds().size() == 0){
+        if (param.getIds().size() == 0) {
             throw new BizException("请选择");
         }
 
-        for(Long visitDoorId : param.getIds()){
-            if(legworkReimbursementRelevanceVisitDOMapper.checkHaving(visitDoorId)){
-                throw new BizException("["+visitDoorId+"]"+ "此任务以被选择为报销项目" );
+        for (Long visitDoorId : param.getIds()) {
+            if (legworkReimbursementRelevanceVisitDOMapper.checkHaving(visitDoorId)) {
+                throw new BizException("[" + visitDoorId + "]" + "此任务以被选择为报销项目");
             }
 
         }
         EmployeeDO user = SessionUtils.getLoginUser();
         LegworkReimbursementDO legworkReimbursementDO = new LegworkReimbursementDO();
-        legworkReimbursementDO.setGmtUser(user.getId());
-        legworkReimbursementDO.setGmtUserName(user.getName());
+        legworkReimbursementDO.setApplyUserId(user.getId());
+        legworkReimbursementDO.setApplyUserName(user.getName());
         legworkReimbursementDOMapper.insertSelective(legworkReimbursementDO);
-        if(legworkReimbursementDO.getId() ==  null){
+        if (legworkReimbursementDO.getId() == null) {
             throw new BizException("无效的记录");
         }
-        for(Long visitDoorId : param.getIds()){
+        for (Long visitDoorId : param.getIds()) {
             LegworkReimbursementRelevanceVisitDO legworkReimbursementRelevanceVisitDO = new LegworkReimbursementRelevanceVisitDO();
             legworkReimbursementRelevanceVisitDO.setLegworkReimbursementId(legworkReimbursementDO.getId());
             legworkReimbursementRelevanceVisitDO.setVisitDoorId(visitDoorId);
@@ -118,14 +118,14 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
         List<RecombinationVO> result = Lists.newArrayList();
 
         List<LegworkReimbursementRelevanceVisitDO> legworkReimbursementRelevanceVisitDOS = legworkReimbursementRelevanceVisitDOMapper.selectByLegworkReimbursementId(id);
-        if(CollectionUtil.isNotEmpty(legworkReimbursementRelevanceVisitDOS)){
-            if(legworkReimbursementRelevanceVisitDOS.size() > 0 ){
-                if(legworkReimbursementRelevanceVisitDOS.get(0) != null){
-                    for(LegworkReimbursementRelevanceVisitDO legworkReimbursementRelevanceVisitDO : legworkReimbursementRelevanceVisitDOS){
+        if (CollectionUtil.isNotEmpty(legworkReimbursementRelevanceVisitDOS)) {
+            if (legworkReimbursementRelevanceVisitDOS.size() > 0) {
+                if (legworkReimbursementRelevanceVisitDOS.get(0) != null) {
+                    for (LegworkReimbursementRelevanceVisitDO legworkReimbursementRelevanceVisitDO : legworkReimbursementRelevanceVisitDOS) {
                         VisitDoorDO visitDoorDO = visitDoorDOMapper.selectByPrimaryKey(legworkReimbursementRelevanceVisitDO.getVisitDoorId());
-                        if(visitDoorDO!=null){
+                        if (visitDoorDO != null) {
                             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(visitDoorDO.getOrderId());
-                            if(loanOrderDO!=null){
+                            if (loanOrderDO != null) {
                                 List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(loanOrderDO.getId());
                                 for (UniversalCustomerVO universalCustomerVO : customers) {
                                     List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
@@ -151,17 +151,17 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
 
     @Override
     public void expensesUpdate(LegworkReimbursementUpdateParam param) {
-        if(param.getId() == null){
+        if (param.getId() == null) {
             throw new BizException("id is null");
         }
-        LegworkReimbursementDO legworkReimbursementDO = BeanPlasticityUtills.copy(LegworkReimbursementDO.class,param);
+        LegworkReimbursementDO legworkReimbursementDO = BeanPlasticityUtills.copy(LegworkReimbursementDO.class, param);
         legworkReimbursementDO.setStatus(new Byte("2"));
         legworkReimbursementDOMapper.updateByPrimaryKeySelective(legworkReimbursementDO);
 
-        if(CollectionUtil.isNotEmpty(param.getFiles())){
+        if (CollectionUtil.isNotEmpty(param.getFiles())) {
             legworkReimbursementFileDOMapper.deleteByPrimaryKey(param.getId());
         }
-        for(String url : param.getFiles()){
+        for (String url : param.getFiles()) {
             LegworkReimbursementFileDO legworkReimbursementFileDO = new LegworkReimbursementFileDO();
             legworkReimbursementFileDO.setLegworkReimbursementId(param.getId());
             legworkReimbursementFileDO.setUrls(url);

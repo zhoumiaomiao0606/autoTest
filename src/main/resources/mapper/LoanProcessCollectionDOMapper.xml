@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LoanProcessCollectionDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR"/>
+        <result column="collection_workbench" property="collectionWorkbench" jdbcType="TINYINT"/>
+        <result column="visit_collection_review" property="visitCollectionReview" jdbcType="TINYINT"/>
+        <result column="visit_collection" property="visitCollection" jdbcType="TINYINT"/>
+        <result column="car_handle" property="carHandle" jdbcType="TINYINT"/>
+        <result column="car_out" property="carOut" jdbcType="TINYINT"/>
+        <result column="settle_order" property="settleOrder" jdbcType="TINYINT"/>
+        <result column="legal_review" property="legalReview" jdbcType="TINYINT"/>
+        <result column="legal_record" property="legalRecord" jdbcType="TINYINT"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, order_id, process_inst_id, collection_workbench, visit_collection_review, visit_collection, 
+    car_handle, car_out, settle_order, legal_review, legal_record, gmt_create, gmt_modify
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_collection
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from loan_process_collection
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
+    insert into loan_process_collection (id, order_id, process_inst_id, 
+      collection_workbench, visit_collection_review, 
+      visit_collection, car_handle, car_out, 
+      settle_order, legal_review, legal_record, 
+      gmt_create, gmt_modify)
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, 
+      #{collectionWorkbench,jdbcType=TINYINT}, #{visitCollectionReview,jdbcType=TINYINT}, 
+      #{visitCollection,jdbcType=TINYINT}, #{carHandle,jdbcType=TINYINT}, #{carOut,jdbcType=TINYINT}, 
+      #{settleOrder,jdbcType=TINYINT}, #{legalReview,jdbcType=TINYINT}, #{legalRecord,jdbcType=TINYINT}, 
+      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
+        insert into loan_process_collection
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="processInstId != null">
+                process_inst_id,
+            </if>
+            <if test="collectionWorkbench != null">
+                collection_workbench,
+            </if>
+            <if test="visitCollectionReview != null">
+                visit_collection_review,
+            </if>
+            <if test="visitCollection != null">
+                visit_collection,
+            </if>
+            <if test="carHandle != null">
+                car_handle,
+            </if>
+            <if test="carOut != null">
+                car_out,
+            </if>
+            <if test="settleOrder != null">
+                settle_order,
+            </if>
+            <if test="legalReview != null">
+                legal_review,
+            </if>
+            <if test="legalRecord != null">
+                legal_record,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="processInstId != null">
+                #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionWorkbench != null">
+                #{collectionWorkbench,jdbcType=TINYINT},
+            </if>
+            <if test="visitCollectionReview != null">
+                #{visitCollectionReview,jdbcType=TINYINT},
+            </if>
+            <if test="visitCollection != null">
+                #{visitCollection,jdbcType=TINYINT},
+            </if>
+            <if test="carHandle != null">
+                #{carHandle,jdbcType=TINYINT},
+            </if>
+            <if test="carOut != null">
+                #{carOut,jdbcType=TINYINT},
+            </if>
+            <if test="settleOrder != null">
+                #{settleOrder,jdbcType=TINYINT},
+            </if>
+            <if test="legalReview != null">
+                #{legalReview,jdbcType=TINYINT},
+            </if>
+            <if test="legalRecord != null">
+                #{legalRecord,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
+        update loan_process_collection
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="processInstId != null">
+                process_inst_id = #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionWorkbench != null">
+                collection_workbench = #{collectionWorkbench,jdbcType=TINYINT},
+            </if>
+            <if test="visitCollectionReview != null">
+                visit_collection_review = #{visitCollectionReview,jdbcType=TINYINT},
+            </if>
+            <if test="visitCollection != null">
+                visit_collection = #{visitCollection,jdbcType=TINYINT},
+            </if>
+            <if test="carHandle != null">
+                car_handle = #{carHandle,jdbcType=TINYINT},
+            </if>
+            <if test="carOut != null">
+                car_out = #{carOut,jdbcType=TINYINT},
+            </if>
+            <if test="settleOrder != null">
+                settle_order = #{settleOrder,jdbcType=TINYINT},
+            </if>
+            <if test="legalReview != null">
+                legal_review = #{legalReview,jdbcType=TINYINT},
+            </if>
+            <if test="legalRecord != null">
+                legal_record = #{legalRecord,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
+    update loan_process_collection
+    set order_id = #{orderId,jdbcType=BIGINT},
+      process_inst_id = #{processInstId,jdbcType=VARCHAR},
+      collection_workbench = #{collectionWorkbench,jdbcType=TINYINT},
+      visit_collection_review = #{visitCollectionReview,jdbcType=TINYINT},
+      visit_collection = #{visitCollection,jdbcType=TINYINT},
+      car_handle = #{carHandle,jdbcType=TINYINT},
+      car_out = #{carOut,jdbcType=TINYINT},
+      settle_order = #{settleOrder,jdbcType=TINYINT},
+      legal_review = #{legalReview,jdbcType=TINYINT},
+      legal_record = #{legalRecord,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

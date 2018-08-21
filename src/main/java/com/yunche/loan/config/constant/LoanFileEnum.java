@@ -141,7 +141,17 @@ public enum LoanFileEnum {
     //购车分期付款手续费委托代扣授权书
     S9022((byte)86,"购车分期付款手续费委托代扣授权书"),
     //合伙人代偿打款凭证
-    COMPENSATION_PAYMENT_VOUCHER((byte)87,"代偿打款凭证");
+    COMPENSATION_PAYMENT_VOUCHER((byte)87,"代偿打款凭证"),
+    //客户贷款资料
+    CUSTOMER_LOAN_INFO((byte)88,"客户贷款资料"),
+    //起诉书
+    INDICTMENT((byte)89,"起诉书"),
+    //证据目录
+    EVIDENCE_CATALOGUE((byte)90,"证据目录"),
+    //证据材料
+    EVIDENCE_MATERIAL((byte)91,"证据材料"),
+    //裁定书
+    VERDICT((byte)92,"裁定书");
 
 
 

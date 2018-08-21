@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  **/
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/vehicleHandle")
+@RequestMapping(value = {"/api/v1/loanorder/vehicleHandle", "/api/v1/app/loanorder/vehicleHandle"})
 public class VehicleHandleController
 {
     @Autowired

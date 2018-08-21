@@ -67,9 +67,11 @@ public class ZhongAnHttpUtil {
         CommonResponse response = (CommonResponse) client.call(request);
         String retMsg = response.getBizContent();
         System.out.println("QQQ"+retMsg);
-        returnMap = (Map)JSON.parse(retMsg);
-        String param1 = (String)returnMap.get("param");
-        returnMap1 = (Map)JSON.parse(param1);
+        if(retMsg !=null&&!"".equals(retMsg)){
+            returnMap = (Map)JSON.parse(retMsg);
+            String param1 = (String)returnMap.get("param");
+            returnMap1 = (Map)JSON.parse(param1);
+        }
         return returnMap1;
     }
 }

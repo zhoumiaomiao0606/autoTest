@@ -21,6 +21,7 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.persistence.entity.TaskEntityImpl;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +38,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
@@ -96,6 +96,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanInfoSupplementDOMapper loanInfoSupplementDOMapper;
 
     @Autowired
+    private LoanRefundApplyDOMapper loanRefundApplyDOMapper;
+
+    @Autowired
+    private LegworkReimbursementDOMapper legworkReimbursementDOMapper;
+
+    @Autowired
     private LoanProcessLogDOMapper loanProcessLogDOMapper;
 
     @Autowired
@@ -111,9 +117,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
 
     @Autowired
-    private LoanRefundApplyDOMapper loanRefundApplyDOMapper;
-
-    @Autowired
     private BankCardRecordDOMapper bankCardRecordDOMapper;
 
     @Autowired
@@ -127,6 +130,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Autowired
+    private ActivitiDeploymentMapper activitiDeploymentMapper;
+
+    @Autowired
+    private ZhonganInfoDOMapper zhonganInfoDOMapper;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -225,6 +234,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 【退款申请】
         if (isRefundApplyTask(approval.getTaskDefinitionKey())) {
             return execRefundApplyTask(approval, loanProcessDO);
+        }
+
+        // 【财务报销】
+        if (isOutworkerCostApplyTask(approval.getTaskDefinitionKey())) {
+            return execOutworkerCostApplyTask(approval);
         }
 
         // 【反审】
@@ -650,6 +664,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
+     * 【财务报销】任务
+     *
+     * @param taskDefinitionKey
+     * @return
+     */
+    private boolean isOutworkerCostApplyTask(String taskDefinitionKey) {
+        boolean isRefundApplyTask = OUTWORKER_COST_APPLY.getCode().equals(taskDefinitionKey)
+                || OUTWORKER_COST_APPLY_REVIEW.getCode().equals(taskDefinitionKey);
+        return isRefundApplyTask;
+    }
+
+    /**
      * 【资料流转（抵押资料 - 合伙人->公司）】任务 -[新建]
      *
      * @param taskDefinitionKey
@@ -1051,6 +1077,65 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
+     * 执行 -【财务报销】
+     *
+     * @param approval
+     * @return
+     */
+    private ResultBean<Void> execOutworkerCostApplyTask(ApprovalParam approval) {
+
+        // [外勤费用申报]
+        if (OUTWORKER_COST_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            // PASS
+            if (ACTION_PASS.equals(approval.getAction())) {
+
+                updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_DONE__APPLY_ORDER_REVIEW_TODO);
+            }
+        }
+
+        // [财务报销]
+        else if (OUTWORKER_COST_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            Byte action = approval.getAction();
+
+            // PASS
+            if (ACTION_PASS.equals(action)) {
+
+                updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_REVIEW_PASS);
+            }
+            // REJECT
+            else if (ACTION_REJECT_MANUAL.equals(action)) {
+
+                updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_REJECT);
+            }
+        }
+
+        return ResultBean.ofSuccess(null);
+    }
+
+    private void updateOutworkerCostApplyProcess(ApprovalParam approval, Byte applyOrderStatus) {
+
+        LegworkReimbursementDO legworkReimbursementDO = new LegworkReimbursementDO();
+        legworkReimbursementDO.setId(approval.getSupplementOrderId());
+
+        legworkReimbursementDO.setStatus(applyOrderStatus);
+
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        legworkReimbursementDO.setApplyUserId(loginUser.getId());
+        legworkReimbursementDO.setApplyUserName(loginUser.getName());
+
+        legworkReimbursementDO.setReviewUserId(loginUser.getId());
+        legworkReimbursementDO.setReviewUserName(loginUser.getName());
+
+        legworkReimbursementDO.setGmtUpdateTime(new Date());
+
+        int count = legworkReimbursementDOMapper.updateByPrimaryKeySelective(legworkReimbursementDO);
+        Preconditions.checkArgument(count > 0, "");
+    }
+
+    /**
      * 更新退款申请单状态
      *
      * @param approval
@@ -1248,6 +1333,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
 
+            // 众安征信接口校验
+            List<ZhonganInfoDO> list = zhonganInfoDOMapper.selectByCreaditOrderId(loanOrderDO.getId());
+            for (ZhonganInfoDO zhonganInfoDO : list) {
+                if (!"成功".equals(zhonganInfoDO.getResultMessage())) {
+                    throw new BizException("客户:" + zhonganInfoDO.getCustomerName() + zhonganInfoDO.getResultMessage() + ",无法提交征信");
+                }
+            }
+
+            // 客户信息校验
             LoanCustomerDO loanCustomerDO = getLoanCustomer(loanOrderDO.getLoanCustomerId());
             String identityValidity = loanCustomerDO.getIdentityValidity();
             Preconditions.checkArgument(StringUtils.isNotBlank(identityValidity), "身份证有效期不能为空");
@@ -1684,15 +1778,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Byte action = approval.getAction();
         if (ACTION_PASS.equals(action)) {
             // new  -> TO_DO   old -> 不变
-            updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_TODO, approval);
+            doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_TODO, approval);
         } else if (ACTION_REJECT_MANUAL.equals(action)) {
             // new  -> REJECT   old -> INIT
-            updateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT, approval);
+            doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT, approval);
 
             // 是否已过电审
             if (!TASK_PROCESS_DONE.equals(currentLoanProcessDO.getTelephoneVerify())) {
                 // 没过电审
-                updateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT, approval);
+                doUpdateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT, approval);
             } else {
                 // 过了电审，则不是真正的全部打回      nothing
             }
@@ -1776,7 +1870,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param taskProcessStatus 未提交/打回
      * @param approval
      */
-    private void updateNextTaskProcessStatus(List<Task> nextTaskList, LoanProcessDO loanProcessDO, Byte taskProcessStatus, ApprovalParam approval) {
+    private void doUpdateNextTaskProcessStatus(List<Task> nextTaskList, LoanProcessDO loanProcessDO, Byte taskProcessStatus, ApprovalParam approval) {
 
         if (!CollectionUtils.isEmpty(nextTaskList)) {
             nextTaskList.stream()
@@ -2727,23 +2821,28 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
-        List<Task> runTaskList = taskService.createTaskQuery()
+        List<Task> loanProcessTaskList = taskService.createTaskQuery()
                 .processInstanceId(loanOrderDO.getProcessInstId())
                 .list();
+
+        List<TaskEntityImpl> insteadPayTaskList = activitiDeploymentMapper.listInsteadPayTaskByOrderId(orderId);
+        List<TaskEntityImpl> collectionTaskList = activitiDeploymentMapper.listCollectionTaskByOrderId(orderId);
+
+        List<Task> runTaskList = Lists.newArrayList();
+        runTaskList.addAll(insteadPayTaskList);
+        runTaskList.addAll(collectionTaskList);
+        runTaskList.addAll(loanProcessTaskList);
 
         List<TaskStateVO> taskStateVOS = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(runTaskList)) {
             taskStateVOS = runTaskList.stream()
                     .filter(Objects::nonNull)
-                    .filter(task -> !BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                            && !LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                            && !REMIT_REVIEW_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                            && !DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode().equals(task.getTaskDefinitionKey())
-                    )
+                    .filter(task -> !task.getTaskDefinitionKey().startsWith("filter"))
                     .map(task -> {
 
                         TaskStateVO taskStateVO = new TaskStateVO();
                         taskStateVO.setTaskDefinitionKey(task.getTaskDefinitionKey());
+                        taskStateVO.setTaskId(task.getId());
                         taskStateVO.setTaskName(task.getName());
                         taskStateVO.setTaskStatus(TASK_PROCESS_TODO);
                         taskStateVO.setTaskStatusText(getTaskStatusText(TASK_PROCESS_TODO));
@@ -3155,7 +3254,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 流程变量：action
         variables.put(PROCESS_VARIABLE_ACTION, approval.getAction());
-        variables.put(PROCESS_VARIABLE_TARGET, approval.getTarget());
+//        variables.put(PROCESS_VARIABLE_TARGET, approval.getTarget());
 
         // 添加流程变量-贷款金额
         fillLoanAmount(variables, approval.getAction(), currentExecTask.getTaskDefinitionKey(), loanOrderDO);

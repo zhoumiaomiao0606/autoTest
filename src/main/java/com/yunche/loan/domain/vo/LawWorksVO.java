@@ -17,7 +17,7 @@ public class LawWorksVO<T> {
 
     private FeeRegisterDO feeRegisterDO;
 
-    private FileInfoDO fileInfoDO;
+    private List<FileInfoDO> fileInfoDO;
 
     private List<UniversalCustomerVO> customers = Lists.newArrayList();
 

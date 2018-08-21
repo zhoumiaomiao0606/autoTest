@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.FeeRegisterParam;
@@ -7,6 +8,7 @@ import com.yunche.loan.domain.param.FileInfoParam;
 import com.yunche.loan.domain.param.ForceParam;
 import com.yunche.loan.domain.param.LitigationParam;
 import com.yunche.loan.domain.query.LawWorkQuery;
+import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.domain.vo.LawWorksVO;
 import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,16 +59,17 @@ public class LawWorksServiceImpl implements LawWorksService {
 
         LawWorksVO lawWorksVO = new LawWorksVO();
         lawWorksVO.setResult(lawWorkQuery);
-        lawWorksVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderid,"0",bankRepayImpRecordId));
+        LitigationStateDO litigationStateDO = litigationStateDOMapper.selectByIdAndType(orderid,"0",bankRepayImpRecordId);
+        lawWorksVO.setLitigationStateDO(litigationStateDO == null?new LitigationStateDO():litigationStateDO);
         List<LitigationDO> list = litigationDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
         if(list == null){
             list = new ArrayList<LitigationDO>();
         }
         ForceDO forceDO = forceDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
         FeeRegisterDO feeRegisterDO = feeRegisterDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
-        FileInfoDO fileInfoDO = fileInfoDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
+        List<FileInfoDO> fileInfoDO = fileInfoDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
         lawWorksVO.setFeeRegisterDO(feeRegisterDO == null ? new FeeRegisterDO():feeRegisterDO);
-        lawWorksVO.setFileInfoDO(fileInfoDO == null ? new FileInfoDO():fileInfoDO);
+        lawWorksVO.setFileInfoDO(fileInfoDO == null ? new ArrayList<FileInfoDO>():fileInfoDO);
         lawWorksVO.setForceDO(forceDO == null ? new ForceDO():forceDO);
         lawWorksVO.setList(list);
         lawWorksVO.setLoanApplyCompensation(list1);
@@ -120,14 +124,18 @@ public class LawWorksServiceImpl implements LawWorksService {
     }
 
     @Override
+    @Transactional
     public void fileInfoInstall(FileInfoParam param) {
-        Long id = param.getId();
+        fileInfoDOMapper.deleteByOrderIdAndRecordId(param.getOrderId(),param.getBankRepayImpRecordId());
         FileInfoDO fileInfoDO = new FileInfoDO();
         BeanUtils.copyProperties(param, fileInfoDO);
-        if(id == null){
+        for(FileVO fileVO:param.getFiles()){
+            fileInfoDO.setOrderId(param.getOrderId());
+            fileInfoDO.setBankRepayImpRecordId(param.getBankRepayImpRecordId());
+            fileInfoDO.setRemark(param.getRemark());
+            fileInfoDO.setType(fileVO.getType()+"");
+            fileInfoDO.setPath(JSON.toJSONString(fileVO.getUrls()));
             fileInfoDOMapper.insertSelective(fileInfoDO);
-        }else{
-            fileInfoDOMapper.updateByPrimaryKeySelective(fileInfoDO);
         }
     }
 
