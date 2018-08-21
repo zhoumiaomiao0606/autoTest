@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.yunche.loan.mapper.ActivitiDeploymentMapper;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.Process;
@@ -17,6 +18,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +47,9 @@ public class ActivitiCache {
 
     @Autowired
     private RepositoryService repositoryService;
+
+    @Autowired
+    private ActivitiDeploymentMapper activitiDeploymentMapper;
 
 
     /**
@@ -171,13 +176,38 @@ public class ActivitiCache {
      */
     public Map<String, List<String>> getTaskDefinitionKeyCandidateGroupsMap() {
 
+        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = Maps.newHashMap();
+
+        // getAll - processDefinitionResourceName
+        Set<String> processDefinitionResourceNameSet = getAllResourceName();
+
+        if (!CollectionUtils.isEmpty(processDefinitionResourceNameSet)) {
+
+            processDefinitionResourceNameSet.stream()
+                    .filter(StringUtils::isNotBlank)
+                    .forEach(processDefinitionResourceName -> {
+
+                        getAndSetTaskDefinitionKeyCandidateGroupsMap(taskDefinitionKeyCandidateGroupsMap, processDefinitionResourceName);
+                    });
+        }
+
+        return taskDefinitionKeyCandidateGroupsMap;
+    }
+
+    /**
+     * @param taskDefinitionKeyCandidateGroupsMap
+     * @param processDefinitionResourceName
+     * @return
+     */
+    private Map<String, List<String>> getAndSetTaskDefinitionKeyCandidateGroupsMap(Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap,
+                                                                                   String processDefinitionResourceName) {
+
         // 查询最新版本的流程定义
-        ProcessDefinition lastVersionProcessDefinition = findLastVersionProcessDefinition();
+        ProcessDefinition lastVersionProcessDefinition = findLastVersionProcessDefinition(processDefinitionResourceName);
 
         if (null == lastVersionProcessDefinition) {
             return null;
         }
-        Map<String, List<String>> taskDefinitionKeyCandidateGroupsMap = Maps.newHashMap();
 
         BpmnModel bpmnModel = repositoryService.getBpmnModel(lastVersionProcessDefinition.getId());
 
@@ -216,11 +246,13 @@ public class ActivitiCache {
     /**
      * 查询最新版本的流程定义
      *
+     * @param processDefinitionResourceName
      * @return
      */
-    private ProcessDefinition findLastVersionProcessDefinition() {
+    private ProcessDefinition findLastVersionProcessDefinition(String processDefinitionResourceName) {
 
         List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionResourceName(processDefinitionResourceName)
                 .orderByProcessDefinitionVersion()
                 //使用流程定义的版本升序排列
                 .desc()
@@ -253,5 +285,12 @@ public class ActivitiCache {
         });
 
         return dataFlowRoleNodesMap;
+    }
+
+    public Set<String> getAllResourceName() {
+
+        Set<String> resourceNameSet = activitiDeploymentMapper.getAllResourceName();
+
+        return resourceNameSet;
     }
 }

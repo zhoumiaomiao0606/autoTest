@@ -5,7 +5,8 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class TaskDistributionDO{
+public class TaskDistributionDO
+{
     private Long taskId;
 
     private String taskKey;

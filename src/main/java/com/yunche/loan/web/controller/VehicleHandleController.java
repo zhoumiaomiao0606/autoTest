@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.*;
  **/
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/vehicleHandle")
+@RequestMapping(value = {"/api/v1/loanorder/vehicleHandle", "/api/v1/app/loanorder/vehicleHandle"})
 public class VehicleHandleController
 {
     @Autowired
     private VehicleHandleService vehicleHandleService;
 
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String orderId) {
-        return ResultBean.ofSuccess(vehicleHandleService.detail(Long.valueOf(orderId)));
+    public ResultBean detail(@RequestParam String orderId,Long bankRepayImpRecordId) {
+        return ResultBean.ofSuccess(vehicleHandleService.detail(Long.valueOf(orderId),bankRepayImpRecordId));
     }
 
 

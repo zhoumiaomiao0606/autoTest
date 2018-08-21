@@ -18,5 +18,5 @@ public interface ForceDOMapper {
 
     int updateByPrimaryKey(ForceDO record);
 
-    ForceDO selectByOrderId(@Param("orderid")Long orderid);
+    ForceDO selectByOrderId(@Param("orderid")Long orderid,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
 }

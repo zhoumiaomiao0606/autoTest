@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
             if (null == code) {
                 return ResultBean.ofError(msg);
             } else {
-                return ResultBean.of(null, false, code, msg);
+                return ResultBean.ofError(code, msg);
             }
         } else if (e instanceof MissingServletRequestParameterException) {
             return ResultBean.ofError("必入参数未填写");
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("必入参数未填写");
         } else if (e instanceof DecodeException) {
             return ResultBean.ofError(e.getMessage());
-        }else if (e instanceof ConstraintViolationException) {
+        } else if (e instanceof ConstraintViolationException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof IllegalArgumentException) {
             return ResultBean.ofError(e.getMessage());
@@ -67,11 +67,11 @@ public class GlobalExceptionHandler {
         } else if (e instanceof JSONPathException) {
             return ResultBean.ofError("类型转换异常");
         } else if (e instanceof BadSqlGrammarException) {
-            return ResultBean.ofError("服务器异常,请联系管理员!");
+            return ResultBean.ofError("出错啦,请稍后再试!");
         } else if (e instanceof MySQLSyntaxErrorException) {
-            return ResultBean.ofError("服务器异常,请联系管理员!");
+            return ResultBean.ofError("出错啦,请稍后再试!");
         } else if (e instanceof RuntimeException) {
-            return ResultBean.ofError("服务器异常,请联系管理员!");
+            return ResultBean.ofError("出错啦,请稍后再试!");
         } else {
             String errorMsg = e.toString() == null ? e.getMessage() : e.toString();
             return ResultBean.ofError(StringUtils.isBlank(errorMsg) ? "未知错误" : errorMsg);

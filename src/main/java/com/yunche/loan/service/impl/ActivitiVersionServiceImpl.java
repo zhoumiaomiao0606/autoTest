@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,19 +43,19 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
      * 流程替换
      */
     @Override
-    @Transactional
-    public void replaceActivitiVersion() {
+    @Transactional(rollbackFor = Exception.class)
+    public void replaceActivitiVersion(@NotEmpty(message = "resourceName不能为空") String resourceName) {
 
         // 获取上个版本的部署ID
-        Long lastVersionDeploymentId = activitiDeploymentMapper.getLastVersionDeploymentId();
+        Long lastVersionDeploymentId = activitiDeploymentMapper.getLastVersionDeploymentId(resourceName);
 
         if (null != lastVersionDeploymentId) {
 
             // 获取(当前部署的)最新版本的部署ID
-            Long newVersionDeploymentId = activitiDeploymentMapper.getNewVersionDeploymentId();
+            Long newVersionDeploymentId = activitiDeploymentMapper.getNewVersionDeploymentId(resourceName);
 
             // 仅保留新版本           资源文件(bpmn/png)
-            int deleteAllBpmnAndPngCount = activitiDeploymentMapper.deleteAllBpmnAndPngExcludeNewVersion(newVersionDeploymentId);
+            int deleteAllBpmnAndPngCount = activitiDeploymentMapper.deleteAllBpmnAndPngExcludeNewVersion(newVersionDeploymentId, resourceName);
 
             // 删除最新的            流程定义
             int deleteNewVersionProcessDefinitionCount = activitiDeploymentMapper.deleteNewVersionProcessDefinition(newVersionDeploymentId);
@@ -62,15 +63,16 @@ public class ActivitiVersionServiceImpl implements ActivitiVersionService {
             // 部署ID替换
             int replaceDeploymentIdCount = activitiDeploymentMapper.replaceDeploymentId(lastVersionDeploymentId, newVersionDeploymentId);
 
-            logger.info("替换旧流程成功        >>>>>"
+            logger.info("替换旧流程成功        >>>>>       resourceName : {}"
                             + NEW_LINE
                             + "lastVersionDeploymentId : {}, newVersionDeploymentId : {}, deleteAllBpmnAndPngCount : {}, deleteNewVersionProcessDefinitionCount : {}, replaceDeploymentIdCount : {}.",
+                    resourceName,
                     lastVersionDeploymentId, newVersionDeploymentId, deleteAllBpmnAndPngCount, deleteNewVersionProcessDefinitionCount, replaceDeploymentIdCount);
         } else {
 
-            logger.info("无旧版本流程       >>>>>"
+            logger.info("无旧版本流程       >>>>>       resourceName : {}"
                     + NEW_LINE
-                    + "lastVersionDeploymentId : {}", lastVersionDeploymentId);
+                    + "lastVersionDeploymentId : {}", resourceName, lastVersionDeploymentId);
         }
     }
 

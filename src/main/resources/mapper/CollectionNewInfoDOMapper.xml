@@ -3,6 +3,7 @@
 <mapper namespace="com.yunche.loan.mapper.CollectionNewInfoDOMapper" >
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CollectionNewInfoDO" >
     <id column="id" property="id" jdbcType="BIGINT" />
+    <id column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT" />
     <result column="isvisit" property="isvisit" jdbcType="VARCHAR" />
     <result column="circumstances" property="circumstances" jdbcType="VARCHAR" />
     <result column="police" property="police" jdbcType="VARCHAR" />
@@ -14,34 +15,39 @@
     <result column="dispatched_date" property="dispatchedDate" jdbcType="DATE" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, isvisit, circumstances, police, notarization, second_mortgage, collection_manId, 
-    islaw, dispatched_staff, dispatched_date
+    id, bank_repay_imp_record_id, isvisit, circumstances, police, notarization, second_mortgage, 
+    collection_manId, islaw, dispatched_staff, dispatched_date
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDOKey" >
     select 
     <include refid="Base_Column_List" />
     from collection_new_info
     where id = #{id,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDOKey" >
     delete from collection_new_info
     where id = #{id,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO" >
-    insert into collection_new_info (id, isvisit, circumstances, 
-      police, notarization, second_mortgage, 
-      collection_manId, islaw, dispatched_staff, 
-      dispatched_date)
-    values (#{id,jdbcType=BIGINT}, #{isvisit,jdbcType=VARCHAR}, #{circumstances,jdbcType=VARCHAR}, 
-      #{police,jdbcType=VARCHAR}, #{notarization,jdbcType=VARCHAR}, #{secondMortgage,jdbcType=VARCHAR}, 
-      #{collectionManid,jdbcType=VARCHAR}, #{islaw,jdbcType=VARCHAR}, #{dispatchedStaff,jdbcType=VARCHAR}, 
-      #{dispatchedDate,jdbcType=DATE})
+    insert into collection_new_info (id, bank_repay_imp_record_id, isvisit, 
+      circumstances, police, notarization, 
+      second_mortgage, collection_manId, islaw, 
+      dispatched_staff, dispatched_date)
+    values (#{id,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT}, #{isvisit,jdbcType=VARCHAR}, 
+      #{circumstances,jdbcType=VARCHAR}, #{police,jdbcType=VARCHAR}, #{notarization,jdbcType=VARCHAR}, 
+      #{secondMortgage,jdbcType=VARCHAR}, #{collectionManid,jdbcType=VARCHAR}, #{islaw,jdbcType=VARCHAR}, 
+      #{dispatchedStaff,jdbcType=VARCHAR}, #{dispatchedDate,jdbcType=DATE})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO" >
     insert into collection_new_info
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
+      </if>
+      <if test="bankRepayImpRecordId != null" >
+        bank_repay_imp_record_id,
       </if>
       <if test="isvisit != null" >
         isvisit,
@@ -74,6 +80,9 @@
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         #{id,jdbcType=BIGINT},
+      </if>
+      <if test="bankRepayImpRecordId != null" >
+        #{bankRepayImpRecordId,jdbcType=BIGINT},
       </if>
       <if test="isvisit != null" >
         #{isvisit,jdbcType=VARCHAR},
@@ -136,6 +145,7 @@
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO" >
     update collection_new_info
@@ -149,5 +159,14 @@
       dispatched_staff = #{dispatchedStaff,jdbcType=VARCHAR},
       dispatched_date = #{dispatchedDate,jdbcType=DATE}
     where id = #{id,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
+
+  <!--根据orderId查询拖车概况-->
+  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="Long" >
+    select
+    <include refid="Base_Column_List" />
+    from collection_new_info
+    where id = #{orderId,jdbcType=BIGINT}
+  </select>
 </mapper>

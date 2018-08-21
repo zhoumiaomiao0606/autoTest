@@ -20,17 +20,18 @@ public class VisitDoorController {
      * 上门详情
      */
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam("order_id") String order_id,@RequestParam("id")String id) {
-        return ResultBean.ofSuccess(visitDoorService.detail(Long.valueOf(order_id),Long.valueOf(id)));
+    public ResultBean detail(@RequestParam("order_id") String order_id,@RequestParam("id")String id,@RequestParam String bank_repay_imp_record_id) {
+        return ResultBean.ofSuccess(visitDoorService.detail(Long.valueOf(order_id),Long.valueOf(id),Long.valueOf(bank_repay_imp_record_id)));
     }
+    //app信息分开
     @GetMapping(value = "/cusinfodetail")
-    public ResultBean cusInfoDetatil(@RequestParam("order_id") String order_id,@RequestParam("id")String id) {
-        return ResultBean.ofSuccess(visitDoorService.cusInfoDetatil(Long.valueOf(order_id),Long.valueOf(id)));
+    public ResultBean cusInfoDetatil(@RequestParam("order_id") String order_id,@RequestParam("id")String id,@RequestParam String bank_repay_imp_record_id) {
+        return ResultBean.ofSuccess(visitDoorService.cusInfoDetatil(Long.valueOf(order_id),Long.valueOf(id),Long.valueOf(bank_repay_imp_record_id)));
     }
-
+    //app信息分开
     @GetMapping(value = "/visitdoordetail")
-    public ResultBean visitDoorDetatil(@RequestParam("order_id") String order_id,@RequestParam("id")String id) {
-        return ResultBean.ofSuccess(visitDoorService.visitDoorDetatil(Long.valueOf(order_id),Long.valueOf(id)));
+    public ResultBean visitDoorDetatil(@RequestParam("order_id") String order_id,@RequestParam("id")String id,@RequestParam String bank_repay_imp_record_id) {
+        return ResultBean.ofSuccess(visitDoorService.visitDoorDetatil(Long.valueOf(order_id),Long.valueOf(id),Long.valueOf(bank_repay_imp_record_id)));
     }
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

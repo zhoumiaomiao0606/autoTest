@@ -1,15 +1,16 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.VehicleHandleDO;
+import com.yunche.loan.domain.entity.VehicleHandleDOKey;
 
 public interface VehicleHandleDOMapper {
-    int deleteByPrimaryKey(Long orderid);
+    int deleteByPrimaryKey(VehicleHandleDOKey key);
 
     int insert(VehicleHandleDO record);
 
     int insertSelective(VehicleHandleDO record);
 
-    VehicleHandleDO selectByPrimaryKey(Long orderid);
+    VehicleHandleDO selectByPrimaryKey(VehicleHandleDOKey key);
 
     int updateByPrimaryKeySelective(VehicleHandleDO record);
 

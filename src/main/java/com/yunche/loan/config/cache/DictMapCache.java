@@ -1,6 +1,7 @@
 package com.yunche.loan.config.cache;
 
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.domain.entity.DictMapDO;
 import com.yunche.loan.mapper.DictMapDOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,6 @@ import java.util.Map;
 public class DictMapCache {
 
     private static final String DICT_2_BANK = "area:cache:dict2bank";
-
-
 
     @Autowired
     DictMapDOMapper dictMapDOMapper;
@@ -40,25 +39,28 @@ public class DictMapCache {
             return;
         }
 
-         Map<String, String> map = Maps.newHashMap();
+        Map<String, String> map = Maps.newHashMap();
+
         allDictMap.parallelStream().forEach(e -> {
             String key = e.getItemKey() + "_" + e.getSource();
             String value = e.getTarget();
             map.put(key, value);
         });
+
         stringRedisTemplate.opsForHash().putAll(DICT_2_BANK, map);
-
-
     }
 
     /**
-     *
      * @param key
      * @param source
      * @return
      */
     public String getValue(String key, String source) {
 
-        return stringRedisTemplate.opsForHash().get(DICT_2_BANK, key.trim()+"_"+source.trim()).toString();
+        try {
+            return stringRedisTemplate.opsForHash().get(DICT_2_BANK, key.trim() + "_" + source.trim()).toString();
+        } catch (Exception e) {
+            throw new BizException("数据字典转换异常,请联系管理员");
+        }
     }
 }

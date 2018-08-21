@@ -349,12 +349,17 @@
 
 -->
 
-       <!-- <table tableName="loan_financial_plan" domainObjectName="LoanFinancialPlanDO"
+        <!-- <table tableName="loan_financial_plan" domainObjectName="LoanFinancialPlanDO"
+                enableCountByExample="false" enableUpdateByExample="false"
+                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+         </table>-->
+
+        <table tableName="loan_process_instead_pay" domainObjectName="LoanProcessInsteadPayDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>-->
+        </table>
 
-        <table tableName="vehicle_outbound" domainObjectName="VehicleOutboundDO"
+        <table tableName="loan_process_collection" domainObjectName="LoanProcessCollectionDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

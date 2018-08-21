@@ -48,7 +48,8 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
      * @param taskKey
      */
     @Override
-    public void get(Long taskId, String taskKey) {
+    public void get(Long taskId, String taskKey)
+    {
         if (taskId == null || StringUtils.isBlank(taskKey)) {
             throw new BizException("必须传入任务id和任务key");
         }
@@ -108,17 +109,19 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
     //打回完成
     @Override
     public void rejectFinish(Long taskId, Long orderId, List<String> taskKeys) {
+
         //遍历可能性
         for (String taskKey : taskKeys) {
+
             TaskDistributionDO taskDistributionDOByTaskId = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
             if (taskDistributionDOByTaskId != null) {
+                //open
                 TaskDistributionDO V = new TaskDistributionDO();
                 V.setTaskKey(taskDistributionDOByTaskId.getTaskKey());
                 V.setTaskId(taskDistributionDOByTaskId.getTaskId());
                 V.setStatus(new Byte("2"));
                 taskDistributionDOMapper.updateByPrimaryKeySelective(V);
             }
-
 
             TaskDistributionDO taskDistributionDOByOrderId = taskDistributionDOMapper.selectByPrimaryKey(orderId, taskKey);
             if (taskDistributionDOByOrderId != null) {

@@ -983,7 +983,7 @@
                 ctelzone = #{ctelzone,jdbcType=VARCHAR},
             </if>
             <if test="signatureType != null">
-                signature_type = #{signatureType,jdbcType=VARCHAR},
+                signature_type = #{signatureType,jdbcType=TINYINT},
             </if>
 
         </set>

@@ -335,4 +335,13 @@
       play_company = #{playCompany,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+    <!--查询贷款总额-->
+    <select id="selectLoanAmount" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+        select
+        loan_amount
+        from loan_order loanorder LEFT JOIN loan_financial_plan plan
+        ON loanorder.loan_financial_plan_id = plan.id
+        where loanorder.id = #{orderId,jdbcType=BIGINT}
+    </select>
 </mapper>

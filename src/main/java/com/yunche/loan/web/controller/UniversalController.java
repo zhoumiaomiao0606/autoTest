@@ -1,12 +1,14 @@
 package com.yunche.loan.web.controller;
 
 
+import com.yunche.loan.config.cache.DictMapCache;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.LoanQueryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,9 @@ public class UniversalController {
 
     @Resource
     private PartnerDOMapper partnerDOMapper;
+
+    @Autowired
+    private DictMapCache dictMapCache;
 
 
     @GetMapping(value = "/customer")
@@ -51,5 +56,11 @@ public class UniversalController {
     public ResultBean ftp2(){
         FtpUtil.icbcUpload("/tmp/8888.jpg");
         return ResultBean.ofSuccess("8888");
+    }
+
+    @GetMapping("/dictmapcache")
+    public ResultBean refreshDictMap(){
+        dictMapCache.refreshAll();
+       return ResultBean.ofSuccess(null,"刷新成功");
     }
 }

@@ -20,5 +20,5 @@ public interface FeeRegisterDOMapper {
 
     int updateByPrimaryKey(FeeRegisterDO record);
 
-    FeeRegisterDO selectByOrderId(@Param("orderid")Long orderid);
+    FeeRegisterDO selectByOrderId(@Param("orderid")Long orderid,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
 }

@@ -3,44 +3,50 @@
 <mapper namespace="com.yunche.loan.mapper.VehicleOutboundDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VehicleOutboundDO">
     <id column="orderid" jdbcType="BIGINT" property="orderid" />
+    <id column="bank_repay_imp_record_id" jdbcType="BIGINT" property="bankRepayImpRecordId" />
     <result column="reason" jdbcType="VARCHAR" property="reason" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="specific_address" jdbcType="VARCHAR" property="specificAddress" />
     <result column="customer_condition" jdbcType="VARCHAR" property="customerCondition" />
     <result column="progress" jdbcType="VARCHAR" property="progress" />
-    <result column="result" jdbcType="TINYINT" property="result" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
     <result column="remarks" jdbcType="VARCHAR" property="remarks" />
     <result column="balance" jdbcType="VARCHAR" property="balance" />
   </resultMap>
   <sql id="Base_Column_List">
-    orderid, reason, address, specific_address, customer_condition, progress, result, 
-    remarks, balance
+    orderid, bank_repay_imp_record_id, reason, address, specific_address, customer_condition, 
+    progress, result, remarks, balance
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDOKey" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from vehicle_outbound
     where orderid = #{orderid,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDOKey">
     delete from vehicle_outbound
     where orderid = #{orderid,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDO">
-    insert into vehicle_outbound (orderid, reason, address, 
-      specific_address, customer_condition, progress, 
-      result, remarks, balance
-      )
-    values (#{orderid,jdbcType=BIGINT}, #{reason,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
-      #{specificAddress,jdbcType=VARCHAR}, #{customerCondition,jdbcType=VARCHAR}, #{progress,jdbcType=VARCHAR}, 
-      #{result,jdbcType=TINYINT}, #{remarks,jdbcType=VARCHAR}, #{balance,jdbcType=VARCHAR}
-      )
+    insert into vehicle_outbound (orderid, bank_repay_imp_record_id, reason, 
+      address, specific_address, customer_condition, 
+      progress, result, remarks, 
+      balance)
+    values (#{orderid,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT}, #{reason,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{specificAddress,jdbcType=VARCHAR}, #{customerCondition,jdbcType=VARCHAR}, 
+      #{progress,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, 
+      #{balance,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDO">
     insert into vehicle_outbound
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="orderid != null">
         orderid,
+      </if>
+      <if test="bankRepayImpRecordId != null">
+        bank_repay_imp_record_id,
       </if>
       <if test="reason != null">
         reason,
@@ -71,6 +77,9 @@
       <if test="orderid != null">
         #{orderid,jdbcType=BIGINT},
       </if>
+      <if test="bankRepayImpRecordId != null">
+        #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
       <if test="reason != null">
         #{reason,jdbcType=VARCHAR},
       </if>
@@ -87,7 +96,7 @@
         #{progress,jdbcType=VARCHAR},
       </if>
       <if test="result != null">
-        #{result,jdbcType=TINYINT},
+        #{result,jdbcType=VARCHAR},
       </if>
       <if test="remarks != null">
         #{remarks,jdbcType=VARCHAR},
@@ -116,7 +125,7 @@
         progress = #{progress,jdbcType=VARCHAR},
       </if>
       <if test="result != null">
-        result = #{result,jdbcType=TINYINT},
+        result = #{result,jdbcType=VARCHAR},
       </if>
       <if test="remarks != null">
         remarks = #{remarks,jdbcType=VARCHAR},
@@ -126,6 +135,7 @@
       </if>
     </set>
     where orderid = #{orderid,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VehicleOutboundDO">
     update vehicle_outbound
@@ -134,9 +144,10 @@
       specific_address = #{specificAddress,jdbcType=VARCHAR},
       customer_condition = #{customerCondition,jdbcType=VARCHAR},
       progress = #{progress,jdbcType=VARCHAR},
-      result = #{result,jdbcType=TINYINT},
+      result = #{result,jdbcType=VARCHAR},
       remarks = #{remarks,jdbcType=VARCHAR},
       balance = #{balance,jdbcType=VARCHAR}
     where orderid = #{orderid,jdbcType=BIGINT}
+      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
 </mapper>

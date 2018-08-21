@@ -33,6 +33,7 @@
 	        financial.down_payment_money              as financial_down_payment_money,
 	        financial.bank_period_principal           AS financial_bank_period_principal,
 	        financial.loan_time                       as financial_loan_time,
+            financial.appraisal                       as financial_appraisal,
 	        useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
                                                       AS financial_bank_fee,
             useCalculateStagingRatio(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
@@ -85,6 +86,7 @@
             f.bank                            AS bank,
             f.bank_period_principal           AS bank_period_principal,
             f.loan_amount                     AS loan_amount,
+            f.appraisal                       AS appraisal,
             d.price                           AS assess_price,
             i.vehicle_property                AS production_type,
             i.vehicle_property                AS vehicle_property,
@@ -424,6 +426,9 @@
         main_order.id                                                                           AS order_id,
         customer.id_card                                                                        AS customer_id_card,
         customer.name                                                                           AS customer_name,
+        customer.hprovince                                                                      AS customer_hprovince,
+        customer.hcity                                                                          AS customer_hcity,
+        customer.hcounty                                                                        AS customer_hcounty,
         customer.address                                                                        AS customer_address,
         customer.company_name                                                                   AS customer_company_name,
         customer.company_address                                                                AS customer_company_address,
@@ -1127,7 +1132,9 @@
                 repay.is_overdue                                    AS repay_is_overdue,
                 repay.overdue_amount                                AS repay_overdue_amount,
                 DATE_FORMAT(repay.check_date,'%Y-%m-%d')            AS repay_check_date
-            from loan_repay_plan repay,(select @row:=0) r where repay.order_id = #{orderId,jdbcType=BIGINT} order by repay.repay_date asc
+            from loan_repay_plan repay,(select @row:=0) r
+            where repay.order_id = #{orderId,jdbcType=BIGINT}
+            order by repay.repay_date asc
 
     </select>
 

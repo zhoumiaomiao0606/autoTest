@@ -16,15 +16,16 @@ import org.springframework.web.bind.annotation.*;
  **/
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/vehicleOutbound")
+@RequestMapping(value = {"/api/v1/loanorder/vehicleOutbound", "/api/v1/app/loanorder/vehicleOutbound"})
 public class VehicleOutboundController
 {
     @Autowired
     private VehicleOutboundService vehicleOutboundService;
 
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String orderId) {
-        return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId)));
+    public ResultBean detail(@RequestParam String orderId,String bank_repay_imp_record_id)
+    {
+        return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
     }
 
 

@@ -22,4 +22,5 @@ public interface LoanApplyCompensationDOMapper {
     int updateByPrimaryKey(LoanApplyCompensationDO record);
 
     List<LoanApplyCompensationDO> selectByOrderId(@Param("orderId")Long orderId);
+
 }

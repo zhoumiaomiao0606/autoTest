@@ -22,4 +22,6 @@ public interface VisitDoorDOMapper {
     List<GpsInfoQuery> selectGpsInfo(@Param("orderid")Long orderid);
 
     List<VisitDoorDO> selectByOrderId(Long orderId);
+
+    List<VisitDoorDO> selectByOrderIdAndBankRepayImpRecordId(Long orderid, Long bankRepayImpRecordId);
 }

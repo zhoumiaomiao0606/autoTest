@@ -16,6 +16,7 @@ public class LoanApplyCompensationDO extends LoanApplyCompensationDOKey {
 
     private Integer overdueDays;
 
+    //逾期次数
     private Integer overdueNumber;
 
     private Integer advancesNumber;

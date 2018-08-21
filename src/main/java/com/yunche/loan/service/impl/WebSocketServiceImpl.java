@@ -34,11 +34,6 @@ import static com.yunche.loan.config.queue.VideoFaceQueue.VIDEO_FACE_QUEUE_KEY_S
 public class WebSocketServiceImpl implements WebSocketService {
 
     /**
-     * 机器面签-语音路径
-     */
-    public static final String voice_path = "https://yunche-base.oss-cn-hangzhou.aliyuncs.com/videoface.m4a";
-
-    /**
      * 使用SimpMessagingTemplate 向浏览器发送消息
      */
     @Autowired
@@ -64,6 +59,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
     private CarService carService;
+
+    @Autowired
+    private DictService dictService;
 
 
     @Override
@@ -218,7 +216,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             if (bankPeriodPrincipal < 100000) {
 
                 // 机器面签
-                machineFace(wsSessionId);
+                machineFace(wsSessionId, webSocketParam.getBankId());
 
                 // 退出排队
                 exitTeam(webSocketParam);
@@ -241,7 +239,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                     if (waitTime >= 60000) {
 
                         // 机器面签
-                        machineFace(wsSessionId);
+                        machineFace(wsSessionId, webSocketParam.getBankId());
 
                         // 退出排队
                         exitTeam(webSocketParam);
@@ -440,12 +438,18 @@ public class WebSocketServiceImpl implements WebSocketService {
      * 机器面签
      *
      * @param wsSessionId
+     * @param bankId
      */
-    private void machineFace(String wsSessionId) {
+    private void machineFace(String wsSessionId, Long bankId) {
 
         WebSocketMsgVO webSocketMsgVO = new WebSocketMsgVO();
         webSocketMsgVO.setFaceSign(FACE_SIGN_MACHINE);
-        webSocketMsgVO.setVoicePath(voice_path);
+
+        Map<String, String> kvMap = dictService.getKVMap("videoFaceVoicePath");
+        if (!CollectionUtils.isEmpty(kvMap)) {
+            String videoFaceVoicePath = kvMap.get(String.valueOf(bankId));
+            webSocketMsgVO.setVoicePath(videoFaceVoicePath);
+        }
 
         simpMessagingTemplate.convertAndSendToUser(wsSessionId, "/queue/faceSign/machine",
                 JSON.toJSONString(ResultBean.ofSuccess(webSocketMsgVO)));

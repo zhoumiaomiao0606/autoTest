@@ -8,5 +8,7 @@ public interface LitigationStateDOMapper {
 
     int insertSelective(LitigationStateDO record);
 
-    LitigationStateDO selectByIdAndType(@Param("id")Long id,@Param("type")String type);
+    LitigationStateDO selectByIdAndBankRepayImpRecordId(@Param("id")Long id,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
+
+    LitigationStateDO selectByIdAndType(@Param("id")Long id,@Param("type")String type,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
 }

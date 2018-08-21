@@ -15,11 +15,6 @@ public enum LoanProcessEnum {
     SOCIAL_CREDIT_RECORD("usertask_social_credit_record", "社会征信录入"),
     LOAN_INFO_RECORD("usertask_loan_info_record", "贷款信息登记"),
 
-    BANK_SOCIAL_CREDIT_RECORD_FILTER("filter_bank_social_credit_record", "征信记录-拦截任务"),
-    LOAN_APPLY_VISIT_VERIFY_FILTER("filter_loan_apply_visit_verify", "业务申请&上门调查-拦截任务"),
-    REMIT_REVIEW_FILTER("filter_remit_review", "打款确认-拦截任务"),
-    DATA_FLOW_MORTGAGE_P2C_NEW_FILTER("filter_data_flow_mortgage_p2c_new", "005-抵押资料合伙人至公司-新建-拦截任务"),
-
     LOAN_APPLY("usertask_loan_apply", "业务申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),
 
@@ -52,20 +47,29 @@ public enum LoanProcessEnum {
     BANK_CARD_SEND("usertask_bank_card_send", "银行卡寄送"),
     CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划"),
 
+    ///////////////////////////////////////////// ↓↓↓↓↓--filter--↓↓↓↓↓ /////////////////////////////////////////////////
+    BANK_SOCIAL_CREDIT_RECORD_FILTER("filter_bank_social_credit_record", "征信记录-拦截任务"),
+    LOAN_APPLY_VISIT_VERIFY_FILTER("filter_loan_apply_visit_verify", "业务申请&上门调查-拦截任务"),
+    REMIT_REVIEW_FILTER("filter_remit_review", "打款确认-拦截任务"),
+    DATA_FLOW_MORTGAGE_P2C_NEW_FILTER("filter_data_flow_mortgage_p2c_new", "005-抵押资料合伙人至公司-新建-拦截任务"),
+    APPLY_INSTEAD_PAY_FILTER("filter_apply_instead_pay", "申请代偿-开始-拦截任务"),
+    ///////////////////////////////////////////// ↑↑↑↑↑--filter--↑↑↑↑↑ /////////////////////////////////////////////////
 
     /////////////////////////////////////////// ↓↓↓↓↓--流程外的节点--↓↓↓↓↓ //////////////////////////////////////////////
     BANK_OPEN_CARD_LIST("usertask_bank_open_card_list", "银行开卡清单"),
 
     INFO_SUPPLEMENT("usertask_info_supplement", "资料增补"),
     CREDIT_SUPPLEMENT("usertask_credit_supplement", "征信增补"),
+
     FINANCIAL_SCHEME_MODIFY_APPLY("usertask_financial_scheme_modify_apply", "金融方案修改"),
     FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW("usertask_financial_scheme_modify_apply_review", "金融方案审核"),
     REFUND_APPLY("usertask_refund_apply", "退款申请"),
     REFUND_APPLY_REVIEW("usertask_refund_apply_review", "退款申请审核"),
-    CUSTOMER_REPAY_PLAN_RECORD("usertask_customer_repay_plan_record", "银行还款计划记录"),
+    OUTWORKER_COST_APPLY("usertask_outworker_cost_apply", "外勤费用申报"),
+    OUTWORKER_COST_APPLY_REVIEW("usertask_outworker_cost_apply_review", "财务报销"),
 
+    CUSTOMER_REPAY_PLAN_RECORD("usertask_customer_repay_plan_record", "银行还款计划记录"),
     INSURANCE_SCENE_RECORD("usertask_insurance_scene_record", "出险登记"),
-    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
     URGE_INSURANCE_WORK_BENCH("usertask_urge_insurance_work_bench", "催保工作台"),
     URGE_INSURANCE_ASSIGN_WORK_BENCH("usertask_urge_insurance_assign_work_bench", "催保分配工作台"),
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
@@ -99,8 +103,28 @@ public enum LoanProcessEnum {
     DATA_FLOW_REGISTER_P2C_REVIEW("usertask_data_flow_register_p2c_review", "014-权证资料合伙人至公司-确认接收"),
 
     DATA_FLOW_REGISTER_C2B("usertask_data_flow_register_c2b", "015-权证资料公司至银行"),
-    DATA_FLOW_REGISTER_C2B_REVIEW("usertask_data_flow_register_c2b_review", "016-权证资料公司至银行-确认接收");
+    DATA_FLOW_REGISTER_C2B_REVIEW("usertask_data_flow_register_c2b_review", "016-权证资料公司至银行-确认接收"),
     ////////////////////////////////////////// ↑↑↑↑↑--资料流转--↑↑↑↑↑ ///////////////////////////////////////////////////
+
+
+    //////////////////////////////////////////// ↓↓↓↓↓--代偿--↓↓↓↓↓ /////////////////////////////////////////////////////
+    APPLY_INSTEAD_PAY("usertask_apply_instead_pay", "申请代偿"),
+    FINANCE_INSTEAD_PAY_REVIEW("usertask_finance_instead_pay_review", "财务代偿-确认"),
+    PARTNER_INSTEAD_PAY("usertask_partner_instead_pay", "合伙人代偿"),
+    PARTNER_INSTEAD_PAY_REVIEW("usertask_partner_instead_pay_review", "合伙人代偿-确认"),
+    //////////////////////////////////////////// ↑↑↑↑↑--代偿--↑↑↑↑↑ /////////////////////////////////////////////////////
+
+    //////////////////////////////////////////// ↓↓↓↓↓--催收--↓↓↓↓↓ /////////////////////////////////////////////////////
+    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
+    VISIT_COLLECTION_REVIEW("usertask_visit_collection_review", "上门催收-审核"),
+    VISIT_COLLECTION("usertask_visit_collection", "上门催收"),
+    CAR_HANDLE("usertask_car_handle", "车辆处理"),
+    CAR_OUT("usertask_car_out", "车辆出库"),
+    SETTLE_ORDER("usertask_settle_order", "结清"),
+
+    LEGAL_REVIEW("usertask_legal_review", "法务审核"),
+    LEGAL_RECORD("usertask_legal_record", "法务登记");
+    //////////////////////////////////////////// ↑↑↑↑↑--催收--↑↑↑↑↑ /////////////////////////////////////////////////////
 
 
     private String code;
