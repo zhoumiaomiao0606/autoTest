@@ -61,12 +61,12 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
         //车辆处理登记
         VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(orderId,bankRepayImpRecordId));
         //根据区id查询省市id
-        if(vehicleHandleDO.getVehicleInboundAddress()!=null && vehicleHandleDO.getVehicleInboundAddress().trim() != "")
+        if(vehicleHandleDO !=null &&vehicleHandleDO.getVehicleInboundAddress()!=null && vehicleHandleDO.getVehicleInboundAddress().trim() != "")
         {
             Long countyId=Long.valueOf(vehicleHandleDO.getVehicleInboundAddress());
             BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
             vehicleHandleDO.setCountyId(countyId);
-            if(cityAreaDO.getParentAreaId()!=null)
+            if(cityAreaDO !=null && cityAreaDO.getParentAreaId()!=null)
             {
                 vehicleHandleDO.setCityId(cityAreaDO.getParentAreaId());
                 BaseAreaDO provenceAreaDO = baseAreaDOMapper.selectByPrimaryKey(cityAreaDO.getParentAreaId(), VALID_STATUS);
@@ -75,11 +75,12 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
 
 
         }
-
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Long customerId = loanOrderDO.getLoanCustomerId();
-        List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(customerId);
-        vehicleHandleDO.setFiles(files);
+        if(vehicleHandleDO !=null) {
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+            Long customerId = loanOrderDO.getLoanCustomerId();
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(customerId);
+            vehicleHandleDO.setFiles(files);
+        }
         //车辆信息
         VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
         //贷款业务详细信息
