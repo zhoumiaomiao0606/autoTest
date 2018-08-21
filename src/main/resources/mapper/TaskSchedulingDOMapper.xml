@@ -579,20 +579,52 @@
                           deputy.bank_card_send                   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
-                          deputy_.id                              AS augmentId,
-                          deputy_.apply_instead_pay               AS taskStatus
+                          deputy_.id                                   AS augmentId,
+                          compensation.curr_arrears                    AS currArrears,
+                          compensation.loan_banlance                   AS loanBanlance,
+                          compensation.advances_banlance               AS advancesBanlance,
+                          compensation.overdue_days                    AS overdueDays,
+                          compensation.overdue_number                  AS overdueNumber,
+                          compensation.advances_number                 AS advancesNumber,
+                          compensation.risk_taking_ratio               AS riskTakingRatio,
+                          compensation.apply_compensation_date         AS applyCompensationDate,
+                          deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
-                          deputy_.id                              AS augmentId,
-                          deputy_.finance_instead_pay_review      AS taskStatus
+                          deputy_.id                                   AS augmentId,
+                          compensation.curr_arrears                    AS currArrears,
+                          compensation.loan_banlance                   AS loanBanlance,
+                          compensation.advances_banlance               AS advancesBanlance,
+                          compensation.overdue_days                    AS overdueDays,
+                          compensation.overdue_number                  AS overdueNumber,
+                          compensation.advances_number                 AS advancesNumber,
+                          compensation.risk_taking_ratio               AS riskTakingRatio,
+                          compensation.apply_compensation_date         AS applyCompensationDate,
+                          deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
-                          deputy_.id                              AS augmentId,
-                          deputy_.partner_instead_pay             AS taskStatus
+                          deputy_.id                                   AS augmentId,
+                          compensation.curr_arrears                    AS currArrears,
+                          compensation.loan_banlance                   AS loanBanlance,
+                          compensation.advances_banlance               AS advancesBanlance,
+                          compensation.overdue_days                    AS overdueDays,
+                          compensation.overdue_number                  AS overdueNumber,
+                          compensation.advances_number                 AS advancesNumber,
+                          compensation.risk_taking_ratio               AS riskTakingRatio,
+                          compensation.apply_compensation_date         AS applyCompensationDate,
+                          deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
-                          deputy_.id                              AS augmentId,
-                          deputy_.partner_instead_pay_review      AS taskStatus
+                          deputy_.id                                   AS augmentId,
+                          compensation.curr_arrears                    AS currArrears,
+                          compensation.loan_banlance                   AS loanBanlance,
+                          compensation.advances_banlance               AS advancesBanlance,
+                          compensation.overdue_days                    AS overdueDays,
+                          compensation.overdue_number                  AS overdueNumber,
+                          compensation.advances_number                 AS advancesNumber,
+                          compensation.risk_taking_ratio               AS riskTakingRatio,
+                          compensation.apply_compensation_date         AS applyCompensationDate,
+                          deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <otherwise>
                         0                                         AS taskStatus
@@ -635,15 +667,19 @@
               </if>
               <if test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+                  left join loan_apply_compensation compensation on compensation.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+                  left join loan_apply_compensation compensation on compensation.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+                  left join loan_apply_compensation compensation on compensation.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+                  left join loan_apply_compensation compensation on compensation.order_id = main.id
               </if>
               where 1=1
               <if test="taskStatus != 0">
