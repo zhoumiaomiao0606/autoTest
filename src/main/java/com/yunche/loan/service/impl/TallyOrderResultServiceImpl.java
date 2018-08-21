@@ -7,6 +7,7 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TallyOrderResultService;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +78,7 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
 
 
         //拖车概况---相关费用报销单里取--拖车时间从流程日志表里取
+        List<TrailVehicleDetailVO> trailVehicleDetailVOS = new ArrayList<>();
         //根据orderId查询出所有版本下的申请拖车记录
         List<CollectionNewInfoDO> collectionNewInfoDOs = collectionNewInfoDOMapper.selectByOrderId(orderId);
         //根据orderId和版本号查询所有的拖车记录
@@ -85,6 +88,11 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
             visitDoorDOs.stream().forEach(visitDoorDO ->
             {
                 TrailVehicleDetailVO trailVehicleDetailVO =new TrailVehicleDetailVO();
+                trailVehicleDetailVO.setApplyTrailVehicleDate(visitDoorDO.getDispatchedDate());
+                trailVehicleDetailVO.setTrailVehicleDate(visitDoorDO.getVisitDate());
+                trailVehicleDetailVO.setTrailVehicleResult(visitDoorDO.getVisitResult());
+                trailVehicleDetailVOS.add(trailVehicleDetailVO);
+
             });
         }
         );
@@ -105,6 +113,11 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
         tallyOrderResultVO.setUniversalCostDetailsVO(universalCostDetailsVO);
         tallyOrderResultVO.setMortgageInfoVO(mortgageInfoVO);
         tallyOrderResultVO.setInsuranceRelevanceDOS(insuranceRelevanceDOS);
+        //拖车记录
+        tallyOrderResultVO.setTrailVehicleDetailVOs(trailVehicleDetailVOS);
+        //逾期代偿
+        tallyOrderResultVO.setLoanApplyCompensationDOS(loanApplyCompensationDOS);
+        //出险
         tallyOrderResultVO.setInsuranceRiskDOS(insuranceRiskDOS);
         tallyOrderResultVO.setCustomers(customers);
         return tallyOrderResultVO;

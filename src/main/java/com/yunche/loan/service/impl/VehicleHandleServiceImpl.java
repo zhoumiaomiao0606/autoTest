@@ -80,6 +80,7 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
             Long customerId = loanOrderDO.getLoanCustomerId();
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(customerId);
             vehicleHandleDO.setFiles(files);
+            vehicleHandleVO.setVehicleHandleDO(vehicleHandleDO);
         }
         //车辆信息
         VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
@@ -91,7 +92,6 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
         }
         //本业务操作日志
         vehicleHandleVO.setBaseCustomerInfoVO(baseCustomerInfoVO);
-        vehicleHandleVO.setVehicleHandleDO(vehicleHandleDO);
         vehicleHandleVO.setVehicleInfoVO(vehicleInfoVO);
         vehicleHandleVO.setCustomers(customers);
         return vehicleHandleVO;

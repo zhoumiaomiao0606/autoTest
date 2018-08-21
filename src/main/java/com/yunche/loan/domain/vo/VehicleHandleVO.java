@@ -15,7 +15,7 @@ public class VehicleHandleVO
 {
     private BaseCustomerInfoVO baseCustomerInfoVO;
 
-    private VehicleHandleDO vehicleHandleDO;
+    private VehicleHandleDO vehicleHandleDO = new VehicleHandleDO();
 
     private VehicleInfoVO vehicleInfoVO;
 
