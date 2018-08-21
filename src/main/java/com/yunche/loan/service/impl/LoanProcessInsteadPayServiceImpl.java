@@ -156,6 +156,8 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         loanProcessInsteadPayDO.setInsteadPayOrderId(insteadPayOrderId);
         loanProcessInsteadPayDO.setProcessInstId(processInstId);
 
+        loanProcessInsteadPayDO.setApplyInsteadPay(TASK_PROCESS_TODO);
+
         loanProcessInsteadPayDO.setGmtCreate(new Date());
         loanProcessInsteadPayDO.setGmtModify(new Date());
 

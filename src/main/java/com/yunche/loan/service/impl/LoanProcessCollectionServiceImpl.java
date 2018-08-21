@@ -150,6 +150,8 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         loanProcessCollectionDO.setCollectionOrderId(collectionOrderId);
         loanProcessCollectionDO.setProcessInstId(processInstId);
 
+        loanProcessCollectionDO.setCollectionWorkbench(TASK_PROCESS_TODO);
+
         loanProcessCollectionDO.setGmtCreate(new Date());
         loanProcessCollectionDO.setGmtModify(new Date());
 
