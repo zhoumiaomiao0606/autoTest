@@ -587,7 +587,7 @@
                           compensation.overdue_number                  AS overdueNumber,
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
-                          compensation.apply_compensation_date         AS applyCompensationDate,
+                          DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
                           deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
@@ -599,7 +599,7 @@
                           compensation.overdue_number                  AS overdueNumber,
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
-                          compensation.apply_compensation_date         AS applyCompensationDate,
+                          DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
                           deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
@@ -611,7 +611,7 @@
                           compensation.overdue_number                  AS overdueNumber,
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
-                          compensation.apply_compensation_date         AS applyCompensationDate,
+                          DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
                           deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
@@ -623,7 +623,7 @@
                           compensation.overdue_number                  AS overdueNumber,
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
-                          compensation.apply_compensation_date         AS applyCompensationDate,
+                          DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
                           deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <otherwise>
