@@ -1,16 +1,13 @@
 package com.yunche.loan.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
-import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
-import com.yunche.loan.mapper.LoanCustomerDOMapper;
-import com.yunche.loan.mapper.LoanProcessLogDOMapper;
-import com.yunche.loan.mapper.LoanRejectLogDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.JpushService;
 import com.yunche.loan.service.LoanProcessApprovalCommonService;
 import com.yunche.loan.service.TaskDistributionService;
@@ -28,6 +25,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_COLLECTION_KEYS;
+import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_INSTEAD_PAY_KEYS;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_AUTO;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_MANUAL;
@@ -47,6 +46,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
 
     @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
     private LoanProcessLogDOMapper loanProcessLogDOMapper;
 
     @Autowired
@@ -57,6 +59,15 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
     @Autowired
     private LoanRejectLogDOMapper loanRejectLogDOMapper;
+
+    @Autowired
+    private LoanProcessDOMapper loanProcessDOMapper;
+
+    @Autowired
+    private LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
+
+    @Autowired
+    private LoanProcessCollectionDOMapper loanProcessCollectionDOMapper;
 
     @Autowired
     private TaskService taskService;
@@ -206,8 +217,6 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
         executorService.execute(() -> {
 
-            logger.info("jpush ---------- start ");
-
             LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
             Long loanCustomerId = null;
             if (loanOrderDO != null) {
@@ -277,9 +286,6 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                 DO.setReadStatus(new Byte("0"));
                 DO.setType(approval.getAction());
 
-                // TODO test
-                logger.info("jpush ---------- push" + JSON.toJSONString(DO));
-
                 jpushService.push(DO);
             }
 
@@ -316,6 +322,67 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                         Preconditions.checkArgument(count > 0, "打回记录失败");
                     });
         }
+    }
+
+    @Override
+    public LoanProcessDO_ getLoanProcess(Long orderId, Long processId, String taskDefinitionKey) {
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+        Preconditions.checkNotNull(taskDefinitionKey, "taskDefinitionKey不能为空");
+
+        LoanProcessDO_ loanProcessDO_ = null;
+
+        // 1 -> 1
+        if (null == processId) {
+
+            boolean isNotInsteadPayAndCollectionTask = !LOAN_PROCESS_INSTEAD_PAY_KEYS.contains(taskDefinitionKey)
+                    && !LOAN_PROCESS_COLLECTION_KEYS.contains(taskDefinitionKey);
+
+            if (isNotInsteadPayAndCollectionTask) {
+
+                loanProcessDO_ = loanProcessDOMapper.selectByPrimaryKey(orderId);
+
+            } else {
+
+                Preconditions.checkNotNull(processId, "processId不能为空");
+            }
+        }
+
+        // 1 -> 多
+        else {
+
+            // 代偿流程
+            if (LOAN_PROCESS_INSTEAD_PAY_KEYS.contains(taskDefinitionKey)) {
+
+                loanProcessDO_ = loanProcessInsteadPayDOMapper.selectByPrimaryKey(processId);
+            }
+            // 催收流程
+            else if (LOAN_PROCESS_COLLECTION_KEYS.contains(taskDefinitionKey)) {
+
+                loanProcessDO_ = loanProcessCollectionDOMapper.selectByPrimaryKey(processId);
+            } else {
+
+                throw new BizException("taskDefinitionKey有误");
+            }
+        }
+
+        Preconditions.checkNotNull(loanProcessDO_, "流程记录丢失");
+
+        return loanProcessDO_;
+    }
+
+    /**
+     * 获取业务单
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public LoanOrderDO getLoanOrder(Long orderId) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
+        Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
+
+        return loanOrderDO;
     }
 
     private String getRejectToTask(String taskDefinitionKey) {
