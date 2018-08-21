@@ -28,5 +28,19 @@ public class LegworkReimbursementDO {
 
     private Byte status;
 
+    private String reimbursementAmount;
+
+    private String bank;
+
+    private String remitAccount;
+
+    private String collectionBank;
+
+    private String collectionAccount;
+
+    private String collectionAccountNumber;
+
+    private Date busiTime;
+
 
 }

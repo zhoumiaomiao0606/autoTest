@@ -575,9 +575,21 @@
                       <when test="taskDefinitionKey == 'usertask_apply_instalment'">
                           deputy.apply_instalment                 AS taskStatus
                       </when>
-                        <when test="taskDefinitionKey == 'usertask_bank_card_send'">
-                            deputy.bank_card_send                 AS taskStatus
-                        </when>
+                      <when test="taskDefinitionKey == 'usertask_bank_card_send'">
+                          deputy.bank_card_send                   AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
+                          deputy_.apply_instead_pay               AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
+                          deputy_.finance_instead_pay_review      AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
+                          deputy_.partner_instead_pay             AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
+                          deputy_.partner_instead_pay_review      AS taskStatus
+                      </when>
                       <otherwise>
                         0                                         AS taskStatus
                       </otherwise>
@@ -616,6 +628,18 @@
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
               left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
               left join employee sendee                         on join_urgerecord.sendee   = sendee.id
+              </if>
+              <if test="taskDefinitionKey == 'usertask_apply_instead_pay'">
+                  left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+              </if>
+              <if test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
+                  left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+              </if>
+              <if test="taskDefinitionKey == 'usertask_partner_instead_pay'">
+                  left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+              </if>
+              <if test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
+                  left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
               </if>
               where 1=1
               <if test="taskStatus != 0">
@@ -755,7 +779,19 @@
                       AND case when #{taskStatus} = 0 then deputy.bank_card_send != 0                    else deputy.bank_card_send        = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_loan_info_record'">
-                      AND case when #{taskStatus} = 0 then deputy.loan_info_record != 0                    else deputy.loan_info_record        = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy.loan_info_record != 0                  else deputy.loan_info_record        = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
+                      AND case when #{taskStatus} = 0 then deputy_.apply_instead_pay != 0                else deputy_.apply_instead_pay        = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
+                      AND case when #{taskStatus} = 0 then deputy_.finance_instead_pay_review != 0       else deputy_.finance_instead_pay_review        = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
+                      AND case when #{taskStatus} = 0 then deputy_.partner_instead_pay != 0              else deputy_.partner_instead_pay         = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
+                      AND case when #{taskStatus} = 0 then deputy_.partner_instead_pay_review!= 0        else deputy_.partner_instead_pay_review        = #{taskStatus} end
                   </when>
                   <otherwise>
                       AND 1=2
