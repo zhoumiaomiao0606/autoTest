@@ -28,6 +28,32 @@ public class VehicleOutboundController
         return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
     }
 
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:  对接app分模块
+    */
+    @GetMapping(value = "/vehicleOutbound")
+    public ResultBean vehicleOutbound(@RequestParam String orderId,String bank_repay_imp_record_id)
+    {
+        return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
+    }
+
+    @GetMapping(value = "/customer")
+    public ResultBean customer(@RequestParam String orderId,String bank_repay_imp_record_id)
+    {
+        return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
+    }
+
+    @GetMapping(value = "/vehicleInfo")
+    public ResultBean vehicleInfo(@RequestParam String orderId,String bank_repay_imp_record_id)
+    {
+        return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
+    }
+
+
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody @Validated VehicleOutboundDO param) {

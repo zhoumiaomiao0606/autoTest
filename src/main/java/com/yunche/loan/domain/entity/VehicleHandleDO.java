@@ -67,8 +67,14 @@ public class VehicleHandleDO extends VehicleHandleDOKey {
     //省市区
     private Long provenceId;
 
+    private String provenceName;
+
     private Long cityId;
 
+    private String cityName;
+
     private Long countyId;
+
+    private String countyName;
 
 }

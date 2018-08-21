@@ -67,11 +67,14 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
             Long countyId=Long.valueOf(vehicleHandleDO.getVehicleInboundAddress());
             BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
             vehicleHandleDO.setCountyId(countyId);
+            vehicleHandleDO.setCountyName(cityAreaDO.getAreaName());
+            vehicleHandleDO.setCityName(cityAreaDO.getParentAreaName());
             if(cityAreaDO !=null && cityAreaDO.getParentAreaId()!=null)
             {
                 vehicleHandleDO.setCityId(cityAreaDO.getParentAreaId());
                 BaseAreaDO provenceAreaDO = baseAreaDOMapper.selectByPrimaryKey(cityAreaDO.getParentAreaId(), VALID_STATUS);
                 vehicleHandleDO.setProvenceId(provenceAreaDO.getParentAreaId());
+                vehicleHandleDO.setProvenceName(provenceAreaDO.getAreaName());
             }
 
 
@@ -80,7 +83,7 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
             Long customerId = loanOrderDO.getLoanCustomerId();
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(customerId)
-                    .stream().filter(universalCustomerFileVO ->  universalCustomerFileVO.getType()=="93")
+                    .stream().filter(universalCustomerFileVO ->  universalCustomerFileVO.getType().equals("93"))
                     .collect(Collectors.toList());
 
 
