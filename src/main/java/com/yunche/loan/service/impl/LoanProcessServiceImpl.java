@@ -82,12 +82,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
-    private LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
-
-    @Autowired
-    private LoanProcessCollectionDOMapper loanProcessCollectionDOMapper;
-
-    @Autowired
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
 
     @Autowired
@@ -103,6 +97,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanInfoSupplementDOMapper loanInfoSupplementDOMapper;
 
     @Autowired
+    private LoanRefundApplyDOMapper loanRefundApplyDOMapper;
+
+    @Autowired
+    private LegworkReimbursementDOMapper legworkReimbursementDOMapper;
+
+    @Autowired
     private LoanProcessLogDOMapper loanProcessLogDOMapper;
 
     @Autowired
@@ -116,9 +116,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
-
-    @Autowired
-    private LoanRefundApplyDOMapper loanRefundApplyDOMapper;
 
     @Autowired
     private BankCardRecordDOMapper bankCardRecordDOMapper;
@@ -237,6 +234,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return execRefundApplyTask(approval, loanProcessDO);
         }
 
+        // 【财务报销】
+        if (isOutworkerCostApplyTask(approval.getTaskDefinitionKey())) {
+            return execOutworkerCostApplyTask(approval);
+        }
+
         // 【反审】
         if (actionIsRollBack(approval.getAction())) {
             return execRollBackTask(approval, loanOrderDO, loanProcessDO);
@@ -277,6 +279,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
+
 
     /**
      * 是否为：[贷款信息登记]任务
@@ -656,6 +659,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private boolean isRefundApplyTask(String taskDefinitionKey) {
         boolean isRefundApplyTask = REFUND_APPLY.getCode().equals(taskDefinitionKey)
                 || REFUND_APPLY_REVIEW.getCode().equals(taskDefinitionKey);
+        return isRefundApplyTask;
+    }
+
+    private boolean isOutworkerCostApplyTask(String taskDefinitionKey) {
+        boolean isRefundApplyTask = OUTWORKER_COST_APPLY.getCode().equals(taskDefinitionKey)
+                || OUTWORKER_COST_APPLY_REVIEW.getCode().equals(taskDefinitionKey);
         return isRefundApplyTask;
     }
 
@@ -1058,6 +1067,58 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         return ResultBean.ofError("参数有误");
+    }
+
+    /**
+     * 执行 -【财务报销】
+     *
+     * @param approval
+     * @param loanProcessDO
+     * @return
+     */
+    private ResultBean<Void> execOutworkerCostApplyTask(ApprovalParam approval) {
+
+        // [外勤费用申报]
+        if (OUTWORKER_COST_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            // PASS
+            if (ACTION_PASS.equals(approval.getAction())) {
+
+                updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_DONE__APPLY_ORDER_REVIEW_TODO);
+            }
+        }
+
+        // [财务报销]
+        else if (OUTWORKER_COST_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            Byte action = approval.getAction();
+
+            // PASS
+            if (ACTION_PASS.equals(action)) {
+
+                updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_REVIEW_PASS);
+            }
+            // REJECT
+            else if (ACTION_REJECT_MANUAL.equals(action)) {
+
+                updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_REJECT);
+            }
+        }
+
+        return ResultBean.ofSuccess(null);
+    }
+
+    private void updateOutworkerCostApplyProcess(ApprovalParam approval, Byte applyOrderStatus) {
+
+        LegworkReimbursementDO legworkReimbursementDO = new LegworkReimbursementDO();
+        legworkReimbursementDO.setId(approval.getSupplementOrderId());
+
+
+        legworkReimbursementDO.setStatus(ORDER_STATUS_DOING);
+        legworkReimbursementDO.setGmtUpdateTime(new Date());
+
+        int count = legworkReimbursementDOMapper.updateByPrimaryKeySelective(legworkReimbursementDO);
+        Preconditions.checkArgument(count > 0, "");
     }
 
     /**
