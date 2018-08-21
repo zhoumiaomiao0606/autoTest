@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
@@ -78,7 +79,11 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
         if(vehicleHandleDO !=null) {
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
             Long customerId = loanOrderDO.getLoanCustomerId();
-            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(customerId);
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(customerId)
+                    .stream().filter(universalCustomerFileVO ->  universalCustomerFileVO.getType()=="93")
+                    .collect(Collectors.toList());
+
+
             vehicleHandleDO.setFiles(files);
             vehicleHandleVO.setVehicleHandleDO(vehicleHandleDO);
         }

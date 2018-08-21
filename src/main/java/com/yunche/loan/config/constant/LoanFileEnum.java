@@ -151,7 +151,9 @@ public enum LoanFileEnum {
     //证据材料
     EVIDENCE_MATERIAL((byte)91,"证据材料"),
     //裁定书
-    VERDICT((byte)92,"裁定书");
+    VERDICT((byte)92,"裁定书"),
+    //车辆处理相关资料
+    VEHICLEHANDLE((byte)93,"车辆处理相关资料");
 
 
 
