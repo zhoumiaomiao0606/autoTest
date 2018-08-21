@@ -4,10 +4,7 @@ import com.yunche.loan.config.util.CarLoanHttpUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.query.GpsInfoQuery;
 import com.yunche.loan.domain.query.LawWorkQuery;
-import com.yunche.loan.domain.vo.CollectionRecordVO;
-import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
-import com.yunche.loan.domain.vo.UniversalCustomerVO;
-import com.yunche.loan.domain.vo.VisitDoorVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.AuxiliaryService;
 import com.yunche.loan.service.LoanQueryService;
@@ -99,7 +96,7 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         }
         List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
 
-        LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
+        LawWorkQuery lawWorkQuery = litigationDOMapper.selectAppVisitInfo(orderId);
 
         CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
         int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
@@ -170,5 +167,10 @@ public class VisitDoorServiceImpl implements VisitDoorService {
     public void visitDoorRevoke(LitigationStateDO litigationStateDO) {
         litigationStateDO.setCollectionType("1");
         litigationStateDOMapper.insertSelective(litigationStateDO);
+    }
+
+    @Override
+    public List<UniversalTelephoneCollectionEmployee> visitDoorEmployees() {
+        return loanQueryDOMapper.selectVisitDoorEmployee();
     }
 }

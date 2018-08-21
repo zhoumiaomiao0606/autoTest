@@ -50,6 +50,7 @@ public class AppLoanOrderController {
         appLoanOrderService.zhongAnQuery(zhongAnQueryParam);
         return ResultBean.ofSuccess(null,"查询成功");
     }
+
     /**
      * 获取团队及业务员
      */

@@ -387,6 +387,33 @@
 	b.cust_type = 1 and a.id = #{orderid,jdbcType=BIGINT}
   </select>
 
+  <select id="selectAppVisitInfo" resultType="com.yunche.loan.domain.query.LawWorkQuery" parameterType="java.lang.Long">
+     SELECT
+	a.id          				AS id,
+	b.NAME        				AS cname,
+	b.mobile      				AS mobile,
+	b.id_card     				AS idcard,
+	b.address     				AS address,
+	c.bank								AS bank,
+	b.identity_address 		AS identityaddress,
+	b.company_name  			AS companyname,
+	b.company_address  		AS companyaddress,
+	b.company_phone  			AS companyphone,
+	b.reserve_mobile  		AS reservemobile,
+	e.`name`       				AS pname,
+	h.license_plate_number AS licenseplatenumber,
+	useGetCarName(d.car_detail_id)       AS carname
+    FROM
+	loan_order a
+	LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
+	LEFT JOIN loan_base_info c on a.loan_base_info_id = c.id
+	LEFT JOIN partner e on c.partner_id = e.id
+	LEFT JOIN loan_car_info d on a.loan_car_info_id = d.id
+	LEFT JOIN vehicle_information	h on a.vehicle_information_id = h.id
+    WHERE
+	b.cust_type = 1 and a.id = #{orderid,jdbcType=BIGINT}
+  </select>
+
   <select id="selectByOrderId" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

@@ -74,7 +74,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     private BankCache bankCache;
 
     @Autowired
-    private ActivitiVersionService activitiVersionService;
+    private ActivitiService activitiService;
 
     @Autowired
     private DictService dictService;
@@ -356,7 +356,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         }
 
         // loginUser 有权访问的nodes
-        Set<String> loginUserOwnDataFlowNodes = activitiVersionService.getLoginUserOwnDataFlowNodes();
+        Set<String> loginUserOwnDataFlowNodes = activitiService.getLoginUserOwnDataFlowNodes();
 
         // 无权访问
         if (CollectionUtils.isEmpty(loginUserOwnDataFlowNodes)) {
