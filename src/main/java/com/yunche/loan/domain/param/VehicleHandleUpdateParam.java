@@ -20,11 +20,11 @@ public class VehicleHandleUpdateParam
 
     private Long handdlePerson;
 
-    private Date trailVehicleDate;
+    private String trailVehicleDate;
 
     private String trailVehicleAddress;
 
-    private Date vehicleInboundDate;
+    private String vehicleInboundDate;
 
     private String vehicleInboundAddress;
 
