@@ -8,15 +8,13 @@ import com.yunche.loan.domain.entity.LoanApplyCompensationDOKey;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
-import com.yunche.loan.domain.vo.FinancialSchemeVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.domain.vo.UniversalInfoVO;
-import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanApplyCompensationDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanFileService;
 import com.yunche.loan.service.LoanPartnerCompensationService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,6 +93,11 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
             applyCompensation.setPartnerCompensationAmount(partnerCompensationAmount);
         }
 
+        UniversalCompensationVO compensationVO = new UniversalCompensationVO();
+        BeanUtils.copyProperties(applyCompensation,compensationVO);
+        compensationVO.setOrderId(String.valueOf(applyCompensation.getOrderId()));
+
+
 
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(query.getOrderId());//客户基本信息
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(query.getOrderId());
@@ -107,7 +110,7 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
         recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setMaterials(materialRecord);
-        recombinationVO.setApplyCompensation(applyCompensation);
+        recombinationVO.setApplyCompensation(compensationVO);
         return ResultBean.ofSuccess(recombinationVO);
     }
 }
