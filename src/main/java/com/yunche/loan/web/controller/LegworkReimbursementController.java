@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/legworkreimbursement")
+@RequestMapping({"/api/v1/loanorder/legworkreimbursement","/api/v1/app/loanorder/legworkreimbursement"})
 public class LegworkReimbursementController {
 
     @Resource
@@ -48,6 +49,14 @@ public class LegworkReimbursementController {
     @GetMapping(value = "/expensesDetail")
     public ResultBean<RecombinationVO> expensesDetail(@RequestParam Long id) {
         return ResultBean.ofSuccess(legworkReimbursementService.expensesDetail(id),"编辑成功");
+    }
+
+    /**
+     * 拖车关联订单详情
+     */
+    @GetMapping(value = "/expensesAppDetail")
+    public ResultBean<Map> expensesAppDetail(@RequestParam Long id) {
+        return ResultBean.ofSuccess(legworkReimbursementService.expensesAppDetail(id),"编辑成功");
     }
 
 
