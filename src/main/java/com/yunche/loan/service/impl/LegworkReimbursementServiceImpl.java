@@ -179,6 +179,7 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
         Map map = Maps.newHashMap();
         map.put("orders",result);
         map.put("legwork",legworkReimbursementDOMapper.selectByPrimaryKey(id));
+        map.put("files",legworkReimbursementFileDOMapper.selectByLegworkReimbursementId(id));
         return map;
     }
 
