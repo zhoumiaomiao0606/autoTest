@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 @Data
 public class UniversalInfoVO {
-    private String curr_arrears;
+    private String overdue_amount;
     private String order_id;
     private String material_complete_material_date;
     private String material_remark;

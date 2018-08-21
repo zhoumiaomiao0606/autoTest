@@ -6,6 +6,7 @@ import lombok.Data;
 public class TaskListVO {
 
     // 未加
+    private String overdueAmount;
     private String taskDisStatus;
     private String receiveManId;
     private String receiveManName;

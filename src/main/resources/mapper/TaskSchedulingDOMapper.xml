@@ -461,6 +461,7 @@
                   join_i.gps_num                               AS carGpsNum,
                   join_bp.remit_amount                         AS remitAmount,
                   join_rep.bank_repay_imp_record_id            AS bankRepayImpRecordId,
+                  join_rep.overdue_amount                      AS overdueAmount,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           deputy.credit_apply                     AS taskStatus
@@ -564,7 +565,6 @@
                           DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                           join_urgerecord.sendee                  AS sendee,
                           sendee.name                             AS sendeeName,
-                          compensation.curr_arrears               AS currArrears,
                           deputy_c.collection_workbench           AS taskStatus
                       </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
@@ -576,7 +576,6 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
-                           compensation.curr_arrears               AS currArrears,
                            deputy_c.visit_collection_review        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection'">
@@ -588,7 +587,6 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
-                           compensation.curr_arrears               AS currArrears,
                            deputy_c.visit_collection               AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_handle'">
@@ -600,7 +598,6 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
-                           compensation.curr_arrears               AS currArrears,
                            deputy_c.car_handle                     AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_out'">
@@ -612,7 +609,6 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
-                           compensation.curr_arrears               AS currArrears,
                            deputy_c.car_out                        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_settle_order'">
@@ -624,7 +620,6 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
-                           compensation.curr_arrears               AS currArrears,
                            deputy_c.settle_order                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_review'">
@@ -636,7 +631,6 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
-                           compensation.curr_arrears               AS currArrears,
                            deputy_c.legal_review                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_record'">
@@ -648,7 +642,6 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
-                           compensation.curr_arrears               AS currArrears,
                            deputy_c.legal_record                   AS taskStatus
                        </when>
                       <when test="taskDefinitionKey == 'usertask_bank_open_card'">
@@ -751,37 +744,34 @@
               left join bank_card_record join_repayplan          on main.id         = join_repayplan.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_apply_instead_pay'">
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay'">
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection_review'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_car_handle'">
@@ -793,25 +783,21 @@
               <if test="taskDefinitionKey == 'usertask_car_out'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_settle_order'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_legal_review'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_legal_record'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               where 1=1
@@ -1997,7 +1983,7 @@
             eat_fee         as eatFee,
             busi_fee        as busiFee,
             other_fee       as otherFee,
-            apply_user      as gmtUser,
+            apply_user_id   as gmtUser,
             apply_user_name as gmtUserName,
             gmt_create_time as gmtCreate,
             gmt_update_time as gmtUpdateTime,
@@ -2005,7 +1991,7 @@
         from legwork_reimbursement
             where 1=1
             and case when 3 = #{maxGroupLevel} then true
-            else gmt_user = #{loginUserId} end
+            else apply_user_id = #{loginUserId} end
             and
             case when #{taskDefinitionKey} = 'usertask_outworker_cost_apply' then
                       case
