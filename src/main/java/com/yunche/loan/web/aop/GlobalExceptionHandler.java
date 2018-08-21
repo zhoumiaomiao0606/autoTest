@@ -67,11 +67,11 @@ public class GlobalExceptionHandler {
         } else if (e instanceof JSONPathException) {
             return ResultBean.ofError("类型转换异常");
         } else if (e instanceof BadSqlGrammarException) {
-            return ResultBean.ofError("服务器异常,请联系管理员!");
+            return ResultBean.ofError("出错啦,请稍后再试!");
         } else if (e instanceof MySQLSyntaxErrorException) {
-            return ResultBean.ofError("服务器异常,请联系管理员!");
+            return ResultBean.ofError("出错啦,请稍后再试!");
         } else if (e instanceof RuntimeException) {
-            return ResultBean.ofError("服务器异常,请联系管理员!");
+            return ResultBean.ofError("出错啦,请稍后再试!");
         } else {
             String errorMsg = e.toString() == null ? e.getMessage() : e.toString();
             return ResultBean.ofError(StringUtils.isBlank(errorMsg) ? "未知错误" : errorMsg);

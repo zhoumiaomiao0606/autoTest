@@ -23,10 +23,10 @@
 
 
     <Loggers>
-        <logger level="debug" name="com.yunche.loan">
+        <logger level="info" name="com.yunche.loan">
             <AppenderRef ref="App-File-Appender"/>
         </logger>
-        <logger level="debug" name="org.activiti.engine.impl.persistence.entity">
+        <logger level="info" name="org.activiti.engine.impl.persistence.entity">
             <AppenderRef ref="App-File-Appender"/>
         </logger>
         <Root level="info">

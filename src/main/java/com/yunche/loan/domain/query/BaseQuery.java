@@ -13,7 +13,7 @@ public class BaseQuery {
     /**
      * 单页最大记录数
      */
-    private static final Integer PAGE_SIZE_MAX = 500;
+    private static final Integer PAGE_SIZE_MAX = 2000;
     /**
      * 主键ID
      */
