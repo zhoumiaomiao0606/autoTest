@@ -15,6 +15,7 @@ import com.yunche.loan.service.VisitDoorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,8 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         visitDoorVO.setResult(lawWorkQuery);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
         if(id != null){
-            visitDoorVO.setVisitDoorDO(visitDoorDOMapper.selectByPrimaryKey(id));
+            VisitDoorDO v = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId,bankRepayImpRecordId);
+            visitDoorVO.setVisitDoorDO(v == null ? new VisitDoorDO():v);
         }else{
             visitDoorVO.setVisitDoorDO(new VisitDoorDO());
         }
@@ -108,7 +110,7 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         visitDoorVO.setResult(lawWorkQuery);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
         visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId,"1",bankRepayImpRecordId));
-        visitDoorVO.setLoanApplyCompensation(list);
+        visitDoorVO.setLoanApplyCompensation(list == null ? new ArrayList<LoanApplyCompensationDO>() : list);
         return visitDoorVO;
     }
 
@@ -124,7 +126,10 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         VisitDoorVO visitDoorVO =new VisitDoorVO();
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
         if(id != null){
-            visitDoorVO.setVisitDoorDO(visitDoorDOMapper.selectByPrimaryKey(id));
+            VisitDoorDO v = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId,bankRepayImpRecordId);
+            visitDoorVO.setVisitDoorDO(v == null ? new VisitDoorDO():v);
+        }else{
+            visitDoorVO.setVisitDoorDO(new VisitDoorDO());
         }
         return visitDoorVO;
     }

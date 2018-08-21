@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.ZhonganInfoDO;
+import com.yunche.loan.domain.vo.ZhonganNameVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,5 +20,9 @@ public interface ZhonganInfoDOMapper {
 
     int updateByPrimaryKey(ZhonganInfoDO record);
 
-    List<ZhonganInfoDO> selectByOrderId(@Param("idcard") String idCard, @Param("customername") String customername);
+    List<ZhonganInfoDO> selectByOrderId(@Param("idcard") String idcard, @Param("customername") String customername);
+    //征信申请查询
+    List<ZhonganInfoDO> selectByCreaditOrderId(@Param("orderId")Long orderId);
+
+    ZhonganNameVO selectZhonganName(@Param("orderId")Long orderId);
 }

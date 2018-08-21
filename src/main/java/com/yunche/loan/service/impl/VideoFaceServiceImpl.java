@@ -354,7 +354,10 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_9 = "9、请您翻开《牡丹信用卡透支分期付款/抵押合同》 第一页确认相关信息。" +
                 "您申请信用卡汽车分期业务用于购买" + redText(videoFaceQuestionAnswerVO.getCarBrandName()) + "品牌的汽车，" +
                 "车辆交易总价" + redText(videoFaceQuestionAnswerVO.getCarPrice()) + "元，" +
-                "分期金额是" + redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal()) + "元。" +
+                "您自行支付的首付款" +redText(videoFaceQuestionAnswerVO.getDownPaymentMoney()) + "元，" +
+                "您申请透支金额"+redText(videoFaceQuestionAnswerVO.getLoanAmount())+"元用于支付剩余交易款项，"+
+                "申请透支金额"+redText(videoFaceQuestionAnswerVO.getBankFee())+"元用于支付汽车金融服务费，"+
+                "合计透支金额"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal())+"元。"+
                 "每月还款" + redText(videoFaceQuestionAnswerVO.getEachMonthRepay()) + "元，"
                 + redText(videoFaceQuestionAnswerVO.getLoanTime() / 12) + "年" +
                 "总计需还款" + redText(videoFaceQuestionAnswerVO.getPrincipalInterestSum()) + "元。" +
@@ -405,6 +408,14 @@ public class VideoFaceServiceImpl implements VideoFaceService {
             videoFaceQuestionAnswerVO.setLoanTime(loanFinancialPlanDO.getLoanTime());
             // 总还款        -> 本息合计
             videoFaceQuestionAnswerVO.setPrincipalInterestSum(loanFinancialPlanDO.getPrincipalInterestSum());
+            //首付款
+            videoFaceQuestionAnswerVO.setDownPaymentMoney(loanFinancialPlanDO.getDownPaymentMoney());
+            //贷款金额
+            videoFaceQuestionAnswerVO.setLoanAmount(loanFinancialPlanDO.getLoanAmount());
+            //金融服务费
+            videoFaceQuestionAnswerVO.setBankFee(loanFinancialPlanDO.getBankFee());
+            //银行分期本金
+            videoFaceQuestionAnswerVO.setBankPeriodPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
         }
 
         // carInfo

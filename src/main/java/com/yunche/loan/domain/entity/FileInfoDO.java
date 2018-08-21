@@ -6,17 +6,13 @@ import lombok.Data;
 public class FileInfoDO {
     private Long id;
 
-    private String undertakeMoney;
-
-    private String undertakeFine;
-
-    private String undertakeFee;
-
-    private String undertakeInterest;
-
-    private String undertakeTotal;
+    private String type;
 
     private Long orderId;
 
     private Long bankRepayImpRecordId;
+
+    private String remark;
+
+    private String path;
 }
