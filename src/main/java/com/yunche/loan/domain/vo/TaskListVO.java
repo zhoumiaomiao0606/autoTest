@@ -40,6 +40,7 @@ public class TaskListVO {
     private String telephoneVerifyStatus;
     private String bankRepayImpRecordId;
     private String augmentId;
+    private String insteadPayOrderId;
     private String currArrears;
     private String loanBanlance;
     private String advancesBanlance;

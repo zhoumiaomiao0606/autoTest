@@ -580,6 +580,7 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                           deputy_.id                                   AS augmentId,
+                          deputy_.instead_pay_order_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -592,6 +593,7 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
                           deputy_.id                                   AS augmentId,
+                          deputy_.instead_pay_order_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -604,6 +606,7 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
                           deputy_.id                                   AS augmentId,
+                          deputy_.instead_pay_order_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -616,6 +619,7 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
                           deputy_.id                                   AS augmentId,
+                          deputy_.instead_pay_order_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
