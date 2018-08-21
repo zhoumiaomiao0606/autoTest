@@ -67,5 +67,7 @@ public interface AppLoanOrderService {
 
     void zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam);
 
-    ZhongAnDetailQuery zhongAnDetail(String idCard,String customerName);
+    ZhongAnDetailQuery zhongAnDetail(Long orderId);
+
+    ZhonganNameVO zhonganName(Long orderId);
 }

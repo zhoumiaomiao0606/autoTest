@@ -12,5 +12,5 @@ public class LitigationStateDO {
 
     private String collectionType;
 
-    private String bankRepayImpRecordId;
+    private Long bankRepayImpRecordId;
 }

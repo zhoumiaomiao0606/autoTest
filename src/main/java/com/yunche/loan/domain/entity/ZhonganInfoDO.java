@@ -3,6 +3,7 @@ package com.yunche.loan.domain.entity;
 import com.google.common.collect.Lists;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 @Data
 public class ZhonganInfoDO {
@@ -45,6 +46,14 @@ public class ZhonganInfoDO {
     private String highRiskRecord;
 
     private String customerName;
+
+    private Date createDate;
+
+    private Long orderId;
+
+    private String customerType;
+
+    private String resultMessage;
 
     private List<ZhonganOverdueDO> overDueList = Lists.newArrayList();
     private List<RspCreditDO> creditList = Lists.newArrayList();
