@@ -63,6 +63,10 @@
     #{reviewUserId,jdbcType=BIGINT}, #{reviewUserName,jdbcType=VARCHAR})
   </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO">
+        <selectKey resultType="java.lang.Long" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into legwork_reimbursement
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
