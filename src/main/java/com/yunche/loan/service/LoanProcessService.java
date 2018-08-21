@@ -15,7 +15,7 @@ public interface LoanProcessService {
 
     ResultBean<List<TaskStateVO>> currentTask(Long orderId);
 
-    ResultBean<TaskStateVO> taskStatus(Long orderId, String taskDefinitionKey);
+    ResultBean<TaskStateVO> taskStatus(Long orderId, String taskDefinitionKey, Long processId);
 
     ResultBean<List<String>> orderHistory(Long orderId, Integer limit);
 

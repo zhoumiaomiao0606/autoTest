@@ -2,6 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.entity.LoanProcessDO_;
 import com.yunche.loan.domain.param.ApprovalParam;
 import org.activiti.engine.task.Task;
 
@@ -65,11 +66,28 @@ public interface LoanProcessApprovalCommonService {
     void asyncPush(LoanOrderDO loanOrderDO, ApprovalParam approval);
 
     /**
-     *
      * @param newTaskList
      * @param orderId
      * @param taskDefinitionKey
      * @param info
      */
     void createRejectLog(List<Task> newTaskList, Long orderId, String taskDefinitionKey, String info);
+
+    /**
+     * 获取主订单
+     *
+     * @param orderId
+     * @return
+     */
+    LoanOrderDO getLoanOrder(Long orderId);
+
+    /**
+     * 获取流程记录
+     *
+     * @param orderId
+     * @param processId
+     * @param taskDefinitionKey
+     * @return
+     */
+    LoanProcessDO_ getLoanProcess(Long orderId, Long processId, String taskDefinitionKey);
 }

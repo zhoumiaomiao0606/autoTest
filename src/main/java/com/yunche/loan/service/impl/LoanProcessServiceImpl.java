@@ -2628,12 +2628,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     @Override
-    public ResultBean<TaskStateVO> taskStatus(Long orderId, String taskDefinitionKey) {
+    public ResultBean<TaskStateVO> taskStatus(Long orderId, String taskDefinitionKey, Long processId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "任务Key不能为空");
 
-        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(orderId);
+        LoanProcessDO_ loanProcessDO_ = loanProcessApprovalCommonService.getLoanProcess(orderId, processId, taskDefinitionKey);
 
         TaskStateVO taskStateVO = new TaskStateVO();
         taskStateVO.setTaskDefinitionKey(taskDefinitionKey);
@@ -2642,15 +2642,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Byte taskStatus = null;
 
         // 非进行中
-        if (!ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
+        if (false) {
+//        if (!ORDER_STATUS_DOING.equals(loanOrderDO.getStatus())) {
 
-            if (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus())) {
+            if (ORDER_STATUS_END.equals(loanOrderDO.getStatus())) {
                 taskStatus = 11;
                 taskStateVO.setTaskStatus(taskStatus);
                 taskStateVO.setTaskStatusText("已结单");
             }
 
-            if (ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus())) {
+            if (ORDER_STATUS_CANCEL.equals(loanOrderDO.getStatus())) {
                 taskStatus = 12;
                 taskStateVO.setTaskStatus(taskStatus);
                 taskStateVO.setTaskStatusText("已弃单");
@@ -2763,7 +2764,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 }
 
             } else {
-                taskStatus = getTaskStatus(loanProcessDO, taskDefinitionKey);
+                taskStatus = getTaskStatus(loanProcessDO_, taskDefinitionKey);
             }
 
             taskStateVO.setTaskStatus(taskStatus);

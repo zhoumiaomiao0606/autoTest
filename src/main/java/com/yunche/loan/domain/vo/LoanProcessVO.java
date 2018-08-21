@@ -1,11 +1,17 @@
-package com.yunche.loan.domain.entity;
+package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.entity.LoanProcessCollectionDO;
+import com.yunche.loan.domain.entity.LoanProcessDO;
 import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * @author liuzhe
+ * @date 2018/8/21
+ */
 @Data
-public class LoanProcessDO implements LoanProcessDO_ {
+public class LoanProcessVO extends LoanProcessDO {
 
     /**
      * 订单号

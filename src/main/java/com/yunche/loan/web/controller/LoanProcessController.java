@@ -63,12 +63,14 @@ public class LoanProcessController {
      *
      * @param orderId
      * @param taskDefinitionKey
+     * @param processId
      * @return
      */
     @GetMapping(value = "/task/status")
     public ResultBean<TaskStateVO> currentTask(@RequestParam("orderId") Long orderId,
-                                               @RequestParam("taskDefinitionKey") String taskDefinitionKey) {
-        return loanProcessService.taskStatus(orderId, taskDefinitionKey);
+                                               @RequestParam("taskDefinitionKey") String taskDefinitionKey,
+                                               @RequestParam(value = "processId", required = false) Long processId) {
+        return loanProcessService.taskStatus(orderId, taskDefinitionKey, processId);
     }
 
     /**

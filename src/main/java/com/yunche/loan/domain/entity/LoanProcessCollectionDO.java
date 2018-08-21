@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class LoanProcessCollectionDO {
+public class LoanProcessCollectionDO implements LoanProcessDO_ {
 
     private Long id;
 

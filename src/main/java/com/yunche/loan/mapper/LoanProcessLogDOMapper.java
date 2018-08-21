@@ -1,12 +1,11 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanProcessLogDO;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
+
 public interface LoanProcessLogDOMapper {
     int deleteByPrimaryKey(Long id);
 
