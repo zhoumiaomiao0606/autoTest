@@ -59,12 +59,12 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         vehicleOutboundDOKey.setBankRepayImpRecordId(bank_repay_imp_record_id);
         VehicleOutboundDO vehicleOutboundDO = vehicleOutboundDOMapper.selectByPrimaryKey(vehicleOutboundDOKey);
         //根据区id查询省市id
-       if(vehicleOutboundDO.getAddress()!=null && vehicleOutboundDO.getAddress().trim() != "")
+       if(vehicleOutboundDO !=null && vehicleOutboundDO.getAddress()!=null && vehicleOutboundDO.getAddress().trim() != "")
        {
            Long countyId=Long.valueOf(vehicleOutboundDO.getAddress());
            BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
            vehicleOutboundInfo.setCountyId(countyId);
-           if(cityAreaDO.getParentAreaId()!=null)
+           if(cityAreaDO !=null && cityAreaDO.getParentAreaId()!=null)
            {
                vehicleOutboundInfo.setCityId(cityAreaDO.getParentAreaId());
                BaseAreaDO provenceAreaDO = baseAreaDOMapper.selectByPrimaryKey(cityAreaDO.getParentAreaId(), VALID_STATUS);
