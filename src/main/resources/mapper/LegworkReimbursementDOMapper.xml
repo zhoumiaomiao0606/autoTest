@@ -1,242 +1,278 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.LegworkReimbursementDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LegworkReimbursementDO" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="trans_fee" property="transFee" jdbcType="VARCHAR" />
-    <result column="hotel_fee" property="hotelFee" jdbcType="VARCHAR" />
-    <result column="eat_fee" property="eatFee" jdbcType="VARCHAR" />
-    <result column="busi_fee" property="busiFee" jdbcType="VARCHAR" />
-    <result column="other_fee" property="otherFee" jdbcType="VARCHAR" />
-    <result column="gmt_user" property="gmtUser" jdbcType="BIGINT" />
-    <result column="gmt_user_name" property="gmtUserName" jdbcType="VARCHAR" />
-    <result column="gmt_create_time" property="gmtCreateTime" jdbcType="TIMESTAMP" />
-    <result column="gmt_update_time" property="gmtUpdateTime" jdbcType="TIMESTAMP" />
-    <result column="status" property="status" jdbcType="TINYINT" />
-    <result column="reimbursement_amount" property="reimbursementAmount" jdbcType="VARCHAR" />
-    <result column="bank" property="bank" jdbcType="VARCHAR" />
-    <result column="remit_account" property="remitAccount" jdbcType="VARCHAR" />
-    <result column="collection_bank" property="collectionBank" jdbcType="VARCHAR" />
-    <result column="collection_account" property="collectionAccount" jdbcType="VARCHAR" />
-    <result column="collection_account_number" property="collectionAccountNumber" jdbcType="VARCHAR" />
-    <result column="busi_time" property="busiTime" jdbcType="TIMESTAMP" />
-    <result column="gmt_apply_user" property="gmtApplyUser" jdbcType="BIGINT" />
-    <result column="gmt_review_user" property="gmtReviewUser" jdbcType="BIGINT" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-    id, trans_fee, hotel_fee, eat_fee, busi_fee, other_fee, gmt_user, gmt_user_name, 
-    gmt_create_time, gmt_update_time, status, reimbursement_amount, bank, remit_account,
-    collection_bank, collection_account, collection_account_number, busi_time, gmt_apply_user,
-    gmt_review_user
+<mapper namespace="com.yunche.loan.mapper.LegworkReimbursementDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LegworkReimbursementDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="trans_fee" property="transFee" jdbcType="VARCHAR"/>
+        <result column="hotel_fee" property="hotelFee" jdbcType="VARCHAR"/>
+        <result column="eat_fee" property="eatFee" jdbcType="VARCHAR"/>
+        <result column="busi_fee" property="busiFee" jdbcType="VARCHAR"/>
+        <result column="other_fee" property="otherFee" jdbcType="VARCHAR"/>
+        <result column="gmt_create_time" property="gmtCreateTime" jdbcType="TIMESTAMP"/>
+        <result column="gmt_update_time" property="gmtUpdateTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="reimbursement_amount" property="reimbursementAmount" jdbcType="VARCHAR"/>
+        <result column="bank" property="bank" jdbcType="VARCHAR"/>
+        <result column="remit_account" property="remitAccount" jdbcType="VARCHAR"/>
+        <result column="collection_bank" property="collectionBank" jdbcType="VARCHAR"/>
+        <result column="collection_account" property="collectionAccount" jdbcType="VARCHAR"/>
+        <result column="collection_account_number" property="collectionAccountNumber" jdbcType="VARCHAR"/>
+        <result column="busi_time" property="busiTime" jdbcType="TIMESTAMP"/>
+        <result column="apply_user_id" property="applyUserId" jdbcType="BIGINT"/>
+        <result column="apply_user_name" property="applyUserName" jdbcType="VARCHAR"/>
+        <result column="review_user_id" property="reviewUserId" jdbcType="BIGINT"/>
+        <result column="review_user_name" property="reviewUserName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, trans_fee, hotel_fee, eat_fee, busi_fee, other_fee, gmt_create_time, gmt_update_time,
+    status, reimbursement_amount, bank, remit_account, collection_bank, collection_account,
+    collection_account_number, busi_time, apply_user_id, apply_user_name, review_user_id,
+    review_user_name
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    from legwork_reimbursement
-    where id = #{id,jdbcType=BIGINT}
-  </select>
 
-  <select id="list" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from legwork_reimbursement
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from legwork_reimbursement
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from legwork_reimbursement
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from legwork_reimbursement
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO" >
-    <selectKey resultType="java.lang.Long" keyProperty="id"
-               order="AFTER">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into legwork_reimbursement
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="transFee != null" >
-        trans_fee,
-      </if>
-      <if test="hotelFee != null" >
-        hotel_fee,
-      </if>
-      <if test="eatFee != null" >
-        eat_fee,
-      </if>
-      <if test="busiFee != null" >
-        busi_fee,
-      </if>
-      <if test="otherFee != null" >
-        other_fee,
-      </if>
-      <if test="gmtUser != null" >
-        gmt_user,
-      </if>
-      <if test="gmtUserName != null" >
-        gmt_user_name,
-      </if>
-      <if test="gmtCreateTime != null" >
-        gmt_create_time,
-      </if>
-      <if test="gmtUpdateTime != null" >
-        gmt_update_time,
-      </if>
-      <if test="status != null" >
-        status,
-      </if>
-      <if test="reimbursementAmount != null" >
-        reimbursement_amount,
-      </if>
-      <if test="bank != null" >
-        bank,
-      </if>
-      <if test="remitAccount != null" >
-        remit_account,
-      </if>
-      <if test="collectionBank != null" >
-        collection_bank,
-      </if>
-      <if test="collectionAccount != null" >
-        collection_account,
-      </if>
-      <if test="collectionAccountNumber != null" >
-        collection_account_number,
-      </if>
-      <if test="busiTime != null" >
-        busi_time,
-      </if>
-      <if test="gmtApplyUser != null" >
-        gmt_apply_user,
-      </if>
-      <if test="gmtReviewUser != null" >
-        gmt_review_user,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="transFee != null" >
-        #{transFee,jdbcType=VARCHAR},
-      </if>
-      <if test="hotelFee != null" >
-        #{hotelFee,jdbcType=VARCHAR},
-      </if>
-      <if test="eatFee != null" >
-        #{eatFee,jdbcType=VARCHAR},
-      </if>
-      <if test="busiFee != null" >
-        #{busiFee,jdbcType=VARCHAR},
-      </if>
-      <if test="otherFee != null" >
-        #{otherFee,jdbcType=VARCHAR},
-      </if>
-      <if test="gmtUser != null" >
-        #{gmtUser,jdbcType=BIGINT},
-      </if>
-      <if test="gmtUserName != null" >
-        #{gmtUserName,jdbcType=VARCHAR},
-      </if>
-      <if test="gmtCreateTime != null" >
-        #{gmtCreateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtUpdateTime != null" >
-        #{gmtUpdateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null" >
-        #{status,jdbcType=TINYINT},
-      </if>
-      <if test="reimbursementAmount != null" >
-        #{reimbursementAmount,jdbcType=VARCHAR},
-      </if>
-      <if test="bank != null" >
-        #{bank,jdbcType=VARCHAR},
-      </if>
-      <if test="remitAccount != null" >
-        #{remitAccount,jdbcType=VARCHAR},
-      </if>
-      <if test="collectionBank != null" >
-        #{collectionBank,jdbcType=VARCHAR},
-      </if>
-      <if test="collectionAccount != null" >
-        #{collectionAccount,jdbcType=VARCHAR},
-      </if>
-      <if test="collectionAccountNumber != null" >
-        #{collectionAccountNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="busiTime != null" >
-        #{busiTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtApplyUser != null" >
-        #{gmtApplyUser,jdbcType=BIGINT},
-      </if>
-      <if test="gmtReviewUser != null" >
-        #{gmtReviewUser,jdbcType=BIGINT},
-      </if>
-    </trim>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO">
+    insert into legwork_reimbursement (id, trans_fee, hotel_fee,
+    eat_fee, busi_fee, other_fee,
+    gmt_create_time, gmt_update_time, status,
+    reimbursement_amount, bank, remit_account,
+    collection_bank, collection_account, collection_account_number,
+    busi_time, apply_user_id, apply_user_name,
+    review_user_id, review_user_name)
+    values (#{id,jdbcType=BIGINT}, #{transFee,jdbcType=VARCHAR}, #{hotelFee,jdbcType=VARCHAR},
+    #{eatFee,jdbcType=VARCHAR}, #{busiFee,jdbcType=VARCHAR}, #{otherFee,jdbcType=VARCHAR},
+    #{gmtCreateTime,jdbcType=TIMESTAMP}, #{gmtUpdateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT},
+    #{reimbursementAmount,jdbcType=VARCHAR}, #{bank,jdbcType=VARCHAR}, #{remitAccount,jdbcType=VARCHAR},
+    #{collectionBank,jdbcType=VARCHAR}, #{collectionAccount,jdbcType=VARCHAR}, #{collectionAccountNumber,jdbcType=VARCHAR},
+    #{busiTime,jdbcType=TIMESTAMP}, #{applyUserId,jdbcType=BIGINT}, #{applyUserName,jdbcType=VARCHAR},
+    #{reviewUserId,jdbcType=BIGINT}, #{reviewUserName,jdbcType=VARCHAR})
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO" >
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO">
+        insert into legwork_reimbursement
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="transFee != null">
+                trans_fee,
+            </if>
+            <if test="hotelFee != null">
+                hotel_fee,
+            </if>
+            <if test="eatFee != null">
+                eat_fee,
+            </if>
+            <if test="busiFee != null">
+                busi_fee,
+            </if>
+            <if test="otherFee != null">
+                other_fee,
+            </if>
+            <if test="gmtCreateTime != null">
+                gmt_create_time,
+            </if>
+            <if test="gmtUpdateTime != null">
+                gmt_update_time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="reimbursementAmount != null">
+                reimbursement_amount,
+            </if>
+            <if test="bank != null">
+                bank,
+            </if>
+            <if test="remitAccount != null">
+                remit_account,
+            </if>
+            <if test="collectionBank != null">
+                collection_bank,
+            </if>
+            <if test="collectionAccount != null">
+                collection_account,
+            </if>
+            <if test="collectionAccountNumber != null">
+                collection_account_number,
+            </if>
+            <if test="busiTime != null">
+                busi_time,
+            </if>
+            <if test="applyUserId != null">
+                apply_user_id,
+            </if>
+            <if test="applyUserName != null">
+                apply_user_name,
+            </if>
+            <if test="reviewUserId != null">
+                review_user_id,
+            </if>
+            <if test="reviewUserName != null">
+                review_user_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="transFee != null">
+                #{transFee,jdbcType=VARCHAR},
+            </if>
+            <if test="hotelFee != null">
+                #{hotelFee,jdbcType=VARCHAR},
+            </if>
+            <if test="eatFee != null">
+                #{eatFee,jdbcType=VARCHAR},
+            </if>
+            <if test="busiFee != null">
+                #{busiFee,jdbcType=VARCHAR},
+            </if>
+            <if test="otherFee != null">
+                #{otherFee,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreateTime != null">
+                #{gmtCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtUpdateTime != null">
+                #{gmtUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="reimbursementAmount != null">
+                #{reimbursementAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="bank != null">
+                #{bank,jdbcType=VARCHAR},
+            </if>
+            <if test="remitAccount != null">
+                #{remitAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionBank != null">
+                #{collectionBank,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionAccount != null">
+                #{collectionAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionAccountNumber != null">
+                #{collectionAccountNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="busiTime != null">
+                #{busiTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="applyUserId != null">
+                #{applyUserId,jdbcType=BIGINT},
+            </if>
+            <if test="applyUserName != null">
+                #{applyUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="reviewUserId != null">
+                #{reviewUserId,jdbcType=BIGINT},
+            </if>
+            <if test="reviewUserName != null">
+                #{reviewUserName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO">
+        update legwork_reimbursement
+        <set>
+            <if test="transFee != null">
+                trans_fee = #{transFee,jdbcType=VARCHAR},
+            </if>
+            <if test="hotelFee != null">
+                hotel_fee = #{hotelFee,jdbcType=VARCHAR},
+            </if>
+            <if test="eatFee != null">
+                eat_fee = #{eatFee,jdbcType=VARCHAR},
+            </if>
+            <if test="busiFee != null">
+                busi_fee = #{busiFee,jdbcType=VARCHAR},
+            </if>
+            <if test="otherFee != null">
+                other_fee = #{otherFee,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreateTime != null">
+                gmt_create_time = #{gmtCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtUpdateTime != null">
+                gmt_update_time = #{gmtUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="reimbursementAmount != null">
+                reimbursement_amount = #{reimbursementAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="bank != null">
+                bank = #{bank,jdbcType=VARCHAR},
+            </if>
+            <if test="remitAccount != null">
+                remit_account = #{remitAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionBank != null">
+                collection_bank = #{collectionBank,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionAccount != null">
+                collection_account = #{collectionAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionAccountNumber != null">
+                collection_account_number = #{collectionAccountNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="busiTime != null">
+                busi_time = #{busiTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="applyUserId != null">
+                apply_user_id = #{applyUserId,jdbcType=BIGINT},
+            </if>
+            <if test="applyUserName != null">
+                apply_user_name = #{applyUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="reviewUserId != null">
+                review_user_id = #{reviewUserId,jdbcType=BIGINT},
+            </if>
+            <if test="reviewUserName != null">
+                review_user_name = #{reviewUserName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO">
     update legwork_reimbursement
-    <set >
-      <if test="transFee != null" >
-        trans_fee = #{transFee,jdbcType=VARCHAR},
-      </if>
-      <if test="hotelFee != null" >
-        hotel_fee = #{hotelFee,jdbcType=VARCHAR},
-      </if>
-      <if test="eatFee != null" >
-        eat_fee = #{eatFee,jdbcType=VARCHAR},
-      </if>
-      <if test="busiFee != null" >
-        busi_fee = #{busiFee,jdbcType=VARCHAR},
-      </if>
-      <if test="otherFee != null" >
-        other_fee = #{otherFee,jdbcType=VARCHAR},
-      </if>
-      <if test="gmtUser != null" >
-        gmt_user = #{gmtUser,jdbcType=BIGINT},
-      </if>
-      <if test="gmtUserName != null" >
-        gmt_user_name = #{gmtUserName,jdbcType=VARCHAR},
-      </if>
-      <if test="gmtCreateTime != null" >
-        gmt_create_time = #{gmtCreateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtUpdateTime != null" >
-        gmt_update_time = #{gmtUpdateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null" >
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="reimbursementAmount != null" >
-        reimbursement_amount = #{reimbursementAmount,jdbcType=VARCHAR},
-      </if>
-      <if test="bank != null" >
-        bank = #{bank,jdbcType=VARCHAR},
-      </if>
-      <if test="remitAccount != null" >
-        remit_account = #{remitAccount,jdbcType=VARCHAR},
-      </if>
-      <if test="collectionBank != null" >
-        collection_bank = #{collectionBank,jdbcType=VARCHAR},
-      </if>
-      <if test="collectionAccount != null" >
-        collection_account = #{collectionAccount,jdbcType=VARCHAR},
-      </if>
-      <if test="collectionAccountNumber != null" >
-        collection_account_number = #{collectionAccountNumber,jdbcType=VARCHAR},
-      </if>
-      <if test="busiTime != null" >
-        busi_time = #{busiTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtApplyUser != null" >
-        gmt_apply_user = #{gmtApplyUser,jdbcType=BIGINT},
-      </if>
-      <if test="gmtReviewUser != null" >
-        gmt_review_user = #{gmtReviewUser,jdbcType=BIGINT},
-      </if>
-    </set>
+    set trans_fee = #{transFee,jdbcType=VARCHAR},
+      hotel_fee = #{hotelFee,jdbcType=VARCHAR},
+      eat_fee = #{eatFee,jdbcType=VARCHAR},
+      busi_fee = #{busiFee,jdbcType=VARCHAR},
+      other_fee = #{otherFee,jdbcType=VARCHAR},
+      gmt_create_time = #{gmtCreateTime,jdbcType=TIMESTAMP},
+      gmt_update_time = #{gmtUpdateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      reimbursement_amount = #{reimbursementAmount,jdbcType=VARCHAR},
+      bank = #{bank,jdbcType=VARCHAR},
+      remit_account = #{remitAccount,jdbcType=VARCHAR},
+      collection_bank = #{collectionBank,jdbcType=VARCHAR},
+      collection_account = #{collectionAccount,jdbcType=VARCHAR},
+      collection_account_number = #{collectionAccountNumber,jdbcType=VARCHAR},
+      busi_time = #{busiTime,jdbcType=TIMESTAMP},
+      apply_user_id = #{applyUserId,jdbcType=BIGINT},
+      apply_user_name = #{applyUserName,jdbcType=VARCHAR},
+      review_user_id = #{reviewUserId,jdbcType=BIGINT},
+      review_user_name = #{reviewUserName,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

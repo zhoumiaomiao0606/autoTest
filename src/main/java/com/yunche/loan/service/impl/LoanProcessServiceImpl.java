@@ -662,6 +662,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         return isRefundApplyTask;
     }
 
+    /**
+     * 【财务报销】任务
+     *
+     * @param taskDefinitionKey
+     * @return
+     */
     private boolean isOutworkerCostApplyTask(String taskDefinitionKey) {
         boolean isRefundApplyTask = OUTWORKER_COST_APPLY.getCode().equals(taskDefinitionKey)
                 || OUTWORKER_COST_APPLY_REVIEW.getCode().equals(taskDefinitionKey);
@@ -1073,7 +1079,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 执行 -【财务报销】
      *
      * @param approval
-     * @param loanProcessDO
      * @return
      */
     private ResultBean<Void> execOutworkerCostApplyTask(ApprovalParam approval) {
@@ -1113,8 +1118,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LegworkReimbursementDO legworkReimbursementDO = new LegworkReimbursementDO();
         legworkReimbursementDO.setId(approval.getSupplementOrderId());
 
+        legworkReimbursementDO.setStatus(applyOrderStatus);
 
-        legworkReimbursementDO.setStatus(ORDER_STATUS_DOING);
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        legworkReimbursementDO.setApplyUserId(loginUser.getId());
+        legworkReimbursementDO.setApplyUserName(loginUser.getName());
+
+        legworkReimbursementDO.setReviewUserId(loginUser.getId());
+        legworkReimbursementDO.setReviewUserName(loginUser.getName());
+
         legworkReimbursementDO.setGmtUpdateTime(new Date());
 
         int count = legworkReimbursementDOMapper.updateByPrimaryKeySelective(legworkReimbursementDO);

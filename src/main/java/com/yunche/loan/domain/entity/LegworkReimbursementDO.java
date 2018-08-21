@@ -6,6 +6,7 @@ import java.util.Date;
 
 @Data
 public class LegworkReimbursementDO {
+
     private Long id;
 
     private String transFee;
@@ -17,10 +18,6 @@ public class LegworkReimbursementDO {
     private String busiFee;
 
     private String otherFee;
-
-    private Long gmtUser;
-
-    private String gmtUserName;
 
     private Date gmtCreateTime;
 
@@ -42,9 +39,11 @@ public class LegworkReimbursementDO {
 
     private Date busiTime;
 
-    private Long gmtApplyUser;
+    private Long applyUserId;
 
-    private Long gmtReviewUser;
+    private String applyUserName;
 
+    private Long reviewUserId;
 
+    private String reviewUserName;
 }
