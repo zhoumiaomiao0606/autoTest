@@ -165,9 +165,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private DictService dictService;
 
-    @Autowired
-    private ZhonganInfoDOMapper zhonganInfoDOMapper;
-
 
     @Override
     @Transactional
@@ -283,121 +280,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
 
-
-    @Override
-    @Transactional
-    public ResultBean<Void> creaditApproval(ApprovalParam approval) {
-        List<ZhonganInfoDO> list = zhonganInfoDOMapper.selectByCreaditOrderId(approval.getOrderId());
-        for(ZhonganInfoDO zhonganInfoDO : list){
-            if(!"成功".equals(zhonganInfoDO.getResultMessage())){
-                throw  new BizException("客户:"+zhonganInfoDO.getCustomerName()+zhonganInfoDO.getResultMessage()+",无法提交征信");
-            }
-        }
-        Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
-        Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
-
-        // APP通过OrderId弃单
-        if (isAppCancelByOrderId(approval)) {
-            return execAppCancelByOrderId(approval);
-        } else {
-            // Web端
-            Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
-        }
-
-        // 节点权限校验
-        if (approval.isCheckPermission()) {
-            permissionService.checkTaskPermission(approval.getTaskDefinitionKey());
-        }
-
-        // 业务单
-        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
-
-        // 节点实时状态
-        LoanProcessDO loanProcessDO = getLoanProcess(approval.getOrderId());
-
-        // 贷款基本信息
-        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-
-        // 校验审核前提条件
-        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
-
-        // 日志
-        log(approval);
-
-
-        ////////////////////////////////////////// ↓↓↓↓↓ 特殊处理  ↓↓↓↓↓ ////////////////////////////////////////////////
-
-        // 【征信增补】
-        if (isCreditSupplementTask(approval.getTaskDefinitionKey(), approval.getAction())) {
-            execCreditSupplementTask(approval, loanOrderDO.getProcessInstId(), loanProcessDO);
-        }
-
-        // 【资料流转（抵押资料 - 合伙人->公司）】
-        if (isDataFlowMortgageP2cNewTask(approval.getTaskDefinitionKey(), approval.getAction())) {
-            execDataFlowMortgageP2cNewFilterTask(approval);
-        }
-
-
-        // 【贷款信息登记】
-        if (isLoanInfoRecordTask(approval)) {
-            return execLoanInfoRecordTask(approval, loanProcessDO);
-        }
-
-        // 【资料增补】
-        if (isInfoSupplementTask(approval)) {
-            return execInfoSupplementTask(approval, loanProcessDO);
-        }
-
-        // 【金融方案修改申请】
-        if (isFinancialSchemeModifyApplyTask(approval.getTaskDefinitionKey())) {
-            return execFinancialSchemeModifyApplyTask(approval, loanOrderDO, loanProcessDO);
-        }
-
-        // 【退款申请】
-        if (isRefundApplyTask(approval.getTaskDefinitionKey())) {
-            return execRefundApplyTask(approval, loanProcessDO);
-        }
-
-        // 【反审】
-        if (actionIsRollBack(approval.getAction())) {
-            return execRollBackTask(approval, loanOrderDO, loanProcessDO);
-        }
-
-        ////////////////////////////////////////// ↑↑↑↑↑ 特殊处理  ↑↑↑↑↑ ////////////////////////////////////////////////
-
-
-        // 获取当前执行任务（activiti中）
-        Task task = getTask(loanOrderDO.getProcessInstId(), approval.getTaskDefinitionKey());
-
-        // 先获取提交之前的待执行任务ID列表
-        List<String> startTaskIdList = getCurrentTaskIdList(task.getProcessInstanceId());
-
-        // 流程变量
-        Map<String, Object> variables = setAndGetVariables(task, approval, loanOrderDO, loanProcessDO);
-
-        // 执行任务
-        execTask(task, variables, approval, loanOrderDO, loanProcessDO);
-
-        // 流程数据同步
-        syncProcess(startTaskIdList, loanOrderDO.getProcessInstId(), approval, loanProcessDO, loanBaseInfoDO);
-
-        // 生成客户还款计划
-        createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
-
-        // [领取]完成
-        finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
-
-        // 通过银行接口  ->  自动查询征信
-        creditAutomaticCommit(approval);
-
-        // 异步打包文件
-        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
-
-        // 异步推送
-        asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
-
-        return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
-    }
 
     /**
      * 是否为：[贷款信息登记]任务
@@ -780,6 +662,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         return isRefundApplyTask;
     }
 
+    /**
+     * 【财务报销】任务
+     *
+     * @param taskDefinitionKey
+     * @return
+     */
     private boolean isOutworkerCostApplyTask(String taskDefinitionKey) {
         boolean isRefundApplyTask = OUTWORKER_COST_APPLY.getCode().equals(taskDefinitionKey)
                 || OUTWORKER_COST_APPLY_REVIEW.getCode().equals(taskDefinitionKey);
@@ -1191,7 +1079,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 执行 -【财务报销】
      *
      * @param approval
-     * @param
      * @return
      */
     private ResultBean<Void> execOutworkerCostApplyTask(ApprovalParam approval) {
@@ -1231,8 +1118,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LegworkReimbursementDO legworkReimbursementDO = new LegworkReimbursementDO();
         legworkReimbursementDO.setId(approval.getSupplementOrderId());
 
+        legworkReimbursementDO.setStatus(applyOrderStatus);
 
-        legworkReimbursementDO.setStatus(ORDER_STATUS_DOING);
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        legworkReimbursementDO.setApplyUserId(loginUser.getId());
+        legworkReimbursementDO.setApplyUserName(loginUser.getName());
+
+        legworkReimbursementDO.setReviewUserId(loginUser.getId());
+        legworkReimbursementDO.setReviewUserName(loginUser.getName());
+
         legworkReimbursementDO.setGmtUpdateTime(new Date());
 
         int count = legworkReimbursementDOMapper.updateByPrimaryKeySelective(legworkReimbursementDO);
