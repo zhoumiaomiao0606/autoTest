@@ -257,4 +257,6 @@ public interface LoanQueryDOMapper {
     * @Description:  根据订单id查询抵押情况
     */ 
     MortgageInfoVO selectMortgageInfo(Long orderId);
+
+    List<UniversalTelephoneCollectionEmployee> selectVisitDoorEmployee();
 }

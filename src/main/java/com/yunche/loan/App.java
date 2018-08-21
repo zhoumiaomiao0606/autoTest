@@ -2,7 +2,7 @@ package com.yunche.loan;
 
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.cache.ActivitiCache;
-import com.yunche.loan.service.ActivitiVersionService;
+import com.yunche.loan.service.ActivitiService;
 import org.activiti.engine.RepositoryService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
@@ -67,7 +67,7 @@ public class App {
     @Bean
     public CommandLineRunner init(RepositoryService repositoryService,
                                   ActivitiCache activitiCache,
-                                  ActivitiVersionService activitiVersionService) {
+                                  ActivitiService activitiService) {
 
         return new CommandLineRunner() {
 
@@ -77,7 +77,7 @@ public class App {
             public void run(String... args) throws Exception {
 
                 // 部署
-                deploy("processes/loan_process_dc.bpmn", "消费贷流程");
+                deploy("processes/loan_process.bpmn", "消费贷流程");
 
                 deploy("processes/loan_process_instead_pay.bpmn", "代偿流程");
 
@@ -98,7 +98,7 @@ public class App {
                         .deploy();
 
                 // 流程替换
-                activitiVersionService.replaceActivitiVersion(processClassPathResource);
+                activitiService.replaceActivitiVersion(processClassPathResource);
 
                 // 刷新activiti缓存数据
                 activitiCache.refresh();

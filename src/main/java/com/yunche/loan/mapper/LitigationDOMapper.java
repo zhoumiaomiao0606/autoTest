@@ -24,4 +24,6 @@ public interface LitigationDOMapper {
     List<LitigationDO> selectByOrderId(@Param("orderid")Long orderid,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
 
     LawWorkQuery selectLawWorkInfo(@Param("orderid")Long orderid);
+
+    LawWorkQuery selectAppVisitInfo(@Param("orderid")Long orderid);
 }

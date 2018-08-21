@@ -154,4 +154,12 @@
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+    <select id="selectByOrderIdAndInsteadPayOrderId" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_instead_pay
+        where order_id = #{orderId,jdbcType=BIGINT}
+        AND instead_pay_order_id=#{insteadPayOrderId,jdbcType=BIGINT}
+    </select>
 </mapper>

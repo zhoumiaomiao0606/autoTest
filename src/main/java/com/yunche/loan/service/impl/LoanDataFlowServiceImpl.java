@@ -43,7 +43,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.ExportExcelConst.*;
-import static com.yunche.loan.config.constant.LoanProcessConst.ACTION_PASS;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C_NEW_FILTER;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMddHHmmss;

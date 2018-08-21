@@ -34,6 +34,16 @@ public class VisitDoorController {
         return ResultBean.ofSuccess(visitDoorService.visitDoorDetatil(Long.valueOf(order_id),Long.valueOf(id),Long.valueOf(bank_repay_imp_record_id)));
     }
 
+    /**
+     * 上门人员列表
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/visitdooremployees")
+    public ResultBean visitDoorEmployees() {
+        return ResultBean.ofSuccess(visitDoorService.visitDoorEmployees());
+    }
+
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody @Validated VisitDoorDO visitDoorDO) {
         visitDoorService.update(visitDoorDO);

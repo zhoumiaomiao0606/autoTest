@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDOKey;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
@@ -46,22 +45,22 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
     private LoanQueryDOMapper loanQueryDOMapper;
     /**
      * 合伙人代偿信息保存
-     * @param universalCompensationParam
+     * @param param
      * @return
      */
     @Override
     @Transactional
-    public Void save(UniversalCompensationParam universalCompensationParam) {
-        Preconditions.checkNotNull(universalCompensationParam,"参数有误");
-        Preconditions.checkNotNull(universalCompensationParam.getOrderId(),"业务单号不能为空");
-        Preconditions.checkNotNull(universalCompensationParam.getApplyCompensationDate(),"代偿申请日期不能为空");
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(universalCompensationParam.getOrderId());
-        Preconditions.checkNotNull(loanOrderDO,"订单不存在：["+universalCompensationParam.getOrderId()+"]");
-        int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(universalCompensationParam);
+    public Void save(UniversalCompensationParam param) {
+        Preconditions.checkNotNull(param,"参数有误");
+        Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
+        Preconditions.checkNotNull(param.getApplyCompensationDate(),"代偿申请日期不能为空");
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(param.getOrderId());
+        Preconditions.checkNotNull(loanOrderDO,"订单不存在：["+param.getOrderId()+"]");
+        int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
         Preconditions.checkArgument(count>0,"合伙人代偿保存失败");
 
         //保存图片
-        ResultBean<Void> resultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), universalCompensationParam.getFiles(),UPLOAD_TYPE_NORMAL );
+        ResultBean<Void> resultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), param.getFiles(),UPLOAD_TYPE_NORMAL );
         Preconditions.checkArgument(resultBean.getSuccess(),"合伙人代偿打款凭证保存失败");
 
         return null;
@@ -76,14 +75,12 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
     public ResultBean detail(UniversalCompensationQuery query) {
         Preconditions.checkNotNull(query,"参数有误");
         Preconditions.checkNotNull(query.getOrderId(),"业务单号不能为空");
-        Preconditions.checkNotNull(query.getApplyCompensationDate(),"代偿申请日期不能为空");
+        Preconditions.checkNotNull(query.getInsteadPayOrderId(),"代偿申请ID不能为空");
 
 
         //数据查询
-        LoanApplyCompensationDOKey doKey = new LoanApplyCompensationDOKey();
-        doKey.setOrderId(query.getOrderId());
-        doKey.setApplyCompensationDate(query.getApplyCompensationDate());
-        LoanApplyCompensationDO applyCompensation = loanApplyCompensationDOMapper.selectByPrimaryKey(doKey);
+
+        LoanApplyCompensationDO applyCompensation = loanApplyCompensationDOMapper.selectByPrimaryKey(query.getInsteadPayOrderId());
         if(applyCompensation.getPartnerCompensationAmount()==null){
             BigDecimal amount = applyCompensation.getCompensationAmount();//代偿金额
             BigDecimal ratio = applyCompensation.getRiskTakingRatio().divide(new BigDecimal("100"));//比例

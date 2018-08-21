@@ -45,7 +45,7 @@ import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
-import static com.yunche.loan.config.constant.LoanProcessConst.*;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionText;
@@ -954,7 +954,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             }
         } catch(Exception e){
             logger.error("大数据风控查询失败",e);
-            throw new BizException("大数据风控查询失败");
+            throw new BizException("大数据风控查询延误，请再次查询");
         }
 
     }
@@ -1453,31 +1453,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         } else {
             appOrderProcessVO.setTaskList(Collections.EMPTY_LIST);
         }
-    }
-
-
-    /**
-     * 任务状态
-     *
-     * @param historicTaskInstance
-     * @return
-     */
-    private String fillTaskStatus(AppOrderProcessVO.Task task, HistoricTaskInstance historicTaskInstance) {
-
-        if (null != historicTaskInstance) {
-            Date endTime = historicTaskInstance.getEndTime();
-            if (null != endTime) {
-                // 已处理
-                task.setTaskStatus(TASK_DONE);
-                task.setTaskStatusText("已处理");
-            } else {
-                // 未处理
-                task.setTaskStatus(TASK_TODO);
-                task.setTaskStatusText("未处理");
-            }
-        }
-
-        return null;
     }
 
     /**

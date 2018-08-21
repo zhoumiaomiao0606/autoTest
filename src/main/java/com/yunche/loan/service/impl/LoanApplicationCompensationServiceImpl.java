@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateUtil;
@@ -9,19 +10,16 @@ import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BankUrgeRecordDO;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDOKey;
-import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.entity.LoanProcessInsteadPayDO;
 import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.domain.vo.FinancialSchemeVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCompensationVO;
 import com.yunche.loan.domain.vo.UniversalInfoVO;
-import com.yunche.loan.mapper.BankUrgeRecordDOMapper;
-import com.yunche.loan.mapper.LoanApplyCompensationDOMapper;
-import com.yunche.loan.mapper.LoanProcessDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanApplicationCompensationService;
+import com.yunche.loan.service.LoanProcessInsteadPayService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.yunche.loan.config.constant.BankUrgeConst.URGE_NO;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 
 
@@ -56,6 +53,13 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
 
     @Autowired
     LoanProcessDOMapper loanProcessDOMapper;
+
+
+    @Autowired
+    LoanProcessInsteadPayService loanProcessInsteadPayService;
+
+    @Autowired
+    LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
     /**
      * 导入文件
      * @param key oss key
@@ -142,7 +146,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                         }
 
                         compensationDO.setGmtCreate(new Date());
-                        compensationDO.setStatus(TASK_PROCESS_TODO);//2:未提交
+                        compensationDO.setStatus(BaseConst.VALID_STATUS);
                         //添加数据
                         loanApplyCompensationDOList.add(compensationDO);
                     }
@@ -153,15 +157,12 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                 loanApplyCompensationDOList.stream()
                         .filter(Objects::nonNull)
                         .forEach(e->{
-                            LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByPrimaryKey(e);
+                            LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByOrderIdAndDate(e.getOrderId(),e.getApplyCompensationDate());
 
                             if(tmpDO==null){
                                 int count = loanApplyCompensationDOMapper.insertSelective(e);
                                 Preconditions.checkArgument(count>0,"插入记录出错");
-                            } else if(!tmpDO.getStatus().equals(TASK_PROCESS_DONE)){
-                                e.setGmtModify(new Date());
-                                int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(e);
-                                Preconditions.checkArgument(count>0,"更新记录出错");
+                                loanProcessInsteadPayService.startProcess(e.getOrderId(),e.getId());
                             }
 
                             //
@@ -183,21 +184,33 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
      * @return
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void manualInsert(UniversalCompensationParam param) {
         Preconditions.checkNotNull(param,"参数有误");
-        LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByPrimaryKey(param);
+        Preconditions.checkNotNull(param.getApplyCompensationDate(),"申请日期不能为空");
+        Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
 
-        if(tmpDO !=null){
-            LoanProcessDO processDO = loanProcessDOMapper.selectByPrimaryKey(param.getOrderId());
-            // TODO 代偿申请 字段
-//            Preconditions.checkArgument(tmpDO.getStatus().equals(TASK_PROCESS_TODO),"订单已提交，禁止修改");
+
+        if(param.getId() !=null){
+            LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderId(param.getOrderId(), param.getId());
+            if(insteadPayDO!=null){
+                Preconditions.checkArgument(insteadPayDO.getApplyInsteadPay().equals(TASK_PROCESS_TODO),"订单已提交，禁止修改");
+            }
             int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
+            return;
         }else {
-            int count = loanApplyCompensationDOMapper.insertSelective(param);
-            Preconditions.checkArgument(count>0,"参数错误，保存失败");
+            LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByOrderIdAndDate(param.getOrderId(),param.getApplyCompensationDate());
+            if(tmpDO==null){
+                int count = loanApplyCompensationDOMapper.insertSelective(param);
+                Preconditions.checkArgument(count>0,"参数错误，保存失败");
+                //流程
+                loanProcessInsteadPayService.startProcess(param.getOrderId(),param.getId());
+            }else{
+                loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
+            }
         }
+
     }
 
     /**
@@ -209,7 +222,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
     public ResultBean detail(UniversalCompensationQuery applicationCompensationQuery) {
         Preconditions.checkNotNull(applicationCompensationQuery,"参数有误");
         Preconditions.checkNotNull(applicationCompensationQuery.getOrderId(),"业务单号不能为空");
-        Preconditions.checkNotNull(applicationCompensationQuery.getApplyCompensationDate(),"申请代偿日期不能为空");
+        Preconditions.checkNotNull(applicationCompensationQuery.getInsteadPayOrderId(),"申请代偿记录不存在");
 
         RecombinationVO<Object> result = new RecombinationVO<>();
 
@@ -217,10 +230,8 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
         UniversalInfoVO infoVO = loanQueryDOMapper.selectUniversalInfo(applicationCompensationQuery.getOrderId());
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(applicationCompensationQuery.getOrderId());
 
-        LoanApplyCompensationDOKey doKey = new LoanApplyCompensationDOKey();
-        doKey.setOrderId(applicationCompensationQuery.getOrderId());
-        doKey.setApplyCompensationDate(applicationCompensationQuery.getApplyCompensationDate());
-        LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectByPrimaryKey(doKey);
+
+        LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectByPrimaryKey(applicationCompensationQuery.getInsteadPayOrderId());
         UniversalCompensationVO compensationVO = new UniversalCompensationVO();
         BeanUtils.copyProperties(loanApplyCompensationDO,compensationVO);
         compensationVO.setOrderId(String.valueOf(loanApplyCompensationDO.getOrderId()));

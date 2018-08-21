@@ -3,7 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDOKey;
+import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.domain.vo.FinancialSchemeVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -31,15 +31,15 @@ public class LoanCompensationReviewServiceImpl implements LoanCompensationReview
 
     /**
      * 代偿确认保存
-     * @param applyReviewDO
+     * @param param
      * @return
      */
     @Override
     @Transactional
-    public Void save(LoanApplyCompensationDO applyReviewDO) {
-        Preconditions.checkNotNull(applyReviewDO,"参数有误");
-
-        int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(applyReviewDO);
+    public Void save(UniversalCompensationParam param) {
+        Preconditions.checkNotNull(param,"参数有误");
+        Preconditions.checkNotNull(param.getId(),"代偿ID不能为空");
+        int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
         Preconditions.checkArgument(count>0,"保存失败");
 
        return null;
@@ -54,12 +54,10 @@ public class LoanCompensationReviewServiceImpl implements LoanCompensationReview
     public ResultBean detail(UniversalCompensationQuery query) {
         Preconditions.checkNotNull(query,"参数有误");
         Preconditions.checkNotNull(query.getOrderId(),"业务单号不能为空");
-        Preconditions.checkNotNull(query.getApplyCompensationDate(),"代偿申请日期不能为空");
+        Preconditions.checkNotNull(query.getInsteadPayOrderId(),"代偿确认ID不能为空");
 
-        LoanApplyCompensationDOKey doKey = new LoanApplyCompensationDOKey();
-        doKey.setOrderId(query.getOrderId());
-        doKey.setApplyCompensationDate(query.getApplyCompensationDate());
-        LoanApplyCompensationDO compensationReview = loanApplyCompensationDOMapper.selectByPrimaryKey(doKey);
+
+        LoanApplyCompensationDO compensationReview = loanApplyCompensationDOMapper.selectByPrimaryKey(query.getInsteadPayOrderId());
         UniversalCompensationVO compensationVO = new UniversalCompensationVO();
         BeanUtils.copyProperties(compensationReview,compensationVO);
         compensationVO.setOrderId(String.valueOf(compensationReview.getOrderId()));

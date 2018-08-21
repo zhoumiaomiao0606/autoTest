@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDOKey;
 import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.domain.vo.*;
@@ -44,6 +43,8 @@ public class LoanPartnerCompensationReviewServiceImpl implements LoanPartnerComp
         Preconditions.checkNotNull(param,"参数有误");
         Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
         Preconditions.checkNotNull(param.getApplyCompensationDate(),"代偿申请日期不能为空");
+        Preconditions.checkNotNull(param.getId(),"代偿ID不能为空");
+
 
         int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
         Preconditions.checkArgument(count>0,"合伙人代偿确认保存失败");
@@ -60,13 +61,10 @@ public class LoanPartnerCompensationReviewServiceImpl implements LoanPartnerComp
     public ResultBean detail(UniversalCompensationQuery query) {
         Preconditions.checkNotNull(query,"参数有误");
         Preconditions.checkNotNull(query.getOrderId(),"业务单号不能为空");
-        Preconditions.checkNotNull(query.getApplyCompensationDate(),"代偿申请日期不能为空");
+        Preconditions.checkNotNull(query.getInsteadPayOrderId(),"代偿申请日期不能为空");
 
         //数据查询
-        LoanApplyCompensationDOKey doKey = new LoanApplyCompensationDOKey();
-        doKey.setOrderId(query.getOrderId());
-        doKey.setApplyCompensationDate(query.getApplyCompensationDate());
-        LoanApplyCompensationDO applyCompensation = loanApplyCompensationDOMapper.selectByPrimaryKey(doKey);
+        LoanApplyCompensationDO applyCompensation = loanApplyCompensationDOMapper.selectByPrimaryKey(query.getInsteadPayOrderId());
         UniversalCompensationVO compensationVO = new UniversalCompensationVO();
         BeanUtils.copyProperties(applyCompensation,compensationVO);
         compensationVO.setOrderId(String.valueOf(applyCompensation.getOrderId()));

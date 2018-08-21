@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.LoanApplyCompensationDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanApplyCompensationDO">
-    <id column="order_id" jdbcType="BIGINT" property="orderId" />
-    <id column="apply_compensation_date" jdbcType="TIMESTAMP" property="applyCompensationDate" />
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
     <result column="curr_arrears" jdbcType="DECIMAL" property="currArrears" />
     <result column="loan_banlance" jdbcType="DECIMAL" property="loanBanlance" />
     <result column="advances_banlance" jdbcType="DECIMAL" property="advancesBanlance" />
@@ -13,6 +13,7 @@
     <result column="risk_taking_ratio" jdbcType="DECIMAL" property="riskTakingRatio" />
     <result column="compensation_amount" jdbcType="DECIMAL" property="compensationAmount" />
     <result column="compensation_cause" jdbcType="VARCHAR" property="compensationCause" />
+    <result column="apply_compensation_date" jdbcType="TIMESTAMP" property="applyCompensationDate" />
     <result column="out_car_number" jdbcType="VARCHAR" property="outCarNumber" />
     <result column="out_bank" jdbcType="VARCHAR" property="outBank" />
     <result column="out_account" jdbcType="VARCHAR" property="outAccount" />
@@ -32,63 +33,57 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
-    order_id, apply_compensation_date, curr_arrears, loan_banlance, advances_banlance, 
-    overdue_days, overdue_number, advances_number, risk_taking_ratio, compensation_amount, 
-    compensation_cause, out_car_number, out_bank, out_account, receive_bank, receive_car_number, 
-    receive_account, review_date, review_operator, partner_compensation_operator, partner_operation_date, 
+    id, order_id, curr_arrears, loan_banlance, advances_banlance, overdue_days, overdue_number, 
+    advances_number, risk_taking_ratio, compensation_amount, compensation_cause, apply_compensation_date, 
+    out_car_number, out_bank, out_account, receive_bank, receive_car_number, receive_account, 
+    review_date, review_operator, partner_compensation_operator, partner_operation_date, 
     partner_compensation_amount, partner_dc_review_operator, partner_dc_review_date, 
     status, remark, gmt_create, gmt_modify
   </sql>
-  <select id="selectByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from loan_apply_compensation
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </select>
-  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDOKey" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from loan_apply_compensation
-    where order_id = #{orderId,jdbcType=BIGINT}
-      and apply_compensation_date = #{applyCompensationDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDOKey">
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from loan_apply_compensation
-    where order_id = #{orderId,jdbcType=BIGINT}
-      and apply_compensation_date = #{applyCompensationDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO">
-    insert into loan_apply_compensation (order_id, apply_compensation_date, 
-      curr_arrears, loan_banlance, advances_banlance, 
-      overdue_days, overdue_number, advances_number, 
-      risk_taking_ratio, compensation_amount, compensation_cause, 
-      out_car_number, out_bank, out_account, 
-      receive_bank, receive_car_number, receive_account, 
-      review_date, review_operator, partner_compensation_operator, 
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into loan_apply_compensation (id, order_id, curr_arrears, 
+      loan_banlance, advances_banlance, overdue_days, 
+      overdue_number, advances_number, risk_taking_ratio, 
+      compensation_amount, compensation_cause, 
+      apply_compensation_date, out_car_number, 
+      out_bank, out_account, receive_bank, 
+      receive_car_number, receive_account, review_date, 
+      review_operator, partner_compensation_operator, 
       partner_operation_date, partner_compensation_amount, 
       partner_dc_review_operator, partner_dc_review_date, 
       status, remark, gmt_create, 
       gmt_modify)
-    values (#{orderId,jdbcType=BIGINT}, #{applyCompensationDate,jdbcType=TIMESTAMP}, 
-      #{currArrears,jdbcType=DECIMAL}, #{loanBanlance,jdbcType=DECIMAL}, #{advancesBanlance,jdbcType=DECIMAL}, 
-      #{overdueDays,jdbcType=INTEGER}, #{overdueNumber,jdbcType=INTEGER}, #{advancesNumber,jdbcType=INTEGER}, 
-      #{riskTakingRatio,jdbcType=DECIMAL}, #{compensationAmount,jdbcType=DECIMAL}, #{compensationCause,jdbcType=VARCHAR}, 
-      #{outCarNumber,jdbcType=VARCHAR}, #{outBank,jdbcType=VARCHAR}, #{outAccount,jdbcType=VARCHAR}, 
-      #{receiveBank,jdbcType=VARCHAR}, #{receiveCarNumber,jdbcType=VARCHAR}, #{receiveAccount,jdbcType=VARCHAR}, 
-      #{reviewDate,jdbcType=TIMESTAMP}, #{reviewOperator,jdbcType=VARCHAR}, #{partnerCompensationOperator,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{currArrears,jdbcType=DECIMAL}, 
+      #{loanBanlance,jdbcType=DECIMAL}, #{advancesBanlance,jdbcType=DECIMAL}, #{overdueDays,jdbcType=INTEGER}, 
+      #{overdueNumber,jdbcType=INTEGER}, #{advancesNumber,jdbcType=INTEGER}, #{riskTakingRatio,jdbcType=DECIMAL}, 
+      #{compensationAmount,jdbcType=DECIMAL}, #{compensationCause,jdbcType=VARCHAR}, 
+      #{applyCompensationDate,jdbcType=TIMESTAMP}, #{outCarNumber,jdbcType=VARCHAR}, 
+      #{outBank,jdbcType=VARCHAR}, #{outAccount,jdbcType=VARCHAR}, #{receiveBank,jdbcType=VARCHAR}, 
+      #{receiveCarNumber,jdbcType=VARCHAR}, #{receiveAccount,jdbcType=VARCHAR}, #{reviewDate,jdbcType=TIMESTAMP}, 
+      #{reviewOperator,jdbcType=VARCHAR}, #{partnerCompensationOperator,jdbcType=VARCHAR}, 
       #{partnerOperationDate,jdbcType=TIMESTAMP}, #{partnerCompensationAmount,jdbcType=DECIMAL}, 
       #{partnerDcReviewOperator,jdbcType=VARCHAR}, #{partnerDcReviewDate,jdbcType=TIMESTAMP}, 
       #{status,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
       #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into loan_apply_compensation
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
       <if test="orderId != null">
         order_id,
-      </if>
-      <if test="applyCompensationDate != null">
-        apply_compensation_date,
       </if>
       <if test="currArrears != null">
         curr_arrears,
@@ -116,6 +111,9 @@
       </if>
       <if test="compensationCause != null">
         compensation_cause,
+      </if>
+      <if test="applyCompensationDate != null">
+        apply_compensation_date,
       </if>
       <if test="outCarNumber != null">
         out_car_number,
@@ -170,11 +168,11 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
       <if test="orderId != null">
         #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="applyCompensationDate != null">
-        #{applyCompensationDate,jdbcType=TIMESTAMP},
       </if>
       <if test="currArrears != null">
         #{currArrears,jdbcType=DECIMAL},
@@ -202,6 +200,9 @@
       </if>
       <if test="compensationCause != null">
         #{compensationCause,jdbcType=VARCHAR},
+      </if>
+      <if test="applyCompensationDate != null">
+        #{applyCompensationDate,jdbcType=TIMESTAMP},
       </if>
       <if test="outCarNumber != null">
         #{outCarNumber,jdbcType=VARCHAR},
@@ -259,6 +260,9 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO">
     update loan_apply_compensation
     <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
       <if test="currArrears != null">
         curr_arrears = #{currArrears,jdbcType=DECIMAL},
       </if>
@@ -285,6 +289,9 @@
       </if>
       <if test="compensationCause != null">
         compensation_cause = #{compensationCause,jdbcType=VARCHAR},
+      </if>
+      <if test="applyCompensationDate != null">
+        apply_compensation_date = #{applyCompensationDate,jdbcType=TIMESTAMP},
       </if>
       <if test="outCarNumber != null">
         out_car_number = #{outCarNumber,jdbcType=VARCHAR},
@@ -338,12 +345,12 @@
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where order_id = #{orderId,jdbcType=BIGINT}
-      and apply_compensation_date = #{applyCompensationDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanApplyCompensationDO">
     update loan_apply_compensation
-    set curr_arrears = #{currArrears,jdbcType=DECIMAL},
+    set order_id = #{orderId,jdbcType=BIGINT},
+      curr_arrears = #{currArrears,jdbcType=DECIMAL},
       loan_banlance = #{loanBanlance,jdbcType=DECIMAL},
       advances_banlance = #{advancesBanlance,jdbcType=DECIMAL},
       overdue_days = #{overdueDays,jdbcType=INTEGER},
@@ -352,6 +359,7 @@
       risk_taking_ratio = #{riskTakingRatio,jdbcType=DECIMAL},
       compensation_amount = #{compensationAmount,jdbcType=DECIMAL},
       compensation_cause = #{compensationCause,jdbcType=VARCHAR},
+      apply_compensation_date = #{applyCompensationDate,jdbcType=TIMESTAMP},
       out_car_number = #{outCarNumber,jdbcType=VARCHAR},
       out_bank = #{outBank,jdbcType=VARCHAR},
       out_account = #{outAccount,jdbcType=VARCHAR},
@@ -369,7 +377,21 @@
       remark = #{remark,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where order_id = #{orderId,jdbcType=BIGINT}
-      and apply_compensation_date = #{applyCompensationDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="selectByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from loan_apply_compensation
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByOrderIdAndDate"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from loan_apply_compensation
+    where order_id = #{orderId,jdbcType=BIGINT}
+    AND apply_compensation_date=#{applyCompensationDate,jdbcType=TIMESTAMP}
+  </select>
 </mapper>

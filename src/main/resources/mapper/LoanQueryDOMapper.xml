@@ -1205,6 +1205,15 @@
         )
         and x.collection_level = 6
     </select>
+    <!--上门人员列表-->
+    <select id="selectVisitDoorEmployee" resultType="com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee">
+        select a.id  AS id,
+        a.`name`     AS name
+        from
+        employee a left join employee_rela_user_group b on a.id = b.employee_id
+        left join user_group c on b.user_group_id = c.id
+        where c.`name`="上门人员"
+    </select>
 
     <!-- 催保专员列表-->
     <select id="selectUniversalInsuranceUrgeEmployee"

@@ -4,6 +4,7 @@ import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.cache.TokenCache;
 import com.yunche.loan.config.util.CarLoanHttpUtil;
 import com.yunche.loan.config.util.OpenApiUtil;
+import com.yunche.loan.config.util.ZhongAnHttpUtil;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.vo.GpsDetailTotalVO;
 import com.yunche.loan.mapper.PartnerDOMapper;
@@ -28,7 +29,14 @@ public class CacheTest extends BaseTest {
     @Resource
     PartnerDOMapper partnerDOMapper;
 
-
+    @Test
+    public void doA1123(){
+        try {
+            ZhongAnHttpUtil.queryInfo("金佳琦","15757135913","330621199310023016","1","2","3333","1","3312333");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void getToken() throws Exception {
         OpenApiUtil.getToken();
@@ -68,7 +76,7 @@ public class CacheTest extends BaseTest {
             System.out.println(e);
         }
     }
-    @Test
+    //@Test
     public void doA1(){
         PartnerDO partnerDO = partnerDOMapper.queryLeaderNameById(Long.valueOf("1805041826416031160"));
         System.out.println(partnerDO.getGpsAccount());
