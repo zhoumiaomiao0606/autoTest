@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="collection_order_id" property="collectionOrderId" jdbcType="BIGINT"/>
         <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR"/>
         <result column="collection_workbench" property="collectionWorkbench" jdbcType="TINYINT"/>
         <result column="visit_collection_review" property="visitCollectionReview" jdbcType="TINYINT"/>
@@ -17,8 +18,9 @@
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, order_id, process_inst_id, collection_workbench, visit_collection_review, visit_collection, 
-    car_handle, car_out, settle_order, legal_review, legal_record, gmt_create, gmt_modify
+    id, order_id, collection_order_id, process_inst_id, collection_workbench, visit_collection_review,
+    visit_collection, car_handle, car_out, settle_order, legal_review, legal_record,
+    gmt_create, gmt_modify
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
@@ -27,22 +29,26 @@
         where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from loan_process_collection
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
-    insert into loan_process_collection (id, order_id, process_inst_id, 
-      collection_workbench, visit_collection_review, 
-      visit_collection, car_handle, car_out, 
-      settle_order, legal_review, legal_record, 
-      gmt_create, gmt_modify)
-    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, 
-      #{collectionWorkbench,jdbcType=TINYINT}, #{visitCollectionReview,jdbcType=TINYINT}, 
-      #{visitCollection,jdbcType=TINYINT}, #{carHandle,jdbcType=TINYINT}, #{carOut,jdbcType=TINYINT}, 
-      #{settleOrder,jdbcType=TINYINT}, #{legalReview,jdbcType=TINYINT}, #{legalRecord,jdbcType=TINYINT}, 
-      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
-  </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
+        delete from loan_process_collection
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO"
+            useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
+        insert into loan_process_collection (id, order_id, collection_order_id,
+        process_inst_id, collection_workbench, visit_collection_review,
+        visit_collection, car_handle, car_out,
+        settle_order, legal_review, legal_record,
+        gmt_create, gmt_modify)
+        values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{collectionOrderId,jdbcType=BIGINT},
+        #{processInstId,jdbcType=VARCHAR}, #{collectionWorkbench,jdbcType=TINYINT}, #{visitCollectionReview,jdbcType=TINYINT},
+        #{visitCollection,jdbcType=TINYINT}, #{carHandle,jdbcType=TINYINT}, #{carOut,jdbcType=TINYINT},
+        #{settleOrder,jdbcType=TINYINT}, #{legalReview,jdbcType=TINYINT}, #{legalRecord,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO"
+            useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
         insert into loan_process_collection
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -50,6 +56,9 @@
             </if>
             <if test="orderId != null">
                 order_id,
+            </if>
+            <if test="collectionOrderId != null">
+                collection_order_id,
             </if>
             <if test="processInstId != null">
                 process_inst_id,
@@ -92,6 +101,9 @@
             <if test="orderId != null">
                 #{orderId,jdbcType=BIGINT},
             </if>
+            <if test="collectionOrderId != null">
+                #{collectionOrderId,jdbcType=BIGINT},
+            </if>
             <if test="processInstId != null">
                 #{processInstId,jdbcType=VARCHAR},
             </if>
@@ -133,6 +145,9 @@
             <if test="orderId != null">
                 order_id = #{orderId,jdbcType=BIGINT},
             </if>
+            <if test="collectionOrderId != null">
+                collection_order_id = #{collectionOrderId,jdbcType=BIGINT},
+            </if>
             <if test="processInstId != null">
                 process_inst_id = #{processInstId,jdbcType=VARCHAR},
             </if>
@@ -172,6 +187,7 @@
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
     update loan_process_collection
     set order_id = #{orderId,jdbcType=BIGINT},
+      collection_order_id = #{collectionOrderId,jdbcType=BIGINT},
       process_inst_id = #{processInstId,jdbcType=VARCHAR},
       collection_workbench = #{collectionWorkbench,jdbcType=TINYINT},
       visit_collection_review = #{visitCollectionReview,jdbcType=TINYINT},

@@ -24,16 +24,9 @@ public interface LoanProcessInsteadPayService {
     /**
      * 开启流程
      *
-     * @param orderId
+     * @param orderId           主订单ID
+     * @param insteadPayOrderId 代偿单ID
      * @return
      */
-    Long startProcess(Long orderId);
-
-    /**
-     * 批量开启流程
-     *
-     * @param orderIdList
-     * @return
-     */
-    void batchStartProcess(List<Long> orderIdList);
+    Long startProcess(Long orderId, Long insteadPayOrderId);
 }

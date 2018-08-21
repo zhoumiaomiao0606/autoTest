@@ -12,7 +12,6 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -25,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
@@ -69,9 +69,6 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
 
     @Autowired
     private TaskService taskService;
-
-    @Autowired
-    private RuntimeService runtimeService;
 
     @Autowired
     private JpushService jpushService;
@@ -156,46 +153,31 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long startProcess(Long orderId) {
+    public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
+                             @NotNull(message = "insteadPayOrderId不能为空") Long insteadPayOrderId) {
 
         ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_COLLECTION_KEY);
 
         // 创建流程记录
-        Long processId = create(orderId, processInstance.getProcessInstanceId());
+        Long processId = create(orderId, insteadPayOrderId, processInstance.getProcessInstanceId());
 
         return processId;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void batchStartProcess(List<Long> orderIdList) {
-
-        if (CollectionUtils.isEmpty(orderIdList)) {
-            return;
-        }
-
-        Preconditions.checkArgument(orderIdList.size() <= 2000, "最大支持2000条");
-
-        orderIdList.stream()
-                .filter(Objects::nonNull)
-                .forEach(orderId -> {
-
-                    startProcess(orderId);
-                });
     }
 
     /**
      * 创建[催收工作台]流程记录
      *
      * @param orderId
+     * @param insteadPayOrderId
      * @param processInstId
      * @return
      */
-    private Long create(Long orderId, String processInstId) {
+    private Long create(Long orderId, Long insteadPayOrderId, String processInstId) {
 
         LoanProcessInsteadPayDO loanProcessInsteadPayDO = new LoanProcessInsteadPayDO();
 
         loanProcessInsteadPayDO.setOrderId(orderId);
+        loanProcessInsteadPayDO.setInsteadPayOrderId(insteadPayOrderId);
         loanProcessInsteadPayDO.setProcessInstId(processInstId);
 
         loanProcessInsteadPayDO.setGmtCreate(new Date());

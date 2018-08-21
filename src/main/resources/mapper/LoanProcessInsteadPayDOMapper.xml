@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="instead_pay_order_id" property="insteadPayOrderId" jdbcType="BIGINT"/>
         <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR"/>
         <result column="apply_instead_pay" property="applyInsteadPay" jdbcType="TINYINT"/>
         <result column="finance_instead_pay_review" property="financeInsteadPayReview" jdbcType="TINYINT"/>
@@ -13,9 +14,9 @@
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, order_id, process_inst_id, apply_instead_pay, finance_instead_pay_review, partner_instead_pay, 
-    partner_instead_pay_review, gmt_create, gmt_modify
-  </sql>
+        id, order_id, instead_pay_order_id, process_inst_id, apply_instead_pay, finance_instead_pay_review,
+        partner_instead_pay, partner_instead_pay_review, gmt_create, gmt_modify
+    </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
@@ -23,21 +24,21 @@
         where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from loan_process_instead_pay
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
+        delete from loan_process_instead_pay
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO"
             useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
-    insert into loan_process_instead_pay (id, order_id, process_inst_id, 
-      apply_instead_pay, finance_instead_pay_review, 
-      partner_instead_pay, partner_instead_pay_review, 
-      gmt_create, gmt_modify)
-    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, 
-      #{applyInsteadPay,jdbcType=TINYINT}, #{financeInsteadPayReview,jdbcType=TINYINT}, 
-      #{partnerInsteadPay,jdbcType=TINYINT}, #{partnerInsteadPayReview,jdbcType=TINYINT}, 
-      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
-  </insert>
+        insert into loan_process_instead_pay (id, order_id, instead_pay_order_id,
+        process_inst_id, apply_instead_pay, finance_instead_pay_review,
+        partner_instead_pay, partner_instead_pay_review,
+        gmt_create, gmt_modify)
+        values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{insteadPayOrderId,jdbcType=BIGINT},
+        #{processInstId,jdbcType=VARCHAR}, #{applyInsteadPay,jdbcType=TINYINT}, #{financeInsteadPayReview,jdbcType=TINYINT},
+        #{partnerInsteadPay,jdbcType=TINYINT}, #{partnerInsteadPayReview,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
+    </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO"
             useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
@@ -48,6 +49,9 @@
             </if>
             <if test="orderId != null">
                 order_id,
+            </if>
+            <if test="insteadPayOrderId != null">
+                instead_pay_order_id,
             </if>
             <if test="processInstId != null">
                 process_inst_id,
@@ -78,6 +82,9 @@
             <if test="orderId != null">
                 #{orderId,jdbcType=BIGINT},
             </if>
+            <if test="insteadPayOrderId != null">
+                #{insteadPayOrderId,jdbcType=BIGINT},
+            </if>
             <if test="processInstId != null">
                 #{processInstId,jdbcType=VARCHAR},
             </if>
@@ -107,6 +114,9 @@
             <if test="orderId != null">
                 order_id = #{orderId,jdbcType=BIGINT},
             </if>
+            <if test="insteadPayOrderId != null">
+                instead_pay_order_id = #{insteadPayOrderId,jdbcType=BIGINT},
+            </if>
             <if test="processInstId != null">
                 process_inst_id = #{processInstId,jdbcType=VARCHAR},
             </if>
@@ -134,6 +144,7 @@
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO">
     update loan_process_instead_pay
     set order_id = #{orderId,jdbcType=BIGINT},
+      instead_pay_order_id = #{insteadPayOrderId,jdbcType=BIGINT},
       process_inst_id = #{processInstId,jdbcType=VARCHAR},
       apply_instead_pay = #{applyInsteadPay,jdbcType=TINYINT},
       finance_instead_pay_review = #{financeInsteadPayReview,jdbcType=TINYINT},

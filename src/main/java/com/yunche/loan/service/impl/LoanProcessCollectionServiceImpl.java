@@ -21,8 +21,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
@@ -85,6 +87,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultBean<Void> approval(ApprovalParam approval) {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
@@ -152,47 +155,33 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     }
 
     @Override
-    public Long startProcess(Long orderId) {
+    @Transactional(rollbackFor = Exception.class)
+    public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
+                             @NotNull(message = "collectionOrderId不能为空") Long collectionOrderId) {
 
         // 开启activiti流程
         ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_COLLECTION_KEY);
 
         // 创建流程记录
-        Long processId = create(orderId, processInstance.getProcessInstanceId());
+        Long processId = create(orderId, collectionOrderId, processInstance.getProcessInstanceId());
 
         return processId;
     }
 
-    @Override
-    public void batchStartProcess(List<Long> orderIdList) {
-
-        if (CollectionUtils.isEmpty(orderIdList)) {
-            return;
-        }
-
-        Preconditions.checkArgument(orderIdList.size() <= 2000, "最大支持2000条");
-
-        orderIdList.stream()
-                .filter(Objects::nonNull)
-                .forEach(orderId -> {
-
-                    startProcess(orderId);
-                });
-    }
-
-
     /**
      * 创建[催收工作台]流程记录
      *
-     * @param orderId
-     * @param processInstId
+     * @param orderId           主订单ID
+     * @param collectionOrderId 催收单ID
+     * @param processInstId     流程实例ID
      * @return
      */
-    private Long create(Long orderId, String processInstId) {
+    private Long create(Long orderId, Long collectionOrderId, String processInstId) {
 
         LoanProcessCollectionDO loanProcessCollectionDO = new LoanProcessCollectionDO();
 
         loanProcessCollectionDO.setOrderId(orderId);
+        loanProcessCollectionDO.setCollectionOrderId(collectionOrderId);
         loanProcessCollectionDO.setProcessInstId(processInstId);
 
         loanProcessCollectionDO.setGmtCreate(new Date());
