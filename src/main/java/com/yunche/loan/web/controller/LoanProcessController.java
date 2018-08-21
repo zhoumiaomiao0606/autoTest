@@ -48,25 +48,6 @@ public class LoanProcessController {
         return loanProcessService.approval(approval);
     }
 
-
-
-    /**
-     * 通用审核接口      action： 0-打回 / 1-提交 / 2-弃单 / 3-资料增补 / 4-新增任务
-     * <p>
-     *
-     * @return
-     */
-    @Limiter(route = "/api/v1/loanprocess/creaditapproval")
-    @PostMapping(value = "/creaditapproval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> creaditApproval(@RequestBody ApprovalParam approval) {
-        approval.setCheckPermission(true);
-        approval.setNeedLog(true);
-        approval.setNeedPush(true);
-
-        return loanProcessService.creaditApproval(approval);
-    }
-
-
     /**
      * 当前业务单的当前任务节点
      *

@@ -2,7 +2,6 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateUtil;
@@ -16,6 +15,7 @@ import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.domain.vo.FinancialSchemeVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCompensationVO;
 import com.yunche.loan.domain.vo.UniversalInfoVO;
 import com.yunche.loan.mapper.BankUrgeRecordDOMapper;
 import com.yunche.loan.mapper.LoanApplyCompensationDOMapper;
@@ -23,6 +23,7 @@ import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanApplicationCompensationService;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,10 +163,12 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                                 int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(e);
                                 Preconditions.checkArgument(count>0,"更新记录出错");
                             }
-                            //客户逾期
-                            if(IDict.K_DCYY.K_DCYY_A.equals(e.getCompensationCause())){
-                                dealBankUrgeRecord(e.getOrderId());
-                            }
+
+                            //
+//                            //客户逾期
+//                            if(IDict.K_DCYY.K_DCYY_A.equals(e.getCompensationCause())){
+//                                dealBankUrgeRecord(e.getOrderId());
+//                            }
                         });
             }
 
@@ -218,11 +221,13 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
         doKey.setOrderId(applicationCompensationQuery.getOrderId());
         doKey.setApplyCompensationDate(applicationCompensationQuery.getApplyCompensationDate());
         LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectByPrimaryKey(doKey);
-
+        UniversalCompensationVO compensationVO = new UniversalCompensationVO();
+        BeanUtils.copyProperties(loanApplyCompensationDO,compensationVO);
+        compensationVO.setOrderId(String.valueOf(loanApplyCompensationDO.getOrderId()));
         //赋值
         result.setInfo(infoVO);
         result.setFinancial(financialSchemeVO);
-        result.setApplyCompensation(loanApplyCompensationDO);
+        result.setApplyCompensation(compensationVO);
 
         return ResultBean.ofSuccess(result);
     }

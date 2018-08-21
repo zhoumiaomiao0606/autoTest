@@ -38,7 +38,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
@@ -134,6 +133,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private ActivitiDeploymentMapper activitiDeploymentMapper;
+
+    @Autowired
+    private ZhonganInfoDOMapper zhonganInfoDOMapper;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -279,7 +281,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
-
 
     /**
      * 是否为：[贷款信息登记]任务
@@ -1332,6 +1333,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
 
+            // 众安征信接口校验
+            List<ZhonganInfoDO> list = zhonganInfoDOMapper.selectByCreaditOrderId(loanOrderDO.getId());
+            for (ZhonganInfoDO zhonganInfoDO : list) {
+                if (!"成功".equals(zhonganInfoDO.getResultMessage())) {
+                    throw new BizException("客户:" + zhonganInfoDO.getCustomerName() + zhonganInfoDO.getResultMessage() + ",无法提交征信");
+                }
+            }
+
+            // 客户信息校验
             LoanCustomerDO loanCustomerDO = getLoanCustomer(loanOrderDO.getLoanCustomerId());
             String identityValidity = loanCustomerDO.getIdentityValidity();
             Preconditions.checkArgument(StringUtils.isNotBlank(identityValidity), "身份证有效期不能为空");
