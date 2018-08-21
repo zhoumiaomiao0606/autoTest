@@ -187,10 +187,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 业务单
-        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
+        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
 
         // 节点实时状态
-        LoanProcessDO loanProcessDO = getLoanProcess(approval.getOrderId());
+        LoanProcessDO loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(approval.getOrderId());
 
         // 贷款基本信息
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
@@ -348,30 +348,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         return ResultBean.ofSuccess(null, "[贷款信息登记]任务执行成功");
     }
-
-    /**
-     * 执行  -->   自动提交  （重复）新产生的[贷款信息登记]
-     *
-     * @param loanInfoRecordTaskList
-     */
-    private void doAutoCompleteLoanInfoRecordTask(List<Task> loanInfoRecordTaskList) {
-
-        if (CollectionUtils.isEmpty(loanInfoRecordTaskList)) {
-            return;
-        }
-
-        Map<String, Object> passVariables = Maps.newHashMap();
-        passVariables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
-
-        // 剩下的（新产生的）  ==>  全直接在activiti中完成
-        loanInfoRecordTaskList.stream()
-                .forEach(task -> {
-
-                    // 在activiti中完成
-                    completeTask(task.getId(), passVariables);
-                });
-    }
-
 
     /**
      * 反审
@@ -1266,7 +1242,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkArgument(notRemitReview, "订单已放款，无法弃单！");
 
         // 业务单
-        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
+        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -1954,33 +1930,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 获取业务单
-     *
-     * @param orderId
-     * @return
-     */
-    public LoanOrderDO getLoanOrder(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
-        Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
-
-        return loanOrderDO;
-    }
-
-    /**
-     * 获取 订单流程节点 实时状态记录
-     *
-     * @param orderId
-     * @return
-     */
-    private LoanProcessDO getLoanProcess(Long orderId) {
-        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
-
-        return loanProcessDO;
-    }
-
-    /**
      * 获取 LoanBaseInfoDO
      *
      * @param loanBaseInfoId
@@ -2632,8 +2581,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "任务Key不能为空");
 
-        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(orderId);
-        LoanProcessDO_ loanProcessDO_ = loanProcessApprovalCommonService.getLoanProcess(orderId, processId, taskDefinitionKey);
+        LoanProcessDO_ loanProcessDO_ = loanProcessApprovalCommonService.getLoanProcess_(orderId, processId, taskDefinitionKey);
+
+        LoanProcessDO loanProcessDO = null;
+        if (loanProcessDO_ instanceof LoanProcessDO) {
+            loanProcessDO = (LoanProcessDO) loanProcessDO_;
+        } else {
+            loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(orderId);
+        }
 
         TaskStateVO taskStateVO = new TaskStateVO();
         taskStateVO.setTaskDefinitionKey(taskDefinitionKey);
@@ -2642,16 +2597,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Byte taskStatus = null;
 
         // 非进行中
-        if (false) {
-//        if (!ORDER_STATUS_DOING.equals(loanOrderDO.getStatus())) {
+        if (!ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
 
-            if (ORDER_STATUS_END.equals(loanOrderDO.getStatus())) {
+            if (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus())) {
                 taskStatus = 11;
                 taskStateVO.setTaskStatus(taskStatus);
                 taskStateVO.setTaskStatusText("已结单");
             }
 
-            if (ORDER_STATUS_CANCEL.equals(loanOrderDO.getStatus())) {
+            if (ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus())) {
                 taskStatus = 12;
                 taskStateVO.setTaskStatus(taskStatus);
                 taskStateVO.setTaskStatusText("已弃单");

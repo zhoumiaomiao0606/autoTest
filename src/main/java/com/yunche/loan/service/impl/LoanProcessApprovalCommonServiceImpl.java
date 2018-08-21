@@ -230,7 +230,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                 String msg = "详细信息请联系管理员";
 
                 String taskName = LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey());
-                //审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
+                // 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补  / 4-新增任务  / 5-反审
                 String result = "[异常]";
                 switch (approval.getAction().intValue()) {
                     case 0:
@@ -244,6 +244,12 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                         break;
                     case 3:
                         result = "[发起资料增补]";
+                        break;
+                    case 4:
+                        result = "[新增任务]";
+                        break;
+                    case 5:
+                        result = "[发起反审]";
                         break;
                     default:
                         result = "[异常]";
@@ -325,7 +331,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
     }
 
     @Override
-    public LoanProcessDO_ getLoanProcess(Long orderId, Long processId, String taskDefinitionKey) {
+    public LoanProcessDO_ getLoanProcess_(Long orderId, Long processId, String taskDefinitionKey) {
         Preconditions.checkNotNull(orderId, "orderId不能为空");
         Preconditions.checkNotNull(taskDefinitionKey, "taskDefinitionKey不能为空");
 
@@ -368,6 +374,20 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         Preconditions.checkNotNull(loanProcessDO_, "流程记录丢失");
 
         return loanProcessDO_;
+    }
+
+    /**
+     * 获取 订单流程节点 实时状态记录
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public LoanProcessDO getLoanProcess(Long orderId) {
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+
+        return loanProcessDO;
     }
 
     /**

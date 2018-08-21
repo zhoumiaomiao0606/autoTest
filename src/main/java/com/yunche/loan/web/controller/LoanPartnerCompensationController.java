@@ -1,6 +1,5 @@
 package com.yunche.loan.web.controller;
 
-
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
@@ -23,25 +22,27 @@ public class LoanPartnerCompensationController {
 
     /**
      * 合伙人代偿保存
+     *
      * @param universalCompensationParam
      * @return
      */
-    @PostMapping(value = "/save",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean save(@RequestBody UniversalCompensationParam universalCompensationParam){
+    @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean save(@RequestBody UniversalCompensationParam universalCompensationParam) {
 
         loanPartnerCompensationService.save(universalCompensationParam);
-        return ResultBean.ofSuccess(null,"保存成功");
+        return ResultBean.ofSuccess(null, "保存成功");
     }
 
 
     /**
      * 详情页
+     *
      * @param query
      * @return
      */
-    @PostMapping(value = "/detail",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean detail(@RequestBody  UniversalCompensationQuery query){
+    @PostMapping(value = "/detail", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean detail(@RequestBody UniversalCompensationQuery query) {
 
-        return loanPartnerCompensationService.detail(query);
+        return ResultBean.ofSuccess(loanPartnerCompensationService.detail(query));
     }
 }

@@ -89,5 +89,13 @@ public interface LoanProcessApprovalCommonService {
      * @param taskDefinitionKey
      * @return
      */
-    LoanProcessDO_ getLoanProcess(Long orderId, Long processId, String taskDefinitionKey);
+    LoanProcessDO_ getLoanProcess_(Long orderId, Long processId, String taskDefinitionKey);
+
+    /**
+     * 获取流程记录 -消费贷
+     *
+     * @param orderId
+     * @return
+     */
+    LoanProcessDO getLoanProcess(Long orderId);
 }

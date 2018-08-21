@@ -42,12 +42,15 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
     @Override
     @Transactional
     public ResultBean<Long> create(LoanOrderDO loanOrderDO) {
+
         Long orderId = createOrderNum();
         loanOrderDO.setId(orderId);
         loanOrderDO.setGmtCreate(new Date());
         loanOrderDO.setGmtModify(new Date());
+
         int count = loanOrderDOMapper.insertSelective(loanOrderDO);
         Preconditions.checkArgument(count > 0, "创建客户信息失败");
+
         return ResultBean.ofSuccess(orderId);
     }
 
@@ -63,7 +66,7 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
         loanOrderDO.setProcessInstId(processInstance.getProcessInstanceId());
         loanOrderDO.setLoanCustomerId(customerId);
         loanOrderDO.setLoanBaseInfoId(baseInfoId);
-        loanOrderDO.setStatus(VALID_STATUS);
+
         ResultBean<Long> createResultBean = create(loanOrderDO);
         Preconditions.checkArgument(createResultBean.getSuccess(), createResultBean.getMsg());
 

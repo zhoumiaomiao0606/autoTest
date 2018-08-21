@@ -45,6 +45,9 @@ public class LoanOrderDO {
 
     private Long bankCardRecordId;
 
+    /**
+     * 暂无意义
+     */
     private Byte status;
 
     private Date gmtCreate;
