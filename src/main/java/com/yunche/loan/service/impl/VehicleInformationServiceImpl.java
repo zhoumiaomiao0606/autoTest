@@ -124,9 +124,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
 
         Long customerId = loanOrderDO.getLoanCustomerId();
 
-        if (customerId != null) {
-            if (param.getFiles() != null) {
-                if (!param.getFiles().isEmpty()) {
+        if (customerId != null && param.getFiles() != null && !param.getFiles().isEmpty()) {
                     for (UniversalFileParam universalFileParam : param.getFiles()) {
                         List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte(universalFileParam.getType()), null);
                         for (LoanFileDO loanFileDO : uploadList) {
@@ -142,8 +140,6 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
                         loanFileDO.setStatus(new Byte("0"));
                         loanFileDOMapper.insertSelective(loanFileDO);
                     }
-                }
-            }
         }
     }
 }

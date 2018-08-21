@@ -2,14 +2,10 @@ package com.yunche.loan.service.impl;
 
 import cn.jiguang.common.utils.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.VehicleHandleDO;
-import com.yunche.loan.domain.entity.VehicleOutboundDO;
-import com.yunche.loan.domain.entity.VehicleOutboundDOKey;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.VehicleOutboundUpdateParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.VehicleHandleDOMapper;
-import com.yunche.loan.mapper.VehicleOutboundDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.VehicleOutboundService;
 import org.springframework.beans.BeanUtils;
@@ -18,7 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 /**
  * @author: ZhongMingxiao
@@ -37,6 +37,14 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
 
     @Autowired
     private VehicleOutboundDOMapper vehicleOutboundDOMapper;
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+    @Autowired
+    private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Autowired
+    private VehicleHandleDOMapper vehicleHandleDOMapper;
+
     @Override
     public VehicleOutboundVO detail(Long orderId,Long bank_repay_imp_record_id)
     {
@@ -45,16 +53,40 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         //客户主要信息
         BaseCustomerInfoVO baseCustomerInfoVO = loanQueryDOMapper.selectBaseCustomerInfoInfo(orderId);
         //车辆出库登记
+        VehicleOutboundInfo vehicleOutboundInfo =new VehicleOutboundInfo();
         VehicleOutboundDOKey vehicleOutboundDOKey =new VehicleOutboundDOKey();
         vehicleOutboundDOKey.setOrderid(orderId);
         vehicleOutboundDOKey.setBankRepayImpRecordId(bank_repay_imp_record_id);
         VehicleOutboundDO vehicleOutboundDO = vehicleOutboundDOMapper.selectByPrimaryKey(vehicleOutboundDOKey);
+        //根据区id查询省市id
+       if(vehicleOutboundDO.getAddress()!=null && vehicleOutboundDO.getAddress().trim() != "")
+       {
+           Long countyId=Long.valueOf(vehicleOutboundDO.getAddress());
+           BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
+           vehicleOutboundInfo.setCountyId(countyId);
+           if(cityAreaDO.getParentAreaId()!=null)
+           {
+               vehicleOutboundInfo.setCityId(cityAreaDO.getParentAreaId());
+               BaseAreaDO provenceAreaDO = baseAreaDOMapper.selectByPrimaryKey(cityAreaDO.getParentAreaId(), VALID_STATUS);
+               vehicleOutboundInfo.setProvenceId(provenceAreaDO.getParentAreaId());
+           }
 
-        VehicleOutboundInfo vehicleOutboundInfo =new VehicleOutboundInfo();
+
+       }
+
         BeanUtils.copyProperties(vehicleOutboundDO, vehicleOutboundInfo);
 
-        //贷款金额  代偿金额  清收成本
+        //贷款金额
+        BigDecimal loan_amount = loanFinancialPlanDOMapper.selectLoanAmount(orderId);
+        vehicleOutboundInfo.setLoan_amount(loan_amount);
+        // 代偿金额 ---需要等流程走通
 
+        // 清收成本
+        VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(orderId, bank_repay_imp_record_id));
+        if(vehicleHandleDO !=null)
+        {
+            vehicleOutboundInfo.setFinal_costs(vehicleHandleDO.getFinalCosts());
+        }
         //车辆信息
         VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
         //贷款业务详细信息
@@ -76,6 +108,7 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
     public ResultBean<Void> update(VehicleOutboundDO param)
     {
         Preconditions.checkNotNull(param.getOrderid(), "订单号不能为空");
+        Preconditions.checkNotNull(param.getBankRepayImpRecordId(), "版本号不能为空");
 
         VehicleOutboundDOKey vehicleOutboundDOKey =new VehicleOutboundDOKey();
         vehicleOutboundDOKey.setOrderid(param.getOrderid());

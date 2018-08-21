@@ -1,10 +1,13 @@
 package com.yunche.loan.domain.vo;
 
+import lombok.Data;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-08-14 18:37
  * @description:贷后车辆信息
  **/
+@Data
 public class VehicleInfoVO
 {
     //车型  例如 奥迪

@@ -3,7 +3,10 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.CollectionNewInfoDO;
 import com.yunche.loan.domain.entity.CollectionNewInfoDOKey;
 
-public interface CollectionNewInfoDOMapper {
+import java.util.List;
+
+public interface CollectionNewInfoDOMapper
+{
     int deleteByPrimaryKey(CollectionNewInfoDOKey key);
 
     int insert(CollectionNewInfoDO record);
@@ -15,4 +18,7 @@ public interface CollectionNewInfoDOMapper {
     int updateByPrimaryKeySelective(CollectionNewInfoDO record);
 
     int updateByPrimaryKey(CollectionNewInfoDO record);
+
+    //根据orderId查询出所有版本下的申请拖车记录
+    List<CollectionNewInfoDO> selectByOrderId(Long orderId);
 }

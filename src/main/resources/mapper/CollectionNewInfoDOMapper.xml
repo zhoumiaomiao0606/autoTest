@@ -161,4 +161,12 @@
     where id = #{id,jdbcType=BIGINT}
       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
+
+  <!--根据orderId查询拖车概况-->
+  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="Long" >
+    select
+    <include refid="Base_Column_List" />
+    from collection_new_info
+    where id = #{orderId,jdbcType=BIGINT}
+  </select>
 </mapper>

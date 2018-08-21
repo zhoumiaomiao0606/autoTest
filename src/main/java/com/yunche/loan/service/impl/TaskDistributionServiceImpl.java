@@ -48,7 +48,8 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
      * @param taskKey
      */
     @Override
-    public void get(Long taskId, String taskKey) {
+    public void get(Long taskId, String taskKey)
+    {
         if (taskId == null || StringUtils.isBlank(taskKey)) {
             throw new BizException("必须传入任务id和任务key");
         }

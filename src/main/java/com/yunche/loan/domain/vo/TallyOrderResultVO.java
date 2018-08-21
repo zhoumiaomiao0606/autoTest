@@ -23,15 +23,15 @@ public class TallyOrderResultVO
 
     private MortgageInfoVO mortgageInfoVO;
 
-    private List<LoanApplyCompensationDO> loanApplyCompensationDOS;
-
     private List<InsuranceRelevanceDO> insuranceRelevanceDOS;
 
     private List<InsuranceRiskDO> insuranceRiskDOS;
 
-    //
+    //逾期代偿情况
+    private List<LoanApplyCompensationDO> loanApplyCompensationDOS;
 
-    //
+    //拖车情况
+    private List<TrailVehicleDetailVO>  trailVehicleDetailVOs;
 
     private List<UniversalCustomerVO> customers;
 }

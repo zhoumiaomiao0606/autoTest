@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: ZhongMingxiao
@@ -19,11 +20,11 @@ public class VehicleHandleUpdateParam
 
     private Long handdlePerson;
 
-    private Date trailVehicleDate;
+    private String trailVehicleDate;
 
     private String trailVehicleAddress;
 
-    private Date vehicleInboundDate;
+    private String vehicleInboundDate;
 
     private String vehicleInboundAddress;
 
@@ -66,4 +67,7 @@ public class VehicleHandleUpdateParam
     private String relationMaterialUrl1;
 
     private String relationMaterialUrl2;
+
+    //附件路径
+    private List<UniversalFileParam> files;
 }

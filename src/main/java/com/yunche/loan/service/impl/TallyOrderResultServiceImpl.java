@@ -75,11 +75,21 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
         List<LoanApplyCompensationDO> loanApplyCompensationDOS = loanApplyCompensationDOMapper.selectByOrderId(orderId);
 
 
-        //拖车概况---相关费用报销单里取
-        TrailVehicleDetailVO trailVehicleDetailVO =new TrailVehicleDetailVO();
+        //拖车概况---相关费用报销单里取--拖车时间从流程日志表里取
+        //根据orderId查询出所有版本下的申请拖车记录
+        List<CollectionNewInfoDO> collectionNewInfoDOs = collectionNewInfoDOMapper.selectByOrderId(orderId);
+        //根据orderId和版本号查询所有的拖车记录
+        collectionNewInfoDOs.stream().forEach(collectionNewInfoDO ->
+        {
+            List<VisitDoorDO> visitDoorDOs = visitDoorDOMapper.selectByOrderIdAndBankRepayImpRecordId(collectionNewInfoDO.getId(),collectionNewInfoDO.getBankRepayImpRecordId());
+            visitDoorDOs.stream().forEach(visitDoorDO ->
+            {
+                TrailVehicleDetailVO trailVehicleDetailVO =new TrailVehicleDetailVO();
+            });
+        }
+        );
 
-        CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(orderId);
-        List<VisitDoorDO> visitDoorDO = visitDoorDOMapper.selectByOrderId(orderId);
+
 
 
         //贷款业务详细信息
