@@ -42,5 +42,9 @@ public class LegworkReimbursementDO {
 
     private Date busiTime;
 
+    private Long gmtApplyUser;
+
+    private Long gmtReviewUser;
+
 
 }

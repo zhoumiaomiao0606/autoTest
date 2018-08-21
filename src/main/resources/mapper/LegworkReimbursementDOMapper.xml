@@ -20,11 +20,14 @@
     <result column="collection_account" property="collectionAccount" jdbcType="VARCHAR" />
     <result column="collection_account_number" property="collectionAccountNumber" jdbcType="VARCHAR" />
     <result column="busi_time" property="busiTime" jdbcType="TIMESTAMP" />
+    <result column="gmt_apply_user" property="gmtApplyUser" jdbcType="BIGINT" />
+    <result column="gmt_review_user" property="gmtReviewUser" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, trans_fee, hotel_fee, eat_fee, busi_fee, other_fee, gmt_user, gmt_user_name, 
     gmt_create_time, gmt_update_time, status, reimbursement_amount, bank, remit_account,
-    collection_bank, collection_account, collection_account_number, busi_time
+    collection_bank, collection_account, collection_account_number, busi_time, gmt_apply_user,
+    gmt_review_user
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -103,6 +106,12 @@
       <if test="busiTime != null" >
         busi_time,
       </if>
+      <if test="gmtApplyUser != null" >
+        gmt_apply_user,
+      </if>
+      <if test="gmtReviewUser != null" >
+        gmt_review_user,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -159,6 +168,12 @@
       <if test="busiTime != null" >
         #{busiTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="gmtApplyUser != null" >
+        #{gmtApplyUser,jdbcType=BIGINT},
+      </if>
+      <if test="gmtReviewUser != null" >
+        #{gmtReviewUser,jdbcType=BIGINT},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LegworkReimbursementDO" >
@@ -214,6 +229,12 @@
       </if>
       <if test="busiTime != null" >
         busi_time = #{busiTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtApplyUser != null" >
+        gmt_apply_user = #{gmtApplyUser,jdbcType=BIGINT},
+      </if>
+      <if test="gmtReviewUser != null" >
+        gmt_review_user = #{gmtReviewUser,jdbcType=BIGINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
