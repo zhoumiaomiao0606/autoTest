@@ -10,6 +10,7 @@ public class SubimitVisitDoorVO {
     private String customerIdCard;
     private String carType;
     private String vehicleApplyLicensePlateArea;
+    private String vehicleApplyLicensePlateAreaName;
     private String financialBank;
     private String partnerName;
     private String salesmanName;

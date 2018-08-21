@@ -1810,6 +1810,7 @@
             customer.id_card  							     as customerIdCard,
             car.car_type 									 as carType,
             vehicle.apply_license_plate_area                 as vehicleApplyLicensePlateArea,
+            area.area_name                                   as vehicleApplyLicensePlateAreaName,
             financial.bank 									 as financialBank,
             partner.name   									 as partnerName,
             employee.name  									 as salesmanName
@@ -1824,6 +1825,7 @@
         left join loan_base_info base on base.id = orders.loan_base_info_id
         left join partner partner on partner.id = base.partner_id
         left join employee employee on employee.id = base.salesman_id
+        left join base_area area on area.area_id = vehicle.apply_license_plate_area
       where
       case when 3 = #{maxGroupLevel} then true
       else door.receiver_id = #{loginUserId} end
