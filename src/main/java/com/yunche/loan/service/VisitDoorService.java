@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.domain.entity.LitigationStateDO;
 import com.yunche.loan.domain.entity.VisitDoorDO;
 import com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee;
+import com.yunche.loan.domain.vo.VisitDoorUpdateVO;
 import com.yunche.loan.domain.vo.VisitDoorVO;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface VisitDoorService {
 
     VisitDoorVO visitDoorDetatil(Long orderId,Long id,Long collectionNewInfoDOKey);
 
-    void update(VisitDoorDO visitDoorDO);
+    VisitDoorUpdateVO update(VisitDoorDO visitDoorDO);
 
     void visitDoorRevoke(LitigationStateDO litigationStateDO);
 

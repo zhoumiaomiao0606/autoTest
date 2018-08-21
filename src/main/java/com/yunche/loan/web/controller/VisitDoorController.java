@@ -46,8 +46,8 @@ public class VisitDoorController {
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean update(@RequestBody @Validated VisitDoorDO visitDoorDO) {
-        visitDoorService.update(visitDoorDO);
-        return ResultBean.ofSuccess(null,"录入成功");
+
+        return ResultBean.ofSuccess(visitDoorService.update(visitDoorDO),"录入成功");
     }
     /*
      *撤销诉讼
