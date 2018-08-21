@@ -187,6 +187,9 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
     @Transactional(rollbackFor = Exception.class)
     public void manualInsert(UniversalCompensationParam param) {
         Preconditions.checkNotNull(param,"参数有误");
+        Preconditions.checkNotNull(param.getApplyCompensationDate(),"申请日期不能为空");
+        Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
+
 
         if(param.getId() !=null){
             LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderId(param.getOrderId(), param.getId());
@@ -197,11 +200,17 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
             return;
         }else {
-            int count = loanApplyCompensationDOMapper.insertSelective(param);
-            Preconditions.checkArgument(count>0,"参数错误，保存失败");
+            LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByOrderIdAndDate(param.getOrderId(),param.getApplyCompensationDate());
+            if(tmpDO==null){
+                int count = loanApplyCompensationDOMapper.insertSelective(param);
+                Preconditions.checkArgument(count>0,"参数错误，保存失败");
+                //流程
+                loanProcessInsteadPayService.startProcess(param.getOrderId(),param.getId());
+            }else{
+                loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
+            }
         }
-        //流程
-        loanProcessInsteadPayService.startProcess(param.getOrderId(),param.getId());
+
     }
 
     /**
