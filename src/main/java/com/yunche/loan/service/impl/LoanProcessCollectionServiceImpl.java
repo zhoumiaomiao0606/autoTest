@@ -11,11 +11,9 @@ import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.JpushService;
-import com.yunche.loan.service.LoanProcessCollectionService;
-import com.yunche.loan.service.PermissionService;
-import com.yunche.loan.service.TaskDistributionService;
+import com.yunche.loan.service.*;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,14 +21,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_COLLECTION_KEY;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
@@ -73,6 +74,9 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     private TaskService taskService;
 
     @Autowired
+    private ActivitiService activitiService;
+
+    @Autowired
     private JpushService jpushService;
 
     @Autowired
@@ -83,6 +87,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultBean<Void> approval(ApprovalParam approval) {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
@@ -149,6 +154,44 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
+                             @NotNull(message = "collectionOrderId不能为空") Long collectionOrderId) {
+
+        // 开启activiti流程
+        ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_COLLECTION_KEY);
+
+        // 创建流程记录
+        Long processId = create(orderId, collectionOrderId, processInstance.getProcessInstanceId());
+
+        return processId;
+    }
+
+    /**
+     * 创建[催收工作台]流程记录
+     *
+     * @param orderId           主订单ID
+     * @param collectionOrderId 催收单ID
+     * @param processInstId     流程实例ID
+     * @return
+     */
+    private Long create(Long orderId, Long collectionOrderId, String processInstId) {
+
+        LoanProcessCollectionDO loanProcessCollectionDO = new LoanProcessCollectionDO();
+
+        loanProcessCollectionDO.setOrderId(orderId);
+        loanProcessCollectionDO.setCollectionOrderId(collectionOrderId);
+        loanProcessCollectionDO.setProcessInstId(processInstId);
+
+        loanProcessCollectionDO.setGmtCreate(new Date());
+        loanProcessCollectionDO.setGmtModify(new Date());
+
+        int count = loanProcessCollectionDOMapper.insertSelective(loanProcessCollectionDO);
+        Preconditions.checkArgument(count > 0, "创建失败");
+
+        return loanProcessCollectionDO.getId();
+    }
 
     /**
      * 获取业务单

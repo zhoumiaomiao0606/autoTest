@@ -8,6 +8,7 @@ import java.util.List;
 
 @Data
 public class ZhongAnQueryParam {
+    private String order_id;
 
     private List<ZhongAnCusParam> customers = Lists.newArrayList();
 

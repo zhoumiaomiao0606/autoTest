@@ -13,6 +13,7 @@ import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,12 +24,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_COLLECTION_KEY;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
@@ -75,6 +78,9 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
 
     @Autowired
     private TaskDistributionService taskDistributionService;
+
+    @Autowired
+    private ActivitiService activitiService;
 
 
     @Override
@@ -143,6 +149,44 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         asyncPush(loanOrderDO.getId(), loanOrderDO.getLoanBaseInfoId(), approval.getTaskDefinitionKey(), approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
+                             @NotNull(message = "insteadPayOrderId不能为空") Long insteadPayOrderId) {
+
+        ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_COLLECTION_KEY);
+
+        // 创建流程记录
+        Long processId = create(orderId, insteadPayOrderId, processInstance.getProcessInstanceId());
+
+        return processId;
+    }
+
+    /**
+     * 创建[催收工作台]流程记录
+     *
+     * @param orderId
+     * @param insteadPayOrderId
+     * @param processInstId
+     * @return
+     */
+    private Long create(Long orderId, Long insteadPayOrderId, String processInstId) {
+
+        LoanProcessInsteadPayDO loanProcessInsteadPayDO = new LoanProcessInsteadPayDO();
+
+        loanProcessInsteadPayDO.setOrderId(orderId);
+        loanProcessInsteadPayDO.setInsteadPayOrderId(insteadPayOrderId);
+        loanProcessInsteadPayDO.setProcessInstId(processInstId);
+
+        loanProcessInsteadPayDO.setGmtCreate(new Date());
+        loanProcessInsteadPayDO.setGmtModify(new Date());
+
+        int count = loanProcessInsteadPayDOMapper.insertSelective(loanProcessInsteadPayDO);
+        Preconditions.checkArgument(count > 0, "创建失败");
+
+        return loanProcessInsteadPayDO.getId();
     }
 
     /**

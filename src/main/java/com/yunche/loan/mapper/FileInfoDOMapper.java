@@ -18,7 +18,11 @@ public interface FileInfoDOMapper {
 
     int updateByPrimaryKeySelective(FileInfoDO record);
 
+    int updateByPrimaryKeyWithBLOBs(FileInfoDO record);
+
     int updateByPrimaryKey(FileInfoDO record);
 
-    FileInfoDO selectByOrderId(@Param("orderid")Long orderid,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
+    List<FileInfoDO> selectByOrderId(@Param("orderId")Long orderid,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
+
+    void deleteByOrderIdAndRecordId(@Param("orderId")Long orderid,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
 }

@@ -39,7 +39,7 @@ public class RecombinationVO<T> {
 
     private UniversalHomeVisitInfoVO home;
 
-    private LoanApplyCompensationDO applyCompensation;
+    private UniversalCompensationVO applyCompensation;
     /**
      * 增补单
      */
@@ -100,7 +100,7 @@ public class RecombinationVO<T> {
 
     private  List<UniversalLegworkReimbursement> legworkReimbursementFiles;
 
-    private List<LoanApplyCompensationDO> loanApplyCompensation = Lists.newArrayList();
+    private List<UniversalCompensationVO> loanApplyCompensation = Lists.newArrayList();
 
     private CollectionNewInfoDO collectionNewInfoDO;
 }

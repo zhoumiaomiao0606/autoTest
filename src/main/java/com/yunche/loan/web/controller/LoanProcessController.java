@@ -48,7 +48,6 @@ public class LoanProcessController {
         return loanProcessService.approval(approval);
     }
 
-
     /**
      * 当前业务单的当前任务节点
      *

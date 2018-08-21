@@ -7,10 +7,12 @@ import com.yunche.loan.domain.entity.LoanApplyCompensationDOKey;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.domain.vo.FinancialSchemeVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCompensationVO;
 import com.yunche.loan.domain.vo.UniversalInfoVO;
 import com.yunche.loan.mapper.LoanApplyCompensationDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanCompensationReviewService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,10 +55,15 @@ public class LoanCompensationReviewServiceImpl implements LoanCompensationReview
         Preconditions.checkNotNull(query,"参数有误");
         Preconditions.checkNotNull(query.getOrderId(),"业务单号不能为空");
         Preconditions.checkNotNull(query.getApplyCompensationDate(),"代偿申请日期不能为空");
+
         LoanApplyCompensationDOKey doKey = new LoanApplyCompensationDOKey();
         doKey.setOrderId(query.getOrderId());
         doKey.setApplyCompensationDate(query.getApplyCompensationDate());
         LoanApplyCompensationDO compensationReview = loanApplyCompensationDOMapper.selectByPrimaryKey(doKey);
+        UniversalCompensationVO compensationVO = new UniversalCompensationVO();
+        BeanUtils.copyProperties(compensationReview,compensationVO);
+        compensationVO.setOrderId(String.valueOf(compensationReview.getOrderId()));
+
 
         RecombinationVO<Object> recombinationVO = new RecombinationVO<>();
 
@@ -67,7 +74,7 @@ public class LoanCompensationReviewServiceImpl implements LoanCompensationReview
         //数据填充
         recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
-        recombinationVO.setApplyCompensation(compensationReview);
+        recombinationVO.setApplyCompensation(compensationVO);
 
         return ResultBean.ofSuccess(recombinationVO);
     }

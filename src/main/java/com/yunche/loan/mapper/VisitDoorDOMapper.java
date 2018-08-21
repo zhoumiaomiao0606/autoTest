@@ -24,4 +24,6 @@ public interface VisitDoorDOMapper {
     List<VisitDoorDO> selectByOrderId(Long orderId);
 
     List<VisitDoorDO> selectByOrderIdAndBankRepayImpRecordId(Long orderid, Long bankRepayImpRecordId);
+
+    VisitDoorDO selectByOrderIdAndRecordId(@Param("orderId")Long orderId,@Param("bankRepayImpRecordId")Long bankRepayImpRecordId);
 }

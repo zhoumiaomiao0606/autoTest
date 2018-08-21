@@ -7,13 +7,11 @@ import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDOKey;
 import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
-import com.yunche.loan.domain.vo.FinancialSchemeVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.domain.vo.UniversalInfoVO;
-import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanApplyCompensationDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanPartnerCompensationReviewService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +67,9 @@ public class LoanPartnerCompensationReviewServiceImpl implements LoanPartnerComp
         doKey.setOrderId(query.getOrderId());
         doKey.setApplyCompensationDate(query.getApplyCompensationDate());
         LoanApplyCompensationDO applyCompensation = loanApplyCompensationDOMapper.selectByPrimaryKey(doKey);
+        UniversalCompensationVO compensationVO = new UniversalCompensationVO();
+        BeanUtils.copyProperties(applyCompensation,compensationVO);
+        compensationVO.setOrderId(String.valueOf(applyCompensation.getOrderId()));
 
 
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(query.getOrderId());//客户基本信息
@@ -82,7 +83,7 @@ public class LoanPartnerCompensationReviewServiceImpl implements LoanPartnerComp
         recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setMaterials(materialRecord);
-        recombinationVO.setApplyCompensation(applyCompensation);
+        recombinationVO.setApplyCompensation(compensationVO);
         return ResultBean.ofSuccess(recombinationVO);
     }
 }

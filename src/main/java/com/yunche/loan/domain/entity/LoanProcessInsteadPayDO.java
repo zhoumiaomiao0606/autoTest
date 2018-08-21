@@ -6,9 +6,12 @@ import java.util.Date;
 
 @Data
 public class LoanProcessInsteadPayDO {
+
     private Long id;
 
     private Long orderId;
+
+    private Long insteadPayOrderId;
 
     private String processInstId;
 
