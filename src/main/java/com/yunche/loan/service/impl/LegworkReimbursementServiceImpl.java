@@ -133,8 +133,9 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
                                 }
                                 RecombinationVO recombinationVO = new RecombinationVO();
                                 recombinationVO.setCustomers(customers);
-                                recombinationVO.setInfo(legworkReimbursementDOMapper.selectByPrimaryKey(id));
+                                recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(loanOrderDO.getId()));
                                 recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(loanOrderDO.getId()));
+                                recombinationVO.setVisitDoor(visitDoorDO);
                                 result.add(recombinationVO);
                             }
                         }
@@ -146,6 +147,7 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(result);
         recombinationVO.setLegworkReimbursementFiles(loanQueryDOMapper.selectUniversalFileByLegworkReimbursementId(id));
+        recombinationVO.setLegworkReimbursement(legworkReimbursementDOMapper.selectByPrimaryKey(id));
         return recombinationVO;
     }
 
@@ -155,12 +157,9 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
             throw new BizException("id is null");
         }
         LegworkReimbursementDO legworkReimbursementDO = BeanPlasticityUtills.copy(LegworkReimbursementDO.class, param);
-        legworkReimbursementDO.setStatus(new Byte("2"));
         legworkReimbursementDOMapper.updateByPrimaryKeySelective(legworkReimbursementDO);
 
-        if (CollectionUtil.isNotEmpty(param.getFiles())) {
-            legworkReimbursementFileDOMapper.deleteByPrimaryKey(param.getId());
-        }
+        legworkReimbursementFileDOMapper.deleteByLegworkReimbursementId(param.getId());
         for (String url : param.getFiles()) {
             LegworkReimbursementFileDO legworkReimbursementFileDO = new LegworkReimbursementFileDO();
             legworkReimbursementFileDO.setLegworkReimbursementId(param.getId());

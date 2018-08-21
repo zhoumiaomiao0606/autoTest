@@ -77,7 +77,7 @@ public class TaskListVO {
     private String paymentGtCreate;
     private String carName;
     private String carGpsNum;
-
+    private String compensationAmount;
     private String dataFlowId;
     private String dataFlowType;
     private String dataFlowTypeText;

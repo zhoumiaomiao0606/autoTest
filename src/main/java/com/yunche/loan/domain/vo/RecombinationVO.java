@@ -100,7 +100,12 @@ public class RecombinationVO<T> {
 
     private  List<UniversalLegworkReimbursement> legworkReimbursementFiles;
 
+    private  LegworkReimbursementDO legworkReimbursement;
+
+
     private List<UniversalCompensationVO> loanApplyCompensation = Lists.newArrayList();
 
     private CollectionNewInfoDO collectionNewInfoDO;
+
+    private VisitDoorDO visitDoor;
 }

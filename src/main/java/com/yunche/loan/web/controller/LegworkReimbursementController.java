@@ -54,7 +54,7 @@ public class LegworkReimbursementController {
     /**
      * 拖车关联订单详情
      */
-    @PostMapping(value = "/ ")
+    @PostMapping(value = "/expensesUpdate")
     public ResultBean<Void> expensesUpdate(@RequestBody @Validated @Valid LegworkReimbursementUpdateParam param) {
         legworkReimbursementService.expensesUpdate(param);
         return ResultBean.ofSuccess(null,"编辑成功");

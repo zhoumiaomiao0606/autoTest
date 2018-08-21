@@ -396,7 +396,8 @@
             process.bank_lend_record                                                                AS process_bank_lend_record,
             bank.repay_date                                                                         AS bank_repay_date,
             car.car_category                                                                        AS car_category,
-            cost.performance_fee                                                                    AS performance_fee
+            cost.performance_fee                                                                    AS performance_fee,
+            compensation.curr_arrears                                                               AS curr_arrears
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
     left join loan_process process on main_order.id = process.order_id
@@ -416,6 +417,7 @@
     left join partner partner on loan.partner_id = partner.id
     left join department department on partner.department_id = department.id
     left join cost_details cost on main_order.cost_details_id = cost.id
+    left join loan_apply_compensation compensation on compensation.order_id = main_order.id
 
   </select>
 
