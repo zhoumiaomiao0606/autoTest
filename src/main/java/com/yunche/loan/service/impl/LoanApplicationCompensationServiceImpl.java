@@ -184,7 +184,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
      * @return
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void manualInsert(UniversalCompensationParam param) {
         Preconditions.checkNotNull(param,"参数有误");
 
@@ -195,6 +195,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
             }
             int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
+            return;
         }else {
             int count = loanApplyCompensationDOMapper.insertSelective(param);
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
