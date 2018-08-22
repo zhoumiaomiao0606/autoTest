@@ -43,6 +43,6 @@ public class LoanPartnerCompensationController {
     @PostMapping(value = "/detail", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean detail(@RequestBody UniversalCompensationQuery query) {
 
-        return ResultBean.ofSuccess(loanPartnerCompensationService.detail(query));
+        return loanPartnerCompensationService.detail(query);
     }
 }
