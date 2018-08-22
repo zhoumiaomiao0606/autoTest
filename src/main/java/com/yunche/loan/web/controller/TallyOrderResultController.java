@@ -41,7 +41,7 @@ public class TallyOrderResultController
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> update(@RequestBody @Validated OrderHandleResultDO param)
     {
-        tallyOrderResultService.update(param);
-        return ResultBean.ofSuccess(null,"保存成功");
+
+        return tallyOrderResultService.update(param);
     }
 }
