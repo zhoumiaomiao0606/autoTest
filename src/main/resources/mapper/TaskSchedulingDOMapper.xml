@@ -462,7 +462,6 @@
                   join_bp.remit_amount                         AS remitAmount,
                   join_rep.bank_repay_imp_record_id            AS bankRepayImpRecordId,
                   join_rep.overdue_amount                      AS overdueAmount,
-                  v_area.area_name                             AS applyLicensePlateArea,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           deputy.credit_apply                     AS taskStatus
@@ -730,7 +729,6 @@
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
               left  join bank_repay_record join_rep        on join_rep.order_id     = main.id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
-              left  join base_area v_area                  on join_h.apply_license_plate_area =  v_area.area_id
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
