@@ -777,7 +777,6 @@
               <if test="taskDefinitionKey == 'usertask_car_handle'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_car_out'">
