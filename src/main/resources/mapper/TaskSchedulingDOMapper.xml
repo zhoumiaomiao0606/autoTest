@@ -557,6 +557,7 @@
                           join_repayplan.status                   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_collection_workbench'">
+                          deputy_c.id                                                   AS processId,
                           (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                         AS collectionDate,
                           (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -568,6 +569,7 @@
                           deputy_c.collection_workbench           AS taskStatus
                       </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
+                           deputy_c.id                                                   AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -579,7 +581,8 @@
                            deputy_c.visit_collection_review        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection'">
-                           door.id                                                       AS processId,
+                           deputy_c.id                                                   AS processId,
+                           door.id                                                       AS visitDoorId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -591,6 +594,7 @@
                            deputy_c.visit_collection               AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_handle'">
+                           deputy_c.id                                                   AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -602,6 +606,7 @@
                            deputy_c.car_handle                     AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_out'">
+                           deputy_c.id                                                   AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -613,6 +618,7 @@
                            deputy_c.car_out                        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_settle_order'">
+                           deputy_c.id                                                   AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -624,6 +630,7 @@
                            deputy_c.settle_order                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_review'">
+                           deputy_c.id                                                   AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -635,6 +642,7 @@
                            deputy_c.legal_review                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_record'">
+                           deputy_c.id                                                   AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -985,7 +993,7 @@
               ) tab
               where 1=1
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
-                  AND case when #{collectionLevel}  = 7 then true
+                  AND case when #{collectionLevel}  = 7 then true and case when  #{taskStatus} = 2 then tab.sendee is null else true end
                            when #{collectionLevel}  = 6 then tab.sendee = #{employeeId}
                   else true end
               </if>

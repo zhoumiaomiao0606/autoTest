@@ -62,7 +62,7 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
         //车辆处理登记
         VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(orderId,bankRepayImpRecordId));
         //根据区id查询省市id
-        if(vehicleHandleDO !=null &&vehicleHandleDO.getVehicleInboundAddress()!=null && "".equals(vehicleHandleDO.getVehicleInboundAddress().trim()))
+        if(vehicleHandleDO !=null &&vehicleHandleDO.getVehicleInboundAddress()!=null && !"".equals(vehicleHandleDO.getVehicleInboundAddress().trim()))
         {
             Long countyId=Long.valueOf(vehicleHandleDO.getVehicleInboundAddress());
             BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
@@ -164,7 +164,7 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
         //车辆处理登记
         VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(orderId,bank_repay_imp_record_id));
         //根据区id查询省市id
-        if(vehicleHandleDO !=null &&vehicleHandleDO.getVehicleInboundAddress()!=null && "".equals(vehicleHandleDO.getVehicleInboundAddress().trim()))
+        if(vehicleHandleDO !=null && vehicleHandleDO.getVehicleInboundAddress()!=null && !"".equals(vehicleHandleDO.getVehicleInboundAddress().trim()))
         {
             StringBuilder stringBuilder =new StringBuilder();
             Long countyId=Long.valueOf(vehicleHandleDO.getVehicleInboundAddress());
