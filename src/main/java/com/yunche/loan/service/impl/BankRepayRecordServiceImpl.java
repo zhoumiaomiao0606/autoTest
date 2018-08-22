@@ -138,6 +138,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
      * @return
      */
     @Override
+    @Transactional
     public ResultBean importFile(String ossKey) {
         Preconditions.checkNotNull(ossKey,"文件名不能为空");
         List<BankFileListRecordDO> list = importOverdueRecord(ossKey);//导入
@@ -446,7 +447,8 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
             List<BankFileListRecordDO> bankRepayList2 =  bankRepayList.stream().filter(f-> (f.getCredentialNo()!=null || f.getCardNumber()!=null)).map(e->{
                 BankRepayParam bankRepayParam = bankRecordQueryDOMapper.selectByIdCardOrRepayCard(e.getCredentialNo(), e.getCardNumber());
                 if(bankRepayParam!=null){
-
+                    LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(bankRepayParam.getOrderId());
+                    e.setCustomerId(orderDO.getLoanCustomerId());
                     e.setOrderId(bankRepayParam.getOrderId());
                     e.setCardNumber(bankRepayParam.getRepayCard());
                     e.setCredentialNo(bankRepayParam.getIdCard());
