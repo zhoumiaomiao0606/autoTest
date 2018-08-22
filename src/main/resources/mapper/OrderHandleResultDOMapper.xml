@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.OrderHandleResultDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.OrderHandleResultDO">
+    <id column="orderid" jdbcType="BIGINT" property="orderid" />
+    <result column="handletype" jdbcType="TINYINT" property="handletype" />
+    <result column="handdle_person" jdbcType="VARCHAR" property="handdlePerson" />
+    <result column="trail_vehicle_date" jdbcType="TIMESTAMP" property="trailVehicleDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    orderid, handletype, handdle_person, trail_vehicle_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from order_handle_result
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from order_handle_result
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.OrderHandleResultDO">
+    insert into order_handle_result (orderid, handletype, handdle_person, 
+      trail_vehicle_date)
+    values (#{orderid,jdbcType=BIGINT}, #{handletype,jdbcType=TINYINT}, #{handdlePerson,jdbcType=VARCHAR}, 
+      #{trailVehicleDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.OrderHandleResultDO">
+    insert into order_handle_result
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderid != null">
+        orderid,
+      </if>
+      <if test="handletype != null">
+        handletype,
+      </if>
+      <if test="handdlePerson != null">
+        handdle_person,
+      </if>
+      <if test="trailVehicleDate != null">
+        trail_vehicle_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderid != null">
+        #{orderid,jdbcType=BIGINT},
+      </if>
+      <if test="handletype != null">
+        #{handletype,jdbcType=TINYINT},
+      </if>
+      <if test="handdlePerson != null">
+        #{handdlePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="trailVehicleDate != null">
+        #{trailVehicleDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.OrderHandleResultDO">
+    update order_handle_result
+    <set>
+      <if test="handletype != null">
+        handletype = #{handletype,jdbcType=TINYINT},
+      </if>
+      <if test="handdlePerson != null">
+        handdle_person = #{handdlePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="trailVehicleDate != null">
+        trail_vehicle_date = #{trailVehicleDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.OrderHandleResultDO">
+    update order_handle_result
+    set handletype = #{handletype,jdbcType=TINYINT},
+      handdle_person = #{handdlePerson,jdbcType=VARCHAR},
+      trail_vehicle_date = #{trailVehicleDate,jdbcType=TIMESTAMP}
+    where orderid = #{orderid,jdbcType=BIGINT}
+  </update>
+</mapper>

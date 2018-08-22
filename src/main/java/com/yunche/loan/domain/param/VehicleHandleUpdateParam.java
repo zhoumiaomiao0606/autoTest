@@ -18,12 +18,6 @@ public class VehicleHandleUpdateParam
 
     private Long orderid;
 
-    private Long handdlePerson;
-
-    private String trailVehicleDate;
-
-    private String trailVehicleAddress;
-
     private String vehicleInboundDate;
 
     private String vehicleInboundAddress;
@@ -38,7 +32,7 @@ public class VehicleHandleUpdateParam
 
     private String vehichleSurface;
 
-    private Byte vehicleKey;
+    private String vehicleKey;
 
     private String vehicleOthermaterial;
 

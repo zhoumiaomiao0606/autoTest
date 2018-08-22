@@ -30,10 +30,14 @@ public class CacheTest extends BaseTest {
     PartnerDOMapper partnerDOMapper;
 
 
-   // @Test
+   @Test
     public void doA1123(){
         try {
-            ZhongAnHttpUtil.queryInfo("金佳琦","15757135913","330621199310023016","1","2","3333","1","3312333");
+            ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","99993");
+
+            // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","99993");
+           // ZhongAnHttpUtil.queryInfo("金佳琦","15757135913","330621199310023016","1","2","3333","1","99992");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
