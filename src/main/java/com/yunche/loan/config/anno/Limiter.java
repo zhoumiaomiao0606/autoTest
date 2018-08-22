@@ -18,10 +18,10 @@ public @interface Limiter {
      *
      * @return
      */
-    String route();
+    String value();
 
     /**
-     * 限流次数
+     * 限流次数   默认：1次/s
      *
      * @return
      */

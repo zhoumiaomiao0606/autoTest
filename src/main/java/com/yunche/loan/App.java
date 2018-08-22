@@ -72,7 +72,7 @@ public class App {
         return new CommandLineRunner() {
 
             @Override
-            @DistributedLock(timeOut = 60 * 5 * 1000)
+            @DistributedLock(60 * 5 * 1000)
             @Transactional(rollbackFor = Exception.class)
             public void run(String... args) throws Exception {
 

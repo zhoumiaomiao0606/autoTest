@@ -365,7 +365,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
             sessionIdStartTimeMap_PC.forEach((k, v) -> {
 
-                // anyChatUserId:wsSessionId::userId
+                // anyChatUserId:wsSessionId:userId
                 String[] userMsgArr = k.split(VIDEO_FACE_QUEUE_KEY_SEPARATOR);
                 String anyChatUserId = userMsgArr[0];
                 String wkSessionId = userMsgArr[1];

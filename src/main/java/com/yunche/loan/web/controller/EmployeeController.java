@@ -143,7 +143,7 @@ public class EmployeeController {
      *
      * @return
      */
-    @Limiter(route = "/api/v1/employee/logout")
+    @Limiter("/api/v1/employee/logout")
     @GetMapping("/logout")
     public ResultBean<Void> logout() {
         return employeeService.logout();

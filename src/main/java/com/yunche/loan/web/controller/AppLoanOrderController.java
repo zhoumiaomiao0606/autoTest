@@ -35,7 +35,7 @@ public class AppLoanOrderController {
      * @param appCustomerParam
      * @return
      */
-    @Limiter(route = "/api/v1/app/loanorder/creditapply/create")
+    @Limiter("/api/v1/app/loanorder/creditapply/create")
     @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<AppCreditApplyVO> createCreditApplyOrder(@RequestBody AppCustomerParam appCustomerParam) {
         return appLoanOrderService.createCreditApplyOrder(appCustomerParam);
@@ -46,16 +46,16 @@ public class AppLoanOrderController {
      * 众安接口
      */
     @PostMapping(value = "/zhonganquery")
-    public ResultBean zhongAnQuery(@RequestBody ZhongAnQueryParam zhongAnQueryParam){
+    public ResultBean zhongAnQuery(@RequestBody ZhongAnQueryParam zhongAnQueryParam) {
         appLoanOrderService.zhongAnQuery(zhongAnQueryParam);
-        return ResultBean.ofSuccess(null,"查询成功");
+        return ResultBean.ofSuccess(null, "查询成功");
     }
 
     /**
      * 获取团队及业务员
      */
     @GetMapping(value = "/zhonganname")
-    public ResultBean zhonganName(@RequestParam("orderid") String orderid){
+    public ResultBean zhonganName(@RequestParam("orderid") String orderid) {
         return ResultBean.ofSuccess(appLoanOrderService.zhonganName(Long.valueOf(orderid)));
     }
 
@@ -63,8 +63,8 @@ public class AppLoanOrderController {
      * 众安接口详情
      */
     @GetMapping(value = "/zhongandetail")
-   // public ResultBean zhongAnDetail(@RequestParam (value = "idcard",required = false) String idcard,@RequestParam (value = "customername",required = false) String customername){
-    public ResultBean zhongAnDetail(@RequestParam (value = "orderid",required = false) String orderId){
+    // public ResultBean zhongAnDetail(@RequestParam (value = "idcard",required = false) String idcard,@RequestParam (value = "customername",required = false) String customername){
+    public ResultBean zhongAnDetail(@RequestParam(value = "orderid", required = false) String orderId) {
         return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(Long.valueOf(orderId)));
 
     }
@@ -86,7 +86,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
-    @Limiter(route = "/api/v1/app/loanorder/baseinfo/create")
+    @Limiter("/api/v1/app/loanorder/baseinfo/create")
     @PostMapping(value = "/baseinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createBaseInfo(@RequestBody AppLoanBaseInfoParam param) {
         return appLoanOrderService.createBaseInfo(param);
@@ -131,7 +131,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
-    @Limiter(route = "/api/v1/app/loanorder/customer/addrela")
+    @Limiter("/api/v1/app/loanorder/customer/addrela")
     @PostMapping(value = "/customer/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> addRelaCustomer(@RequestBody AppCustomerParam param) {
         return appLoanOrderService.addRelaCustomer(param);
@@ -169,7 +169,7 @@ public class AppLoanOrderController {
      * @param appLoanCarInfoParam
      * @return
      */
-    @Limiter(route = "/api/v1/app/loanorder/carinfo/create")
+    @Limiter("/api/v1/app/loanorder/carinfo/create")
     @PostMapping(value = "/carinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createLoanCarInfo(@RequestBody AppLoanCarInfoParam appLoanCarInfoParam) {
         return appLoanOrderService.createLoanCarInfo(appLoanCarInfoParam);
@@ -214,7 +214,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
-    @Limiter(route = "/api/v1/app/loanorder/financialplan/create")
+    @Limiter("/api/v1/app/loanorder/financialplan/create")
     @PostMapping(value = "/financialplan/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createLoanFinancialPlan(@RequestBody AppLoanFinancialPlanParam param) {
         return appLoanOrderService.createLoanFinancialPlan(param);
@@ -259,7 +259,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
-    @Limiter(route = "/api/v1/app/loanorder/homevisit/save")
+    @Limiter("/api/v1/app/loanorder/homevisit/save")
     @PostMapping(value = "/homevisit/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> saveLoanHomeVisit(@RequestBody AppLoanHomeVisitParam param) {
         return appLoanOrderService.createOrUpdateLoanHomeVisit(param);

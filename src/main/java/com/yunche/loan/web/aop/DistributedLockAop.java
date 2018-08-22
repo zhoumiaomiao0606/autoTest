@@ -3,7 +3,6 @@ package com.yunche.loan.web.aop;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.util.LockUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -28,9 +27,7 @@ public class DistributedLockAop {
     private static final Logger logger = LoggerFactory.getLogger(DistributedLockAop.class);
 
     /**
-     * @see com.yunche.loan.config.anno.DistributedLock
-     * <p>
-     * methodName - DefaultValue   Map
+     * 🔐KEY前缀
      */
     private static final String LOCK_KEY_PREFIX = "lock:key:";
 
@@ -46,27 +43,22 @@ public class DistributedLockAop {
 
         DistributedLock annotation = method.getAnnotation(DistributedLock.class);
 
-        String key = annotation.key();
-        long timeOut = annotation.timeOut();
+        // timeOut
+        long timeOut = annotation.value();
+
 
         // key
-        if (StringUtils.isBlank(key)) {
+        // methodName
+        String fullMethodName = getFullMethodName(method);
 
-            // methodName
-            String fullMethodName = getFullMethodName(method);
+        // hashCode
+        int fullMethodNameHashCode = fullMethodName.hashCode();
 
-            // hashCode
-            int fullMethodNameHashCode = fullMethodName.hashCode();
+        // prefix + methodName + hashCode
+        String key = LOCK_KEY_PREFIX + method.getName() + ":" + fullMethodNameHashCode;
 
-            // prefix + methodName + hashCode
-            key = LOCK_KEY_PREFIX + method.getName() + ":" + fullMethodNameHashCode;
 
-        } else {
-
-            key = LOCK_KEY_PREFIX + key;
-        }
-
-        // 生成一个随机数：作为当前🔐的val
+        // randomVal     生成一个随机数：作为当前🔐的val
         long randomNum = new Random().nextInt(1000000000);
         String val = System.currentTimeMillis() + String.valueOf(randomNum);
 
