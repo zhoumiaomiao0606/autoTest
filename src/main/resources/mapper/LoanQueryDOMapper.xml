@@ -337,6 +337,7 @@
             customer.hcity                                                                          AS customer_hcity,
             customer.hcounty                                                                        AS customer_hcounty,
             customer.lend_card                                                                      AS customer_lend_card,
+            customer.signature_type                                                                 AS customer_signature_type,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
