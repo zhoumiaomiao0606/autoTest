@@ -114,6 +114,10 @@ public class ApprovalParam {
      * 选项
      */
     private String choice;
+    /**
+     * 银行批次号
+     */
+    private Long bankRepayImpRecordId;
     /////////////////////////////////////////////////////// 代偿 ////////////////////////////////////////////////////////
 
 

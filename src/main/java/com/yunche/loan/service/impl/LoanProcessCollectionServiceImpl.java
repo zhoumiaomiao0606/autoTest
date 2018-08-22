@@ -59,6 +59,9 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     @Autowired
     private LoanProcessApprovalCommonService loanProcessApprovalCommonService;
 
+    @Autowired
+    private VisitDoorService visitDoorService;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -109,22 +112,12 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
+        // 上门拖车 || 上门拖车-确认    -->
+        doVisitDoor(approval);
+
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
 
-    /**
-     * 上门拖车-失败历史记录处理
-     *
-     * @param visitDoorId
-     */
-    private void vistiCollection_resultIsfailed(Long visitDoorId) {
-
-        VisitDoorDO visitDoorDO = new VisitDoorDO();
-        visitDoorDO.setId(visitDoorId);
-        visitDoorDO.setStatus(TASK_PROCESS_DONE);
-        int count = visitDoorDOMapper.updateByPrimaryKeySelective(visitDoorDO);
-        Preconditions.checkArgument(count > 0, "拖车记录更新失败");
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -139,6 +132,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 
         return processId;
     }
+
 
     /**
      * 创建[催收工作台]流程记录
@@ -233,23 +227,6 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         loanProcessDO.setId(approval.getProcessId());
         loanProcessDO.setOrderId(approval.getOrderId());
 
-//        // 如果弃单，则记录弃单节点
-//        if (ACTION_CANCEL.equals(approval.getAction())) {
-//            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
-//            loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
-//            updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
-//        }
-
-        // 结单 ending  -暂无【结单节点】
-//        if (XXX.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-//            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
-//        }
-
-//        //【资料审核】打回到【业务申请】 标记
-//        if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
-//            loanProcessDO.setLoanApplyRejectOrginTask(MATERIAL_REVIEW.getCode());
-//        }
-
         // 更新当前执行的任务状态
         Byte taskProcessStatus = null;
         if (ACTION_REJECT_MANUAL.equals(approval.getAction()) || ACTION_REJECT_AUTO.equals(approval.getAction())) {
@@ -262,9 +239,6 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 
         // 更新新产生的任务状态
         updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskIdList, approval, currentLoanProcessDO);
-
-        // 特殊处理：部分节点的同步  !!!
-//        special_syncProcess(approval, loanProcessDO, currentLoanProcessDO, loanBaseInfoDO);
 
         // 更新本地流程记录
         updateLoanProcess(loanProcessDO);
@@ -300,9 +274,6 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         if (taskDefinitionKey.startsWith("filter")) {
             return;
         }
-
-        // 更新资料流转type
-//        doUpdateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus, approval);
 
         // 执行更新
         loanProcessApprovalCommonService.doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
@@ -349,14 +320,6 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         } else if (ACTION_REJECT_MANUAL.equals(action)) {
             // new  -> REJECT   old -> INIT
             doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT, approval);
-
-//            // 是否已过电审
-//            if (!TASK_PROCESS_DONE.equals(currentLoanProcessDO.getTelephoneVerify())) {
-//                // 没过电审
-//                doUpdateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT, approval);
-//            } else {
-//                // 过了电审，则不是真正的全部打回      nothing
-//            }
 
             // 打回记录
             loanProcessApprovalCommonService.createRejectLog(newTaskList, approval.getOrderId(),
@@ -456,13 +419,8 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         // [上门拖车]
         else if (VISIT_COLLECTION.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
-            Preconditions.checkNotNull(approval.getSupplementOrderId(), "催收单ID不能为空");
-            VisitDoorDO visitDoorDO = visitDoorDOMapper.selectByPrimaryKey(approval.getSupplementOrderId());
-            Preconditions.checkNotNull(visitDoorDO, "催收单不存在");
-            Preconditions.checkNotNull(visitDoorDO.getVisitResult(), "催收结果不能为空");
-
             // 催收结果
-            String visitResult = visitDoorDO.getVisitResult();
+            String visitResult = approval.getChoice();
 
             // 1-拖车失败
             if ("1".equals(visitResult)) {
@@ -477,5 +435,49 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
             }
 
         }
+    }
+
+    /**
+     * 上门拖车 || 上门拖车-确认    -->
+     *
+     * @param approval
+     */
+    private void doVisitDoor(ApprovalParam approval) {
+
+        Preconditions.checkNotNull(approval.getBankRepayImpRecordId(), "批次号不能为空");
+
+        // 上门拖车 || 上门拖车-确认
+        boolean is_visit_collection_or_visit_collection_review_task__action_is_pass =
+                (VISIT_COLLECTION_REVIEW.getCode().equals(approval.getTaskDefinitionKey())
+                        || VISIT_COLLECTION.getCode().equals(approval.getTaskDefinitionKey()))
+                        && ACTION_PASS.equals(approval.getAction());
+
+        if (is_visit_collection_or_visit_collection_review_task__action_is_pass) {
+
+            VisitDoorDO visitDoorDO = new VisitDoorDO();
+
+            visitDoorDO.setOrderId(approval.getOrderId());
+            visitDoorDO.setBankRepayImpRecordId(approval.getBankRepayImpRecordId());
+            visitDoorDO.setVisitResult(approval.getChoice());
+
+            visitDoorService.insertNewInfo(visitDoorDO);
+        }
+
+    }
+
+    /**
+     * 上门拖车-失败历史记录处理
+     *
+     * @param visitDoorId
+     */
+    private void vistiCollection_resultIsfailed(Long visitDoorId) {
+        Preconditions.checkNotNull(visitDoorId, "上门拖车ID不能为空");
+
+        VisitDoorDO visitDoorDO = new VisitDoorDO();
+        visitDoorDO.setId(visitDoorId);
+        visitDoorDO.setStatus(TASK_PROCESS_DONE);
+
+        int count = visitDoorDOMapper.updateByPrimaryKeySelective(visitDoorDO);
+        Preconditions.checkArgument(count > 0, "拖车记录更新失败");
     }
 }
