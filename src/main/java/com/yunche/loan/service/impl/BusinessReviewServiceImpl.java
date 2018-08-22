@@ -189,6 +189,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
 
         //银行分期本金
         BigDecimal bank_period_principal = initDecimal(param.getBank_period_principal());
+        BigDecimal total = bank_period_principal;
         //返利金额
         BigDecimal return_rate_amount = initDecimal(param.getReturn_rate_amount());
         //是否月结 0 否 1 是
@@ -207,34 +208,80 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         BigDecimal other_fee = initDecimal(param.getOther_fee());
         //月结 0 否 1 是
         if ("1".equals(pay_month)) {
+            if(!"3".equals(param.getService_fee_type())){
+                total.subtract(service_fee);
+            }
+            if(!"3".equals(param.getApply_license_plate_deposit_fee_type())){
+                total.subtract(apply_license_plate_deposit_fee);
+            }
+
+            if(!"3".equals(param.getPerformance_fee())){
+                total.subtract(performance_fee);
+            }
+            if(!"3".equals(param.getInstall_gps_fee())){
+                total.subtract(install_gps_fee);
+            }
+
+            if(!"3".equals(param.getRisk_fee())){
+                total.subtract(risk_fee);
+            }
+            if(!"3".equals(param.getFair_assess_fee())){
+                total.subtract(fair_assess_fee);
+            }
+
+            if(!"3".equals(param.getApply_license_plate_out_province_fee())){
+                total.subtract(apply_license_plate_out_province_fee);
+            }
+            if(!"3".equals(param.getBased_margin_fee())){
+                total.subtract(based_margin_fee);
+            }
+
+            if(!"3".equals(param.getExtra_fee())){
+                total.subtract(extra_fee);
+            }
+            if(!"3".equals(param.getOther_fee())){
+                total.subtract(other_fee);
+            }
+            total.subtract(return_rate_amount).setScale(2, BigDecimal.ROUND_HALF_UP);
             //月结算
-            return bank_period_principal
-                    .subtract(service_fee)
-                    .subtract(apply_license_plate_deposit_fee)
-                    .subtract(performance_fee)
-                    .subtract(install_gps_fee)
-                    .subtract(risk_fee)
-                    .subtract(fair_assess_fee)
-                    .subtract(apply_license_plate_out_province_fee)
-                    .subtract(based_margin_fee)
-                    .subtract(extra_fee)
-                    .subtract(other_fee)
-                    .subtract(return_rate_amount)
-                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+            return total;
         } else {
             //日结
-            return bank_period_principal
-                    .subtract(service_fee)
-                    .subtract(apply_license_plate_deposit_fee)
-                    .subtract(performance_fee)
-                    .subtract(install_gps_fee)
-                    .subtract(risk_fee)
-                    .subtract(fair_assess_fee)
-                    .subtract(apply_license_plate_out_province_fee)
-                    .subtract(based_margin_fee)
-                    .subtract(extra_fee)
-                    .subtract(other_fee)
-                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+            if(!"3".equals(param.getService_fee_type())){
+                total.subtract(service_fee);
+            }
+            if(!"3".equals(param.getApply_license_plate_deposit_fee_type())){
+                total.subtract(apply_license_plate_deposit_fee);
+            }
+
+            if(!"3".equals(param.getPerformance_fee())){
+                total.subtract(performance_fee);
+            }
+            if(!"3".equals(param.getInstall_gps_fee())){
+                total.subtract(install_gps_fee);
+            }
+
+            if(!"3".equals(param.getRisk_fee())){
+                total.subtract(risk_fee);
+            }
+            if(!"3".equals(param.getFair_assess_fee())){
+                total.subtract(fair_assess_fee);
+            }
+
+            if(!"3".equals(param.getApply_license_plate_out_province_fee())){
+                total.subtract(apply_license_plate_out_province_fee);
+            }
+            if(!"3".equals(param.getBased_margin_fee())){
+                total.subtract(based_margin_fee);
+            }
+
+            if(!"3".equals(param.getExtra_fee())){
+                total.subtract(extra_fee);
+            }
+            if(!"3".equals(param.getOther_fee())){
+                total.subtract(other_fee);
+            }
+            return total.setScale(2, BigDecimal.ROUND_HALF_UP);
         }
     }
 

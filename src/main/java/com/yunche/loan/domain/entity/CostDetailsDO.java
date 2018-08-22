@@ -51,4 +51,6 @@ public class CostDetailsDO {
     private Byte status;
 
     private String feature;
+
+    private BigDecimal rebate_not_deducted;
 }
