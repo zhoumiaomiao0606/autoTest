@@ -157,7 +157,8 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
 
     @Override
     public Map expensesAppDetail(Long id) {
-        List<Long> result = Lists.newArrayList();
+
+        List<Map> result = Lists.newArrayList();
 
         List<LegworkReimbursementRelevanceVisitDO> legworkReimbursementRelevanceVisitDOS = legworkReimbursementRelevanceVisitDOMapper.selectByLegworkReimbursementId(id);
         if (CollectionUtil.isNotEmpty(legworkReimbursementRelevanceVisitDOS)) {
@@ -168,7 +169,15 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
                         if (visitDoorDO != null) {
                             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(visitDoorDO.getOrderId());
                             if (loanOrderDO != null) {
-                                result.add(loanOrderDO.getId());
+                                UniversalInfoVO universalInfoVO  = loanQueryDOMapper.selectUniversalInfo(loanOrderDO.getId());
+                                if(universalInfoVO!=null){
+                                    Map map = Maps.newHashMap();
+                                    map.put("orderId",universalInfoVO.getOrder_id());
+                                    map.put("customerName",universalInfoVO.getCustomer_name());
+                                    map.put("customerMobile",universalInfoVO.getCustomer_mobile());
+                                    map.put("customerIdCard",universalInfoVO.getCustomer_id_card());
+                                    result.add(map);
+                                }
                             }
                         }
                     }
