@@ -48,4 +48,5 @@ public class VisitDoorDO {
     //批次号id
     private Long bankRepayImpRecordId;
 
+    private int status;
 }

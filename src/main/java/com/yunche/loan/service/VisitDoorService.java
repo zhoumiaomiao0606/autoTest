@@ -20,4 +20,6 @@ public interface VisitDoorService {
     void visitDoorRevoke(LitigationStateDO litigationStateDO);
 
     List<UniversalTelephoneCollectionEmployee> visitDoorEmployees();
+
+    void insertNewInfo(VisitDoorDO visitDoorDO);
 }
