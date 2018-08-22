@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VehicleHandleDO">
     <id column="orderid" jdbcType="BIGINT" property="orderid" />
     <id column="bank_repay_imp_record_id" jdbcType="BIGINT" property="bankRepayImpRecordId" />
-    <result column="handdle_person" jdbcType="BIGINT" property="handdlePerson" />
+    <result column="handdle_person" jdbcType="VARCHAR" property="handdlePerson" />
     <result column="trail_vehicle_date" jdbcType="TIMESTAMP" property="trailVehicleDate" />
     <result column="trail_vehicle_address" jdbcType="VARCHAR" property="trailVehicleAddress" />
     <result column="vehicle_inbound_date" jdbcType="TIMESTAMP" property="vehicleInboundDate" />
@@ -14,7 +14,7 @@
     <result column="chassis_number" jdbcType="VARCHAR" property="chassisNumber" />
     <result column="driver_kilometers" jdbcType="VARCHAR" property="driverKilometers" />
     <result column="vehichle_surface" jdbcType="VARCHAR" property="vehichleSurface" />
-    <result column="vehicle_key" jdbcType="TINYINT" property="vehicleKey" />
+    <result column="vehicle_key" jdbcType="VARCHAR" property="vehicleKey" />
     <result column="vehicle_othermaterial" jdbcType="VARCHAR" property="vehicleOthermaterial" />
     <result column="vehicle_otherthings" jdbcType="VARCHAR" property="vehicleOtherthings" />
     <result column="purchase_tax" jdbcType="DECIMAL" property="purchaseTax" />
@@ -62,12 +62,12 @@
       vehicle_statement, trail_vehicle_costs, vehicle_maintenance_costs, 
       other_costs, final_costs, relation_material_url1, 
       relation_material_url2)
-    values (#{orderid,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT}, #{handdlePerson,jdbcType=BIGINT}, 
+    values (#{orderid,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT}, #{handdlePerson,jdbcType=VARCHAR}, 
       #{trailVehicleDate,jdbcType=TIMESTAMP}, #{trailVehicleAddress,jdbcType=VARCHAR}, 
       #{vehicleInboundDate,jdbcType=TIMESTAMP}, #{vehicleInboundAddress,jdbcType=VARCHAR}, 
       #{vehicleInboundAddressDetail,jdbcType=VARCHAR}, #{customerCondition,jdbcType=VARCHAR}, 
       #{chassisNumber,jdbcType=VARCHAR}, #{driverKilometers,jdbcType=VARCHAR}, #{vehichleSurface,jdbcType=VARCHAR}, 
-      #{vehicleKey,jdbcType=TINYINT}, #{vehicleOthermaterial,jdbcType=VARCHAR}, #{vehicleOtherthings,jdbcType=VARCHAR}, 
+      #{vehicleKey,jdbcType=VARCHAR}, #{vehicleOthermaterial,jdbcType=VARCHAR}, #{vehicleOtherthings,jdbcType=VARCHAR}, 
       #{purchaseTax,jdbcType=DECIMAL}, #{roadMaintenanceCosts,jdbcType=DECIMAL}, #{roadMaintenanceCostsStatement,jdbcType=VARCHAR}, 
       #{breakRulesCosts,jdbcType=DECIMAL}, #{breakRulesCostsStatement,jdbcType=VARCHAR}, 
       #{vehicleStatement,jdbcType=VARCHAR}, #{trailVehicleCosts,jdbcType=DECIMAL}, #{vehicleMaintenanceCosts,jdbcType=DECIMAL}, 
@@ -167,7 +167,7 @@
         #{bankRepayImpRecordId,jdbcType=BIGINT},
       </if>
       <if test="handdlePerson != null">
-        #{handdlePerson,jdbcType=BIGINT},
+        #{handdlePerson,jdbcType=VARCHAR},
       </if>
       <if test="trailVehicleDate != null">
         #{trailVehicleDate,jdbcType=TIMESTAMP},
@@ -197,7 +197,7 @@
         #{vehichleSurface,jdbcType=VARCHAR},
       </if>
       <if test="vehicleKey != null">
-        #{vehicleKey,jdbcType=TINYINT},
+        #{vehicleKey,jdbcType=VARCHAR},
       </if>
       <if test="vehicleOthermaterial != null">
         #{vehicleOthermaterial,jdbcType=VARCHAR},
@@ -247,7 +247,7 @@
     update vehicle_handle
     <set>
       <if test="handdlePerson != null">
-        handdle_person = #{handdlePerson,jdbcType=BIGINT},
+        handdle_person = #{handdlePerson,jdbcType=VARCHAR},
       </if>
       <if test="trailVehicleDate != null">
         trail_vehicle_date = #{trailVehicleDate,jdbcType=TIMESTAMP},
@@ -277,7 +277,7 @@
         vehichle_surface = #{vehichleSurface,jdbcType=VARCHAR},
       </if>
       <if test="vehicleKey != null">
-        vehicle_key = #{vehicleKey,jdbcType=TINYINT},
+        vehicle_key = #{vehicleKey,jdbcType=VARCHAR},
       </if>
       <if test="vehicleOthermaterial != null">
         vehicle_othermaterial = #{vehicleOthermaterial,jdbcType=VARCHAR},
@@ -327,7 +327,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VehicleHandleDO">
     update vehicle_handle
-    set handdle_person = #{handdlePerson,jdbcType=BIGINT},
+    set handdle_person = #{handdlePerson,jdbcType=VARCHAR},
       trail_vehicle_date = #{trailVehicleDate,jdbcType=TIMESTAMP},
       trail_vehicle_address = #{trailVehicleAddress,jdbcType=VARCHAR},
       vehicle_inbound_date = #{vehicleInboundDate,jdbcType=TIMESTAMP},
@@ -337,7 +337,7 @@
       chassis_number = #{chassisNumber,jdbcType=VARCHAR},
       driver_kilometers = #{driverKilometers,jdbcType=VARCHAR},
       vehichle_surface = #{vehichleSurface,jdbcType=VARCHAR},
-      vehicle_key = #{vehicleKey,jdbcType=TINYINT},
+      vehicle_key = #{vehicleKey,jdbcType=VARCHAR},
       vehicle_othermaterial = #{vehicleOthermaterial,jdbcType=VARCHAR},
       vehicle_otherthings = #{vehicleOtherthings,jdbcType=VARCHAR},
       purchase_tax = #{purchaseTax,jdbcType=DECIMAL},

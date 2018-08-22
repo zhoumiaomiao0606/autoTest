@@ -14,5 +14,5 @@ public class LegworkReimbursementVO {
     private String gmtUserName;
     private String gmtCreate;
     private String gmtUpdateTime;
-    private String status;
+    private String taskStatus;
 }

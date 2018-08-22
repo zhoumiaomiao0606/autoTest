@@ -39,7 +39,7 @@ public class LoanProcessConst {
     /**
      * 流程外的节点
      */
-    public static final Set<String> OUTSIDE_LOAN_PROCESS_NODE_LIST = Sets.newHashSet(
+    public static final Set<String> OUTSIDE_LOAN_PROCESS_KEYS = Sets.newHashSet(
             INFO_SUPPLEMENT.getCode(),
             CREDIT_SUPPLEMENT.getCode(),
             FINANCIAL_SCHEME_MODIFY_APPLY.getCode(),
@@ -48,6 +48,15 @@ public class LoanProcessConst {
             REFUND_APPLY_REVIEW.getCode(),
             CUSTOMER_REPAY_PLAN_RECORD.getCode(),
             COLLECTION_WORKBENCH.getCode(),
+            OUTWORKER_COST_APPLY.getCode(),
+            OUTWORKER_COST_APPLY_REVIEW.getCode()
+    );
+
+    /**
+     * 审核-无需order_id
+     */
+    public static final Set<String> APPROVAL_NOT_NEED_ORDER_ID_PROCESS_KEYS = Sets.newHashSet(
+            // 一个报销单 --> N个order_id
             OUTWORKER_COST_APPLY.getCode(),
             OUTWORKER_COST_APPLY_REVIEW.getCode()
     );

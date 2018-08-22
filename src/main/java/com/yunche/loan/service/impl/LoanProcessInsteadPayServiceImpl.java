@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.*;
@@ -14,7 +13,6 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,13 +41,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
     private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
-    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
-
-    @Autowired
     private LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
-
-    @Autowired
-    private LoanProcessLogDOMapper loanProcessLogDOMapper;
 
     @Autowired
     private TaskService taskService;
@@ -90,7 +82,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
 //        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessInsteadPayDO);
 
         // 日志
-        log(approval);
+        loanProcessApprovalCommonService.log(approval);
 
         // 获取当前执行任务（activiti中）
         Task task = loanProcessApprovalCommonService.getTask(loanProcessDO.getProcessInstId(), approval.getTaskDefinitionKey());
@@ -190,45 +182,6 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         Preconditions.checkNotNull(loanProcessInsteadPayDO, "流程记录丢失");
 
         return loanProcessInsteadPayDO;
-    }
-
-    /**
-     * 获取 LoanBaseInfoDO
-     *
-     * @param loanBaseInfoId
-     * @return
-     */
-    private LoanBaseInfoDO getLoanBaseInfoDO(Long loanBaseInfoId) {
-        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanBaseInfoId);
-        Preconditions.checkNotNull(loanBaseInfoDO, "数据异常，贷款基本信息为空");
-        Preconditions.checkNotNull(loanBaseInfoDO.getLoanAmount(), "数据异常，贷款金额为空");
-        Preconditions.checkNotNull(loanBaseInfoDO.getBank(), "数据异常，贷款银行为空");
-
-        return loanBaseInfoDO;
-    }
-
-    /**
-     * 流程操作日志记录
-     *
-     * @param approval
-     */
-    private void log(ApprovalParam approval) {
-        // 是否需要日志记录
-        if (!approval.isNeedLog()) {
-            return;
-        }
-
-        LoanProcessLogDO loanProcessLogDO = new LoanProcessLogDO();
-        BeanUtils.copyProperties(approval, loanProcessLogDO);
-
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-        loanProcessLogDO.setUserId(loginUser.getId());
-        loanProcessLogDO.setUserName(loginUser.getName());
-
-        loanProcessLogDO.setCreateTime(new Date());
-
-        int count = loanProcessLogDOMapper.insertSelective(loanProcessLogDO);
-        Preconditions.checkArgument(count > 0, "操作日志记录失败");
     }
 
     /**

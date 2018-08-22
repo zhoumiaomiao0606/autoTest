@@ -29,9 +29,6 @@ public class LimiterAop {
     @Around("@annotation(com.yunche.loan.config.anno.Limiter)")
     public Object around(ProceedingJoinPoint point) throws Throwable {
 
-        String route = "";
-        int limit = 1;
-
         MethodSignature methodSignature = (MethodSignature) point.getSignature();
         Method method = methodSignature.getMethod();
 
@@ -39,8 +36,8 @@ public class LimiterAop {
          * 如果方法具有Limiter注解，则需要把method，limit拿出来
          */
         Limiter limiter = method.getAnnotation(Limiter.class);
-        route = limiter.route();
-        limit = limiter.limit();
+        String route = limiter.value();
+        int limit = limiter.limit();
 
         // 唯一：登录用户SessionId + 参数
         String obj = SecurityUtils.getSubject().getSession().getId().toString() + ":" + JSON.toJSONString(point.getArgs());

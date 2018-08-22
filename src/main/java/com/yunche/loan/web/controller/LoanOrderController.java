@@ -42,7 +42,7 @@ public class LoanOrderController {
      * @param param
      * @return
      */
-    @Limiter(route = "/api/v1/loanorder/creditapply/create")
+    @Limiter("/api/v1/loanorder/creditapply/create")
     @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<String> createCreditApplyOrder(@RequestBody CreditApplyOrderParam param) {
         return loanOrderService.createCreditApplyOrder(param);
@@ -78,7 +78,7 @@ public class LoanOrderController {
      * @param creditRecordParam
      * @return
      */
-    @Limiter(route = "/api/v1/loanorder/creditrecord/create")
+    @Limiter("/api/v1/loanorder/creditrecord/create")
     @PostMapping(value = "/creditrecord/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createCreditRecord(@RequestBody CreditRecordParam creditRecordParam) {
         return loanOrderService.createCreditRecord(creditRecordParam);
@@ -101,7 +101,7 @@ public class LoanOrderController {
      * @param loanCarInfoParam
      * @return
      */
-    @Limiter(route = "/api/v1/loanorder/carinfo/create")
+    @Limiter("/api/v1/loanorder/carinfo/create")
     @PostMapping(value = "/carinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createLoanCarInfo(@RequestBody LoanCarInfoParam loanCarInfoParam) {
         return loanOrderService.createLoanCarInfo(loanCarInfoParam);
@@ -146,7 +146,7 @@ public class LoanOrderController {
      * @param loanHomeVisitParam
      * @return
      */
-    @Limiter(route = "/api/v1/loanorder/homevisit/save")
+    @Limiter("/api/v1/loanorder/homevisit/save")
     @PostMapping(value = "/homevisit/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> saveLoanHomeVisit(@RequestBody LoanHomeVisitParam loanHomeVisitParam) {
         return loanOrderService.createOrUpdateLoanHomeVisit(loanHomeVisitParam);
