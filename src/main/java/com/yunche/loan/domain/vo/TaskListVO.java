@@ -57,6 +57,7 @@ public class TaskListVO {
     private String supplementTypeText;
     private String supplementContent;
     private String supplementStartTime;
+    private String applyLicensePlateArea;
 
     private String car_detail_id;
     // 已加

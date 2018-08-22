@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
@@ -21,6 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -151,6 +153,36 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
         return recombinationVO;
     }
 
+
+
+    @Override
+    public Map expensesAppDetail(Long id) {
+        List<Long> result = Lists.newArrayList();
+
+        List<LegworkReimbursementRelevanceVisitDO> legworkReimbursementRelevanceVisitDOS = legworkReimbursementRelevanceVisitDOMapper.selectByLegworkReimbursementId(id);
+        if (CollectionUtil.isNotEmpty(legworkReimbursementRelevanceVisitDOS)) {
+            if (legworkReimbursementRelevanceVisitDOS.size() > 0) {
+                if (legworkReimbursementRelevanceVisitDOS.get(0) != null) {
+                    for (LegworkReimbursementRelevanceVisitDO legworkReimbursementRelevanceVisitDO : legworkReimbursementRelevanceVisitDOS) {
+                        VisitDoorDO visitDoorDO = visitDoorDOMapper.selectByPrimaryKey(legworkReimbursementRelevanceVisitDO.getVisitDoorId());
+                        if (visitDoorDO != null) {
+                            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(visitDoorDO.getOrderId());
+                            if (loanOrderDO != null) {
+                                result.add(loanOrderDO.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Map map = Maps.newHashMap();
+        map.put("orders",result);
+        map.put("legwork",legworkReimbursementDOMapper.selectByPrimaryKey(id));
+        map.put("files",legworkReimbursementFileDOMapper.selectByLegworkReimbursementId(id));
+        return map;
+    }
+
     @Override
     public void expensesUpdate(LegworkReimbursementUpdateParam param) {
         if (param.getId() == null) {
@@ -167,4 +199,5 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
             legworkReimbursementFileDOMapper.insertSelective(legworkReimbursementFileDO);
         }
     }
+
 }

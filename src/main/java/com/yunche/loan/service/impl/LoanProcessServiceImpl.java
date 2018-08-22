@@ -10,7 +10,6 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.LoanProcessLogVO;
@@ -33,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -187,10 +185,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 业务单
-        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
+        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
 
         // 节点实时状态
-        LoanProcessDO loanProcessDO = getLoanProcess(approval.getOrderId());
+        LoanProcessDO loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(approval.getOrderId());
 
         // 贷款基本信息
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
@@ -348,30 +346,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         return ResultBean.ofSuccess(null, "[贷款信息登记]任务执行成功");
     }
-
-    /**
-     * 执行  -->   自动提交  （重复）新产生的[贷款信息登记]
-     *
-     * @param loanInfoRecordTaskList
-     */
-    private void doAutoCompleteLoanInfoRecordTask(List<Task> loanInfoRecordTaskList) {
-
-        if (CollectionUtils.isEmpty(loanInfoRecordTaskList)) {
-            return;
-        }
-
-        Map<String, Object> passVariables = Maps.newHashMap();
-        passVariables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
-
-        // 剩下的（新产生的）  ==>  全直接在activiti中完成
-        loanInfoRecordTaskList.stream()
-                .forEach(task -> {
-
-                    // 在activiti中完成
-                    completeTask(task.getId(), passVariables);
-                });
-    }
-
 
     /**
      * 反审
@@ -1266,7 +1240,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkArgument(notRemitReview, "订单已放款，无法弃单！");
 
         // 业务单
-        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
+        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -1696,52 +1670,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         doUpdateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus, approval);
 
         // 执行更新
-        doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
-    }
-
-    /**
-     * 执行 - 更新本地已执行的任务状态
-     *
-     * @param loanProcessDO
-     * @param taskDefinitionKey
-     * @param taskProcessStatus
-     */
-    private void doUpdateCurrentTaskProcessStatus(LoanProcessDO loanProcessDO, String taskDefinitionKey, Byte taskProcessStatus) {
-        // 方法名拼接   setXXX
-        String methodBody = null;
-        for (LoanProcessEnum e : LoanProcessEnum.values()) {
-
-            if (e.getCode().equals(taskDefinitionKey)) {
-
-                String[] keyArr = null;
-
-                if (taskDefinitionKey.startsWith("servicetask")) {
-                    keyArr = taskDefinitionKey.split("servicetask");
-                } else if (taskDefinitionKey.startsWith("usertask")) {
-                    keyArr = taskDefinitionKey.split("usertask");
-                }
-
-                // 下划线转驼峰
-                methodBody = StringUtil.underline2Camel(keyArr[1]);
-                break;
-            }
-        }
-
-        // setXX
-        String methodName = "set" + methodBody;
-
-        // 反射执行
-        try {
-
-            // 获取反射对象
-            Class<? extends LoanProcessDO> loanProcessDOClass = loanProcessDO.getClass();
-            // 获取对应method
-            Method method = loanProcessDOClass.getMethod(methodName, Byte.class);
-            // 执行method
-            Object result = method.invoke(loanProcessDO, taskProcessStatus);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        loanProcessApprovalCommonService.doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
     }
 
     /**
@@ -1951,33 +1880,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
         Preconditions.checkArgument(count > 0, "[资料增补]提交失败");
-    }
-
-    /**
-     * 获取业务单
-     *
-     * @param orderId
-     * @return
-     */
-    public LoanOrderDO getLoanOrder(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
-        Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
-
-        return loanOrderDO;
-    }
-
-    /**
-     * 获取 订单流程节点 实时状态记录
-     *
-     * @param orderId
-     * @return
-     */
-    private LoanProcessDO getLoanProcess(Long orderId) {
-        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
-
-        return loanProcessDO;
     }
 
     /**
@@ -2632,8 +2534,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "任务Key不能为空");
 
-        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(orderId);
-        LoanProcessDO_ loanProcessDO_ = loanProcessApprovalCommonService.getLoanProcess(orderId, processId, taskDefinitionKey);
+        LoanProcessDO_ loanProcessDO_ = loanProcessApprovalCommonService.getLoanProcess_(orderId, processId, taskDefinitionKey);
+
+        LoanProcessDO loanProcessDO = null;
+        if (loanProcessDO_ instanceof LoanProcessDO) {
+            loanProcessDO = (LoanProcessDO) loanProcessDO_;
+        } else {
+            loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(orderId);
+        }
 
         TaskStateVO taskStateVO = new TaskStateVO();
         taskStateVO.setTaskDefinitionKey(taskDefinitionKey);
@@ -2642,16 +2550,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Byte taskStatus = null;
 
         // 非进行中
-        if (false) {
-//        if (!ORDER_STATUS_DOING.equals(loanOrderDO.getStatus())) {
+        if (!ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())) {
 
-            if (ORDER_STATUS_END.equals(loanOrderDO.getStatus())) {
+            if (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus())) {
                 taskStatus = 11;
                 taskStateVO.setTaskStatus(taskStatus);
                 taskStateVO.setTaskStatusText("已结单");
             }
 
-            if (ORDER_STATUS_CANCEL.equals(loanOrderDO.getStatus())) {
+            if (ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus())) {
                 taskStatus = 12;
                 taskStateVO.setTaskStatus(taskStatus);
                 taskStateVO.setTaskStatusText("已弃单");
@@ -2999,7 +2906,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL, actualLoanAmount);
 
             // 预计 < 13W,但实际 >= 13W
-            if (EXPECT_LOAN_AMOUNT_LT_13W.equals(expectLoanAmount) && null != actualLoanAmount && actualLoanAmount >= ACTUAL_LOAN_AMOUNT_13W) {
+            if (EXPECT_LOAN_AMOUNT_LT_13W.equals(expectLoanAmount) && actualLoanAmount >= ACTUAL_LOAN_AMOUNT_13W) {
 
                 List<LoanCreditInfoDO> customerIdAndType = loanCreditInfoDOMapper.getByCustomerIdAndType(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_SOCIAL);
                 // 没录过[社会征信]
@@ -3007,6 +2914,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     // target
                     variables.put(PROCESS_VARIABLE_TARGET, SOCIAL_CREDIT_RECORD.getCode());
                 }
+
+            } else {
+                // target 正常通过
+                variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
             }
         }
     }
@@ -3112,6 +3023,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply())) {
                 variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
+            } else {
+                variables.put(PROCESS_VARIABLE_TARGET, BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode());
             }
 
         }

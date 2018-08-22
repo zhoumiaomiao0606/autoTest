@@ -21,8 +21,11 @@ public class BusinessReviewCalculateParam {
     private String fair_assess_fee;//公正评估费
     @NotBlank
     private String apply_license_plate_out_province_fee;//上省外牌费用
+
     @NotBlank
     private String based_margin_fee;//基础保证金
+
+    private String rebate_not_deducted;//返利不内扣
     @NotBlank
     private String service_fee_type;//服务费  1 打款内扣 2 返利内扣 3 实收
     @NotBlank
@@ -39,6 +42,8 @@ public class BusinessReviewCalculateParam {
     private String apply_license_plate_out_province_fee_type;//上省外牌费用 1 打款内扣 2 返利内扣 3 实收
     @NotBlank
     private String based_margin_fee_type;//基础保证金 1 打款内扣 2 返利内扣 3 实收
+
+    private String rebate_not_deducted_type;
     @NotBlank
     private String extra_fee;
     @NotBlank

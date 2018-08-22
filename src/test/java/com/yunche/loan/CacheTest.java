@@ -29,7 +29,8 @@ public class CacheTest extends BaseTest {
     @Resource
     PartnerDOMapper partnerDOMapper;
 
-    @Test
+
+   // @Test
     public void doA1123(){
         try {
             ZhongAnHttpUtil.queryInfo("金佳琦","15757135913","330621199310023016","1","2","3333","1","3312333");

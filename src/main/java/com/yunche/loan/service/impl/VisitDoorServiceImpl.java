@@ -67,7 +67,8 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         visitDoorVO.setResult(lawWorkQuery);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
         if(id != null){
-            VisitDoorDO v = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId,bankRepayImpRecordId);
+           // VisitDoorDO v = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId,bankRepayImpRecordId);
+            VisitDoorDO v = visitDoorDOMapper.selectByPrimaryKey(id);
             visitDoorVO.setVisitDoorDO(v == null ? new VisitDoorDO():v);
         }else{
             visitDoorVO.setVisitDoorDO(new VisitDoorDO());
@@ -123,7 +124,7 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         VisitDoorVO visitDoorVO =new VisitDoorVO();
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
         if(id != null){
-            VisitDoorDO v = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId,bankRepayImpRecordId);
+            VisitDoorDO v = visitDoorDOMapper.selectByPrimaryKey(id);
             visitDoorVO.setVisitDoorDO(v == null ? new VisitDoorDO():v);
         }else{
             visitDoorVO.setVisitDoorDO(new VisitDoorDO());

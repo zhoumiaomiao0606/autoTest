@@ -66,7 +66,7 @@ public class ZhongAnHttpUtil {
         //发起请求
         CommonResponse response = (CommonResponse) client.call(request);
         String retMsg = response.getBizContent();
-        System.out.println("QQQ"+retMsg);
+        logger.info("众安大数据返回信息:"+retMsg);
         if(retMsg !=null&&!"".equals(retMsg)){
             returnMap = (Map)JSON.parse(retMsg);
             String param1 = (String)returnMap.get("param");

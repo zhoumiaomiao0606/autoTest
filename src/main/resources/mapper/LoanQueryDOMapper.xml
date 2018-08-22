@@ -663,7 +663,8 @@
              cost.extra_fee_type                             AS cost_extra_fee_type,
              cost.other_fee_type                             AS cost_other_fee_type,
              remit.remit_amount                              AS remit_amount,
-             remit.return_rate_amount                        AS remit_return_rate_amount
+             remit.return_rate_amount                        AS remit_return_rate_amount,
+             cost.rebate_not_deducted                        AS rebate_not_deducted
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join cost_details cost on main_order.cost_details_id = cost.id

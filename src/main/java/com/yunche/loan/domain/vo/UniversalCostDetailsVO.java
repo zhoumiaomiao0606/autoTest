@@ -25,6 +25,8 @@ public class UniversalCostDetailsVO {
     private String cost_extra_fee;
     //其他费用
     private String cost_other_fee;
+    //返利不内扣
+    private String rebate_not_deducted;
 
     //1.打款内扣  2.返利内扣  3.实收
     private String cost_service_fee_type;

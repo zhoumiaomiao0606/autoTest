@@ -568,6 +568,7 @@
                           deputy_c.collection_workbench           AS taskStatus
                       </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
+                           door.id                                                       AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -579,6 +580,7 @@
                            deputy_c.visit_collection_review        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection'">
+                           door.id                                                       AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -706,6 +708,8 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
+                          compensation.compensation_amount             AS compensationAmount,
+                          compensation.partner_compensation_amount     AS partnerCompensationAmount,
                           deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <otherwise>
@@ -768,16 +772,19 @@
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
+                  left join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
+                  and door.order_id = join_urgerecord.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
+                  left join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
+                  and door.order_id = join_urgerecord.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_car_handle'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_apply_compensation compensation on compensation.order_id = main.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_car_out'">
@@ -954,9 +961,11 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
                       AND case when #{taskStatus} = 0 then deputy_c.visit_collection_review != 0         else deputy_c.visit_collection_review    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then door.status != 0                              else door.status                         = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_visit_collection'">
                       AND case when #{taskStatus} = 0 then deputy_c.visit_collection != 0                else deputy_c.visit_collection    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then door.status != 0                              else door.status                  = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_car_handle'">
                       AND case when #{taskStatus} = 0 then deputy_c.car_handle != 0                     else deputy_c.car_handle    = #{taskStatus} end
@@ -1948,12 +1957,15 @@
             orders.id 									     as orderId,
             customer.name 									 as customerName,
             customer.id_card  							     as customerIdCard,
+            customer.mobile                                  as customerMobile,
             car.car_type 									 as carType,
             vehicle.apply_license_plate_area                 as vehicleApplyLicensePlateArea,
             area.area_name                                   as vehicleApplyLicensePlateAreaName,
             financial.bank 									 as financialBank,
             partner.name   									 as partnerName,
-            employee.name  									 as salesmanName
+            employee.name  									 as salesmanName,
+            useGetSmallCarName(car.car_detail_id)            as carName,
+            door.visit_date                                  as visitDate
         from
         visit_door door
         left join loan_order orders on door.order_id = orders.id
@@ -1967,6 +1979,7 @@
         left join employee employee on employee.id = base.salesman_id
         left join base_area area on area.area_id = vehicle.apply_license_plate_area
       where
+      door.status = 1 and
       case when 3 = #{maxGroupLevel} then true
       else door.receiver_id = #{loginUserId} end
       and door.id not in (select visit_door_id from legwork_reimbursement_relevance_visit )
@@ -1985,7 +1998,7 @@
             other_fee       as otherFee,
             apply_user_id   as gmtUser,
             apply_user_name as gmtUserName,
-            gmt_create_time as gmtCreate,
+            DATE_FORMAT(gmt_create_time,'%Y-%m-%d %H:%i:%S') as gmtCreate,
             gmt_update_time as gmtUpdateTime,
             status          as taskStatus
         from legwork_reimbursement

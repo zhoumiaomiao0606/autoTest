@@ -7,7 +7,7 @@ import com.yunche.loan.domain.param.SubimitVisitDoorParam;
 import com.yunche.loan.domain.vo.LegworkReimbursementUpdateParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
 
-import java.util.List;
+import java.util.Map;
 
 public interface LegworkReimbursementService {
 
@@ -20,4 +20,6 @@ public interface LegworkReimbursementService {
     RecombinationVO expensesDetail(Long id);
 
     void expensesUpdate(LegworkReimbursementUpdateParam param);
+
+    Map expensesAppDetail(Long id);
 }

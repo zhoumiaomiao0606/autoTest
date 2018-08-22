@@ -1,9 +1,5 @@
 package com.yunche.loan.config.constant;
 
-import com.google.common.collect.Maps;
-
-import java.util.Map;
-
 /**
  * @author liuzhe
  * @date 2018/3/23
@@ -75,10 +71,4 @@ public class LoanOrderProcessConst {
      */
     public static final Byte ORDER_STATUS_CANCEL = 3;
 
-
-    public static final Map<String, String> taskDefinitionKeyFiledMap = Maps.newHashMap();
-
-    static {
-//        taskDefinitionKeyFiledMap.put(CREDIT_APPLY.getCode(), );
-    }
 }

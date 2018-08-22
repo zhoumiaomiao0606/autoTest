@@ -102,4 +102,21 @@ public class DateUtil {
         }
 
     }
+
+    /**
+     * 时间戳日期，去掉时分秒
+     * @param date
+     * @return
+     */
+   public static Date getDateTo10(Date date){
+       Date psDate =null;
+       try {
+           SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+           String s = sdf.format(date);
+           psDate =  sdf.parse(s);
+       } catch (ParseException e) {
+           throw new BizException("日期格式错误");
+       }
+        return psDate;
+   }
 }

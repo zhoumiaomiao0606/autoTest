@@ -62,4 +62,6 @@ public class BusinessReviewUpdateParam  {
     private String remit_amount;//打款金额
     @NotBlank
     private String insurance_situation;//保险情况
+    @NotBlank
+    private String rebate_not_deducted;
 }

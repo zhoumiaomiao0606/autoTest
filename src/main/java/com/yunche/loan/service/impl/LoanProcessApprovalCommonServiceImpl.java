@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.*;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -230,7 +232,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                 String msg = "详细信息请联系管理员";
 
                 String taskName = LoanProcessEnum.getNameByCode(approval.getTaskDefinitionKey());
-                //审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补
+                // 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补  / 4-新增任务  / 5-反审
                 String result = "[异常]";
                 switch (approval.getAction().intValue()) {
                     case 0:
@@ -244,6 +246,12 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                         break;
                     case 3:
                         result = "[发起资料增补]";
+                        break;
+                    case 4:
+                        result = "[新增任务]";
+                        break;
+                    case 5:
+                        result = "[发起反审]";
                         break;
                     default:
                         result = "[异常]";
@@ -325,7 +333,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
     }
 
     @Override
-    public LoanProcessDO_ getLoanProcess(Long orderId, Long processId, String taskDefinitionKey) {
+    public LoanProcessDO_ getLoanProcess_(Long orderId, Long processId, String taskDefinitionKey) {
         Preconditions.checkNotNull(orderId, "orderId不能为空");
         Preconditions.checkNotNull(taskDefinitionKey, "taskDefinitionKey不能为空");
 
@@ -368,6 +376,67 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         Preconditions.checkNotNull(loanProcessDO_, "流程记录丢失");
 
         return loanProcessDO_;
+    }
+
+    /**
+     * 获取 订单流程节点 实时状态记录
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public LoanProcessDO getLoanProcess(Long orderId) {
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
+
+        return loanProcessDO;
+    }
+
+    /**
+     * 执行 - 更新本地已执行的任务状态
+     *
+     * @param loanProcessDO_
+     * @param taskDefinitionKey
+     * @param taskProcessStatus
+     */
+    @Override
+    public void doUpdateCurrentTaskProcessStatus(LoanProcessDO_ loanProcessDO_,
+                                                 String taskDefinitionKey, Byte taskProcessStatus) {
+        // 方法名拼接   setXXX
+        String methodBody = null;
+        for (LoanProcessEnum e : LoanProcessEnum.values()) {
+
+            if (e.getCode().equals(taskDefinitionKey)) {
+
+                String[] keyArr = null;
+
+                if (taskDefinitionKey.startsWith("servicetask")) {
+                    keyArr = taskDefinitionKey.split("servicetask");
+                } else if (taskDefinitionKey.startsWith("usertask")) {
+                    keyArr = taskDefinitionKey.split("usertask");
+                }
+
+                // 下划线转驼峰
+                methodBody = StringUtil.underline2Camel(keyArr[1]);
+                break;
+            }
+        }
+
+        // setXX
+        String methodName = "set" + methodBody;
+
+        // 反射执行
+        try {
+
+            // 获取反射对象
+            Class<? extends LoanProcessDO_> loanProcessDOClass = loanProcessDO_.getClass();
+            // 获取对应method
+            Method method = loanProcessDOClass.getMethod(methodName, Byte.class);
+            // 执行method
+            Object result = method.invoke(loanProcessDO_, taskProcessStatus);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
