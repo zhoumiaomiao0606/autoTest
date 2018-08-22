@@ -17,6 +17,7 @@ import com.yunche.loan.domain.param.BankRepayParam;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankRepayRecordService;
 import com.yunche.loan.service.CollectionService;
+import com.yunche.loan.service.LoanProcessCollectionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,9 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 
     @Autowired
     BankFileListDOMapper bankFileListDOMapper;
+
+    @Autowired
+    LoanProcessCollectionService  loanProcessCollectionService;
     @Override
     public ResultBean query() {
 //        //查询客户详细信息
@@ -222,20 +226,28 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
      * @return
      */
     private Long recordImportBatch(String ossKey) {
+        Long bankFileListId =null;
+
         BankFileListDO bankFileListDO = new BankFileListDO();
         String[] split1 = ossKey.split(File.separator);
         String fileName =ossKey;
         if(split1.length>0){
             fileName = split1[split1.length-1].trim();
         }
-        bankFileListDO.setFileName(fileName);
-        bankFileListDO.setFileKey(ossKey);
-        bankFileListDO.setFileType(IDict.K_WJLX.WJLX_1);
-        bankFileListDO.setGmtCreate(new Date());
-        bankFileListDO.setOperator("auto");
-        int count = bankFileListDOMapper.insertSelective(bankFileListDO);
-        Preconditions.checkArgument(count>0,"插入失败");
-        Long bankFileListId =  bankFileListDO.getId();
+
+        BankFileListDO fileDO = bankFileListDOMapper.selectByFileName(fileName.trim());
+        if(fileDO!=null){
+            bankFileListId=fileDO.getId();
+        }else{
+            bankFileListDO.setFileName(fileName);
+            bankFileListDO.setFileKey(ossKey);
+            bankFileListDO.setFileType(IDict.K_WJLX.WJLX_1);
+            bankFileListDO.setGmtCreate(new Date());
+            bankFileListDO.setOperator("auto");
+            int count = bankFileListDOMapper.insertSelective(bankFileListDO);
+            Preconditions.checkArgument(count>0,"插入失败");
+            bankFileListId =  bankFileListDO.getId();
+        }
         return bankFileListId;
     }
 
@@ -396,6 +408,9 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 bankUrgeRecordDOMapper.updateByPrimaryKeySelective(bankUrgeRecordDO);
             }
 
+            //TODO 开启催收任务
+            loanProcessCollectionService.startProcess(e.getOrderId(),e.getBankFileListId());
+
         });
     }
 
@@ -428,9 +443,10 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
             }
             Long batchId = recordImportBatch(ossKey);
             //获取批次号
-            List bankRepayList2 =  bankRepayList.stream().filter(f-> (f.getCredentialNo()!=null || f.getCardNumber()!=null)).map(e->{
+            List<BankFileListRecordDO> bankRepayList2 =  bankRepayList.stream().filter(f-> (f.getCredentialNo()!=null || f.getCardNumber()!=null)).map(e->{
                 BankRepayParam bankRepayParam = bankRecordQueryDOMapper.selectByIdCardOrRepayCard(e.getCredentialNo(), e.getCardNumber());
                 if(bankRepayParam!=null){
+
                     e.setOrderId(bankRepayParam.getOrderId());
                     e.setCardNumber(bankRepayParam.getRepayCard());
                     e.setCredentialNo(bankRepayParam.getIdCard());
@@ -438,21 +454,28 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                     e.setBankFileListId(batchId);
                     e.setStatus(VALID_STATUS);
                 }else{
-                    e.setIsCustomer(K_YORN_NO);
-                    e.setCredentialNo(e.getCredentialNo()==null?"-1":e.getCredentialNo());
-                    e.setCardNumber(e.getCardNumber()==null?"-1":e.getCardNumber());
-                    e.setBankFileListId(batchId);
-                    e.setOrderId((long)-1);//不存在的记录
-                    e.setStatus(INVALID_STATUS);
+                    //非系统客户，记录暂不导入
+                    LOG.info("客户不存在，批次【"+batchId+"】,客户证件号码【"+e.getCredentialNo()+"】、卡号【"+e.getCardNumber()+"】");
+//                    e.setIsCustomer(K_YORN_NO);
+//                    e.setCredentialNo(e.getCredentialNo()==null?"-1":e.getCredentialNo());
+//                    e.setCardNumber(e.getCardNumber()==null?"-1":e.getCardNumber());
+//                    e.setBankFileListId(batchId);
+//                    e.setOrderId((long)-1);//不存在的记录
+//                    e.setStatus(INVALID_STATUS);
                 }
                 return e;
 
             }).collect(Collectors.toList());
 
-            if (!CollectionUtils.isEmpty(bankRepayList2)) {
-                int count = bankFileListRecordDOMapper.insertBatch(bankRepayList2);
-                Preconditions.checkArgument(count == bankRepayList2.size(), "批量插入失败");
-            }
+            //重复记录过滤
+            bankRepayList2.stream().filter(Objects::nonNull).forEach(e->{
+
+                BankFileListRecordDO recordDO = bankFileListRecordDOMapper.selectByPrimaryKey(e);
+                if(recordDO==null){
+                    int insert = bankFileListRecordDOMapper.insert(e);
+                    Preconditions.checkArgument(insert>0,"插入失败");
+                }
+            });
         } catch (Exception e) {
             Preconditions.checkArgument(false, e.getMessage());
         }
