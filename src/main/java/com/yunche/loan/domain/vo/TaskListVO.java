@@ -83,6 +83,7 @@ public class TaskListVO {
     private String dataFlowId;
     private String dataFlowType;
     private String dataFlowTypeText;
+    private String visitDoorId;
     // 未加
     /**
      * 任务类型：1-已提交;  2-未提交;  3-打回;

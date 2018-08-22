@@ -33,7 +33,7 @@
     risk_fee, fair_assess_fee, apply_license_plate_out_province_fee, based_margin_fee, 
     service_fee_type, apply_license_plate_deposit_fee_type, performance_fee_type, install_gps_fee_type, 
     risk_fee_type, fair_assess_fee_type, apply_license_plate_out_province_fee_type, based_margin_fee_type, 
-    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature，rebate_not_deducted
+    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature,rebate_not_deducted
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 

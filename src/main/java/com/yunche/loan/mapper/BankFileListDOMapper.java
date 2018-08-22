@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.BankFileListDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface BankFileListDOMapper {
@@ -16,4 +17,6 @@ public interface BankFileListDOMapper {
     int updateByPrimaryKeySelective(BankFileListDO record);
 
     int updateByPrimaryKey(BankFileListDO record);
+
+    BankFileListDO selectByFileName(@Param("fileName") String fileName);
 }

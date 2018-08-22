@@ -36,7 +36,6 @@ public class BankRepayRecordController {
     @GetMapping(value = "/imp")
     public ResultBean importFile(@RequestParam("key") String ossKey){
       return bankRepayRecordService.importFile(ossKey);
-
     }
 
     @GetMapping(value = "/detail")
