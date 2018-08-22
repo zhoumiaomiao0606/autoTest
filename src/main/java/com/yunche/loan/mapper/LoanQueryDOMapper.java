@@ -259,4 +259,13 @@ public interface LoanQueryDOMapper {
     MortgageInfoVO selectMortgageInfo(Long orderId);
 
     List<UniversalTelephoneCollectionEmployee> selectVisitDoorEmployee();
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:  模糊查询
+    */
+    List<CustomerOrderVO> selectCustomerOrder( @Param("name") String name);
 }

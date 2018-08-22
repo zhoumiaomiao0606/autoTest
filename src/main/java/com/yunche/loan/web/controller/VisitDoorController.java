@@ -57,5 +57,13 @@ public class VisitDoorController {
         visitDoorService.visitDoorRevoke(param);
         return ResultBean.ofSuccess(null,"撤诉成功");
     }
+    /**
+     * 新增一条代办任务
+     */
+    @PostMapping(value = "/insertnewinfo", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean insertNewInfo(@RequestBody @Validated VisitDoorDO visitDoorDO){
+        visitDoorService.insertNewInfo(visitDoorDO);
+        return ResultBean.ofSuccess("","录入成功");
+    }
 
 }

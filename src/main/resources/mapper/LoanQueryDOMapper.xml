@@ -442,7 +442,8 @@
         partner.name                                                                            AS partner_name,
         useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
         salesman.name                                                                           AS salesman_name,
-        car.business_source                                                                     AS car_business_source
+        car.business_source                                                                     AS car_business_source,
+        loan.bank                                                                               AS bank
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
         left join loan_process process on main_order.id = process.order_id
@@ -548,8 +549,12 @@
            v.now_driving_license_owner       AS now_driving_license_owner,
            i.vehicle_property                AS vehicle_property,
            i.car_type                        AS car_type,
+           i.car_key                         AS car_key,
+           i.gps_num                         AS gps_num,
            v.color                           AS color,
            v.license_plate_type              AS license_plate_type,
+           v.purchase_car_invoice_num              AS purchase_car_invoice_num,
+           v.license_plate_number              AS license_plate_number,
            CONCAT(area.parent_area_name,area.area_name)                            AS vehicle_apply_license_plate_area,
            v.engine_number                   AS engine_number,
            v.registration_certificate_number AS registration_certificate_number,
@@ -1991,10 +1996,32 @@
 
     </select>
 
-    <select id="selectUniversalFileByLegworkReimbursementId" resultType="com.yunche.loan.domain.vo.UniversalLegworkReimbursement" parameterType="java.lang.Long" >
+    <select id="selectUniversalFileByLegworkReimbursementId"  resultType="com.yunche.loan.domain.vo.UniversalLegworkReimbursement" parameterType="java.lang.Long" >
         select
         urls
         from legwork_reimbursement_file
         where legwork_reimbursement_id = #{legworkReimbursementId,jdbcType=BIGINT}
+    </select>
+
+
+    <!--======================================通用模糊客户查询=========================================================-->
+    <select id="selectCustomerOrder"  resultType="com.yunche.loan.domain.vo.CustomerOrderVO">
+        select
+        main_order.id                                                                           AS order_id,
+        customer.id_card                                                                        AS customer_id_card,
+        customer.name                                                                           AS customer_name,
+        partner.name                                                                            AS partner_name,
+        salesman.name                                                                           AS salesman_name
+        from loan_order main_order
+        left join loan_customer customer on customer.id = main_order.loan_customer_id
+        left join loan_process p on main_order.id = p.order_id
+        left join loan_base_info b on main_order.loan_base_info_id = b.id
+        left join employee salesman on b.salesman_id = salesman.id
+        left join partner partner on b.partner_id = partner.id
+        where
+        p.remit_review = 1
+        <if test="name!=null">
+            and customer.name like concat(concat('%',#{name}),'%')
+        </if>
     </select>
 </mapper>

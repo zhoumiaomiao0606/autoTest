@@ -10,7 +10,6 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.LoanProcessLogVO;
@@ -33,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -1672,52 +1670,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         doUpdateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus, approval);
 
         // 执行更新
-        doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
-    }
-
-    /**
-     * 执行 - 更新本地已执行的任务状态
-     *
-     * @param loanProcessDO
-     * @param taskDefinitionKey
-     * @param taskProcessStatus
-     */
-    private void doUpdateCurrentTaskProcessStatus(LoanProcessDO loanProcessDO, String taskDefinitionKey, Byte taskProcessStatus) {
-        // 方法名拼接   setXXX
-        String methodBody = null;
-        for (LoanProcessEnum e : LoanProcessEnum.values()) {
-
-            if (e.getCode().equals(taskDefinitionKey)) {
-
-                String[] keyArr = null;
-
-                if (taskDefinitionKey.startsWith("servicetask")) {
-                    keyArr = taskDefinitionKey.split("servicetask");
-                } else if (taskDefinitionKey.startsWith("usertask")) {
-                    keyArr = taskDefinitionKey.split("usertask");
-                }
-
-                // 下划线转驼峰
-                methodBody = StringUtil.underline2Camel(keyArr[1]);
-                break;
-            }
-        }
-
-        // setXX
-        String methodName = "set" + methodBody;
-
-        // 反射执行
-        try {
-
-            // 获取反射对象
-            Class<? extends LoanProcessDO> loanProcessDOClass = loanProcessDO.getClass();
-            // 获取对应method
-            Method method = loanProcessDOClass.getMethod(methodName, Byte.class);
-            // 执行method
-            Object result = method.invoke(loanProcessDO, taskProcessStatus);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        loanProcessApprovalCommonService.doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
     }
 
     /**
@@ -2953,7 +2906,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL, actualLoanAmount);
 
             // 预计 < 13W,但实际 >= 13W
-            if (EXPECT_LOAN_AMOUNT_LT_13W.equals(expectLoanAmount) && null != actualLoanAmount && actualLoanAmount >= ACTUAL_LOAN_AMOUNT_13W) {
+            if (EXPECT_LOAN_AMOUNT_LT_13W.equals(expectLoanAmount) && actualLoanAmount >= ACTUAL_LOAN_AMOUNT_13W) {
 
                 List<LoanCreditInfoDO> customerIdAndType = loanCreditInfoDOMapper.getByCustomerIdAndType(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_SOCIAL);
                 // 没录过[社会征信]
@@ -2961,6 +2914,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     // target
                     variables.put(PROCESS_VARIABLE_TARGET, SOCIAL_CREDIT_RECORD.getCode());
                 }
+
+            } else {
+                // target 正常通过
+                variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
             }
         }
     }
@@ -3066,6 +3023,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply())) {
                 variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
+            } else {
+                variables.put(PROCESS_VARIABLE_TARGET, BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode());
             }
 
         }
