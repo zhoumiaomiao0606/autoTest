@@ -130,6 +130,12 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                     loanCustomerDO.setOpenCardOrder(param.getOpenCardOrder());
                     loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
                 }
+
+                //更新客户信息 签单类型
+                LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, null);
+                customerDO.setSignatureType(param.getSignatureType());
+                int count = loanCustomerDOMapper.updateByPrimaryKeySelective(customerDO);
+                Preconditions.checkArgument(count > 0, "保存失败");
             }
         }
     }

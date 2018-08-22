@@ -4,8 +4,6 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
-import com.yunche.loan.domain.entity.LoanCustomerDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import com.yunche.loan.domain.param.LoanTelephoneVerifyParam;
 import com.yunche.loan.mapper.EmployeeDOMapper;
@@ -63,12 +61,6 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
             int count = loanTelephoneVerifyDOMapper.updateByPrimaryKeySelective(loanTelephoneVerifyDO);
             Preconditions.checkArgument(count > 0, "保存失败");
         }
-        //更新客户信息 签单类型
-        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(loanTelephoneVerifyDO.getOrderId()));
-        LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(orderDO.getLoanCustomerId(), null);
-        customerDO.setSignatureType(loanTelephoneVerifyParam.getSignatureType());
-        int count = loanCustomerDOMapper.updateByPrimaryKeySelective(customerDO);
-        Preconditions.checkArgument(count > 0, "保存失败");
         return ResultBean.ofSuccess(null);
     }
 }
