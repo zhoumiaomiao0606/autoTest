@@ -45,6 +45,9 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
     @Autowired
     private VehicleHandleDOMapper vehicleHandleDOMapper;
 
+    @Autowired
+    private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
+
     @Override
     public VehicleOutboundVO detail(Long orderId,Long bank_repay_imp_record_id)
     {
@@ -132,5 +135,105 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         }
 
         return ResultBean.ofSuccess(null, "保存成功");
+    }
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:
+    */
+    @Override
+    public VehicleOutboundInfo vehicleOutbound(Long orderId, Long bank_repay_imp_record_id)
+    {
+        //车辆出库登记
+        VehicleOutboundInfo vehicleOutboundInfo =new VehicleOutboundInfo();
+        VehicleOutboundDOKey vehicleOutboundDOKey =new VehicleOutboundDOKey();
+        vehicleOutboundDOKey.setOrderid(orderId);
+        vehicleOutboundDOKey.setBankRepayImpRecordId(bank_repay_imp_record_id);
+        VehicleOutboundDO vehicleOutboundDO = vehicleOutboundDOMapper.selectByPrimaryKey(vehicleOutboundDOKey);
+        //根据区id查询省市id
+        if(vehicleOutboundDO !=null )
+        {
+            StringBuilder stringBuilder =new StringBuilder();
+            if(vehicleOutboundDO.getAddress()!=null && vehicleOutboundDO.getAddress().trim() != "")
+            {
+                Long countyId = Long.valueOf(vehicleOutboundDO.getAddress());
+                BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
+                vehicleOutboundInfo.setCountyId(countyId);
+                if (cityAreaDO != null && cityAreaDO.getParentAreaId() != null) {
+                    vehicleOutboundInfo.setCityId(cityAreaDO.getParentAreaId());
+                    BaseAreaDO provenceAreaDO = baseAreaDOMapper.selectByPrimaryKey(cityAreaDO.getParentAreaId(), VALID_STATUS);
+                    vehicleOutboundInfo.setProvenceId(provenceAreaDO.getParentAreaId());
+                    if(provenceAreaDO.getParentAreaName() !=null)
+                    {
+                        stringBuilder.append(provenceAreaDO.getParentAreaName());
+                    }
+                    stringBuilder.append(provenceAreaDO.getAreaName());
+                }
+                stringBuilder.append(cityAreaDO.getAreaName());
+            }
+
+            BeanUtils.copyProperties(vehicleOutboundDO, vehicleOutboundInfo);
+            vehicleOutboundInfo.setAddress(stringBuilder.toString());
+
+        }
+        return vehicleOutboundInfo;
+    }
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:
+    */
+    @Override
+    public BaseCustomerInfoVO customer(Long orderId,Long bank_repay_imp_record_id)
+    {
+        //客户主要信息
+        BaseCustomerInfoVO baseCustomerInfoVO = loanQueryDOMapper.selectBaseCustomerInfoInfo(orderId);
+        LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectLastByOrderId(orderId);
+
+        if(loanApplyCompensationDO !=null)
+        {
+            baseCustomerInfoVO.setLoanBanlance(loanApplyCompensationDO.getLoanBanlance());
+            baseCustomerInfoVO.setCompensationAmount(loanApplyCompensationDO.getCompensationAmount());
+            baseCustomerInfoVO.setCurrArrears(loanApplyCompensationDO.getCurrArrears());
+        }
+
+        //车辆信息
+        VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
+        if(vehicleInfoVO != null)
+        {
+            baseCustomerInfoVO.setLicense_plate_number(vehicleInfoVO.getLicense_plate_number());
+            baseCustomerInfoVO.setCar_name(vehicleInfoVO.getCar_name());
+        }
+
+
+        // 清收成本
+        VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(orderId, bank_repay_imp_record_id));
+        if(vehicleHandleDO !=null)
+        {
+            baseCustomerInfoVO.setFinalCosts(vehicleHandleDO.getFinalCosts());
+        }
+
+        return baseCustomerInfoVO;
+    }
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:
+    */
+    @Override
+    public VehicleInfoVO vehicleInfo(Long orderId)
+    {
+        //车辆信息
+        VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
+        return vehicleInfoVO;
     }
 }

@@ -22,7 +22,8 @@ public class VehicleHandleController
     private VehicleHandleService vehicleHandleService;
 
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String orderId,Long bankRepayImpRecordId) {
+    public ResultBean detail(@RequestParam String orderId,Long bankRepayImpRecordId)
+    {
         return ResultBean.ofSuccess(vehicleHandleService.detail(Long.valueOf(orderId),bankRepayImpRecordId));
     }
 
@@ -31,5 +32,18 @@ public class VehicleHandleController
     public ResultBean<Void> update(@RequestBody @Validated VehicleHandleUpdateParam param) {
         vehicleHandleService.update(param);
         return ResultBean.ofSuccess(null,"保存成功");
+    }
+
+    /**
+     * @Author: ZhongMingxiao
+     * @Param:
+     * @return:
+     * @Date:
+     * @Description:  对接app分模块
+     */
+    @GetMapping(value = "/vehiclehandle")
+    public ResultBean vehicleHandle(@RequestParam String orderId,String bank_repay_imp_record_id)
+    {
+        return ResultBean.ofSuccess(vehicleHandleService.vehicleHandle(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
     }
 }

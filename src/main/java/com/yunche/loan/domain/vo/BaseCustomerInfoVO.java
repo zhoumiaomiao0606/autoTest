@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-08-14 16:53
@@ -44,4 +46,27 @@ public class BaseCustomerInfoVO
     private String partner_biz_area;
     //业务来源
     private String car_business_source;
+
+    //逾期金额
+    private BigDecimal currArrears;
+
+    //贷款金额
+    private BigDecimal loanBanlance;
+
+    //财务代偿金额
+    private BigDecimal compensationAmount;
+
+    //清收成本
+    private BigDecimal finalCosts;
+
+    //贷款银行
+    private String bank;
+    //车型
+
+    //车牌号
+    //车牌号
+    private String license_plate_number;
+
+    //车型  例如 奥迪
+    private String car_name;
 }

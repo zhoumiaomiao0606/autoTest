@@ -26,4 +26,5 @@ public interface LoanApplyCompensationDOMapper {
 
     LoanApplyCompensationDO selectByOrderIdAndDate(@Param("orderId")Long orderId,@Param("applyCompensationDate") Date applyCompensationDate);
 
+    LoanApplyCompensationDO selectLastByOrderId(@Param("orderId")Long orderId);
 }
