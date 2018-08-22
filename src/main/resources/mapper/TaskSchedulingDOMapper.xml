@@ -568,7 +568,6 @@
                           deputy_c.collection_workbench           AS taskStatus
                       </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
-                           door.id                                                       AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -772,8 +771,6 @@
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
-                  left join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
-                  and door.order_id = join_urgerecord.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
@@ -961,7 +958,6 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
                       AND case when #{taskStatus} = 0 then deputy_c.visit_collection_review != 0         else deputy_c.visit_collection_review    = #{taskStatus} end
-                      AND case when #{taskStatus} = 0 then door.status != 0                              else door.status                         = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_visit_collection'">
                       AND case when #{taskStatus} = 0 then deputy_c.visit_collection != 0                else deputy_c.visit_collection    = #{taskStatus} end
