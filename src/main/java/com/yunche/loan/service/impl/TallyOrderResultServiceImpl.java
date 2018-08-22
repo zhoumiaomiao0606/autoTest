@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.TallyOrderResultUpdateParam;
 import com.yunche.loan.domain.vo.*;
@@ -48,6 +49,8 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
+
+    private OrderHandleResultDOMapper orderHandleResultDOMapper;
 
     @Override
     public TallyOrderResultVO detail(Long orderId)
@@ -124,9 +127,20 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     }
 
     @Override
-    public void update(TallyOrderResultUpdateParam param)
+    public  ResultBean<Void> update(OrderHandleResultDO param)
     {
-
+        Preconditions.checkNotNull(param.getOrderid(), "订单号不能为空");
+        OrderHandleResultDO existDO =orderHandleResultDOMapper.selectByPrimaryKey(param.getOrderid());
+        if (null == existDO) {
+            int count =orderHandleResultDOMapper.insert(param);
+            Preconditions.checkArgument(count > 0, "插入失败");
+        }
+        else
+            {
+                int count = orderHandleResultDOMapper.updateByPrimaryKey(param);
+                Preconditions.checkArgument(count > 0, "编辑失败");
+            }
+        return ResultBean.ofSuccess(null, "保存成功");
     }
 /**
 * @Author: ZhongMingxiao

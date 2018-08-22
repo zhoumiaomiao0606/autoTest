@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.OrderHandleResultDO;
 import com.yunche.loan.domain.param.TallyOrderResultUpdateParam;
 import com.yunche.loan.service.TallyOrderResultService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,9 @@ public class TallyOrderResultController
 
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> update(@RequestBody @Validated TallyOrderResultUpdateParam param)
+    public ResultBean<Void> update(@RequestBody @Validated OrderHandleResultDO param)
     {
-        tallyOrderResultService.update(param);
-        return ResultBean.ofSuccess(null,"保存成功");
+
+        return tallyOrderResultService.update(param);
     }
 }

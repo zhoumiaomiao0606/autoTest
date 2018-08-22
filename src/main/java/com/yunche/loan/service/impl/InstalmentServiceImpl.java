@@ -81,9 +81,11 @@ public class InstalmentServiceImpl implements InstalmentService {
             throw new BizException("金融方案信息不存在");
         }else{
             LoanFinancialPlanDO financialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(financialPlanId);
-            financialPlanDO.setAppraisal(param.getAppraisal());
-            int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(financialPlanDO);
-            Preconditions.checkArgument(count>0,"更新产品基准评估价失败");
+            if(param.getAppraisal()!=null){
+                financialPlanDO.setAppraisal(param.getAppraisal());
+                int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(financialPlanDO);
+                Preconditions.checkArgument(count>0,"更新产品基准评估价失败");
+            }
         }
 
         Long customerId = orderDO.getLoanCustomerId();

@@ -11,7 +11,7 @@ import java.util.List;
 public class InstalmentUpdateParam {
     @NotEmpty
     private String order_id;
-    @NotNull
+
     private BigDecimal appraisal;
     @NotNull
     private List<UniversalFileParam> files;
