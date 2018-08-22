@@ -35,7 +35,7 @@ public class LoanCompensationReviewServiceImpl implements LoanCompensationReview
      * @return
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Void save(UniversalCompensationParam param) {
         Preconditions.checkNotNull(param,"参数有误");
         Preconditions.checkNotNull(param.getId(),"代偿ID不能为空");

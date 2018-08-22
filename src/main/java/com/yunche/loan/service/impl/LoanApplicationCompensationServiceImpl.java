@@ -66,7 +66,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
      * @return
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void batchInsert(String key) {
         Preconditions.checkNotNull(key,"文件key不能为空");
         List<LoanApplyCompensationDO> loanApplyCompensationDOList= Lists.newArrayList();
