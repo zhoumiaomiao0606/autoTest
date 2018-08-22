@@ -993,7 +993,7 @@
               ) tab
               where 1=1
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
-                  AND case when #{collectionLevel}  = 7 then true and case when  #{taskStatus} = 2 then tab.sendee is null else false end
+                  AND case when #{collectionLevel}  = 7 then true and case when  #{taskStatus} = 2 then tab.sendee is null else true end
                            when #{collectionLevel}  = 6 then tab.sendee = #{employeeId}
                   else true end
               </if>
