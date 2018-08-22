@@ -1498,7 +1498,7 @@
                     LEFT JOIN loan_customer c ON a.loan_customer_id = c.id
                 WHERE
                     c.id_card = #{idCard}
-                    AND (b.bank_lend_record = 2 or b.bank_card_record=2)
+
             ) t
             GROUP BY
                 t.id_card
