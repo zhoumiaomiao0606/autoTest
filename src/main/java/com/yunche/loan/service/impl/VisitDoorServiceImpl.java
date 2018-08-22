@@ -46,31 +46,31 @@ public class VisitDoorServiceImpl implements VisitDoorService {
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
     @Override
-    public VisitDoorVO detail(Long orderId,Long id,Long bankRepayImpRecordId) {
+    public VisitDoorVO detail(Long orderId, Long id, Long bankRepayImpRecordId) {
         List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
 
         CollectionNewInfoDOKey collectionNewInfoDOKey = new CollectionNewInfoDOKey();
         collectionNewInfoDOKey.setId(orderId);
         collectionNewInfoDOKey.setBankRepayImpRecordId(bankRepayImpRecordId);
         CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(collectionNewInfoDOKey);
-        if(collectionNewInfoDO ==  null){
+        if (collectionNewInfoDO == null) {
             collectionNewInfoDO = new CollectionNewInfoDO();
         }
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectLawWorkInfo(orderId);
 
         CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
-        int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
+        int num = collectionRecordDOMapper.selectNewestTotal(orderId).size();
 
         VisitDoorVO visitDoorVO = new VisitDoorVO();
         visitDoorVO.setCollectionRecordVO(collectionRecordVO);
         visitDoorVO.setCollectionNum(num);
         visitDoorVO.setResult(lawWorkQuery);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
-        if(id != null){
-           // VisitDoorDO v = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId,bankRepayImpRecordId);
+        if (id != null) {
+            // VisitDoorDO v = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId,bankRepayImpRecordId);
             VisitDoorDO v = visitDoorDOMapper.selectByPrimaryKey(id);
-            visitDoorVO.setVisitDoorDO(v == null ? new VisitDoorDO():v);
-        }else{
+            visitDoorVO.setVisitDoorDO(v == null ? new VisitDoorDO() : v);
+        } else {
             visitDoorVO.setVisitDoorDO(new VisitDoorDO());
         }
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
@@ -81,18 +81,18 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         visitDoorVO.setCustomers(customers);
         visitDoorVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         visitDoorVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));
-        visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId,"1",bankRepayImpRecordId));
+        visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId, "1", bankRepayImpRecordId));
         visitDoorVO.setLoanApplyCompensation(list);
         return visitDoorVO;
     }
 
     @Override
-    public VisitDoorVO cusInfoDetatil(Long orderId, Long id,Long bankRepayImpRecordId) {
+    public VisitDoorVO cusInfoDetatil(Long orderId, Long id, Long bankRepayImpRecordId) {
         CollectionNewInfoDOKey collectionNewInfoDOKey = new CollectionNewInfoDOKey();
         collectionNewInfoDOKey.setId(orderId);
         collectionNewInfoDOKey.setBankRepayImpRecordId(bankRepayImpRecordId);
         CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(collectionNewInfoDOKey);
-        if(collectionNewInfoDO ==  null){
+        if (collectionNewInfoDO == null) {
             collectionNewInfoDO = new CollectionNewInfoDO();
         }
         List<LoanApplyCompensationDO> list = loanApplyCompensationDOMapper.selectByOrderId(orderId);
@@ -100,52 +100,52 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         LawWorkQuery lawWorkQuery = litigationDOMapper.selectAppVisitInfo(orderId);
 
         CollectionRecordVO collectionRecordVO = collectionRecordDOMapper.selectNewest(orderId);
-        int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
+        int num = collectionRecordDOMapper.selectNewestTotal(orderId).size();
 
         VisitDoorVO visitDoorVO = new VisitDoorVO();
         visitDoorVO.setCollectionRecordVO(collectionRecordVO);
         visitDoorVO.setCollectionNum(num);
         visitDoorVO.setResult(lawWorkQuery);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
-        visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId,"1",bankRepayImpRecordId));
+        visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId, "1", bankRepayImpRecordId));
         visitDoorVO.setLoanApplyCompensation(list == null ? new ArrayList<LoanApplyCompensationDO>() : list);
         return visitDoorVO;
     }
 
     @Override
-    public VisitDoorVO visitDoorDetatil(Long orderId, Long id,Long bankRepayImpRecordId) {
+    public VisitDoorVO visitDoorDetatil(Long orderId, Long id, Long bankRepayImpRecordId) {
         CollectionNewInfoDOKey collectionNewInfoDOKey = new CollectionNewInfoDOKey();
         collectionNewInfoDOKey.setId(orderId);
         collectionNewInfoDOKey.setBankRepayImpRecordId(bankRepayImpRecordId);
         CollectionNewInfoDO collectionNewInfoDO = collectionNewInfoDOMapper.selectByPrimaryKey(collectionNewInfoDOKey);
-        if(collectionNewInfoDO ==  null){
+        if (collectionNewInfoDO == null) {
             collectionNewInfoDO = new CollectionNewInfoDO();
         }
-        VisitDoorVO visitDoorVO =new VisitDoorVO();
+        VisitDoorVO visitDoorVO = new VisitDoorVO();
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
-        if(id != null){
+        if (id != null) {
             VisitDoorDO v = visitDoorDOMapper.selectByPrimaryKey(id);
-            visitDoorVO.setVisitDoorDO(v == null ? new VisitDoorDO():v);
-        }else{
+            visitDoorVO.setVisitDoorDO(v == null ? new VisitDoorDO() : v);
+        } else {
             visitDoorVO.setVisitDoorDO(new VisitDoorDO());
         }
         return visitDoorVO;
     }
 
-    public String getGspAddress(Long orderId){
+    public String getGspAddress(Long orderId) {
         String returnInfo = "";
         List<GpsInfoQuery> list = visitDoorDOMapper.selectGpsInfo(orderId);
-        if(list.size() > 0){
+        if (list.size() > 0) {
             GpsInfoQuery gpsInfoQuery = list.get(0);
             String gpsCom = gpsInfoQuery.getGps_company();
-            if("JIMI".equals(gpsCom)){
+            if ("JIMI".equals(gpsCom)) {
                 returnInfo = auxiliaryService.getGpsAddress(gpsInfoQuery.getGps_number());
-            }else if("CATLOAN".equals(gpsCom)){
+            } else if ("CATLOAN".equals(gpsCom)) {
                 try {
-                    List<Map<String,Object>> list1 = CarLoanHttpUtil.getGpsInfo(gpsInfoQuery.getGps_number());
-                    if(list1.size()>0){
-                        Map<String,Object> map = list1.get(0);
-                        returnInfo += "经度:"+map.get("lng")+",纬度:"+map.get("lat");
+                    List<Map<String, Object>> list1 = CarLoanHttpUtil.getGpsInfo(gpsInfoQuery.getGps_number());
+                    if (list1.size() > 0) {
+                        Map<String, Object> map = list1.get(0);
+                        returnInfo += "经度:" + map.get("lng") + ",纬度:" + map.get("lat");
                     }
                 } catch (Exception e) {
                     return "";
@@ -158,18 +158,17 @@ public class VisitDoorServiceImpl implements VisitDoorService {
     @Override
     public VisitDoorUpdateVO update(VisitDoorDO visitDoorDO) {
         VisitDoorUpdateVO visitDoorUpdateVO = new VisitDoorUpdateVO();
-         if(visitDoorDO.getId() !=null&&!"".equals(visitDoorDO.getId())){
-             visitDoorDO.setStatus(2);
-           visitDoorDOMapper.updateByPrimaryKeySelective(visitDoorDO);
-        }else{
-             visitDoorDO.setStatus(2);
+        if (null != visitDoorDO.getId()) {
+            visitDoorDOMapper.updateByPrimaryKeySelective(visitDoorDO);
+        } else {
             visitDoorDOMapper.insertSelective(visitDoorDO);
         }
         visitDoorUpdateVO.setId(visitDoorDO.getId());
-         return visitDoorUpdateVO;
+        return visitDoorUpdateVO;
     }
+
     @Override
-    public void insertNewInfo(VisitDoorDO visitDoorDO){
+    public void insertNewInfo(VisitDoorDO visitDoorDO) {
         VisitDoorDO v = new VisitDoorDO();
         v.setOrderId(visitDoorDO.getOrderId());
         v.setBankRepayImpRecordId(visitDoorDO.getBankRepayImpRecordId());

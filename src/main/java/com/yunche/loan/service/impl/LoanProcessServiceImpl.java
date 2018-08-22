@@ -49,6 +49,7 @@ import static com.yunche.loan.config.constant.LoanAmountConst.*;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
+import static com.yunche.loan.config.constant.LoanProcessConst.APPROVAL_NOT_NEED_ORDER_ID_PROCESS_KEYS;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
@@ -168,8 +169,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Override
     @Transactional
     public ResultBean<Void> approval(ApprovalParam approval) {
-        Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
+        if (!APPROVAL_NOT_NEED_ORDER_ID_PROCESS_KEYS.contains(approval.getTaskDefinitionKey())) {
+            Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
+        }
 
         // APP通过OrderId弃单
         if (isAppCancelByOrderId(approval)) {
@@ -1049,7 +1052,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         }
 
-        return ResultBean.ofSuccess(null);
+        return ResultBean.ofError(null, "");
     }
 
     private void updateOutworkerCostApplyProcess(ApprovalParam approval, Byte applyOrderStatus) {

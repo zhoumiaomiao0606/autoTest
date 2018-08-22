@@ -15,8 +15,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-
 /**
  * @author liuzhe
  * @date 2018/4/10

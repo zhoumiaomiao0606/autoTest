@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REJECT;
-import static com.yunche.loan.config.constant.LoanProcessConst.OUTSIDE_LOAN_PROCESS_NODE_LIST;
+import static com.yunche.loan.config.constant.LoanProcessConst.OUTSIDE_LOAN_PROCESS_KEYS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 
 /**
@@ -87,7 +87,7 @@ public class LoanRejectLogServiceImpl implements LoanRejectLogService {
     public static Byte getTaskStatus(LoanProcessDO_ loanProcessDO_, String taskDefinitionKey) {
 
         // 流程外的节点 除外
-        if (OUTSIDE_LOAN_PROCESS_NODE_LIST.contains(taskDefinitionKey)) {
+        if (OUTSIDE_LOAN_PROCESS_KEYS.contains(taskDefinitionKey)) {
             return null;
         }
 

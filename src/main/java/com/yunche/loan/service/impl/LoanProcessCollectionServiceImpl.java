@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
-import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +43,9 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 
     @Autowired
     private LoanProcessCollectionDOMapper loanProcessCollectionDOMapper;
+
+    @Autowired
+    private VisitDoorDOMapper visitDoorDOMapper;
 
     @Autowired
     private TaskService taskService;
@@ -108,6 +110,20 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
+    }
+
+    /**
+     * 上门拖车-失败历史记录处理
+     *
+     * @param visitDoorId
+     */
+    private void vistiCollection_resultIsfailed(Long visitDoorId) {
+
+        VisitDoorDO visitDoorDO = new VisitDoorDO();
+        visitDoorDO.setId(visitDoorId);
+        visitDoorDO.setStatus(TASK_PROCESS_DONE);
+        int count = visitDoorDOMapper.updateByPrimaryKeySelective(visitDoorDO);
+        Preconditions.checkArgument(count > 0, "拖车记录更新失败");
     }
 
     @Override
@@ -440,12 +456,20 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         // [上门拖车]
         else if (VISIT_COLLECTION.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
+            Preconditions.checkNotNull(approval.getSupplementOrderId(), "催收单ID不能为空");
+            VisitDoorDO visitDoorDO = visitDoorDOMapper.selectByPrimaryKey(approval.getSupplementOrderId());
+            Preconditions.checkNotNull(visitDoorDO, "催收单不存在");
+            Preconditions.checkNotNull(visitDoorDO.getVisitResult(), "催收结果不能为空");
+
             // 催收结果
-            String visitResult = approval.getChoice();
+            String visitResult = visitDoorDO.getVisitResult();
 
             // 1-拖车失败
             if ("1".equals(visitResult)) {
                 variables.put(PROCESS_VARIABLE_TARGET, VISIT_COLLECTION.getCode());
+
+                // 上门拖车-失败历史记录处理
+                vistiCollection_resultIsfailed(approval.getSupplementOrderId());
             }
             // 2-车辆回收、3-客户结清、4-客户还款
             else if ("2".equals(visitResult) || "3".equals(visitResult) || "4".equals(visitResult)) {
