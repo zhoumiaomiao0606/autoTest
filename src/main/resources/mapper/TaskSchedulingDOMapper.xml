@@ -706,6 +706,8 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
+                          compensation.compensation_amount             AS compensationAmount,
+                          compensation.partner_compensation_amount     AS partnerCompensationAmount,
                           deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <otherwise>
