@@ -170,7 +170,7 @@ public class VisitDoorServiceImpl implements VisitDoorService {
     }
     @Override
     public void insertNewInfo(VisitDoorDO visitDoorDO){
-        if("1".equals(visitDoorDO.getVisitResult())){
+        if(!"2".equals(visitDoorDO.getVisitResult())&&!"3".equals(visitDoorDO.getVisitResult())&!"4".equals(visitDoorDO.getVisitResult())){
             VisitDoorDO v = new VisitDoorDO();
             v.setOrderId(visitDoorDO.getOrderId());
             v.setBankRepayImpRecordId(visitDoorDO.getBankRepayImpRecordId());
