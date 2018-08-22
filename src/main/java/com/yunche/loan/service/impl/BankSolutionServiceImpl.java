@@ -579,7 +579,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
 
 
-        Long useYear = new Long(0);
+        /*Long useYear = new Long(0);
         try {
             SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
             Date old = simpleFormat.parse(simpleFormat.format(loanCarInfoDO.getFirstRegisterDate() == null ? new Date() : loanCarInfoDO.getFirstRegisterDate()));
@@ -592,7 +592,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             useYear = new Long(mon);
         } catch (ParseException e) {
             e.printStackTrace();
-        }
+        }*/
 
         String serNo = GeneratorIDUtil.execute();
         //pub
