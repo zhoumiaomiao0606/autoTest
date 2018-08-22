@@ -5,5 +5,6 @@ package com.yunche.loan.domain.param;
  * @create: 2018-08-14 10:31
  * @description:
  **/
-public class TallyOrderResultUpdateParam {
+public class TallyOrderResultUpdateParam
+{
 }

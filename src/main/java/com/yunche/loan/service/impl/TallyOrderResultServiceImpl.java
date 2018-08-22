@@ -128,4 +128,16 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     {
 
     }
+/**
+* @Author: ZhongMingxiao
+* @Param:
+* @return:
+* @Date:
+* @Description:  模糊查询客户信息
+*/
+    @Override
+    public List<CustomerOrderVO> CustomerOrder(String name)
+    {
+        return loanQueryDOMapper.selectCustomerOrder(name);
+    }
 }

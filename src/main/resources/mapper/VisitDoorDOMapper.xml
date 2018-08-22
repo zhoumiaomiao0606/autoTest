@@ -23,11 +23,12 @@
     <result column="order_id" property="orderId" jdbcType="BIGINT" />
     <result column="visit_people_id" property="visitPeopleId" jdbcType="BIGINT" />
     <result column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="TINYINT"/>
   </resultMap>
   <sql id="Base_Column_List" >
     id, dispatched_staff_id, dispatched_staff_name, dispatched_date, receiver_id, receiver_name, 
     visit_people_name, visit_date, traffic, feed_back, visit_address, visit_detail, gps_detail, 
-    people_detail, next_plan, visit_result, remarks, car_detail, order_id, visit_people_id,bank_repay_imp_record_id
+    people_detail, next_plan, visit_result, remarks, car_detail, order_id, visit_people_id,bank_repay_imp_record_id,status
   </sql>
   <select id="selectGpsInfo" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.query.GpsInfoQuery">
     select a.id AS id,c.gps_company AS gps_company,d.gps_number AS gps_number
@@ -54,14 +55,14 @@
       feed_back, visit_address, visit_detail, 
       gps_detail, people_detail, next_plan, 
       visit_result, remarks, car_detail, 
-      order_id, visit_people_id,bank_repay_imp_record_id)
+      order_id, visit_people_id,bank_repay_imp_record_id,status)
     values (#{id,jdbcType=BIGINT}, #{dispatchedStaffId,jdbcType=BIGINT}, #{dispatchedStaffName,jdbcType=VARCHAR}, 
       #{dispatchedDate,jdbcType=DATE}, #{receiverId,jdbcType=BIGINT}, #{receiverName,jdbcType=VARCHAR}, 
       #{visitPeopleName,jdbcType=VARCHAR}, #{visitDate,jdbcType=DATE}, #{traffic,jdbcType=VARCHAR}, 
       #{feedBack,jdbcType=VARCHAR}, #{visitAddress,jdbcType=VARCHAR}, #{visitDetail,jdbcType=VARCHAR}, 
       #{gpsDetail,jdbcType=VARCHAR}, #{peopleDetail,jdbcType=VARCHAR}, #{nextPlan,jdbcType=VARCHAR}, 
       #{visitResult,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, #{carDetail,jdbcType=VARCHAR}, 
-      #{orderId,jdbcType=BIGINT}, #{visitPeopleId,jdbcType=BIGINT},#{bankRepayImpRecordId,jdbcType=BIGINT})
+      #{orderId,jdbcType=BIGINT}, #{visitPeopleId,jdbcType=BIGINT},#{bankRepayImpRecordId,jdbcType=BIGINT},#{status,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VisitDoorDO" useGeneratedKeys="true" keyProperty="id">
     insert into visit_door
@@ -129,6 +130,9 @@
       <if test="bankRepayImpRecordId != null" >
         bank_repay_imp_record_id,
       </if>
+      <if test="status != null" >
+        status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -193,6 +197,9 @@
       </if>
       <if test="bankRepayImpRecordId != null" >
         #{bankRepayImpRecordId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -259,6 +266,9 @@
       <if test="bankRepayImpRecordId != null" >
         bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
       </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -283,7 +293,8 @@
       car_detail = #{carDetail,jdbcType=VARCHAR},
       order_id = #{orderId,jdbcType=BIGINT},
       visit_people_id = #{visitPeopleId,jdbcType=BIGINT},
-      bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+      bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
+      status = #{status,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
@@ -293,6 +304,13 @@
     <include refid="Base_Column_List" />
     from visit_door
     where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByOrderIdAndBankRepayImpRecordId" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from visit_door
+    where order_id = #{orderId,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </select>
 
   <select id="selectByOrderIdAndRecordId" resultMap="BaseResultMap" >

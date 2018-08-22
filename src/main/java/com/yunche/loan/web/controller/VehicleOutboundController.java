@@ -38,19 +38,19 @@ public class VehicleOutboundController
     @GetMapping(value = "/vehicleOutbound")
     public ResultBean vehicleOutbound(@RequestParam String orderId,String bank_repay_imp_record_id)
     {
-        return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
+        return ResultBean.ofSuccess(vehicleOutboundService.vehicleOutbound(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
     }
 
     @GetMapping(value = "/customer")
     public ResultBean customer(@RequestParam String orderId,String bank_repay_imp_record_id)
     {
-        return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
+        return ResultBean.ofSuccess(vehicleOutboundService.customer(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
     }
 
     @GetMapping(value = "/vehicleInfo")
-    public ResultBean vehicleInfo(@RequestParam String orderId,String bank_repay_imp_record_id)
+    public ResultBean vehicleInfo(@RequestParam String orderId)
     {
-        return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
+        return ResultBean.ofSuccess(vehicleOutboundService.vehicleInfo(Long.valueOf(orderId)));
     }
 
 

@@ -116,8 +116,8 @@ public enum LoanProcessEnum {
 
     //////////////////////////////////////////// ↓↓↓↓↓--催收--↓↓↓↓↓ /////////////////////////////////////////////////////
     COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
-    VISIT_COLLECTION_REVIEW("usertask_visit_collection_review", "上门催收-审核"),
-    VISIT_COLLECTION("usertask_visit_collection", "上门催收"),
+    VISIT_COLLECTION_REVIEW("usertask_visit_collection_review", "上门拖车-审核"),
+    VISIT_COLLECTION("usertask_visit_collection", "上门拖车"),
     CAR_HANDLE("usertask_car_handle", "车辆处理"),
     CAR_OUT("usertask_car_out", "车辆出库"),
     SETTLE_ORDER("usertask_settle_order", "结清"),

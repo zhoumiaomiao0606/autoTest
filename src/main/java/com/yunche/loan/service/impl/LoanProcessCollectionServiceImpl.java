@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.*;
@@ -102,17 +101,8 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         // 流程数据同步
         syncProcess(startTaskIdList, loanProcessDO.getProcessInstId(), approval, loanProcessDO);
 
-        // 生成客户还款计划
-//        createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
-
         // [领取]完成
         loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanProcessDO.getProcessInstId());
-
-        // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
-
-        // 异步打包文件
-//        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
@@ -299,53 +289,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 //        doUpdateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus, approval);
 
         // 执行更新
-        doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
-    }
-
-    /**
-     * 执行 - 更新本地已执行的任务状态
-     *
-     * @param loanProcessDO
-     * @param taskDefinitionKey
-     * @param taskProcessStatus
-     */
-    private void doUpdateCurrentTaskProcessStatus(LoanProcessCollectionDO loanProcessDO,
-                                                  String taskDefinitionKey, Byte taskProcessStatus) {
-        // 方法名拼接   setXXX
-        String methodBody = null;
-        for (LoanProcessEnum e : LoanProcessEnum.values()) {
-
-            if (e.getCode().equals(taskDefinitionKey)) {
-
-                String[] keyArr = null;
-
-                if (taskDefinitionKey.startsWith("servicetask")) {
-                    keyArr = taskDefinitionKey.split("servicetask");
-                } else if (taskDefinitionKey.startsWith("usertask")) {
-                    keyArr = taskDefinitionKey.split("usertask");
-                }
-
-                // 下划线转驼峰
-                methodBody = StringUtil.underline2Camel(keyArr[1]);
-                break;
-            }
-        }
-
-        // setXX
-        String methodName = "set" + methodBody;
-
-        // 反射执行
-        try {
-
-            // 获取反射对象
-            Class<? extends LoanProcessCollectionDO> loanProcessDOClass = loanProcessDO.getClass();
-            // 获取对应method
-            Method method = loanProcessDOClass.getMethod(methodName, Byte.class);
-            // 执行method
-            Object result = method.invoke(loanProcessDO, taskProcessStatus);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        loanProcessApprovalCommonService.doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
     }
 
     /**
@@ -458,20 +402,22 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         // 【催收工作台】
         if (COLLECTION_WORKBENCH.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
+            String choice = approval.getChoice();
+
             // A  -> [上门拖车]
-            if ("A".equals(approval.getChoice())) {
+            if ("A".equals(choice)) {
 
                 variables.put(PROCESS_VARIABLE_TARGET, VISIT_COLLECTION_REVIEW.getCode());
             }
 
             // B  -> [法务审核]
-            else if ("B".equals(approval.getChoice())) {
+            else if ("B".equals(choice)) {
 
                 variables.put(PROCESS_VARIABLE_TARGET, LEGAL_REVIEW.getCode());
             }
 
             // C  -> [上门拖车] + [法务审核]
-            else if ("C".equals(approval.getChoice())) {
+            else if ("C".equals(choice)) {
 
                 Byte visitCollectionReviewStatus = loanProcessDO.getVisitCollectionReview();
                 Byte legalReviewStatus = loanProcessDO.getLegalReview();
@@ -494,10 +440,16 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         // [上门拖车]
         else if (VISIT_COLLECTION.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
-            if ("A".equals(approval.getChoice())) {
-                variables.put(PROCESS_VARIABLE_TARGET, CAR_HANDLE.getCode());
-            } else if ("B".equals(approval.getChoice())) {
-                variables.put(PROCESS_VARIABLE_TARGET, SETTLE_ORDER.getCode());
+            // 催收结果
+            String visitResult = approval.getChoice();
+
+            // 1-拖车失败
+            if ("1".equals(visitResult)) {
+                variables.put(PROCESS_VARIABLE_TARGET, VISIT_COLLECTION.getCode());
+            }
+            // 2-车辆回收、3-客户结清、4-客户还款
+            else if ("2".equals(visitResult) || "3".equals(visitResult) || "4".equals(visitResult)) {
+                variables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
             }
 
         }

@@ -394,4 +394,12 @@
     where order_id = #{orderId,jdbcType=BIGINT}
     AND apply_compensation_date=#{applyCompensationDate,jdbcType=TIMESTAMP}
   </select>
+
+  <select id="selectLastByOrderId"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from loan_apply_compensation
+    where order_id = #{orderId,jdbcType=BIGINT}
+    ORDER BY apply_compensation_date DESC limit 1
+  </select>
 </mapper>

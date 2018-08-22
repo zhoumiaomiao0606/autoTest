@@ -13,6 +13,9 @@ public class VehicleInfoVO
     //车型  例如 奥迪
     private String car_name;
 
+    //车牌号
+    private String license_plate_number;
+
     //行驶证车主
     private String now_driving_license_owner;
 
@@ -37,6 +40,9 @@ public class VehicleInfoVO
     //登记证书号
     private String registration_certificate_number;
 
+    //购车发票号
+    private String purchase_car_invoice_num;
+
     //车架号
     private String vehicle_identification_number;
 
@@ -45,5 +51,12 @@ public class VehicleInfoVO
 
     //购车发票价
     private String purchase_car_invoice_price;
+
+    //车辆Gps个数
+    private int gps_num;
+
+    //是否有备用钥匙
+    private int car_key;
+
 
 }
