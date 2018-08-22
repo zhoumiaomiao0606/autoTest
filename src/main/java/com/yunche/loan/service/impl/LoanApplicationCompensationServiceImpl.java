@@ -190,7 +190,6 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
         Preconditions.checkNotNull(param.getApplyCompensationDate(),"申请日期不能为空");
         Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
 
-
         if(param.getId() !=null){
             LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderId(param.getOrderId(), param.getId());
             if(insteadPayDO!=null){
