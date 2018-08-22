@@ -961,9 +961,11 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
                       AND case when #{taskStatus} = 0 then deputy_c.visit_collection_review != 0         else deputy_c.visit_collection_review    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then door.status != 0                              else door.status                         = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_visit_collection'">
                       AND case when #{taskStatus} = 0 then deputy_c.visit_collection != 0                else deputy_c.visit_collection    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then door.status != 0                              else door.status                  = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_car_handle'">
                       AND case when #{taskStatus} = 0 then deputy_c.car_handle != 0                     else deputy_c.car_handle    = #{taskStatus} end
