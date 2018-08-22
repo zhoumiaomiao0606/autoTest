@@ -49,6 +49,8 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
+    private OrderHandleResultDOMapper orderHandleResultDOMapper;
+
     @Override
     public TallyOrderResultVO detail(Long orderId)
     {
@@ -124,8 +126,9 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     }
 
     @Override
-    public void update(TallyOrderResultUpdateParam param)
+    public void update(OrderHandleResultDO param)
     {
+        orderHandleResultDOMapper.insert(param);
 
     }
 /**
