@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.yunche.loan.config.constant.BankUrgeConst.URGE_NO;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 
 
 @Service
@@ -196,7 +196,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
         if(param.getId() !=null){
             LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderId(param.getOrderId(), param.getId());
             if(insteadPayDO!=null){
-                Preconditions.checkArgument(insteadPayDO.getApplyInsteadPay().equals(TASK_PROCESS_TODO),"订单已提交，禁止修改");
+                Preconditions.checkArgument(!insteadPayDO.getApplyInsteadPay().equals(TASK_PROCESS_DONE),"订单已提交，禁止修改");
             }
             int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
             Preconditions.checkArgument(count>0,"参数错误，保存失败");
