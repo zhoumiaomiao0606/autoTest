@@ -69,26 +69,23 @@ public class BizExceptionHandler {
 
         List<Object> argList = Arrays.stream(args)
                 .filter(arg -> !(arg instanceof HttpServletRequest) && !(arg instanceof HttpServletResponse))
-                .map(arg -> {
-                    return arg;
-                })
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isEmpty(argList)) {
             logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request)).stream().collect(Collectors.joining(" ")));
         } else {
-            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request), JSON.toJSONString(argList.get(0))).stream().collect(Collectors.joining(" ")));
+            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request), JSON.toJSONString(argList)).stream().collect(Collectors.joining(" ")));
         }
     }
 
     /**
-     * 获取请求主机IP地址,如果通过代理进来，则透过防火墙获取真实IP地址;
+     * 获取请求主机IP地址,如果通过代理进来，则透过防火墙获取真实IP地址
      *
      * @param request
      * @return
      * @throws IOException
      */
-    public final static String getIpAddress(HttpServletRequest request) {
+    public static String getIpAddress(HttpServletRequest request) {
 
         String ip = request.getHeader("X-Forwarded-For");
 

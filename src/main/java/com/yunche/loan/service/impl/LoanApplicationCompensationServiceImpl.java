@@ -60,6 +60,9 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
 
     @Autowired
     LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
+
+    @Autowired
+    LoanCustomerDOMapper loanCustomerDOMapper;
     /**
      * 导入文件
      * @param key oss key
@@ -248,6 +251,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
      * @return
      */
     private Long isHasCustomer(String idCard){
+//        loanCustomerDOMapper.
         return loanQueryDOMapper.selectOrderIdByIDCard(idCard);
     }
 
