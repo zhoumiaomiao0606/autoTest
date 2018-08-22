@@ -177,6 +177,7 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
                                     map.put("customerMobile",universalInfoVO.getCustomer_mobile());
                                     map.put("customerIdCard",universalInfoVO.getCustomer_id_card());
                                     map.put("visitDoorId",visitDoorDO.getId());
+                                    map.put("bankRepayImpRecordId",visitDoorDO.getBankRepayImpRecordId());
                                     result.add(map);
                                 }
                             }
