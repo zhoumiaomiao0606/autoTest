@@ -772,14 +772,14 @@
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
-                  right join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
+                  left join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
                   and door.order_id = join_urgerecord.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
-                  right join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
+                  left join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
                   and door.order_id = join_urgerecord.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_car_handle'">
@@ -1978,8 +1978,8 @@
         left join partner partner on partner.id = base.partner_id
         left join employee employee on employee.id = base.salesman_id
         left join base_area area on area.area_id = vehicle.apply_license_plate_area
-        left join
       where
+      door.status = 1 and
       case when 3 = #{maxGroupLevel} then true
       else door.receiver_id = #{loginUserId} end
       and door.id not in (select visit_door_id from legwork_reimbursement_relevance_visit )
