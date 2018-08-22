@@ -71,6 +71,8 @@ public class ZhongAnHttpUtil {
             returnMap = (Map)JSON.parse(retMsg);
             String param1 = (String)returnMap.get("param");
             returnMap1 = (Map)JSON.parse(param1);
+        }else{
+            queryInfo(name,tel,idcard,appNo,loanPeriod,appRole,ralationship,applyNo);
         }
         return returnMap1;
     }
