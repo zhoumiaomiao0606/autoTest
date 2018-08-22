@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_COLLECTION_KEY;
+import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_INSTEAD_PAY_KEY;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
@@ -122,7 +122,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
     public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
                              @NotNull(message = "insteadPayOrderId不能为空") Long insteadPayOrderId) {
 
-        ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_COLLECTION_KEY);
+        ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_INSTEAD_PAY_KEY);
 
         // 创建流程记录
         Long processId = create(orderId, insteadPayOrderId, processInstance.getProcessInstanceId());
