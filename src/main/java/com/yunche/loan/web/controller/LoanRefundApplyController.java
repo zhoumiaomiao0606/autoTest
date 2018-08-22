@@ -32,7 +32,7 @@ public class LoanRefundApplyController {
     /**
      * 退款单更新
      */
-    @Limiter(route = "/api/v1/loanrefundapply/update")
+    @Limiter("/api/v1/loanrefundapply/update")
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> update(@RequestBody @Validated LoanRefundApplyParam param) {
         return loanRefundApplyService.update(param);

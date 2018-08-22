@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 public class VehicleHandleDO extends VehicleHandleDOKey {
-    private Long handdlePerson;
+    private String handdlePerson;
 
     private String trailVehicleDate;
 
@@ -31,7 +31,7 @@ public class VehicleHandleDO extends VehicleHandleDOKey {
 
     private String vehichleSurface;
 
-    private Byte vehicleKey;
+    private String vehicleKey;
 
     private String vehicleOthermaterial;
 

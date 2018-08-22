@@ -14,18 +14,9 @@ import java.lang.annotation.Target;
 public @interface DistributedLock {
 
     /**
-     * 当前锁的：key
-     * <p>
-     * 默认取：注解标注的-当前方法名
-     *
-     * @return
-     */
-    String key() default "";
-
-    /**
      * 当前锁的：自动过期时间  （单位：微秒）默认值：1000
      *
      * @return
      */
-    long timeOut() default 1000;
+    long value() default 1000;
 }
