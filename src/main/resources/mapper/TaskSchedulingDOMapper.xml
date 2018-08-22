@@ -462,7 +462,6 @@
                   join_bp.remit_amount                         AS remitAmount,
                   join_rep.bank_repay_imp_record_id            AS bankRepayImpRecordId,
                   join_rep.overdue_amount                      AS overdueAmount,
-                  v_area.area_name                             AS applyLicensePlateArea,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           deputy.credit_apply                     AS taskStatus
@@ -730,7 +729,6 @@
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
               left  join bank_repay_record join_rep        on join_rep.order_id     = main.id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
-              left  join base_area v_area                  on join_h.apply_license_plate_area =  v_area.area_id
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
@@ -774,14 +772,14 @@
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
-                  right join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
+                  left join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
                   and door.order_id = join_urgerecord.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
-                  right join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
+                  left join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
                   and door.order_id = join_urgerecord.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_car_handle'">
@@ -963,9 +961,11 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
                       AND case when #{taskStatus} = 0 then deputy_c.visit_collection_review != 0         else deputy_c.visit_collection_review    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then door.status != 0                              else door.status                         = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_visit_collection'">
                       AND case when #{taskStatus} = 0 then deputy_c.visit_collection != 0                else deputy_c.visit_collection    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then door.status != 0                              else door.status                  = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_car_handle'">
                       AND case when #{taskStatus} = 0 then deputy_c.car_handle != 0                     else deputy_c.car_handle    = #{taskStatus} end
@@ -1978,8 +1978,8 @@
         left join partner partner on partner.id = base.partner_id
         left join employee employee on employee.id = base.salesman_id
         left join base_area area on area.area_id = vehicle.apply_license_plate_area
-        left join
       where
+      door.status = 1 and
       case when 3 = #{maxGroupLevel} then true
       else door.receiver_id = #{loginUserId} end
       and door.id not in (select visit_door_id from legwork_reimbursement_relevance_visit )
