@@ -51,6 +51,8 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
     @Override
     public VehicleOutboundVO detail(Long orderId,Long bank_repay_imp_record_id)
     {
+        Preconditions.checkNotNull(orderId, "订单号不能为空");
+        Preconditions.checkNotNull(bank_repay_imp_record_id, "版本号不能为空");
         VehicleOutboundVO vehicleOutboundVO =new VehicleOutboundVO();
         // TODO
         //客户主要信息
@@ -64,7 +66,7 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         //根据区id查询省市id
        if(vehicleOutboundDO !=null )
        {
-           if(vehicleOutboundDO.getAddress()!=null && vehicleOutboundDO.getAddress().trim() != "")
+           if(vehicleOutboundDO.getAddress()!=null && "".equals(vehicleOutboundDO.getAddress().trim()))
            {
                Long countyId = Long.valueOf(vehicleOutboundDO.getAddress());
                BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
@@ -157,7 +159,7 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         if(vehicleOutboundDO !=null )
         {
             StringBuilder stringBuilder =new StringBuilder();
-            if(vehicleOutboundDO.getAddress()!=null && vehicleOutboundDO.getAddress().trim() != "")
+            if(vehicleOutboundDO.getAddress()!=null && "".equals(vehicleOutboundDO.getAddress().trim()))
             {
                 Long countyId = Long.valueOf(vehicleOutboundDO.getAddress());
                 BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
