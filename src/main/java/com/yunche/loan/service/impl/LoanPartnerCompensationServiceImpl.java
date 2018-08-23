@@ -81,6 +81,7 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
         //数据查询
 
         LoanApplyCompensationDO applyCompensation = loanApplyCompensationDOMapper.selectByPrimaryKey(query.getInsteadPayOrderId());
+        Preconditions.checkNotNull(applyCompensation,"代偿记录不存在");
         if(applyCompensation.getPartnerCompensationAmount()==null){
             BigDecimal amount = applyCompensation.getCompensationAmount();//代偿金额
             BigDecimal ratio = applyCompensation.getRiskTakingRatio().divide(new BigDecimal("100"));//比例
