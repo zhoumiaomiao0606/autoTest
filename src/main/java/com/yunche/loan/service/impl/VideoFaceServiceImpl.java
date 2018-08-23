@@ -358,6 +358,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
                 "您申请透支金额"+redText(videoFaceQuestionAnswerVO.getLoanAmount())+"元用于支付剩余交易款项，"+
                 "申请透支金额"+redText(videoFaceQuestionAnswerVO.getBankFee())+"元用于支付汽车金融服务费，"+
                 "合计透支金额"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal())+"元。"+
+                "您首月需还款"+redText(videoFaceQuestionAnswerVO.getFirstMonthRepay())+"元，"+
                 "每月还款" + redText(videoFaceQuestionAnswerVO.getEachMonthRepay()) + "元，"
                 + redText(videoFaceQuestionAnswerVO.getLoanTime() / 12) + "年" +
                 "总计需还款" + redText(videoFaceQuestionAnswerVO.getPrincipalInterestSum()) + "元。" +
@@ -416,6 +417,8 @@ public class VideoFaceServiceImpl implements VideoFaceService {
             videoFaceQuestionAnswerVO.setBankFee(loanFinancialPlanDO.getBankFee());
             //银行分期本金
             videoFaceQuestionAnswerVO.setBankPeriodPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
+            //首月还款
+            videoFaceQuestionAnswerVO.setFirstMonthRepay(loanFinancialPlanDO.getFirstMonthRepay());
         }
 
         // carInfo

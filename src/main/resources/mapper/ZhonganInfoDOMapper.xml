@@ -337,9 +337,8 @@
     select
     <include refid="Base_Column_List" />
     from zhongan_info t where t.order_id = #{orderId,jdbcType=BIGINT} and t.id_card in (
-    select b.id_card from loan_order a
-    left join loan_customer b on a.loan_customer_id = b.id
-    where a.id = #{orderId,jdbcType=BIGINT} and b.status = 0
+    select b.id_card from  loan_customer b where b.principal_cust_id =(
+      select a.loan_customer_id  from loan_order a where a.id = #{orderId,jdbcType=BIGINT})and b.`status` =0
     ) group by t.id_card order by t.create_date desc
   </select>
   <select id="selectZhonganName" resultType="com.yunche.loan.domain.vo.ZhonganNameVO" parameterType="java.lang.Long">
