@@ -266,7 +266,7 @@
         feature = #{feature,jdbcType=VARCHAR},
       </if>
       <if test="rebate_not_deducted != null" >
-        #{rebate_not_deducted,jdbcType=DECIMAL},
+        rebate_not_deducted = #{rebate_not_deducted,jdbcType=DECIMAL},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
