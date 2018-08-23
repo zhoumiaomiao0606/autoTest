@@ -318,6 +318,7 @@
     <include refid="Base_Column_List" />
     from visit_door
     where order_id = #{orderId,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+    AND visit_result =2
   </select>
 
 </mapper>

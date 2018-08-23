@@ -51,6 +51,9 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Autowired
+    private VisitDoorDOMapper visitDoorDOMapper;
+
 
     @Override
     public VehicleHandleVO detail(Long orderId,Long bankRepayImpRecordId)
@@ -89,6 +92,12 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
 
             vehicleHandleDO.setFiles(files);
             vehicleHandleVO.setVehicleHandleDO(vehicleHandleDO);
+        }
+
+        VisitDoorDO visitDoorDO = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId, bankRepayImpRecordId);
+        if (visitDoorDO !=null)
+        {
+            vehicleHandleDO.setHanddlePerson(vehicleHandleDO.getHanddlePerson());
         }
         //车辆信息
         VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
@@ -198,6 +207,11 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
 
 
             vehicleHandleDO.setFiles(files);
+        }
+        VisitDoorDO visitDoorDO = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId, bank_repay_imp_record_id);
+        if (visitDoorDO !=null)
+        {
+            vehicleHandleDO.setHanddlePerson(vehicleHandleDO.getHanddlePerson());
         }
         return vehicleHandleDO;
     }
