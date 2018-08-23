@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +52,7 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
+    @Autowired
     private OrderHandleResultDOMapper orderHandleResultDOMapper;
 
     @Override
@@ -91,8 +94,16 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
             visitDoorDOs.stream().forEach(visitDoorDO ->
             {
                 TrailVehicleDetailVO trailVehicleDetailVO =new TrailVehicleDetailVO();
-                trailVehicleDetailVO.setApplyTrailVehicleDate(visitDoorDO.getDispatchedDate());
-                trailVehicleDetailVO.setTrailVehicleDate(visitDoorDO.getVisitDate());
+                //时间戳转字符串
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                if(visitDoorDO.getDispatchedDate() !=null)
+                {
+                    trailVehicleDetailVO.setApplyTrailVehicleDate(simpleDateFormat.format(visitDoorDO.getDispatchedDate()));
+                }
+                if(visitDoorDO.getDispatchedDate() !=null)
+                {
+                    trailVehicleDetailVO.setApplyTrailVehicleDate(simpleDateFormat.format(visitDoorDO.getVisitDate()));
+                }
                 trailVehicleDetailVO.setTrailVehicleResult(visitDoorDO.getVisitResult());
                 trailVehicleDetailVOS.add(trailVehicleDetailVO);
 

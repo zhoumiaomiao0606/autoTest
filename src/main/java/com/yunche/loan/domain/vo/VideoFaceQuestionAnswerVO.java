@@ -50,4 +50,6 @@ public class VideoFaceQuestionAnswerVO {
 
     private BigDecimal bankFee;
 
+    private BigDecimal firstMonthRepay;
+
 }

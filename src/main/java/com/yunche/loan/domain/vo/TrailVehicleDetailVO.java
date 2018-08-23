@@ -13,10 +13,10 @@ import java.util.Date;
 public class TrailVehicleDetailVO
 {
     //申请上门拖车时间
-    private Date applyTrailVehicleDate;
+    private String applyTrailVehicleDate;
 
     //拖车时间
-    private Date trailVehicleDate;
+    private String trailVehicleDate;
     //拖车结果
     private String trailVehicleResult;
     //相关费用
