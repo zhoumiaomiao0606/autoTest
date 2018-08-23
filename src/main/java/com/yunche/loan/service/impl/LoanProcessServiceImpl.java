@@ -1277,12 +1277,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
-
             // 众安征信接口校验
-            List<ZhonganInfoDO> list = zhonganInfoDOMapper.selectByCreaditOrderId(loanOrderDO.getId());
-            for (ZhonganInfoDO zhonganInfoDO : list) {
-                if (!"成功".equals(zhonganInfoDO.getResultMessage())) {
-                    throw new BizException("客户:" + zhonganInfoDO.getCustomerName() + zhonganInfoDO.getResultMessage() + ",无法提交征信");
+            List<LoanCustomerDO> loanCustomerDOS = zhonganInfoDOMapper.selectCusByOrderId(loanOrderDO.getId());
+            for(LoanCustomerDO loanCustomerDO:loanCustomerDOS){
+                ZhonganInfoDO zhonganInfoDO = zhonganInfoDOMapper.selectZNByOrderIdAndIdcard(loanOrderDO.getId(),loanCustomerDO.getIdCard());
+                if(zhonganInfoDO == null){
+                    throw new BizException("客户:" + zhonganInfoDO.getCustomerName() +"没有进行大数据查询,无法提交");
+                }else{
+                    if(!"成功".equals(zhonganInfoDO.getResultMessage())){
+                        throw new BizException("客户:" + zhonganInfoDO.getCustomerName() + zhonganInfoDO.getResultMessage() + ",无法提交征信");
+                    }
                 }
             }
 

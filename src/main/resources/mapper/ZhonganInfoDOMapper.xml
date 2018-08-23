@@ -333,13 +333,24 @@
       tel = #{tel,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <select id="selectByCreaditOrderId" resultMap="BaseResultMap">
+  <select id="selectZNByOrderIdAndIdcard" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
+    from zhongan_info where order_id = #{orderId,jdbcType=BIGINT} and id_card = #{idCard,jdbcType=VARCHAR}
+    order by create_date desc limit 1
+  </select>
+  <select id="selectCusByOrderId" resultType="com.yunche.loan.domain.entity.LoanCustomerDO">
+    select b.* from  loan_customer b where b.principal_cust_id =(
+      select a.loan_customer_id  from loan_order a where a.id = #{orderId,jdbcType=BIGINT}) and b.`status` =0
+  </select>
+  <select id="selectByCreaditOrderId" resultMap="BaseResultMap">
+    select a.* from (
+    select
+    *
     from zhongan_info t where t.order_id = #{orderId,jdbcType=BIGINT} and t.id_card in (
     select b.id_card from  loan_customer b where b.principal_cust_id =(
-      select a.loan_customer_id  from loan_order a where a.id = #{orderId,jdbcType=BIGINT})and b.`status` =0
-    ) group by t.id_card order by t.create_date desc
+      select a.loan_customer_id  from loan_order a where a.id = #{orderId,jdbcType=BIGINT})and b.`status` = 0
+    ) order by t.create_date desc)a group by a.id_card
   </select>
   <select id="selectZhonganName" resultType="com.yunche.loan.domain.vo.ZhonganNameVO" parameterType="java.lang.Long">
   SELECT

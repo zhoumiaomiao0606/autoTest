@@ -70,4 +70,6 @@ public interface AppLoanOrderService {
     ZhongAnDetailQuery zhongAnDetail(Long orderId);
 
     ZhonganNameVO zhonganName(Long orderId);
+
+    void zhonganInsert();
 }
