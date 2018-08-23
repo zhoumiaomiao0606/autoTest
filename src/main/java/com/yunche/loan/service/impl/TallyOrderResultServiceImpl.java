@@ -55,6 +55,9 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     @Autowired
     private OrderHandleResultDOMapper orderHandleResultDOMapper;
 
+    @Autowired
+    private LegworkReimbursementDOMapper legworkReimbursementDOMapper;
+
     @Override
     public TallyOrderResultVO detail(Long orderId)
     {
@@ -102,9 +105,15 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
                 }
                 if(visitDoorDO.getDispatchedDate() !=null)
                 {
-                    trailVehicleDetailVO.setApplyTrailVehicleDate(simpleDateFormat.format(visitDoorDO.getVisitDate()));
+                    trailVehicleDetailVO.setTrailVehicleDate(simpleDateFormat.format(visitDoorDO.getVisitDate()));
                 }
                 trailVehicleDetailVO.setTrailVehicleResult(visitDoorDO.getVisitResult());
+                LegworkReimbursementDO legworkReimbursementDO = legworkReimbursementDOMapper.selectByPrimaryKey(visitDoorDO.getId());
+                if(legworkReimbursementDO !=null)
+                {
+                    trailVehicleDetailVO.setRelationFee(legworkReimbursementDO.getReimbursementAmount());
+                }
+
                 trailVehicleDetailVOS.add(trailVehicleDetailVO);
 
             });
