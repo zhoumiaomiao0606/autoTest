@@ -84,7 +84,7 @@ public class TaskSchedulingController {
     /**
      * 待办任务列表-all
      */
-    @Limiter("/api/v1/taskscheduling/scheduletasklist")
+    //@Limiter("/api/v1/taskscheduling/scheduletasklist")
     @GetMapping(value = "/scheduletasklist")
     public ResultBean<List<ScheduleTaskVO>> scheduletasklist(@RequestParam(required = false) String key,
                                                              @RequestParam Integer pageIndex,
@@ -95,7 +95,7 @@ public class TaskSchedulingController {
     /**
      * 待办任务列表-all
      */
-    @Limiter("/api/v1/taskscheduling/countScheduletasklist")
+    //@Limiter("/api/v1/taskscheduling/countScheduletasklist")
     @GetMapping(value = "/countScheduletasklist")
     public ResultBean<Long> countScheduletasklist(@RequestParam(required = false) String key,
                                                   @RequestParam Integer pageIndex,
@@ -107,7 +107,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
-    @Limiter("/api/v1/taskscheduling/queryTaskList")
+    //@Limiter("/api/v1/taskscheduling/queryTaskList")
     @PostMapping(value = "/queryTaskList")
     public ResultBean<List<TaskListVO>> scheduleTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.queryTaskList(taskListQuery);
@@ -116,7 +116,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
-    @Limiter("/api/v1/taskscheduling/countQueryTaskList")
+    //@Limiter("/api/v1/taskscheduling/countQueryTaskList")
     @PostMapping(value = "/countQueryTaskList")
     public ResultBean<Long> countQueryTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.countQueryTaskList(taskListQuery);
@@ -125,7 +125,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
-    @Limiter("/api/v1/taskscheduling/queryAppTaskList")
+    //@Limiter("/api/v1/taskscheduling/queryAppTaskList")
     @PostMapping(value = "/queryAppTaskList")
     public ResultBean<List<AppTaskVO>> queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
         return taskSchedulingService.queryAppTaskList(appTaskListQuery);
