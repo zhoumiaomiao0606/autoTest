@@ -568,7 +568,7 @@
            v.license_plate_type              AS license_plate_type,
            v.purchase_car_invoice_num              AS purchase_car_invoice_num,
            v.license_plate_number              AS license_plate_number,
-           CONCAT(area.parent_area_name,area.area_name)                            AS vehicle_apply_license_plate_area,
+           CONCAT(area.parent_area_name,area.area_name)                            AS apply_license_plate_area,
            v.engine_number                   AS engine_number,
            v.registration_certificate_number AS registration_certificate_number,
            v.vehicle_identification_number   AS vehicle_identification_number,
