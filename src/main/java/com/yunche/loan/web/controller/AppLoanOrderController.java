@@ -68,6 +68,14 @@ public class AppLoanOrderController {
         return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(Long.valueOf(orderId)));
 
     }
+    /**
+     * 众安异步
+     */
+    @GetMapping(value = "/zhonganinsert")
+    public ResultBean zhonganInsert(){
+        appLoanOrderService.zhonganInsert();
+        return ResultBean.ofSuccess(null,"插入成功");
+    }
 
     /**
      * 征信申请单详情

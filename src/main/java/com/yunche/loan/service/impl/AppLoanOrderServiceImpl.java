@@ -909,7 +909,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                             rspLawSuitDO.setId(zhongAnInfoDO.getId());
                             rspLawSuitDO.setSortTimeString((String)mapx.get("sortTimeString"));
                             rspLawSuitDO.setTitle((String)mapx.get("title"));
-                            zhongAnInfoDO.setTel(zhongAnCusParam.getTel());
                             rspLawSuitDOMapper.insertSelective(rspLawSuitDO);
                         }
                     }
@@ -948,6 +947,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     zhonganInfoDO.setCustomerType(zhongAnCusParam.getCustomertype());
                     zhonganInfoDO.setIdCard(zhongAnCusParam.getIdcard());
                     zhonganInfoDO.setCreateDate(new Date());
+                    zhonganInfoDO.setTel(zhongAnCusParam.getTel());
                     zhongAnInfoDOMapper.insertSelective(zhonganInfoDO);
                 }
                 else{
@@ -981,6 +981,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     public ZhonganNameVO zhonganName(Long orderId) {
         ZhonganNameVO zhonganNameVO = zhongAnInfoDOMapper.selectZhonganName(orderId);
         return zhonganNameVO;
+    }
+
+    @Override
+    public void zhonganInsert() {
+
     }
 
     @Override
