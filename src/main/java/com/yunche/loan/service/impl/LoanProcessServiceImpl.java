@@ -188,7 +188,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 业务单
-        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
+        LoanOrderDO loanOrderDO = null;
+        if (null != approval.getOrderId()) {
+            loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
+        }
 
         // 节点实时状态
         LoanProcessDO loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(approval.getOrderId());
