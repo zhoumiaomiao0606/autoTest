@@ -1,7 +1,8 @@
 package com.yunche.loan.config.thread;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import java.util.concurrent.*;
 
 /**
  * @author liuzhe
@@ -12,6 +13,17 @@ public class ThreadPool {
     /**
      * 线程池
      */
-    public static final ExecutorService executorService = Executors.newFixedThreadPool(30);
+    public static final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("biz-pool-%d").build();
+
+    public static final ExecutorService executorService = new ThreadPoolExecutor(
+            16,
+            32,
+            60L,
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(2048),
+            namedThreadFactory,
+            new ThreadPoolExecutor.AbortPolicy()
+    );
 
 }
