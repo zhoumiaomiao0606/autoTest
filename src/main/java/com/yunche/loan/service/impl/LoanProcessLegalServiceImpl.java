@@ -8,6 +8,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessLegalDO;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.mapper.CollectionNewInfoDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanProcessLegalDOMapper;
 import com.yunche.loan.service.*;
@@ -60,6 +61,9 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
     @Autowired
     private LoanProcessApprovalCommonService loanProcessApprovalCommonService;
 
+    @Autowired
+    private CollectionNewInfoDOMapper collectionNewInfoDOMapper;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -103,6 +107,7 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
+        visitLawBack(approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -378,4 +383,11 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
         return variables;
     }
 
+    public void visitLawBack(ApprovalParam approval) {
+        if (VISIT_COLLECTION_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
+            collectionNewInfoDOMapper.isvisitback(approval.getOrderId(), approval.getBankRepayImpRecordId());
+        } else if (LEGAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
+            collectionNewInfoDOMapper.islawback(approval.getOrderId(), approval.getBankRepayImpRecordId());
+        }
+    }
 }

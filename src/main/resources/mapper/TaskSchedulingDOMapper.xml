@@ -460,7 +460,6 @@
                   useGetSmallCarName(join_i.car_detail_id)     AS carName,
                   join_i.gps_num                               AS carGpsNum,
                   join_bp.remit_amount                         AS remitAmount,
-                  join_rep.bank_file_list_id            AS bankRepayImpRecordId,
                   join_rep.optimal_return                      AS overdueAmount,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
@@ -565,6 +564,7 @@
                           DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                           join_urgerecord.sendee                  AS sendee,
                           sendee.name                             AS sendeeName,
+                          join_urgerecord.bank_repay_imp_record_id AS bankRepayImpRecordId,
                           join_urgerecord.urge_status             AS taskStatus
                       </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
@@ -577,6 +577,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.visit_collection_review        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection'">
@@ -590,6 +591,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.visit_collection               AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_handle'">
@@ -602,6 +604,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.car_handle                     AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_out'">
@@ -614,6 +617,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.car_out                        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_settle_order'">
@@ -626,6 +630,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.settle_order                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_review'">
@@ -638,6 +643,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_l.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_l.legal_review                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_record'">
@@ -650,6 +656,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_l.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_l.legal_record                   AS taskStatus
                        </when>
                       <when test="taskDefinitionKey == 'usertask_bank_open_card'">
@@ -667,7 +674,7 @@
                       <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
-                          deputy_.instead_pay_order_id                 AS insteadPayOrderId,
+                          deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -681,7 +688,7 @@
                       <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
-                          deputy_.instead_pay_order_id                 AS insteadPayOrderId,
+                          deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -690,12 +697,12 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
-                          deputy_.apply_instead_pay                    AS taskStatus
+                          deputy_.finance_instead_pay_review           AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
-                          deputy_.instead_pay_order_id                 AS insteadPayOrderId,
+                          deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -704,12 +711,12 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
-                          deputy_.apply_instead_pay                    AS taskStatus
+                          deputy_.partner_instead_pay                  AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
-                          deputy_.instead_pay_order_id                 AS insteadPayOrderId,
+                          deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -719,7 +726,7 @@
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
                           compensation.compensation_amount             AS compensationAmount,
-                          deputy_.apply_instead_pay                    AS taskStatus
+                          deputy_.partner_instead_pay_review           AS taskStatus
                       </when>
                       <otherwise>
                         0                                         AS taskStatus
@@ -758,19 +765,19 @@
               </if>
               <if test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
-                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
               </if>
               <if test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
-                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
-                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
-                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
               </if>
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
@@ -1079,7 +1086,15 @@
                       AND tab.isStraighten = #{isStraighten}
                   </if>
               </if>
-              <if test="taskDefinitionKey == 'usertask_collection_workbench'">
+              <if test="taskDefinitionKey == 'usertask_collection_workbench'
+              || taskDefinitionKey == 'usertask_visit_collection_review'
+              || taskDefinitionKey == 'usertask_visit_collection'
+              || taskDefinitionKey == 'usertask_car_handle'
+              || taskDefinitionKey == 'usertask_car_out'
+              || taskDefinitionKey == 'usertask_settle_order'
+              || taskDefinitionKey == 'usertask_legal_review'
+              || taskDefinitionKey == 'usertask_legal_record'
+              ">
                   <if test="sendee != null">
                       AND tab.sendee = #{sendee}
                   </if>

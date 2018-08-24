@@ -107,7 +107,7 @@ public class CollectionServiceImpl implements CollectionService {
         visitDoorVO.setRepayments(loanQueryDOMapper.selectUniversalLoanRepaymentPlan(orderId));
         visitDoorVO.setCustomers(customers);
         visitDoorVO.setResult(lawWorkQuery);
-        visitDoorVO.setCollectionRecordVO(collectionRecordVO);
+        visitDoorVO.setCollectionRecordVO(collectionRecordVO == null?new CollectionRecordVO():collectionRecordVO);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
         visitDoorVO.setCollectionNum(num);
         visitDoorVO.setLoanApplyCompensation(list);

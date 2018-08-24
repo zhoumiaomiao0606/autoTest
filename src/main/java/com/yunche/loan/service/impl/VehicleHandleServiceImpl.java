@@ -65,8 +65,10 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
         //车辆处理登记
         VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(orderId,bankRepayImpRecordId));
         //根据区id查询省市id
-        if(vehicleHandleDO !=null && vehicleHandleDO.getVehicleInboundAddress()!=null && !"".equals(vehicleHandleDO.getVehicleInboundAddress().trim()))
+        if(vehicleHandleDO !=null )
         {
+            if(vehicleHandleDO.getVehicleInboundAddress()!=null && !"".equals(vehicleHandleDO.getVehicleInboundAddress().trim()))
+            {
             Long countyId=Long.valueOf(vehicleHandleDO.getVehicleInboundAddress());
             BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
             vehicleHandleDO.setCountyId(countyId);
@@ -80,9 +82,8 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
                 vehicleHandleDO.setProvenceName(provenceAreaDO.getAreaName());
             }
 
+            }
 
-        }
-        if(vehicleHandleDO !=null) {
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
             Long customerId = loanOrderDO.getLoanCustomerId();
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(customerId)
@@ -91,13 +92,16 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
 
 
             vehicleHandleDO.setFiles(files);
-            vehicleHandleVO.setVehicleHandleDO(vehicleHandleDO);
-        }
+
+        }else
+            {
+            vehicleHandleDO =new VehicleHandleDO();
+            }
 
         VisitDoorDO visitDoorDO = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId, bankRepayImpRecordId);
         if (visitDoorDO !=null)
         {
-            vehicleHandleDO.setHanddlePerson(vehicleHandleDO.getHanddlePerson());
+            vehicleHandleDO.setHanddlePerson(visitDoorDO.getVisitPeopleName());
         }
         //车辆信息
         VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
@@ -174,32 +178,25 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
         //车辆处理登记
         VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(orderId,bank_repay_imp_record_id));
         //根据区id查询省市id
-        if(vehicleHandleDO !=null && vehicleHandleDO.getVehicleInboundAddress()!=null && !"".equals(vehicleHandleDO.getVehicleInboundAddress().trim()))
+        if(vehicleHandleDO !=null )
         {
-            StringBuilder stringBuilder =new StringBuilder();
-            Long countyId=Long.valueOf(vehicleHandleDO.getVehicleInboundAddress());
-            BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
-            vehicleHandleDO.setCountyId(countyId);
-            vehicleHandleDO.setCountyName(cityAreaDO.getAreaName());
-            vehicleHandleDO.setCityName(cityAreaDO.getParentAreaName());
-            if(cityAreaDO !=null && cityAreaDO.getParentAreaId()!=null)
+            if(vehicleHandleDO.getVehicleInboundAddress()!=null && !"".equals(vehicleHandleDO.getVehicleInboundAddress().trim()))
             {
-                vehicleHandleDO.setCityId(cityAreaDO.getParentAreaId());
-                BaseAreaDO provenceAreaDO = baseAreaDOMapper.selectByPrimaryKey(cityAreaDO.getParentAreaId(), VALID_STATUS);
-                vehicleHandleDO.setProvenceId(provenceAreaDO.getParentAreaId());
-                vehicleHandleDO.setProvenceName(provenceAreaDO.getAreaName());
-                if(provenceAreaDO.getParentAreaName() !=null)
+                Long countyId=Long.valueOf(vehicleHandleDO.getVehicleInboundAddress());
+                BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
+                vehicleHandleDO.setCountyId(countyId);
+                vehicleHandleDO.setCountyName(cityAreaDO.getAreaName());
+                vehicleHandleDO.setCityName(cityAreaDO.getParentAreaName());
+                if(cityAreaDO !=null && cityAreaDO.getParentAreaId()!=null)
                 {
-                    stringBuilder.append(provenceAreaDO.getParentAreaName());
+                    vehicleHandleDO.setCityId(cityAreaDO.getParentAreaId());
+                    BaseAreaDO provenceAreaDO = baseAreaDOMapper.selectByPrimaryKey(cityAreaDO.getParentAreaId(), VALID_STATUS);
+                    vehicleHandleDO.setProvenceId(provenceAreaDO.getParentAreaId());
+                    vehicleHandleDO.setProvenceName(provenceAreaDO.getAreaName());
                 }
-                stringBuilder.append(provenceAreaDO.getAreaName());
 
             }
-            stringBuilder.append(cityAreaDO.getAreaName());
-            vehicleHandleDO.setVehicleInboundAddress(stringBuilder.toString());
 
-        }
-        if(vehicleHandleDO !=null) {
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
             Long customerId = loanOrderDO.getLoanCustomerId();
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(customerId)
@@ -208,11 +205,17 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
 
 
             vehicleHandleDO.setFiles(files);
+
+
+        }else
+        {
+            vehicleHandleDO =new VehicleHandleDO();
         }
+
         VisitDoorDO visitDoorDO = visitDoorDOMapper.selectByOrderIdAndRecordId(orderId, bank_repay_imp_record_id);
         if (visitDoorDO !=null)
         {
-            vehicleHandleDO.setHanddlePerson(vehicleHandleDO.getHanddlePerson());
+            vehicleHandleDO.setHanddlePerson(visitDoorDO.getVisitPeopleName());
         }
         return vehicleHandleDO;
     }
