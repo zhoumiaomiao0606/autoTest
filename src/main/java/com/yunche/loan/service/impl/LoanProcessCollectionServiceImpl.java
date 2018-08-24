@@ -61,6 +61,9 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     @Autowired
     private VisitDoorService visitDoorService;
 
+    @Autowired
+    private CollectionNewInfoDOMapper collectionNewInfoDOMapper;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -110,6 +113,8 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 
         // 更新[上门拖车]-状态记录
         updateVisitDoorDO(approval);
+
+        visitLawBack(approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -464,6 +469,14 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 
             int count = visitDoorDOMapper.updateByPrimaryKeySelective(visitDoorDO);
             Preconditions.checkArgument(count > 0, "拖车记录更新失败");
+        }
+    }
+
+    public void visitLawBack(ApprovalParam approval){
+        if(VISIT_COLLECTION_REVIEW.getCode().equals(approval.getTaskDefinitionKey())&&ACTION_REJECT_MANUAL.equals(approval.getAction())){
+            collectionNewInfoDOMapper.isvisitback(approval.getOrderId(),approval.getBankRepayImpRecordId());
+        }else if(LEGAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey())&&ACTION_REJECT_MANUAL.equals(approval.getAction())){
+            collectionNewInfoDOMapper.islawback(approval.getOrderId(),approval.getBankRepayImpRecordId());
         }
     }
 
