@@ -3,24 +3,21 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
-import com.yunche.loan.domain.param.TallyOrderResultUpdateParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TallyOrderResultService;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_END;
 
 /**
  * @author: ZhongMingxiao
@@ -29,9 +26,10 @@ import java.util.Map;
  **/
 @Service
 @Transactional
-public class TallyOrderResultServiceImpl implements TallyOrderResultService
-{
-    @Resource
+public class TallyOrderResultServiceImpl implements TallyOrderResultService {
+
+
+    @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
 
     @Autowired
@@ -39,7 +37,7 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
 
     @Autowired
     private InsuranceRelevanceDOMapper insuranceRelevanceDOMapper;
-    
+
     @Autowired
     private InsuranceRiskDOMapper insuranceRiskDOMapper;
 
@@ -48,7 +46,7 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
 
     @Autowired
     private VisitDoorDOMapper visitDoorDOMapper;
-    
+
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
@@ -58,9 +56,12 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     @Autowired
     private LegworkReimbursementDOMapper legworkReimbursementDOMapper;
 
+    @Autowired
+    private LoanProcessDOMapper loanProcessDOMapper;
+
+
     @Override
-    public TallyOrderResultVO detail(Long orderId)
-    {
+    public TallyOrderResultVO detail(Long orderId) {
         TallyOrderResultVO tallyOrderResultVO = new TallyOrderResultVO();
 
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
@@ -70,14 +71,14 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
         //金融方案
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
-        FinancialSchemeToTallyOrderVO financialSchemeToTallyOrderVO=new FinancialSchemeToTallyOrderVO();
+        FinancialSchemeToTallyOrderVO financialSchemeToTallyOrderVO = new FinancialSchemeToTallyOrderVO();
 
         BeanUtils.copyProperties(financialSchemeVO, financialSchemeToTallyOrderVO);
 
         //业务审批单信息
         UniversalCostDetailsVO universalCostDetailsVO = loanQueryDOMapper.selectUniversalCostDetails(orderId);
         //抵押情况
-        MortgageInfoVO mortgageInfoVO =loanQueryDOMapper.selectMortgageInfo(orderId);
+        MortgageInfoVO mortgageInfoVO = loanQueryDOMapper.selectMortgageInfo(orderId);
         //最新保险信息
         List<InsuranceRelevanceDO> insuranceRelevanceDOS = insuranceRelevanceDOMapper.selectInsuranceInfoByOrderId(orderId);
         //出险记录
@@ -92,35 +93,30 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
         List<CollectionNewInfoDO> collectionNewInfoDOs = collectionNewInfoDOMapper.selectByOrderId(orderId);
         //根据orderId和版本号查询所有的拖车记录
         collectionNewInfoDOs.stream().forEach(collectionNewInfoDO ->
-        {
-            List<VisitDoorDO> visitDoorDOs = visitDoorDOMapper.selectByOrderIdAndBankRepayImpRecordId(collectionNewInfoDO.getId(),collectionNewInfoDO.getBankRepayImpRecordId());
-            visitDoorDOs.stream().forEach(visitDoorDO ->
-            {
-                TrailVehicleDetailVO trailVehicleDetailVO =new TrailVehicleDetailVO();
-                //时间戳转字符串
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                if(visitDoorDO.getDispatchedDate() !=null)
                 {
-                    trailVehicleDetailVO.setApplyTrailVehicleDate(simpleDateFormat.format(visitDoorDO.getDispatchedDate()));
-                }
-                if(visitDoorDO.getDispatchedDate() !=null)
-                {
-                    trailVehicleDetailVO.setTrailVehicleDate(simpleDateFormat.format(visitDoorDO.getVisitDate()));
-                }
-                trailVehicleDetailVO.setTrailVehicleResult(visitDoorDO.getVisitResult());
-                LegworkReimbursementDO legworkReimbursementDO = legworkReimbursementDOMapper.selectByPrimaryKey(visitDoorDO.getId());
-                if(legworkReimbursementDO !=null)
-                {
-                    trailVehicleDetailVO.setRelationFee(legworkReimbursementDO.getReimbursementAmount());
-                }
+                    List<VisitDoorDO> visitDoorDOs = visitDoorDOMapper.selectByOrderIdAndBankRepayImpRecordId(collectionNewInfoDO.getId(), collectionNewInfoDO.getBankRepayImpRecordId());
+                    visitDoorDOs.stream().forEach(visitDoorDO ->
+                    {
+                        TrailVehicleDetailVO trailVehicleDetailVO = new TrailVehicleDetailVO();
+                        //时间戳转字符串
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        if (visitDoorDO.getDispatchedDate() != null) {
+                            trailVehicleDetailVO.setApplyTrailVehicleDate(simpleDateFormat.format(visitDoorDO.getDispatchedDate()));
+                        }
+                        if (visitDoorDO.getDispatchedDate() != null) {
+                            trailVehicleDetailVO.setTrailVehicleDate(simpleDateFormat.format(visitDoorDO.getVisitDate()));
+                        }
+                        trailVehicleDetailVO.setTrailVehicleResult(visitDoorDO.getVisitResult());
+                        LegworkReimbursementDO legworkReimbursementDO = legworkReimbursementDOMapper.selectByPrimaryKey(visitDoorDO.getId());
+                        if (legworkReimbursementDO != null) {
+                            trailVehicleDetailVO.setRelationFee(legworkReimbursementDO.getReimbursementAmount());
+                        }
 
-                trailVehicleDetailVOS.add(trailVehicleDetailVO);
+                        trailVehicleDetailVOS.add(trailVehicleDetailVO);
 
-            });
-        }
+                    });
+                }
         );
-
-
 
 
         //贷款业务详细信息
@@ -147,31 +143,37 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService
     }
 
     @Override
-    public  ResultBean<Void> update(OrderHandleResultDO param)
-    {
+    public ResultBean<Void> update(OrderHandleResultDO param) {
         Preconditions.checkNotNull(param.getOrderid(), "订单号不能为空");
-        OrderHandleResultDO existDO =orderHandleResultDOMapper.selectByPrimaryKey(param.getOrderid());
+        OrderHandleResultDO existDO = orderHandleResultDOMapper.selectByPrimaryKey(param.getOrderid());
         if (null == existDO) {
-            int count =orderHandleResultDOMapper.insert(param);
+            int count = orderHandleResultDOMapper.insert(param);
             Preconditions.checkArgument(count > 0, "插入失败");
+        } else {
+            int count = orderHandleResultDOMapper.updateByPrimaryKey(param);
+            Preconditions.checkArgument(count > 0, "编辑失败");
         }
-        else
-            {
-                int count = orderHandleResultDOMapper.updateByPrimaryKey(param);
-                Preconditions.checkArgument(count > 0, "编辑失败");
-            }
+
+        // 更新订单总状态
+        LoanProcessDO loanProcessDO = new LoanProcessDO();
+        loanProcessDO.setOrderId(param.getOrderid());
+        loanProcessDO.setOrderStatus(ORDER_STATUS_END);
+        loanProcessDO.setGmtModify(new Date());
+        int count = loanProcessDOMapper.updateByPrimaryKeySelective(loanProcessDO);
+        Preconditions.checkArgument(count > 0, "更新失败");
+
         return ResultBean.ofSuccess(null, "保存成功");
     }
-/**
-* @Author: ZhongMingxiao
-* @Param:
-* @return:
-* @Date:
-* @Description:  模糊查询客户信息
-*/
+
+    /**
+     * @Author: ZhongMingxiao
+     * @Param:
+     * @return:
+     * @Date:
+     * @Description: 模糊查询客户信息
+     */
     @Override
-    public List<CustomerOrderVO> CustomerOrder(String name)
-    {
+    public List<CustomerOrderVO> CustomerOrder(String name) {
         return loanQueryDOMapper.selectCustomerOrder(name);
     }
 }

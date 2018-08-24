@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_COLLECTION_KEYS;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_INSTEAD_PAY_KEYS;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
@@ -293,7 +294,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
                 DO.setProcessKey(approval.getTaskDefinitionKey());
                 DO.setSendDate(new Date());
-                DO.setReadStatus(new Byte("0"));
+                DO.setReadStatus(VALID_STATUS);
                 DO.setType(approval.getAction());
 
                 jpushService.push(DO);
