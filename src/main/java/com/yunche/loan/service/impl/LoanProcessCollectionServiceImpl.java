@@ -83,11 +83,8 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
             permissionService.checkTaskPermission(approval.getTaskDefinitionKey());
         }
 
-        // 业务单
-        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
-
-        // 节点实时状态
-        LoanProcessCollectionDO loanProcessDO = getLoanProcess(approval.getProcessId());
+        // 订单状态校验
+        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId());
 
         // 操作日志
         loanProcessApprovalCommonService.log(approval);
@@ -96,6 +93,12 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         if (isPassSettleOrderTask(approval)) {
             return execPassSettleOrderTask(approval);
         }
+
+        // 业务单
+        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
+
+        // 节点实时状态
+        LoanProcessCollectionDO loanProcessDO = getLoanProcess(approval.getProcessId());
 
         // 获取当前执行任务（activiti中）
         Task task = loanProcessApprovalCommonService.getTask(loanProcessDO.getProcessInstId(), approval.getTaskDefinitionKey());

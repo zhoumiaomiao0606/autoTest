@@ -188,10 +188,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 业务单
-        LoanOrderDO loanOrderDO = null;
-        if (null != approval.getOrderId()) {
-            loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
-        }
+        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
 
         // 节点实时状态
         LoanProcessDO loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(approval.getOrderId());
@@ -284,6 +281,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
+    }
+
+    /**
+     * 业务单
+     *
+     * @param orderId
+     * @return
+     */
+    private LoanOrderDO getLoanOrder(Long orderId) {
+
+        if (null != orderId) {
+
+            LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(orderId);
+
+            return loanOrderDO;
+        }
+
+        return null;
     }
 
     /**
@@ -2718,6 +2733,56 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                             break;
                         case 12:
                             taskStatus = 12;
+                            break;
+                    }
+                }
+
+            } else if (OUTWORKER_COST_APPLY.getCode().equals(taskDefinitionKey)) {
+
+                // 外勤费用申报
+                LegworkReimbursementDO legworkReimbursementDO = legworkReimbursementDOMapper.selectByPrimaryKey(orderId);
+                if (null != legworkReimbursementDO) {
+
+                    switch (legworkReimbursementDO.getStatus()) {
+                        case 0:
+                            taskStatus = 0;
+                            break;
+                        case 1:
+                            taskStatus = 1;
+                            break;
+                        case 2:
+                            taskStatus = 2;
+                            break;
+                        case 3:
+                            taskStatus = 3;
+                            break;
+                        case 4:
+                            taskStatus = 1;
+                            break;
+                    }
+                }
+
+            } else if (OUTWORKER_COST_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
+
+                // 财务报销
+                LegworkReimbursementDO legworkReimbursementDO = legworkReimbursementDOMapper.selectByPrimaryKey(orderId);
+                if (null != legworkReimbursementDO) {
+
+                    switch (legworkReimbursementDO.getStatus()) {
+                        case 0:
+                            taskStatus = 0;
+                            break;
+                        case 1:
+                            taskStatus = 1;
+                            break;
+                        case 2:
+                            taskStatus = 0;
+                            break;
+                        case 3:
+                            taskStatus = 0;
+                            break;
+                        case 4:
+                            taskStatus = 2;
                             break;
                     }
                 }

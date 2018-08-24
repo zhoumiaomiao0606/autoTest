@@ -1,13 +1,17 @@
 package com.yunche.loan;
 
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.cache.TokenCache;
 import com.yunche.loan.config.util.CarLoanHttpUtil;
 import com.yunche.loan.config.util.OpenApiUtil;
 import com.yunche.loan.config.util.ZhongAnHttpUtil;
 import com.yunche.loan.domain.entity.PartnerDO;
+import com.yunche.loan.domain.param.ZhongAnCusParam;
+import com.yunche.loan.domain.param.ZhongAnQueryParam;
 import com.yunche.loan.domain.vo.GpsDetailTotalVO;
 import com.yunche.loan.mapper.PartnerDOMapper;
+import com.yunche.loan.service.AppLoanOrderService;
 import com.yunche.loan.service.AuxiliaryService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +33,30 @@ public class CacheTest extends BaseTest {
     @Resource
     PartnerDOMapper partnerDOMapper;
 
+    @Resource
+    AppLoanOrderService appLoanOrderService;
+
 
    @Test
     public void doA1123(){
         try {
+            ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
+            zhongAnQueryParam.setOrder_id("123");
+            List<ZhongAnCusParam> customers = Lists.newArrayList();
+            ZhongAnCusParam zhongAnCusParam = new ZhongAnCusParam();
+            zhongAnCusParam.setIdcard("341226198404016579");
+            zhongAnCusParam.setName("武军");
+            zhongAnCusParam.setCustomertype("主贷人");
+            zhongAnCusParam.setRalationship("1");
+            zhongAnCusParam.setTel("15658880777");
+            zhongAnCusParam.setLoanmoney("1");
+            customers.add(zhongAnCusParam);
+            zhongAnQueryParam.setCustomers(customers);
+            appLoanOrderService.zhongAnQuery(zhongAnQueryParam);
            // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","999967");
 
             // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","99993");
-           ZhongAnHttpUtil.queryInfo("贾秀龙","13803132243","130703198703212118 ","1","2","3333","1","99199212");
+           //ZhongAnHttpUtil.queryInfo("武军","15658880777","341226198404016579","1","2","3333","1","991912392121");
 
         } catch (Exception e) {
             e.printStackTrace();
