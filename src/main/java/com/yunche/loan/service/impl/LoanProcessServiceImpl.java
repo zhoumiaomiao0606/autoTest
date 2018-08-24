@@ -188,10 +188,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 业务单
-        LoanOrderDO loanOrderDO = null;
-        if (null != approval.getOrderId()) {
-            loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
-        }
+        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
 
         // 节点实时状态
         LoanProcessDO loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(approval.getOrderId());
@@ -284,6 +281,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
+    }
+
+    /**
+     * 业务单
+     *
+     * @param orderId
+     * @return
+     */
+    private LoanOrderDO getLoanOrder(Long orderId) {
+
+        if (null != orderId) {
+
+            LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(orderId);
+
+            return loanOrderDO;
+        }
+
+        return null;
     }
 
     /**

@@ -109,4 +109,11 @@ public interface LoanProcessApprovalCommonService {
      * @param taskProcessStatus
      */
     void doUpdateCurrentTaskProcessStatus(LoanProcessDO_ loanProcessDO_, String taskDefinitionKey, Byte taskProcessStatus);
+
+    /**
+     * 订单状态校验
+     *
+     * @param orderId
+     */
+    void checkOrderStatus(Long orderId);
 }

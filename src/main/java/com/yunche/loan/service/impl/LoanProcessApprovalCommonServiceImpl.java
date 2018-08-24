@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_END;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_COLLECTION_KEYS;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_INSTEAD_PAY_KEYS;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_LEGAL_KEYS;
@@ -391,6 +394,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
      */
     @Override
     public LoanProcessDO getLoanProcess(Long orderId) {
+
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
@@ -442,6 +446,27 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public void checkOrderStatus(Long orderId) {
+
+        LoanProcessDO loanProcessDO = getLoanProcess(orderId);
+
+        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()),
+                "当前订单" + getOrderStatusText(loanProcessDO));
+    }
+
+    /**
+     * 订单状态Text
+     *
+     * @param loanProcessDO
+     * @return
+     */
+    private String getOrderStatusText(LoanProcessDO loanProcessDO) {
+        String orderStatusText = ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) ?
+                "[已弃单]" : (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus()) ? "[已结单]" : "[状态异常]");
+        return orderStatusText;
     }
 
     /**
