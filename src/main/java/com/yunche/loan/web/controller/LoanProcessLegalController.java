@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 /**
  * [法务处理] -流程
  *
@@ -50,8 +47,8 @@ public class LoanProcessLegalController {
      * @return
      */
     @GetMapping(value = "/startProcess")
-    public ResultBean<Long> startProcess(@RequestParam(value = "orderId") @NotNull Long orderId,
-                                         @RequestParam(value = "bankRepayImpRecordId") @NotNull Long bankRepayImpRecordId) {
+    public ResultBean<Long> startProcess(@RequestParam(value = "orderId") Long orderId,
+                                         @RequestParam(value = "bankRepayImpRecordId") Long bankRepayImpRecordId) {
         Long processId = loanProcessLegalService.startProcess(orderId, bankRepayImpRecordId);
         return ResultBean.ofSuccess(processId);
     }

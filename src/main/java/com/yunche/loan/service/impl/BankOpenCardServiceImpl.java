@@ -38,7 +38,6 @@ import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
-import static com.yunche.loan.config.thread.ThreadPool.executorService;
 
 @Service
 public class BankOpenCardServiceImpl implements BankOpenCardService {
@@ -263,7 +262,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                 Preconditions.checkArgument(count == list.size(), "批量插入失败");
             }
             //更新客户表中对应记录中的卡号 （lend_card）
-            list.stream().filter(Objects::nonNull).forEach(e->{
+            list.stream().filter(Objects::nonNull).forEach(e -> {
                 LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
                 LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), BaseConst.VALID_STATUS);
                 loanCustomerDO.setLendCard(e.getCardNumber());
@@ -489,16 +488,11 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
      * @param list
      */
     private void asyncPush(List<String> list) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                list.parallelStream().forEach(e -> {
-                    FtpUtil.icbcUpload(e);
-                });
 
-            }
+        list.parallelStream().forEach(e -> {
+            FtpUtil.icbcUpload(e);
         });
-    }
 
+    }
 
 }
