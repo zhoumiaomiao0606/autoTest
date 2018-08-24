@@ -13,11 +13,11 @@ import java.util.List;
 public class VehicleHandleDO extends VehicleHandleDOKey {
     private String handdlePerson;
 
-    private String trailVehicleDate;
+    private Date trailVehicleDate;
 
     private String trailVehicleAddress;
 
-    private String vehicleInboundDate;
+    private Date vehicleInboundDate;
 
     private String vehicleInboundAddress;
 
