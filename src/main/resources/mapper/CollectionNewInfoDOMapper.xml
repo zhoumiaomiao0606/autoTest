@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.CollectionNewInfoDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CollectionNewInfoDO" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <id column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT" />
-    <result column="isvisit" property="isvisit" jdbcType="VARCHAR" />
-    <result column="circumstances" property="circumstances" jdbcType="VARCHAR" />
-    <result column="police" property="police" jdbcType="VARCHAR" />
-    <result column="notarization" property="notarization" jdbcType="VARCHAR" />
-    <result column="second_mortgage" property="secondMortgage" jdbcType="VARCHAR" />
-    <result column="collection_manId" property="collectionManid" jdbcType="VARCHAR" />
-    <result column="islaw" property="islaw" jdbcType="VARCHAR" />
-    <result column="dispatched_staff" property="dispatchedStaff" jdbcType="VARCHAR" />
-    <result column="dispatched_date" property="dispatchedDate" jdbcType="DATE" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.yunche.loan.mapper.CollectionNewInfoDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CollectionNewInfoDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT"/>
+        <result column="isvisit" property="isvisit" jdbcType="VARCHAR"/>
+        <result column="circumstances" property="circumstances" jdbcType="VARCHAR"/>
+        <result column="police" property="police" jdbcType="VARCHAR"/>
+        <result column="notarization" property="notarization" jdbcType="VARCHAR"/>
+        <result column="second_mortgage" property="secondMortgage" jdbcType="VARCHAR"/>
+        <result column="collection_manId" property="collectionManid" jdbcType="VARCHAR"/>
+        <result column="islaw" property="islaw" jdbcType="VARCHAR"/>
+        <result column="dispatched_staff" property="dispatchedStaff" jdbcType="VARCHAR"/>
+        <result column="dispatched_date" property="dispatchedDate" jdbcType="DATE"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, bank_repay_imp_record_id, isvisit, circumstances, police, notarization, second_mortgage, 
     collection_manId, islaw, dispatched_staff, dispatched_date
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDOKey" >
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap"
+            parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDOKey">
     SELECT
 	a.id    AS id ,
 	bank_repay_imp_record_id,
@@ -36,12 +37,12 @@
     where a.id = #{id,jdbcType=BIGINT}
       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDOKey" >
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDOKey">
     delete from collection_new_info
     where id = #{id,jdbcType=BIGINT}
       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO" >
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO">
     insert into collection_new_info (id, bank_repay_imp_record_id, isvisit, 
       circumstances, police, notarization, 
       second_mortgage, collection_manId, islaw, 
@@ -51,114 +52,115 @@
       #{secondMortgage,jdbcType=VARCHAR}, #{collectionManid,jdbcType=VARCHAR}, #{islaw,jdbcType=VARCHAR}, 
       #{dispatchedStaff,jdbcType=VARCHAR}, #{dispatchedDate,jdbcType=DATE})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO" >
-    insert into collection_new_info
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="bankRepayImpRecordId != null" >
-        bank_repay_imp_record_id,
-      </if>
-      <if test="isvisit != null" >
-        isvisit,
-      </if>
-      <if test="circumstances != null" >
-        circumstances,
-      </if>
-      <if test="police != null" >
-        police,
-      </if>
-      <if test="notarization != null" >
-        notarization,
-      </if>
-      <if test="secondMortgage != null" >
-        second_mortgage,
-      </if>
-      <if test="collectionManid != null" >
-        collection_manId,
-      </if>
-      <if test="islaw != null" >
-        islaw,
-      </if>
-      <if test="dispatchedStaff != null" >
-        dispatched_staff,
-      </if>
-      <if test="dispatchedDate != null" >
-        dispatched_date,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="bankRepayImpRecordId != null" >
-        #{bankRepayImpRecordId,jdbcType=BIGINT},
-      </if>
-      <if test="isvisit != null" >
-        #{isvisit,jdbcType=VARCHAR},
-      </if>
-      <if test="circumstances != null" >
-        #{circumstances,jdbcType=VARCHAR},
-      </if>
-      <if test="police != null" >
-        #{police,jdbcType=VARCHAR},
-      </if>
-      <if test="notarization != null" >
-        #{notarization,jdbcType=VARCHAR},
-      </if>
-      <if test="secondMortgage != null" >
-        #{secondMortgage,jdbcType=VARCHAR},
-      </if>
-      <if test="collectionManid != null" >
-        #{collectionManid,jdbcType=VARCHAR},
-      </if>
-      <if test="islaw != null" >
-        #{islaw,jdbcType=VARCHAR},
-      </if>
-      <if test="dispatchedStaff != null" >
-        #{dispatchedStaff,jdbcType=VARCHAR},
-      </if>
-      <if test="dispatchedDate != null" >
-        #{dispatchedDate,jdbcType=DATE},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO" >
-    update collection_new_info
-    <set >
-      <if test="isvisit != null" >
-        isvisit = #{isvisit,jdbcType=VARCHAR},
-      </if>
-      <if test="circumstances != null" >
-        circumstances = #{circumstances,jdbcType=VARCHAR},
-      </if>
-      <if test="police != null" >
-        police = #{police,jdbcType=VARCHAR},
-      </if>
-      <if test="notarization != null" >
-        notarization = #{notarization,jdbcType=VARCHAR},
-      </if>
-      <if test="secondMortgage != null" >
-        second_mortgage = #{secondMortgage,jdbcType=VARCHAR},
-      </if>
-      <if test="collectionManid != null" >
-        collection_manId = #{collectionManid,jdbcType=VARCHAR},
-      </if>
-      <if test="islaw != null" >
-        islaw = #{islaw,jdbcType=VARCHAR},
-      </if>
-      <if test="dispatchedStaff != null" >
-        dispatched_staff = #{dispatchedStaff,jdbcType=VARCHAR},
-      </if>
-      <if test="dispatchedDate != null" >
-        dispatched_date = #{dispatchedDate,jdbcType=DATE},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-      and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO" >
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO">
+        insert into collection_new_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="bankRepayImpRecordId != null">
+                bank_repay_imp_record_id,
+            </if>
+            <if test="isvisit != null">
+                isvisit,
+            </if>
+            <if test="circumstances != null">
+                circumstances,
+            </if>
+            <if test="police != null">
+                police,
+            </if>
+            <if test="notarization != null">
+                notarization,
+            </if>
+            <if test="secondMortgage != null">
+                second_mortgage,
+            </if>
+            <if test="collectionManid != null">
+                collection_manId,
+            </if>
+            <if test="islaw != null">
+                islaw,
+            </if>
+            <if test="dispatchedStaff != null">
+                dispatched_staff,
+            </if>
+            <if test="dispatchedDate != null">
+                dispatched_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="bankRepayImpRecordId != null">
+                #{bankRepayImpRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="isvisit != null">
+                #{isvisit,jdbcType=VARCHAR},
+            </if>
+            <if test="circumstances != null">
+                #{circumstances,jdbcType=VARCHAR},
+            </if>
+            <if test="police != null">
+                #{police,jdbcType=VARCHAR},
+            </if>
+            <if test="notarization != null">
+                #{notarization,jdbcType=VARCHAR},
+            </if>
+            <if test="secondMortgage != null">
+                #{secondMortgage,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionManid != null">
+                #{collectionManid,jdbcType=VARCHAR},
+            </if>
+            <if test="islaw != null">
+                #{islaw,jdbcType=VARCHAR},
+            </if>
+            <if test="dispatchedStaff != null">
+                #{dispatchedStaff,jdbcType=VARCHAR},
+            </if>
+            <if test="dispatchedDate != null">
+                #{dispatchedDate,jdbcType=DATE},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO">
+        update collection_new_info
+        <set>
+            <if test="isvisit != null">
+                isvisit = #{isvisit,jdbcType=VARCHAR},
+            </if>
+            <if test="circumstances != null">
+                circumstances = #{circumstances,jdbcType=VARCHAR},
+            </if>
+            <if test="police != null">
+                police = #{police,jdbcType=VARCHAR},
+            </if>
+            <if test="notarization != null">
+                notarization = #{notarization,jdbcType=VARCHAR},
+            </if>
+            <if test="secondMortgage != null">
+                second_mortgage = #{secondMortgage,jdbcType=VARCHAR},
+            </if>
+            <if test="collectionManid != null">
+                collection_manId = #{collectionManid,jdbcType=VARCHAR},
+            </if>
+            <if test="islaw != null">
+                islaw = #{islaw,jdbcType=VARCHAR},
+            </if>
+            <if test="dispatchedStaff != null">
+                dispatched_staff = #{dispatchedStaff,jdbcType=VARCHAR},
+            </if>
+            <if test="dispatchedDate != null">
+                dispatched_date = #{dispatchedDate,jdbcType=DATE},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+        and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CollectionNewInfoDO">
     update collection_new_info
     set isvisit = #{isvisit,jdbcType=VARCHAR},
       circumstances = #{circumstances,jdbcType=VARCHAR},
@@ -173,19 +175,31 @@
       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
 
-  <!--根据orderId查询拖车概况-->
-  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="Long" >
-    select
-    <include refid="Base_Column_List" />
-    from collection_new_info
-    where id = #{orderId,jdbcType=BIGINT}
-  </select>
-  <update id="isvisitback">
-    update collection_new_info set isvisit = "0" , circumstances = "" , police ="" , notarization="" , second_mortgage="" , collection_manId =""
-    where id =#{orderId,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+    <!--根据orderId查询拖车概况-->
+    <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="Long">
+        select
+        <include refid="Base_Column_List"/>
+        from collection_new_info
+        where id = #{orderId,jdbcType=BIGINT}
+    </select>
+
+    <update id="isvisitback">
+    update collection_new_info
+    set isvisit = "0" ,
+    circumstances = "" ,
+    police ="" ,
+    notarization="" ,
+    second_mortgage="" ,
+    collection_manId =""
+    where id =#{orderId,jdbcType=BIGINT}
+    and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
-  <update id="islawback">
-      update collection_new_info set islaw ="0" where id = #{orderId,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+
+    <update id="islawback">
+      update collection_new_info
+       set islaw ="0"
+       where id = #{orderId,jdbcType=BIGINT}
+       and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
   </update>
 
 </mapper>

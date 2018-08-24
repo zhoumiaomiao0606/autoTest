@@ -154,7 +154,6 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
     }
 
 
-
     @Override
     public Map expensesAppDetail(Long id) {
 
@@ -169,15 +168,15 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
                         if (visitDoorDO != null) {
                             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(visitDoorDO.getOrderId());
                             if (loanOrderDO != null) {
-                                UniversalInfoVO universalInfoVO  = loanQueryDOMapper.selectUniversalInfo(loanOrderDO.getId());
-                                if(universalInfoVO!=null){
+                                UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(loanOrderDO.getId());
+                                if (universalInfoVO != null) {
                                     Map map = Maps.newHashMap();
-                                    map.put("orderId",universalInfoVO.getOrder_id());
-                                    map.put("customerName",universalInfoVO.getCustomer_name());
-                                    map.put("customerMobile",universalInfoVO.getCustomer_mobile());
-                                    map.put("customerIdCard",universalInfoVO.getCustomer_id_card());
-                                    map.put("visitDoorId",visitDoorDO.getId());
-                                    map.put("bankRepayImpRecordId",visitDoorDO.getBankRepayImpRecordId());
+                                    map.put("orderId", universalInfoVO.getOrder_id());
+                                    map.put("customerName", universalInfoVO.getCustomer_name());
+                                    map.put("customerMobile", universalInfoVO.getCustomer_mobile());
+                                    map.put("customerIdCard", universalInfoVO.getCustomer_id_card());
+                                    map.put("visitDoorId", visitDoorDO.getId());
+                                    map.put("bankRepayImpRecordId", visitDoorDO.getBankRepayImpRecordId());
                                     result.add(map);
                                 }
                             }
@@ -188,9 +187,9 @@ public class LegworkReimbursementServiceImpl implements LegworkReimbursementServ
         }
 
         Map map = Maps.newHashMap();
-        map.put("orders",result);
-        map.put("legwork",legworkReimbursementDOMapper.selectByPrimaryKey(id));
-        map.put("files",legworkReimbursementFileDOMapper.selectByLegworkReimbursementId(id));
+        map.put("orders", result);
+        map.put("legwork", legworkReimbursementDOMapper.selectByPrimaryKey(id));
+        map.put("files", legworkReimbursementFileDOMapper.selectByLegworkReimbursementId(id));
         return map;
     }
 

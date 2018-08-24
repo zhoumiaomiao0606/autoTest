@@ -65,6 +65,7 @@ public enum LoanProcessEnum {
     FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW("usertask_financial_scheme_modify_apply_review", "金融方案审核"),
     REFUND_APPLY("usertask_refund_apply", "退款申请"),
     REFUND_APPLY_REVIEW("usertask_refund_apply_review", "退款申请审核"),
+
     OUTWORKER_COST_APPLY("usertask_outworker_cost_apply", "外勤费用申报"),
     OUTWORKER_COST_APPLY_REVIEW("usertask_outworker_cost_apply_review", "财务报销"),
 

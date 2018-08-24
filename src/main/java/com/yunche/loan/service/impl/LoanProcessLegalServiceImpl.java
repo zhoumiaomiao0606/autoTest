@@ -78,6 +78,9 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
             permissionService.checkTaskPermission(approval.getTaskDefinitionKey());
         }
 
+        // 订单状态校验
+        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId());
+
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
 
@@ -384,8 +387,8 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
     }
 
     public void visitLawBack(ApprovalParam approval) {
-        if (VISIT_COLLECTION_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
-            collectionNewInfoDOMapper.isvisitback(approval.getOrderId(), approval.getBankRepayImpRecordId());
+        if (LEGAL_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
+            collectionNewInfoDOMapper.islawback(approval.getOrderId(), approval.getBankRepayImpRecordId());
         } else if (LEGAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
             collectionNewInfoDOMapper.islawback(approval.getOrderId(), approval.getBankRepayImpRecordId());
         }

@@ -681,6 +681,7 @@
                       <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
+                          compensation.compensation_amount             AS compensationAmount,
                           deputy_.bank_repay_imp_record_id             AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
@@ -697,6 +698,7 @@
                       <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
+                          compensation.compensation_amount             AS compensationAmount,
                           deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
@@ -712,6 +714,7 @@
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
+                          compensation.compensation_amount             AS compensationAmount,
                           deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
@@ -727,6 +730,7 @@
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
+                          compensation.compensation_amount             AS compensationAmount,
                           deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
@@ -736,7 +740,6 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
-                          compensation.compensation_amount             AS compensationAmount,
                           join_rep.optimal_return                      AS overdueAmount,
                           deputy_.partner_instead_pay_review           AS taskStatus
                       </when>

@@ -6,8 +6,8 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface CollectionNewInfoDOMapper
-{
+public interface CollectionNewInfoDOMapper {
+
     int deleteByPrimaryKey(CollectionNewInfoDOKey key);
 
     int insert(CollectionNewInfoDO record);
@@ -20,10 +20,15 @@ public interface CollectionNewInfoDOMapper
 
     int updateByPrimaryKey(CollectionNewInfoDO record);
 
-    //根据orderId查询出所有版本下的申请拖车记录
+    /**
+     * 根据orderId查询出所有版本下的申请拖车记录
+     *
+     * @param orderId
+     * @return
+     */
     List<CollectionNewInfoDO> selectByOrderId(Long orderId);
 
-    void isvisitback(@Param("orderId")Long orderId,@Param("bankRepayImpRecordId") Long bankRepayImpRecordId);
+    void isvisitback(@Param("orderId") Long orderId, @Param("bankRepayImpRecordId") Long bankRepayImpRecordId);
 
-    void islawback(@Param("orderId")Long orderId,@Param("bankRepayImpRecordId") Long bankRepayImpRecordId);
+    void islawback(@Param("orderId") Long orderId, @Param("bankRepayImpRecordId") Long bankRepayImpRecordId);
 }

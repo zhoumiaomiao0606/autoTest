@@ -69,6 +69,9 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
             permissionService.checkTaskPermission(approval.getTaskDefinitionKey());
         }
 
+        // 订单状态校验
+        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId());
+
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
 

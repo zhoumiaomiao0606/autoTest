@@ -59,7 +59,8 @@ public class LawWorksServiceImpl implements LawWorksService {
 
         LawWorksVO lawWorksVO = new LawWorksVO();
         lawWorksVO.setResult(lawWorkQuery);
-        LitigationStateDO litigationStateDO = litigationStateDOMapper.selectByIdAndType(orderid,"0",bankRepayImpRecordId);
+      //  LitigationStateDO litigationStateDO = litigationStateDOMapper.selectByIdAndType(orderid,"0",bankRepayImpRecordId);
+        LitigationStateDO litigationStateDO = null;
         lawWorksVO.setLitigationStateDO(litigationStateDO == null?new LitigationStateDO():litigationStateDO);
         List<LitigationDO> list = litigationDOMapper.selectByOrderId(orderid,bankRepayImpRecordId);
         if(list == null){
@@ -142,6 +143,6 @@ public class LawWorksServiceImpl implements LawWorksService {
     @Override
     public void litigationRevoke(LitigationStateDO litigationStateDO) {
         litigationStateDO.setCollectionType("0");
-        litigationStateDOMapper.insertSelective(litigationStateDO);
+       // litigationStateDOMapper.insertSelective(litigationStateDO);
     }
 }

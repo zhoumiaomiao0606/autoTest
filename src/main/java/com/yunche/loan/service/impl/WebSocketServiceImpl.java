@@ -28,7 +28,7 @@ import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
 import static com.yunche.loan.config.constant.FaceSignConst.FACE_SIGN_MACHINE;
 import static com.yunche.loan.config.constant.VideoFaceConst.*;
-import static com.yunche.loan.config.queue.VideoFaceQueue.VIDEO_FACE_QUEUE_KEY_SEPARATOR;
+import static com.yunche.loan.config.queue.VideoFaceQueue.SEPARATOR;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -307,14 +307,14 @@ public class WebSocketServiceImpl implements WebSocketService {
                 msg.setTotalNum(size);
 
                 // anyChatUserId:wsSessionId:userId:order_id
-                String[] userMsgArr = k.split(VIDEO_FACE_QUEUE_KEY_SEPARATOR);
+                String[] userMsgArr = k.split(SEPARATOR);
                 String anyChatUserId = userMsgArr[0];
                 String wkSessionId = userMsgArr[1];
                 String customerId = userMsgArr[2];
                 String orderId = userMsgArr[3];
 
                 // 收集anyChatUserId:wsSessionId:userId:order_id     : rankNum
-                String k_rankNum = k + VIDEO_FACE_QUEUE_KEY_SEPARATOR + rankNum;
+                String k_rankNum = k + SEPARATOR + rankNum;
                 anyChatUserId_wsSessionId_userId_orderId_rankNum_List.add(k_rankNum);
 
                 // APP   -> 排名、总排队数          -> 点对点 推送URL：   /user/{user}/queue/team/info/app       {user} -> wkSessionId
@@ -342,7 +342,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                     .filter(StringUtils::isNotBlank)
                     .forEach(e -> {
 
-                        String[] userMsgArr = e.split(VIDEO_FACE_QUEUE_KEY_SEPARATOR);
+                        String[] userMsgArr = e.split(SEPARATOR);
                         Long anyChatUserId = Long.valueOf(userMsgArr[0]);
                         String wkSessionId = userMsgArr[1];
                         Long customerId = Long.valueOf(userMsgArr[2]);
@@ -366,7 +366,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             sessionIdStartTimeMap_PC.forEach((k, v) -> {
 
                 // anyChatUserId:wsSessionId:userId
-                String[] userMsgArr = k.split(VIDEO_FACE_QUEUE_KEY_SEPARATOR);
+                String[] userMsgArr = k.split(SEPARATOR);
                 String anyChatUserId = userMsgArr[0];
                 String wkSessionId = userMsgArr[1];
                 String userId = userMsgArr[2];
