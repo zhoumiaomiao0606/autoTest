@@ -116,7 +116,7 @@ public interface ActivitiDeploymentMapper {
     List<TaskEntityImpl> listInsteadPayTaskByOrderId(Long orderId);
 
     /**
-     * 执行中的-[催收任务]列表
+     * 执行中的-[上门催收]列表
      *
      * @param orderId
      * @return
@@ -125,4 +125,15 @@ public interface ActivitiDeploymentMapper {
     @Select("SELECT * FROM `act_ru_task` WHERE `PROC_INST_ID_` IN " +
             " ( SELECT `process_inst_id` FROM `loan_process_collection` WHERE `order_id` = #{orderId} ) ")
     List<TaskEntityImpl> listCollectionTaskByOrderId(Long orderId);
+
+    /**
+     * 执行中的-[法务诉讼]列表
+     *
+     * @param orderId
+     * @return
+     */
+    @ResultMap("taskResultMap")
+    @Select("SELECT * FROM `act_ru_task` WHERE `PROC_INST_ID_` IN " +
+            " ( SELECT `process_inst_id` FROM `loan_process_legal` WHERE `order_id` = #{orderId} ) ")
+    List<TaskEntityImpl> listLegalTaskByOrderId(Long orderId);
 }

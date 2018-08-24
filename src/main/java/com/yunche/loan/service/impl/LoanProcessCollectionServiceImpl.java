@@ -82,13 +82,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         // 节点实时状态
         LoanProcessCollectionDO loanProcessDO = getLoanProcess(approval.getProcessId());
 
-        // 贷款基本信息
-//        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-
-        // 校验审核前提条件
-//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessInsteadPayDO);
-
-        // 日志
+        // 操作日志
         loanProcessApprovalCommonService.log(approval);
 
         // 获取当前执行任务（activiti中）
@@ -124,7 +118,22 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
                              @NotNull(message = "collectionOrderId不能为空") Long collectionOrderId) {
 
-        // 开启activiti流程
+        // 上一条流程记录
+        LoanProcessCollectionDO lastLoanProcessCollectionDO = loanProcessCollectionDOMapper.getLastLoanProcessByCollectionOrderId(collectionOrderId);
+
+        // 历史流程已存在
+        if (null != lastLoanProcessCollectionDO) {
+
+            Preconditions.checkArgument(ORDER_STATUS_CANCEL.equals(lastLoanProcessCollectionDO.getOrderStatus()),
+                    "当前催收，已发起过[上门催收]流程");
+        }
+        // 无历史流程
+        else {
+
+            // pass
+        }
+
+        // 开启activiti流程  -上门催收
         ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_COLLECTION_KEY);
 
         // 创建流程记录
@@ -363,7 +372,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         // 流程变量：action
         variables.put(PROCESS_VARIABLE_ACTION, approval.getAction());
 
-        fillOtherVariables(variables, approval, loanProcessDO);
+        fillOtherVariables(variables, approval);
 
         return variables;
     }
@@ -374,50 +383,11 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
      *
      * @param variables
      * @param approval
-     * @param loanProcessDO
      */
-    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval, LoanProcessCollectionDO loanProcessDO) {
-
-        // 【催收工作台】
-        if (COLLECTION_WORKBENCH.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-
-            String choice = approval.getChoice();
-
-            // A  -> [上门拖车]
-            if ("A".equals(choice)) {
-
-                variables.put(PROCESS_VARIABLE_TARGET, VISIT_COLLECTION_REVIEW.getCode());
-            }
-
-            // B  -> [法务审核]
-            else if ("B".equals(choice)) {
-
-                variables.put(PROCESS_VARIABLE_TARGET, LEGAL_REVIEW.getCode());
-            }
-
-            // C  -> [上门拖车] + [法务审核]
-            else if ("C".equals(choice)) {
-
-                Byte visitCollectionReviewStatus = loanProcessDO.getVisitCollectionReview();
-                Byte legalReviewStatus = loanProcessDO.getLegalReview();
-
-                // 第一次走
-                if (TASK_PROCESS_INIT.equals(visitCollectionReviewStatus) && TASK_PROCESS_INIT.equals(legalReviewStatus)) {
-                    variables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
-                }
-
-                // 第二+次走
-                else if (!TASK_PROCESS_INIT.equals(visitCollectionReviewStatus)) {
-                    variables.put(PROCESS_VARIABLE_TARGET, LEGAL_REVIEW.getCode());
-                } else if (!TASK_PROCESS_INIT.equals(legalReviewStatus)) {
-                    variables.put(PROCESS_VARIABLE_TARGET, VISIT_COLLECTION_REVIEW.getCode());
-                }
-
-            }
-        }
+    private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval) {
 
         // [上门拖车]
-        else if (VISIT_COLLECTION.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+        if (VISIT_COLLECTION.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
             // 催收结果
             String visitResult = approval.getChoice();
@@ -429,9 +399,13 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
                 // 上门拖车-失败历史记录处理
                 vistiCollection_resultIsfailed(approval.getSupplementOrderId());
             }
-            // 2-车辆回收、3-客户结清、4-客户还款
-            else if ("2".equals(visitResult) || "3".equals(visitResult) || "4".equals(visitResult)) {
-                variables.put(PROCESS_VARIABLE_TARGET, StringUtils.EMPTY);
+            // 2-车辆回收
+            else if ("2".equals(visitResult)) {
+                variables.put(PROCESS_VARIABLE_TARGET, CAR_HANDLE.getCode());
+            }
+            // 3-客户结清、4-客户还款
+            else if ("3".equals(visitResult) || "4".equals(visitResult)) {
+                variables.put(PROCESS_VARIABLE_TARGET, SETTLE_ORDER.getCode());
             }
 
         }

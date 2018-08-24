@@ -5,9 +5,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.LoanProcessLegalDO;
 import com.yunche.loan.domain.param.ApprovalParam;
-import com.yunche.loan.mapper.*;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanProcessLegalDOMapper;
 import com.yunche.loan.service.*;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -24,33 +26,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_INSTEAD_PAY_KEY;
+import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_LEGAL_KEY;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_INIT;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
-import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_ACTION;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
 /**
  * @author liuzhe
- * @date 2018/8/20
+ * @date 2018/8/23
  */
 @Service
-public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPayService {
+public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
+
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
-    private LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
+    private LoanProcessLegalDOMapper loanProcessLegalDOMapper;
 
     @Autowired
     private TaskService taskService;
 
     @Autowired
-    private PermissionService permissionService;
+    private ActivitiService activitiService;
 
     @Autowired
-    private ActivitiService activitiService;
+    private PermissionService permissionService;
 
     @Autowired
     private LoanProcessApprovalCommonService loanProcessApprovalCommonService;
@@ -73,7 +79,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
 
         // 节点实时状态
-        LoanProcessInsteadPayDO loanProcessDO = getLoanProcess(approval.getProcessId());
+        LoanProcessLegalDO loanProcessDO = getLoanProcess(approval.getProcessId());
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -94,7 +100,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         syncProcess(startTaskIdList, loanProcessDO.getProcessInstId(), approval, loanProcessDO);
 
         // [领取]完成
-        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
+        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanProcessDO.getProcessInstId());
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
@@ -102,45 +108,61 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
 
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
-                             @NotNull(message = "insteadPayOrderId不能为空") Long insteadPayOrderId) {
+                             @NotNull(message = "collectionOrderId不能为空") Long collectionOrderId) {
 
-        // 开启activiti流程   -代偿流程
-        ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_INSTEAD_PAY_KEY);
+        // 上一条流程记录
+        LoanProcessLegalDO lastLoanProcessLegalDO = loanProcessLegalDOMapper.getLastLoanProcessByCollectionOrderId(collectionOrderId);
+
+        // 历史流程已存在
+        if (null != lastLoanProcessLegalDO) {
+
+            Preconditions.checkArgument(ORDER_STATUS_CANCEL.equals(lastLoanProcessLegalDO.getOrderStatus()), "当前催收，已发起过法务流程");
+        }
+        // 无历史流程
+        else {
+
+            // pass
+        }
+
+        // 开启activiti流程   -法务处理流程
+        ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_LEGAL_KEY);
 
         // 创建流程记录
-        Long processId = create(orderId, insteadPayOrderId, processInstance.getProcessInstanceId());
+        Long processId = create(orderId, collectionOrderId, processInstance.getProcessInstanceId());
 
         return processId;
     }
 
+
     /**
      * 创建[催收工作台]流程记录
      *
-     * @param orderId
-     * @param insteadPayOrderId 代偿单ID
-     * @param processInstId
+     * @param orderId           主订单ID
+     * @param collectionOrderId 催收批次号
+     * @param processInstId     流程实例ID
      * @return
      */
-    private Long create(Long orderId, Long insteadPayOrderId, String processInstId) {
+    private Long create(Long orderId, Long collectionOrderId, String processInstId) {
 
-        LoanProcessInsteadPayDO loanProcessInsteadPayDO = new LoanProcessInsteadPayDO();
+        LoanProcessLegalDO loanProcessLegalDO = new LoanProcessLegalDO();
 
-        loanProcessInsteadPayDO.setOrderId(orderId);
-        loanProcessInsteadPayDO.setInsteadPayOrderId(insteadPayOrderId);
-        loanProcessInsteadPayDO.setProcessInstId(processInstId);
+        loanProcessLegalDO.setOrderId(orderId);
+        loanProcessLegalDO.setCollectionOrderId(collectionOrderId);
+        loanProcessLegalDO.setProcessInstId(processInstId);
 
-        loanProcessInsteadPayDO.setApplyInsteadPay(TASK_PROCESS_TODO);
+        loanProcessLegalDO.setLegalReview(TASK_PROCESS_TODO);
 
-        loanProcessInsteadPayDO.setGmtCreate(new Date());
-        loanProcessInsteadPayDO.setGmtModify(new Date());
+        loanProcessLegalDO.setGmtCreate(new Date());
+        loanProcessLegalDO.setGmtModify(new Date());
 
-        int count = loanProcessInsteadPayDOMapper.insertSelective(loanProcessInsteadPayDO);
+        int count = loanProcessLegalDOMapper.insertSelective(loanProcessLegalDO);
         Preconditions.checkArgument(count > 0, "创建失败");
 
-        return loanProcessInsteadPayDO.getId();
+        return loanProcessLegalDO.getId();
     }
 
     /**
@@ -163,31 +185,11 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
      * @param processId
      * @return
      */
-    private LoanProcessInsteadPayDO getLoanProcess(Long processId) {
-        LoanProcessInsteadPayDO loanProcessInsteadPayDO = loanProcessInsteadPayDOMapper.selectByPrimaryKey(processId);
-        Preconditions.checkNotNull(loanProcessInsteadPayDO, "流程记录丢失");
+    private LoanProcessLegalDO getLoanProcess(Long processId) {
+        LoanProcessLegalDO loanProcessDO = loanProcessLegalDOMapper.selectByPrimaryKey(processId);
+        Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
-        return loanProcessInsteadPayDO;
-    }
-
-    /**
-     * 获取当前执行任务（activiti中）
-     *
-     * @param processInstId
-     * @param taskDefinitionKey
-     * @return
-     */
-    public Task getTask(String processInstId, String taskDefinitionKey) {
-
-        // 获取当前流程task
-        Task task = taskService.createTaskQuery()
-                .processInstanceId(processInstId)
-                .taskDefinitionKey(taskDefinitionKey)
-                .singleResult();
-
-        Preconditions.checkNotNull(task, "当前任务不存在");
-
-        return task;
+        return loanProcessDO;
     }
 
     /**
@@ -222,24 +224,19 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
      * @param currentLoanProcessDO
      */
     private void syncProcess(List<String> startTaskIdList, String processInstId, ApprovalParam approval,
-                             LoanProcessInsteadPayDO currentLoanProcessDO) {
+                             LoanProcessLegalDO currentLoanProcessDO) {
 
         // 更新状态
-        LoanProcessInsteadPayDO loanProcessDO = new LoanProcessInsteadPayDO();
+        LoanProcessLegalDO loanProcessDO = new LoanProcessLegalDO();
         loanProcessDO.setId(approval.getProcessId());
         loanProcessDO.setOrderId(approval.getOrderId());
 
-//        // 如果弃单，则记录弃单节点
-//        if (ACTION_CANCEL.equals(approval.getAction())) {
+        // 如果弃单，则记录弃单节点
+        if (ACTION_CANCEL.equals(approval.getAction())) {
 //            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
 //            loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
-//            updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
-//        }
-
-        // 结单 ending  -暂无【结单节点】
-//        if (XXX.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-//            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
-//        }
+            updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
+        }
 
         // 更新当前执行的任务状态
         Byte taskProcessStatus = null;
@@ -254,9 +251,6 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         // 更新新产生的任务状态
         updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskIdList, approval, currentLoanProcessDO);
 
-        // 特殊处理：部分节点的同步  !!!
-//        special_syncProcess(approval, loanProcessDO, currentLoanProcessDO, loanBaseInfoDO);
-
         // 更新本地流程记录
         updateLoanProcess(loanProcessDO);
     }
@@ -266,11 +260,12 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
      *
      * @param loanProcessDO
      */
-    private void updateLoanProcess(LoanProcessInsteadPayDO loanProcessDO) {
+    private void updateLoanProcess(LoanProcessLegalDO loanProcessDO) {
         loanProcessDO.setGmtModify(new Date());
-        int count = loanProcessInsteadPayDOMapper.updateByPrimaryKeySelective(loanProcessDO);
+        int count = loanProcessLegalDOMapper.updateByPrimaryKeySelective(loanProcessDO);
         Preconditions.checkArgument(count > 0, "更新本地流程记录失败");
     }
+
 
     /**
      * 更新本地已执行的任务状态
@@ -280,7 +275,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
      * @param taskProcessStatus
      * @param approval
      */
-    private void updateCurrentTaskProcessStatus(LoanProcessInsteadPayDO loanProcessDO, String taskDefinitionKey,
+    private void updateCurrentTaskProcessStatus(LoanProcessLegalDO loanProcessDO, String taskDefinitionKey,
                                                 Byte taskProcessStatus, ApprovalParam approval) {
 
         if (null == taskProcessStatus) {
@@ -290,9 +285,6 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         if (taskDefinitionKey.startsWith("filter")) {
             return;
         }
-
-        // 更新资料流转type
-//        doUpdateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus, approval);
 
         // 执行更新
         loanProcessApprovalCommonService.doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
@@ -307,8 +299,8 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
      * @param approval
      * @param currentLoanProcessDO
      */
-    private void updateNextTaskProcessStatus(LoanProcessInsteadPayDO loanProcessDO, String processInstanceId, List<String> startTaskIdList,
-                                             ApprovalParam approval, LoanProcessInsteadPayDO currentLoanProcessDO) {
+    private void updateNextTaskProcessStatus(LoanProcessLegalDO loanProcessDO, String processInstanceId, List<String> startTaskIdList,
+                                             ApprovalParam approval, LoanProcessLegalDO currentLoanProcessDO) {
 
         // 获取提交之后的待执行任务列表
         List<Task> endTaskList = loanProcessApprovalCommonService.getCurrentTaskList(processInstanceId);
@@ -340,14 +332,6 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
             // new  -> REJECT   old -> INIT
             doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT, approval);
 
-//            // 是否已过电审
-//            if (!TASK_PROCESS_DONE.equals(currentLoanProcessDO.getTelephoneVerify())) {
-//                // 没过电审
-//                doUpdateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT, approval);
-//            } else {
-//                // 过了电审，则不是真正的全部打回      nothing
-//            }
-
             // 打回记录
             loanProcessApprovalCommonService.createRejectLog(newTaskList, approval.getOrderId(),
                     approval.getTaskDefinitionKey(), approval.getInfo());
@@ -365,7 +349,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
      * @param taskProcessStatus 未提交/打回
      * @param approval
      */
-    private void doUpdateNextTaskProcessStatus(List<Task> nextTaskList, LoanProcessInsteadPayDO loanProcessDO,
+    private void doUpdateNextTaskProcessStatus(List<Task> nextTaskList, LoanProcessLegalDO loanProcessDO,
                                                Byte taskProcessStatus, ApprovalParam approval) {
 
         if (!CollectionUtils.isEmpty(nextTaskList)) {

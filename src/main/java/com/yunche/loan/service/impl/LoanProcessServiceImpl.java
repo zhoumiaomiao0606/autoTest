@@ -2510,11 +2510,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         List<TaskEntityImpl> insteadPayTaskList = activitiDeploymentMapper.listInsteadPayTaskByOrderId(orderId);
         List<TaskEntityImpl> collectionTaskList = activitiDeploymentMapper.listCollectionTaskByOrderId(orderId);
+        List<TaskEntityImpl> legalTaskList = activitiDeploymentMapper.listLegalTaskByOrderId(orderId);
 
         List<Task> runTaskList = Lists.newArrayList();
         runTaskList.addAll(insteadPayTaskList);
         runTaskList.addAll(collectionTaskList);
         runTaskList.addAll(loanProcessTaskList);
+        runTaskList.addAll(legalTaskList);
 
         List<TaskStateVO> taskStateVOS = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(runTaskList)) {
@@ -2534,8 +2536,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     })
                     .collect(toList());
         }
-
-        // TODO 还要加上资料增补任务 ？？？
 
         return ResultBean.ofSuccess(taskStateVOS, "查询当前流程任务节点信息成功");
     }

@@ -3,9 +3,11 @@ package com.yunche.loan.web.controller;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.anno.Limiter;
+import com.yunche.loan.config.constant.ActivitiConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.service.LoanProcessApprovalCommonService;
 import com.yunche.loan.service.LoanProcessService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityImpl;
@@ -31,6 +33,9 @@ public class LoanProcessController {
 
     @Autowired
     private RuntimeService runtimeService;
+
+    @Autowired
+    private LoanProcessApprovalCommonService loanProcessApprovalCommonService;
 
 
     /**
@@ -112,11 +117,21 @@ public class LoanProcessController {
         return loanProcessService.rejectLog(orderId, taskDefinitionKey);
     }
 
-    @GetMapping(value = "/startProcess")
-    public ResultBean<Map> startProcess(@RequestParam("processKey") String processDefinitionKey) {
+    @GetMapping(value = "/startProcess_")
+    public ResultBean<Map> startProcess_(@RequestParam("processKey") String processDefinitionKey) {
 
         // 开启activiti流程
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey);
+        ProcessInstance processInstance = null;
+        if (ActivitiConst.LOAN_PROCESS_KEY.equals(processDefinitionKey)) {
+            processInstance = runtimeService.startProcessInstanceByKey(ActivitiConst.LOAN_PROCESS_KEY);
+        } else if (ActivitiConst.LOAN_PROCESS_INSTEAD_PAY_KEY.equals(processDefinitionKey)) {
+            processInstance = runtimeService.startProcessInstanceByKey(ActivitiConst.LOAN_PROCESS_INSTEAD_PAY_KEY);
+        } else if (ActivitiConst.LOAN_PROCESS_COLLECTION_KEY.equals(processDefinitionKey)) {
+            processInstance = runtimeService.startProcessInstanceByKey(ActivitiConst.LOAN_PROCESS_COLLECTION_KEY);
+        } else if (ActivitiConst.LOAN_PROCESS_LEGAL_KEY.equals(processDefinitionKey)) {
+            processInstance = runtimeService.startProcessInstanceByKey(ActivitiConst.LOAN_PROCESS_LEGAL_KEY);
+        }
+
         Preconditions.checkNotNull(processInstance, "开启流程实例异常");
         Preconditions.checkNotNull(processInstance.getProcessInstanceId(), "开启流程实例异常");
 

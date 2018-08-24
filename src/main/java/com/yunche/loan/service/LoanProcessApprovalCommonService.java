@@ -1,7 +1,6 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.LoanProcessCollectionDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.entity.LoanProcessDO_;
 import com.yunche.loan.domain.param.ApprovalParam;
@@ -67,6 +66,8 @@ public interface LoanProcessApprovalCommonService {
     void asyncPush(LoanOrderDO loanOrderDO, ApprovalParam approval);
 
     /**
+     * 打回记录
+     *
      * @param newTaskList
      * @param orderId
      * @param taskDefinitionKey
@@ -91,7 +92,7 @@ public interface LoanProcessApprovalCommonService {
     LoanProcessDO getLoanProcess(Long orderId);
 
     /**
-     * 获取流程记录      -消费贷/催收/代偿
+     * 获取流程记录      -消费贷/上门催收/法务处理/代偿
      *
      * @param orderId
      * @param processId
@@ -101,7 +102,7 @@ public interface LoanProcessApprovalCommonService {
     LoanProcessDO_ getLoanProcess_(Long orderId, Long processId, String taskDefinitionKey);
 
     /**
-     * 执行流程数据更新   -消费贷/催收/代偿
+     * 执行流程数据更新   -消费贷/上门催收/法务处理/代偿
      *
      * @param loanProcessDO_
      * @param taskDefinitionKey
