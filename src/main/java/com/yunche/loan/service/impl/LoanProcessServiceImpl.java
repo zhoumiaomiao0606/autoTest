@@ -278,7 +278,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         creditAutomaticCommit(approval);
 
         // 异步打包文件
-        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
+        asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
@@ -542,19 +542,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 异步打包文件
      *
      * @param taskDefinitionKey
+     * @param action
      * @param loanProcessDO
      * @param retryNum          重试次数
      */
-    private void asyncPackZipFile(String taskDefinitionKey, LoanProcessDO loanProcessDO, Integer retryNum) {
+    private void asyncPackZipFile(String taskDefinitionKey, Byte action, LoanProcessDO loanProcessDO, Integer retryNum) {
 
         if (null == retryNum) {
             retryNum = 0;
         }
-        //资料增补、电审、录入提车资料后，都会出发异步打包操作
-        if (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)
+        // 资料增补、电审、录入提车资料 - PASS 后，都会出发异步打包操作
+        boolean bool = (VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)
                 || INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)
                 || LOAN_APPLY.getCode().equals(taskDefinitionKey)
-                || VISIT_VERIFY.getCode().equals(taskDefinitionKey)) {
+                || VISIT_VERIFY.getCode().equals(taskDefinitionKey)
+        ) && ACTION_PASS.equals(action);
+
+        if (bool) {
 
             if (retryNum < 0) {
                 return;
@@ -562,21 +566,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             retryNum--;
 
             int finalRetryNum = retryNum;
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
+            executorService.execute(() -> {
 
-                    ResultBean<String> resultBean = null;
-                    try {
-                        // 打包，并上传至OSS
-                        resultBean = materialService.downloadFiles2OSS(loanProcessDO.getOrderId(), true);
-                    } catch (Exception e) {
-                        logger.error("asyncPackZipFile error", e);
-                    } finally {
-                        // 失败，重试
-                        if (null == resultBean || !resultBean.getSuccess()) {
-                            asyncPackZipFile(taskDefinitionKey, loanProcessDO, finalRetryNum);
-                        }
+                ResultBean<String> resultBean = null;
+                try {
+                    // 打包，并上传至OSS
+                    resultBean = materialService.downloadFiles2OSS(loanProcessDO.getOrderId(), true);
+                } catch (Exception e) {
+                    logger.error("asyncPackZipFile error", e);
+                } finally {
+                    // 失败，重试
+                    if (null == resultBean || !resultBean.getSuccess()) {
+                        asyncPackZipFile(taskDefinitionKey, action, loanProcessDO, finalRetryNum);
                     }
                 }
             });
@@ -1133,11 +1134,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
         }
 
-        // 结单 ending  -暂无【结单节点】
-//        if (XXX.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-//            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
-//        }
-
         //【资料审核】打回到【业务申请】 标记
         if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
             loanProcessDO.setLoanApplyRejectOrginTask(MATERIAL_REVIEW.getCode());
@@ -1200,6 +1196,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
 
         }
+
+        // [电审]打回  -[银行开卡]不打回
+//        else if () {
+//
+//        }
     }
 
     /**
@@ -1279,12 +1280,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
             // 众安征信接口校验
             List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectCusByOrderId(loanOrderDO.getId());
-            for(LoanCustomerDO loanCustomerDO:loanCustomerDOS){
-                ZhonganInfoDO zhonganInfoDO = zhonganInfoDOMapper.selectZNByOrderIdAndIdcard(loanOrderDO.getId(),loanCustomerDO.getIdCard());
-                if(zhonganInfoDO == null){
-                    throw new BizException("客户:" + loanCustomerDO.getName() +"没有进行大数据查询,无法提交");
-                }else{
-                    if(!"成功".equals(zhonganInfoDO.getResultMessage())){
+            for (LoanCustomerDO loanCustomerDO : loanCustomerDOS) {
+                ZhonganInfoDO zhonganInfoDO = zhonganInfoDOMapper.selectZNByOrderIdAndIdcard(loanOrderDO.getId(), loanCustomerDO.getIdCard());
+                if (zhonganInfoDO == null) {
+                    throw new BizException("客户:" + loanCustomerDO.getName() + "没有进行大数据查询,无法提交");
+                } else {
+                    if (!"成功".equals(zhonganInfoDO.getResultMessage())) {
                         throw new BizException("客户:" + zhonganInfoDO.getCustomerName() + zhonganInfoDO.getResultMessage() + ",无法提交征信");
                     }
                 }
@@ -1525,7 +1526,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             endInfoSupplement(approval);
 
             // 异步打包文件
-            asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
+            asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
 
             return ResultBean.ofSuccess(null, "[资料增补]提交成功");
         }
@@ -1606,16 +1607,25 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         Byte action = approval.getAction();
         if (ACTION_PASS.equals(action)) {
-            // new  -> TO_DO   old -> 不变
+
+            // new  -> TO_DO     old -> 不变
             doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_TODO, approval);
-        } else if (ACTION_REJECT_MANUAL.equals(action)) {
-            // new  -> REJECT   old -> INIT
+
+        } else if (ACTION_REJECT_MANUAL.equals(action) || ACTION_REJECT_AUTO.equals(action)) {
+
+            // new  ->  REJECT
             doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT, approval);
 
-            // 是否已过电审
+            // old  ->  INIT
+            // 没过电审
             if (!TASK_PROCESS_DONE.equals(currentLoanProcessDO.getTelephoneVerify())) {
-                // 没过电审
+
+                // 移除不需要打回的节点
+                removeNotNeedRejectTasks(oldTaskList, approval);
+
+                // old  ->  INIT
                 doUpdateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT, approval);
+
             } else {
                 // 过了电审，则不是真正的全部打回      nothing
             }
@@ -1626,6 +1636,31 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         } else if (ACTION_CANCEL.equals(action)) {
             // nothing
+        }
+    }
+
+    /**
+     * 移除不需要打回的节点
+     *
+     * @param oldTaskList
+     * @param approval
+     */
+    private void removeNotNeedRejectTasks(List<Task> oldTaskList, ApprovalParam approval) {
+
+        // [电审] 的并行节点 -> [银行开卡] 不能随[电审]一起打回
+        if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            if (!CollectionUtils.isEmpty(oldTaskList)) {
+
+                List<Task> removeTaskList = oldTaskList.stream()
+                        .filter(Objects::nonNull)
+                        .filter(task -> BANK_OPEN_CARD.getCode().equals(task.getTaskDefinitionKey()))
+                        .collect(toList());
+
+
+                oldTaskList.removeAll(removeTaskList);
+            }
+
         }
     }
 

@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import cn.jiguang.common.utils.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.VehicleOutboundDO;
 import com.yunche.loan.domain.param.VehicleOutboundUpdateParam;
@@ -25,6 +26,8 @@ public class VehicleOutboundController
     @GetMapping(value = "/detail")
     public ResultBean detail(@RequestParam String orderId,String bank_repay_imp_record_id)
     {
+        Preconditions.checkNotNull(orderId, "订单号不能为空");
+        Preconditions.checkNotNull(bank_repay_imp_record_id, "版本号不能为空");
         return ResultBean.ofSuccess(vehicleOutboundService.detail(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
     }
 

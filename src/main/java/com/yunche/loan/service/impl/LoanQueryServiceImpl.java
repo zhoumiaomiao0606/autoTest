@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -268,7 +266,6 @@ public class LoanQueryServiceImpl implements LoanQueryService {
                         urls.addAll(e.getUrls());
 
                     } else {
-
                         typeFilesMap.put(type, e);
                     }
 

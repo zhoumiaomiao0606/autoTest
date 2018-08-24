@@ -440,9 +440,10 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
             }
             Long batchId = recordImportBatch(ossKey);
             //获取批次号
-            List<BankFileListRecordDO> bankRepayList2 =  bankRepayList.stream().filter(f-> (f.getCredentialNo()!=null || f.getCardNumber()!=null)).map(e->{
+            bankRepayList =  bankRepayList.stream().filter(f-> (f.getCredentialNo()!=null || f.getCardNumber()!=null)).map(e->{
                 BankRepayParam bankRepayParam = bankRecordQueryDOMapper.selectByIdCardOrRepayCard(e.getCredentialNo(), e.getCardNumber());
                 if(bankRepayParam!=null){
+
                     LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(bankRepayParam.getOrderId());
                     e.setCustomerId(orderDO.getLoanCustomerId());
                     e.setOrderId(bankRepayParam.getOrderId());
@@ -460,13 +461,14 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
 //                    e.setBankFileListId(batchId);
 //                    e.setOrderId((long)-1);//不存在的记录
 //                    e.setStatus(INVALID_STATUS);
+                    return  null;
                 }
                 return e;
 
             }).collect(Collectors.toList());
-
+            bankRepayList = bankRepayList.stream().filter(Objects::nonNull).collect(Collectors.toList());
             //重复记录过滤
-            bankRepayList2.stream().filter(Objects::nonNull).forEach(e->{
+            bankRepayList.stream().filter(Objects::nonNull).forEach(e->{
 
                 BankFileListRecordDO recordDO = bankFileListRecordDOMapper.selectByPrimaryKey(e);
                 if(recordDO==null){

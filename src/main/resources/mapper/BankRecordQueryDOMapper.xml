@@ -49,11 +49,9 @@
         FROM
         loan_order a
         LEFT JOIN bank_card_record d ON a.id= d.order_id
-        LEFT JOIN loan_process b ON a.id = b.order_id
         LEFT JOIN loan_customer c ON a.loan_customer_id = c.id
         WHERE
             1=1
-        AND b.bank_lend_record = 1
         <if test="idCard != null ">
             AND c.id_card =#{idCard}
         </if>

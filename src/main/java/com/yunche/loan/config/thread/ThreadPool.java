@@ -17,11 +17,11 @@ public class ThreadPool {
             .setNameFormat("biz-pool-%d").build();
 
     public static final ExecutorService executorService = new ThreadPoolExecutor(
-            16,
+            0,
             32,
             60L,
             TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(2048),
+            new LinkedBlockingQueue<>(1024),
             namedThreadFactory,
             new ThreadPoolExecutor.AbortPolicy()
     );

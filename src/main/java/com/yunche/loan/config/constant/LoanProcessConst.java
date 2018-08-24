@@ -23,15 +23,20 @@ public class LoanProcessConst {
     );
 
     /**
-     * 催收流程-KEY
+     * 上门催收流程-KEY
      */
     public static final Set<String> LOAN_PROCESS_COLLECTION_KEYS = Sets.newHashSet(
-            COLLECTION_WORKBENCH.getCode(),
             VISIT_COLLECTION_REVIEW.getCode(),
             VISIT_COLLECTION.getCode(),
             CAR_HANDLE.getCode(),
             CAR_OUT.getCode(),
-            SETTLE_ORDER.getCode(),
+            SETTLE_ORDER.getCode()
+    );
+
+    /**
+     * 法务处理流程-KEY
+     */
+    public static final Set<String> LOAN_PROCESS_LEGAL_KEYS = Sets.newHashSet(
             LEGAL_REVIEW.getCode(),
             LEGAL_RECORD.getCode()
     );
@@ -49,7 +54,8 @@ public class LoanProcessConst {
             CUSTOMER_REPAY_PLAN_RECORD.getCode(),
             COLLECTION_WORKBENCH.getCode(),
             OUTWORKER_COST_APPLY.getCode(),
-            OUTWORKER_COST_APPLY_REVIEW.getCode()
+            OUTWORKER_COST_APPLY_REVIEW.getCode(),
+            OVERDUE_COLLECTION_LIST.getCode()
     );
 
     /**

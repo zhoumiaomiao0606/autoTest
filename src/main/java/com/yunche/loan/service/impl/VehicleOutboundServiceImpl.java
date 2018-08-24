@@ -58,8 +58,6 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
     @Override
     public VehicleOutboundVO detail(Long orderId,Long bank_repay_imp_record_id)
     {
-        Preconditions.checkNotNull(orderId, "订单号不能为空");
-        Preconditions.checkNotNull(bank_repay_imp_record_id, "版本号不能为空");
         VehicleOutboundVO vehicleOutboundVO =new VehicleOutboundVO();
         // TODO
         //客户主要信息

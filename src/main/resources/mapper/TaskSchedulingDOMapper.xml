@@ -691,6 +691,7 @@
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
                           join_rep.optimal_return                      AS overdueAmount,
+                          join_c.lend_card                             AS lendCard,
                           deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
@@ -738,6 +739,9 @@
                           compensation.compensation_amount             AS compensationAmount,
                           join_rep.optimal_return                      AS overdueAmount,
                           deputy_.partner_instead_pay_review           AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_material_manage'">
+                          deputy.material_manage                 AS taskStatus
                       </when>
                       <otherwise>
                         0                                         AS taskStatus
@@ -1016,6 +1020,9 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_legal_record'">
                       AND case when #{taskStatus} = 0 then deputy_l.legal_record != 0                   else deputy_l.legal_record    = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_material_manage'">
+                      AND case when #{taskStatus} = 0 then deputy.material_manage != 0                   else deputy.material_manage   = #{taskStatus} end
                   </when>
                   <otherwise>
                       AND 1=2

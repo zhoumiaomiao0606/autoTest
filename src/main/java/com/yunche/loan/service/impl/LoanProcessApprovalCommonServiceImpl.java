@@ -27,8 +27,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_COLLECTION_KEYS;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_INSTEAD_PAY_KEYS;
+import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_LEGAL_KEYS;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_AUTO;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_MANUAL;
@@ -293,7 +295,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
                 DO.setProcessKey(approval.getTaskDefinitionKey());
                 DO.setSendDate(new Date());
-                DO.setReadStatus(new Byte("0"));
+                DO.setReadStatus(VALID_STATUS);
                 DO.setType(approval.getAction());
 
                 jpushService.push(DO);
@@ -344,10 +346,11 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         // 1 -> 1
         if (null == processId) {
 
-            boolean isNotInsteadPayAndCollectionTask = !LOAN_PROCESS_INSTEAD_PAY_KEYS.contains(taskDefinitionKey)
-                    && !LOAN_PROCESS_COLLECTION_KEYS.contains(taskDefinitionKey);
+            boolean isNot_insteadPay__collection__legal_Task = !LOAN_PROCESS_INSTEAD_PAY_KEYS.contains(taskDefinitionKey)
+                    && !LOAN_PROCESS_COLLECTION_KEYS.contains(taskDefinitionKey)
+                    && !LOAN_PROCESS_LEGAL_KEYS.contains(taskDefinitionKey);
 
-            if (isNotInsteadPayAndCollectionTask) {
+            if (isNot_insteadPay__collection__legal_Task) {
 
                 loanProcessDO_ = loanProcessDOMapper.selectByPrimaryKey(orderId);
 
