@@ -8,9 +8,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.BankUrgeRecordDO;
-import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
-import com.yunche.loan.domain.entity.LoanProcessInsteadPayDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.UniversalCompensationParam;
 import com.yunche.loan.domain.query.UniversalCompensationQuery;
 import com.yunche.loan.domain.vo.FinancialSchemeVO;
@@ -63,6 +61,9 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
 
     @Autowired
     LoanCustomerDOMapper loanCustomerDOMapper;
+
+    @Autowired
+    LoanOrderDOMapper loanOrderDOMapper;
 
     /**
      * 导入文件
@@ -195,7 +196,9 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
         Preconditions.checkNotNull(param, "参数有误");
         Preconditions.checkNotNull(param.getApplyCompensationDate(), "申请日期不能为空");
         Preconditions.checkNotNull(param.getOrderId(), "业务单号不能为空");
-
+        //获取银行卡号
+        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(param.getOrderId());
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(orderDO.getLoanCustomerId(), null);
         if (param.getId() != null) {
             LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndBankRepayImpRecordId(param.getOrderId(), param.getId());
             if (insteadPayDO != null) {
