@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -115,11 +114,12 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
-                             @NotNull(message = "bankRepayImpRecordId不能为空") Long bankRepayImpRecordId) {
+    public Long startProcess(Long orderId, Long bankRepayImpRecordId) {
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+        Preconditions.checkNotNull(bankRepayImpRecordId, "bankRepayImpRecordId不能为空");
 
         // 上一条流程记录
-        LoanProcessCollectionDO lastLoanProcessCollectionDO = loanProcessCollectionDOMapper.getLastLoanProcessByBankRepayImpRecordId(bankRepayImpRecordId);
+        LoanProcessCollectionDO lastLoanProcessCollectionDO = loanProcessCollectionDOMapper.getLastLoanProcessByOrderIdAndBankRepayImpRecordId(orderId, bankRepayImpRecordId);
 
         // 历史流程已存在
         if (null != lastLoanProcessCollectionDO) {
@@ -159,7 +159,8 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         loanProcessCollectionDO.setBankRepayImpRecordId(bankRepayImpRecordId);
         loanProcessCollectionDO.setProcessInstId(processInstId);
 
-        loanProcessCollectionDO.setCollectionWorkbench(TASK_PROCESS_TODO);
+        loanProcessCollectionDO.setVisitCollectionReview(TASK_PROCESS_TODO);
+        loanProcessCollectionDO.setOrderStatus(ORDER_STATUS_DOING);
 
         loanProcessCollectionDO.setGmtCreate(new Date());
         loanProcessCollectionDO.setGmtModify(new Date());
@@ -235,6 +236,13 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         LoanProcessCollectionDO loanProcessDO = new LoanProcessCollectionDO();
         loanProcessDO.setId(approval.getProcessId());
         loanProcessDO.setOrderId(approval.getOrderId());
+
+        // 如果弃单，则记录弃单节点
+        if (ACTION_CANCEL.equals(approval.getAction())) {
+            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
+            loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
+            updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
+        }
 
         // 更新当前执行的任务状态
         Byte taskProcessStatus = null;

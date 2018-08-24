@@ -18,12 +18,13 @@
         order_status, cancel_task_def_key, gmt_create, gmt_modify
     </sql>
 
-    <!--getLastLoanProcessByBankRepayImpRecordId-->
-    <select id="getLastLoanProcessByBankRepayImpRecordId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    <!--getLastLoanProcessByOrderIdAndBankRepayImpRecordId-->
+    <select id="getLastLoanProcessByOrderIdAndBankRepayImpRecordId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from loan_process_legal
-        where bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+        where order_id = #{orderId,jdbcType=BIGINT}
+        AND bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
         ORDER BY gmt_create DESC
         LIMIT 1
     </select>

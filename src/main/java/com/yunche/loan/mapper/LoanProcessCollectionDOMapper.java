@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanProcessCollectionDO;
+import org.apache.ibatis.annotations.Param;
 
 public interface LoanProcessCollectionDOMapper {
 
@@ -16,5 +17,6 @@ public interface LoanProcessCollectionDOMapper {
 
     int updateByPrimaryKey(LoanProcessCollectionDO record);
 
-    LoanProcessCollectionDO getLastLoanProcessByBankRepayImpRecordId(Long bankRepayImpRecordId);
+    LoanProcessCollectionDO getLastLoanProcessByOrderIdAndBankRepayImpRecordId(@Param("orderId") Long orderId,
+                                                                               @Param("bankRepayImpRecordId") Long bankRepayImpRecordId);
 }
