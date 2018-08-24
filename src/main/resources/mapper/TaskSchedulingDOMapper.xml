@@ -683,7 +683,8 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
-                          deputy_.apply_instead_pay                    AS taskStatus
+                          deputy_.apply_instead_pay                    AS taskStatus,
+                          join_c.lend_card                             AS lendCard
                       </when>
                       <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
                           deputy_.id                                   AS processId,
