@@ -472,11 +472,11 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         }
     }
 
-    public void visitLawBack(ApprovalParam approval){
-        if(VISIT_COLLECTION_REVIEW.getCode().equals(approval.getTaskDefinitionKey())&&ACTION_REJECT_MANUAL.equals(approval.getAction())){
-            collectionNewInfoDOMapper.isvisitback(approval.getOrderId(),approval.getBankRepayImpRecordId());
-        }else if(LEGAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey())&&ACTION_REJECT_MANUAL.equals(approval.getAction())){
-            collectionNewInfoDOMapper.islawback(approval.getOrderId(),approval.getBankRepayImpRecordId());
+    public void visitLawBack(ApprovalParam approval) {
+        if (VISIT_COLLECTION_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
+            collectionNewInfoDOMapper.isvisitback(approval.getOrderId(), approval.getBankRepayImpRecordId());
+        } else if (LEGAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
+            collectionNewInfoDOMapper.islawback(approval.getOrderId(), approval.getBankRepayImpRecordId());
         }
     }
 
