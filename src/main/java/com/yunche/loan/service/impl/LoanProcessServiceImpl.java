@@ -1027,9 +1027,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private ResultBean<Void> execOutworkerCostApplyTask(ApprovalParam approval) {
         Preconditions.checkNotNull(approval.getSupplementOrderId(), "财务报销单ID不能为空");
 
-        // 日志
-        loanProcessApprovalCommonService.log(approval);
-
         // [外勤费用申报]
         if (OUTWORKER_COST_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
 
