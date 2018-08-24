@@ -690,7 +690,7 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
-                          deputy_.apply_instead_pay                    AS taskStatus
+                          deputy_.finance_instead_pay_review           AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
                           deputy_.id                                   AS processId,
@@ -704,7 +704,7 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
-                          deputy_.apply_instead_pay                    AS taskStatus
+                          deputy_.partner_instead_pay                  AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
                           deputy_.id                                   AS processId,
@@ -719,7 +719,7 @@
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
                           compensation.compensation_amount             AS compensationAmount,
-                          deputy_.apply_instead_pay                    AS taskStatus
+                          deputy_.partner_instead_pay_review           AS taskStatus
                       </when>
                       <otherwise>
                         0                                         AS taskStatus
@@ -758,19 +758,19 @@
               </if>
               <if test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
-                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
               </if>
               <if test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
-                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
-                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
-                  left join loan_apply_compensation compensation on compensation.id = deputy_.instead_pay_order_id
+                  left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
               </if>
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
