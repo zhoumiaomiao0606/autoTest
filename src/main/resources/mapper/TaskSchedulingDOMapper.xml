@@ -852,7 +852,14 @@
               </if>
               where 1=1
               <if test="taskStatus != 0">
-                    and deputy.order_status = 1
+                  <choose>
+                      <when test="taskDefinitionKey == 'usertask_settle_order'">
+                          and deputy.order_status = 2
+                      </when>
+                      <otherwise>
+                          and deputy.order_status = 1
+                      </otherwise>
+                  </choose>
               </if>
               <choose>
                   <when test="taskDefinitionKey == 'usertask_credit_apply'">
@@ -1016,7 +1023,9 @@
                       AND case when #{taskStatus} = 0 then deputy_c.car_out != 0                        else deputy_c.car_out    = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_settle_order'">
-                      AND case when #{taskStatus} = 0 then deputy_c.settle_order != 0                   else deputy_c.settle_order    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy_c.settle_order != 0
+                               when #{taskStatus} = 1 then deputy.order_status = 2
+                               else deputy_c.settle_order    = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_legal_review'">
                       AND case when #{taskStatus} = 0 then deputy_l.legal_review != 0                   else deputy_l.legal_review    = #{taskStatus} end

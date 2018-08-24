@@ -101,7 +101,7 @@ public class ResultBean<T> implements Serializable {
         resultBean.setTotalNum(totalNum);
         resultBean.setPageIndex(pageIndex);
         resultBean.setPageSize(pageSize);
-        resultBean.setTotalPage((pageSize == null || pageSize == 0) ? null : (totalNum % pageSize == 0 ? totalNum / pageSize : (totalNum / pageSize + 1)));
+        resultBean.setTotalPage((null == pageSize || pageSize == 0) ? null : (totalNum % pageSize == 0 ? totalNum / pageSize : (totalNum / pageSize + 1)));
         resultBean.setMsg(msg);
         return resultBean;
     }
@@ -124,4 +124,3 @@ public class ResultBean<T> implements Serializable {
         return resultBean;
     }
 }
-

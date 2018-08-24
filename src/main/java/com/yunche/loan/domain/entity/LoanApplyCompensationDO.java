@@ -32,6 +32,7 @@ public class LoanApplyCompensationDO {
 
     private String compensationCause;
 
+    //申请代偿时间
     private Date applyCompensationDate;
 
     private String outCarNumber;

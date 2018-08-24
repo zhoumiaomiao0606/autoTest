@@ -126,8 +126,17 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         }
         //本业务操作日志
         vehicleOutboundVO.setBaseCustomerInfoVO(baseCustomerInfoVO);
-        vehicleOutboundVO.setVehicleOutboundInfo(vehicleOutboundInfo);
-        vehicleOutboundVO.setVehicleInfoVO(vehicleInfoVO);
+        if (vehicleOutboundInfo !=null)
+        {
+            vehicleOutboundVO.setVehicleOutboundInfo(vehicleOutboundInfo);
+        }
+
+        if (vehicleInfoVO !=null)
+        {
+            vehicleOutboundVO.setVehicleInfoVO(vehicleInfoVO);
+        }
+
+
         vehicleOutboundVO.setCustomers(customers);
 
         return vehicleOutboundVO;
