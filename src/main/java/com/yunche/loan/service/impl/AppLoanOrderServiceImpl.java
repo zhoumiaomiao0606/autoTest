@@ -869,7 +869,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     Map creditResultMap = myJson;
                         String qcqlInfo = (String)creditResultMap.get("qcqlInfo");
                         Map qcqlInfoMap = new HashMap();
-                        if(qcqlInfo.contains("高危行为")){
+                        if(qcqlInfo.contains("高危行为")||qcqlInfo.contains("风险记录")){
                             qcqlInfoMap = (Map)JSON.parse(qcqlInfo);
                         }
                     ZhonganInfoDO zhongAnInfoDO = new ZhonganInfoDO();
