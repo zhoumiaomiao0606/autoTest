@@ -23,7 +23,7 @@ public class CollectionController {
 
     @Resource
     private CollectionService collectionService;
-
+    
     @GetMapping(value = "/detail")
     public ResultBean detail(@RequestParam String order_id,@RequestParam String bank_repay_imp_record_id) {
         return ResultBean.ofSuccess(collectionService.detail(Long.valueOf(order_id),Long.valueOf(bank_repay_imp_record_id)));
