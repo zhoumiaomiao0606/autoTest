@@ -161,9 +161,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
             List<String> currentTaskIdList = currentTaskList.stream()
                     .filter(Objects::nonNull)
-                    .map(e -> {
-                        return e.getId();
-                    })
+                    .map(Task::getId)
                     .collect(toList());
 
             return currentTaskIdList;
