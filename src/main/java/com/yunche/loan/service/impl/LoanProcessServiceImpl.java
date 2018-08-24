@@ -1037,6 +1037,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (ACTION_PASS.equals(approval.getAction())) {
 
                 updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_DONE__APPLY_ORDER_REVIEW_TODO);
+
+                return ResultBean.ofSuccess(null, "[外勤费用申报]任务执行成功");
             }
         }
 
@@ -1049,15 +1051,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (ACTION_PASS.equals(action)) {
 
                 updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_REVIEW_PASS);
+
+                return ResultBean.ofSuccess(null, "[财务报销]任务执行成功");
             }
             // REJECT
             else if (ACTION_REJECT_MANUAL.equals(action)) {
 
                 updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_REJECT);
+
+                return ResultBean.ofSuccess(null, "[财务报销]任务执行成功");
             }
         }
 
-        return ResultBean.ofError(null, "");
+        return ResultBean.ofError(null, "流程审核参数有误");
     }
 
     private void updateOutworkerCostApplyProcess(ApprovalParam approval, Byte applyOrderStatus) {
@@ -1078,7 +1084,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         legworkReimbursementDO.setGmtUpdateTime(new Date());
 
         int count = legworkReimbursementDOMapper.updateByPrimaryKeySelective(legworkReimbursementDO);
-        Preconditions.checkArgument(count > 0, "");
+        Preconditions.checkArgument(count > 0, "更新失败");
     }
 
     /**
