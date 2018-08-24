@@ -226,11 +226,12 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
     {
         //客户主要信息
         BaseCustomerInfoVO baseCustomerInfoVO = loanQueryDOMapper.selectBaseCustomerInfoInfo(orderId);
-        LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectLastByOrderId(orderId);
-
+        LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectByOrderIdAndBankRepayImpRecordId(orderId,bank_repay_imp_record_id);
+        //贷款金额
+        BigDecimal loan_amount = loanFinancialPlanDOMapper.selectLoanAmount(orderId);
         if(loanApplyCompensationDO !=null)
         {
-            baseCustomerInfoVO.setLoanBanlance(loanApplyCompensationDO.getLoanBanlance());
+            baseCustomerInfoVO.setLoanBanlance(loan_amount);
             baseCustomerInfoVO.setCompensationAmount(loanApplyCompensationDO.getCompensationAmount());
             baseCustomerInfoVO.setCurrArrears(loanApplyCompensationDO.getCurrArrears());
         }

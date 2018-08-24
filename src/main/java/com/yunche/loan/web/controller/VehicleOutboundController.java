@@ -47,6 +47,8 @@ public class VehicleOutboundController
     @GetMapping(value = "/customer")
     public ResultBean customer(@RequestParam String orderId,String bank_repay_imp_record_id)
     {
+        Preconditions.checkNotNull(orderId, "订单号不能为空");
+        Preconditions.checkNotNull(bank_repay_imp_record_id, "版本号不能为空");
         return ResultBean.ofSuccess(vehicleOutboundService.customer(Long.valueOf(orderId),Long.valueOf(bank_repay_imp_record_id)));
     }
 
