@@ -1086,7 +1086,15 @@
                       AND tab.isStraighten = #{isStraighten}
                   </if>
               </if>
-              <if test="taskDefinitionKey == 'usertask_collection_workbench'">
+              <if test="taskDefinitionKey == 'usertask_collection_workbench'
+              || taskDefinitionKey == 'usertask_visit_collection_review'
+              || taskDefinitionKey == 'usertask_visit_collection'
+              || taskDefinitionKey == 'usertask_car_handle'
+              || taskDefinitionKey == 'usertask_car_out'
+              || taskDefinitionKey == 'usertask_settle_order'
+              || taskDefinitionKey == 'usertask_legal_review'
+              || taskDefinitionKey == 'usertask_legal_record'
+              ">
                   <if test="sendee != null">
                       AND tab.sendee = #{sendee}
                   </if>
