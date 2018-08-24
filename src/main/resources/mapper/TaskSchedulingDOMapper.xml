@@ -849,7 +849,14 @@
               </if>
               where 1=1
               <if test="taskStatus != 0">
-                    and deputy.order_status = 1
+                  <choose>
+                      <when test="taskDefinitionKey == 'usertask_settle_order'">
+                          and deputy.order_status = 2
+                      </when>
+                      <otherwise>
+                          and deputy.order_status = 1
+                      </otherwise>
+                  </choose>
               </if>
               <choose>
                   <when test="taskDefinitionKey == 'usertask_credit_apply'">
