@@ -18,7 +18,11 @@ public class VehicleHandleUpdateParam
 
     private Long orderid;
 
-    private String vehicleInboundDate;
+    private Date trailVehicleDate;
+
+    private String trailVehicleAddress;
+
+    private Date vehicleInboundDate;
 
     private String vehicleInboundAddress;
 

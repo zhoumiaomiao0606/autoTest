@@ -1,8 +1,12 @@
 package com.yunche.loan.domain.entity;
 
+import lombok.Data;
+
 import java.util.Date;
 
+@Data
 public class OrderHandleResultDO {
+
     private Long orderid;
 
     private Byte handletype;
@@ -10,36 +14,4 @@ public class OrderHandleResultDO {
     private String handdlePerson;
 
     private Date trailVehicleDate;
-
-    public Long getOrderid() {
-        return orderid;
-    }
-
-    public void setOrderid(Long orderid) {
-        this.orderid = orderid;
-    }
-
-    public Byte getHandletype() {
-        return handletype;
-    }
-
-    public void setHandletype(Byte handletype) {
-        this.handletype = handletype;
-    }
-
-    public String getHanddlePerson() {
-        return handdlePerson;
-    }
-
-    public void setHanddlePerson(String handdlePerson) {
-        this.handdlePerson = handdlePerson == null ? null : handdlePerson.trim();
-    }
-
-    public Date getTrailVehicleDate() {
-        return trailVehicleDate;
-    }
-
-    public void setTrailVehicleDate(Date trailVehicleDate) {
-        this.trailVehicleDate = trailVehicleDate;
-    }
 }

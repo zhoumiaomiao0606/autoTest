@@ -180,22 +180,27 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
         //根据区id查询省市id
         if(vehicleHandleDO !=null )
         {
+            StringBuilder stringBuilder =new StringBuilder();
+            //
             if(vehicleHandleDO.getVehicleInboundAddress()!=null && !"".equals(vehicleHandleDO.getVehicleInboundAddress().trim()))
             {
-                Long countyId=Long.valueOf(vehicleHandleDO.getVehicleInboundAddress());
+                Long countyId = Long.valueOf(vehicleHandleDO.getVehicleInboundAddress());
                 BaseAreaDO cityAreaDO = baseAreaDOMapper.selectByPrimaryKey(countyId, VALID_STATUS);
                 vehicleHandleDO.setCountyId(countyId);
-                vehicleHandleDO.setCountyName(cityAreaDO.getAreaName());
-                vehicleHandleDO.setCityName(cityAreaDO.getParentAreaName());
-                if(cityAreaDO !=null && cityAreaDO.getParentAreaId()!=null)
-                {
+                if (cityAreaDO != null && cityAreaDO.getParentAreaId() != null) {
                     vehicleHandleDO.setCityId(cityAreaDO.getParentAreaId());
                     BaseAreaDO provenceAreaDO = baseAreaDOMapper.selectByPrimaryKey(cityAreaDO.getParentAreaId(), VALID_STATUS);
                     vehicleHandleDO.setProvenceId(provenceAreaDO.getParentAreaId());
-                    vehicleHandleDO.setProvenceName(provenceAreaDO.getAreaName());
+                    if(provenceAreaDO.getParentAreaName() !=null)
+                    {
+                        stringBuilder.append(provenceAreaDO.getParentAreaName());
+                    }
+                    stringBuilder.append(provenceAreaDO.getAreaName());
                 }
-
+                stringBuilder.append(cityAreaDO.getAreaName());
             }
+            vehicleHandleDO.setVehicleInboundAddress(stringBuilder.toString());
+            //
 
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
             Long customerId = loanOrderDO.getLoanCustomerId();
