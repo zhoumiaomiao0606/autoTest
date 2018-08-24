@@ -81,8 +81,8 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     tomcat:
       max-wait: 10000
-      max-idle: 1000
-      max-active: 1000
+      max-idle: 2000
+      max-active: 2000
       test-on-borrow: true
 
   redis:

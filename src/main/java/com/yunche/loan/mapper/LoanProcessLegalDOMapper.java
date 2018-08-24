@@ -16,5 +16,5 @@ public interface LoanProcessLegalDOMapper {
 
     int updateByPrimaryKey(LoanProcessLegalDO record);
 
-    LoanProcessLegalDO getLastLoanProcessByCollectionOrderId(Long collectionOrderId);
+    LoanProcessLegalDO getLastLoanProcessByBankRepayImpRecordId(Long bankRepayImpRecordId);
 }

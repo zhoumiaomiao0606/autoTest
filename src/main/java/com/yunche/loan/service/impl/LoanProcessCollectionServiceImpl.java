@@ -116,16 +116,16 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
-                             @NotNull(message = "collectionOrderId不能为空") Long collectionOrderId) {
+                             @NotNull(message = "bankRepayImpRecordId不能为空") Long bankRepayImpRecordId) {
 
         // 上一条流程记录
-        LoanProcessCollectionDO lastLoanProcessCollectionDO = loanProcessCollectionDOMapper.getLastLoanProcessByCollectionOrderId(collectionOrderId);
+        LoanProcessCollectionDO lastLoanProcessCollectionDO = loanProcessCollectionDOMapper.getLastLoanProcessByBankRepayImpRecordId(bankRepayImpRecordId);
 
         // 历史流程已存在
         if (null != lastLoanProcessCollectionDO) {
 
             Preconditions.checkArgument(ORDER_STATUS_CANCEL.equals(lastLoanProcessCollectionDO.getOrderStatus()),
-                    "当前催收，已发起过[上门催收]流程");
+                    "当前催收批次，已发起过[上门催收]流程");
         }
         // 无历史流程
         else {
@@ -137,7 +137,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_COLLECTION_KEY);
 
         // 创建流程记录
-        Long processId = create(orderId, collectionOrderId, processInstance.getProcessInstanceId());
+        Long processId = create(orderId, bankRepayImpRecordId, processInstance.getProcessInstanceId());
 
         return processId;
     }
@@ -146,17 +146,17 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     /**
      * 创建[催收工作台]流程记录
      *
-     * @param orderId           主订单ID
-     * @param collectionOrderId 催收单ID
-     * @param processInstId     流程实例ID
+     * @param orderId              主订单ID
+     * @param bankRepayImpRecordId 催收单ID
+     * @param processInstId        流程实例ID
      * @return
      */
-    private Long create(Long orderId, Long collectionOrderId, String processInstId) {
+    private Long create(Long orderId, Long bankRepayImpRecordId, String processInstId) {
 
         LoanProcessCollectionDO loanProcessCollectionDO = new LoanProcessCollectionDO();
 
         loanProcessCollectionDO.setOrderId(orderId);
-        loanProcessCollectionDO.setCollectionOrderId(collectionOrderId);
+        loanProcessCollectionDO.setBankRepayImpRecordId(bankRepayImpRecordId);
         loanProcessCollectionDO.setProcessInstId(processInstId);
 
         loanProcessCollectionDO.setCollectionWorkbench(TASK_PROCESS_TODO);

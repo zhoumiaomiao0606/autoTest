@@ -63,22 +63,24 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
 
     @Autowired
     LoanCustomerDOMapper loanCustomerDOMapper;
+
     /**
      * 导入文件
+     *
      * @param key oss key
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchInsert(String key) {
-        Preconditions.checkNotNull(key,"文件key不能为空");
-        List<LoanApplyCompensationDO> loanApplyCompensationDOList= Lists.newArrayList();
+        Preconditions.checkNotNull(key, "文件key不能为空");
+        List<LoanApplyCompensationDO> loanApplyCompensationDOList = Lists.newArrayList();
 
         try {
 
             List<String[]> rowList = POIUtil.readExcelFromOSS(0, 1, key);
             if (!CollectionUtils.isEmpty(rowList)) {
-                Preconditions.checkArgument(rowList.size()<=2000,"最大支持导入2000条数据，当前条数：" + rowList.size());
+                Preconditions.checkArgument(rowList.size() <= 2000, "最大支持导入2000条数据，当前条数：" + rowList.size());
 
                 for (int i = 0; i < rowList.size(); i++) {
 
@@ -91,7 +93,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                         continue;
                     }
 
-                    if(!StringUtils.isEmpty(isHasCustomer(row[2]))){
+                    if (!StringUtils.isEmpty(isHasCustomer(row[2]))) {
                         LoanApplyCompensationDO compensationDO = new LoanApplyCompensationDO();
                         compensationDO.setOrderId(isHasCustomer(row[2]));//业务单号
 
@@ -159,13 +161,13 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
                 //插入数据库
                 loanApplyCompensationDOList.stream()
                         .filter(Objects::nonNull)
-                        .forEach(e->{
-                            LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByOrderIdAndDate(e.getOrderId(),e.getApplyCompensationDate());
+                        .forEach(e -> {
+                            LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByOrderIdAndDate(e.getOrderId(), e.getApplyCompensationDate());
 
-                            if(tmpDO==null){
+                            if (tmpDO == null) {
                                 int count = loanApplyCompensationDOMapper.insertSelective(e);
-                                Preconditions.checkArgument(count>0,"插入记录出错");
-                                loanProcessInsteadPayService.startProcess(e.getOrderId(),e.getId());
+                                Preconditions.checkArgument(count > 0, "插入记录出错");
+                                loanProcessInsteadPayService.startProcess(e.getOrderId(), e.getId());
                             }
 
                             //
@@ -183,32 +185,33 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
 
     /**
      * 手工录入
+     *
      * @param param
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void manualInsert(UniversalCompensationParam param) {
-        Preconditions.checkNotNull(param,"参数有误");
-        Preconditions.checkNotNull(param.getApplyCompensationDate(),"申请日期不能为空");
-        Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
+        Preconditions.checkNotNull(param, "参数有误");
+        Preconditions.checkNotNull(param.getApplyCompensationDate(), "申请日期不能为空");
+        Preconditions.checkNotNull(param.getOrderId(), "业务单号不能为空");
 
-        if(param.getId() !=null){
-            LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderId(param.getOrderId(), param.getId());
-            if(insteadPayDO!=null){
-                Preconditions.checkArgument(!insteadPayDO.getApplyInsteadPay().equals(TASK_PROCESS_DONE),"订单已提交，禁止修改");
+        if (param.getId() != null) {
+            LoanProcessInsteadPayDO insteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndBankRepayImpRecordId(param.getOrderId(), param.getId());
+            if (insteadPayDO != null) {
+                Preconditions.checkArgument(!insteadPayDO.getApplyInsteadPay().equals(TASK_PROCESS_DONE), "订单已提交，禁止修改");
             }
             int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
-            Preconditions.checkArgument(count>0,"参数错误，保存失败");
+            Preconditions.checkArgument(count > 0, "参数错误，保存失败");
             return;
-        }else {
-            LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByOrderIdAndDate(param.getOrderId(),param.getApplyCompensationDate());
-            if(tmpDO==null){
+        } else {
+            LoanApplyCompensationDO tmpDO = loanApplyCompensationDOMapper.selectByOrderIdAndDate(param.getOrderId(), param.getApplyCompensationDate());
+            if (tmpDO == null) {
                 int count = loanApplyCompensationDOMapper.insertSelective(param);
-                Preconditions.checkArgument(count>0,"参数错误，保存失败");
+                Preconditions.checkArgument(count > 0, "参数错误，保存失败");
                 //流程
-                loanProcessInsteadPayService.startProcess(param.getOrderId(),param.getId());
-            }else{
+                loanProcessInsteadPayService.startProcess(param.getOrderId(), param.getId());
+            } else {
                 loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
             }
         }
@@ -217,14 +220,15 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
 
     /**
      * 详情页
+     *
      * @param applicationCompensationQuery
      * @return
      */
     @Override
     public ResultBean detail(UniversalCompensationQuery applicationCompensationQuery) {
-        Preconditions.checkNotNull(applicationCompensationQuery,"参数有误");
-        Preconditions.checkNotNull(applicationCompensationQuery.getOrderId(),"业务单号不能为空");
-        Preconditions.checkNotNull(applicationCompensationQuery.getInsteadPayOrderId(),"申请代偿记录不存在");
+        Preconditions.checkNotNull(applicationCompensationQuery, "参数有误");
+        Preconditions.checkNotNull(applicationCompensationQuery.getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(applicationCompensationQuery.getInsteadPayOrderId(), "申请代偿记录不存在");
 
         RecombinationVO<Object> result = new RecombinationVO<>();
 
@@ -235,7 +239,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
 
         LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectByPrimaryKey(applicationCompensationQuery.getInsteadPayOrderId());
         UniversalCompensationVO compensationVO = new UniversalCompensationVO();
-        BeanUtils.copyProperties(loanApplyCompensationDO,compensationVO);
+        BeanUtils.copyProperties(loanApplyCompensationDO, compensationVO);
         compensationVO.setOrderId(String.valueOf(loanApplyCompensationDO.getOrderId()));
         //赋值
         result.setInfo(infoVO);
@@ -247,10 +251,11 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
 
     /**
      * 判断是否系统客户
+     *
      * @param idCard
      * @return
      */
-    private Long isHasCustomer(String idCard){
+    private Long isHasCustomer(String idCard) {
 //        loanCustomerDOMapper.
         return loanQueryDOMapper.selectOrderIdByIDCard(idCard);
     }
@@ -258,7 +263,7 @@ public class LoanApplicationCompensationServiceImpl implements LoanApplicationCo
     /**
      * 催保原因为 A:客户逾期 生成待催收记录
      */
-    public void  dealBankUrgeRecord(Long orderId){
+    public void dealBankUrgeRecord(Long orderId) {
         BankUrgeRecordDO newUrge = new BankUrgeRecordDO();
         newUrge.setOrderId(orderId);
         newUrge.setOperator(SessionUtils.getLoginUser().getName());

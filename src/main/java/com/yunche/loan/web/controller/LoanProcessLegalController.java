@@ -3,14 +3,13 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
-import com.yunche.loan.service.LoanProcessCollectionService;
 import com.yunche.loan.service.LoanProcessLegalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 法务处理 -流程
+ * [法务处理] -流程
  *
  * @author liuzhe
  * @date 2018/8/23
@@ -25,7 +24,7 @@ public class LoanProcessLegalController {
 
 
     /**
-     * 法务处理流程 -审核
+     * [法务处理]流程 -审核
      *
      * @param approval
      * @return
@@ -41,16 +40,16 @@ public class LoanProcessLegalController {
 
 
     /**
-     * 开启 法务处理流程
+     * 开启 [法务处理]流程
      *
      * @param orderId
-     * @param collectionOrderId
+     * @param bankRepayImpRecordId 批次号
      * @return
      */
     @GetMapping(value = "/startProcess")
-    public ResultBean<Long> startProcess(@RequestParam Long orderId,
-                                         @RequestParam Long collectionOrderId) {
-        Long processId = loanProcessLegalService.startProcess(orderId, collectionOrderId);
+    public ResultBean<Long> startProcess(@RequestParam(value = "orderId") Long orderId,
+                                         @RequestParam(value = "bankRepayImpRecordId") Long bankRepayImpRecordId) {
+        Long processId = loanProcessLegalService.startProcess(orderId, bankRepayImpRecordId);
         return ResultBean.ofSuccess(processId);
     }
 }

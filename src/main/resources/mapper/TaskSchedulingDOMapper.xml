@@ -557,7 +557,6 @@
                           join_repayplan.status                   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_collection_workbench'">
-                          deputy_c.id                                                   AS processId,
                           (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                         AS collectionDate,
                           (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -566,7 +565,7 @@
                           DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                           join_urgerecord.sendee                  AS sendee,
                           sendee.name                             AS sendeeName,
-                          deputy_c.collection_workbench           AS taskStatus
+                          join_urgerecord.urge_status             AS taskStatus
                       </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
                            deputy_c.id                                                   AS processId,
@@ -630,7 +629,7 @@
                            deputy_c.settle_order                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_review'">
-                           deputy_c.id                                                   AS processId,
+                           deputy_l.id                                                   AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -639,10 +638,10 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
-                           deputy_c.legal_review                   AS taskStatus
+                           deputy_l.legal_review                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_record'">
-                           deputy_c.id                                                   AS processId,
+                           deputy_l.id                                                   AS processId,
                            (select collection_date from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
                                                                                          AS collectionDate,
                            (select is_repayment from collection_record where order_id = main.id order by collection_date,gmt_create desc limit 1)
@@ -651,7 +650,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
-                           deputy_c.legal_record                   AS taskStatus
+                           deputy_l.legal_record                   AS taskStatus
                        </when>
                       <when test="taskDefinitionKey == 'usertask_bank_open_card'">
                           deputy.bank_open_card                   AS taskStatus
@@ -776,7 +775,6 @@
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_process_collection deputy_c on deputy_c.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection_review'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
@@ -808,12 +806,12 @@
               <if test="taskDefinitionKey == 'usertask_legal_review'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_process_collection deputy_c on deputy_c.order_id = main.id
+                  left join loan_process_legal deputy_l on deputy_l.order_id = main.id
               </if>
               <if test="taskDefinitionKey == 'usertask_legal_record'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_process_collection deputy_c on deputy_c.order_id = main.id
+                  left join loan_process_legal deputy_l on deputy_l.order_id = main.id
               </if>
               where 1=1
               <if test="taskStatus != 0">
@@ -965,7 +963,7 @@
                       AND case when #{taskStatus} = 0 then deputy_.partner_instead_pay_review!= 0        else deputy_.partner_instead_pay_review        = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_collection_workbench'">
-                      AND case when #{taskStatus} = 0 then deputy_c.collection_workbench != 0            else deputy_c.collection_workbench    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then join_urgerecord.urge_status != 0              else join_urgerecord.urge_status         = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
                       AND case when #{taskStatus} = 0 then deputy_c.visit_collection_review != 0         else deputy_c.visit_collection_review    = #{taskStatus} end
@@ -984,10 +982,10 @@
                       AND case when #{taskStatus} = 0 then deputy_c.settle_order != 0                   else deputy_c.settle_order    = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_legal_review'">
-                      AND case when #{taskStatus} = 0 then deputy_c.legal_review != 0                   else deputy_c.legal_review    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy_l.legal_review != 0                   else deputy_l.legal_review    = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_legal_record'">
-                      AND case when #{taskStatus} = 0 then deputy_c.legal_record != 0                   else deputy_c.legal_record    = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy_l.legal_record != 0                   else deputy_l.legal_record    = #{taskStatus} end
                   </when>
                   <otherwise>
                       AND 1=2
