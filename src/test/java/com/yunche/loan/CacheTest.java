@@ -33,10 +33,10 @@ public class CacheTest extends BaseTest {
    @Test
     public void doA1123(){
         try {
-            ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","99993");
+           // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","999967");
 
             // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","99993");
-           // ZhongAnHttpUtil.queryInfo("金佳琦","15757135913","330621199310023016","1","2","3333","1","99992");
+           ZhongAnHttpUtil.queryInfo("贾秀龙","13803132243","130703198703212118 ","1","2","3333","1","99199212");
 
         } catch (Exception e) {
             e.printStackTrace();

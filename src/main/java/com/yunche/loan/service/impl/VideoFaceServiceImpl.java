@@ -356,7 +356,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
                 "车辆交易总价" + redText(videoFaceQuestionAnswerVO.getCarPrice()) + "元，" +
                 "您自行支付的首付款" +redText(videoFaceQuestionAnswerVO.getDownPaymentMoney()) + "元，" +
                 "您申请透支金额"+redText(videoFaceQuestionAnswerVO.getLoanAmount())+"元用于支付剩余交易款项，"+
-                "申请透支金额"+redText(videoFaceQuestionAnswerVO.getBankFee())+"元用于支付汽车金融服务费，"+
+                "申请透支金额"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal().subtract(videoFaceQuestionAnswerVO.getLoanAmount()))+"元用于支付汽车金融服务费，"+
                 "合计透支金额"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal())+"元。"+
                 "您首月需还款"+redText(videoFaceQuestionAnswerVO.getFirstMonthRepay())+"元，"+
                 "每月还款" + redText(videoFaceQuestionAnswerVO.getEachMonthRepay()) + "元，"
