@@ -40,7 +40,7 @@ public class CacheTest extends BaseTest {
    @Test
     public void doA1123(){
         try {
-            ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
+            /*ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
             zhongAnQueryParam.setOrder_id("123");
             List<ZhongAnCusParam> customers = Lists.newArrayList();
             ZhongAnCusParam zhongAnCusParam = new ZhongAnCusParam();
@@ -52,11 +52,11 @@ public class CacheTest extends BaseTest {
             zhongAnCusParam.setLoanmoney("1");
             customers.add(zhongAnCusParam);
             zhongAnQueryParam.setCustomers(customers);
-            appLoanOrderService.zhongAnQuery(zhongAnQueryParam);
+            appLoanOrderService.zhongAnQuery(zhongAnQueryParam);*/
            // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","999967");
 
             // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","99993");
-           //ZhongAnHttpUtil.queryInfo("武军","15658880777","341226198404016579","1","2","3333","1","991912392121");
+           ZhongAnHttpUtil.queryInfo("肖方顺","13640437742","360781199411040613","1","2","3333","","98812312392121");
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -32,6 +32,6 @@ public class ApplyDiviGeneralInfoVO {
     private String customer_id;
     private String vehicle_assess_use_year;//使用年限
     private String car_category;
-
+    private String financial_appraisal;
 
 }
