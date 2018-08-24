@@ -5,25 +5,25 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class LoanProcessInsteadPayDO implements LoanProcessDO_ {
+public class LoanProcessLegalDO implements LoanProcessDO_ {
 
     private Long id;
 
     private Long orderId;
     /**
-     * 批次号
+     * 催收批次号
      */
     private Long bankRepayImpRecordId;
 
     private String processInstId;
 
-    private Byte applyInsteadPay;
+    private Byte legalReview;
 
-    private Byte financeInsteadPayReview;
+    private Byte legalRecord;
 
-    private Byte partnerInsteadPay;
+    private Byte orderStatus;
 
-    private Byte partnerInsteadPayReview;
+    private String cancelTaskDefKey;
 
     private Date gmtCreate;
 

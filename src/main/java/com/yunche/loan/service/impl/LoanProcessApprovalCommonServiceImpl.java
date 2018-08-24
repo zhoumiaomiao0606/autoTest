@@ -213,6 +213,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
      */
     @Override
     public void asyncPush(LoanOrderDO loanOrderDO, ApprovalParam approval) {
+
         if (!approval.isNeedPush()) {
             return;
         }
@@ -221,12 +222,13 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
             LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
             Long loanCustomerId = null;
-            if (loanOrderDO != null) {
+            if (null != loanOrderDO) {
                 loanCustomerId = loanOrderDO.getLoanCustomerId();
             }
-            LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, new Byte("0"));
+            LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanCustomerId, null);
 
-            if (loanBaseInfoDO != null && !LoanProcessEnum.CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+            if (null != loanBaseInfoDO && !CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+
                 String title = "你有一个新的消息";
                 String prompt = "你提交的订单被管理员审核啦";
                 String msg = "详细信息请联系管理员";
@@ -258,7 +260,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                 }
                 title = taskName + result;
 
-                if (loanCustomerDO != null) {
+                if (null != loanCustomerDO) {
                     prompt = "主贷人:[" + loanCustomerDO.getName() + "]-" + title;
                 }
                 msg = StringUtils.isBlank(approval.getInfo()) ? "无" : "null".equals(approval.getInfo()) ? "无" : approval.getInfo();

@@ -11,9 +11,13 @@ public class ActivitiConst {
      */
     public static final String LOAN_PROCESS_KEY = "loan_process";
     /**
-     * 催收工作台流程-KEY
+     * 上门催收流程-KEY
      */
     public static final String LOAN_PROCESS_COLLECTION_KEY = "loan_process_collection";
+    /**
+     * 法务处理流程-KEY
+     */
+    public static final String LOAN_PROCESS_LEGAL_KEY = "loan_process_legal";
     /**
      * 代偿流程-KEY
      */

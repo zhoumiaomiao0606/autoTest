@@ -81,7 +81,9 @@ public class App {
 
                 deploy("processes/loan_process_instead_pay.bpmn", "代偿流程");
 
-                deploy("processes/loan_process_collection.bpmn", "催收工作台流程");
+                deploy("processes/loan_process_collection.bpmn", "上门催收流程");
+
+                deploy("processes/loan_process_legal.bpmn", "法务处理流程");
             }
 
             /**

@@ -1137,4 +1137,9 @@
 
     </select>
 
+    <select id="selectCusByOrderId" resultMap="BaseResultMap">
+    select b.* from  loan_customer b where b.principal_cust_id =(
+      select a.loan_customer_id  from loan_order a where a.id = #{orderId,jdbcType=BIGINT}) and b.`status` =0
+  </select>
+
 </mapper>

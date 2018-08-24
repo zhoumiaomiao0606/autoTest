@@ -78,4 +78,8 @@ public interface LoanCustomerDOMapper {
      * @return
      */
     Byte getCustRelationById(Long id);
+
+    //查询订单人员是否全部查过征信
+    List<LoanCustomerDO> selectCusByOrderId(@Param("orderId")Long orderId);
+
 }

@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="order_id" property="orderId" jdbcType="BIGINT"/>
-        <result column="instead_pay_order_id" property="insteadPayOrderId" jdbcType="BIGINT"/>
+        <result column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT"/>
         <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR"/>
         <result column="apply_instead_pay" property="applyInsteadPay" jdbcType="TINYINT"/>
         <result column="finance_instead_pay_review" property="financeInsteadPayReview" jdbcType="TINYINT"/>
@@ -14,15 +14,26 @@
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, order_id, instead_pay_order_id, process_inst_id, apply_instead_pay, finance_instead_pay_review,
+        id, order_id, bank_repay_imp_record_id, process_inst_id, apply_instead_pay, finance_instead_pay_review,
         partner_instead_pay, partner_instead_pay_review, gmt_create, gmt_modify
     </sql>
+
+    <!--selectByOrderIdAndBankRepayImpRecordId-->
+    <select id="selectByOrderIdAndBankRepayImpRecordId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_instead_pay
+        where order_id = #{orderId,jdbcType=BIGINT}
+        AND bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+    </select>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
         from loan_process_instead_pay
         where id = #{id,jdbcType=BIGINT}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from loan_process_instead_pay
         where id = #{id,jdbcType=BIGINT}
@@ -30,11 +41,11 @@
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO"
             useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
-        insert into loan_process_instead_pay (id, order_id, instead_pay_order_id,
+        insert into loan_process_instead_pay (id, order_id, bank_repay_imp_record_id,
         process_inst_id, apply_instead_pay, finance_instead_pay_review,
         partner_instead_pay, partner_instead_pay_review,
         gmt_create, gmt_modify)
-        values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{insteadPayOrderId,jdbcType=BIGINT},
+        values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT},
         #{processInstId,jdbcType=VARCHAR}, #{applyInsteadPay,jdbcType=TINYINT}, #{financeInsteadPayReview,jdbcType=TINYINT},
         #{partnerInsteadPay,jdbcType=TINYINT}, #{partnerInsteadPayReview,jdbcType=TINYINT},
         #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
@@ -50,8 +61,8 @@
             <if test="orderId != null">
                 order_id,
             </if>
-            <if test="insteadPayOrderId != null">
-                instead_pay_order_id,
+            <if test="bankRepayImpRecordId != null">
+                bank_repay_imp_record_id,
             </if>
             <if test="processInstId != null">
                 process_inst_id,
@@ -82,8 +93,8 @@
             <if test="orderId != null">
                 #{orderId,jdbcType=BIGINT},
             </if>
-            <if test="insteadPayOrderId != null">
-                #{insteadPayOrderId,jdbcType=BIGINT},
+            <if test="bankRepayImpRecordId != null">
+                #{bankRepayImpRecordId,jdbcType=BIGINT},
             </if>
             <if test="processInstId != null">
                 #{processInstId,jdbcType=VARCHAR},
@@ -114,8 +125,8 @@
             <if test="orderId != null">
                 order_id = #{orderId,jdbcType=BIGINT},
             </if>
-            <if test="insteadPayOrderId != null">
-                instead_pay_order_id = #{insteadPayOrderId,jdbcType=BIGINT},
+            <if test="bankRepayImpRecordId != null">
+                bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
             </if>
             <if test="processInstId != null">
                 process_inst_id = #{processInstId,jdbcType=VARCHAR},
@@ -142,24 +153,16 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessInsteadPayDO">
-    update loan_process_instead_pay
-    set order_id = #{orderId,jdbcType=BIGINT},
-      instead_pay_order_id = #{insteadPayOrderId,jdbcType=BIGINT},
-      process_inst_id = #{processInstId,jdbcType=VARCHAR},
-      apply_instead_pay = #{applyInsteadPay,jdbcType=TINYINT},
-      finance_instead_pay_review = #{financeInsteadPayReview,jdbcType=TINYINT},
-      partner_instead_pay = #{partnerInsteadPay,jdbcType=TINYINT},
-      partner_instead_pay_review = #{partnerInsteadPayReview,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-
-    <select id="selectByOrderIdAndInsteadPayOrderId" resultMap="BaseResultMap" >
-        select
-        <include refid="Base_Column_List"/>
-        from loan_process_instead_pay
-        where order_id = #{orderId,jdbcType=BIGINT}
-        AND instead_pay_order_id=#{insteadPayOrderId,jdbcType=BIGINT}
-    </select>
+        update loan_process_instead_pay
+        set order_id = #{orderId,jdbcType=BIGINT},
+        bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
+        process_inst_id = #{processInstId,jdbcType=VARCHAR},
+        apply_instead_pay = #{applyInsteadPay,jdbcType=TINYINT},
+        finance_instead_pay_review = #{financeInsteadPayReview,jdbcType=TINYINT},
+        partner_instead_pay = #{partnerInsteadPay,jdbcType=TINYINT},
+        partner_instead_pay_review = #{partnerInsteadPayReview,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>

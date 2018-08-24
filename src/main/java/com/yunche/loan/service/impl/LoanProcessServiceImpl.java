@@ -1278,11 +1278,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
             // 众安征信接口校验
-            List<LoanCustomerDO> loanCustomerDOS = zhonganInfoDOMapper.selectCusByOrderId(loanOrderDO.getId());
+            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectCusByOrderId(loanOrderDO.getId());
             for(LoanCustomerDO loanCustomerDO:loanCustomerDOS){
                 ZhonganInfoDO zhonganInfoDO = zhonganInfoDOMapper.selectZNByOrderIdAndIdcard(loanOrderDO.getId(),loanCustomerDO.getIdCard());
                 if(zhonganInfoDO == null){
-                    throw new BizException("客户:" + zhonganInfoDO.getCustomerName() +"没有进行大数据查询,无法提交");
+                    throw new BizException("客户:" + loanCustomerDO.getName() +"没有进行大数据查询,无法提交");
                 }else{
                     if(!"成功".equals(zhonganInfoDO.getResultMessage())){
                         throw new BizException("客户:" + zhonganInfoDO.getCustomerName() + zhonganInfoDO.getResultMessage() + ",无法提交征信");
@@ -2510,11 +2510,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         List<TaskEntityImpl> insteadPayTaskList = activitiDeploymentMapper.listInsteadPayTaskByOrderId(orderId);
         List<TaskEntityImpl> collectionTaskList = activitiDeploymentMapper.listCollectionTaskByOrderId(orderId);
+        List<TaskEntityImpl> legalTaskList = activitiDeploymentMapper.listLegalTaskByOrderId(orderId);
 
         List<Task> runTaskList = Lists.newArrayList();
         runTaskList.addAll(insteadPayTaskList);
         runTaskList.addAll(collectionTaskList);
         runTaskList.addAll(loanProcessTaskList);
+        runTaskList.addAll(legalTaskList);
 
         List<TaskStateVO> taskStateVOS = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(runTaskList)) {
@@ -2534,8 +2536,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     })
                     .collect(toList());
         }
-
-        // TODO 还要加上资料增补任务 ？？？
 
         return ResultBean.ofSuccess(taskStateVOS, "查询当前流程任务节点信息成功");
     }

@@ -10,8 +10,10 @@ public class LoanProcessCollectionDO implements LoanProcessDO_ {
     private Long id;
 
     private Long orderId;
-
-    private Long collectionOrderId;
+    /**
+     * 催收批次号
+     */
+    private Long bankRepayImpRecordId;
 
     private String processInstId;
 
@@ -27,9 +29,9 @@ public class LoanProcessCollectionDO implements LoanProcessDO_ {
 
     private Byte settleOrder;
 
-    private Byte legalReview;
+    private Byte orderStatus;
 
-    private Byte legalRecord;
+    private String cancelTaskDefKey;
 
     private Date gmtCreate;
 

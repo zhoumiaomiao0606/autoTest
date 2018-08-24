@@ -408,10 +408,6 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 }
                 bankUrgeRecordDOMapper.updateByPrimaryKeySelective(bankUrgeRecordDO);
             }
-
-            //TODO 开启催收任务
-            loanProcessCollectionService.startProcess(e.getOrderId(),e.getBankFileListId());
-
         });
     }
 
