@@ -443,6 +443,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
             bankRepayList =  bankRepayList.stream().filter(f-> (f.getCredentialNo()!=null || f.getCardNumber()!=null)).map(e->{
                 BankRepayParam bankRepayParam = bankRecordQueryDOMapper.selectByIdCardOrRepayCard(e.getCredentialNo(), e.getCardNumber());
                 if(bankRepayParam!=null){
+
                     LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(bankRepayParam.getOrderId());
                     e.setCustomerId(orderDO.getLoanCustomerId());
                     e.setOrderId(bankRepayParam.getOrderId());
