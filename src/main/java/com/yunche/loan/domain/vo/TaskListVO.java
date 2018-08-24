@@ -114,6 +114,8 @@ public class TaskListVO {
      * [退款申请单] 创建时间
      */
     private String refund_start_time;
+
+    private String lendCard;
 }
 
 
