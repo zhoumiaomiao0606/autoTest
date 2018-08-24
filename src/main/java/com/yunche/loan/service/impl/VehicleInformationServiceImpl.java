@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
+import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
@@ -53,8 +54,12 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
 
     @Override
     public RecombinationVO detail(Long orderId) {
-        VehicleInformationVO vehicleInformationVO = loanQueryDOMapper.selectVehicleInformation(orderId);
 
+        VehicleInformationVO vehicleInformationVO = loanQueryDOMapper.selectVehicleInformation(orderId);
+        Long informationIdById = loanOrderDOMapper.getVehicleInformationIdById(orderId);
+        VehicleInformationDO informationDO = vehicleInformationDOMapper.selectByPrimaryKey(informationIdById);
+        int month = DateUtil.getdiffMonth1(informationDO.getTransfer_ownership_date(), informationDO.getRegister_date());
+        vehicleInformationVO.setAssess_use_year(String.valueOf(month));
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
 
         for (UniversalCustomerVO universalCustomerVO : customers) {
