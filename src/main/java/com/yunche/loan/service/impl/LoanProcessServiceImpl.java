@@ -3005,7 +3005,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL, actualLoanAmount);
 
             // 预计 < 13W,但实际 >= 13W
-            if (EXPECT_LOAN_AMOUNT_LT_13W.equals(expectLoanAmount) && actualLoanAmount >= ACTUAL_LOAN_AMOUNT_13W) {
+            if (EXPECT_LOAN_AMOUNT_LT_13W.equals(expectLoanAmount) && null != actualLoanAmount && actualLoanAmount >= ACTUAL_LOAN_AMOUNT_13W) {
 
                 List<LoanCreditInfoDO> customerIdAndType = loanCreditInfoDOMapper.getByCustomerIdAndType(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_SOCIAL);
                 // 没录过[社会征信]
