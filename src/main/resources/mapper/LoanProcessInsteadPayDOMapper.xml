@@ -27,6 +27,16 @@
         AND bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
     </select>
 
+    <!--selectByOrderIdAndInsteadPayOrderIdReddlyReview-->
+    <select id="selectByOrderIdAndInsteadPayOrderIdReddlyReview" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_instead_pay
+        where order_id = #{orderId,jdbcType=BIGINT}
+        AND bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+        AND finance_instead_pay_review = 1
+    </select>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
@@ -165,33 +175,5 @@
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}
     </update>
-    update loan_process_instead_pay
-    set order_id = #{orderId,jdbcType=BIGINT},
-      instead_pay_order_id = #{insteadPayOrderId,jdbcType=BIGINT},
-      process_inst_id = #{processInstId,jdbcType=VARCHAR},
-      apply_instead_pay = #{applyInsteadPay,jdbcType=TINYINT},
-      finance_instead_pay_review = #{financeInsteadPayReview,jdbcType=TINYINT},
-      partner_instead_pay = #{partnerInsteadPay,jdbcType=TINYINT},
-      partner_instead_pay_review = #{partnerInsteadPayReview,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
 
-    <select id="selectByOrderIdAndInsteadPayOrderId" resultMap="BaseResultMap" >
-        select
-        <include refid="Base_Column_List"/>
-        from loan_process_instead_pay
-        where order_id = #{orderId,jdbcType=BIGINT}
-        AND instead_pay_order_id=#{insteadPayOrderId,jdbcType=BIGINT}
-    </select>
-
-    <select id="selectByOrderIdAndInsteadPayOrderIdReddlyReview" resultMap="BaseResultMap" >
-        select
-        <include refid="Base_Column_List"/>
-        from loan_process_instead_pay
-        where order_id = #{orderId,jdbcType=BIGINT}
-        AND instead_pay_order_id=#{insteadPayOrderId,jdbcType=BIGINT}
-        AND finance_instead_pay_review =1
-    </select>
 </mapper>
