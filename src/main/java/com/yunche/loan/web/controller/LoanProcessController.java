@@ -7,7 +7,6 @@ import com.yunche.loan.config.constant.ActivitiConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.service.LoanProcessApprovalCommonService;
 import com.yunche.loan.service.LoanProcessService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntityImpl;
@@ -33,9 +32,6 @@ public class LoanProcessController {
 
     @Autowired
     private RuntimeService runtimeService;
-
-    @Autowired
-    private LoanProcessApprovalCommonService loanProcessApprovalCommonService;
 
 
     /**

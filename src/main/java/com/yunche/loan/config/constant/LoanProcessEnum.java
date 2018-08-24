@@ -45,7 +45,7 @@ public enum LoanProcessEnum {
     BANK_LEND_RECORD("usertask_bank_lend_record", "银行放款记录"),
     BANK_CARD_RECORD("usertask_bank_card_record", "银行卡接收"),
     BANK_CARD_SEND("usertask_bank_card_send", "银行卡寄送"),
-    CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "银行还款计划"),
+    CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "客户还款计划"),
 
     ///////////////////////////////////////////// ↓↓↓↓↓--filter--↓↓↓↓↓ /////////////////////////////////////////////////
     BANK_SOCIAL_CREDIT_RECORD_FILTER("filter_bank_social_credit_record", "征信记录-拦截任务"),
@@ -72,6 +72,9 @@ public enum LoanProcessEnum {
     INSURANCE_SCENE_RECORD("usertask_insurance_scene_record", "出险登记"),
     URGE_INSURANCE_WORK_BENCH("usertask_urge_insurance_work_bench", "催保工作台"),
     URGE_INSURANCE_ASSIGN_WORK_BENCH("usertask_urge_insurance_assign_work_bench", "催保分配工作台"),
+
+    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
+    OVERDUE_COLLECTION_LIST("usertask_overdue_collection_list", "逾期催缴清单"),
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
 
 
@@ -115,7 +118,6 @@ public enum LoanProcessEnum {
     //////////////////////////////////////////// ↑↑↑↑↑--代偿--↑↑↑↑↑ /////////////////////////////////////////////////////
 
     //////////////////////////////////////////// ↓↓↓↓↓--催收--↓↓↓↓↓ /////////////////////////////////////////////////////
-    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
     VISIT_COLLECTION_REVIEW("usertask_visit_collection_review", "上门拖车-审核"),
     VISIT_COLLECTION("usertask_visit_collection", "上门拖车"),
     CAR_HANDLE("usertask_car_handle", "车辆处理"),

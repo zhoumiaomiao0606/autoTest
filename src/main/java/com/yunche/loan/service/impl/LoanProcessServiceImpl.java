@@ -1134,11 +1134,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
         }
 
-        // 结单 ending  -暂无【结单节点】
-//        if (XXX.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-//            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
-//        }
-
         //【资料审核】打回到【业务申请】 标记
         if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
             loanProcessDO.setLoanApplyRejectOrginTask(MATERIAL_REVIEW.getCode());
@@ -1612,16 +1607,25 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         Byte action = approval.getAction();
         if (ACTION_PASS.equals(action)) {
-            // new  -> TO_DO   old -> 不变
+
+            // new  -> TO_DO     old -> 不变
             doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_TODO, approval);
-        } else if (ACTION_REJECT_MANUAL.equals(action)) {
-            // new  -> REJECT   old -> INIT
+
+        } else if (ACTION_REJECT_MANUAL.equals(action) || ACTION_REJECT_AUTO.equals(action)) {
+
+            // new  ->  REJECT
             doUpdateNextTaskProcessStatus(newTaskList, loanProcessDO, TASK_PROCESS_REJECT, approval);
 
-            // 是否已过电审
+            // old  ->  INIT
+            // 没过电审
             if (!TASK_PROCESS_DONE.equals(currentLoanProcessDO.getTelephoneVerify())) {
-                // 没过电审
+
+                // 移除不需要打回的节点
+                removeNotNeedRejectTasks(oldTaskList, approval);
+
+                // old  ->  INIT
                 doUpdateNextTaskProcessStatus(oldTaskList, loanProcessDO, TASK_PROCESS_INIT, approval);
+
             } else {
                 // 过了电审，则不是真正的全部打回      nothing
             }
@@ -1632,6 +1636,31 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         } else if (ACTION_CANCEL.equals(action)) {
             // nothing
+        }
+    }
+
+    /**
+     * 移除不需要打回的节点
+     *
+     * @param oldTaskList
+     * @param approval
+     */
+    private void removeNotNeedRejectTasks(List<Task> oldTaskList, ApprovalParam approval) {
+
+        // [电审] 的并行节点 -> [银行开卡] 不能随[电审]一起打回
+        if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            if (!CollectionUtils.isEmpty(oldTaskList)) {
+
+                List<Task> removeTaskList = oldTaskList.stream()
+                        .filter(Objects::nonNull)
+                        .filter(task -> BANK_OPEN_CARD.getCode().equals(task.getTaskDefinitionKey()))
+                        .collect(toList());
+
+
+                oldTaskList.removeAll(removeTaskList);
+            }
+
         }
     }
 
