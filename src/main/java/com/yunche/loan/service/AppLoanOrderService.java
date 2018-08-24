@@ -65,7 +65,7 @@ public interface AppLoanOrderService {
 
     ResultBean<AppOrderProcessVO> orderProcess(Long orderId);
 
-    void zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam);
+    ZhonganReturnVO zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam);
 
     ZhongAnDetailQuery zhongAnDetail(Long orderId);
 

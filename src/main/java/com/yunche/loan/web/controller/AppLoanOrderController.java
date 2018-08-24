@@ -47,8 +47,8 @@ public class AppLoanOrderController {
      */
     @PostMapping(value = "/zhonganquery")
     public ResultBean zhongAnQuery(@RequestBody ZhongAnQueryParam zhongAnQueryParam) {
-        appLoanOrderService.zhongAnQuery(zhongAnQueryParam);
-        return ResultBean.ofSuccess(null, "查询成功");
+
+        return ResultBean.ofSuccess(appLoanOrderService.zhongAnQuery(zhongAnQueryParam), "查询成功");
     }
 
     /**

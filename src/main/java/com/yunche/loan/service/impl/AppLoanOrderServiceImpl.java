@@ -853,7 +853,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Override
     @Transactional
-    public void zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam) {
+    public ZhonganReturnVO zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam) {
+        ZhonganReturnVO zhonganReturnVO = new ZhonganReturnVO();
         List<ZhongAnCusParam> customers = zhongAnQueryParam.getCustomers();
         if(customers.size() == 0){
             throw new BizException("查询数据不能为空");
@@ -939,6 +940,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                             zhongAnOverDueDOMapper.insertSelective(zhongAnOverDueDO);
                         }
                     }
+                    zhonganReturnVO.setFlag(true);
                 }else if((boolean)map.get("success") == false){
                     ZhonganInfoDO zhonganInfoDO = new ZhonganInfoDO();
                     zhonganInfoDO.setOrderId(Long.valueOf(zhongAnQueryParam.getOrder_id()));
@@ -949,6 +951,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     zhonganInfoDO.setCreateDate(new Date());
                     zhonganInfoDO.setTel(zhongAnCusParam.getTel());
                     zhongAnInfoDOMapper.insertSelective(zhonganInfoDO);
+                    zhonganReturnVO.setFlag(false);
                 }
                 else{
                     throw new BizException("该客户:"+zhongAnCusParam.getName()+","+map.get("message"));
@@ -958,7 +961,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             logger.error("大数据风控查询失败",e);
             throw new BizException("大数据风控查询延误，请再次查询");
         }
-
+        return zhonganReturnVO;
     }
 
     @Override
