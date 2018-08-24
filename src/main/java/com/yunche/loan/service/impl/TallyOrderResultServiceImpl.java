@@ -14,10 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_END;
 
 /**
  * @author: ZhongMingxiao
@@ -55,9 +52,6 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService {
 
     @Autowired
     private LegworkReimbursementDOMapper legworkReimbursementDOMapper;
-
-    @Autowired
-    private LoanProcessDOMapper loanProcessDOMapper;
 
 
     @Override
@@ -145,6 +139,7 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService {
     @Override
     public ResultBean<Void> update(OrderHandleResultDO param) {
         Preconditions.checkNotNull(param.getOrderid(), "订单号不能为空");
+
         OrderHandleResultDO existDO = orderHandleResultDOMapper.selectByPrimaryKey(param.getOrderid());
         if (null == existDO) {
             int count = orderHandleResultDOMapper.insert(param);
@@ -153,14 +148,6 @@ public class TallyOrderResultServiceImpl implements TallyOrderResultService {
             int count = orderHandleResultDOMapper.updateByPrimaryKey(param);
             Preconditions.checkArgument(count > 0, "编辑失败");
         }
-
-        // 更新订单总状态
-        LoanProcessDO loanProcessDO = new LoanProcessDO();
-        loanProcessDO.setOrderId(param.getOrderid());
-        loanProcessDO.setOrderStatus(ORDER_STATUS_END);
-        loanProcessDO.setGmtModify(new Date());
-        int count = loanProcessDOMapper.updateByPrimaryKeySelective(loanProcessDO);
-        Preconditions.checkArgument(count > 0, "更新失败");
 
         return ResultBean.ofSuccess(null, "保存成功");
     }

@@ -47,6 +47,12 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     private VisitDoorDOMapper visitDoorDOMapper;
 
     @Autowired
+    private CollectionNewInfoDOMapper collectionNewInfoDOMapper;
+
+    @Autowired
+    private LoanProcessDOMapper loanProcessDOMapper;
+
+    @Autowired
     private TaskService taskService;
 
     @Autowired
@@ -61,17 +67,16 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     @Autowired
     private VisitDoorService visitDoorService;
 
-    @Autowired
-    private CollectionNewInfoDOMapper collectionNewInfoDOMapper;
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultBean<Void> approval(ApprovalParam approval) {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
-        Preconditions.checkNotNull(approval.getProcessId(), "processId不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
+        if (!SETTLE_ORDER.getCode().equals(approval.getTaskDefinitionKey())) {
+            Preconditions.checkNotNull(approval.getProcessId(), "processId不能为空");
+        }
 
         // 节点权限校验
         if (approval.isCheckPermission()) {
@@ -86,6 +91,11 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
 
         // 操作日志
         loanProcessApprovalCommonService.log(approval);
+
+        // 直接结清  -不走流程
+        if (isPassSettleOrderTask(approval)) {
+            return execPassSettleOrderTask(approval);
+        }
 
         // 获取当前执行任务（activiti中）
         Task task = loanProcessApprovalCommonService.getTask(loanProcessDO.getProcessInstId(), approval.getTaskDefinitionKey());
@@ -108,13 +118,8 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
-        // 上门拖车 || 上门拖车-确认    -->
-        doVisitDoorInsertNewInfo(approval);
-
-        // 更新[上门拖车]-状态记录
-        updateVisitDoorDO(approval);
-
-        visitLawBack(approval);
+        // 执行附加任务
+        doExtraTask(approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -425,6 +430,25 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     }
 
     /**
+     * 执行附加任务
+     *
+     * @param approval
+     */
+    private void doExtraTask(ApprovalParam approval) {
+
+        // 结单  -> 更新订单总状态：[已结单]
+        doSettleOrder(approval);
+
+        // 上门拖车 || 上门拖车-确认    -->
+        doVisitDoorInsertNewInfo(approval);
+
+        // 更新[上门拖车]-状态记录
+        updateVisitDoorDO(approval);
+
+        visitLawBack(approval);
+    }
+
+    /**
      * 上门拖车 || 上门拖车-确认    -->
      *
      * @param approval
@@ -477,6 +501,57 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
             collectionNewInfoDOMapper.isvisitback(approval.getOrderId(), approval.getBankRepayImpRecordId());
         } else if (LEGAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
             collectionNewInfoDOMapper.islawback(approval.getOrderId(), approval.getBankRepayImpRecordId());
+        }
+    }
+
+
+    /**
+     * 直接结清  -不走流程
+     *
+     * @param approval
+     * @return
+     */
+    private boolean isPassSettleOrderTask(ApprovalParam approval) {
+
+        boolean isPassSettleOrderTask = SETTLE_ORDER.getCode().equals(approval.getTaskDefinitionKey())
+                && ACTION_PASS.equals(approval.getAction())
+                && null == approval.getProcessId();
+
+        return isPassSettleOrderTask;
+    }
+
+    /**
+     * 结单  -> 更新订单总状态：[已结单]
+     *
+     * @param approval
+     * @return
+     */
+    private ResultBean<Void> execPassSettleOrderTask(ApprovalParam approval) {
+
+        // 更新订单总状态：[已结单]
+        doSettleOrder(approval);
+
+        return ResultBean.ofSuccess(null, "[结清]成功");
+    }
+
+
+    /**
+     * 结单  -> 更新订单总状态：[已结单]
+     *
+     * @param approval
+     */
+    public void doSettleOrder(ApprovalParam approval) {
+
+        // 更新订单总状态：[已结单]
+        if (SETTLE_ORDER.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            LoanProcessDO loanProcessDO = new LoanProcessDO();
+            loanProcessDO.setOrderId(approval.getOrderId());
+            loanProcessDO.setOrderStatus(ORDER_STATUS_END);
+
+            loanProcessDO.setGmtModify(new Date());
+            int count = loanProcessDOMapper.updateByPrimaryKeySelective(loanProcessDO);
+            Preconditions.checkArgument(count > 0, "更新失败");
         }
     }
 
