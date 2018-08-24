@@ -33,7 +33,5 @@ public class TelephoneVerifyParam {
 
     private  String openCardOrder;
 
-    private Byte signatureType;
-
 
 }

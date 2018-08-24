@@ -175,4 +175,6 @@ public class CustomerVO {
     private String bankCreditStatus;
 
     private String ctelzone;
+
+    private Byte signatureType;//签单类型  1-夫妻单签  2-夫妻双签  3-其他
 }
