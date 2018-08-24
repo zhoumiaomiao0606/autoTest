@@ -58,10 +58,12 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         VehicleInformationVO vehicleInformationVO = loanQueryDOMapper.selectVehicleInformation(orderId);
         Long informationIdById = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         VehicleInformationDO informationDO = vehicleInformationDOMapper.selectByPrimaryKey(informationIdById);
-        int month = DateUtil.getdiffMonth1(informationDO.getTransfer_ownership_date(), informationDO.getRegister_date());
-        vehicleInformationVO.setAssess_use_year(String.valueOf(month));
-        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        Integer month = DateUtil.getdiffMonth1(informationDO.getTransfer_ownership_date(), informationDO.getRegister_date());
+        if (null != month) {
+            vehicleInformationVO.setAssess_use_year(String.valueOf(month));
+        }
 
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
@@ -130,21 +132,21 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         Long customerId = loanOrderDO.getLoanCustomerId();
 
         if (customerId != null && param.getFiles() != null && !param.getFiles().isEmpty()) {
-                    for (UniversalFileParam universalFileParam : param.getFiles()) {
-                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte(universalFileParam.getType()), null);
-                        for (LoanFileDO loanFileDO : uploadList) {
-                            loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
-                        }
-                        LoanFileDO loanFileDO = new LoanFileDO();
-                        loanFileDO.setCustomerId(customerId);
-                        loanFileDO.setPath(JSON.toJSONString(universalFileParam.getUrls()));
-                        loanFileDO.setType(new Byte(universalFileParam.getType()));
-                        loanFileDO.setUploadType(new Byte("1"));
-                        loanFileDO.setGmtCreate(new Date());
-                        loanFileDO.setGmtModify(new Date());
-                        loanFileDO.setStatus(new Byte("0"));
-                        loanFileDOMapper.insertSelective(loanFileDO);
-                    }
+            for (UniversalFileParam universalFileParam : param.getFiles()) {
+                List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte(universalFileParam.getType()), null);
+                for (LoanFileDO loanFileDO : uploadList) {
+                    loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
+                }
+                LoanFileDO loanFileDO = new LoanFileDO();
+                loanFileDO.setCustomerId(customerId);
+                loanFileDO.setPath(JSON.toJSONString(universalFileParam.getUrls()));
+                loanFileDO.setType(new Byte(universalFileParam.getType()));
+                loanFileDO.setUploadType(new Byte("1"));
+                loanFileDO.setGmtCreate(new Date());
+                loanFileDO.setGmtModify(new Date());
+                loanFileDO.setStatus(new Byte("0"));
+                loanFileDOMapper.insertSelective(loanFileDO);
+            }
         }
     }
 }

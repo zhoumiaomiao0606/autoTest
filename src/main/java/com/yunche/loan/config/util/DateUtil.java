@@ -8,12 +8,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtil {
+
     /**
      * 返回当前日期 格式为 YYYYMMDD
      * 例如 "20180701"
+     *
      * @return
      */
-    public static String getDate(){
+    public static String getDate() {
         SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
         String dateString = dataFormat.format(date);
@@ -24,9 +26,10 @@ public class DateUtil {
     /**
      * 获取当前 日期 时分秒
      * 返回 例如 返回："123040"
+     *
      * @return
      */
-    public static String getTime(){
+    public static String getTime() {
         SimpleDateFormat dataFormat = new SimpleDateFormat("HHmmss");
         Date date = new Date();
         String timeString = dataFormat.format(date);
@@ -35,10 +38,11 @@ public class DateUtil {
 
     /**
      * 将格式为2035-09-18 的字符串转成 Date 对象
+     *
      * @param yyyymmdd
      * @return
      */
-    public static Date getDate10(String yyyymmdd){
+    public static Date getDate10(String yyyymmdd) {
         SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {
@@ -52,10 +56,11 @@ public class DateUtil {
     /**
      * 将字符串日期转成 Date 对象
      * 例如 传入参数："20350918"
+     *
      * @param yyyymmdd
      * @return
      */
-    public static Date getDate(String yyyymmdd){
+    public static Date getDate(String yyyymmdd) {
         SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = null;
         try {
@@ -66,23 +71,23 @@ public class DateUtil {
         return date;
     }
 
-    public static String getDateTo8(Date date){
-        String dateString=null;
-        try{
+    public static String getDateTo8(Date date) {
+        String dateString = null;
+        try {
             SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMdd");
             dateString = dataFormat.format(date);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new BizException("日期格式错误");
         }
         return dateString;
     }
 
-    public static String getDateTo6(Date date){
-        String dateString=null;
-        try{
+    public static String getDateTo6(Date date) {
+        String dateString = null;
+        try {
             SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMM");
             dateString = dataFormat.format(date);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new BizException("日期格式错误");
         }
         return dateString;
@@ -92,13 +97,14 @@ public class DateUtil {
      * 日期
      * 例如 2035.09.18   -》 20350918
      * 如果格式不符，直接返回传入的参数
+     *
      * @return
      */
-    public static String getDateTo8(String date){
+    public static String getDateTo8(String date) {
         String[] split = date.split("\\.");
-        if(date.length()==10 || split.length==3){
-             return split[0].trim()+split[1].trim()+split[2].trim();
-        }else{
+        if (date.length() == 10 || split.length == 3) {
+            return split[0].trim() + split[1].trim() + split[2].trim();
+        } else {
             return date;
         }
 
@@ -106,30 +112,36 @@ public class DateUtil {
 
     /**
      * 时间戳日期，去掉时分秒
+     *
      * @param date
      * @return
      */
-   public static Date getDateTo10(Date date){
-       Date psDate =null;
-       try {
-           SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-           String s = sdf.format(date);
-           psDate =  sdf.parse(s);
-       } catch (ParseException e) {
-           throw new BizException("日期格式错误");
-       }
+    public static Date getDateTo10(Date date) {
+        Date psDate = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String s = sdf.format(date);
+            psDate = sdf.parse(s);
+        } catch (ParseException e) {
+            throw new BizException("日期格式错误");
+        }
         return psDate;
-   }
+    }
 
 
     /**
      * 相隔月数  date1 >date2
+     *
      * @param date1
      * @param date2
      * @return
      */
-    public static int getdiffMonth1( Date date1,Date date2){
-       
+    public static Integer getdiffMonth1(Date date1, Date date2) {
+
+        if (null == date1 || null == date2) {
+            return null;
+        }
+
         try {
 
             Calendar cal1 = Calendar.getInstance();
@@ -138,14 +150,14 @@ public class DateUtil {
             cal1.setTime(date1);
             cal2.setTime(date2);
             System.out.println(cal1.get(Calendar.YEAR));
-            System.out.println( cal1.get(Calendar.MONTH)+1);
-            System.out.println( cal1.get(Calendar.DAY_OF_MONTH));
+            System.out.println(cal1.get(Calendar.MONTH) + 1);
+            System.out.println(cal1.get(Calendar.DAY_OF_MONTH));
 
-            int diffMonth = (cal1.get(Calendar.YEAR)-cal2.get(Calendar.YEAR))*12 +
-                    (cal1.get(Calendar.MONTH)-cal2.get(Calendar.MONTH));
+            int diffMonth = (cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR)) * 12 +
+                    (cal1.get(Calendar.MONTH) - cal2.get(Calendar.MONTH));
 
-            if(cal1.get(Calendar.DAY_OF_MONTH)-cal2.get(Calendar.DAY_OF_MONTH)>0){
-                diffMonth+=1;
+            if (cal1.get(Calendar.DAY_OF_MONTH) - cal2.get(Calendar.DAY_OF_MONTH) > 0) {
+                diffMonth += 1;
             }
             System.out.println(diffMonth);
             return diffMonth;
@@ -155,5 +167,5 @@ public class DateUtil {
         }
 
     }
-   
+
 }
