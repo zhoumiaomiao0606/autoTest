@@ -460,7 +460,6 @@
                   useGetSmallCarName(join_i.car_detail_id)     AS carName,
                   join_i.gps_num                               AS carGpsNum,
                   join_bp.remit_amount                         AS remitAmount,
-                  join_rep.bank_file_list_id            AS bankRepayImpRecordId,
                   join_rep.optimal_return                      AS overdueAmount,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
@@ -565,6 +564,7 @@
                           DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                           join_urgerecord.sendee                  AS sendee,
                           sendee.name                             AS sendeeName,
+                          join_urgerecord.bank_repay_imp_record_id AS bankRepayImpRecordId,
                           join_urgerecord.urge_status             AS taskStatus
                       </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
@@ -577,6 +577,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.visit_collection_review        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection'">
@@ -590,6 +591,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.visit_collection               AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_handle'">
@@ -602,6 +604,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.car_handle                     AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_out'">
@@ -614,6 +617,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.car_out                        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_settle_order'">
@@ -626,6 +630,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_c.settle_order                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_review'">
@@ -638,6 +643,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_l.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_l.legal_review                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_record'">
@@ -650,6 +656,7 @@
                            DATE_FORMAT(join_urgerecord.gmt_create,'%Y-%m-%d %H:%i:%S')   AS urgeGmtCreate,
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
+                           deputy_l.bank_repay_imp_record_id       AS bankRepayImpRecordId,
                            deputy_l.legal_record                   AS taskStatus
                        </when>
                       <when test="taskDefinitionKey == 'usertask_bank_open_card'">
