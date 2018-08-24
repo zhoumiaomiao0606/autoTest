@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 上门催收 -流程
+ * [上门催收] -流程
  *
  * @author liuzhe
  * @date 2018/8/20
@@ -24,7 +24,7 @@ public class LoanProcessCollectionController {
 
 
     /**
-     * 上门催收流程 -审核
+     * [上门催收]流程 -审核
      *
      * @param approval
      * @return
@@ -39,15 +39,15 @@ public class LoanProcessCollectionController {
     }
 
     /**
-     * 开启 上门催收流程
+     * 开启 [上门催收]流程
      *
      * @param orderId
-     * @param collectionOrderId
+     * @param collectionOrderId 批次号
      * @return
      */
     @GetMapping(value = "/startProcess")
-    public ResultBean<Long> startProcess(@RequestParam Long orderId,
-                                         @RequestParam Long collectionOrderId) {
+    public ResultBean<Long> startProcess(@RequestParam(value = "orderId") Long orderId,
+                                         @RequestParam(value = "bankRepayImpRecordId") Long collectionOrderId) {
         Long processId = loanProcessCollectionService.startProcess(orderId, collectionOrderId);
         return ResultBean.ofSuccess(processId);
     }

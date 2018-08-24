@@ -112,7 +112,7 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
-                             @NotNull(message = "collectionOrderId不能为空") Long collectionOrderId) {
+                             @NotNull(message = "批次号不能为空") Long collectionOrderId) {
 
         // 上一条流程记录
         LoanProcessLegalDO lastLoanProcessLegalDO = loanProcessLegalDOMapper.getLastLoanProcessByCollectionOrderId(collectionOrderId);
@@ -120,7 +120,8 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
         // 历史流程已存在
         if (null != lastLoanProcessLegalDO) {
 
-            Preconditions.checkArgument(ORDER_STATUS_CANCEL.equals(lastLoanProcessLegalDO.getOrderStatus()), "当前催收，已发起过法务流程");
+            Preconditions.checkArgument(ORDER_STATUS_CANCEL.equals(lastLoanProcessLegalDO.getOrderStatus()),
+                    "当前催收批次，已发起过[法务处理]流程");
         }
         // 无历史流程
         else {

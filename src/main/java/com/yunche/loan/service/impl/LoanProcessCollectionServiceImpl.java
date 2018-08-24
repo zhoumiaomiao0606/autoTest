@@ -116,7 +116,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
-                             @NotNull(message = "collectionOrderId不能为空") Long collectionOrderId) {
+                             @NotNull(message = "批次号不能为空") Long collectionOrderId) {
 
         // 上一条流程记录
         LoanProcessCollectionDO lastLoanProcessCollectionDO = loanProcessCollectionDOMapper.getLastLoanProcessByCollectionOrderId(collectionOrderId);
@@ -125,7 +125,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         if (null != lastLoanProcessCollectionDO) {
 
             Preconditions.checkArgument(ORDER_STATUS_CANCEL.equals(lastLoanProcessCollectionDO.getOrderStatus()),
-                    "当前催收，已发起过[上门催收]流程");
+                    "当前催收批次，已发起过[上门催收]流程");
         }
         // 无历史流程
         else {
