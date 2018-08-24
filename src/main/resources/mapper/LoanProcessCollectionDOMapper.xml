@@ -202,4 +202,11 @@
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+    <select id="selectByPrimaryOrderIdAndBankRepayImpRecordId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_collection
+        where order_id = #{orderId,jdbcType=BIGINT} AND  collection_order_id = #{bank_repay_imp_record_id,jdbcType=BIGINT} ORDER BY id DESC limit 1
+    </select>
 </mapper>

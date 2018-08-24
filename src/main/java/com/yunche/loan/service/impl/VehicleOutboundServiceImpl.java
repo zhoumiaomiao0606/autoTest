@@ -48,6 +48,13 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
+   /* @Autowired
+    private LoanProcessCollectionDOMapper loanProcessCollectionDOMapper;*/
+
+    @Autowired
+    private LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
+
+
     @Override
     public VehicleOutboundVO detail(Long orderId,Long bank_repay_imp_record_id)
     {
@@ -88,6 +95,22 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         BigDecimal loan_amount = loanFinancialPlanDOMapper.selectLoanAmount(orderId);
         vehicleOutboundInfo.setLoan_amount(loan_amount);
         // 代偿金额 ---需要等流程走通
+        //先到loan_process_collection取到流程实例id --loan_process_collection
+//        LoanProcessCollectionDO loanProcessCollectionDO = loanProcessCollectionDOMapper.selectByPrimaryOrderIdAndBankRepayImpRecordId(orderId, bank_repay_imp_record_id);
+        //根据流程实例id和订单id取到代偿单id
+     /*   loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderId(loanProcessCollectionDO.getOrderId(),loanProcessCollectionDO.getProcessInstId())*/
+        LoanProcessInsteadPayDO loanProcessInsteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderIdReddlyReview(orderId, bank_repay_imp_record_id);
+        if (loanProcessInsteadPayDO !=null)
+        {
+            LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectByPrimaryKey(loanProcessInsteadPayDO.getId());
+            if (loanApplyCompensationDO !=null)
+            {
+                vehicleOutboundInfo.setCompensation_amount_sum(loanApplyCompensationDO.getCompensationAmount());
+            }
+        }
+
+
+
 
         // 清收成本
         VehicleHandleDO vehicleHandleDO = vehicleHandleDOMapper.selectByPrimaryKey(new VehicleHandleDOKey(orderId, bank_repay_imp_record_id));

@@ -103,7 +103,7 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
                 approvalParam.setOrderId(orderId);
                 approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_CARD_RECORD.getCode());
                 approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
-                approvalParam.setNeedLog(false);
+                approvalParam.setNeedLog(true);
                 approvalParam.setCheckPermission(false);
                 ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                 Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
