@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -111,11 +110,12 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
-                             @NotNull(message = "bankRepayImpRecordId不能为空") Long bankRepayImpRecordId) {
+    public Long startProcess(Long orderId, Long bankRepayImpRecordId) {
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+        Preconditions.checkNotNull(bankRepayImpRecordId, "bankRepayImpRecordId不能为空");
 
         // 上一条流程记录
-        LoanProcessLegalDO lastLoanProcessLegalDO = loanProcessLegalDOMapper.getLastLoanProcessByBankRepayImpRecordId(bankRepayImpRecordId);
+        LoanProcessLegalDO lastLoanProcessLegalDO = loanProcessLegalDOMapper.getLastLoanProcessByOrderIdAndBankRepayImpRecordId(orderId, bankRepayImpRecordId);
 
         // 历史流程已存在
         if (null != lastLoanProcessLegalDO) {
@@ -156,6 +156,7 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
         loanProcessLegalDO.setProcessInstId(processInstId);
 
         loanProcessLegalDO.setLegalReview(TASK_PROCESS_TODO);
+        loanProcessLegalDO.setOrderStatus(ORDER_STATUS_DOING);
 
         loanProcessLegalDO.setGmtCreate(new Date());
         loanProcessLegalDO.setGmtModify(new Date());
@@ -234,8 +235,8 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
 
         // 如果弃单，则记录弃单节点
         if (ACTION_CANCEL.equals(approval.getAction())) {
-//            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
-//            loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
+            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
+            loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
             updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
         }
 

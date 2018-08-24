@@ -17,8 +17,6 @@ public class LoanProcessCollectionDO implements LoanProcessDO_ {
 
     private String processInstId;
 
-    private Byte collectionWorkbench;
-
     private Byte visitCollectionReview;
 
     private Byte visitCollection;
