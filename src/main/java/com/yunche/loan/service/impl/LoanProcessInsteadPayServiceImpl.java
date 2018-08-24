@@ -129,7 +129,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         LoanProcessInsteadPayDO loanProcessInsteadPayDO = new LoanProcessInsteadPayDO();
 
         loanProcessInsteadPayDO.setOrderId(orderId);
-        loanProcessInsteadPayDO.setInsteadPayOrderId(insteadPayOrderId);
+        loanProcessInsteadPayDO.setBankRepayImpRecordId(insteadPayOrderId);
         loanProcessInsteadPayDO.setProcessInstId(processInstId);
 
         loanProcessInsteadPayDO.setApplyInsteadPay(TASK_PROCESS_TODO);

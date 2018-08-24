@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="order_id" property="orderId" jdbcType="BIGINT"/>
-        <result column="collection_order_id" property="collectionOrderId" jdbcType="BIGINT"/>
+        <result column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT"/>
         <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR"/>
         <result column="visit_collection_review" property="visitCollectionReview" jdbcType="TINYINT"/>
         <result column="visit_collection" property="visitCollection" jdbcType="TINYINT"/>
@@ -17,17 +17,17 @@
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, order_id, collection_order_id, process_inst_id, visit_collection_review, visit_collection,
-        car_handle, car_out, settle_order, order_status, cancel_task_def_key, gmt_create,
-        gmt_modify
+        id, order_id, bank_repay_imp_record_id, process_inst_id, visit_collection_review,
+        visit_collection, car_handle, car_out, settle_order, order_status, cancel_task_def_key,
+        gmt_create, gmt_modify
     </sql>
 
-    <!--getLastLoanProcessByCollectionOrderId-->
-    <select id="getLastLoanProcessByCollectionOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    <!--getLastLoanProcessByBankRepayImpRecordId-->
+    <select id="getLastLoanProcessByBankRepayImpRecordId" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
         from loan_process_collection
-        where collection_order_id = #{collectionOrderId,jdbcType=BIGINT}
+        where bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
         ORDER BY gmt_create DESC
         LIMIT 1
     </select>
@@ -42,19 +42,23 @@
         delete from loan_process_collection
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
-        insert into loan_process_collection (id, order_id, collection_order_id,
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO"
+            useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
+        insert into loan_process_collection (id, order_id, bank_repay_imp_record_id,
         process_inst_id, visit_collection_review, visit_collection,
         car_handle, car_out, settle_order,
         order_status, cancel_task_def_key, gmt_create,
         gmt_modify)
-        values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{collectionOrderId,jdbcType=BIGINT},
+        values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT},
         #{processInstId,jdbcType=VARCHAR}, #{visitCollectionReview,jdbcType=TINYINT}, #{visitCollection,jdbcType=TINYINT},
         #{carHandle,jdbcType=TINYINT}, #{carOut,jdbcType=TINYINT}, #{settleOrder,jdbcType=TINYINT},
         #{orderStatus,jdbcType=TINYINT}, #{cancelTaskDefKey,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
         #{gmtModify,jdbcType=TIMESTAMP})
     </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO"
+            useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
         insert into loan_process_collection
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -63,8 +67,8 @@
             <if test="orderId != null">
                 order_id,
             </if>
-            <if test="collectionOrderId != null">
-                collection_order_id,
+            <if test="bankRepayImpRecordId != null">
+                bank_repay_imp_record_id,
             </if>
             <if test="processInstId != null">
                 process_inst_id,
@@ -104,8 +108,8 @@
             <if test="orderId != null">
                 #{orderId,jdbcType=BIGINT},
             </if>
-            <if test="collectionOrderId != null">
-                #{collectionOrderId,jdbcType=BIGINT},
+            <if test="bankRepayImpRecordId != null">
+                #{bankRepayImpRecordId,jdbcType=BIGINT},
             </if>
             <if test="processInstId != null">
                 #{processInstId,jdbcType=VARCHAR},
@@ -145,8 +149,8 @@
             <if test="orderId != null">
                 order_id = #{orderId,jdbcType=BIGINT},
             </if>
-            <if test="collectionOrderId != null">
-                collection_order_id = #{collectionOrderId,jdbcType=BIGINT},
+            <if test="bankRepayImpRecordId != null">
+                bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
             </if>
             <if test="processInstId != null">
                 process_inst_id = #{processInstId,jdbcType=VARCHAR},
@@ -184,7 +188,7 @@
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
     update loan_process_collection
     set order_id = #{orderId,jdbcType=BIGINT},
-      collection_order_id = #{collectionOrderId,jdbcType=BIGINT},
+      bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
       process_inst_id = #{processInstId,jdbcType=VARCHAR},
       visit_collection_review = #{visitCollectionReview,jdbcType=TINYINT},
       visit_collection = #{visitCollection,jdbcType=TINYINT},

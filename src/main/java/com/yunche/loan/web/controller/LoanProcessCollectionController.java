@@ -42,13 +42,13 @@ public class LoanProcessCollectionController {
      * 开启 [上门催收]流程
      *
      * @param orderId
-     * @param collectionOrderId 批次号
+     * @param bankRepayImpRecordId 批次号
      * @return
      */
     @GetMapping(value = "/startProcess")
     public ResultBean<Long> startProcess(@RequestParam(value = "orderId") Long orderId,
-                                         @RequestParam(value = "bankRepayImpRecordId") Long collectionOrderId) {
-        Long processId = loanProcessCollectionService.startProcess(orderId, collectionOrderId);
+                                         @RequestParam(value = "bankRepayImpRecordId") Long bankRepayImpRecordId) {
+        Long processId = loanProcessCollectionService.startProcess(orderId, bankRepayImpRecordId);
         return ResultBean.ofSuccess(processId);
     }
 }

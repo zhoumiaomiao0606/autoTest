@@ -13,7 +13,7 @@ public class LoanProcessCollectionDO implements LoanProcessDO_ {
     /**
      * 催收批次号
      */
-    private Long collectionOrderId;
+    private Long bankRepayImpRecordId;
 
     private String processInstId;
 

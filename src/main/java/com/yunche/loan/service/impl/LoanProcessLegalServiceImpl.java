@@ -112,10 +112,10 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
-                             @NotNull(message = "批次号不能为空") Long collectionOrderId) {
+                             @NotNull(message = "bankRepayImpRecordId不能为空") Long bankRepayImpRecordId) {
 
         // 上一条流程记录
-        LoanProcessLegalDO lastLoanProcessLegalDO = loanProcessLegalDOMapper.getLastLoanProcessByCollectionOrderId(collectionOrderId);
+        LoanProcessLegalDO lastLoanProcessLegalDO = loanProcessLegalDOMapper.getLastLoanProcessByBankRepayImpRecordId(bankRepayImpRecordId);
 
         // 历史流程已存在
         if (null != lastLoanProcessLegalDO) {
@@ -133,7 +133,7 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
         ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_LEGAL_KEY);
 
         // 创建流程记录
-        Long processId = create(orderId, collectionOrderId, processInstance.getProcessInstanceId());
+        Long processId = create(orderId, bankRepayImpRecordId, processInstance.getProcessInstanceId());
 
         return processId;
     }
@@ -142,17 +142,17 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
     /**
      * 创建[催收工作台]流程记录
      *
-     * @param orderId           主订单ID
-     * @param collectionOrderId 催收批次号
-     * @param processInstId     流程实例ID
+     * @param orderId              主订单ID
+     * @param bankRepayImpRecordId 催收批次号
+     * @param processInstId        流程实例ID
      * @return
      */
-    private Long create(Long orderId, Long collectionOrderId, String processInstId) {
+    private Long create(Long orderId, Long bankRepayImpRecordId, String processInstId) {
 
         LoanProcessLegalDO loanProcessLegalDO = new LoanProcessLegalDO();
 
         loanProcessLegalDO.setOrderId(orderId);
-        loanProcessLegalDO.setCollectionOrderId(collectionOrderId);
+        loanProcessLegalDO.setBankRepayImpRecordId(bankRepayImpRecordId);
         loanProcessLegalDO.setProcessInstId(processInstId);
 
         loanProcessLegalDO.setLegalReview(TASK_PROCESS_TODO);

@@ -20,9 +20,9 @@ public interface LoanProcessLegalService {
     /**
      * 开启流程
      *
-     * @param orderId           主订单ID
-     * @param collectionOrderId 催收批次号
+     * @param orderId              主订单ID
+     * @param bankRepayImpRecordId 批次号
      * @return
      */
-    Long startProcess(Long orderId, Long collectionOrderId);
+    Long startProcess(Long orderId, Long bankRepayImpRecordId);
 }
