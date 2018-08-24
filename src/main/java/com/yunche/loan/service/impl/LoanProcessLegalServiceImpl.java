@@ -107,7 +107,9 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
-        visitLawBack(approval);
+
+        //
+        updateVisitLawBack(approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -383,7 +385,7 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
         return variables;
     }
 
-    public void visitLawBack(ApprovalParam approval) {
+    public void updateVisitLawBack(ApprovalParam approval) {
         if (VISIT_COLLECTION_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
             collectionNewInfoDOMapper.isvisitback(approval.getOrderId(), approval.getBankRepayImpRecordId());
         } else if (LEGAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_CANCEL.equals(approval.getAction())) {
