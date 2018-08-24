@@ -4,6 +4,7 @@ import com.yunche.loan.config.exception.BizException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtil {
@@ -119,4 +120,40 @@ public class DateUtil {
        }
         return psDate;
    }
+
+
+    /**
+     * 相隔月数  date1 >date2
+     * @param date1
+     * @param date2
+     * @return
+     */
+    public static int getdiffMonth1( Date date1,Date date2){
+       
+        try {
+
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+
+            cal1.setTime(date1);
+            cal2.setTime(date2);
+            System.out.println(cal1.get(Calendar.YEAR));
+            System.out.println( cal1.get(Calendar.MONTH)+1);
+            System.out.println( cal1.get(Calendar.DAY_OF_MONTH));
+
+            int diffMonth = (cal1.get(Calendar.YEAR)-cal2.get(Calendar.YEAR))*12 +
+                    (cal1.get(Calendar.MONTH)-cal2.get(Calendar.MONTH));
+
+            if(cal1.get(Calendar.DAY_OF_MONTH)-cal2.get(Calendar.DAY_OF_MONTH)>0){
+                diffMonth+=1;
+            }
+            System.out.println(diffMonth);
+            return diffMonth;
+
+        } catch (Exception e) {
+            throw new BizException("日期格式错误");
+        }
+
+    }
+   
 }
