@@ -1413,6 +1413,7 @@
              c.id                                 AS customer_id,
              c.name                               AS cname,
              c.id_card                            AS id_card,
+             c.signature_type                     AS customer_signature_type,
              f.financial_product_name             AS financial_product_name,
              f.financial_product_id               AS financial_product_id,
              h.license_plate_number               AS license_plate_number,
