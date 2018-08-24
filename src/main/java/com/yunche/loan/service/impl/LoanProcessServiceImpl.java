@@ -2737,6 +2737,56 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                     }
                 }
 
+            } else if (OUTWORKER_COST_APPLY.getCode().equals(taskDefinitionKey)) {
+
+                // 外勤费用申报
+                LegworkReimbursementDO legworkReimbursementDO = legworkReimbursementDOMapper.selectByPrimaryKey(orderId);
+                if (null != legworkReimbursementDO) {
+
+                    switch (legworkReimbursementDO.getStatus()) {
+                        case 0:
+                            taskStatus = 0;
+                            break;
+                        case 1:
+                            taskStatus = 1;
+                            break;
+                        case 2:
+                            taskStatus = 2;
+                            break;
+                        case 3:
+                            taskStatus = 3;
+                            break;
+                        case 4:
+                            taskStatus = 1;
+                            break;
+                    }
+                }
+
+            } else if (OUTWORKER_COST_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
+
+                // 财务报销
+                LegworkReimbursementDO legworkReimbursementDO = legworkReimbursementDOMapper.selectByPrimaryKey(orderId);
+                if (null != legworkReimbursementDO) {
+
+                    switch (legworkReimbursementDO.getStatus()) {
+                        case 0:
+                            taskStatus = 0;
+                            break;
+                        case 1:
+                            taskStatus = 1;
+                            break;
+                        case 2:
+                            taskStatus = 0;
+                            break;
+                        case 3:
+                            taskStatus = 0;
+                            break;
+                        case 4:
+                            taskStatus = 2;
+                            break;
+                    }
+                }
+
             } else {
                 taskStatus = getTaskStatus(loanProcessDO_, taskDefinitionKey);
             }
