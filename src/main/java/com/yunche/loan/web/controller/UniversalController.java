@@ -63,4 +63,5 @@ public class UniversalController {
         dictMapCache.refreshAll();
        return ResultBean.ofSuccess(null,"刷新成功");
     }
+
 }

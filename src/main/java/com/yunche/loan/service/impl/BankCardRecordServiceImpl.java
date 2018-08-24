@@ -6,6 +6,7 @@ import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.BankCardRecordDO;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.BankCardRecordVO;
@@ -13,6 +14,7 @@ import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.mapper.BankCardRecordDOMapper;
+import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.BankCardRecordService;
@@ -46,6 +48,9 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
 
     @Autowired
     LoanProcessService loanProcessService;
+
+    @Autowired
+    LoanCustomerDOMapper loanCustomerDOMapper;
 
 
     @Override
@@ -97,7 +102,11 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
                 loanOrderDO.setBankCardRecordId((long) bankCardRecordDO.getId());
                 int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
                 Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
-
+                //数据同步
+                LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+                LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(orderDO.getLoanCustomerId(), null);
+                customerDO.setLendCard(bankCardRecordDO.getRepayCardId());
+                loanCustomerDOMapper.updateByPrimaryKeySelective(customerDO);
                 // 对应记录更新出错
                 ApprovalParam approvalParam = new ApprovalParam();
                 approvalParam.setOrderId(orderId);
@@ -126,8 +135,14 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
     @Override
     public ResultBean<RecombinationVO> detail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         RecombinationVO recombinationVO = new RecombinationVO();
         BankCardRecordVO bankCardRecordVO = loanQueryDOMapper.selectBankCardRecordDetail(orderId);
+        if(bankCardRecordVO.getRepayCardId()==null){
+
+            LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
+            bankCardRecordVO.setRepayCardId(customerDO.getLendCard());
+        }
         recombinationVO.setInfo(bankCardRecordVO);
         //共贷人信息查询
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
