@@ -13,11 +13,11 @@ import java.util.List;
 @Data
 public class VehicleHandleVO
 {
-    private BaseCustomerInfoVO baseCustomerInfoVO;
+    private BaseCustomerInfoVO baseCustomerInfoVO = new BaseCustomerInfoVO();
 
-    private VehicleHandleDO vehicleHandleDO;
+    private VehicleHandleDO vehicleHandleDO =new VehicleHandleDO();
 
-    private VehicleInfoVO vehicleInfoVO;
+    private VehicleInfoVO vehicleInfoVO =new VehicleInfoVO();
 
     private List<UniversalCustomerVO> customers;
 

@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import com.yunche.loan.domain.entity.VehicleOutboundDO;
 import lombok.Data;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 
@@ -13,11 +14,11 @@ import java.util.List;
 @Data
 public class VehicleOutboundVO
 {
-    private BaseCustomerInfoVO baseCustomerInfoVO;
+    private BaseCustomerInfoVO baseCustomerInfoVO =new BaseCustomerInfoVO();
 
-    private VehicleOutboundInfo vehicleOutboundInfo;
+    private VehicleOutboundInfo vehicleOutboundInfo =new VehicleOutboundInfo();
 
-    private VehicleInfoVO vehicleInfoVO;
+    private VehicleInfoVO vehicleInfoVO = new VehicleInfoVO();
 
     private List<UniversalCustomerVO> customers;
 }
