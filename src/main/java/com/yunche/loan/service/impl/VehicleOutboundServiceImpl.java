@@ -100,7 +100,7 @@ public class VehicleOutboundServiceImpl implements VehicleOutboundService
         LoanProcessInsteadPayDO loanProcessInsteadPayDO = loanProcessInsteadPayDOMapper.selectByOrderIdAndInsteadPayOrderIdReddlyReview(orderId, bank_repay_imp_record_id);
         if (loanProcessInsteadPayDO !=null)
         {
-            LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectByPrimaryKey(loanProcessInsteadPayDO.getId());
+            LoanApplyCompensationDO loanApplyCompensationDO = loanApplyCompensationDOMapper.selectByOrderIdAndBankRepayImpRecordId(orderId, bank_repay_imp_record_id);
             if (loanApplyCompensationDO !=null)
             {
                 vehicleOutboundInfo.setCompensation_amount_sum(loanApplyCompensationDO.getCompensationAmount());
