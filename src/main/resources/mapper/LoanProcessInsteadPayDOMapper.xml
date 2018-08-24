@@ -33,7 +33,7 @@
         <include refid="Base_Column_List"/>
         from loan_process_instead_pay
         where order_id = #{orderId,jdbcType=BIGINT}
-        AND bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+        AND bank_repay_imp_record_id = #{insteadPayOrderId,jdbcType=BIGINT}
         AND finance_instead_pay_review = 1
     </select>
 
