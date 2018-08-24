@@ -729,6 +729,9 @@
                           compensation.compensation_amount             AS compensationAmount,
                           deputy_.partner_instead_pay_review           AS taskStatus
                       </when>
+                      <when test="taskDefinitionKey == 'usertask_material_manage'">
+                          deputy.material_manage                 AS taskStatus
+                      </when>
                       <otherwise>
                         0                                         AS taskStatus
                       </otherwise>
@@ -994,6 +997,9 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_legal_record'">
                       AND case when #{taskStatus} = 0 then deputy_l.legal_record != 0                   else deputy_l.legal_record    = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_material_manage'">
+                      AND case when #{taskStatus} = 0 then deputy.material_manage != 0                   else deputy.material_manage   = #{taskStatus} end
                   </when>
                   <otherwise>
                       AND 1=2
