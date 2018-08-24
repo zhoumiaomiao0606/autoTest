@@ -460,7 +460,6 @@
                   useGetSmallCarName(join_i.car_detail_id)     AS carName,
                   join_i.gps_num                               AS carGpsNum,
                   join_bp.remit_amount                         AS remitAmount,
-                  join_rep.optimal_return                      AS overdueAmount,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           deputy.credit_apply                     AS taskStatus
@@ -565,6 +564,7 @@
                           join_urgerecord.sendee                  AS sendee,
                           sendee.name                             AS sendeeName,
                           join_urgerecord.bank_repay_imp_record_id AS bankRepayImpRecordId,
+                          join_rep.optimal_return                 AS overdueAmount,
                           join_urgerecord.urge_status             AS taskStatus
                       </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection_review'">
@@ -578,6 +578,7 @@
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
                            deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
+                           join_rep.optimal_return                 AS overdueAmount,
                            deputy_c.visit_collection_review        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_visit_collection'">
@@ -592,6 +593,7 @@
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
                            deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
+                           join_rep.optimal_return                 AS overdueAmount,
                            deputy_c.visit_collection               AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_handle'">
@@ -605,6 +607,7 @@
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
                            deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
+                           join_rep.optimal_return                 AS overdueAmount,
                            deputy_c.car_handle                     AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_car_out'">
@@ -618,6 +621,7 @@
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
                            deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
+                           join_rep.optimal_return                 AS overdueAmount,
                            deputy_c.car_out                        AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_settle_order'">
@@ -631,6 +635,7 @@
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
                            deputy_c.bank_repay_imp_record_id       AS bankRepayImpRecordId,
+                           join_rep.optimal_return                 AS overdueAmount,
                            deputy_c.settle_order                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_review'">
@@ -644,6 +649,7 @@
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
                            deputy_l.bank_repay_imp_record_id       AS bankRepayImpRecordId,
+                           join_rep.optimal_return                 AS overdueAmount,
                            deputy_l.legal_review                   AS taskStatus
                        </when>
                        <when test="taskDefinitionKey == 'usertask_legal_record'">
@@ -657,6 +663,7 @@
                            join_urgerecord.sendee                  AS sendee,
                            sendee.name                             AS sendeeName,
                            deputy_l.bank_repay_imp_record_id       AS bankRepayImpRecordId,
+                           join_rep.optimal_return                 AS overdueAmount,
                            deputy_l.legal_record                   AS taskStatus
                        </when>
                       <when test="taskDefinitionKey == 'usertask_bank_open_card'">
@@ -674,7 +681,7 @@
                       <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
-                          deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
+                          deputy_.bank_repay_imp_record_id             AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -683,8 +690,9 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
-                          deputy_.apply_instead_pay                    AS taskStatus,
-                          join_c.lend_card                             AS lendCard
+                          join_rep.optimal_return                      AS overdueAmount,
+                          join_c.lend_card                             AS lendCard,
+                          deputy_.apply_instead_pay                    AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
                           deputy_.id                                   AS processId,
@@ -698,6 +706,7 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
+                          join_rep.optimal_return                      AS overdueAmount,
                           deputy_.finance_instead_pay_review           AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay'">
@@ -712,6 +721,7 @@
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
+                          join_rep.optimal_return                      AS overdueAmount,
                           deputy_.partner_instead_pay                  AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
@@ -727,6 +737,7 @@
                           compensation.risk_taking_ratio               AS riskTakingRatio,
                           DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
                           compensation.compensation_amount             AS compensationAmount,
+                          join_rep.optimal_return                      AS overdueAmount,
                           deputy_.partner_instead_pay_review           AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_material_manage'">
@@ -747,7 +758,6 @@
               left  join department join_d                 on join_d.id             = join_p.department_id
               left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
               left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
-              left  join bank_file_list_record join_rep        on join_rep.order_id     = main.id
               left  join remit_details join_bp             on main.remit_details_id  = join_bp.id
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
@@ -770,27 +780,34 @@
               <if test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
                   left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = deputy_.bank_repay_imp_record_id and deputy_.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_finance_instead_pay_review'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
                   left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = deputy_.bank_repay_imp_record_id and deputy_.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
                   left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = deputy_.bank_repay_imp_record_id and deputy_.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_partner_instead_pay_review'">
                   left join loan_process_instead_pay deputy_ on deputy_.order_id = main.id
                   left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = deputy_.bank_repay_imp_record_id and deputy_.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
+
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection_review'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
@@ -798,31 +815,37 @@
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
                   left join visit_door door on door.bank_repay_imp_record_id = join_urgerecord.bank_repay_imp_record_id
                   and door.order_id = join_urgerecord.order_id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_car_handle'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_car_out'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_settle_order'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_collection deputy_c on deputy_c.order_id = main.id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_legal_review'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_legal deputy_l on deputy_l.order_id = main.id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
               </if>
               <if test="taskDefinitionKey == 'usertask_legal_record'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join loan_process_legal deputy_l on deputy_l.order_id = main.id
+                  left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
               </if>
               where 1=1
               <if test="taskStatus != 0">
