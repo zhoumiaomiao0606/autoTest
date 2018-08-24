@@ -180,4 +180,12 @@
     from collection_new_info
     where id = #{orderId,jdbcType=BIGINT}
   </select>
+  <update id="isvisitback">
+    update collection_new_info set isvisit = "0" , circumstances = "" , police ="" , notarization="" , second_mortgage="" , collection_manId =""
+    where id =#{orderId,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+  </update>
+  <update id="islawback">
+      update collection_new_info set islaw ="0" where id = #{orderId,jdbcType=BIGINT} and bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
+  </update>
+
 </mapper>

@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.CollectionNewInfoDO;
 import com.yunche.loan.domain.entity.CollectionNewInfoDOKey;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -21,4 +22,8 @@ public interface CollectionNewInfoDOMapper
 
     //根据orderId查询出所有版本下的申请拖车记录
     List<CollectionNewInfoDO> selectByOrderId(Long orderId);
+
+    void isvisitback(@Param("orderId")Long orderId,@Param("bankRepayImpRecordId") Long bankRepayImpRecordId);
+
+    void islawback(@Param("orderId")Long orderId,@Param("bankRepayImpRecordId") Long bankRepayImpRecordId);
 }

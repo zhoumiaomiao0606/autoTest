@@ -62,7 +62,7 @@ public class VisitDoorServiceImpl implements VisitDoorService {
         int num =collectionRecordDOMapper.selectNewestTotal(orderId).size();
 
         VisitDoorVO visitDoorVO = new VisitDoorVO();
-        visitDoorVO.setCollectionRecordVO(collectionRecordVO);
+        visitDoorVO.setCollectionRecordVO(collectionRecordVO == null ? new CollectionRecordVO():collectionRecordVO);
         visitDoorVO.setCollectionNum(num);
         visitDoorVO.setResult(lawWorkQuery);
         visitDoorVO.setCollectionNewInfoDO(collectionNewInfoDO);
