@@ -106,7 +106,10 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
         // 上门拖车 || 上门拖车-确认    -->
-        doVisitDoor(approval);
+        doVisitDoorInsertNewInfo(approval);
+
+        // 更新[上门拖车]-状态记录
+        updateVisitDoorDO(approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -403,9 +406,6 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
             // 1-拖车失败
             if ("1".equals(visitResult)) {
                 variables.put(PROCESS_VARIABLE_TARGET, VISIT_COLLECTION.getCode());
-
-                // 上门拖车-失败历史记录处理
-                vistiCollection_resultIsfailed(approval.getSupplementOrderId());
             }
             // 2-车辆回收
             else if ("2".equals(visitResult)) {
@@ -424,7 +424,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
      *
      * @param approval
      */
-    private void doVisitDoor(ApprovalParam approval) {
+    private void doVisitDoorInsertNewInfo(ApprovalParam approval) {
 
         Preconditions.checkNotNull(approval.getBankRepayImpRecordId(), "批次号不能为空");
 
@@ -448,18 +448,23 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
     }
 
     /**
-     * 上门拖车-失败历史记录处理
+     * 更新[上门拖车]-状态记录
      *
-     * @param visitDoorId
+     * @param approval
      */
-    private void vistiCollection_resultIsfailed(Long visitDoorId) {
-        Preconditions.checkNotNull(visitDoorId, "上门拖车ID不能为空");
+    private void updateVisitDoorDO(ApprovalParam approval) {
 
-        VisitDoorDO visitDoorDO = new VisitDoorDO();
-        visitDoorDO.setId(visitDoorId);
-        visitDoorDO.setStatus(TASK_PROCESS_DONE);
+        if (VISIT_COLLECTION.getCode().equals(approval.getTaskDefinitionKey())) {
 
-        int count = visitDoorDOMapper.updateByPrimaryKeySelective(visitDoorDO);
-        Preconditions.checkArgument(count > 0, "拖车记录更新失败");
+            Preconditions.checkNotNull(approval.getSupplementOrderId(), "上门拖车ID不能为空");
+
+            VisitDoorDO visitDoorDO = new VisitDoorDO();
+            visitDoorDO.setId(approval.getSupplementOrderId());
+            visitDoorDO.setStatus(TASK_PROCESS_DONE);
+
+            int count = visitDoorDOMapper.updateByPrimaryKeySelective(visitDoorDO);
+            Preconditions.checkArgument(count > 0, "拖车记录更新失败");
+        }
     }
+
 }
