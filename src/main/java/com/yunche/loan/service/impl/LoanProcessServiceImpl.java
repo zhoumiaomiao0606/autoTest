@@ -187,8 +187,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             permissionService.checkTaskPermission(approval.getTaskDefinitionKey());
         }
 
+        // 【财务报销】
+        if (isOutworkerCostApplyTask(approval.getTaskDefinitionKey())) {
+            return execOutworkerCostApplyTask(approval);
+        }
+
         // 业务单
-        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
+        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
 
         // 节点实时状态
         LoanProcessDO loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(approval.getOrderId());
@@ -236,11 +241,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return execRefundApplyTask(approval, loanProcessDO);
         }
 
-        // 【财务报销】
-        if (isOutworkerCostApplyTask(approval.getTaskDefinitionKey())) {
-            return execOutworkerCostApplyTask(approval);
-        }
-
         // 【反审】
         if (actionIsRollBack(approval.getAction())) {
             return execRollBackTask(approval, loanOrderDO, loanProcessDO);
@@ -281,24 +281,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
-    }
-
-    /**
-     * 业务单
-     *
-     * @param orderId
-     * @return
-     */
-    private LoanOrderDO getLoanOrder(Long orderId) {
-
-        if (null != orderId) {
-
-            LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(orderId);
-
-            return loanOrderDO;
-        }
-
-        return null;
     }
 
     /**
@@ -1044,6 +1026,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private ResultBean<Void> execOutworkerCostApplyTask(ApprovalParam approval) {
         Preconditions.checkNotNull(approval.getSupplementOrderId(), "财务报销单ID不能为空");
+
+        // 日志
+        loanProcessApprovalCommonService.log(approval);
 
         // [外勤费用申报]
         if (OUTWORKER_COST_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {

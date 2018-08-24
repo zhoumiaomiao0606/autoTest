@@ -1024,7 +1024,7 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_settle_order'">
                       AND case when #{taskStatus} = 0 then deputy_c.settle_order != 0
-                               when #{taskStatus} = 1 then deputy.order_status = 1
+                               when #{taskStatus} = 1 then deputy.order_status = 2
                                else deputy_c.settle_order    = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_legal_review'">
