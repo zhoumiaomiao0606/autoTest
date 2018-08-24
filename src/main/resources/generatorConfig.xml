@@ -360,15 +360,15 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-        <table tableName="loan_process_collection" domainObjectName="LoanProcessCollectionDO"
+        <table tableName="loan_process_legal" domainObjectName="LoanProcessLegalDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-    <!--    <table tableName="vehicle_handle" domainObjectName="VehicleHandleDO"
+        <table tableName="loan_process_collection" domainObjectName="LoanProcessCollectionDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>-->
+        </table>
 
 
         <!-- 忽略列，不生成bean 字段

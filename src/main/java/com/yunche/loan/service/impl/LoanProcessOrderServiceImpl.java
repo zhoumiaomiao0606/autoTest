@@ -58,7 +58,7 @@ public class LoanProcessOrderServiceImpl implements LoanProcessOrderService {
     @Transactional
     public ResultBean<Long> createLoanOrder(Long baseInfoId, Long customerId) {
 
-        // 开启activiti流程
+        // 开启activiti流程   -消费贷流程
         ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_KEY);
 
         // 插入

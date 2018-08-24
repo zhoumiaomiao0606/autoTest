@@ -45,9 +45,10 @@ public class GlobalExceptionHandler {
                 return ResultBean.ofError(code, msg);
             }
         } else if (e instanceof MissingServletRequestParameterException) {
-            return ResultBean.ofError("必入参数未填写");
+            String parameterName = ((MissingServletRequestParameterException) e).getParameterName();
+            return ResultBean.ofError(parameterName + "不能为空");
         } else if (e instanceof MethodArgumentNotValidException) {
-            return ResultBean.ofError("必入参数未填写");
+            return ResultBean.ofError("表单必录数据填写不完整");
         } else if (e instanceof DecodeException) {
             return ResultBean.ofError(e.getMessage());
         } else if (e instanceof ConstraintViolationException) {

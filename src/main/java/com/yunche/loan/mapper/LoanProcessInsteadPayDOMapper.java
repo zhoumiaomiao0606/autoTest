@@ -20,4 +20,6 @@ public interface LoanProcessInsteadPayDOMapper {
     LoanProcessInsteadPayDO selectByOrderIdAndInsteadPayOrderId(@Param("orderId") Long orderId, @Param("insteadPayOrderId") Long insteadPayOrderId);
 
     LoanProcessInsteadPayDO selectByOrderIdAndInsteadPayOrderIdReddlyReview(@Param("orderId") Long orderId, @Param("insteadPayOrderId") Long insteadPayOrderId);
+    LoanProcessInsteadPayDO selectByOrderIdAndBankRepayImpRecordId(@Param("orderId") Long orderId,
+                                                                   @Param("bankRepayImpRecordId") Long bankRepayImpRecordId);
 }

@@ -5,12 +5,12 @@ import com.yunche.loan.domain.param.ApprovalParam;
 
 /**
  * @author liuzhe
- * @date 2018/8/20
+ * @date 2018/8/23
  */
-public interface LoanProcessCollectionService {
+public interface LoanProcessLegalService {
 
     /**
-     * [催收工作台]流程 -审核
+     * 法务处理-流程
      *
      * @param approval
      * @return
@@ -18,7 +18,7 @@ public interface LoanProcessCollectionService {
     ResultBean<Void> approval(ApprovalParam approval);
 
     /**
-     * 开启 -[催收工作台]流程
+     * 开启流程
      *
      * @param orderId              主订单ID
      * @param bankRepayImpRecordId 批次号

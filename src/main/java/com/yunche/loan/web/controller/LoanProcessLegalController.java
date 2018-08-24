@@ -3,52 +3,56 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
-import com.yunche.loan.service.LoanProcessCollectionService;
+import com.yunche.loan.service.LoanProcessLegalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 /**
- * [上门催收] -流程
+ * [法务处理] -流程
  *
  * @author liuzhe
- * @date 2018/8/20
+ * @date 2018/8/23
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanProcess/collection")
-public class LoanProcessCollectionController {
+@RequestMapping("/api/v1/loanProcess/legal")
+public class LoanProcessLegalController {
 
     @Autowired
-    private LoanProcessCollectionService loanProcessCollectionService;
+    private LoanProcessLegalService loanProcessLegalService;
 
 
     /**
-     * [上门催收]流程 -审核
+     * [法务处理]流程 -审核
      *
      * @param approval
      * @return
      */
-    @Limiter("/api/v1/loanProcess/collection/approval")
+    @Limiter("/api/v1/loanProcess/legal/approval")
     @PostMapping(value = "/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> approval(@RequestBody ApprovalParam approval) {
         approval.setCheckPermission(true);
         approval.setNeedLog(true);
         approval.setNeedPush(true);
-        return loanProcessCollectionService.approval(approval);
+        return loanProcessLegalService.approval(approval);
     }
 
+
     /**
-     * 开启 [上门催收]流程
+     * 开启 [法务处理]流程
      *
      * @param orderId
      * @param bankRepayImpRecordId 批次号
      * @return
      */
     @GetMapping(value = "/startProcess")
-    public ResultBean<Long> startProcess(@RequestParam(value = "orderId") Long orderId,
-                                         @RequestParam(value = "bankRepayImpRecordId") Long bankRepayImpRecordId) {
-        Long processId = loanProcessCollectionService.startProcess(orderId, bankRepayImpRecordId);
+    public ResultBean<Long> startProcess(@RequestParam(value = "orderId") @NotNull Long orderId,
+                                         @RequestParam(value = "bankRepayImpRecordId") @NotNull Long bankRepayImpRecordId) {
+        Long processId = loanProcessLegalService.startProcess(orderId, bankRepayImpRecordId);
         return ResultBean.ofSuccess(processId);
     }
 }

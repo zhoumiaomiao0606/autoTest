@@ -75,12 +75,6 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         // 节点实时状态
         LoanProcessInsteadPayDO loanProcessDO = getLoanProcess(approval.getProcessId());
 
-        // 贷款基本信息
-//        LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-
-        // 校验审核前提条件
-//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessInsteadPayDO);
-
         // 日志
         loanProcessApprovalCommonService.log(approval);
 
@@ -99,17 +93,8 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         // 流程数据同步
         syncProcess(startTaskIdList, loanProcessDO.getProcessInstId(), approval, loanProcessDO);
 
-        // 生成客户还款计划
-//        createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
-
         // [领取]完成
         loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
-
-        // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
-
-        // 异步打包文件
-//        asyncPackZipFile(approval.getTaskDefinitionKey(), loanProcessDO, 2);
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
@@ -122,6 +107,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
     public Long startProcess(@NotNull(message = "orderId不能为空") Long orderId,
                              @NotNull(message = "insteadPayOrderId不能为空") Long insteadPayOrderId) {
 
+        // 开启activiti流程   -代偿流程
         ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_INSTEAD_PAY_KEY);
 
         // 创建流程记录
@@ -134,7 +120,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
      * 创建[催收工作台]流程记录
      *
      * @param orderId
-     * @param insteadPayOrderId
+     * @param insteadPayOrderId 代偿单ID
      * @param processInstId
      * @return
      */
@@ -143,7 +129,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         LoanProcessInsteadPayDO loanProcessInsteadPayDO = new LoanProcessInsteadPayDO();
 
         loanProcessInsteadPayDO.setOrderId(orderId);
-        loanProcessInsteadPayDO.setInsteadPayOrderId(insteadPayOrderId);
+        loanProcessInsteadPayDO.setBankRepayImpRecordId(insteadPayOrderId);
         loanProcessInsteadPayDO.setProcessInstId(processInstId);
 
         loanProcessInsteadPayDO.setApplyInsteadPay(TASK_PROCESS_TODO);

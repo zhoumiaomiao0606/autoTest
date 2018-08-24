@@ -18,4 +18,7 @@ public interface LoanProcessCollectionDOMapper {
     int updateByPrimaryKey(LoanProcessCollectionDO record);
 
     LoanProcessCollectionDO selectByPrimaryOrderIdAndBankRepayImpRecordId(@Param("orderId") Long orderId,@Param("bank_repay_imp_record_id")Long bank_repay_imp_record_id);
+
+    LoanProcessCollectionDO getLastLoanProcessByOrderIdAndBankRepayImpRecordId(@Param("orderId") Long orderId,
+                                                                               @Param("bankRepayImpRecordId") Long bankRepayImpRecordId);
 }

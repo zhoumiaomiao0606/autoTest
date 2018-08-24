@@ -10,8 +10,10 @@ public class LoanProcessInsteadPayDO implements LoanProcessDO_ {
     private Long id;
 
     private Long orderId;
-
-    private Long insteadPayOrderId;
+    /**
+     * 批次号
+     */
+    private Long bankRepayImpRecordId;
 
     private String processInstId;
 

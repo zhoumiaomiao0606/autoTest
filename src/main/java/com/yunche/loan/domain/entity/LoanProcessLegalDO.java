@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class LoanProcessCollectionDO implements LoanProcessDO_ {
+public class LoanProcessLegalDO implements LoanProcessDO_ {
 
     private Long id;
 
@@ -17,15 +17,9 @@ public class LoanProcessCollectionDO implements LoanProcessDO_ {
 
     private String processInstId;
 
-    private Byte visitCollectionReview;
+    private Byte legalReview;
 
-    private Byte visitCollection;
-
-    private Byte carHandle;
-
-    private Byte carOut;
-
-    private Byte settleOrder;
+    private Byte legalRecord;
 
     private Byte orderStatus;
 

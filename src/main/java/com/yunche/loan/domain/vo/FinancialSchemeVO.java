@@ -76,4 +76,6 @@ public class FinancialSchemeVO {
 
     private String category_superior;//产品大类
     private String appraisal;//基准评估价
+
+    private Byte customer_signature_type;//签单类型
 }

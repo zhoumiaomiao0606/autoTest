@@ -280,7 +280,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                     approvalParam.setOrderId(e.getOrderId());
                     approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
                     approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
-                    approvalParam.setNeedLog(false);
+                    approvalParam.setNeedLog(true);
                     approvalParam.setCheckPermission(false);
                     ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                     LOG.info(e.getOrderId() + approvalResultBean.getMsg());

@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.LoanProcessCollectionDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
+<mapper namespace="com.yunche.loan.mapper.LoanProcessLegalDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessLegalDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="order_id" property="orderId" jdbcType="BIGINT"/>
         <result column="bank_repay_imp_record_id" property="bankRepayImpRecordId" jdbcType="BIGINT"/>
         <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR"/>
-        <result column="visit_collection_review" property="visitCollectionReview" jdbcType="TINYINT"/>
-        <result column="visit_collection" property="visitCollection" jdbcType="TINYINT"/>
-        <result column="car_handle" property="carHandle" jdbcType="TINYINT"/>
-        <result column="car_out" property="carOut" jdbcType="TINYINT"/>
-        <result column="settle_order" property="settleOrder" jdbcType="TINYINT"/>
+        <result column="legal_review" property="legalReview" jdbcType="TINYINT"/>
+        <result column="legal_record" property="legalRecord" jdbcType="TINYINT"/>
         <result column="order_status" property="orderStatus" jdbcType="TINYINT"/>
         <result column="cancel_task_def_key" property="cancelTaskDefKey" jdbcType="VARCHAR"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, order_id, bank_repay_imp_record_id, process_inst_id, visit_collection_review,
-        visit_collection, car_handle, car_out, settle_order, order_status, cancel_task_def_key,
-        gmt_create, gmt_modify
+        id, order_id, bank_repay_imp_record_id, process_inst_id, legal_review, legal_record,
+        order_status, cancel_task_def_key, gmt_create, gmt_modify
     </sql>
 
     <!--getLastLoanProcessByOrderIdAndBankRepayImpRecordId-->
     <select id="getLastLoanProcessByOrderIdAndBankRepayImpRecordId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from loan_process_collection
+        from loan_process_legal
         where order_id = #{orderId,jdbcType=BIGINT}
         AND bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT}
         ORDER BY gmt_create DESC
@@ -36,31 +32,29 @@
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
-        from loan_process_collection
+        from loan_process_legal
         where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-        delete from loan_process_collection
+        delete from loan_process_legal
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO"
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessLegalDO"
             useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
-        insert into loan_process_collection (id, order_id, bank_repay_imp_record_id,
-        process_inst_id, visit_collection_review, visit_collection,
-        car_handle, car_out, settle_order,
+        insert into loan_process_legal (id, order_id, bank_repay_imp_record_id,
+        process_inst_id, legal_review, legal_record,
         order_status, cancel_task_def_key, gmt_create,
         gmt_modify)
         values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{bankRepayImpRecordId,jdbcType=BIGINT},
-        #{processInstId,jdbcType=VARCHAR}, #{visitCollectionReview,jdbcType=TINYINT}, #{visitCollection,jdbcType=TINYINT},
-        #{carHandle,jdbcType=TINYINT}, #{carOut,jdbcType=TINYINT}, #{settleOrder,jdbcType=TINYINT},
+        #{processInstId,jdbcType=VARCHAR}, #{legalReview,jdbcType=TINYINT}, #{legalRecord,jdbcType=TINYINT},
         #{orderStatus,jdbcType=TINYINT}, #{cancelTaskDefKey,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
         #{gmtModify,jdbcType=TIMESTAMP})
     </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO"
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessLegalDO"
             useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
-        insert into loan_process_collection
+        insert into loan_process_legal
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
@@ -74,20 +68,11 @@
             <if test="processInstId != null">
                 process_inst_id,
             </if>
-            <if test="visitCollectionReview != null">
-                visit_collection_review,
+            <if test="legalReview != null">
+                legal_review,
             </if>
-            <if test="visitCollection != null">
-                visit_collection,
-            </if>
-            <if test="carHandle != null">
-                car_handle,
-            </if>
-            <if test="carOut != null">
-                car_out,
-            </if>
-            <if test="settleOrder != null">
-                settle_order,
+            <if test="legalRecord != null">
+                legal_record,
             </if>
             <if test="orderStatus != null">
                 order_status,
@@ -115,20 +100,11 @@
             <if test="processInstId != null">
                 #{processInstId,jdbcType=VARCHAR},
             </if>
-            <if test="visitCollectionReview != null">
-                #{visitCollectionReview,jdbcType=TINYINT},
+            <if test="legalReview != null">
+                #{legalReview,jdbcType=TINYINT},
             </if>
-            <if test="visitCollection != null">
-                #{visitCollection,jdbcType=TINYINT},
-            </if>
-            <if test="carHandle != null">
-                #{carHandle,jdbcType=TINYINT},
-            </if>
-            <if test="carOut != null">
-                #{carOut,jdbcType=TINYINT},
-            </if>
-            <if test="settleOrder != null">
-                #{settleOrder,jdbcType=TINYINT},
+            <if test="legalRecord != null">
+                #{legalRecord,jdbcType=TINYINT},
             </if>
             <if test="orderStatus != null">
                 #{orderStatus,jdbcType=TINYINT},
@@ -144,8 +120,8 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
-        update loan_process_collection
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessLegalDO">
+        update loan_process_legal
         <set>
             <if test="orderId != null">
                 order_id = #{orderId,jdbcType=BIGINT},
@@ -156,20 +132,11 @@
             <if test="processInstId != null">
                 process_inst_id = #{processInstId,jdbcType=VARCHAR},
             </if>
-            <if test="visitCollectionReview != null">
-                visit_collection_review = #{visitCollectionReview,jdbcType=TINYINT},
+            <if test="legalReview != null">
+                legal_review = #{legalReview,jdbcType=TINYINT},
             </if>
-            <if test="visitCollection != null">
-                visit_collection = #{visitCollection,jdbcType=TINYINT},
-            </if>
-            <if test="carHandle != null">
-                car_handle = #{carHandle,jdbcType=TINYINT},
-            </if>
-            <if test="carOut != null">
-                car_out = #{carOut,jdbcType=TINYINT},
-            </if>
-            <if test="settleOrder != null">
-                settle_order = #{settleOrder,jdbcType=TINYINT},
+            <if test="legalRecord != null">
+                legal_record = #{legalRecord,jdbcType=TINYINT},
             </if>
             <if test="orderStatus != null">
                 order_status = #{orderStatus,jdbcType=TINYINT},
@@ -186,27 +153,17 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessCollectionDO">
-    update loan_process_collection
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessLegalDO">
+    update loan_process_legal
     set order_id = #{orderId,jdbcType=BIGINT},
       bank_repay_imp_record_id = #{bankRepayImpRecordId,jdbcType=BIGINT},
       process_inst_id = #{processInstId,jdbcType=VARCHAR},
-      visit_collection_review = #{visitCollectionReview,jdbcType=TINYINT},
-      visit_collection = #{visitCollection,jdbcType=TINYINT},
-      car_handle = #{carHandle,jdbcType=TINYINT},
-      car_out = #{carOut,jdbcType=TINYINT},
-      settle_order = #{settleOrder,jdbcType=TINYINT},
+      legal_review = #{legalReview,jdbcType=TINYINT},
+      legal_record = #{legalRecord,jdbcType=TINYINT},
       order_status = #{orderStatus,jdbcType=TINYINT},
       cancel_task_def_key = #{cancelTaskDefKey,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
-
-    <select id="selectByPrimaryOrderIdAndBankRepayImpRecordId" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from loan_process_collection
-        where order_id = #{orderId,jdbcType=BIGINT} AND  collection_order_id = #{bank_repay_imp_record_id,jdbcType=BIGINT} ORDER BY id DESC limit 1
-    </select>
 </mapper>
