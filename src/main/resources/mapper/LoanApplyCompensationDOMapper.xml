@@ -402,4 +402,12 @@
     where order_id = #{orderId,jdbcType=BIGINT}
     ORDER BY apply_compensation_date DESC limit 1
   </select>
+
+  <select id="selectByOrderIdAndBankRepayImpRecordId"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from loan_apply_compensation
+    where id = #{bank_repay_imp_record_id,jdbcType=BIGINT}
+    AND order_id =#{orderId,jdbcType=BIGINT}
+  </select>
 </mapper>
