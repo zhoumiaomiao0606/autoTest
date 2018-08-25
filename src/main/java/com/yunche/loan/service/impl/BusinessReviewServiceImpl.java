@@ -209,79 +209,80 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         //月结 0 否 1 是
         if ("1".equals(pay_month)) {
             if(!"3".equals(param.getService_fee_type())){
-                total.subtract(service_fee);
+                total = total.subtract(service_fee);
             }
             if(!"3".equals(param.getApply_license_plate_deposit_fee_type())){
-                total.subtract(apply_license_plate_deposit_fee);
+                total = total.subtract(apply_license_plate_deposit_fee);
             }
 
             if(!"3".equals(param.getPerformance_fee())){
-                total.subtract(performance_fee);
+                total = total.subtract(performance_fee);
             }
             if(!"3".equals(param.getInstall_gps_fee())){
-                total.subtract(install_gps_fee);
+                total = total.subtract(install_gps_fee);
             }
 
             if(!"3".equals(param.getRisk_fee())){
-                total.subtract(risk_fee);
+                total = total.subtract(risk_fee);
             }
             if(!"3".equals(param.getFair_assess_fee())){
-                total.subtract(fair_assess_fee);
+                total = total.subtract(fair_assess_fee);
             }
 
             if(!"3".equals(param.getApply_license_plate_out_province_fee())){
-                total.subtract(apply_license_plate_out_province_fee);
+                total = total.subtract(apply_license_plate_out_province_fee);
             }
             if(!"3".equals(param.getBased_margin_fee())){
-                total.subtract(based_margin_fee);
+                total = total.subtract(based_margin_fee);
             }
 
             if(!"3".equals(param.getExtra_fee())){
-                total.subtract(extra_fee);
+                total = total.subtract(extra_fee);
             }
             if(!"3".equals(param.getOther_fee())){
-                total.subtract(other_fee);
+                total = total.subtract(other_fee);
             }
-            total.subtract(return_rate_amount).setScale(2, BigDecimal.ROUND_HALF_UP);
+            total = total.subtract(return_rate_amount).setScale(2, BigDecimal.ROUND_HALF_UP);
             //月结算
             return total;
         } else {
             //日结
             if(!"3".equals(param.getService_fee_type())){
-                total.subtract(service_fee);
+                total = total.subtract(service_fee);
             }
             if(!"3".equals(param.getApply_license_plate_deposit_fee_type())){
-                total.subtract(apply_license_plate_deposit_fee);
+                total = total.subtract(apply_license_plate_deposit_fee);
             }
 
             if(!"3".equals(param.getPerformance_fee())){
-                total.subtract(performance_fee);
+                total = total.subtract(performance_fee);
             }
             if(!"3".equals(param.getInstall_gps_fee())){
-                total.subtract(install_gps_fee);
+                total = total.subtract(install_gps_fee);
             }
 
             if(!"3".equals(param.getRisk_fee())){
-                total.subtract(risk_fee);
+                total = total.subtract(risk_fee);
             }
             if(!"3".equals(param.getFair_assess_fee())){
-                total.subtract(fair_assess_fee);
+                total = total.subtract(fair_assess_fee);
             }
 
             if(!"3".equals(param.getApply_license_plate_out_province_fee())){
-                total.subtract(apply_license_plate_out_province_fee);
+                total = total.subtract(apply_license_plate_out_province_fee);
             }
             if(!"3".equals(param.getBased_margin_fee())){
-                total.subtract(based_margin_fee);
+                total = total.subtract(based_margin_fee);
             }
 
             if(!"3".equals(param.getExtra_fee())){
-                total.subtract(extra_fee);
+                total = total.subtract(extra_fee);
             }
             if(!"3".equals(param.getOther_fee())){
-                total.subtract(other_fee);
+                total = total.subtract(other_fee);
             }
-            return total.setScale(2, BigDecimal.ROUND_HALF_UP);
+            total = total.setScale(2, BigDecimal.ROUND_HALF_UP);
+            return total;
         }
     }
 
