@@ -147,7 +147,7 @@ public class ICBCApiRequest {
         private String picid;
         @NotEmpty
         private String picname;
-        @NotEmpty
+
         private String picnote;
 
 
