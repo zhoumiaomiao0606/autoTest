@@ -981,7 +981,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyBankOpenCard.setPictures(bankOpenCardParam.getPictures());
 
         //参数校验
-        violationUtil.violation(applyBankOpenCard, ICBCApiRequest.ApplyBankOpenCard.class);
+        violationUtil.violation(applyBankOpenCard);
         violationUtil.violation(customer);
 
         asyncUpload.execute(new Process() {
