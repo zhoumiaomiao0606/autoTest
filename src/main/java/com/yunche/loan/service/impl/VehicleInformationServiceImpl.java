@@ -60,6 +60,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         VehicleInformationDO informationDO = vehicleInformationDOMapper.selectByPrimaryKey(informationIdById);
         Integer month = DateUtil.getdiffMonth1(informationDO.getTransfer_ownership_date(), informationDO.getRegister_date());
         if (null != month) {
+            month = month>60?60:month;
             vehicleInformationVO.setAssess_use_year(String.valueOf(month));
         }
 

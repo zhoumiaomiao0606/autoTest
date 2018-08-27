@@ -156,7 +156,7 @@ public class DateUtil {
             if (cal1.get(Calendar.DAY_OF_MONTH) - cal2.get(Calendar.DAY_OF_MONTH) > 0) {
                 diffMonth += 1;
             }
-            return diffMonth>60?60:diffMonth;
+            return diffMonth;
 
         } catch (Exception e) {
             throw new BizException("日期格式错误");
