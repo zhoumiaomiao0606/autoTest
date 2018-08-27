@@ -1288,9 +1288,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 if (zhonganInfoDO == null) {
                     throw new BizException("客户:" + loanCustomerDO.getName() + "没有进行大数据查询,无法提交");
                 } else {
-                    if (!"成功".equals(zhonganInfoDO.getResultMessage())) {
+                    /*if (!"成功".equals(zhonganInfoDO.getResultMessage())) {
                         throw new BizException("客户:" + zhonganInfoDO.getCustomerName() + zhonganInfoDO.getResultMessage() + ",无法提交征信");
-                    }
+                    }*/
                 }
             }
 
