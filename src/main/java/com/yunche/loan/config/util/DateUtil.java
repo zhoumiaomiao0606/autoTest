@@ -130,7 +130,7 @@ public class DateUtil {
 
 
     /**
-     * 相隔月数  date1 >date2
+     * 相隔月数  date1 >date2(不满一个月算一个月)
      *
      * @param date1
      * @param date2
@@ -149,9 +149,6 @@ public class DateUtil {
 
             cal1.setTime(date1);
             cal2.setTime(date2);
-            System.out.println(cal1.get(Calendar.YEAR));
-            System.out.println(cal1.get(Calendar.MONTH) + 1);
-            System.out.println(cal1.get(Calendar.DAY_OF_MONTH));
 
             int diffMonth = (cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR)) * 12 +
                     (cal1.get(Calendar.MONTH) - cal2.get(Calendar.MONTH));
@@ -159,8 +156,7 @@ public class DateUtil {
             if (cal1.get(Calendar.DAY_OF_MONTH) - cal2.get(Calendar.DAY_OF_MONTH) > 0) {
                 diffMonth += 1;
             }
-            System.out.println(diffMonth);
-            return diffMonth;
+            return diffMonth>60?60:diffMonth;
 
         } catch (Exception e) {
             throw new BizException("日期格式错误");
