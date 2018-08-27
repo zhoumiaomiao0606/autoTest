@@ -39,7 +39,7 @@ public class BankListFileServiceImpl implements BankListFileService{
             return bankFileListRecordVO;
         }).collect(Collectors.toList());
         PageInfo<BankFileListRecordVO> pageInfo = new PageInfo<>(collect);
-        return ResultBean.ofSuccess(bankFileListRecordDOS, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofSuccess(collect, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
 
     }
 
