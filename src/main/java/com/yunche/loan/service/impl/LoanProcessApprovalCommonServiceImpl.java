@@ -50,7 +50,7 @@ import static java.util.stream.Collectors.toList;
 public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApprovalCommonService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoanProcessApprovalCommonServiceImpl.class);
-
+    private static final Long  AUTO_EMPLOYEE=878l;
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -93,6 +93,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
      */
     @Override
     public void log(ApprovalParam approval) {
+
         // 是否需要日志记录
         if (!approval.isNeedLog()) {
             return;
@@ -101,9 +102,20 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         LoanProcessLogDO loanProcessLogDO = new LoanProcessLogDO();
         BeanUtils.copyProperties(approval, loanProcessLogDO);
 
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-        loanProcessLogDO.setUserId(loginUser.getId());
-        loanProcessLogDO.setUserName(loginUser.getName());
+        EmployeeDO loginUser = null;
+        try{
+            loginUser = SessionUtils.getLoginUser();
+        }catch(Exception e){
+            logger.info("自动任务|| 未登录");
+        }
+        if(loginUser == null){
+            loanProcessLogDO.setUserId(AUTO_EMPLOYEE);
+            loanProcessLogDO.setUserName("自动任务");
+        }else{
+            loanProcessLogDO.setUserId(loginUser.getId());
+            loanProcessLogDO.setUserName(loginUser.getName());
+        }
+
 
         loanProcessLogDO.setCreateTime(new Date());
 
