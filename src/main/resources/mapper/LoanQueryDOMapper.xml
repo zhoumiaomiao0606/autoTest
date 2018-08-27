@@ -29,7 +29,6 @@
 	        vehicle.registration_certificate_number   as vehicle_registration_certificate_number,
 	        vehicle.license_plate_number              as vehicle_license_plate_number,
 	        financial.appraisal                       AS car_assess_price,
-	        (year(now())-year(vehicle.register_date)) as vehicle_use_year,
 	        financial.down_payment_money              as financial_down_payment_money,
 	        financial.bank_period_principal           AS financial_bank_period_principal,
 	        financial.loan_time                       as financial_loan_time,
@@ -50,16 +49,7 @@
                  end                                  as customer_collateral,
 	        vehicle.assess_org                        as vehicle_assess_org,
 	        customer.id                               as customer_id,
-	        case when  vehicle.assess_use_year is not null then  vehicle.assess_use_year
-            else
-                case when
-                    TIMESTAMPDIFF(MONTH,DATE_FORMAT(vehicle.register_date,'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S')) mod 2 = 0
-                      then
-                    TIMESTAMPDIFF(MONTH,DATE_FORMAT(vehicle.register_date,'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S')) + 1
-                      else
-                    TIMESTAMPDIFF(MONTH,DATE_FORMAT(vehicle.register_date,'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'))
-                end
-            end AS vehicle_assess_use_year,
+            vehicle.assess_use_year                   AS vehicle_assess_use_year,
             car.car_category                          as car_category
 
         from (select * from loan_order where id = #{orderId}) orders
@@ -121,16 +111,7 @@
             DATE_FORMAT(i.first_register_date,'%Y-%m-%d')      AS first_register_date,
             v.car_category                                     AS car_category,
             v.assess_org                                       AS assess_org,
-            case when  v.assess_use_year is not null then  v.assess_use_year
-            else
-                case when
-                    TIMESTAMPDIFF(MONTH,DATE_FORMAT(v.register_date,'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S')) mod 2 = 0
-                      then
-                    TIMESTAMPDIFF(MONTH,DATE_FORMAT(v.register_date,'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S')) + 1
-                      else
-                    TIMESTAMPDIFF(MONTH,DATE_FORMAT(v.register_date,'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'))
-                end
-            end AS assess_use_year
+            ceil(TIMESTAMPDIFF(MONTH,DATE_FORMAT(v.register_date,'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(v.transfer_ownership_date,'%Y-%m-%d %H:%i:%S'))) AS assess_use_year
 
 
 
