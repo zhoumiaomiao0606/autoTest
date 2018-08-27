@@ -255,6 +255,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                 }
 
             }
+            recordLists = recordLists.stream().filter(Objects::nonNull).collect(Collectors.toList());//去空
             //过滤非系统客户
             List<BankFileListRecordDO> list = recordLists.parallelStream().filter(e -> e.getIsCustomer().equals(K_YORN_YES)).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(list)) {
