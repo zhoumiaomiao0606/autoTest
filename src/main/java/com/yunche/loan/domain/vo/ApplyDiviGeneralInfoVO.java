@@ -18,7 +18,6 @@ public class ApplyDiviGeneralInfoVO {
     private String vehicle_registration_certificate_number;//注册登记号
     private String vehicle_license_plate_number;//车牌号
     private String car_assess_price;//品估计
-    private String vehicle_use_year;//使用年限
     private String financial_down_payment_money;//首付款
     private String financial_bank_period_principal;//分期本金
     private String financial_loan_time;//分期时间
