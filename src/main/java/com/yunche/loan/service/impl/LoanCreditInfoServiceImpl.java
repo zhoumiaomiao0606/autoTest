@@ -1,10 +1,14 @@
 package com.yunche.loan.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO;
 import com.yunche.loan.domain.vo.CreditRecordVO;
 import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.domain.vo.LoanCreditInfoVO;
@@ -14,6 +18,7 @@ import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanFileService;
+import com.yunche.loan.service.LoanQueryService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -54,6 +57,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
+    private LoanQueryService loanQueryService;
 
 
     @Override
@@ -151,6 +157,8 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         fillFiles(principalLender, principalLender.getCustomerId());
                         // 征信结果
                         fillCreditMsg(principalLender, creditType);
+                        //线上征信查询结果
+                        fillBankCreditMsg(principalLender);
                         List<Long> relevanceOrderlist = loanOrderDOMapper.selectRelevanceLoanOrderIdByCustomerId(principalLender.getCustomerId());
                         if (principalLender != null) {
                             principalLender.setRelevanceOrderlist(relevanceOrderlist);
@@ -168,6 +176,8 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         fillFiles(commonLender, commonLender.getCustomerId());
                         // 征信结果
                         fillCreditMsg(commonLender, creditType);
+                        //线上征信查询结果
+                        fillBankCreditMsg(commonLender);
                         List<Long> relevanceOrderlist = loanOrderDOMapper.selectRelevanceLoanOrderIdByCustomerId(commonLender.getCustomerId());
                         if (commonLender != null) {
                             commonLender.setRelevanceOrderlist(relevanceOrderlist);
@@ -184,6 +194,8 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                         fillFiles(guarantor, guarantor.getCustomerId());
                         // 征信结果
                         fillCreditMsg(guarantor, creditType);
+                        //线上征信查询结果
+                        fillBankCreditMsg(guarantor);
                         List<Long> relevanceOrderlist = loanOrderDOMapper.selectRelevanceLoanOrderIdByCustomerId(guarantor.getCustomerId());
                         if (guarantor != null) {
                             guarantor.setRelevanceOrderlist(relevanceOrderlist);
@@ -214,6 +226,29 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         creditRecordVO.setCommonLenderList(sortedCommonLenderList);
         creditRecordVO.setGuarantorList(sortedGuarantorList);
         creditRecordVO.setEmergencyContactList(sortedEmergencyContactList);
+    }
+
+    /**
+     *
+     * @param creditRecord
+     */
+    private void fillBankCreditMsg(CreditRecordVO.CustomerCreditRecord creditRecord) {
+       try{
+           BankInterfaceSerialReturnVO returnVO = loanQueryService.selectLastBankInterfaceSerialByTransCode(creditRecord.getCustomerId(), IDict.K_TRANS_CODE.APPLYCREDIT);
+           if(returnVO!=null){
+
+               String api_msg = returnVO.getApi_msg();
+               ObjectMapper objectMapper = new ObjectMapper();
+               Map map = objectMapper.readValue(api_msg, Map.class);
+               Map pub = (Map)map.get("pub");
+               String result = (String)pub.get("retmsg");
+               creditRecord.setBankCreditResponse(result);
+           }
+       }catch (IOException e){
+           throw new BizException("解析银行征信接口应答信息失败");
+       }
+
+
     }
 
     /**

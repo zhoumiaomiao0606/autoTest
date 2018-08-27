@@ -78,5 +78,7 @@ public class CreditRecordVO {
         private String bankCreditStatus;
 
         private String bankCreditNote;
+
+        private String bankCreditResponse;
     }
 }
