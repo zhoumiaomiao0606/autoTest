@@ -502,7 +502,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                     // can [征信增补]
                     canCreditSupplement(Long.valueOf(e.getId()), appTaskVO);
 
-                    // 视频面签列表查询时   ==>  才需要车型
+                    // [视频面签]列表查询时   ==>  才需要车型
                     if (multipartType == 7) {
                         // carName
                         if (StringUtils.isNotBlank(appTaskVO.getCarDetailId())) {

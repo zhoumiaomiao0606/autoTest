@@ -4,11 +4,8 @@ import com.yunche.loan.domain.param.WebSocketParam;
 import com.yunche.loan.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpSession;
 
 /**
  * @author liuzhe
@@ -18,9 +15,6 @@ import javax.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/api/v1")
 public class WebSocketController {
-
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     private WebSocketService webSocketService;
@@ -102,50 +96,14 @@ public class WebSocketController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @GetMapping("/chat_app")
-    public String chat_app() {
-        return "chat_app";
-    }
-
-    @GetMapping("/chat_pc")
-    public String chat_pc() {
-        return "chat_pc";
-    }
-
-    @GetMapping("/chat_sendToUser")
-    public String chat_sendToUser() {
-        return "chat_sendToUser";
-    }
-
-    @GetMapping("/chat_sendTo")
-    public String chat_sendTo() {
-        return "chat_sendTo";
-    }
-
-    @GetMapping("/chat_exit")
-    public String chat_exit() {
-        return "chat_exit";
-    }
-
     @GetMapping("/chat_wait")
     public String chat_wait() {
         return "chat_wait";
     }
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
-
     @GetMapping("/ws")
     public String ws() {
-        return "websocket";
-    }
-
-    @GetMapping("/sendMsg")
-    public void sendMsg(HttpSession session) {
-        System.out.println("测试发送消息：随机消息" + session.getId());
-        simpMessagingTemplate.convertAndSendToUser("123", "/message", "后台具体用户消息");
+        return "ws";
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

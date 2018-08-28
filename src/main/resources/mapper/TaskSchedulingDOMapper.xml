@@ -329,8 +329,11 @@
             <when test="multipartType == 7">
                 AND
                     CASE
-                        <!-- 杭州城站 - [贷款信息登记]-已提交-->
+                        <!-- 杭州城站 - [视频面签登记]-已提交-->
                         WHEN join_bk.id = 1 THEN
+                            deputy.loan_info_record = 1
+                        <!-- 台州路桥支行 - [视频面签登记]-已提交-->
+                        WHEN join_bk.id = 3 THEN
                             deputy.loan_info_record = 1
                         <!-- 其他银行 - [征信申请]-即单子生成即可 ==> 无需控制-->
                         ELSE

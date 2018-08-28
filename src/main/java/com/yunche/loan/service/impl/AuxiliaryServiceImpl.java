@@ -140,7 +140,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                         }
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
-                        throw new BizException("与第三方系统通讯异常");
+                        throw new BizException(e.getMessage());
                     }
                 } else if ("CARLOAN".equals(param.getGpsCompany())) {
                     try {
