@@ -67,7 +67,6 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class LoanProcessServiceImpl implements LoanProcessService {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoanProcessServiceImpl.class);
 
     /**
      * 换行符
@@ -221,7 +220,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
 
-        // 【贷款信息登记】
+        // 【视频面签登记】
         if (isLoanInfoRecordTask(approval)) {
             return execLoanInfoRecordTask(approval, loanProcessDO);
         }
@@ -297,7 +296,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 执行 - [贷款信息登记]任务
+     * 执行 - [视频面签登记]任务
      *
      * @param approval
      * @param currentLoanProcessDO

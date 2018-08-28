@@ -13,7 +13,7 @@ public enum LoanProcessEnum {
 
     BANK_CREDIT_RECORD("usertask_bank_credit_record", "银行征信录入"),
     SOCIAL_CREDIT_RECORD("usertask_social_credit_record", "社会征信录入"),
-    LOAN_INFO_RECORD("usertask_loan_info_record", "贷款信息登记"),
+    LOAN_INFO_RECORD("usertask_loan_info_record", "视频面签登记"),
 
     LOAN_APPLY("usertask_loan_apply", "业务申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),

@@ -34,7 +34,7 @@
     }
 
     function connect() {
-        var socket = new SockJS('/videoFace'); //链接SockJS 的endpoint 名称为"/videoFace"
+        var socket = new SockJS('/api/v1/videoFace'); //链接SockJS 的endpoint 名称为"/videoFace"
         stompClient = Stomp.over(socket);//使用stomp子协议的WebSocket 客户端
         stompClient.connect({}, function (frame) {//链接Web Socket的服务端。
             setConnected(true);
