@@ -1,15 +1,13 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.domain.param.FlowOperationMsgParam;
 import com.yunche.loan.domain.param.LegworkReimbursementParam;
 import com.yunche.loan.domain.param.SubimitVisitDoorParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 
-import com.yunche.loan.domain.vo.LegworkReimbursementVO;
-import com.yunche.loan.domain.vo.ScheduleTaskVO;
-import com.yunche.loan.domain.vo.SubimitVisitDoorVO;
-import com.yunche.loan.domain.vo.TaskListVO;
+import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,6 +15,8 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 public interface TaskSchedulingDOMapper {
+
+    List<FlowOperationMsgListVO> selectFlowOperationMsgList(FlowOperationMsgParam param);
 
     List<LegworkReimbursementVO> legworkReimbursementList(LegworkReimbursementParam param);
 

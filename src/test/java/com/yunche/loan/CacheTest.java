@@ -56,7 +56,7 @@ public class CacheTest extends BaseTest {
            // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","999967");
 
             // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","99993");
-           ZhongAnHttpUtil.queryInfo("肖方顺","13640437742","360781199411040613","1","2","3333","","98812312392121");
+           ZhongAnHttpUtil.queryInfo("文秋生","17985865856","36078119860618513X","1","2","3333","","98811");
 
         } catch (Exception e) {
             e.printStackTrace();

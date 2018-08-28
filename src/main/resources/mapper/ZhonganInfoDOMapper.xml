@@ -344,13 +344,16 @@
       select a.loan_customer_id  from loan_order a where a.id = #{orderId,jdbcType=BIGINT}) and b.`status` =0
   </select>
   <select id="selectByCreaditOrderId" resultMap="BaseResultMap">
-    select a.* from (
-    select
-    *
-    from zhongan_info t where t.order_id = #{orderId,jdbcType=BIGINT} and t.id_card in (
-    select b.id_card from  loan_customer b where b.principal_cust_id =(
-      select a.loan_customer_id  from loan_order a where a.id = #{orderId,jdbcType=BIGINT})and b.`status` = 0
-    ) order by t.create_date desc)a group by a.id_card
+    select DISTINCT z.* from zhongan_info z
+                                inner join
+                                (
+                                  select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_date desc separator ','),',',1)
+                                  as id
+                                  from zhongan_info GROUP BY id_card
+                                ) d on d.id = z.id and z.order_id = #{orderId,jdbcType=BIGINT} and z.id_card in (
+										select b.id_card from  loan_customer b where b.principal_cust_id =(
+											select a.loan_customer_id  from loan_order a where a.id = #{orderId,jdbcType=BIGINT})and b.`status` = 0 and b.cust_type != 4
+										)
   </select>
   <select id="selectZhonganName" resultType="com.yunche.loan.domain.vo.ZhonganNameVO" parameterType="java.lang.Long">
   SELECT

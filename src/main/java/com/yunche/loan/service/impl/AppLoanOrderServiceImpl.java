@@ -10,18 +10,14 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.config.util.ZhongAnHttpUtil;
-import com.yunche.loan.domain.query.ZhongAnDetailQuery;
-import com.yunche.loan.domain.vo.AppBusinessInfoVO;
-import com.yunche.loan.domain.vo.AppCustomerInfoVO;
-import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.*;
+import com.yunche.loan.domain.query.ZhongAnDetailQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import net.sf.json.JSONObject;
 import org.activiti.engine.HistoryService;
-import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,14 +36,16 @@ import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
-import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
+import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.*;
-import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
+import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_INFO;
+import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_USER_NAME;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.TASK_USER_GROUP_MAP;
 import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionText;
 
 /**
@@ -868,32 +866,36 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         zhongAnQueryParam.getOrder_id(),zhongAnCusParam.getLoanmoney(),zhongAnCusParam.getCustomertype(),zhongAnCusParam.getRalationship(),
                         System.currentTimeMillis()+""+random.nextInt(10000));
                 if((boolean)map.get("success")){
+                    ZhonganInfoDO zhongAnInfoDO = new ZhonganInfoDO();
                     JSONObject myJson = JSONObject.fromObject(map.get("creditResult"));
-                    Map creditResultMap = myJson;
+                    Map creditResultMap = new HashMap();
+                    if(myJson !=null){
+                        creditResultMap = myJson;
                         String qcqlInfo = (String)creditResultMap.get("qcqlInfo");
                         Map qcqlInfoMap = new HashMap();
                         if(qcqlInfo.contains("高危行为")||qcqlInfo.contains("风险记录")){
                             qcqlInfoMap = (Map)JSON.parse(qcqlInfo);
                         }
-                    ZhonganInfoDO zhongAnInfoDO = new ZhonganInfoDO();
-                    zhongAnInfoDO.setIdCard(zhongAnCusParam.getIdcard());
-                    zhongAnInfoDO.setAge((String)creditResultMap.get("age"));
-                    zhongAnInfoDO.setGender((String)creditResultMap.get("gender"));
-                    zhongAnInfoDO.setMobileCity((String)creditResultMap.get("mobileCity"));
-                    zhongAnInfoDO.setMobileCommDuration((String)creditResultMap.get("mobileCommDuration"));
-                    zhongAnInfoDO.setMobileCommSts((String)creditResultMap.get("mobileCommSts"));
-                    zhongAnInfoDO.setPhoneidNameCheck((String)creditResultMap.get("PhoneIdNameCheck"));
-                    zhongAnInfoDO.setHighRiskBehavior((String)qcqlInfoMap.get("高危行为"));
-                    zhongAnInfoDO.setHighRiskRecord((String)qcqlInfoMap.get("风险记录"));
-                    zhongAnInfoDO.setRsnHighRisk((String)creditResultMap.get("rsnHighRisk"));
-                    zhongAnInfoDO.setRsnLongOverdue((String)creditResultMap.get("rsnLongOverdue"));
-                    zhongAnInfoDO.setRsnMultiLoan((String)creditResultMap.get("rsnMultiLoan"));
-                    zhongAnInfoDO.setRsnPolicyRestrict((String)creditResultMap.get("rsnPolicyRestrict"));
-                    zhongAnInfoDO.setRsnRiskRec((String)creditResultMap.get("rsnRiskRec"));
-                    zhongAnInfoDO.setRspLawsuitAlllist((String)creditResultMap.get("rspLawsuit_details"));
-                    zhongAnInfoDO.setRspSpeclistInblacklist((String)creditResultMap.get("rspSpecList_inBlacklist"));
-                    zhongAnInfoDO.setRspSpeclistMaxdftlevel((String)creditResultMap.get("rspSpecList_maxDftLevel"));
-                    zhongAnInfoDO.setRspWatchlistDetail((String)creditResultMap.get("rspWatchList_detail"));
+
+                        zhongAnInfoDO.setIdCard(zhongAnCusParam.getIdcard());
+                        zhongAnInfoDO.setAge((String)creditResultMap.get("age"));
+                        zhongAnInfoDO.setGender((String)creditResultMap.get("gender"));
+                        zhongAnInfoDO.setMobileCity((String)creditResultMap.get("mobileCity"));
+                        zhongAnInfoDO.setMobileCommDuration((String)creditResultMap.get("mobileCommDuration"));
+                        zhongAnInfoDO.setMobileCommSts((String)creditResultMap.get("mobileCommSts"));
+                        zhongAnInfoDO.setPhoneidNameCheck((String)creditResultMap.get("PhoneIdNameCheck"));
+                        zhongAnInfoDO.setHighRiskBehavior((String)qcqlInfoMap.get("高危行为"));
+                        zhongAnInfoDO.setHighRiskRecord((String)qcqlInfoMap.get("风险记录"));
+                        zhongAnInfoDO.setRsnHighRisk((String)creditResultMap.get("rsnHighRisk"));
+                        zhongAnInfoDO.setRsnLongOverdue((String)creditResultMap.get("rsnLongOverdue"));
+                        zhongAnInfoDO.setRsnMultiLoan((String)creditResultMap.get("rsnMultiLoan"));
+                        zhongAnInfoDO.setRsnPolicyRestrict((String)creditResultMap.get("rsnPolicyRestrict"));
+                        zhongAnInfoDO.setRsnRiskRec((String)creditResultMap.get("rsnRiskRec"));
+                        zhongAnInfoDO.setRspLawsuitAlllist((String)creditResultMap.get("rspLawsuit_details"));
+                        zhongAnInfoDO.setRspSpeclistInblacklist((String)creditResultMap.get("rspSpecList_inBlacklist"));
+                        zhongAnInfoDO.setRspSpeclistMaxdftlevel((String)creditResultMap.get("rspSpecList_maxDftLevel"));
+                        zhongAnInfoDO.setRspWatchlistDetail((String)creditResultMap.get("rspWatchList_detail"));
+                    }
                     zhongAnInfoDO.setCreateDate(new Date());
                     zhongAnInfoDO.setCustomerName(zhongAnCusParam.getName());
                     zhongAnInfoDO.setOrderId(Long.valueOf(zhongAnQueryParam.getOrder_id()));
@@ -1151,17 +1153,19 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
         if (vehicleInformationDO != null) {
-
-            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
-            loanCarInfoVO.setApplyLicensePlateAreaId(baseAreaDO.getAreaId());
             String tmpApplyLicensePlateArea = null;
-            if (baseAreaDO != null) {
-                if (baseAreaDO.getParentAreaName() != null) {
-                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
-                } else {
-                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+            if (StringUtils.isNotBlank(vehicleInformationDO.getApply_license_plate_area())) {
+                BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
+                loanCarInfoVO.setApplyLicensePlateAreaId(baseAreaDO.getAreaId());
+                if (baseAreaDO != null) {
+                    if (baseAreaDO.getParentAreaName() != null) {
+                        tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                    } else {
+                        tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                    }
                 }
             }
+
             loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());

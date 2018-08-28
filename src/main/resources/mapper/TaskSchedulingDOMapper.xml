@@ -2140,4 +2140,59 @@
             </if>
     </select>
 
+    <select id="selectFlowOperationMsgList" resultType="com.yunche.loan.domain.vo.FlowOperationMsgListVO" parameterType="com.yunche.loan.domain.param.FlowOperationMsgParam">
+        select
+                msg.id 								            AS id,
+		        msg.order_id 					                AS orderId,
+		        msg.title							            AS title,
+		        msg.prompt						                AS prompt,
+		        msg.msg								            AS msg,
+		        msg.sender						                AS sender,
+		        msg.process_key				                    AS processKey,
+		        DATE_FORMAT(msg.send_date,'%Y-%m-%d %H:%i:%S') 	AS sendDate,
+		        case when DATE_FORMAT(msg.send_date,'%Y-%m-%d') is null or DATE_FORMAT(msg.send_date,'%Y-%m-%d') = '' then
+                '0000-00-00'  else  DATE_FORMAT(msg.send_date,'%Y-%m-%d') end
+                                                                AS chooseDate,
+		        msg.read_status				                    AS readStatus,
+		        msg.type					                    AS type,
+		        customer.name 				                    AS customerName,
+		        customer.id_card 			                    AS customerIdCard
+                from flow_operation_msg msg
+                    left join loan_order o on o.id = msg.order_id
+                    left join loan_base_info base on o.loan_base_info_id = base.id
+                    left join loan_customer customer on customer.id = o.loan_customer_id
+                where 1=1
+                and
+                CASE WHEN  #{maxGroupLevel}  = 0 THEN false
+                     when  #{maxGroupLevel} = 1 then
+                base.salesman_id in
+                  <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                      #{item}
+                  </foreach>
+                else true end
+                and
+                    case when #{multipartType} = 1 then process_key = 'usertask_bank_credit_record' or process_key = 'usertask_social_credit_record'
+                    when #{multipartType} = 2 then process_key = 'usertask_material_review' or process_key = 'usertask_telephone_verify'
+                    when #{multipartType} = 3 then process_key not in ('usertask_bank_credit_record','usertask_social_credit_record','usertask_material_review','usertask_telephone_verify')
+                    else false end
+                and
+                case when #{maxGroupLevel} = 3 then 1=1
+                else 1=1
+                <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                    and
+                    base.partner_id in
+                    <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="bankList != null and bankList.size() > 0">
+                    and
+                    base.partner_id in
+                    <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+               end
+        ORDER By msg.send_date DESC
+    </select>
 </mapper>

@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.FlowOperationMsgParam;
 import com.yunche.loan.domain.param.TaskDistributionParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
@@ -32,7 +33,13 @@ public class TaskSchedulingController {
     @Resource
     private LoanQueryService loanQueryService;
 
-
+    /**
+     * 领取
+     */
+    @PostMapping(value = "/flowOperationMsgList")
+    public ResultBean<List<FlowOperationMsgListVO>> flowOperationMsgList(@RequestBody @Validated FlowOperationMsgParam param) {
+        return taskSchedulingService.selectFlowOperationMsgList(param);
+    }
     /**
      * 是否属于银行单子
      */
