@@ -1,15 +1,16 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.FlowOperationMsgParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
-import com.yunche.loan.domain.vo.AppTaskVO;
-import com.yunche.loan.domain.vo.ScheduleTaskVO;
-import com.yunche.loan.domain.vo.TaskListVO;
+import com.yunche.loan.domain.vo.*;
 
 import java.util.List;
 
 public interface TaskSchedulingService {
+
+    ResultBean<List<FlowOperationMsgListVO>> selectFlowOperationMsgList(FlowOperationMsgParam param);
 
     boolean selectRejectTask(Long orderId);
 

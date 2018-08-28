@@ -44,7 +44,7 @@
     from flow_operation_msg msg
 		left join loan_order o on o.id = msg.order_id
 		left join loan_customer customer on customer.id = o.loan_customer_id
-    where msg.employee_id = 1 ORDER By msg.send_date,msg.read_status DESC
+    where msg.employee_id = #{employeeId} ORDER By msg.send_date,msg.read_status DESC
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from flow_operation_msg

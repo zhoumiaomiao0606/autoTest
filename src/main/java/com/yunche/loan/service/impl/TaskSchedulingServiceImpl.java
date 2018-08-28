@@ -12,13 +12,11 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.param.FlowOperationMsgParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
-import com.yunche.loan.domain.vo.AppTaskVO;
-import com.yunche.loan.domain.vo.ScheduleTaskVO;
-import com.yunche.loan.domain.vo.TaskListVO;
-import com.yunche.loan.domain.vo.TaskStateVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.apache.commons.lang3.StringUtils;
@@ -85,6 +83,22 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
 
+    @Override
+    public ResultBean<List<FlowOperationMsgListVO>> selectFlowOperationMsgList(FlowOperationMsgParam query) {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        query.setMaxGroupLevel(maxGroupLevel);
+        query.setJuniorIds(juniorIds);
+        //获取用户可见的区域
+        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        //获取用户可见的银行
+        query.setBankList(getUserHaveBank(loginUser.getId()));
+        PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
+        List list = taskSchedulingDOMapper.selectFlowOperationMsgList(query);
+        PageInfo<FlowOperationMsgListVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
 
     @Override
     public boolean selectRejectTask(Long orderId) {
