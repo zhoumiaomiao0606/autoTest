@@ -67,6 +67,7 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class LoanProcessServiceImpl implements LoanProcessService {
 
+    private static final Logger logger = LoggerFactory.getLogger(LoanProcessServiceImpl.class);
 
     /**
      * 换行符
