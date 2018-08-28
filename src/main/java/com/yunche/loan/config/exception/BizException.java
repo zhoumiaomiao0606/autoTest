@@ -12,6 +12,10 @@ public class BizException extends RuntimeException {
         super();
     }
 
+    public BizException(Throwable cause) {
+        super(cause);
+    }
+
     public BizException(String msg) {
         super(msg);
         this.msg = msg;
