@@ -866,32 +866,36 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         zhongAnQueryParam.getOrder_id(),zhongAnCusParam.getLoanmoney(),zhongAnCusParam.getCustomertype(),zhongAnCusParam.getRalationship(),
                         System.currentTimeMillis()+""+random.nextInt(10000));
                 if((boolean)map.get("success")){
+                    ZhonganInfoDO zhongAnInfoDO = new ZhonganInfoDO();
                     JSONObject myJson = JSONObject.fromObject(map.get("creditResult"));
-                    Map creditResultMap = myJson;
+                    Map creditResultMap = new HashMap();
+                    if(myJson !=null){
+                        creditResultMap = myJson;
                         String qcqlInfo = (String)creditResultMap.get("qcqlInfo");
                         Map qcqlInfoMap = new HashMap();
                         if(qcqlInfo.contains("高危行为")||qcqlInfo.contains("风险记录")){
                             qcqlInfoMap = (Map)JSON.parse(qcqlInfo);
                         }
-                    ZhonganInfoDO zhongAnInfoDO = new ZhonganInfoDO();
-                    zhongAnInfoDO.setIdCard(zhongAnCusParam.getIdcard());
-                    zhongAnInfoDO.setAge((String)creditResultMap.get("age"));
-                    zhongAnInfoDO.setGender((String)creditResultMap.get("gender"));
-                    zhongAnInfoDO.setMobileCity((String)creditResultMap.get("mobileCity"));
-                    zhongAnInfoDO.setMobileCommDuration((String)creditResultMap.get("mobileCommDuration"));
-                    zhongAnInfoDO.setMobileCommSts((String)creditResultMap.get("mobileCommSts"));
-                    zhongAnInfoDO.setPhoneidNameCheck((String)creditResultMap.get("PhoneIdNameCheck"));
-                    zhongAnInfoDO.setHighRiskBehavior((String)qcqlInfoMap.get("高危行为"));
-                    zhongAnInfoDO.setHighRiskRecord((String)qcqlInfoMap.get("风险记录"));
-                    zhongAnInfoDO.setRsnHighRisk((String)creditResultMap.get("rsnHighRisk"));
-                    zhongAnInfoDO.setRsnLongOverdue((String)creditResultMap.get("rsnLongOverdue"));
-                    zhongAnInfoDO.setRsnMultiLoan((String)creditResultMap.get("rsnMultiLoan"));
-                    zhongAnInfoDO.setRsnPolicyRestrict((String)creditResultMap.get("rsnPolicyRestrict"));
-                    zhongAnInfoDO.setRsnRiskRec((String)creditResultMap.get("rsnRiskRec"));
-                    zhongAnInfoDO.setRspLawsuitAlllist((String)creditResultMap.get("rspLawsuit_details"));
-                    zhongAnInfoDO.setRspSpeclistInblacklist((String)creditResultMap.get("rspSpecList_inBlacklist"));
-                    zhongAnInfoDO.setRspSpeclistMaxdftlevel((String)creditResultMap.get("rspSpecList_maxDftLevel"));
-                    zhongAnInfoDO.setRspWatchlistDetail((String)creditResultMap.get("rspWatchList_detail"));
+
+                        zhongAnInfoDO.setIdCard(zhongAnCusParam.getIdcard());
+                        zhongAnInfoDO.setAge((String)creditResultMap.get("age"));
+                        zhongAnInfoDO.setGender((String)creditResultMap.get("gender"));
+                        zhongAnInfoDO.setMobileCity((String)creditResultMap.get("mobileCity"));
+                        zhongAnInfoDO.setMobileCommDuration((String)creditResultMap.get("mobileCommDuration"));
+                        zhongAnInfoDO.setMobileCommSts((String)creditResultMap.get("mobileCommSts"));
+                        zhongAnInfoDO.setPhoneidNameCheck((String)creditResultMap.get("PhoneIdNameCheck"));
+                        zhongAnInfoDO.setHighRiskBehavior((String)qcqlInfoMap.get("高危行为"));
+                        zhongAnInfoDO.setHighRiskRecord((String)qcqlInfoMap.get("风险记录"));
+                        zhongAnInfoDO.setRsnHighRisk((String)creditResultMap.get("rsnHighRisk"));
+                        zhongAnInfoDO.setRsnLongOverdue((String)creditResultMap.get("rsnLongOverdue"));
+                        zhongAnInfoDO.setRsnMultiLoan((String)creditResultMap.get("rsnMultiLoan"));
+                        zhongAnInfoDO.setRsnPolicyRestrict((String)creditResultMap.get("rsnPolicyRestrict"));
+                        zhongAnInfoDO.setRsnRiskRec((String)creditResultMap.get("rsnRiskRec"));
+                        zhongAnInfoDO.setRspLawsuitAlllist((String)creditResultMap.get("rspLawsuit_details"));
+                        zhongAnInfoDO.setRspSpeclistInblacklist((String)creditResultMap.get("rspSpecList_inBlacklist"));
+                        zhongAnInfoDO.setRspSpeclistMaxdftlevel((String)creditResultMap.get("rspSpecList_maxDftLevel"));
+                        zhongAnInfoDO.setRspWatchlistDetail((String)creditResultMap.get("rspWatchList_detail"));
+                    }
                     zhongAnInfoDO.setCreateDate(new Date());
                     zhongAnInfoDO.setCustomerName(zhongAnCusParam.getName());
                     zhongAnInfoDO.setOrderId(Long.valueOf(zhongAnQueryParam.getOrder_id()));
