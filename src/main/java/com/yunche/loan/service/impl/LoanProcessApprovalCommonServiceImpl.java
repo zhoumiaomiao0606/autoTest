@@ -50,7 +50,9 @@ import static java.util.stream.Collectors.toList;
 public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApprovalCommonService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoanProcessApprovalCommonServiceImpl.class);
-    private static final Long  AUTO_EMPLOYEE=878l;
+
+    private static final Long AUTO_EMPLOYEE_ID = 878L;
+    private static final String AUTO_EMPLOYEE_NAME = "自动任务";
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -75,6 +77,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
     @Autowired
     private LoanProcessCollectionDOMapper loanProcessCollectionDOMapper;
+
+    @Autowired
+    private LoanProcessLegalDOMapper loanProcessLegalDOMapper;
 
     @Autowired
     private TaskService taskService;
@@ -103,19 +108,18 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         BeanUtils.copyProperties(approval, loanProcessLogDO);
 
         EmployeeDO loginUser = null;
-        try{
+        try {
             loginUser = SessionUtils.getLoginUser();
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.info("自动任务|| 未登录");
         }
-        if(loginUser == null){
-            loanProcessLogDO.setUserId(AUTO_EMPLOYEE);
-            loanProcessLogDO.setUserName("自动任务");
-        }else{
+        if (null == loginUser) {
+            loanProcessLogDO.setUserId(AUTO_EMPLOYEE_ID);
+            loanProcessLogDO.setUserName(AUTO_EMPLOYEE_NAME);
+        } else {
             loanProcessLogDO.setUserId(loginUser.getId());
             loanProcessLogDO.setUserName(loginUser.getName());
         }
-
 
         loanProcessLogDO.setCreateTime(new Date());
 
@@ -381,10 +385,15 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
                 loanProcessDO_ = loanProcessInsteadPayDOMapper.selectByPrimaryKey(processId);
             }
-            // 催收流程
+            // 上门催收流程
             else if (LOAN_PROCESS_COLLECTION_KEYS.contains(taskDefinitionKey)) {
 
                 loanProcessDO_ = loanProcessCollectionDOMapper.selectByPrimaryKey(processId);
+            }
+            // 法务处理流程
+            else if (LOAN_PROCESS_LEGAL_KEYS.contains(taskDefinitionKey)) {
+
+                loanProcessDO_ = loanProcessLegalDOMapper.selectByPrimaryKey(processId);
             } else {
 
                 throw new BizException("taskDefinitionKey有误");
@@ -419,8 +428,8 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
      * @param taskProcessStatus
      */
     @Override
-    public void doUpdateCurrentTaskProcessStatus(LoanProcessDO_ loanProcessDO_,
-                                                 String taskDefinitionKey, Byte taskProcessStatus) {
+    public void doUpdateCurrentTaskProcessStatus(LoanProcessDO_ loanProcessDO_, String taskDefinitionKey,
+                                                 Byte taskProcessStatus) {
         // 方法名拼接   setXXX
         String methodBody = null;
         for (LoanProcessEnum e : LoanProcessEnum.values()) {
