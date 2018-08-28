@@ -60,7 +60,7 @@ public class ZhongAnHttpUtil {
         param.put("merchKey","D63EB54EDE6021213B8D06B11D348C5A");
         param.put("applyNo",applyNo);
         param.put("productCode","YCJRCD");
-        param.put("ruleCode","YCJRCD615010");
+        param.put("ruleCode","YCJRCD698005");
         param.put("jsonData", map.toJSONString());
         request.setParams(param);
         //发起请求
