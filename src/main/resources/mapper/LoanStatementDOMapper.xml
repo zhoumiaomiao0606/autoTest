@@ -293,7 +293,11 @@
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
 
         <where>
-            and credit_info.type = 1  and credit_info.gmt_modify between #{startDate} and #{endDate}
+            and credit_info.type = 1
+            <if test="startDate !=null and endDate !=null">
+                and credit_info.gmt_modify between #{startDate} and #{endDate}
+            </if>
+
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 principal_base.partner_id in
@@ -427,7 +431,10 @@
         LEFT JOIN base_area principal_area ON principal_area.area_id = principal_base.area_id
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
         <where>
-            and credit_info.type = 2  and credit_info.gmt_modify between #{startDate} and #{endDate}
+            and credit_info.type = 2
+            <if test="startDate !=null and endDate !=null">
+            and credit_info.gmt_modify between #{startDate} and #{endDate}
+            </if>
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 principal_base.partner_id in
@@ -542,6 +549,10 @@
             <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
                 #{item}
             </foreach>
+        </if>
+        <if test="startRemitAmount !=null and endRemitAmount !=null" >
+            and
+            remit_details.remit_amount BETWEEN #{startRemitAmount} AND  #{endRemitAmount}
         </if>
 
         having submitTime between #{startDate} and #{endDate}
@@ -964,4 +975,122 @@
             AND TO_DAYS(usertask_bank_card_send_create_time) &lt;= TO_DAYS(#{usertask_bank_card_send_create_time_end})
         </if>
     </select>
+    <!--=======================================导出 EXCEL 财务垫款明细查询-财务打款单=========================================-->
+    <select id="exportRemitDetailForRemitOrderQuerys" parameterType="com.yunche.loan.domain.param.ExportRemitDetailQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryForRemitOrderVO" >
+
+        SELECT
+        base_area.area_name,
+        customer. NAME AS customer_name,
+        customer.id_card AS customer_id_card,
+        customer.mobile AS customer_mobile,
+        loaninfo.bank,
+        partner. NAME AS partner_name,
+        employee. NAME AS salesman_name,
+        case when car.car_type = 0 then '新车'
+        when car.car_type = 1 then '二手车'
+        else '其他' end as car_type,
+        cardetail.price,
+        loan_financial_plan.sign_rate,
+        loan_financial_plan.loan_amount,
+        loan_financial_plan.down_payment_money,
+        loan_financial_plan.bank_period_principal,
+        remit_details.remit_amount,
+
+        remit_details.return_rate_amount                                                                AS remit_return_rate_amount,
+        cost_details.service_fee,
+        cost_details.performance_fee,
+        cost_details.apply_license_plate_deposit_fee,
+        cost_details.install_gps_fee,
+        cost_details.risk_fee,
+        cost_details.fair_assess_fee,
+        cost_details.apply_license_plate_out_province_fee,
+        cost_details.based_margin_fee,
+        cost_details.rebate_not_deducted,
+        cost_details.extra_fee,
+        cost_details.other_fee,
+
+
+        orders.gmt_create,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_remit_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as submitTime,
+        (
+        SELECT
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_remit_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as username
+        FROM
+        loan_order orders
+        LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+        LEFT JOIN loan_base_info loaninfo ON orders.loan_base_info_id = loaninfo.id
+        LEFT JOIN base_area ON loaninfo.area_id = base_area.area_id
+        LEFT JOIN loan_car_info car ON orders.loan_car_info_id = car.id
+        LEFT JOIN car_detail cardetail ON cardetail.id = car.car_detail_id
+        LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+        LEFT JOIN remit_details ON orders.remit_details_id = remit_details.id
+        LEFT JOIN loan_process process ON orders.id = process.order_id
+        LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
+        LEFT JOIN employee employee ON base.salesman_id = employee.id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN cost_details ON orders.cost_details_id = cost_details.id
+
+        where 1=1
+        and process.loan_review = 1
+        and
+        case when #{maxGroupLevel} = 0 then false
+        when #{maxGroupLevel} = 1 then
+        loaninfo.salesman_id in
+        (
+        <choose>
+            <when test="juniorIds != null and juniorIds.size() > 0">
+                <foreach item="item" index="index" collection="juniorIds" separator=",">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                select temp.id from (SELECT 1 as id) temp  where temp.id =2
+            </otherwise>
+        </choose>
+        )
+        else true end
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            base.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="startRemitAmount !=null and endRemitAmount !=null" >
+            and
+            remit_details.remit_amount BETWEEN #{startRemitAmount} AND  #{endRemitAmount}
+        </if>
+
+        having submitTime between #{startDate} and #{endDate}
+        order by submitTime desc
+
+    </select>
+
 </mapper>

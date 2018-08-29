@@ -86,8 +86,6 @@ public class ExportQueryServiceImpl implements ExportQueryService
     @Override
     public String expertRemitDetailQuery(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam) {
         Long loginUserId = SessionUtils.getLoginUser().getId();
-        String startDate = exportRemitDetailQueryVerifyParam.getStartDate();
-        String endDate = exportRemitDetailQueryVerifyParam.getEndDate();
 
         exportRemitDetailQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
         exportRemitDetailQueryVerifyParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
@@ -95,7 +93,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
         ArrayList<String> header = Lists.newArrayList("业务区域","客户姓名", "身份证号",
                 "手机号", "贷款银行", "业务团队", "业务员", "车型", "车价", "执行利率", "首付款", "贷款金额", "银行分期本金", "打款金额",
-                "创建时间","提交时间","提交人"
+                "创建时间","垫款时间","提交人"
         );
 
 
@@ -196,6 +194,35 @@ public class ExportQueryServiceImpl implements ExportQueryService
                 ,"银行卡寄送时间"
         );
         String ossResultKey = POIUtil.createExcelFile("MortgageOrders",list,header,ExportOrdersVO.class,ossConfig);
+        return ossResultKey;
+    }
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:  财务打款单导出垫款明细
+    */
+    @Override
+    public String expertRemitDetailQueryForRemitOrder(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam)
+    {
+        //TODO
+
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        exportRemitDetailQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        exportRemitDetailQueryVerifyParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+        List<ExportRemitDetailQueryForRemitOrderVO> list = loanStatementDOMapper.exportRemitDetailForRemitOrderQuerys(exportRemitDetailQueryVerifyParam);
+
+        ArrayList<String> header = Lists.newArrayList("业务区域","客户姓名", "身份证号",
+                "手机号", "贷款银行", "业务团队", "业务员", "车型", "车价", "执行利率", "首付款", "贷款金额", "银行分期本金", "打款金额",
+                "公司收益","履约金","上牌押金","GPS使用费","风险金","公正评估费","上省外牌","基础保证金","其他","返利不内扣","返利金额","额外费用",
+                "创建时间","垫款时间","提交人"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("RemitDetailForRemitOrder",list,header,ExportRemitDetailQueryForRemitOrderVO.class,ossConfig);
         return ossResultKey;
     }
 
