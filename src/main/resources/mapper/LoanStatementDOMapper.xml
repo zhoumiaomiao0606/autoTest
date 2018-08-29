@@ -550,9 +550,13 @@
                 #{item}
             </foreach>
         </if>
-        <if test="startRemitAmount !=null and endRemitAmount !=null" >
+        <if test="startRemitAmount !=null" >
             and
-            remit_details.remit_amount BETWEEN #{startRemitAmount} AND  #{endRemitAmount}
+            remit_details.remit_amount &gt;= #{startRemitAmount}
+        </if>
+
+        <if test="endRemitAmount !=null" >
+            AND  remit_details.remit_amount &lt;= #{endRemitAmount}
         </if>
 
         having submitTime between #{startDate} and #{endDate}
@@ -1083,9 +1087,13 @@
                 #{item}
             </foreach>
         </if>
-        <if test="startRemitAmount !=null and endRemitAmount !=null" >
+        <if test="startRemitAmount !=null" >
             and
-            remit_details.remit_amount BETWEEN #{startRemitAmount} AND  #{endRemitAmount}
+            remit_details.remit_amount &gt;= #{startRemitAmount}
+        </if>
+
+        <if test="endRemitAmount !=null" >
+            AND  remit_details.remit_amount &lt;= #{endRemitAmount}
         </if>
 
         having submitTime between #{startDate} and #{endDate}
