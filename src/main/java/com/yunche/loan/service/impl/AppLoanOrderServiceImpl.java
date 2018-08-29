@@ -178,6 +178,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private ZhonganOverdueDOMapper zhongAnOverDueDOMapper;
 
+    @Autowired
+    private VideoFaceLogDOMapper videoFaceLogDOMapper;
+
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
@@ -588,7 +591,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 customerInfoVO.setEmergencyContactList(emergencyContactList);
             }
         }
-
+        VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(orderId);
+        if(videoFaceLogDO==null){
+            customerInfoVO.setVideoFaceFlag("0");
+        }else{
+            customerInfoVO.setVideoFaceFlag("1");
+        }
         return ResultBean.ofSuccess(customerInfoVO);
     }
 

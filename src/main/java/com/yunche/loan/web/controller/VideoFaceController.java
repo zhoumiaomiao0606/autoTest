@@ -48,7 +48,6 @@ public class VideoFaceController {
 
         return videoFaceService.updateLog(videoFaceLogDO);
     }
-
     /**
      * 面签记录查询
      *

@@ -74,6 +74,8 @@ public class VideoFaceLogVO {
 
     private String gmtCreateStr;
 
+    private String partnerName;
+
 
     public String getTypeVal() {
         Byte type = getType();
