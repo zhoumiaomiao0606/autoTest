@@ -16,4 +16,5 @@ public class ZhonganListVO {
     private String customerIdCard;
     private String customerType;
     private String orderId;
+    private String title;
 }

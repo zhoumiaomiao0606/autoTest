@@ -2205,7 +2205,9 @@
           customer.name									 as customerName,
           customer.id_card								 as customerIdCard,
           z.customer_type								 as customerType,
-          z.order_id                                     as orderId
+          z.order_id                                     as orderId,
+          CONCAT('[众安征信]',case when customer.name = '' or customer.name = null then '' else customer.name end)
+                                                         as title
 
           from zhongan_info z
           left join loan_order o on o.id = z.order_id
