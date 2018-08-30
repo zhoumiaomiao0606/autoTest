@@ -4,12 +4,15 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.FlowOperationMsgParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
+import com.yunche.loan.domain.query.ZhonganListQuery;
 import com.yunche.loan.domain.vo.*;
 
 import java.util.List;
 import java.util.Map;
 
 public interface TaskSchedulingService {
+
+    ResultBean<List<ZhonganListVO>> selectZhonganList(ZhonganListQuery query);
 
     ResultBean<Map> appCount();
 

@@ -7,6 +7,7 @@ import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
 
+import com.yunche.loan.domain.query.ZhonganListQuery;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +16,8 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 public interface TaskSchedulingDOMapper {
+
+    List<ZhonganListVO> selectZhonganList(ZhonganListQuery query);
 
     List<FlowOperationMsgListVO> selectFlowOperationMsgList(FlowOperationMsgParam param);
 

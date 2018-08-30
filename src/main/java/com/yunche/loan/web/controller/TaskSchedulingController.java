@@ -6,6 +6,7 @@ import com.yunche.loan.domain.param.FlowOperationMsgParam;
 import com.yunche.loan.domain.param.TaskDistributionParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
+import com.yunche.loan.domain.query.ZhonganListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TaskDistributionService;
@@ -47,6 +48,14 @@ public class TaskSchedulingController {
     @PostMapping(value = "/flowOperationMsgList")
     public ResultBean<List<FlowOperationMsgListVO>> flowOperationMsgList(@RequestBody @Validated FlowOperationMsgParam param) {
         return taskSchedulingService.selectFlowOperationMsgList(param);
+    }
+
+    /**
+     * 领取
+     */
+    @PostMapping(value = "/zhonganList")
+    public ResultBean<List<ZhonganListVO>> zhonganList(@RequestBody @Validated ZhonganListQuery param) {
+        return taskSchedulingService.selectZhonganList(param);
     }
     /**
      * 是否属于银行单子
