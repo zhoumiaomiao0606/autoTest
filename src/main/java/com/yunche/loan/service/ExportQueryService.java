@@ -15,4 +15,6 @@ public interface ExportQueryService
     String expertMortgageOverdueQuery(ExportMortgageOverdueQueryVerifyParam exportMortgageOverdueQueryVerifyParam);
 
     String exportOrders(ExportOrdersParam exportOrdersParam);
+
+    String expertRemitDetailQueryForRemitOrder(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam);
 }

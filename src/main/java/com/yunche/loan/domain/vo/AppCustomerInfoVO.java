@@ -224,4 +224,5 @@ public class AppCustomerInfoVO {
 //
 //        private Byte status;
     }
+    private String videoFaceFlag;
 }

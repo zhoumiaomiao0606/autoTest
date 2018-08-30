@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.service.ExportQueryService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,8 +23,6 @@ public class ExpertController
     @PostMapping(value = "/exportBankCreditQuery")
     public ResultBean exportBankCreditQuery(@RequestBody ExportBankCreditQueryVerifyParam exportBankCreditQueryVerifyParam)
     {
-        Preconditions.checkNotNull(exportBankCreditQueryVerifyParam.getStartDate(), "开始时间不能为空");
-        Preconditions.checkNotNull(exportBankCreditQueryVerifyParam.getEndDate(), "结束时间不能为空");
         return ResultBean.ofSuccess(exportQueryService.exportBankCreditQuery(exportBankCreditQueryVerifyParam));
     }
 
@@ -33,8 +32,6 @@ public class ExpertController
     @PostMapping(value = "/exportSocialCreditQuery")
     public ResultBean expertSocialCreditQuery(@RequestBody ExportSocialCreditQueryVerifyParam exportSocialCreditQueryVerifyParam)
     {
-        Preconditions.checkNotNull(exportSocialCreditQueryVerifyParam.getStartDate(), "开始时间不能为空");
-        Preconditions.checkNotNull(exportSocialCreditQueryVerifyParam.getEndDate(), "结束时间不能为空");
         return ResultBean.ofSuccess(exportQueryService.expertSocialCreditQuery(exportSocialCreditQueryVerifyParam));
     }
 
@@ -47,6 +44,17 @@ public class ExpertController
         Preconditions.checkNotNull(exportRemitDetailQueryVerifyParam.getStartDate(), "开始时间不能为空");
         Preconditions.checkNotNull(exportRemitDetailQueryVerifyParam.getEndDate(), "结束时间不能为空");
         return ResultBean.ofSuccess(exportQueryService.expertRemitDetailQuery(exportRemitDetailQueryVerifyParam));
+    }
+
+    /**
+     * EXCEl导出财务垫款明细查询-财务打款单
+     */
+    @PostMapping(value = "/exportRemitDetailQueryForRemitOrder")
+    public ResultBean expertRemitDetailQueryForRemitOrder(@RequestBody ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam)
+    {
+        Preconditions.checkNotNull(exportRemitDetailQueryVerifyParam.getStartDate(), "开始时间不能为空");
+        Preconditions.checkNotNull(exportRemitDetailQueryVerifyParam.getEndDate(), "结束时间不能为空");
+        return ResultBean.ofSuccess(exportQueryService.expertRemitDetailQueryForRemitOrder(exportRemitDetailQueryVerifyParam));
     }
 
     /**

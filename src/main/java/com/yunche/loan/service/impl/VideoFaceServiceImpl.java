@@ -13,6 +13,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.query.VideoFaceQuery;
 import com.yunche.loan.domain.vo.CustomerVO;
+import com.yunche.loan.domain.vo.VideoFaceFlagVO;
 import com.yunche.loan.domain.vo.VideoFaceLogVO;
 import com.yunche.loan.domain.vo.VideoFaceQuestionAnswerVO;
 import com.yunche.loan.mapper.*;
@@ -74,6 +75,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
     @Autowired
     private BankCache bankCache;
+
+    @Autowired
+    private PartnerDOMapper partnerDOMapper;
 
 
     @Override
@@ -164,10 +168,12 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         VideoFaceLogVO videoFaceLogVO = new VideoFaceLogVO();
         if (null != videoFaceLogDO) {
+            PartnerDO partnerDO = partnerDOMapper.queryPartnerInfoByOrderId(videoFaceLogDO.getOrderId());
+            String partnerName = partnerDO.getName();
             BeanUtils.copyProperties(videoFaceLogDO, videoFaceLogVO);
             videoFaceLogVO.setOrderId(String.valueOf(videoFaceLogDO.getOrderId()));
+            videoFaceLogVO.setPartnerName(partnerName);
         }
-
         return ResultBean.ofSuccess(videoFaceLogVO);
     }
 
@@ -290,6 +296,18 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         return ResultBean.ofSuccess(questionList);
+    }
+
+    @Override
+    public VideoFaceFlagVO isFlag(Long orderId) {
+        VideoFaceFlagVO videoFaceFlagVO = new VideoFaceFlagVO();
+        VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(orderId);
+        if(videoFaceLogDO == null){
+            videoFaceFlagVO.setFlag("0");
+        }else{
+            videoFaceFlagVO.setFlag("1");
+        }
+        return videoFaceFlagVO;
     }
 
     private List<String> get_Question_List_ICBC_TaiZhou_LuQiao_Branch(Long bankId, Long orderId, String address) {

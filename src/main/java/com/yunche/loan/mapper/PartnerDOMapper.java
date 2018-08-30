@@ -33,4 +33,6 @@ public interface PartnerDOMapper {
     PartnerDO queryByPartnerName(@Param("name") String name);
 
     PartnerDO queryLeaderNameById(@Param("id") Long id);
+
+    PartnerDO queryPartnerInfoByOrderId(@Param("orderId") Long orderId);
 }

@@ -444,5 +444,11 @@
       disable_bank_list = #{disableBankList,jdbcType=VARCHAR},gps_company = #{gpsCompany,jdbcType=VARCHAR},gps_account = #{gpsAccount,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+    <select id="queryPartnerInfoByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select c.* from loan_order a
+            left join loan_base_info b on a.loan_base_info_id = b.id
+            left join partner c on b.partner_id = c.id
+            where a.id = #{orderId,jdbcType=BIGINT}
+    </select>
 
 </mapper>

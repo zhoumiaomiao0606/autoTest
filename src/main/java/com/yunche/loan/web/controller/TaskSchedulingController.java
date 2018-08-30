@@ -150,7 +150,7 @@ public class TaskSchedulingController {
     }
 
     /**
-     * 领取
+     * 领取任务             --insert
      */
     @PostMapping(value = "/get")
     public ResultBean<Void> get(@RequestBody @Validated TaskDistributionParam param) {
@@ -160,7 +160,7 @@ public class TaskSchedulingController {
 
 
     /**
-     * 释放
+     * 取消领取  -释放任务    --delete
      */
     @PostMapping(value = "/release")
     public ResultBean<Void> release(@RequestBody @Validated TaskDistributionParam param) {

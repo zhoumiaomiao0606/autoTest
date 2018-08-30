@@ -48,8 +48,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
      * @param taskKey
      */
     @Override
-    public void get(Long taskId, String taskKey)
-    {
+    public void get(Long taskId, String taskKey) {
         if (taskId == null || StringUtils.isBlank(taskKey)) {
             throw new BizException("必须传入任务id和任务key");
         }
@@ -79,7 +78,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         taskDistributionDOMapper.insertSelective(V);
     }
 
-    //释放
+    // 释放
     @Override
     public void release(Long taskId, String taskKey) {
         if (taskId == null || StringUtils.isBlank(taskKey)) {
@@ -94,7 +93,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         }
 
         Byte status = taskDistributionDO.getStatus();
-        if (!status.toString().equals("2")) {
+        if (!"2".equals(String.valueOf(status))) {
             throw new BizException("该任务状态无法被释放");
         }
 
@@ -106,7 +105,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         taskDistributionDOMapper.deleteByPrimaryKey(taskId, taskKey);
     }
 
-    //打回完成
+    // 打回完成
     @Override
     public void rejectFinish(Long taskId, Long orderId, List<String> taskKeys) {
 
@@ -115,7 +114,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
             TaskDistributionDO taskDistributionDOByTaskId = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
             if (taskDistributionDOByTaskId != null) {
-                //open
+                // open
                 TaskDistributionDO V = new TaskDistributionDO();
                 V.setTaskKey(taskDistributionDOByTaskId.getTaskKey());
                 V.setTaskId(taskDistributionDOByTaskId.getTaskId());
@@ -125,7 +124,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
             TaskDistributionDO taskDistributionDOByOrderId = taskDistributionDOMapper.selectByPrimaryKey(orderId, taskKey);
             if (taskDistributionDOByOrderId != null) {
-                //open
+                // open
                 TaskDistributionDO V = new TaskDistributionDO();
                 V.setTaskKey(taskDistributionDOByOrderId.getTaskKey());
                 V.setTaskId(taskDistributionDOByOrderId.getTaskId());

@@ -73,7 +73,7 @@ public class ZhongAnHttpUtil {
             returnMap1 = (Map)JSON.parse(param1);
         }else{
            // Thread.sleep(1000);
-            queryInfo(name,tel,idcard,appNo,loanPeriod,appRole,ralationship,applyNo);
+            returnMap1 = queryInfo(name,tel,idcard,appNo,loanPeriod,appRole,ralationship,applyNo);
         }
         return returnMap1;
     }

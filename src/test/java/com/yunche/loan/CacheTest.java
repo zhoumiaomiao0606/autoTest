@@ -13,11 +13,13 @@ import com.yunche.loan.domain.vo.GpsDetailTotalVO;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.AppLoanOrderService;
 import com.yunche.loan.service.AuxiliaryService;
+import net.sf.json.JSONObject;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +38,14 @@ public class CacheTest extends BaseTest {
     @Resource
     AppLoanOrderService appLoanOrderService;
 
+    @Test
 
-   @Test
+    public void getAAA(){
+        Map map = new HashMap();
+        boolean fals = (boolean)map.get("A");
+    }
+
+   //@Test
     public void doA1123(){
         try {
             /*ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
