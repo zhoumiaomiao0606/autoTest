@@ -205,7 +205,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
-//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
+        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -275,7 +275,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
+        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -467,8 +467,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 另一个[征信录入]  ->  未提交
             if (TASK_PROCESS_TODO.equals(creditRecordStatus)) {
 
-                Task bank_social_credit_record_task = loanProcessApprovalCommonService.getTask(
-                        loanOrderDO.getProcessInstId(), BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode());
+                Task bank_social_credit_record_task = taskService.createTaskQuery()
+                        .processInstanceId(loanOrderDO.getProcessInstId())
+                        .taskDefinitionKey(BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode())
+                        .singleResult();
 
                 String rollBackFromTaskKey = null;
 
@@ -608,7 +610,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             throw new BizException("[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]暂不支持反审");
         }
 
-        return ResultBean.ofSuccess(null, "[反审]发起成功");
+        return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "-反审]发起成功");
     }
 
     /**
