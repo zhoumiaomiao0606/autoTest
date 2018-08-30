@@ -2201,7 +2201,7 @@
     <select id="selectZhonganList" parameterType="com.yunche.loan.domain.query.ZhonganListQuery" resultType="com.yunche.loan.domain.vo.ZhonganListVO">
         select
           DATE_FORMAT(z.create_date,'%Y-%m-%d %H:%i:%S') as createDate,
-          DATE_FORMAT(z.create_date,'%Y-%m-%d %H:%i:%S') as chooseDate,
+          DATE_FORMAT(z.create_date,'%Y-%m-%d') as chooseDate,
           customer.name									 as customerName,
           customer.id_card								 as customerIdCard,
           z.customer_type								 as customerType,

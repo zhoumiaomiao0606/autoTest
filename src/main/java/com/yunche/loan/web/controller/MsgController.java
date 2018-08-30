@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.service.JpushService;
+import com.yunche.loan.service.MsgService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
@@ -17,6 +18,9 @@ public class MsgController {
     @Resource
     private JpushService jpushService;
 
+    @Resource
+    private MsgService msgService;
+
 
     @GetMapping(value = "/list")
     public ResultBean list(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
@@ -28,4 +32,16 @@ public class MsgController {
         jpushService.read(id);
         return ResultBean.ofSuccess(null);
     }
+
+    @GetMapping(value = "/creditDetail")
+    public ResultBean creditDetail(@RequestParam Long orderId) {
+        return ResultBean.ofSuccess(msgService.creditDetail(orderId));
+    }
+
+    @GetMapping(value = "/msgDetail")
+    public ResultBean msgDetail(@RequestParam Long msgId) {
+        return ResultBean.ofSuccess(msgService.msgDetail(msgId));
+    }
+
+
 }
