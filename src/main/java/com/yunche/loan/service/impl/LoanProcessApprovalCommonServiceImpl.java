@@ -4,14 +4,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.JpushService;
-import com.yunche.loan.service.LoanProcessApprovalCommonService;
-import com.yunche.loan.service.TaskDistributionService;
+import com.yunche.loan.service.*;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
@@ -25,20 +24,22 @@ import org.springframework.util.CollectionUtils;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_END;
+import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
+import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_COLLECTION_KEYS;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_INSTEAD_PAY_KEYS;
 import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_LEGAL_KEYS;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_AUTO;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_MANUAL;
+import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C;
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_SOCIAL_CREDIT_RECORD_FILTER;
 import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static java.util.stream.Collectors.toList;
 
@@ -52,7 +53,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
     private static final Logger logger = LoggerFactory.getLogger(LoanProcessApprovalCommonServiceImpl.class);
 
     private static final Long AUTO_EMPLOYEE_ID = 878L;
+
     private static final String AUTO_EMPLOYEE_NAME = "自动任务";
+
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -80,6 +83,12 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
     @Autowired
     private LoanProcessLegalDOMapper loanProcessLegalDOMapper;
+
+    @Autowired
+    private LoanDataFlowService loanDataFlowService;
+
+    @Autowired
+    private DictService dictService;
 
     @Autowired
     private TaskService taskService;
@@ -475,6 +484,218 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()),
                 "当前订单" + getOrderStatusText(loanProcessDO));
     }
+
+    /**
+     * 更新本地流程记录
+     *
+     * @param loanProcessDO
+     */
+    @Override
+    public void updateLoanProcess(LoanProcessDO loanProcessDO) {
+
+        loanProcessDO.setGmtModify(new Date());
+        int count = loanProcessDOMapper.updateByPrimaryKeySelective(loanProcessDO);
+
+        Preconditions.checkArgument(count > 0, "更新本地流程记录失败");
+    }
+
+    /**
+     * 完成任务   ==>   在activiti中完成
+     *
+     * @param taskId
+     * @param variables
+     */
+    @Override
+    public void completeTask(String taskId, Map<String, Object> variables) {
+        // 执行任务
+        taskService.complete(taskId, variables);
+    }
+
+    /**
+     * 更新本地已执行的任务状态
+     *
+     * @param loanProcessDO
+     * @param taskDefinitionKey
+     * @param taskProcessStatus
+     * @param approval
+     */
+    @Override
+    public void updateCurrentTaskProcessStatus(LoanProcessDO loanProcessDO, String taskDefinitionKey,
+                                               Byte taskProcessStatus, ApprovalParam approval) {
+
+        if (null == taskProcessStatus) {
+            return;
+        }
+
+        if (taskDefinitionKey.startsWith("filter")) {
+            return;
+        }
+
+        // 更新资料流转type
+        doUpdateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus, approval);
+
+        // 执行更新
+        doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
+    }
+
+    /**
+     * 更新资料流转type
+     *
+     * @param loanProcessDO
+     * @param taskDefinitionKey
+     * @param taskProcessStatus
+     * @param approval
+     */
+    private void doUpdateDataFlowType(LoanProcessDO loanProcessDO, String taskDefinitionKey, Byte taskProcessStatus, ApprovalParam approval) {
+
+        // 如果是：[资料流转]节点
+        if (taskDefinitionKey.startsWith(DATA_FLOW_TASK_KEY_PREFIX)) {
+
+            String[] taskKeyArr = taskDefinitionKey.split(DATA_FLOW_TASK_KEY_REVIEW_SUFFIX);
+
+            // 是否为：[确认接收]节点     _review
+            boolean is_review_task_key = taskDefinitionKey.endsWith(DATA_FLOW_TASK_KEY_REVIEW_SUFFIX) && taskKeyArr.length == 1;
+
+            // send   task-key
+            String send_task_key = taskKeyArr[0];
+            // review task-key
+            String review_task_key = null;
+
+            if (is_review_task_key) {
+                review_task_key = taskDefinitionKey;
+            } else {
+                review_task_key = taskDefinitionKey + DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
+            }
+
+            // taskKey - type  映射
+            Map<String, String> codeKMap = dictService.getCodeKMap("loanDataFlowType");
+
+            // send-type
+            Byte send_type = Byte.valueOf(codeKMap.get(send_task_key));
+            // review-type
+            Byte review_type = Byte.valueOf(codeKMap.get(review_task_key));
+
+            Preconditions.checkNotNull(send_type, "资料流转-taskDefinitionKey异常");
+            Preconditions.checkNotNull(review_type, "资料流转-taskDefinitionKey异常");
+
+
+            // send   存在状态：1、2、3
+            if (!is_review_task_key) {
+
+                // 1
+                if (TASK_PROCESS_DONE.equals(taskProcessStatus)) {
+
+                    // update  type -> next_review_taskKey--type
+
+                    updateDataFlowType(loanProcessDO.getOrderId(), send_type, review_type);
+                }
+
+                // 2   新建记录
+                else if (TASK_PROCESS_TODO.equals(taskProcessStatus)) {
+
+                    // create  type -> send_taskKey--type
+
+                    preRecordDataFlowOrderAndType(loanProcessDO.getOrderId(), send_type, approval);
+                }
+
+                // 3
+                else if (TASK_PROCESS_REJECT.equals(taskProcessStatus)) {
+
+                    // update   type -> send_taskKey--type
+
+                    updateDataFlowType(loanProcessDO.getOrderId(), review_type, send_type);
+                }
+
+            }
+
+            // _review    存在状态：0、1、2
+            else {
+
+                // 0
+                if (TASK_PROCESS_INIT.equals(taskProcessStatus)) {
+
+                    // update   type -> send_taskKey--type
+
+                    updateDataFlowType(loanProcessDO.getOrderId(), review_type, send_type);
+                }
+
+                // 1
+                else if (TASK_PROCESS_DONE.equals(taskProcessStatus)) {
+
+                    // nothing    让下一个节点自己create
+
+                }
+
+                // 2
+                else if (TASK_PROCESS_TODO.equals(taskProcessStatus)) {
+
+                    // update  type -> next_review_taskKey--type
+
+                    updateDataFlowType(loanProcessDO.getOrderId(), send_type, review_type);
+                }
+
+            }
+        }
+    }
+
+    /**
+     * 资料流转-SEND-TODO待办节点-预处理：插入一条待处理的节点记录 -> orderId、type
+     *
+     * @param orderId
+     * @param sendType
+     * @param approval
+     */
+    private void preRecordDataFlowOrderAndType(Long orderId, Byte sendType, ApprovalParam approval) {
+
+        // 【资料流转（抵押资料 - 合伙人->公司）】任务 -[新建]
+        if (isDataFlowMortgageP2cNewTask(approval.getOriginalTaskDefinitionKey(), approval.getOriginalAction())) {
+            // [提交之前]已经create过了  不能重复创建
+            return;
+        }
+
+        LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+
+        loanDataFlowDO.setOrderId(orderId);
+        loanDataFlowDO.setType(sendType);
+
+        ResultBean result = loanDataFlowService.create(loanDataFlowDO);
+        Preconditions.checkArgument(result.getSuccess(), result.getMsg());
+    }
+
+    /**
+     * 【资料流转（抵押资料 - 合伙人->公司）】任务 -[新建]
+     *
+     * @param taskDefinitionKey
+     * @param action
+     * @return
+     */
+    private boolean isDataFlowMortgageP2cNewTask(String taskDefinitionKey, Byte action) {
+        // 新建【资料流转（抵押资料 - 合伙人->公司）】单据
+        boolean isDataFlowMortgageP2cNewTask = DATA_FLOW_MORTGAGE_P2C.getCode().equals(taskDefinitionKey)
+                && ACTION_NEW_TASK.equals(action);
+        return isDataFlowMortgageP2cNewTask;
+    }
+
+    /**
+     * 更新资料流转type
+     *
+     * @param orderId
+     * @param current_type
+     * @param to_be_update_type
+     */
+    private void updateDataFlowType(Long orderId, Byte current_type, Byte to_be_update_type) {
+
+        LoanDataFlowDO loanDataFlowDO = loanDataFlowService.getLastByOrderIdAndType(orderId, current_type);
+
+        if (null != loanDataFlowDO) {
+
+            loanDataFlowDO.setType(to_be_update_type);
+
+            ResultBean updateResultBean = loanDataFlowService.update(loanDataFlowDO);
+            Preconditions.checkArgument(updateResultBean.getSuccess(), updateResultBean.getMsg());
+        }
+    }
+
 
     /**
      * 订单状态Text

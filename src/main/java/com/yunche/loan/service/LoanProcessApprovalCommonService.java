@@ -7,6 +7,7 @@ import com.yunche.loan.domain.param.ApprovalParam;
 import org.activiti.engine.task.Task;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 流程审核 公用方法
@@ -116,4 +117,30 @@ public interface LoanProcessApprovalCommonService {
      * @param orderId
      */
     void checkOrderStatus(Long orderId);
+
+    /**
+     * 更新本地流程记录
+     *
+     * @param loanProcessDO
+     */
+    void updateLoanProcess(LoanProcessDO loanProcessDO);
+
+    /**
+     * 完成任务   ==>   在activiti中完成
+     *
+     * @param taskId
+     * @param variables
+     */
+    void completeTask(String taskId, Map<String, Object> variables);
+
+    /**
+     * 更新本地已执行的任务状态
+     *
+     * @param loanProcessDO
+     * @param taskDefinitionKey
+     * @param taskProcessStatus
+     * @param approval
+     */
+    void updateCurrentTaskProcessStatus(LoanProcessDO loanProcessDO, String taskDefinitionKey,
+                                        Byte taskProcessStatus, ApprovalParam approval);
 }
