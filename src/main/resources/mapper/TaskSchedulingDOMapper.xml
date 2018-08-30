@@ -1060,7 +1060,7 @@
               <if test="orderId != null">
                   AND tab.id = #{orderId}
               </if>
-              <if test="customer != null">
+              <if test="customer != null and customer != ''">
                   AND tab.customer LIKE CONCAT('%', #{customer} ,'%')
               </if>
               <if test="mobile != null">
