@@ -1,10 +1,13 @@
 package com.yunche.loan.domain.vo;
 
+import lombok.Data;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-08-28 18:27
  * @description:
  **/
+@Data
 public class ExportRemitDetailQueryForRemitOrderVO
 {
     //业务区域
