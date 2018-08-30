@@ -30,7 +30,6 @@
         <result column="customer_repay_plan" property="customerRepayPlan" jdbcType="TINYINT"/>
         <result column="business_pay" property="businessPay" jdbcType="TINYINT"/>
         <result column="cancel_task_def_key" property="cancelTaskDefKey" jdbcType="VARCHAR"/>
-        <result column="loan_apply_reject_orgin_task" property="loanApplyRejectOrginTask" jdbcType="VARCHAR"/>
         <result column="order_status" property="orderStatus" jdbcType="TINYINT"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
@@ -57,12 +56,11 @@
         car_insurance, vehicle_information, apply_license_plate_deposit_info, install_gps,
         commit_key, material_review, material_print_review, material_manage, apply_instalment,
         business_review, loan_review, remit_review, bank_lend_record, bank_card_send, customer_repay_plan,
-        business_pay, cancel_task_def_key, loan_apply_reject_orgin_task, order_status, gmt_create,
-        gmt_modify, data_flow_contract_p2c, data_flow_contract_p2c_review, data_flow_contract_c2b,
-        data_flow_contract_c2b_review, data_flow_mortgage_b2c, data_flow_mortgage_b2c_review,
-        data_flow_mortgage_c2p, data_flow_mortgage_c2p_review, data_flow_mortgage_p2c, data_flow_mortgage_p2c_review,
-        data_flow_mortgage_c2b, data_flow_mortgage_c2b_review, data_flow_register_p2c, data_flow_register_p2c_review,
-        data_flow_register_c2b, data_flow_register_c2b_review
+        business_pay, cancel_task_def_key, order_status, gmt_create, gmt_modify, data_flow_contract_p2c,
+        data_flow_contract_p2c_review, data_flow_contract_c2b, data_flow_contract_c2b_review,
+        data_flow_mortgage_b2c, data_flow_mortgage_b2c_review, data_flow_mortgage_c2p, data_flow_mortgage_c2p_review,
+        data_flow_mortgage_p2c, data_flow_mortgage_p2c_review, data_flow_mortgage_c2b, data_flow_mortgage_c2b_review,
+        data_flow_register_p2c, data_flow_register_p2c_review, data_flow_register_c2b, data_flow_register_c2b_review
     </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
@@ -84,17 +82,16 @@
         material_print_review, material_manage, apply_instalment,
         business_review, loan_review, remit_review,
         bank_lend_record, bank_card_send, customer_repay_plan,
-        business_pay, cancel_task_def_key, loan_apply_reject_orgin_task,
-        order_status, gmt_create, gmt_modify,
-        data_flow_contract_p2c, data_flow_contract_p2c_review,
-        data_flow_contract_c2b, data_flow_contract_c2b_review,
-        data_flow_mortgage_b2c, data_flow_mortgage_b2c_review,
-        data_flow_mortgage_c2p, data_flow_mortgage_c2p_review,
-        data_flow_mortgage_p2c, data_flow_mortgage_p2c_review,
-        data_flow_mortgage_c2b, data_flow_mortgage_c2b_review,
-        data_flow_register_p2c, data_flow_register_p2c_review,
-        data_flow_register_c2b, data_flow_register_c2b_review
-        )
+        business_pay, cancel_task_def_key, order_status,
+        gmt_create, gmt_modify, data_flow_contract_p2c,
+        data_flow_contract_p2c_review, data_flow_contract_c2b,
+        data_flow_contract_c2b_review, data_flow_mortgage_b2c,
+        data_flow_mortgage_b2c_review, data_flow_mortgage_c2p,
+        data_flow_mortgage_c2p_review, data_flow_mortgage_p2c,
+        data_flow_mortgage_p2c_review, data_flow_mortgage_c2b,
+        data_flow_mortgage_c2b_review, data_flow_register_p2c,
+        data_flow_register_p2c_review, data_flow_register_c2b,
+        data_flow_register_c2b_review)
         values (#{orderId,jdbcType=BIGINT}, #{creditApply,jdbcType=TINYINT}, #{loanInfoRecord,jdbcType=TINYINT},
         #{bankCreditRecord,jdbcType=TINYINT}, #{socialCreditRecord,jdbcType=TINYINT}, #{loanApply,jdbcType=TINYINT},
         #{visitVerify,jdbcType=TINYINT}, #{bankOpenCard,jdbcType=TINYINT}, #{telephoneVerify,jdbcType=TINYINT},
@@ -104,17 +101,16 @@
         #{materialPrintReview,jdbcType=TINYINT}, #{materialManage,jdbcType=TINYINT}, #{applyInstalment,jdbcType=TINYINT},
         #{businessReview,jdbcType=TINYINT}, #{loanReview,jdbcType=TINYINT}, #{remitReview,jdbcType=TINYINT},
         #{bankLendRecord,jdbcType=TINYINT}, #{bankCardSend,jdbcType=TINYINT}, #{customerRepayPlan,jdbcType=TINYINT},
-        #{businessPay,jdbcType=TINYINT}, #{cancelTaskDefKey,jdbcType=VARCHAR}, #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
-        #{orderStatus,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{dataFlowContractP2c,jdbcType=TINYINT}, #{dataFlowContractP2cReview,jdbcType=TINYINT},
-        #{dataFlowContractC2b,jdbcType=TINYINT}, #{dataFlowContractC2bReview,jdbcType=TINYINT},
-        #{dataFlowMortgageB2c,jdbcType=TINYINT}, #{dataFlowMortgageB2cReview,jdbcType=TINYINT},
-        #{dataFlowMortgageC2p,jdbcType=TINYINT}, #{dataFlowMortgageC2pReview,jdbcType=TINYINT},
-        #{dataFlowMortgageP2c,jdbcType=TINYINT}, #{dataFlowMortgageP2cReview,jdbcType=TINYINT},
-        #{dataFlowMortgageC2b,jdbcType=TINYINT}, #{dataFlowMortgageC2bReview,jdbcType=TINYINT},
-        #{dataFlowRegisterP2c,jdbcType=TINYINT}, #{dataFlowRegisterP2cReview,jdbcType=TINYINT},
-        #{dataFlowRegisterC2b,jdbcType=TINYINT}, #{dataFlowRegisterC2bReview,jdbcType=TINYINT}
-        )
+        #{businessPay,jdbcType=TINYINT}, #{cancelTaskDefKey,jdbcType=VARCHAR}, #{orderStatus,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{dataFlowContractP2c,jdbcType=TINYINT},
+        #{dataFlowContractP2cReview,jdbcType=TINYINT}, #{dataFlowContractC2b,jdbcType=TINYINT},
+        #{dataFlowContractC2bReview,jdbcType=TINYINT}, #{dataFlowMortgageB2c,jdbcType=TINYINT},
+        #{dataFlowMortgageB2cReview,jdbcType=TINYINT}, #{dataFlowMortgageC2p,jdbcType=TINYINT},
+        #{dataFlowMortgageC2pReview,jdbcType=TINYINT}, #{dataFlowMortgageP2c,jdbcType=TINYINT},
+        #{dataFlowMortgageP2cReview,jdbcType=TINYINT}, #{dataFlowMortgageC2b,jdbcType=TINYINT},
+        #{dataFlowMortgageC2bReview,jdbcType=TINYINT}, #{dataFlowRegisterP2c,jdbcType=TINYINT},
+        #{dataFlowRegisterP2cReview,jdbcType=TINYINT}, #{dataFlowRegisterC2b,jdbcType=TINYINT},
+        #{dataFlowRegisterC2bReview,jdbcType=TINYINT})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
         insert into loan_process
@@ -202,9 +198,6 @@
             </if>
             <if test="cancelTaskDefKey != null">
                 cancel_task_def_key,
-            </if>
-            <if test="loanApplyRejectOrginTask != null">
-                loan_apply_reject_orgin_task,
             </if>
             <if test="orderStatus != null">
                 order_status,
@@ -349,9 +342,6 @@
             <if test="cancelTaskDefKey != null">
                 #{cancelTaskDefKey,jdbcType=VARCHAR},
             </if>
-            <if test="loanApplyRejectOrginTask != null">
-                #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
-            </if>
             <if test="orderStatus != null">
                 #{orderStatus,jdbcType=TINYINT},
             </if>
@@ -495,9 +485,6 @@
             <if test="cancelTaskDefKey != null">
                 cancel_task_def_key = #{cancelTaskDefKey,jdbcType=VARCHAR},
             </if>
-            <if test="loanApplyRejectOrginTask != null">
-                loan_apply_reject_orgin_task = #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
-            </if>
             <if test="orderStatus != null">
                 order_status = #{orderStatus,jdbcType=TINYINT},
             </if>
@@ -559,54 +546,53 @@
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
-        update loan_process
-        set credit_apply = #{creditApply,jdbcType=TINYINT},
-        loan_info_record = #{loanInfoRecord,jdbcType=TINYINT},
-        bank_credit_record = #{bankCreditRecord,jdbcType=TINYINT},
-        social_credit_record = #{socialCreditRecord,jdbcType=TINYINT},
-        loan_apply = #{loanApply,jdbcType=TINYINT},
-        visit_verify = #{visitVerify,jdbcType=TINYINT},
-        bank_open_card = #{bankOpenCard,jdbcType=TINYINT},
-        telephone_verify = #{telephoneVerify,jdbcType=TINYINT},
-        financial_scheme = #{financialScheme,jdbcType=TINYINT},
-        bank_card_record = #{bankCardRecord,jdbcType=TINYINT},
-        car_insurance = #{carInsurance,jdbcType=TINYINT},
-        vehicle_information = #{vehicleInformation,jdbcType=TINYINT},
-        apply_license_plate_deposit_info = #{applyLicensePlateDepositInfo,jdbcType=TINYINT},
-        install_gps = #{installGps,jdbcType=TINYINT},
-        commit_key = #{commitKey,jdbcType=TINYINT},
-        material_review = #{materialReview,jdbcType=TINYINT},
-        material_print_review = #{materialPrintReview,jdbcType=TINYINT},
-        material_manage = #{materialManage,jdbcType=TINYINT},
-        apply_instalment = #{applyInstalment,jdbcType=TINYINT},
-        business_review = #{businessReview,jdbcType=TINYINT},
-        loan_review = #{loanReview,jdbcType=TINYINT},
-        remit_review = #{remitReview,jdbcType=TINYINT},
-        bank_lend_record = #{bankLendRecord,jdbcType=TINYINT},
-        bank_card_send = #{bankCardSend,jdbcType=TINYINT},
-        customer_repay_plan = #{customerRepayPlan,jdbcType=TINYINT},
-        business_pay = #{businessPay,jdbcType=TINYINT},
-        cancel_task_def_key = #{cancelTaskDefKey,jdbcType=VARCHAR},
-        loan_apply_reject_orgin_task = #{loanApplyRejectOrginTask,jdbcType=VARCHAR},
-        order_status = #{orderStatus,jdbcType=TINYINT},
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        data_flow_contract_p2c = #{dataFlowContractP2c,jdbcType=TINYINT},
-        data_flow_contract_p2c_review = #{dataFlowContractP2cReview,jdbcType=TINYINT},
-        data_flow_contract_c2b = #{dataFlowContractC2b,jdbcType=TINYINT},
-        data_flow_contract_c2b_review = #{dataFlowContractC2bReview,jdbcType=TINYINT},
-        data_flow_mortgage_b2c = #{dataFlowMortgageB2c,jdbcType=TINYINT},
-        data_flow_mortgage_b2c_review = #{dataFlowMortgageB2cReview,jdbcType=TINYINT},
-        data_flow_mortgage_c2p = #{dataFlowMortgageC2p,jdbcType=TINYINT},
-        data_flow_mortgage_c2p_review = #{dataFlowMortgageC2pReview,jdbcType=TINYINT},
-        data_flow_mortgage_p2c = #{dataFlowMortgageP2c,jdbcType=TINYINT},
-        data_flow_mortgage_p2c_review = #{dataFlowMortgageP2cReview,jdbcType=TINYINT},
-        data_flow_mortgage_c2b = #{dataFlowMortgageC2b,jdbcType=TINYINT},
-        data_flow_mortgage_c2b_review = #{dataFlowMortgageC2bReview,jdbcType=TINYINT},
-        data_flow_register_p2c = #{dataFlowRegisterP2c,jdbcType=TINYINT},
-        data_flow_register_p2c_review = #{dataFlowRegisterP2cReview,jdbcType=TINYINT},
-        data_flow_register_c2b = #{dataFlowRegisterC2b,jdbcType=TINYINT},
-        data_flow_register_c2b_review = #{dataFlowRegisterC2bReview,jdbcType=TINYINT}
-        where order_id = #{orderId,jdbcType=BIGINT}
-    </update>
+    update loan_process
+    set credit_apply = #{creditApply,jdbcType=TINYINT},
+      loan_info_record = #{loanInfoRecord,jdbcType=TINYINT},
+      bank_credit_record = #{bankCreditRecord,jdbcType=TINYINT},
+      social_credit_record = #{socialCreditRecord,jdbcType=TINYINT},
+      loan_apply = #{loanApply,jdbcType=TINYINT},
+      visit_verify = #{visitVerify,jdbcType=TINYINT},
+      bank_open_card = #{bankOpenCard,jdbcType=TINYINT},
+      telephone_verify = #{telephoneVerify,jdbcType=TINYINT},
+      financial_scheme = #{financialScheme,jdbcType=TINYINT},
+      bank_card_record = #{bankCardRecord,jdbcType=TINYINT},
+      car_insurance = #{carInsurance,jdbcType=TINYINT},
+      vehicle_information = #{vehicleInformation,jdbcType=TINYINT},
+      apply_license_plate_deposit_info = #{applyLicensePlateDepositInfo,jdbcType=TINYINT},
+      install_gps = #{installGps,jdbcType=TINYINT},
+      commit_key = #{commitKey,jdbcType=TINYINT},
+      material_review = #{materialReview,jdbcType=TINYINT},
+      material_print_review = #{materialPrintReview,jdbcType=TINYINT},
+      material_manage = #{materialManage,jdbcType=TINYINT},
+      apply_instalment = #{applyInstalment,jdbcType=TINYINT},
+      business_review = #{businessReview,jdbcType=TINYINT},
+      loan_review = #{loanReview,jdbcType=TINYINT},
+      remit_review = #{remitReview,jdbcType=TINYINT},
+      bank_lend_record = #{bankLendRecord,jdbcType=TINYINT},
+      bank_card_send = #{bankCardSend,jdbcType=TINYINT},
+      customer_repay_plan = #{customerRepayPlan,jdbcType=TINYINT},
+      business_pay = #{businessPay,jdbcType=TINYINT},
+      cancel_task_def_key = #{cancelTaskDefKey,jdbcType=VARCHAR},
+      order_status = #{orderStatus,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      data_flow_contract_p2c = #{dataFlowContractP2c,jdbcType=TINYINT},
+      data_flow_contract_p2c_review = #{dataFlowContractP2cReview,jdbcType=TINYINT},
+      data_flow_contract_c2b = #{dataFlowContractC2b,jdbcType=TINYINT},
+      data_flow_contract_c2b_review = #{dataFlowContractC2bReview,jdbcType=TINYINT},
+      data_flow_mortgage_b2c = #{dataFlowMortgageB2c,jdbcType=TINYINT},
+      data_flow_mortgage_b2c_review = #{dataFlowMortgageB2cReview,jdbcType=TINYINT},
+      data_flow_mortgage_c2p = #{dataFlowMortgageC2p,jdbcType=TINYINT},
+      data_flow_mortgage_c2p_review = #{dataFlowMortgageC2pReview,jdbcType=TINYINT},
+      data_flow_mortgage_p2c = #{dataFlowMortgageP2c,jdbcType=TINYINT},
+      data_flow_mortgage_p2c_review = #{dataFlowMortgageP2cReview,jdbcType=TINYINT},
+      data_flow_mortgage_c2b = #{dataFlowMortgageC2b,jdbcType=TINYINT},
+      data_flow_mortgage_c2b_review = #{dataFlowMortgageC2bReview,jdbcType=TINYINT},
+      data_flow_register_p2c = #{dataFlowRegisterP2c,jdbcType=TINYINT},
+      data_flow_register_p2c_review = #{dataFlowRegisterP2cReview,jdbcType=TINYINT},
+      data_flow_register_c2b = #{dataFlowRegisterC2b,jdbcType=TINYINT},
+      data_flow_register_c2b_review = #{dataFlowRegisterC2bReview,jdbcType=TINYINT}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
 </mapper>
