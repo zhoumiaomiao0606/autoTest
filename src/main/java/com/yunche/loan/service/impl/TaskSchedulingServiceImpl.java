@@ -16,6 +16,7 @@ import com.yunche.loan.domain.param.FlowOperationMsgParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.ScheduleTaskQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
+import com.yunche.loan.domain.query.ZhonganListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
@@ -84,6 +85,58 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     private LoanQueryDOMapper loanQueryDOMapper;
 
     @Override
+    public ResultBean<List<ZhonganListVO>> selectZhonganList(ZhonganListQuery query) {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        query.setMaxGroupLevel(maxGroupLevel);
+        query.setJuniorIds(juniorIds);
+        //获取用户可见的区域
+        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        //获取用户可见的银行
+        query.setBankList(getUserHaveBank(loginUser.getId()));
+        PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
+        List list = taskSchedulingDOMapper.selectZhonganList(query);
+        PageInfo<ZhonganListVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+
+    }
+
+    @Override
+    public ResultBean<Map> appCount() {
+        ResultBean<Long> countScheduletask = countScheduletasklist();
+        ResultBean<Long> countCredit = countFlowOperationMsgList(new Long("1"));
+        ResultBean<Long> countRisk = countFlowOperationMsgList(new Long("2"));
+        ResultBean<Long> countBusi = countFlowOperationMsgList(new Long("3"));
+        Map map = new HashMap();
+        map.put("countScheduletask",countScheduletask.getData());
+        map.put("countCredit",countCredit.getData());
+        map.put("countRisk",countRisk.getData());
+        map.put("countBusi",countBusi.getData());
+        return ResultBean.ofSuccess(map);
+    }
+
+    @Override
+    public ResultBean<Long> countFlowOperationMsgList(Long multipartType) {
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        FlowOperationMsgParam query = new FlowOperationMsgParam();
+        query.setMultipartType(multipartType);
+        query.setMaxGroupLevel(maxGroupLevel);
+        query.setJuniorIds(juniorIds);
+        //获取用户可见的区域
+        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        //获取用户可见的银行
+        query.setBankList(getUserHaveBank(loginUser.getId()));
+        query.setReadStatus(new Long("0"));
+        long count = PageHelper.count(() -> {
+            taskSchedulingDOMapper.selectFlowOperationMsgList(query);
+        });
+        return ResultBean.ofSuccess(count);
+    }
+
+    @Override
     public ResultBean<List<FlowOperationMsgListVO>> selectFlowOperationMsgList(FlowOperationMsgParam query) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
@@ -147,7 +200,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     @Override
-    public ResultBean<Long> countScheduletasklist(String key, Integer pageIndex, Integer pageSize) {
+    public ResultBean<Long> countScheduletasklist() {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
@@ -160,7 +213,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         ScheduleTaskQuery query = new ScheduleTaskQuery();
         query.setJuniorIds(juniorIds);
-        query.setKey(key);
         query.setEmployeeId(loginUser.getId());
         query.setTelephoneVerifyLevel(telephoneVerifyLevel);
         query.setFinanceLevel(financeLevel);

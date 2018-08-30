@@ -6,6 +6,7 @@ import com.yunche.loan.domain.param.FlowOperationMsgParam;
 import com.yunche.loan.domain.param.TaskDistributionParam;
 import com.yunche.loan.domain.query.AppTaskListQuery;
 import com.yunche.loan.domain.query.TaskListQuery;
+import com.yunche.loan.domain.query.ZhonganListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TaskDistributionService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 任务调度中心
@@ -36,9 +38,24 @@ public class TaskSchedulingController {
     /**
      * 领取
      */
+    @GetMapping(value = "/appCount")
+    public ResultBean<Map> appCount() {
+        return taskSchedulingService.appCount();
+    }
+    /**
+     * 领取
+     */
     @PostMapping(value = "/flowOperationMsgList")
     public ResultBean<List<FlowOperationMsgListVO>> flowOperationMsgList(@RequestBody @Validated FlowOperationMsgParam param) {
         return taskSchedulingService.selectFlowOperationMsgList(param);
+    }
+
+    /**
+     * 领取
+     */
+    @PostMapping(value = "/zhonganList")
+    public ResultBean<List<ZhonganListVO>> zhonganList(@RequestBody @Validated ZhonganListQuery param) {
+        return taskSchedulingService.selectZhonganList(param);
     }
     /**
      * 是否属于银行单子
@@ -104,10 +121,8 @@ public class TaskSchedulingController {
      */
     @Limiter(value = "/api/v1/taskscheduling/countScheduletasklist", limit = 2)
     @GetMapping(value = "/countScheduletasklist")
-    public ResultBean<Long> countScheduletasklist(@RequestParam(required = false) String key,
-                                                  @RequestParam Integer pageIndex,
-                                                  @RequestParam Integer pageSize) {
-        return taskSchedulingService.countScheduletasklist(key, pageIndex, pageSize);
+    public ResultBean<Long> countScheduletasklist() {
+        return taskSchedulingService.countScheduletasklist();
     }
 
 

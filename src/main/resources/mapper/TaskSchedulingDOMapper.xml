@@ -2162,6 +2162,9 @@
                     left join loan_base_info base on o.loan_base_info_id = base.id
                     left join loan_customer customer on customer.id = o.loan_customer_id
                 where 1=1
+                <if test="readStatus!=null">
+                    and msg.read_status = #{readStatus}
+                </if>
                 and
                 CASE WHEN  #{maxGroupLevel}  = 0 THEN false
                      when  #{maxGroupLevel} = 1 then
@@ -2194,5 +2197,45 @@
                 </if>
                end
         ORDER By msg.send_date DESC
+    </select>
+    <select id="selectZhonganList" parameterType="com.yunche.loan.domain.query.ZhonganListQuery" resultType="com.yunche.loan.domain.vo.ZhonganListVO">
+        select
+          DATE_FORMAT(z.create_date,'%Y-%m-%d %H:%i:%S') as createDate,
+          DATE_FORMAT(z.create_date,'%Y-%m-%d %H:%i:%S') as chooseDate,
+          customer.name									 as customerName,
+          customer.id_card								 as customerIdCard,
+          z.customer_type								 as customerType,
+          z.order_id                                     as orderId
+
+          from zhongan_info z
+          left join loan_order o on o.id = z.order_id
+          left join loan_base_info base on o.loan_base_info_id = base.id
+          left join loan_customer customer on customer.id = o.loan_customer_id
+          and
+          CASE WHEN  #{maxGroupLevel}  = 0 THEN false
+          when  #{maxGroupLevel} = 1 then
+          base.salesman_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+          else true end
+          and
+          case when #{maxGroupLevel} = 3 then 1=1
+          else 1=1
+          <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+              and
+              base.partner_id in
+              <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                  #{item}
+              </foreach>
+          </if>
+          <if test="bankList != null and bankList.size() > 0">
+              and
+              base.partner_id in
+              <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                  #{item}
+              </foreach>
+          </if>
+          end
     </select>
 </mapper>
