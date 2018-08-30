@@ -7,8 +7,13 @@ import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TaskSchedulingService {
+
+    ResultBean<Map> appCount();
+
+    ResultBean<Long> countFlowOperationMsgList(Long multipartType);
 
     ResultBean<List<FlowOperationMsgListVO>> selectFlowOperationMsgList(FlowOperationMsgParam param);
 
@@ -22,5 +27,5 @@ public interface TaskSchedulingService {
 
     ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery);
 
-    ResultBean<Long> countScheduletasklist(String key, Integer pageIndex, Integer pageSize);
+    ResultBean<Long> countScheduletasklist();
 }

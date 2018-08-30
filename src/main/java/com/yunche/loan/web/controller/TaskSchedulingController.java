@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 任务调度中心
@@ -33,6 +34,13 @@ public class TaskSchedulingController {
     @Resource
     private LoanQueryService loanQueryService;
 
+    /**
+     * 领取
+     */
+    @GetMapping(value = "/appCount")
+    public ResultBean<Map> appCount() {
+        return taskSchedulingService.appCount();
+    }
     /**
      * 领取
      */
@@ -104,10 +112,8 @@ public class TaskSchedulingController {
      */
     @Limiter(value = "/api/v1/taskscheduling/countScheduletasklist", limit = 2)
     @GetMapping(value = "/countScheduletasklist")
-    public ResultBean<Long> countScheduletasklist(@RequestParam(required = false) String key,
-                                                  @RequestParam Integer pageIndex,
-                                                  @RequestParam Integer pageSize) {
-        return taskSchedulingService.countScheduletasklist(key, pageIndex, pageSize);
+    public ResultBean<Long> countScheduletasklist() {
+        return taskSchedulingService.countScheduletasklist();
     }
 
 

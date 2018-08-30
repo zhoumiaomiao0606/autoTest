@@ -22,6 +22,8 @@ public class FlowOperationMsgParam {
     @NotNull
     private Integer pageSize;
     @NotNull
+
+    Long readStatus;
     Long multipartType;
     Long maxGroupLevel;
     private List<Long> bizAreaIdList = Lists.newArrayList();//区域ID列表
