@@ -1061,7 +1061,7 @@
                   AND tab.id = #{orderId}
               </if>
               <if test="customer != null">
-                  AND tab.customer = #{customer}
+                  AND tab.customer LIKE CONCAT('%', #{customer} ,'%')
               </if>
               <if test="mobile != null">
                   AND tab.mobile = #{mobile}
