@@ -1113,10 +1113,10 @@
                   </if>
               </if>
               <if test="minRemitAmount != null">
-                  AND tab.remitAmount &lt;= #{minRemitAmount}
+                  AND tab.remitAmount &gt;=  #{minRemitAmount}
               </if>
             <if test="maxRemitAmount != null">
-                AND tab.remitAmount &gt;= #{maxRemitAmount}
+                AND tab.remitAmount &lt;= #{maxRemitAmount}
             </if>
               <if test="carType != null">
                   AND tab.carType = #{carType}
@@ -1866,6 +1866,7 @@
                                     LEFT JOIN   employee             				AS e     ON   e.id = b.salesman_id
                                     LEFT JOIN   department           				AS d     ON	  d.id = e.department_id
                                     LEFT JOIN   partner             				AS p     ON   p.id = b.partner_id
+                                    LEFT JOIN   current_node_manager                AS complex_log on complex_log.order_id = a.id
 
                         <where>
                             <if test="orderId != null and orderId != '' ">
@@ -1882,6 +1883,12 @@
                             </if>
                             <if test="partnerId != null">
                                 AND p.id = #{partnerId}
+                            </if>
+                            <if test="startPrintGmtCreate != null">
+                                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startPrintGmtCreate})
+                            </if>
+                            <if test="endPrintGmtCreate != null">
+                                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endPrintGmtCreate})
                             </if>
                             <if test="dataFlowTypeList != null and dataFlowTypeList.size() > 0">
                                 AND  df.type IN
