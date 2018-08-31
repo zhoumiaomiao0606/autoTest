@@ -710,8 +710,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 bankCreditProcess(orderId, phybrno, loanCustomerDO);
             }
         }
-        //如果银行接口直接返回失败，或拒贷，直接打回到贷款申请
-        back2creditpply(orderId,customers);
+//        //如果银行接口直接返回失败，或拒贷，直接打回到贷款申请
+//        back2creditpply(orderId,customers);
     }
 
     private void bankCreditProcess(Long orderId, String phybrno, LoanCustomerDO loanCustomerDO) {
@@ -829,7 +829,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     /**
-     * 银行拒绝直接打回到征信申请
+     * 银行拒绝直接打回到征信申请（待定）
      * @param orderId
      * @param customers
      */
