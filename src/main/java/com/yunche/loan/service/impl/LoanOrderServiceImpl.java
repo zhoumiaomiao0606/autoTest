@@ -413,9 +413,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 //（个性化）如果上牌地是区县一级，则返回形式为 省+区
                 if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
                     Long parentAreaId = baseAreaDO.getParentAreaId();
-                    BaseAreaDO provenceDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
-                    baseAreaDO.setParentAreaId(provenceDO.getAreaId());
-                    baseAreaDO.setParentAreaName(provenceDO.getAreaName());
+                    BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                    baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                    baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
                 }
                 loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
 
