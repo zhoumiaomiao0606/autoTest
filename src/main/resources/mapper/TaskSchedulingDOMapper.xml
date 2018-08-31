@@ -354,7 +354,7 @@
         </foreach>
         else true end
         <if test="customer != null and customer != '' ">
-            AND tab.customer = #{customer}
+            AND tab.customer LIKE CONCAT('%', #{customer} ,'%')
         </if>
         <if test="bankName !=null and bankName != '' ">
             AND tab.bank = #{bankName}
@@ -1112,6 +1112,12 @@
                       AND tab.signRate &gt; 20
                   </if>
               </if>
+              <if test="minRemitAmount != null">
+                  AND tab.remitAmount &gt;=  #{minRemitAmount}
+              </if>
+            <if test="maxRemitAmount != null">
+                AND tab.remitAmount &lt;= #{maxRemitAmount}
+            </if>
               <if test="carType != null">
                   AND tab.carType = #{carType}
               </if>
@@ -1379,10 +1385,16 @@
                 AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
             </if>
             <if test="startPrintGmtCreate != null">
-                AND TO_DAYS(complex_log.usertask_material_print_review_create_time) &lt;= TO_DAYS(#{startPrintGmtCreate})
+                AND TO_DAYS(complex_log.usertask_material_print_review_create_time) &gt;= TO_DAYS(#{startPrintGmtCreate})
             </if>
             <if test="endPrintGmtCreate != null">
                 AND TO_DAYS(complex_log.usertask_material_print_review_create_time) &lt;= TO_DAYS(#{endPrintGmtCreate})
+            </if>
+            <if test="startRemitGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startRemitGmtCreate})
+            </if>
+            <if test="endRemitGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endRemitGmtCreate})
             </if>
 
             <choose>
@@ -1854,6 +1866,7 @@
                                     LEFT JOIN   employee             				AS e     ON   e.id = b.salesman_id
                                     LEFT JOIN   department           				AS d     ON	  d.id = e.department_id
                                     LEFT JOIN   partner             				AS p     ON   p.id = b.partner_id
+                                    LEFT JOIN   current_node_manager                AS complex_log on complex_log.order_id = a.id
 
                         <where>
                             <if test="orderId != null and orderId != '' ">
@@ -1870,6 +1883,12 @@
                             </if>
                             <if test="partnerId != null">
                                 AND p.id = #{partnerId}
+                            </if>
+                            <if test="startPrintGmtCreate != null">
+                                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startPrintGmtCreate})
+                            </if>
+                            <if test="endPrintGmtCreate != null">
+                                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endPrintGmtCreate})
                             </if>
                             <if test="dataFlowTypeList != null and dataFlowTypeList.size() > 0">
                                 AND  df.type IN
@@ -2151,8 +2170,8 @@
         select
                 msg.id 								            AS id,
 		        msg.order_id 					                AS orderId,
-		        msg.title							            AS title,
-		        msg.prompt						                AS prompt,
+        CONCAT(case when customer.name = '' or customer.name = null then '' else customer.name end,msg.title)
+                                                                AS title,
 		        msg.msg								            AS msg,
 		        msg.sender						                AS sender,
 		        msg.process_key				                    AS processKey,
@@ -2207,24 +2226,33 @@
     </select>
     <select id="selectZhonganList" parameterType="com.yunche.loan.domain.query.ZhonganListQuery" resultType="com.yunche.loan.domain.vo.ZhonganListVO">
         select
-          DATE_FORMAT(z.create_date,'%Y-%m-%d %H:%i:%S') as createDate,
-          DATE_FORMAT(z.create_date,'%Y-%m-%d') as chooseDate,
-          customer.name									 as customerName,
-          customer.id_card								 as customerIdCard,
-          z.customer_type								 as customerType,
-          z.order_id                                     as orderId,
-          CONCAT('[众安征信]',case when customer.name = '' or customer.name = null then '' else customer.name end)
-                                                         as title
+        DATE_FORMAT(z.create_date,'%Y-%m-%d %H:%i:%S') as createDate,
+        DATE_FORMAT(z.create_date,'%Y-%m-%d') as chooseDate,
+        customer.name as customerName,
+        customer.id_card as customerIdCard,
+        z.customer_type as customerType,
+        z.order_id as orderId,
+        CONCAT('[众安征信]',case when customer.name = '' or customer.name = null then '' else customer.name end)
+        as title
 
-          from zhongan_info z
-          left join loan_order o on o.id = z.order_id
-          left join loan_base_info base on o.loan_base_info_id = base.id
-          left join loan_customer customer on customer.id = o.loan_customer_id
-          and
-          CASE WHEN  #{maxGroupLevel}  = 0 THEN false
-          when  #{maxGroupLevel} = 1 then
-          base.salesman_id in
-          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+        from
+        (
+          select DISTINCT serial.* from zhongan_info serial
+          inner join
+          (
+          select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_date desc separator ','),',',1)
+          as serial_no
+          from zhongan_info GROUP BY id_card,order_id
+          ) orderdata on orderdata.serial_no = serial.id
+        ) z
+        left join loan_order o on o.id = z.order_id
+        left join loan_base_info base on o.loan_base_info_id = base.id
+        left join loan_customer customer on customer.id = o.loan_customer_id
+        and
+        CASE WHEN #{maxGroupLevel} = 0 THEN false
+        when #{maxGroupLevel} = 1 then
+        base.salesman_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
               #{item}
           </foreach>
           else true end
