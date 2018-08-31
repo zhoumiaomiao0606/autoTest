@@ -2,20 +2,20 @@
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="loan_process_instead_pay" name="代偿流程" isExecutable="true">
     <startEvent id="startevent1" name="Start"></startEvent>
-    <userTask id="usertask_apply_instead_pay" name="申请代偿"></userTask>
+    <userTask id="usertask_apply_instead_pay" name="申请代偿" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管"></userTask>
     <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask_apply_instead_pay"></sequenceFlow>
-    <userTask id="usertask_finance_instead_pay_review" name="财务代偿-确认"></userTask>
+    <userTask id="usertask_finance_instead_pay_review" name="财务代偿-确认" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管"></userTask>
     <sequenceFlow id="flow2" sourceRef="usertask_apply_instead_pay" targetRef="usertask_finance_instead_pay_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow3" sourceRef="usertask_finance_instead_pay_review" targetRef="exclusivegateway1"></sequenceFlow>
-    <userTask id="usertask_partner_instead_pay" name="合伙人代偿"></userTask>
+    <userTask id="usertask_partner_instead_pay" name="合伙人代偿" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管"></userTask>
     <sequenceFlow id="flow4" sourceRef="exclusivegateway1" targetRef="usertask_partner_instead_pay">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask4" name="User Task"></userTask>
-    <userTask id="usertask_partner_instead_pay_review" name="合伙人代偿-确认"></userTask>
+    <userTask id="usertask_partner_instead_pay_review" name="合伙人代偿-确认" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管"></userTask>
     <sequenceFlow id="flow5" sourceRef="usertask_partner_instead_pay" targetRef="usertask_partner_instead_pay_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
