@@ -64,49 +64,49 @@ public class App {
     }
 
 
-    //@Bean
-    //public CommandLineRunner init(RepositoryService repositoryService,
-    //                              ActivitiCache activitiCache,
-    //                              ActivitiService activitiService) {
-//
-    //    return new CommandLineRunner() {
-//
-    //        @Override
-    //        @DistributedLock(60 * 5 * 1000)
-    //        @Transactional(rollbackFor = Exception.class)
-    //        public void run(String... args) throws Exception {
-//
-    //            // 部署
-    //            deploy("processes/loan_process.bpmn", "消费贷流程");
-//
-    //            deploy("processes/loan_process_instead_pay.bpmn", "代偿流程");
-//
-    //            deploy("processes/loan_process_collection.bpmn", "上门催收流程");
-//
-    //            deploy("processes/loan_process_legal.bpmn", "法务处理流程");
-    //        }
-//
-    //        /**
-    //         * 部署新流程
-    //         *
-    //         * @param processClassPathResource
-    //         * @param processName
-    //         */
-    //        private void deploy(String processClassPathResource, String processName) {
-//
-    //            repositoryService.createDeployment()
-    //                    .addClasspathResource(processClassPathResource)
-    //                    .name(processName)
-    //                    .deploy();
-//
-    //            // 流程替换
-    //            activitiService.replaceActivitiVersion(processClassPathResource);
-//
-    //            // 刷新activiti缓存数据
-    //            activitiCache.refresh();
-    //        }
-    //    };
+    @Bean
+    public CommandLineRunner init(RepositoryService repositoryService,
+                                  ActivitiCache activitiCache,
+                                  ActivitiService activitiService) {
 
-    //}
+        return new CommandLineRunner() {
+
+            @Override
+            @DistributedLock(60 * 5 * 1000)
+            @Transactional(rollbackFor = Exception.class)
+            public void run(String... args) throws Exception {
+
+                // 部署
+                deploy("processes/loan_process.bpmn", "消费贷流程");
+
+                deploy("processes/loan_process_instead_pay.bpmn", "代偿流程");
+
+                deploy("processes/loan_process_collection.bpmn", "上门催收流程");
+
+                deploy("processes/loan_process_legal.bpmn", "法务处理流程");
+            }
+
+            /**
+             * 部署新流程
+             *
+             * @param processClassPathResource
+             * @param processName
+             */
+            private void deploy(String processClassPathResource, String processName) {
+
+                repositoryService.createDeployment()
+                        .addClasspathResource(processClassPathResource)
+                        .name(processName)
+                        .deploy();
+
+                // 流程替换
+                activitiService.replaceActivitiVersion(processClassPathResource);
+
+                // 刷新activiti缓存数据
+                activitiCache.refresh();
+            }
+        };
+
+    }
 }
 
