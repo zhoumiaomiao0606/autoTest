@@ -220,6 +220,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
                 // open-新产生的任务    如果新任务是：过去已存在(被打回过)，一律OPEN
                 List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
+
                 // open-被打回过的Tasks
                 taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
             }

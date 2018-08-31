@@ -76,6 +76,9 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
     @Transactional(rollbackFor = Exception.class)
     public ResultBean<Void> execRollBackTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
+        // 先获取提交之前的待执行任务列表
+        List<String> currentTaskIdList = loanProcessApprovalCommonService.getCurrentTaskIdList(loanOrderDO.getProcessInstId());
+
         String taskDefinitionKey = approval.getTaskDefinitionKey();
 
         // [业务申请]
@@ -312,9 +315,6 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
 
             throw new BizException("[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]暂不支持反审");
         }
-
-        // 先获取提交之前的待执行任务列表
-        List<String> currentTaskIdList = loanProcessApprovalCommonService.getCurrentTaskIdList(loanOrderDO.getProcessInstId());
 
         // [领取]完成
         loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId());
