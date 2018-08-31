@@ -2650,8 +2650,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // [征信申请] & [PASS]
         boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
+
         // [银行&社会征信录入]
         boolean isBankAndSocialCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey);
+
         if (isApplyVerifyTaskAndActionIsPass || isBankAndSocialCreditRecordTask) {
 
             // 预计贷款金额

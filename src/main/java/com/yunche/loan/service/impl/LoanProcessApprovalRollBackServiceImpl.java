@@ -286,12 +286,31 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         // [合同套打]
         else if (MATERIAL_PRINT_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
 
+            // [申请分期] - 任务状态
+            Byte applyInstalmentStatus = loanProcessDO.getApplyInstalment();
+
             // 被反审的节点列表
-            List<String> nextTaskKeys = Lists.newArrayList(
-                    MATERIAL_MANAGE.getCode(),
-                    APPLY_INSTALMENT.getCode(),
-                    DATA_FLOW_CONTRACT_C2B.getCode()
-            );
+            List<String> nextTaskKeys = null;
+
+            // 没走 -> [申请分期]
+            if (TASK_PROCESS_INIT.equals(applyInstalmentStatus)) {
+
+                nextTaskKeys = Lists.newArrayList(
+                        MATERIAL_MANAGE.getCode(),
+                        DATA_FLOW_CONTRACT_C2B.getCode()
+                );
+
+            }
+            // 走了 -> [申请分期]
+            else {
+
+                nextTaskKeys = Lists.newArrayList(
+                        MATERIAL_MANAGE.getCode(),
+                        APPLY_INSTALMENT.getCode(),
+                        DATA_FLOW_CONTRACT_C2B.getCode()
+                );
+
+            }
 
             // 领取校验
             checkTaskDistribution(approval.getOrderId(), nextTaskKeys);
