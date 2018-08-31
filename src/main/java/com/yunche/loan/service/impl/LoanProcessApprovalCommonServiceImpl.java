@@ -210,8 +210,10 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
         if (null != approval.getTaskId()) {
 
+            Byte action = approval.getAction();
+
             // PASS
-            if (ACTION_PASS.equals(approval.getAction())) {
+            if (ACTION_PASS.equals(action)) {
 
                 // pass-当前task
                 taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
@@ -222,8 +224,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                 taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
             }
 
-            // REJECT
-            else if (ACTION_REJECT_MANUAL.equals(approval.getAction()) || ACTION_REJECT_AUTO.equals(approval.getAction())) {
+            // REJECT || ROLL_BACK
+            else if (ACTION_REJECT_MANUAL.equals(action) || ACTION_REJECT_AUTO.equals(action)
+                    || ACTION_ROLL_BACK.equals(action)) {
 
                 List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
 
