@@ -94,7 +94,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         commonLenderDO.setId(commonLenderId);
         commonLenderDO.setCustType(CUST_TYPE_PRINCIPAL);
         commonLenderDO.setPrincipalCustId(commonLenderId);
-        principalLenderDO.setCustRelation(CUST_RELATION_self);
+        commonLenderDO.setCustRelation(CUST_RELATION_self);
         commonLenderDO.setGmtModify(new Date());
         loanCustomerDOMapper.updateByPrimaryKeySelective(commonLenderDO);
 

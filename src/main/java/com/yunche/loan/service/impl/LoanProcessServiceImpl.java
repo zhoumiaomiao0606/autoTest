@@ -191,7 +191,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
-        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
+//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -261,7 +261,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-        creditAutomaticCommit(approval);
+//        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -1042,10 +1042,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
         }
 
-        //【资料审核】打回到【业务申请】 标记
-        if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
-            loanProcessDO.setLoanApplyRejectOrginTask(MATERIAL_REVIEW.getCode());
-        }
+//        //【资料审核】打回到【业务申请】 标记
+//        if (MATERIAL_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+//            loanProcessDO.setLoanApplyRejectOrginTask(MATERIAL_REVIEW.getCode());
+//        }
 
         // 更新当前执行的任务状态
         Byte taskProcessStatus = null;
@@ -1354,7 +1354,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                     boolean isLoanApplyVisitVerifyFilterTask = (LOAN_APPLY.getCode().equals(taskDefinitionKey)
                             || VISIT_VERIFY.getCode().equals(taskDefinitionKey))
-                            && !MATERIAL_REVIEW.getCode().equals(loanProcessDO.getLoanApplyRejectOrginTask());
+                            && TASK_PROCESS_INIT.equals(loanProcessDO.getTelephoneVerify());
 
                     if (isBankAndSocialCreditRecordTask) {
                         approval.setTaskDefinitionKey(task.getTaskDefinitionKey());
@@ -1926,13 +1926,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // [社会征信]-过来的拦截任务        ==>   [社会征信] & [PASS] & [ target -> 贷款申请-filter     贷款申请 补充 社会征信 ]
         Object target = variables.get(PROCESS_VARIABLE_TARGET);
-        boolean isSocialTask_TargetIs_LoanApplyVisitVerifyFilterTask =
+        boolean is_socialTask__target_is__LoanApplyVisitVerifyFilterTask =
                 SOCIAL_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey())
                         && ACTION_PASS.equals(approval.getAction())
                         && LOAN_APPLY_VISIT_VERIFY_FILTER.getCode().equals(target);
 
         // 执行拦截任务
-        if (loanApplyVisitVerifyFilterTask || isSocialTask_TargetIs_LoanApplyVisitVerifyFilterTask) {
+        if (loanApplyVisitVerifyFilterTask || is_socialTask__target_is__LoanApplyVisitVerifyFilterTask) {
 
             // 获取所有正在执行的并行任务
             List<Task> tasks = loanProcessApprovalCommonService.getCurrentTaskList(processInstId);
@@ -2663,42 +2663,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         String taskDefinitionKey = approval.getTaskDefinitionKey();
         Byte action = approval.getAction();
 
-//        // 【业务申请】
-//        if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
-//
-//            // 是否 [打回] - 自于【资料审核】
-//
-//            // 如果为【打回】
-//            if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
-//
-//                // 2.是否打回自【资料审核】
-//                LoanRejectLogDO loanRejectLogDO = loanRejectLogDOMapper.lastByOrderIdAndTaskDefinitionKey(approval.getOrderId(), taskDefinitionKey);
-//
-//                if (null != loanRejectLogDO) {
-//                    // 是
-//                    if (MATERIAL_REVIEW.getCode().equals(loanRejectLogDO.getRejectOriginTask())) {
-//                        // 添加流程变量 -打回来源 -> reject_origin_task
-////                        variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, MATERIAL_REVIEW.getCode());
-//                        variables.put(PROCESS_VARIABLE_TARGET, MATERIAL_REVIEW.getCode());
-//
-//                        // 将reject_origin_task置空
-//                        updateLoanApplyRejectOrginTaskIsNull(loanProcessDO);
-//
-//                    } else {
-//                        // 否
-////                        variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, null);
-//                    }
-//                } else {
-//                    // 否
-////                    variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, null);
-//                }
-//            } else {
-//                // 否
-////                variables.put(PROCESS_VARIABLE_REJECT_ORIGIN_TASK, null);
-//            }
-//
-//        }
-
         // [贷款申请]
         if (LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
 
@@ -2740,21 +2704,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // 是否为【打回】
                 else if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
 
-                    // 是否 [打回] - 自于【资料审核】
+                    // 打回记录
                     LoanRejectLogDO loanRejectLogDO = loanRejectLogDOMapper.lastByOrderIdAndTaskDefinitionKey(approval.getOrderId(), taskDefinitionKey);
+                    Preconditions.checkNotNull(loanRejectLogDO, "[贷款申请-打回记录]丢失");
 
-                    if (null != loanRejectLogDO) {
+                    // [打回] -> 自于【资料审核】
+                    if (MATERIAL_REVIEW.getCode().equals(loanRejectLogDO.getRejectOriginTask())) {
 
-                        // 是
-                        if (MATERIAL_REVIEW.getCode().equals(loanRejectLogDO.getRejectOriginTask())) {
+                        // target  -> [资料审核]
+                        variables.put(PROCESS_VARIABLE_TARGET, MATERIAL_REVIEW.getCode());
 
-                            // // target  -> [资料审核]
-                            variables.put(PROCESS_VARIABLE_TARGET, MATERIAL_REVIEW.getCode());
+                    }
+                    // ELSE：[打回] -> 自于【电审】
+                    else {
 
-                            // 将reject_origin_task置空
-                            updateLoanApplyRejectOrginTaskIsNull(loanProcessDO);
-                        }
-
+                        // target  -> filter
+                        variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
                     }
 
                 }
@@ -2885,17 +2850,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 variables.put(PROCESS_VARIABLE_TARGET, DATA_FLOW_MORTGAGE_B2C.getCode());
             }
         }
-    }
-
-    /**
-     * 将reject_origin_task置空
-     *
-     * @param loanProcessDO
-     */
-
-    private void updateLoanApplyRejectOrginTaskIsNull(LoanProcessDO loanProcessDO) {
-        int count = loanProcessDOMapper.updateLoanApplyRejectOrginTaskIsNull(loanProcessDO.getOrderId());
-        Preconditions.checkArgument(count > 0, "更新失败");
     }
 
 
