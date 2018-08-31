@@ -2,8 +2,6 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
-import java.sql.Timestamp;
-
 @Data
 public class UniversalBankInterfaceSerialVO {
     private String serialNo;
@@ -17,4 +15,6 @@ public class UniversalBankInterfaceSerialVO {
     private String requestTime;
 
     private String callbackTime;
+
+    private String rejectReason;
 }

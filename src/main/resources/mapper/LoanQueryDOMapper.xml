@@ -1274,6 +1274,7 @@
             customer_id                                    as customerId,
             api_status                                     as apiStatus,
             status                                         as status,
+            reject_reason                                  as rejectReason,
             DATE_FORMAT(request_time,'%Y-%m-%d %H:%i:%S')  as requestTime,
             DATE_FORMAT(callback_time,'%Y-%m-%d %H:%i:%S') as callbackTime
         from bank_interface_serial where customer_id = #{customerId} and trans_code = #{transCode} order by request_time desc limit 1

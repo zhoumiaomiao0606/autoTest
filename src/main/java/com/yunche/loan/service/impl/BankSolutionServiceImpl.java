@@ -20,11 +20,13 @@ import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.config.util.Process;
 import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionService;
+import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,9 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
@@ -123,6 +127,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Resource
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
+
+    @Autowired
+    private LoanProcessService loanProcessService;
 
     //征信自动提交
     @Override
@@ -703,6 +710,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 bankCreditProcess(orderId, phybrno, loanCustomerDO);
             }
         }
+        //如果银行接口直接返回失败，或拒贷，直接打回到贷款申请
+        back2creditpply(orderId,customers);
     }
 
     private void bankCreditProcess(Long orderId, String phybrno, LoanCustomerDO loanCustomerDO) {
@@ -816,6 +825,35 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 icbcFeignClient.applyCredit(applyCredit);
             }
         });
+
+    }
+
+    /**
+     * 银行拒绝直接打回到征信申请
+     * @param orderId
+     * @param customers
+     */
+    private void back2creditpply(Long orderId, List<LoanCustomerDO> customers) {
+
+        for(LoanCustomerDO customerDO:customers){
+            UniversalBankInterfaceSerialVO universalBankInterfaceSerialVO = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(customerDO.getId(), IDict.K_TRANS_CODE.APPLYCREDIT);
+            if(!"2".equals(universalBankInterfaceSerialVO.getStatus()) && !"1".equals(universalBankInterfaceSerialVO.getStatus())){
+                LOG.info("征信查询 自动打回开始 ===============================================================");
+                ApprovalParam approvalParam = new ApprovalParam();
+                approvalParam.setAction(new Byte("0"));
+                approvalParam.setOrderId(orderId);
+                approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
+                approvalParam.setNeedLog(true);
+                approvalParam.setCheckPermission(false);
+                approvalParam.setInfo(universalBankInterfaceSerialVO.getRejectReason());
+                loanProcessService.approval(approvalParam);
+
+                LOG.info("征信查询 自动打回成功 ===============================================================");
+                break;
+            }
+        }
+
+
     }
 
 
