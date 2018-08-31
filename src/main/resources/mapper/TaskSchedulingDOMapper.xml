@@ -1113,10 +1113,10 @@
                   </if>
               </if>
               <if test="minRemitAmount != null">
-                  AND tab.remitAmount &lt;= #{minRemitAmount}
+                  AND tab.remitAmount &gt;=  #{minRemitAmount}
               </if>
             <if test="maxRemitAmount != null">
-                AND tab.remitAmount &gt;= #{maxRemitAmount}
+                AND tab.remitAmount &lt;= #{maxRemitAmount}
             </if>
               <if test="carType != null">
                   AND tab.carType = #{carType}
