@@ -293,7 +293,7 @@
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
 
         <where>
-            and credit_info.type = 1
+            and credit_info.type = 1 OR credit_info.type IS  NULL
             <if test="startDate !=null and endDate !=null">
                 and credit_info.gmt_modify between #{startDate} and #{endDate}
             </if>
@@ -431,7 +431,7 @@
         LEFT JOIN base_area principal_area ON principal_area.area_id = principal_base.area_id
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
         <where>
-            and credit_info.type = 2
+            and credit_info.type = 2 OR credit_info.type is NULL
             <if test="startDate !=null and endDate !=null">
             and credit_info.gmt_modify between #{startDate} and #{endDate}
             </if>

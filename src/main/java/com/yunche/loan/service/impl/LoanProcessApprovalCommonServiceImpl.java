@@ -165,9 +165,11 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
      */
     @Override
     public List<Task> getCurrentTaskList(String processInstanceId) {
+
         List<Task> currentTaskList = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .list();
+
         return currentTaskList;
     }
 
@@ -194,6 +196,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
         return null;
     }
+
 
     /**
      * [领取]完成
