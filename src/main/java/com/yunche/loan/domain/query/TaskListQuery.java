@@ -113,6 +113,14 @@ public class TaskListQuery {
 
     private String endPrintGmtCreate;
 
+    private String startRemitGmtCreate;
+
+    private String endRemitGmtCreate;
+
+    private String minRemitAmount;
+
+    private String maxRemitAmount;
+
     private String serialStatus;
 
     private String bankOpenCardOrder;
