@@ -313,6 +313,12 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
             throw new BizException("[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]暂不支持反审");
         }
 
+        // 先获取提交之前的待执行任务列表
+        List<String> currentTaskIdList = loanProcessApprovalCommonService.getCurrentTaskIdList(loanOrderDO.getProcessInstId());
+
+        // [领取]完成
+        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId());
+
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "-反审]发起成功");
     }
 
