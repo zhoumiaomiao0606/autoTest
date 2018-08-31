@@ -191,7 +191,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
-//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
+        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -261,7 +261,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
+        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -2553,6 +2553,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         String actionText = null;
 
         switch (action) {
+            case -1:
+                actionText = "自动打回";
+                break;
             case 0:
                 actionText = "打回";
                 break;
@@ -2766,15 +2769,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // [社会征信] & [PASS] &   [loan_apply 补充 [社会征信]]
-        else if (SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
+        else if (SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
 
-            if (null != variables.get(PROCESS_VARIABLE_TARGET)) {
-                return;
+            // PASS
+            if (ACTION_PASS.equals(action)) {
+
+                if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply())) {
+
+                    variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
+                } else {
+
+                    variables.put(PROCESS_VARIABLE_TARGET, BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode());
+                }
             }
 
-            if (TASK_PROCESS_DONE.equals(loanProcessDO.getLoanApply())) {
-                variables.put(PROCESS_VARIABLE_TARGET, LOAN_APPLY_VISIT_VERIFY_FILTER.getCode());
-            } else {
+            // REJECT
+            else if (ACTION_REJECT_MANUAL.equals(action) || ACTION_REJECT_AUTO.equals(action)) {
+
                 variables.put(PROCESS_VARIABLE_TARGET, BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode());
             }
 
