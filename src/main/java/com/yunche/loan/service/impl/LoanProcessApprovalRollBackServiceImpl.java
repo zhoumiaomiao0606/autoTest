@@ -242,8 +242,8 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
                 // 执行[反审]
                 doRollBack(loanOrderDO.getProcessInstId(),
                         Lists.newArrayList(),
-                        Lists.newArrayList(LOAN_APPLY.getCode()),
-                        VISIT_VERIFY.getCode(),
+                        Lists.newArrayList(VISIT_VERIFY.getCode()),
+                        LOAN_APPLY.getCode(),
                         rollBackVariables
                 );
 
