@@ -1,12 +1,11 @@
 package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Preconditions;
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.DateUtil;
-import com.yunche.loan.domain.entity.BaseAreaDO;
-import com.yunche.loan.domain.entity.LoanFileDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.VehicleInformationDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
 import com.yunche.loan.domain.vo.RecombinationVO;
@@ -51,18 +50,17 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
     @Autowired
     private LoanQueryService loanQueryService;
 
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private BankDOMapper bankDOMapper;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
 
         VehicleInformationVO vehicleInformationVO = loanQueryDOMapper.selectVehicleInformation(orderId);
-        Long informationIdById = loanOrderDOMapper.getVehicleInformationIdById(orderId);
-        VehicleInformationDO informationDO = vehicleInformationDOMapper.selectByPrimaryKey(informationIdById);
-        Integer month = DateUtil.getdiffMonth1(informationDO.getTransfer_ownership_date(), informationDO.getRegister_date());
-        if (null != month) {
-            month = month>60?60:month;
-            vehicleInformationVO.setAssess_use_year(String.valueOf(month));
-        }
 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
@@ -107,6 +105,15 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
     public void update(VehicleInformationUpdateParam param) {
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
+
+        //使用年限自动计算
+        Integer month =null;
+        if(param.getTransfer_ownership_date()!=null ||param.getRegister_date()!=null){
+            month =  assessUseYear(Long.valueOf(param.getOrder_id()),DateUtil.getDate10(param.getTransfer_ownership_date()),DateUtil.getDate10(param.getRegister_date()));
+        }
+        if(month !=null){
+            param.setAssess_use_year(String.valueOf(month));
+        }
         Long foundationId = loanOrderDO.getVehicleInformationId();//关联ID
         if (foundationId == null) {
             //新增提交
@@ -153,5 +160,31 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
                 loanFileDOMapper.insertSelective(loanFileDO);
             }
         }
+    }
+
+    /**
+     * 台州要求使用前先最多为60个月，超过60月记为60
+     * 其他银行按真实月数
+     * 使用年限
+     * @param orderId
+     * @return
+     */
+    private  Integer assessUseYear(Long orderId,Date transferOwnershipDate,Date registerDate){
+
+        if(transferOwnershipDate==null || registerDate==null){
+            return null;
+        }
+        Integer month = DateUtil.getdiffMonth1(transferOwnershipDate,registerDate);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
+        Preconditions.checkNotNull(bankId, "贷款银行不存在");
+        if (null != month) {
+            if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
+                month = month>60?60:month;
+            }
+        }
+
+        return month;
     }
 }

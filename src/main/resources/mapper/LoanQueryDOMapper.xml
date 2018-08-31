@@ -111,7 +111,7 @@
             DATE_FORMAT(i.first_register_date,'%Y-%m-%d')      AS first_register_date,
             v.car_category                                     AS car_category,
             v.assess_org                                       AS assess_org,
-            ceil(TIMESTAMPDIFF(MONTH,DATE_FORMAT(v.register_date,'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(v.transfer_ownership_date,'%Y-%m-%d %H:%i:%S'))) AS assess_use_year
+            v.assess_use_year                 AS assess_use_year
 
 
 
