@@ -392,7 +392,8 @@
             DATE_FORMAT(complex_log.usertask_credit_apply_create_time, '%Y-%m-%d %H:%i:%S' )   AS creditDate,
             DATE_FORMAT(complex_log.usertask_remit_review_create_time,'%Y-%m-%d %H:%i:%S')     AS remitGmtCreate,
             DATE_FORMAT(complex_log.usertask_loan_apply_create_time,'%Y-%m-%d %H:%i:%S')       AS loanGmtCreate,
-            DATE_FORMAT(complex_log.usertask_telephone_verify_create_time,'%Y-%m-%d %H:%i:%S') AS telephoneGmtCreate
+            DATE_FORMAT(complex_log.usertask_telephone_verify_create_time,'%Y-%m-%d %H:%i:%S') AS telephoneGmtCreate,
+            DATE_FORMAT(complex_log.usertask_material_print_review_create_time,'%Y-%m-%d %H:%i:%S') AS printGmtCreate
             from
             (
             select task.*,
@@ -1376,6 +1377,12 @@
             </if>
             <if test="endCreditGmtCreate != null">
                 AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+            </if>
+            <if test="startPrintGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_material_print_review_create_time) &lt;= TO_DAYS(#{startPrintGmtCreate})
+            </if>
+            <if test="endPrintGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_material_print_review_create_time) &lt;= TO_DAYS(#{endPrintGmtCreate})
             </if>
 
             <choose>

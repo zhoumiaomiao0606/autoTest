@@ -108,7 +108,7 @@ public class ResultBean<T> implements Serializable {
 
 
     public static ResultBean ofError(BaseExceptionEnum baseExceptionEnum) {
-        return ofError(baseExceptionEnum.getCode(), baseExceptionEnum.getCode());
+        return ofError(baseExceptionEnum.getCode(), baseExceptionEnum.getMessage());
     }
 
     public static ResultBean ofError(String msg) {

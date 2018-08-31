@@ -172,6 +172,19 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
 
+            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
+
+            ApprovalParam approvalParam = new ApprovalParam();
+            approvalParam.setAction(new Byte("0"));
+            approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
+            approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
+            approvalParam.setNeedLog(false);
+            approvalParam.setCheckPermission(false);
+            approvalParam.setInfo(applyCreditCallback.getReq().getNote());
+            loanProcessService.approval(approvalParam);
+
+            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
+
 
         }else if(IDict.K_RESULT.BACK.equals(applyCreditCallback.getReq().getResult())){
             bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.BACK));

@@ -225,6 +225,8 @@ public class MsgServiceImpl implements MsgService {
         String msgInfo = "无";
         String sender = "无";
         String title = "无";
+        String tAction = null;
+        String mAction = null;
         FlowOperationMsgDO flowOperationMsgDO = flowOperationMsgDOMapper.selectByPrimaryKey(msgId);
         if(flowOperationMsgDO!=null){
             Long orderId = flowOperationMsgDO.getOrderId();
@@ -238,7 +240,26 @@ public class MsgServiceImpl implements MsgService {
                 if("2".equals(t.getCredit_result())){
                     tReviewResult = "通融通过";
                 }
+                if(t.getAction().equals("0")){
+                    tReviewResult = "打回";
+                }
+                //if(t.getAction().equals("1")){
+                //    tReviewResult = "通过";
+                //}
+                if(t.getAction().equals("2")){
+                    tReviewResult = "弃单";
+                }
+                if(t.getAction().equals("3")){
+                    tReviewResult = "资料增补";
+                }
+                if(t.getAction().equals("4")){
+                    tReviewResult = "新增任务";
+                }
+                if(t.getAction().equals("5")){
+                    tReviewResult = "反审";
+                }
                 tTime = t.getCreate_time();
+                tAction = t.getAction();
             }
             if(m!=null){
                 //* 审核结果：0-REJECT / 1-PASS / 2-CANCEL / 3-资料增补  / 4-新增任务  / 5-反审
@@ -261,6 +282,7 @@ public class MsgServiceImpl implements MsgService {
                     mReviewResult = "反审";
                 }
                 mTime = m.getCreate_time();
+                mAction = m.getAction();
             }
 
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
@@ -347,6 +369,9 @@ public class MsgServiceImpl implements MsgService {
         result.put("msgTime",msgTime);
         result.put("msgInfo",msgInfo);
         result.put("sender",sender);
+        // 通用审核接口 action： 0-打回 / 1-提交 / 2-弃单 / 3-资料增补 / 4-新增任务 / 5-反审
+        result.put("tAction",tAction);
+        result.put("mAction",mAction);
 
         return result;
     }

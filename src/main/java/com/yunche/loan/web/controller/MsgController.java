@@ -43,5 +43,4 @@ public class MsgController {
         return ResultBean.ofSuccess(msgService.msgDetail(msgId));
     }
 
-
 }

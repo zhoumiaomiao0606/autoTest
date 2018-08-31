@@ -109,6 +109,10 @@ public class TaskListQuery {
 
     private String endLoanGmtCreate;//贷款时间
 
+    private String startPrintGmtCreate;
+
+    private String endPrintGmtCreate;
+
     private String serialStatus;
 
     private String bankOpenCardOrder;
