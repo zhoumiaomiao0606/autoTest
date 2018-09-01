@@ -29,9 +29,9 @@
 
     <plugins>
         <!-- com.github.pagehelper为PageHelper类所在包名 -->
-        <plugin interceptor="com.github.pagehelper.PageHelper">
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
             <!-- 4.0.0以后版本可以不设置该参数 -->
-            <property name="dialect" value="mysql"/>
+            <!--<property name="dialect" value="mysql"/>-->
             <!--将RowBounds第一个参数offset当成pageNum页码使用 -->
             <property name="offsetAsPageNum" value="true"/>
             <!-- 使用RowBounds分页会进行count查询 -->

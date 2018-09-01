@@ -1,9 +1,12 @@
 package com.yunche.loan.config.util;
 
 import com.google.common.collect.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +22,9 @@ public class LockUtils {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
+
 
     /**
      * 获取🔐
@@ -31,7 +37,7 @@ public class LockUtils {
 
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/distributedLock.lua")));
-        redisScript.setResultType(Long.TYPE);
+        redisScript.setResultType(Long.class);
 
         Object result = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key), randomVal, String.valueOf(timeOut));
 
@@ -50,9 +56,10 @@ public class LockUtils {
      */
     public boolean releaseLock(String key, String val) {
 
+        Class<Long> clazz = Long.class;
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/releaseLock.lua")));
-        redisScript.setResultType(Long.TYPE);
+        redisScript.setResultType(clazz);
 
         Object result = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key), val);
 

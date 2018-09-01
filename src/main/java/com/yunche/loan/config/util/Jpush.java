@@ -9,11 +9,12 @@ import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.*;
-import org.apache.log4j.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Jpush {
-    private static Logger logger  = Logger.getLogger(Jpush.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(Jpush.class);
 
     private final static String appKey = "b7b44fd73efc19ef6135c92b";
 
@@ -22,28 +23,29 @@ public class Jpush {
 
     /**
      * 推送给设备标识参数的用户
-     * @param registrationId 设备标识
+     *
+     * @param registrationId     设备标识
      * @param notification_title 通知内容标题
-     * @param extrasparam 扩展字段
+     * @param extrasparam        扩展字段
      */
-    public static void sendToRegistrationId(String registrationId,String notification_title,String extrasparam) {
-        JPushClient jPushClient = new JPushClient(masterSecret,appKey);
+    public static void sendToRegistrationId(String registrationId, String notification_title, String extrasparam) {
+        JPushClient jPushClient = new JPushClient(masterSecret, appKey);
         try {
-            PushPayload pushPayload= Jpush.buildPushObject_all_registrationId_alertWithTitle(registrationId,notification_title,extrasparam);
-            PushResult pushResult=jPushClient.sendPush(pushPayload);
-            logger.info("Jpush-----:processKey:"+extrasparam+"-------result:"+pushResult.getResponseCode()+"------msg:"+notification_title);
+            PushPayload pushPayload = Jpush.buildPushObject_all_registrationId_alertWithTitle(registrationId, notification_title, extrasparam);
+            PushResult pushResult = jPushClient.sendPush(pushPayload);
+            logger.info("Jpush-----:processKey:" + extrasparam + "-------result:" + pushResult.getResponseCode() + "------msg:" + notification_title);
             //if(pushResult.getResponseCode()==200){}
         } catch (APIConnectionException e) {
             logger.warn("链接极光失败");
 
         } catch (APIRequestException e) {
             logger.warn("获取极光result失败");
-        }finally {
+        } finally {
             jPushClient.close();
         }
     }
 
-    private static PushPayload buildPushObject_all_registrationId_alertWithTitle(String registrationId,String notification_title,String extrasparam) {
+    private static PushPayload buildPushObject_all_registrationId_alertWithTitle(String registrationId, String notification_title, String extrasparam) {
 
         //创建一个IosAlert对象，可指定APNs的alert、title等字段
         //IosAlert iosAlert =  IosAlert.newBuilder().setTitleAndBody("title", "alert body").build();
@@ -60,7 +62,7 @@ public class Jpush {
                                 .setAlert(notification_title)
                                 .setTitle(notification_title)
                                 //此字段为透传字段，不会显示在通知栏。用户可以通过此字段来做一些定制需求，如特定的key传要指定跳转的页面（value）
-                                .addExtra("processKey",extrasparam)
+                                .addExtra("processKey", extrasparam)
                                 .build())
                         //指定当前推送的iOS通知
                         .addPlatformNotification(IosNotification.newBuilder()
@@ -73,7 +75,7 @@ public class Jpush {
                                 // 如果系统没有此音频则以系统默认声音提醒；此字段如果传空字符串，iOS9及以上的系统是无声音提醒，以下的系统是默认声音
                                 .setSound("sound.caf")
                                 //此字段为透传字段，不会显示在通知栏。用户可以通过此字段来做一些定制需求，如特定的key传要指定跳转的页面（value）
-                                .addExtra("processKey",extrasparam)
+                                .addExtra("processKey", extrasparam)
                                 //此项说明此推送是一个background推送，想了解background看：http://docs.jpush.io/client/ios_tutorials/#ios-7-background-remote-notification
                                 //取消此注释，消息推送时ios将无法在锁屏情况接收
                                 // .setContentAvailable(true)
@@ -103,7 +105,6 @@ public class Jpush {
                 .build();
 
     }
-
 
 }
 

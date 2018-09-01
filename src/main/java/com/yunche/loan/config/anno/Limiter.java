@@ -21,9 +21,16 @@ public @interface Limiter {
     String value();
 
     /**
-     * 限流次数   默认：1次/s
+     * 限流次数，配合expire使用      默认：1次/s
      *
      * @return
      */
     int limit() default 1;
+
+    /**
+     * 限流时间跨度 （单位：秒）      默认：1s
+     *
+     * @return
+     */
+    int expire() default 1;
 }

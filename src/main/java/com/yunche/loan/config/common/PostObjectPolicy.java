@@ -15,8 +15,7 @@ import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
 
-import com.google.common.base.Preconditions;
-import net.sf.json.JSONObject;
+import com.yunche.loan.config.exception.BizException;
 
 /**
  * @author liuzhe
@@ -65,14 +64,15 @@ public class PostObjectPolicy extends HttpServlet {
             respMap.put("dir", dir);
             respMap.put("host", host);
             respMap.put("expire", String.valueOf(expireEndTime / 1000));
-            JSONObject ja1 = JSONObject.fromObject(respMap);
-            System.out.println(ja1.toString());
+
+            System.out.println(respMap.toString());
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST");
-            response(request, response, ja1.toString());
+            response(request, response, respMap.toString());
 
         } catch (Exception e) {
-            Preconditions.checkArgument(false, e.getMessage());
+
+            throw new BizException(e.getMessage());
         }
     }
 

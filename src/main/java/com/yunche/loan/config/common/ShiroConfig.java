@@ -216,7 +216,7 @@ public class ShiroConfig {
         redisManager.setHost(host);
         redisManager.setPort(port);
         redisManager.setPassword(password);
-        redisManager.setExpire(SESSION_EXPIRE);
+//        redisManager.setExpire(SESSION_EXPIRE);
         redisManager.setTimeout(CONNECT_TO_REDIS_TIMEOUT);
         return redisManager;
     }

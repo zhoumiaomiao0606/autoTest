@@ -3,12 +3,11 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.query.RelaQuery;
 import com.yunche.loan.domain.entity.EmployeeRelaUserGroupDO;
 import com.yunche.loan.domain.entity.EmployeeRelaUserGroupDOKey;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
 public interface EmployeeRelaUserGroupDOMapper {
+
     int deleteByPrimaryKey(EmployeeRelaUserGroupDOKey key);
 
     int insert(EmployeeRelaUserGroupDO record);

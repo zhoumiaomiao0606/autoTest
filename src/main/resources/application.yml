@@ -1,6 +1,7 @@
 spring:
   profiles: dev
   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&characterEncoding=utf-8
     username: yunche
     password: yc_123
@@ -15,11 +16,13 @@ spring:
     host: 47.97.122.31
     port: 6380
     password: yunche@1234
-    pool:
-      max-active: 100
-      max-idle: 100
-      min-idle: 0
-      max-wait: 10000
+    lettuce:
+      pool:
+        max-active: 100
+        max-idle: 100
+        min-idle: 0
+        max-wait: 10000
+    timeout: 3000
 
   mail:
     host: smtp.exmail.qq.com
@@ -52,11 +55,12 @@ spring:
     host: 47.97.122.31
     port: 6381
     password: yunche@1234
-    pool:
-      max-active: 50
-      max-idle: 30
-      min-idle: 0
-      max-wait: 10000
+    lettuce:
+      pool:
+        max-active: 50
+        max-idle: 30
+        min-idle: 0
+        max-wait: 10000
 
   mail:
     host: smtp.exmail.qq.com
@@ -75,10 +79,11 @@ spring:
 spring:
   profiles: pub
   datasource:
-    url: jdbc:mysql://rm-bp1uk11f20h4i65u9rw.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
-    username: yuncheadmin
-    password: Yunche_2018
-    driver-class-name: com.mysql.jdbc.Driver
+    druid:
+      url: jdbc:mysql://rm-bp1uk11f20h4i65u9rw.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
+      username: yuncheadmin
+      password: Yunche_2018
+      driver-class-name: com.mysql.jdbc.Driver
     tomcat:
       max-wait: 10000
       max-idle: 2000
@@ -89,11 +94,12 @@ spring:
     host: r-bp1b3d268c17de84.redis.rds.aliyuncs.com
     port: 6379
     password: Yunche2018
-    pool:
-      max-active: 2000
-      max-idle: 2000
-      min-idle: 0
-      max-wait: 10000
+    lettuce:
+      pool:
+        max-active: 2000
+        max-idle: 2000
+        min-idle: 0
+        max-wait: 10000
 
   mail:
     host: smtp.exmail.qq.com

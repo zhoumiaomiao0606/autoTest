@@ -13,7 +13,6 @@ import com.yunche.loan.domain.vo.GpsDetailTotalVO;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.AppLoanOrderService;
 import com.yunche.loan.service.AuxiliaryService;
-import net.sf.json.JSONObject;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

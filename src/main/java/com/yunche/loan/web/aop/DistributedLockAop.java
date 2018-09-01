@@ -69,7 +69,7 @@ public class DistributedLockAop {
             boolean getLock = lockUtils.lock(key, val, timeOut);
             logger.info(getLock ? "获取锁成功！KEY：" + key + " , VAL：" + val : "获取锁失败！KEY：" + key + " , VAL：" + val);
 
-            // 获取到锁
+            // 获m取到锁
             if (getLock) {
 
                 // 执行原方法

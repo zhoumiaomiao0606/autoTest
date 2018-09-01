@@ -3,13 +3,14 @@ package com.yunche.loan.config.util;
 import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.common.OSSConfig;
-import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
 import java.io.*;
@@ -22,7 +23,8 @@ import java.util.List;
 
 public class POIUtil {
 
-    private static Logger logger = Logger.getLogger(POIUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(POIUtil.class);
+
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
 
@@ -339,20 +341,19 @@ public class POIUtil {
 
 
     /**
-    * @Author: ZhongMingxiao
-    * @Param: 导出头信息、导出数据、导出
-    * @return:
-    * @Date:
-    * @Description:
-    */
-    public static  <T> String  createExcelFile(String fname,List<T> list,List<String> header,Class<T> clazz,OSSConfig ossConfig)
-    {
+     * @Author: ZhongMingxiao
+     * @Param: 导出头信息、导出数据、导出
+     * @return:
+     * @Date:
+     * @Description:
+     */
+    public static <T> String createExcelFile(String fname, List<T> list, List<String> header, Class<T> clazz, OSSConfig ossConfig) {
         StringBuilder fileName = new StringBuilder();
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
         fileName.append(fname).append(timestamp).append(id).append(".xlsx");
         //创建workbook
-        File file = new File( ossConfig.getDownLoadBasepath() + File.separator + fileName);
+        File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
         XSSFWorkbook workbook = null;
 
@@ -421,5 +422,5 @@ public class POIUtil {
         }
 
         return ossConfig.getDownLoadDiskName() + File.separator + fileName;
-        }
+    }
 }

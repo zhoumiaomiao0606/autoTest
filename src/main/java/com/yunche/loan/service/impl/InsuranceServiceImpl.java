@@ -17,7 +17,8 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.InsuranceService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ import java.util.List;
 @Transactional
 public class InsuranceServiceImpl implements InsuranceService {
 
-    private static Logger logger = Logger.getLogger(InsuranceServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(InsuranceServiceImpl.class);
 
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
