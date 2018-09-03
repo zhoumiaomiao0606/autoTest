@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
@@ -245,7 +244,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                creditRecord.setBankCreditResponse(result);
            }
        }catch (IOException e){
-           throw new BizException("解析银行征信接口应答信息失败");
+           creditRecord.setBankCreditResponse("json解析异常,请联系管理员");
        }
 
 
