@@ -14,9 +14,9 @@ import java.lang.annotation.Target;
 public @interface DistributedLock {
 
     /**
-     * 当前锁的：自动过期时间  （单位：微秒）默认值：1000
+     * 当前锁的：自动过期时间  （单位：秒）默认值：1s
      *
      * @return
      */
-    long value() default 1000;
+    long value() default 1;
 }

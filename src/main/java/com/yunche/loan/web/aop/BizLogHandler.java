@@ -2,14 +2,16 @@ package com.yunche.loan.web.aop;
 
 import com.alibaba.fastjson.JSON;
 
+import com.yunche.loan.config.util.SessionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -18,35 +20,33 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 统一日志处理
+ *
  * @author liuzhe
  * @date 2018/1/10
  */
 @Aspect
 @Component
-public class BizExceptionHandler {
+public class BizLogHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(BizExceptionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(BizLogHandler.class);
 
 
-    /**
-     * 捕获所有controller层的方法
-     */
-    @Pointcut("execution(* com.yunche.loan.web.controller.*.*(..))")
-    public void controller() {
-    }
-
-    @Around("controller()")
+    @Around(value = "execution(* com.yunche.loan.web.controller.*.*(..))")
     public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
 
         long startTime = System.currentTimeMillis();
 
         // 日志记录
-        log(pjp.getArgs());
+        log(pjp);
 
         // exec
         Object result = pjp.proceed();
@@ -61,21 +61,50 @@ public class BizExceptionHandler {
     /**
      * 记录日志
      *
-     * @param args
+     * @param pjp
      */
-    private void log(Object[] args) {
+    private void log(ProceedingJoinPoint pjp) {
 
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        Object[] args = pjp.getArgs();
 
-        List<Object> argList = Arrays.stream(args)
-                .filter(arg -> !(arg instanceof HttpServletRequest) && !(arg instanceof HttpServletResponse))
-                .collect(Collectors.toList());
+        MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
+        Method method = methodSignature.getMethod();
+        MessageMapping messageMappingAnnotation = method.getAnnotation(MessageMapping.class);
 
-        if (CollectionUtils.isEmpty(argList)) {
-            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request)).stream().collect(Collectors.joining(" ")));
-        } else {
-            logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request), JSON.toJSONString(argList)).stream().collect(Collectors.joining(" ")));
+        // web
+        if (null == messageMappingAnnotation) {
+
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
+            List<Object> argList = Arrays.stream(args)
+                    .filter(arg -> !(arg instanceof HttpServletRequest) && !(arg instanceof HttpServletResponse))
+                    .collect(Collectors.toList());
+
+            if (CollectionUtils.isEmpty(argList)) {
+                logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request)).stream().collect(Collectors.joining(" ")));
+            } else {
+                logger.info(Arrays.asList(request.getServletPath(), getIpAddress(request), JSON.toJSONString(argList)).stream().collect(Collectors.joining(" ")));
+            }
         }
+
+        // webSocket
+        else {
+
+            String[] path = messageMappingAnnotation.value();
+
+            String webSocketSessionId = SessionUtils.getWebSocketSessionId();
+
+            String currentServerHostAddress = null;
+            try {
+                currentServerHostAddress = InetAddress.getLocalHost().getHostAddress();
+            } catch (UnknownHostException e) {
+                logger.error(e.getMessage(), e);
+            }
+
+            logger.info(Arrays.asList(path[0], webSocketSessionId, currentServerHostAddress, JSON.toJSONString(args))
+                    .stream().collect(Collectors.joining(" ")));
+        }
+
     }
 
     /**

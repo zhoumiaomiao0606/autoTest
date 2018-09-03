@@ -2,6 +2,7 @@ package com.yunche.loan.web.aop;
 
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.util.LockUtils;
+import com.yunche.loan.config.util.SessionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Random;
 
@@ -48,14 +50,14 @@ public class DistributedLockAop {
 
 
         // key
+        // sessionId
+        Serializable sessionId = SessionUtils.getSessionId();
         // methodName
         String fullMethodName = getFullMethodName(method);
-
         // hashCode
         int fullMethodNameHashCode = fullMethodName.hashCode();
-
-        // prefix + methodName + hashCode
-        String key = LOCK_KEY_PREFIX + method.getName() + ":" + fullMethodNameHashCode;
+        // prefix + methodName + sessionId + hashCode
+        String key = LOCK_KEY_PREFIX + method.getName() + ":" + sessionId + ":" + fullMethodNameHashCode;
 
 
         // randomVal     生成一个随机数：作为当前🔐的val
@@ -67,7 +69,7 @@ public class DistributedLockAop {
 
             // 获取锁
             boolean getLock = lockUtils.lock(key, val, timeOut);
-            logger.info(getLock ? "获取锁成功！KEY：" + key + " , VAL：" + val : "获取锁失败！KEY：" + key + " , VAL：" + val);
+            logger.debug(getLock ? "获取锁成功！KEY：" + key + " , VAL：" + val : "获取锁失败！KEY：" + key + " , VAL：" + val);
 
             // 获m取到锁
             if (getLock) {
@@ -86,7 +88,7 @@ public class DistributedLockAop {
 
             // 释放锁
             boolean releaseLock = lockUtils.releaseLock(key, val);
-            logger.info(releaseLock ? "释放锁成功！KEY：" + key + " , VAL：" + val : "释放锁失败！KEY：" + key + " , VAL：" + val);
+            logger.debug(releaseLock ? "释放锁成功！KEY：" + key + " , VAL：" + val : "释放锁失败！KEY：" + key + " , VAL：" + val);
         }
 
         return null;

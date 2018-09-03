@@ -8,12 +8,12 @@
 
 local key = KEYS[1]
 local value = ARGV[1]
-local pExpire = ARGV[2]
+local expire = ARGV[2]
 
-if redis.call("SET", key, value, "NX", "PX", pExpire) then
+if redis.call("SET", key, value, "NX", "EX", expire) then
     return 1
 elseif redis.call("TTL", key) == -1 then
-    redis.call("PEXPIRE", key, pExpire)
+    redis.call("EXPIRE", key, expire)
 end
 return 0
 

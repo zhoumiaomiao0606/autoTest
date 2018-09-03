@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.validation.ConstraintViolationException;
 
-
+/**
+ * 统一异常处理
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -32,9 +34,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResultBean handleMethodArgumentNotValidException(Exception e) {
+    public ResultBean<Object> exceptionHandler(Throwable e) {
 
-        logger.error("GlobalExceptionHandler : ", e);
+        return doGlobalExceptionHandler(e);
+    }
+
+    /**
+     * 执行异常处理
+     *
+     * @param e
+     * @return
+     */
+    public static ResultBean<Object> doGlobalExceptionHandler(Throwable e) {
+
+        logger.error(e.getMessage(), e);
 
         if (e instanceof BizException) {
             String code = ((BizException) e).getCode();

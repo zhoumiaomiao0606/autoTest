@@ -4,9 +4,13 @@ import com.yunche.loan.config.constant.BaseExceptionEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.messaging.simp.SimpAttributes;
 import org.springframework.messaging.simp.SimpAttributesContextHolder;
+
+import java.io.Serializable;
 
 /**
  * @author liuzhe
@@ -20,15 +24,55 @@ public class SessionUtils {
      * @return
      */
     public static EmployeeDO getLoginUser() {
-        Object principal = SecurityUtils.getSubject().getPrincipal();
-        if (null == principal) {
+
+        Subject subject = SecurityUtils.getSubject();
+        if (null == subject) {
+
             SecurityUtils.getSubject().logout();
             throw new BizException(BaseExceptionEnum.NOT_LOGIN);
+
         } else {
-            EmployeeDO loginUser = new EmployeeDO();
-            BeanUtils.copyProperties(principal, loginUser);
-            return loginUser;
+
+            Object principal = subject.getPrincipal();
+            if (null == principal) {
+
+                SecurityUtils.getSubject().logout();
+                throw new BizException(BaseExceptionEnum.NOT_LOGIN);
+
+            } else {
+
+                EmployeeDO loginUser = new EmployeeDO();
+                BeanUtils.copyProperties(principal, loginUser);
+
+                return loginUser;
+            }
         }
+    }
+
+    /**
+     * 获取会话ID
+     *
+     * @return
+     */
+    public static Serializable getSessionId() {
+
+        Serializable sessionId = null;
+
+        try {
+
+            Subject subject = SecurityUtils.getSubject();
+            if (null != subject) {
+                Session session = subject.getSession();
+                if (null != session) {
+                    sessionId = session.getId();
+                }
+            }
+
+        } catch (Exception ex) {
+            // nothing
+        }
+
+        return sessionId;
     }
 
     /**

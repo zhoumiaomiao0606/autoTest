@@ -1,5 +1,6 @@
 package com.yunche.loan;
 
+import com.github.pagehelper.autoconfigure.PageHelperAutoConfiguration;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.cache.ActivitiCache;
 import com.yunche.loan.service.ActivitiService;
@@ -9,7 +10,6 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class/*, DataSourceAutoConfiguration.class*/})
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, PageHelperAutoConfiguration.class})
 @EnableTransactionManagement
 @EnableFeignClients
 @EnableScheduling
@@ -74,7 +74,7 @@ public class App {
         return new CommandLineRunner() {
 
             @Override
-            @DistributedLock(60 * 5 * 1000)
+            @DistributedLock(300)
             @Transactional(rollbackFor = Exception.class)
             public void run(String... args) throws Exception {
 

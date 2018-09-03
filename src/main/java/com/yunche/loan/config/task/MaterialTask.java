@@ -2,6 +2,7 @@ package com.yunche.loan.config.task;
 
 import com.github.pagehelper.util.StringUtil;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.OSSUnit;
@@ -24,6 +25,8 @@ import java.util.List;
 public class MaterialTask {
 
     private static final Logger LOG = LoggerFactory.getLogger(OSSUnit.class);
+
+
     @Autowired
     MaterialDownHisDOMapper materialDownHisDOMapper;
 
@@ -39,8 +42,10 @@ public class MaterialTask {
     @Autowired
     UnsecuredService unsecuredService;
 
+
     @Scheduled(cron = "0 0/1 * * * ?")
-    public void filedownload() {
+    @DistributedLock(60)
+    public void fileDownload() {
         List<MaterialDownHisDO> all = Lists.newArrayList();
         List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.PRE_TRANSACTION);
         List<MaterialDownHisDO> materialDownHisFAIL = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.FAIL);
@@ -48,12 +53,17 @@ public class MaterialTask {
         all.addAll(materialDownHisFAIL);
 
         if (!CollectionUtils.isEmpty(all)) {
+
             all.stream().forEach(e -> {
+
                 try {
+
                     LOG.info(e.getFileName() + "文件下载开始");
+
                     //先锁定记录为处理中
                     e.setStatus(IDict.K_JYZT.PROCESS);
                     materialDownHisDOMapper.updateByPrimaryKeySelective(e);
+
                     //文件下载
                     String key = null;
                     if (StringUtil.isEmpty(e.getFileKey())) {
@@ -69,7 +79,9 @@ public class MaterialTask {
                     }
 
                     LOG.info(e.getFileName() + ":文件下载完成");
+
                     LOG.info(e.getFileName() + ":文件导入开始");
+
                     switch (e.getFileType()) {
                         case IDict.K_WJLX.WJLX_0:
                             boolean b0 = bankOpenCardService.importFile(key);
@@ -88,10 +100,13 @@ public class MaterialTask {
                         default:
                             break;
                     }
+
                 } catch (Exception e2) {
+
                     LOG.info(e2.getMessage());
                     modifyFail(e);
                 }
+
             });
         }
     }

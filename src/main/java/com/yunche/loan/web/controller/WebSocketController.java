@@ -1,4 +1,4 @@
-package com.yunche.loan.web.websocket;
+package com.yunche.loan.web.controller;
 
 import com.yunche.loan.domain.param.WebSocketParam;
 import com.yunche.loan.service.WebSocketService;

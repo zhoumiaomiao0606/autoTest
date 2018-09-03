@@ -1,12 +1,9 @@
 package com.yunche.loan.config.util;
 
 import com.google.common.collect.Lists;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Component;
 
@@ -22,16 +19,13 @@ public class LockUtils {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    @Resource
-    private RedisTemplate<String, String> redisTemplate;
-
 
     /**
      * 获取🔐
      *
      * @param key
      * @param randomVal
-     * @param timeOut   单位：微秒
+     * @param timeOut   单位：秒
      */
     public boolean lock(String key, String randomVal, Long timeOut) {
 
