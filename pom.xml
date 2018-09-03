@@ -14,7 +14,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.0.4.RELEASE</version>
-        <!--<relativePath/>-->
+        <relativePath/>
     </parent>
 
     <dependencyManagement>
@@ -113,21 +113,35 @@
         </dependency>
         <!-- test -->
 
-        <!-- spring boot jdbc & mybatis -->
+        <!-- feign -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!-- feign -->
+
+        <!-- mybatis -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>${mybatis-spring-boot-starter.version}</version>
         </dependency>
+        <!-- mybatis -->
+
+        <!-- mysql -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>-->
-        <!-- spring boot jdbc & mybatis -->
+        <!-- mysql -->
+
+        <!-- druid -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.10</version>
+        </dependency>
+        <!-- druid -->
 
         <!--mybatis-generator-->
         <dependency>
@@ -163,13 +177,21 @@
         </dependency>
         <!--lombok-->
 
-        <!--json-->
+        <!-- fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
         </dependency>
-        <!--json-->
+        <!-- fastjson -->
+
+        <!-- gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.2</version>
+        </dependency>
+        <!-- gson -->
 
         <!-- guava -->
         <dependency>
@@ -178,14 +200,6 @@
             <version>${guava.version}</version>
         </dependency>
         <!-- guava -->
-
-        <!--Http 请求-->
-        <dependency>
-            <groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>1.4.9</version>
-        </dependency>
-        <!--Http 请求-->
 
         <!--热部署-->
         <!--<dependency>-->
@@ -245,14 +259,6 @@
         </dependency>
         <!-- poi -->
 
-        <!-- druid -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.1.10</version>
-        </dependency>
-        <!-- druid -->
-
         <!-- jpush -->
         <dependency>
             <groupId>cn.jpush.api</groupId>
@@ -261,22 +267,7 @@
         </dependency>
         <!-- jpush -->
 
-        <!-- gson -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.2</version>
-        </dependency>
-        <!-- gson -->
-
-        <!-- spring-cloud-starter-feign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <!-- spring-cloud-starter-feign -->
-
-        <!-- google -->
+        <!-- google-core-javase -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
@@ -287,7 +278,7 @@
             <artifactId>javase</artifactId>
             <version>3.2.0</version>
         </dependency>
-        <!-- google -->
+        <!-- google-core-javase -->
 
         <!-- thymeleaf -->
         <dependency>
@@ -296,35 +287,21 @@
         </dependency>
         <!-- thymeleaf -->
 
-        <dependency>
-            <groupId>com.icbc.api</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/api_client.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.zhongan.scorpoin</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/lib/zaOpenapiSdk.jar</systemPath>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+        <!-- validation-api -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>2.0.1.Final</version>
         </dependency>
+        <!-- validation-api -->
 
-
-        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
+        <!-- hibernate-validator -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>6.0.10.Final</version>
         </dependency>
+        <!-- hibernate-validator -->
 
         <dependency>
             <groupId>com.lowagie</groupId>
@@ -362,15 +339,25 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-properties-migrator</artifactId>
-        </dependency>-->
-
+        <!-- api_client.jar -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web-services</artifactId>
+            <groupId>com.icbc.api</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/api_client.jar</systemPath>
         </dependency>
+        <!-- api_client.jar -->
+
+        <!-- zaOpenapiSdk.jar -->
+        <dependency>
+            <groupId>com.zhongan.scorpoin</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/zaOpenapiSdk.jar</systemPath>
+        </dependency>
+        <!-- zaOpenapiSdk.jar -->
 
     </dependencies>
 
