@@ -83,8 +83,8 @@ JAR_PATH="/root/yunche-biz/pub/yunche-biz.jar"
 JAR_PORT="7002"
 JAR_PROFILES="pub"
 
-# kill
-PIDS=`ps -ef|grep $KILL_PROCESS | grep -v grep|grep -v PPID|awk '{print $pid_}'`
+# kill      $2 -> result[1] - pid
+PIDS=`ps -ef|grep $KILL_PROCESS | grep -v grep|grep -v PPID|awk '{print $2}'`
 for PID in $PIDS
 do
   echo "Kill the $KILL_PROCESS process [ $PID ]"
