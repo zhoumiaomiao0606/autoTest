@@ -7,7 +7,7 @@ JAR_PORT="7002"
 JAR_PROFILES="pub"
 
 
-echo "开始执行本地start.sh >>>>>>>>>>>>>>"
+echo "开始执行start.sh >>>>>>>>>>>>>>"
 
 # kill
 PIDS=`ps -ef|grep $KILL_PROCESS | grep -v grep|grep -v PPID|awk '{print $pid_}'`
@@ -22,4 +22,4 @@ nohup  java -jar $JAR_PATH --server.port=$JAR_PORT --spring.profiles.active=$JAR
 
 rm -rf nohup.out
 
-echo "结束执行本地start.sh <<<<<<<<<<<<<<"
+echo "结束执行start.sh <<<<<<<<<<<<<<"
