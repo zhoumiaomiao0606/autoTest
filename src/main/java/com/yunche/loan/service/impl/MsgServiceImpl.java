@@ -211,7 +211,7 @@ public class MsgServiceImpl implements MsgService {
         String mReviewResult = "无";
         String tTime = "无";
         String mTime = "无";
-        String tRemark = "";
+        String tRemark = "无";
         String mRemark = "无";
         String customerName = "无";
         String customerIdCard = "无";
@@ -302,10 +302,10 @@ public class MsgServiceImpl implements MsgService {
                     }
                 }
 
-//                LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
-//                if (loanTelephoneVerifyDO != null) {
-//                    tRemark = loanTelephoneVerifyDO.getInfo();
-//                }
+                LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+                if (loanTelephoneVerifyDO != null) {
+                    tRemark = loanTelephoneVerifyDO.getInfo();
+                }
 
                 MaterialAuditDO materialAuditDO = materialAuditDOMapper.selectByPrimaryKey(loanOrderDO.getMaterialAuditId());
                 if (materialAuditDO != null) {
