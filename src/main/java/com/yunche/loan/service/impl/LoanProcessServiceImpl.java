@@ -965,7 +965,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         }
 
-        return ResultBean.ofError(null, "流程审核参数有误");
+        return ResultBean.ofError("流程审核参数有误");
     }
 
     private void updateOutworkerCostApplyProcess(ApprovalParam approval, Byte applyOrderStatus) {
