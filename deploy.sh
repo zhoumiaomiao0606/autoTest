@@ -15,7 +15,7 @@ COPY_JAR_DEST_DIR="/root/yunche-biz/pub/"
 SPAWN_TIME_OUT=300
 
 # start.sh 路径
-START_SH_PATH="/root/yunche-biz/pub/run.sh"
+START_SH_PATH="/root/yunche-biz/pub/start.sh"
 
 
 echo "发布开始 >>>>>>>>>>>>>>>>>>>>>>>>>>>>"
