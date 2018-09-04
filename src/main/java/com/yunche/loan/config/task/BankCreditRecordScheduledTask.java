@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -40,10 +39,9 @@ public class BankCreditRecordScheduledTask {
      */
     @Scheduled(cron = "0 0/1 * * * ?")
     @DistributedLock(60)
-    @Transactional
     public void doAutoRejectTask() {
 
-        // 扫描：[银行征信] - 推送失败的所有订单ID列表
+        // 扫描：[银行征信] - 推送失败的 所有订单ID
         List<Long> orderIdList = listOrderIdOfBankCreditRecordPushFailed();
 
         // 自动打回
@@ -51,7 +49,7 @@ public class BankCreditRecordScheduledTask {
     }
 
     /**
-     * [银行征信] - 推送失败的   所有订单ID列表
+     * [银行征信] - 推送失败的   所有订单ID
      *
      * @return
      */
@@ -84,15 +82,22 @@ public class BankCreditRecordScheduledTask {
 
                         approval.setOrderId(orderId);
 
-                        ResultBean<Void> approvalResult = loanProcessService.approval(approval);
+                        try {
 
-                        if (approvalResult.getSuccess()) {
+                            ResultBean<Void> approvalResult = loanProcessService.approval(approval);
 
-                            logger.info("自动打回成功  >>>  orderId : {}", orderId);
+                            if (approvalResult.getSuccess()) {
 
-                        } else {
+                                logger.info("自动打回成功  >>>  orderId : {}", orderId);
 
-                            logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, approvalResult.getSuccess());
+                            } else {
+
+                                logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, approvalResult.getSuccess());
+                            }
+
+                        } catch (Exception e) {
+
+                            logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, e.getMessage());
                         }
 
                     });

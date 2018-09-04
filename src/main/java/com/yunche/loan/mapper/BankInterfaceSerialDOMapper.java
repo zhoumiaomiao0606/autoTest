@@ -22,7 +22,7 @@ public interface BankInterfaceSerialDOMapper {
                                                          @Param("transCode") String transCode);
 
     /**
-     * [银行征信] - 推送失败的  所有订单ID列表
+     * [银行征信] - 推送失败的  所有订单ID
      *
      * @return
      */
