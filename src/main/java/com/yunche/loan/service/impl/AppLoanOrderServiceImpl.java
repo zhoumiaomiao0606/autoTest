@@ -55,6 +55,7 @@ import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionT
 @Service
 public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AppLoanOrderServiceImpl.class);
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -163,8 +164,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanInfoSupplementService loanInfoSupplementService;
-
-    private static final Logger logger = LoggerFactory.getLogger(AppLoanOrderServiceImpl.class);
 
     @Autowired
     private ZhonganInfoDOMapper zhongAnInfoDOMapper;
