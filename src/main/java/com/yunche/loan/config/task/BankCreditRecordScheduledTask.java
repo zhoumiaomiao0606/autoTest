@@ -16,7 +16,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_CREDIT_RECORD;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_AUTO;
 
 /**
