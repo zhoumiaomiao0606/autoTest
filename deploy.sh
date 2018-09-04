@@ -14,7 +14,7 @@ COPY_JAR_DEST_DIR="/root/yunche-biz/pub/"
 # 300s
 SPAWN_TIME_OUT=300
 
-# start.sh 路径
+# start.sh 路径˜
 START_SH_PATH="/root/yunche-biz/pub/start.sh"
 
 

@@ -101,7 +101,7 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
         BeanUtils.copyProperties(loanBaseInfoDO, loanBaseInfoVO);
 
         // 申请日期
-        loanBaseInfoVO.setApplyDate(loanBaseInfoDO.getGmtModify());
+        loanBaseInfoVO.setApplyDate(loanBaseInfoDO.getGmtCreate());
 
         // 实际贷款额
         Byte loanAmount = loanBaseInfoDO.getLoanAmount();
