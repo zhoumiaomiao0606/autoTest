@@ -51,4 +51,3 @@ nbdist/
 /bin/
 *.log
 
-application.properties

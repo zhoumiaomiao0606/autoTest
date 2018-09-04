@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.MaterialDownHisDO;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.BankOpenCardService;
@@ -18,13 +17,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
 public class MaterialTask {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OSSUnit.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MaterialTask.class);
 
 
     @Autowired
@@ -45,6 +45,7 @@ public class MaterialTask {
 
     @Scheduled(cron = "0 0/1 * * * ?")
     @DistributedLock(60)
+    @Transactional
     public void fileDownload() {
         List<MaterialDownHisDO> all = Lists.newArrayList();
         List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.PRE_TRANSACTION);
