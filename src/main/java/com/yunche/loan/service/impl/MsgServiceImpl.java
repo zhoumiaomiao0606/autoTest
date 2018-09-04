@@ -41,9 +41,6 @@ public class MsgServiceImpl implements MsgService {
     private LoanOrderDOMapper loanOrderDOMapper;
 
     @Resource
-    private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
-
-    @Resource
     private MaterialAuditDOMapper materialAuditDOMapper;
 
     @Resource
@@ -302,9 +299,9 @@ public class MsgServiceImpl implements MsgService {
                     }
                 }
 
-                LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
-                if (loanTelephoneVerifyDO != null) {
-                    tRemark = loanTelephoneVerifyDO.getInfo();
+                //LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+                if (t != null) {
+                    tRemark = t.getInfo();
                 }
 
                 MaterialAuditDO materialAuditDO = materialAuditDOMapper.selectByPrimaryKey(loanOrderDO.getMaterialAuditId());
