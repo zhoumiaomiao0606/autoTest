@@ -74,7 +74,7 @@ public class BankCreditRecordScheduledTask {
             approval.setAction(ACTION_REJECT_AUTO);
 
             approval.setCheckPermission(false);
-            approval.setNeedLog(false);
+            approval.setNeedLog(true);
             approval.setNeedPush(true);
 
             orderIdList.parallelStream()
