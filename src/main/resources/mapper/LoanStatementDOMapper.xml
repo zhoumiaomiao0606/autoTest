@@ -291,9 +291,10 @@
         LEFT JOIN partner principal_partner ON principal_partner.id = principal_base.partner_id
         LEFT JOIN base_area principal_area ON principal_area.area_id = principal_base.area_id
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
+        LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
 
         <where>
-            and credit_info.type = 1 OR credit_info.type IS  NULL
+            and (credit_info.type = 1 OR credit_info.type is NULL) AND loan_process.bank_credit_record IN (1,2)
             <if test="startDate !=null and endDate !=null">
                 and credit_info.gmt_modify between #{startDate} and #{endDate}
             </if>
@@ -430,8 +431,9 @@
         LEFT JOIN partner principal_partner ON principal_partner.id = principal_base.partner_id
         LEFT JOIN base_area principal_area ON principal_area.area_id = principal_base.area_id
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
+        LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
-            and credit_info.type = 2 OR credit_info.type is NULL
+            and (credit_info.type = 2 OR credit_info.type is NULL) AND loan_process.social_credit_record IN (1,2)
             <if test="startDate !=null and endDate !=null">
             and credit_info.gmt_modify between #{startDate} and #{endDate}
             </if>
