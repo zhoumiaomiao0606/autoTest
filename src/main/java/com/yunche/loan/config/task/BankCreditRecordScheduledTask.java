@@ -17,6 +17,7 @@ import java.util.List;
 
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_CREDIT_RECORD;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_AUTO;
 
 /**
  * @author liuzhe
@@ -73,7 +74,7 @@ public class BankCreditRecordScheduledTask {
 
             ApprovalParam approval = new ApprovalParam();
             approval.setTaskDefinitionKey(BANK_CREDIT_RECORD.getCode());
-            approval.setAction(ACTION_PASS);
+            approval.setAction(ACTION_REJECT_AUTO);
 
             approval.setCheckPermission(false);
             approval.setNeedLog(false);
