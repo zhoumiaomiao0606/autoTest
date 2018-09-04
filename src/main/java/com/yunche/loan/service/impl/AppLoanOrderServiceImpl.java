@@ -298,7 +298,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // 订单基本信息
         AppCreditApplyOrderVO creditApplyOrderVO = new AppCreditApplyOrderVO();
         BeanUtils.copyProperties(loanOrderDO, creditApplyOrderVO);
-        creditApplyOrderVO.setOrderId(loanOrderDO.getId());
+        creditApplyOrderVO.setOrderId(String.valueOf(loanOrderDO.getId()));
 
         // 关联的-客户信息(主贷人/共贷人/担保人/紧急联系人)
         ResultBean<CustDetailVO> custDetailVOResultBean = loanCustomerService.detailAll(orderId, null);
