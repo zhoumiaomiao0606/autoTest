@@ -6,6 +6,7 @@ import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.response.base.BasicResponse;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
@@ -22,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -107,9 +109,15 @@ public class FeignConfig {
                 DO.setStatus(IDict.K_JYZT.PROCESS);
                 DO.setFileNum(Integer.parseInt(fileNum.toString()));
                 DO.setApiStatus(200);
+
                 if (V != null) {
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
                 } else {
+                    //当前操作人
+                    DO.setOperatePersonnel(SessionUtils.getLoginUser().getName());
+                    //操作时间
+                    DO.setOperateDate(new Date());
+
                     bankInterfaceSerialDOMapper.insertSelective(DO);
                 }
             }
@@ -187,6 +195,10 @@ public class FeignConfig {
                 if (V != null) {
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
                 } else {
+                    //当前操作人
+                    DO.setOperatePersonnel(SessionUtils.getLoginUser().getName());
+                    //操作时间
+                    DO.setOperateDate(new Date());
                     bankInterfaceSerialDOMapper.insertSelective(DO);
                 }
 
@@ -302,6 +314,10 @@ public class FeignConfig {
                         if (V != null) {
                             bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
                         } else {
+                            //当前操作人
+                            DO.setOperatePersonnel(SessionUtils.getLoginUser().getName());
+                            //操作时间
+                            DO.setOperateDate(new Date());
                             bankInterfaceSerialDOMapper.insertSelective(DO);
                         }
                         return obj;
@@ -318,6 +334,10 @@ public class FeignConfig {
                         if (V != null) {
                             bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
                         } else {
+                            //当前操作人
+                            DO.setOperatePersonnel(SessionUtils.getLoginUser().getName());
+                            //操作时间
+                            DO.setOperateDate(new Date());
                             bankInterfaceSerialDOMapper.insertSelective(DO);
                         }
                         throw new BizException(returnMsg);
