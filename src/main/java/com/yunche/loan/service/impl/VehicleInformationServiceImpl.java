@@ -108,7 +108,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
 
         //使用年限自动计算
         Integer month =null;
-        if(param.getTransfer_ownership_date()!=null ||param.getRegister_date()!=null){
+        if(param.getTransfer_ownership_date()!=null && param.getRegister_date()!=null){
             month =  assessUseYear(Long.valueOf(param.getOrder_id()),DateUtil.getDate10(param.getTransfer_ownership_date()),DateUtil.getDate10(param.getRegister_date()));
             if(month !=null){
                 param.setAssess_use_year(String.valueOf(month));
