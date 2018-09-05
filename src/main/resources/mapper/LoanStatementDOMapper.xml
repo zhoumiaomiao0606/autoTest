@@ -475,7 +475,7 @@
         case when car.car_type = 0 then '新车'
              when car.car_type = 1 then '二手车'
              else '其他' end as car_type,
-        cardetail.price,
+        loan_financial_plan.car_price AS price,
         loan_financial_plan.sign_rate,
         loan_financial_plan.loan_amount,
         loan_financial_plan.down_payment_money,
@@ -520,7 +520,7 @@
         LEFT JOIN employee employee ON base.salesman_id = employee.id
         LEFT JOIN partner partner ON partner.id = base.partner_id
         where 1=1
-        and process.loan_review = 1
+        and process.remit_review = 1
         and
         case when #{maxGroupLevel} = 0 then false
         when #{maxGroupLevel} = 1 then
@@ -995,7 +995,7 @@
         case when car.car_type = 0 then '新车'
         when car.car_type = 1 then '二手车'
         else '其他' end as car_type,
-        cardetail.price,
+        loan_financial_plan.car_price AS price,
         loan_financial_plan.sign_rate,
         loan_financial_plan.loan_amount,
         loan_financial_plan.down_payment_money,
@@ -1057,7 +1057,7 @@
         LEFT JOIN cost_details ON orders.cost_details_id = cost_details.id
 
         where 1=1
-        and process.loan_review = 1
+        and process.remit_review = 1
         and
         case when #{maxGroupLevel} = 0 then false
         when #{maxGroupLevel} = 1 then
