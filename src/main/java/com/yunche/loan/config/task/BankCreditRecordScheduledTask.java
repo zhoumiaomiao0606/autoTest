@@ -92,12 +92,12 @@ public class BankCreditRecordScheduledTask {
 
                             } else {
 
-                                logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, approvalResult.getSuccess());
+                                logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, approvalResult.getMsg());
                             }
 
                         } catch (Exception e) {
 
-                            logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, e.getMessage());
+                            logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, e.getMessage(), e);
                         }
 
                     });

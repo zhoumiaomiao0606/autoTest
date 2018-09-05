@@ -1896,6 +1896,20 @@
                                     #{item}
                                 </foreach>
                             </if>
+                            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                                AND
+                                b.partner_id IN
+                                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                                    #{item}
+                                </foreach>
+                            </if>
+                            <if test="bankList != null and bankList.size() > 0">
+                                AND
+                                b.bank IN
+                                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                                    #{item}
+                                </foreach>
+                            </if>
 
                             AND
 
