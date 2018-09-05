@@ -57,4 +57,6 @@ public class VideoFaceLogDO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String videoSize;
 }

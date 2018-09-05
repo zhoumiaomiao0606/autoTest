@@ -702,11 +702,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 //只有调用接口成功才算
                 //非处理中 并且 非查询成功的可以进行推送
                 if (!IDict.K_JJSTS.SUCCESS.equals(result.getStatus()) && !IDict.K_JJSTS.PROCESS.equals(result.getStatus()) && !IDict.K_JJSTS.SUCCESS_ERROR.equals(result.getStatus())) {
-                    checkCustomerHavingCreditON14Day(loanCustomerDO);
+//                    checkCustomerHavingCreditON14Day(loanCustomerDO);
                     bankCreditProcess(orderId, phybrno, loanCustomerDO);
                 }
             } else {
-                checkCustomerHavingCreditON14Day(loanCustomerDO);
+//                checkCustomerHavingCreditON14Day(loanCustomerDO);
                 bankCreditProcess(orderId, phybrno, loanCustomerDO);
             }
         }
