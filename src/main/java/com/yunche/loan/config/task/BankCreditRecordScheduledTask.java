@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -21,7 +20,7 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT
  * @author liuzhe
  * @date 2018/9/4
  */
-@Component
+//@Component
 public class BankCreditRecordScheduledTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BankCreditRecordScheduledTask.class);
