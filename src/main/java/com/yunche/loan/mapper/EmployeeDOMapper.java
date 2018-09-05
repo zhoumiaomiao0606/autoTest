@@ -1,15 +1,12 @@
 package com.yunche.loan.mapper;
 
-import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.domain.query.RelaQuery;
 import com.yunche.loan.domain.entity.EmployeeDO;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
 public interface EmployeeDOMapper {
 
     int setMachineIdForNull(Long id);
@@ -33,10 +30,6 @@ public interface EmployeeDOMapper {
     List<EmployeeDO> getAll(@Param("type") Byte type, @Param("status") Byte status);
 
     List<String> listTitle();
-
-    int countListEmployeeByUserGroupId(BaseQuery query);
-
-    List<EmployeeDO> listEmployeeByUserGroupId(BaseQuery query);
 
     /**
      * 根据合伙人 统计关联的(外包)员工总数

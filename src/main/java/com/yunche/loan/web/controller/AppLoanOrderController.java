@@ -45,7 +45,7 @@ public class AppLoanOrderController {
     /**
      * 众安接口
      */
-    @PostMapping(value = "/zhonganquery")
+    @PostMapping(value = "/zhonganquery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean zhongAnQuery(@RequestBody ZhongAnQueryParam zhongAnQueryParam) {
 
         return ResultBean.ofSuccess(appLoanOrderService.zhongAnQuery(zhongAnQueryParam), "查询成功");
@@ -68,13 +68,14 @@ public class AppLoanOrderController {
         return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(Long.valueOf(orderId)));
 
     }
+
     /**
      * 众安异步
      */
     @GetMapping(value = "/zhonganinsert")
-    public ResultBean zhonganInsert(){
+    public ResultBean zhonganInsert() {
         appLoanOrderService.zhonganInsert();
-        return ResultBean.ofSuccess(null,"插入成功");
+        return ResultBean.ofSuccess(null, "插入成功");
     }
 
     /**

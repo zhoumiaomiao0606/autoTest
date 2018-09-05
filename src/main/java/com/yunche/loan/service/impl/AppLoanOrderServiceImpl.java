@@ -55,6 +55,7 @@ import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionT
 @Service
 public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AppLoanOrderServiceImpl.class);
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -163,8 +164,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private LoanInfoSupplementService loanInfoSupplementService;
-
-    private static final Logger logger = LoggerFactory.getLogger(AppLoanOrderServiceImpl.class);
 
     @Autowired
     private ZhonganInfoDOMapper zhongAnInfoDOMapper;
@@ -298,7 +297,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // 订单基本信息
         AppCreditApplyOrderVO creditApplyOrderVO = new AppCreditApplyOrderVO();
         BeanUtils.copyProperties(loanOrderDO, creditApplyOrderVO);
-        creditApplyOrderVO.setOrderId(loanOrderDO.getId());
+        creditApplyOrderVO.setOrderId(String.valueOf(loanOrderDO.getId()));
 
         // 关联的-客户信息(主贷人/共贷人/担保人/紧急联系人)
         ResultBean<CustDetailVO> custDetailVOResultBean = loanCustomerService.detailAll(orderId, null);
@@ -860,6 +859,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Override
     @Transactional
     public ZhonganReturnVO zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam) {
+
         ZhonganReturnVO zhonganReturnVO = new ZhonganReturnVO();
         zhonganReturnVO.setFlag(true);
         String returnInfo = "";
@@ -867,6 +867,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         if (customers.size() == 0) {
             throw new BizException("查询数据不能为空");
         }
+
         try {
             for (ZhongAnCusParam zhongAnCusParam : customers) {
 
@@ -880,8 +881,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
                     ZhonganInfoDO zhongAnInfoDO = new ZhonganInfoDO();
 
-                    String creditResultStr = (String) map.get("creditResult");
-                    JSONObject creditResultMap = JSON.parseObject(creditResultStr);
+                    JSONObject creditResultMap = (JSONObject) map.get("creditResult");
 
                     if (!CollectionUtils.isEmpty(creditResultMap)) {
 

@@ -1557,7 +1557,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     private List<String> getTaskIdList(List<Task> startTaskList) {
 
-        if (CollectionUtils.isEmpty(startTaskList)) {
+        if (!CollectionUtils.isEmpty(startTaskList)) {
 
             List<String> startTaskIdList = startTaskList.stream()
                     .filter(Objects::nonNull)
@@ -2949,7 +2949,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private boolean isLoanApplyVisitVerifyFilterTask(String taskDefinitionKey, Map<String, Object> variables) {
         // 业务申请 或 上门调查    但是非【资料审核】打回
         boolean isLoanApplyVisitVerifyFilterTask = (LOAN_APPLY.getCode().equals(taskDefinitionKey) || VISIT_VERIFY.getCode().equals(taskDefinitionKey))
-                && !MATERIAL_REVIEW.getCode().equals(variables.get(PROCESS_VARIABLE_REJECT_ORIGIN_TASK));
+                && !MATERIAL_REVIEW.getCode().equals(variables.get(PROCESS_VARIABLE_TARGET));
         return isLoanApplyVisitVerifyFilterTask;
     }
 

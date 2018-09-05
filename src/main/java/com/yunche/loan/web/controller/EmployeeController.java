@@ -180,8 +180,8 @@ public class EmployeeController {
 
     @PostMapping(value = "/bindBizArea", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> bindBizArea(@RequestBody @Validated @Valid BindBizAreaParam param) {
-        employeeService.bindBizArea(param.getId(),param.getBizAreaIds());
-        return ResultBean.ofSuccess(null,"编辑成功");
+        employeeService.bindBizArea(param.getId(), param.getBizAreaIds());
+        return ResultBean.ofSuccess(null, "编辑成功");
     }
 
 }

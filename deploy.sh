@@ -14,7 +14,7 @@ COPY_JAR_DEST_DIR="/root/yunche-biz/pub/"
 # 300s
 SPAWN_TIME_OUT=300
 
-# start.sh 路径
+# start.sh 路径˜
 START_SH_PATH="/root/yunche-biz/pub/start.sh"
 
 
@@ -83,8 +83,8 @@ JAR_PATH="/root/yunche-biz/pub/yunche-biz.jar"
 JAR_PORT="7002"
 JAR_PROFILES="pub"
 
-# kill
-PIDS=`ps -ef|grep $KILL_PROCESS | grep -v grep|grep -v PPID|awk '{print $pid_}'`
+# kill      $2 -> result[1] - pid
+PIDS=`ps -ef|grep $KILL_PROCESS | grep -v grep|grep -v PPID|awk '{print $2}'`
 for PID in $PIDS
 do
   echo "Kill the $KILL_PROCESS process [ $PID ]"

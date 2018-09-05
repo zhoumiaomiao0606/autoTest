@@ -60,6 +60,10 @@ public class EmployeeDO implements Serializable {
      * 视频面签 对应权限的银行ID
      */
     private Long bankId;
+    /**
+     * 是否开启待办提示：0-否; 1-是;
+     */
+    private Byte notify;
 
     private List<Long> bizAreaIds = Collections.EMPTY_LIST;
 }
