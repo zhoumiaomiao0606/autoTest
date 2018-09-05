@@ -29,6 +29,6 @@ public class ScheduleTaskQuery {
 
     Set<String> juniorIds = Sets.newHashSet();
 
-    private List<Long> bizAreaIdList = Lists.newArrayList();//区域ID列表
-    private List<String> bankList = Lists.newArrayList();//银行ID列表
+    private List<Long> bizAreaIdList = Lists.newArrayList();//区域合伙人ID列表
+    private List<String> bankList = Lists.newArrayList();//银行name列表
 }

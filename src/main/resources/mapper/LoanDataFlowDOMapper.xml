@@ -14,9 +14,10 @@
         <result column="express_receive_date" property="expressReceiveDate" jdbcType="TIMESTAMP"/>
         <result column="express_receive_man" property="expressReceiveMan" jdbcType="VARCHAR"/>
         <result column="has_mortgage_contract" property="hasMortgageContract" jdbcType="TINYINT"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="contract_num" property="contractNum" jdbcType="VARCHAR"/>
         <result column="type" property="type" jdbcType="TINYINT"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
-        <result column="info" property="info" jdbcType="VARCHAR"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
@@ -24,7 +25,7 @@
     <sql id="Base_Column_List">
         id, order_id, flow_out_dept_id, flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
         express_com, express_num, express_send_date, express_receive_date, express_receive_man,
-        has_mortgage_contract, type, status, info, gmt_create, gmt_modify
+        has_mortgage_contract, info, contract_num, type, status, gmt_create, gmt_modify
     </sql>
 
     <!-- getLastByOrderIdAndType -->
@@ -42,16 +43,16 @@
 
         INSERT INTO
 
-            loan_data_flow
+        loan_data_flow
 
-                (
-                    id, order_id, flow_out_dept_id,
-                    flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
-                    express_com, express_num, express_send_date,
-                    express_receive_date, express_receive_man,
-                    has_mortgage_contract, type, status,
-                    info, gmt_create, gmt_modify
-                )
+        (
+        id, order_id, flow_out_dept_id,
+        flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
+        express_com, express_num, express_send_date,
+        express_receive_date, express_receive_man,
+        has_mortgage_contract, type, status,
+        info, gmt_create, gmt_modify
+        )
 
         VALUES
 
@@ -70,21 +71,21 @@
 
         ON DUPLICATE KEY UPDATE
 
-        /*order_id                  = VALUES(order_id),*/
-        flow_out_dept_id          = VALUES(flow_out_dept_id),
-        flow_out_dept_name        = VALUES(flow_out_dept_name),
-        flow_in_dept_id           = VALUES(flow_in_dept_id),
-        flow_in_dept_name         = VALUES(flow_in_dept_name),
-        express_com               = VALUES(express_com),
-        express_num               = VALUES(express_num),
-        express_send_date         = VALUES(express_send_date),
-        express_receive_date      = VALUES(express_receive_date),
-        express_receive_man       = VALUES(express_receive_man),
-        has_mortgage_contract     = VALUES(has_mortgage_contract),
-        /*type                      = VALUES(type),*/
-        status                    = VALUES(status),
-        info                      = VALUES(info),
-        gmt_modify                = VALUES(gmt_modify)
+        /*order_id = VALUES(order_id),*/
+        flow_out_dept_id = VALUES(flow_out_dept_id),
+        flow_out_dept_name = VALUES(flow_out_dept_name),
+        flow_in_dept_id = VALUES(flow_in_dept_id),
+        flow_in_dept_name = VALUES(flow_in_dept_name),
+        express_com = VALUES(express_com),
+        express_num = VALUES(express_num),
+        express_send_date = VALUES(express_send_date),
+        express_receive_date = VALUES(express_receive_date),
+        express_receive_man = VALUES(express_receive_man),
+        has_mortgage_contract = VALUES(has_mortgage_contract),
+        /*type = VALUES(type),*/
+        status = VALUES(status),
+        info = VALUES(info),
+        gmt_modify = VALUES(gmt_modify)
 
     </insert>
 
@@ -100,28 +101,26 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
-
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into loan_data_flow (id, order_id, flow_out_dept_id,
         flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
         express_com, express_num, express_send_date,
         express_receive_date, express_receive_man,
-        has_mortgage_contract, type, status,
-        info, gmt_create, gmt_modify
-        )
+        has_mortgage_contract, info, contract_num,
+        type, status, gmt_create,
+        gmt_modify)
         values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{flowOutDeptId,jdbcType=BIGINT},
         #{flowOutDeptName,jdbcType=VARCHAR}, #{flowInDeptId,jdbcType=BIGINT}, #{flowInDeptName,jdbcType=VARCHAR},
         #{expressCom,jdbcType=TINYINT}, #{expressNum,jdbcType=VARCHAR}, #{expressSendDate,jdbcType=TIMESTAMP},
         #{expressReceiveDate,jdbcType=TIMESTAMP}, #{expressReceiveMan,jdbcType=VARCHAR},
-        #{hasMortgageContract,jdbcType=TINYINT}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT},
-        #{info,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
-        )
+        #{hasMortgageContract,jdbcType=TINYINT}, #{info,jdbcType=VARCHAR}, #{contractNum,jdbcType=VARCHAR},
+        #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP})
     </insert>
 
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
-        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into loan_data_flow
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -160,14 +159,17 @@
             <if test="hasMortgageContract != null">
                 has_mortgage_contract,
             </if>
+            <if test="info != null">
+                info,
+            </if>
+            <if test="contractNum != null">
+                contract_num,
+            </if>
             <if test="type != null">
                 type,
             </if>
             <if test="status != null">
                 status,
-            </if>
-            <if test="info != null">
-                info,
             </if>
             <if test="gmtCreate != null">
                 gmt_create,
@@ -213,14 +215,17 @@
             <if test="hasMortgageContract != null">
                 #{hasMortgageContract,jdbcType=TINYINT},
             </if>
+            <if test="info != null">
+                #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNum != null">
+                #{contractNum,jdbcType=VARCHAR},
+            </if>
             <if test="type != null">
                 #{type,jdbcType=TINYINT},
             </if>
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
-            </if>
-            <if test="info != null">
-                #{info,jdbcType=VARCHAR},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -230,7 +235,6 @@
             </if>
         </trim>
     </insert>
-
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
         update loan_data_flow
         <set>
@@ -267,14 +271,17 @@
             <if test="hasMortgageContract != null">
                 has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT},
             </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="contractNum != null">
+                contract_num = #{contractNum,jdbcType=VARCHAR},
+            </if>
             <if test="type != null">
                 type = #{type,jdbcType=TINYINT},
             </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
-            </if>
-            <if test="info != null">
-                info = #{info,jdbcType=VARCHAR},
             </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
@@ -285,26 +292,25 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO">
-    update loan_data_flow
-    set order_id = #{orderId,jdbcType=BIGINT},
-      flow_out_dept_id = #{flowOutDeptId,jdbcType=BIGINT},
-      flow_out_dept_name = #{flowOutDeptName,jdbcType=VARCHAR},
-      flow_in_dept_id = #{flowInDeptId,jdbcType=BIGINT},
-      flow_in_dept_name = #{flowInDeptName,jdbcType=VARCHAR},
-      express_com = #{expressCom,jdbcType=TINYINT},
-      express_num = #{expressNum,jdbcType=VARCHAR},
-      express_send_date = #{expressSendDate,jdbcType=TIMESTAMP},
-      express_receive_date = #{expressReceiveDate,jdbcType=TIMESTAMP},
-      express_receive_man = #{expressReceiveMan,jdbcType=VARCHAR},
-      has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT},
-      type = #{type,jdbcType=TINYINT},
-      status = #{status,jdbcType=TINYINT},
-      info = #{info,jdbcType=VARCHAR},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-
+        update loan_data_flow
+        set order_id = #{orderId,jdbcType=BIGINT},
+        flow_out_dept_id = #{flowOutDeptId,jdbcType=BIGINT},
+        flow_out_dept_name = #{flowOutDeptName,jdbcType=VARCHAR},
+        flow_in_dept_id = #{flowInDeptId,jdbcType=BIGINT},
+        flow_in_dept_name = #{flowInDeptName,jdbcType=VARCHAR},
+        express_com = #{expressCom,jdbcType=TINYINT},
+        express_num = #{expressNum,jdbcType=VARCHAR},
+        express_send_date = #{expressSendDate,jdbcType=TIMESTAMP},
+        express_receive_date = #{expressReceiveDate,jdbcType=TIMESTAMP},
+        express_receive_man = #{expressReceiveMan,jdbcType=VARCHAR},
+        has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT},
+        info = #{info,jdbcType=VARCHAR},
+        contract_num = #{contractNum,jdbcType=VARCHAR},
+        type = #{type,jdbcType=TINYINT},
+        status = #{status,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>

@@ -76,6 +76,8 @@ public class VideoFaceLogVO {
 
     private String partnerName;
 
+    private String videoSize;
+
 
     public String getTypeVal() {
         Byte type = getType();

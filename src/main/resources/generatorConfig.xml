@@ -371,7 +371,7 @@
 
 -->
 
-        <table tableName="employee" domainObjectName="EmployeeDO"
+        <table tableName="loan_data_flow" domainObjectName="LoanDataFlowDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

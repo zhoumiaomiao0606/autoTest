@@ -5,7 +5,6 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
@@ -55,9 +54,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     private UserGroupRelaBankDOMapper userGroupRelaBankDOMapper;
 
     @Autowired
-    private UserGroupRelaAreaDOMapper userGroupRelaAreaDOMapper;
-
-    @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
 
     @Autowired
@@ -67,22 +63,14 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     private CarService carService;
 
     @Autowired
-    private BaseAreaDOMapper baseAreaDOMapper;
-
-    @Autowired
-    private BankCache bankCache;
-
-    @Autowired
     private ActivitiService activitiService;
 
     @Autowired
     private DictService dictService;
 
-    @Autowired
-    private LoanRejectLogService loanRejectLogService;
-
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
+
 
     @Override
     public ResultBean<List<ZhonganListVO>> selectZhonganList(ZhonganListQuery query) {
@@ -92,7 +80,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setMaxGroupLevel(maxGroupLevel);
         query.setJuniorIds(juniorIds);
         //获取用户可见的区域
-        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        query.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
@@ -109,10 +97,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         ResultBean<Long> countRisk = countFlowOperationMsgList(new Long("2"));
         ResultBean<Long> countBusi = countFlowOperationMsgList(new Long("3"));
         Map map = new HashMap();
-        map.put("countScheduletask",countScheduletask.getData());
-        map.put("countCredit",countCredit.getData());
-        map.put("countRisk",countRisk.getData());
-        map.put("countBusi",countBusi.getData());
+        map.put("countScheduletask", countScheduletask.getData());
+        map.put("countCredit", countCredit.getData());
+        map.put("countRisk", countRisk.getData());
+        map.put("countBusi", countBusi.getData());
         return ResultBean.ofSuccess(map);
     }
 
@@ -126,7 +114,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setMaxGroupLevel(maxGroupLevel);
         query.setJuniorIds(juniorIds);
         //获取用户可见的区域
-        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        query.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
         query.setReadStatus(new Long("0"));
@@ -144,7 +132,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setMaxGroupLevel(maxGroupLevel);
         query.setJuniorIds(juniorIds);
         //获取用户可见的区域
-        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        query.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
@@ -188,7 +176,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setRefundApplyLevel(refundApplyLevel);
         query.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        query.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
 
@@ -222,7 +210,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setRefundApplyLevel(refundApplyLevel);
         query.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        query.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        query.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
 
@@ -270,7 +258,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setRefundApplyLevel(refundApplyLevel);
         taskListQuery.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        taskListQuery.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
         taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
@@ -313,7 +301,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setRefundApplyLevel(refundApplyLevel);
         taskListQuery.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        taskListQuery.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
         taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
@@ -349,7 +337,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         appTaskListQuery.setRefundApplyLevel(refundApplyLevel);
         appTaskListQuery.setMaterialSupplementLevel(materialSupplementLevel);
         //获取用户可见的区域
-        appTaskListQuery.setBizAreaIdList(getUserHaveBizArea(loginUser.getId()));
+        appTaskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         appTaskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
 
@@ -380,6 +368,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         // loginUser 只能访问 自己及下级的数据
         loginUserGetSelfAndSub(taskListQuery);
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        //获取用户可见的区域内合伙人ID列表
+        taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
+        //获取用户可见的银行
+        taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
 
         // 分页
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
@@ -686,12 +680,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     /**
-     * 获取用户可见的银行
+     * 获取用户可见的银行 名称
      *
-     * @param id
+     * @param userId
      */
-    private List<String> getUserHaveBank(Long id) {
-        List<Long> groupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(id);
+    private List<String> getUserHaveBank(Long userId) {
+        List<Long> groupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(userId);
         List<String> userBankIdList = Lists.newArrayList();
         groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId -> {
             List<String> tmpBankidList = userGroupRelaBankDOMapper.getBankNameListByUserGroupId(groupId);
@@ -702,19 +696,19 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     /**
-     * 获取用户可见的区域
+     * 获取 用户可见区域内的 所有合伙人ID列表
      *
-     * @param id
+     * @param userId
      */
-    private List<Long> getUserHaveBizArea(Long id) {
-        List<Long> longs = loanQueryDOMapper.selectEmpBizAreaPartnerIds(SessionUtils.getLoginUser().getId());
-        if (CollectionUtils.isEmpty(longs)) {
+    private List<Long> getUserHaveBizAreaPartnerId(Long userId) {
+        List<Long> empBizAreaPartnerIds = loanQueryDOMapper.selectEmpBizAreaPartnerIds(userId);
+        if (CollectionUtils.isEmpty(empBizAreaPartnerIds)) {
             return null;
         }
-        if (longs.get(0) == null) {
+        if (empBizAreaPartnerIds.get(0) == null) {
             return null;
         }
-        return longs;
+        return empBizAreaPartnerIds;
     }
 
 }

@@ -77,48 +77,53 @@ public class UserGroupServiceImpl implements UserGroupService {
         doBindEmployee(id, userGroupParam.getEmployeeIdList());
 
         // 绑定业务区域
-        doBindArea(id,userGroupParam.getAreaIdList());
+        doBindArea(id, userGroupParam.getAreaIdList());
 
         // 绑定银行
-        doBindBank(id,userGroupParam.getBankNameList());
+        doBindBank(id, userGroupParam.getBankNameList());
 
         return ResultBean.ofSuccess(id, "创建成功");
     }
 
     /**
      * 绑定银行列表
+     *
      * @param id
      * @param bankNameList
      */
     private void doBindBank(Long id, List<String> bankNameList) {
 
-        List<BankDO> bankDOS = bankDOMapper.listAll(null);
+//        List<BankDO> bankDOS = bankDOMapper.listAll(null);
 
-        bankNameList.stream().filter(Objects::nonNull).forEach(bankName->{
-            UserGroupRelaBankDO userGroupRelaBankDO = new UserGroupRelaBankDO();
-            userGroupRelaBankDO.setUserGroupId(id);
-            userGroupRelaBankDO.setBankId(bankDOMapper.selectIdByName(bankName));
-            userGroupRelaBankDO.setGmtCreate(new Date());
-            int count = userGroupRelaBankDOMapper.insert(userGroupRelaBankDO);
-            Preconditions.checkArgument(count>0,"用户组绑定银行失败！");
+        bankNameList.stream()
+                .filter(Objects::nonNull)
+                .forEach(bankName -> {
 
-        });
+                    UserGroupRelaBankDO userGroupRelaBankDO = new UserGroupRelaBankDO();
+                    userGroupRelaBankDO.setUserGroupId(id);
+                    userGroupRelaBankDO.setBankId(bankDOMapper.selectIdByName(bankName));
+                    userGroupRelaBankDO.setGmtCreate(new Date());
+                    userGroupRelaBankDO.setGmtModify(new Date());
+                    int count = userGroupRelaBankDOMapper.insertSelective(userGroupRelaBankDO);
+                    Preconditions.checkArgument(count > 0, "用户组绑定银行失败！");
+                });
     }
 
     /**
      * 绑定区域列表
+     *
      * @param id
      * @param areaIdList
      */
     private void doBindArea(Long id, List<Long> areaIdList) {
 
-        areaIdList.stream().filter(Objects :: nonNull).forEach(areaId->{
+        areaIdList.stream().filter(Objects::nonNull).forEach(areaId -> {
             UserGroupRelaAreaDO userGroupRelaAreaDO = new UserGroupRelaAreaDO();
             userGroupRelaAreaDO.setUserGroupId(id);
             userGroupRelaAreaDO.setAreaId(areaId);
             userGroupRelaAreaDO.setGmtCreate(new Date());
             int count = userGroupRelaAreaDOMapper.insert(userGroupRelaAreaDO);
-            Preconditions.checkArgument(count>0,"用户组绑定区域");
+            Preconditions.checkArgument(count > 0, "用户组绑定区域");
         });
 
     }
@@ -162,7 +167,7 @@ public class UserGroupServiceImpl implements UserGroupService {
         fillDepartment(userGroupDO.getDepartmentId(), userGroupVO);
         fillArea(userGroupVO);
         List<Long> areaIdList = userGroupRelaAreaDOMapper.getAreaIdListByUserGroupId(id);
-        List<BaseAreaDO> areaDeail =  areaIdList.parallelStream().map(e->{
+        List<BaseAreaDO> areaDeail = areaIdList.parallelStream().map(e -> {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(e, VALID_STATUS);
             return baseAreaDO;
         }).collect(Collectors.toList());
@@ -730,6 +735,7 @@ public class UserGroupServiceImpl implements UserGroupService {
 
     /**
      * 更新用户组关联区域
+     *
      * @param userGroupParam
      * @return
      */
@@ -737,20 +743,21 @@ public class UserGroupServiceImpl implements UserGroupService {
     public ResultBean updateUserArea(UserGroupParam userGroupParam) {
         //删除原先绑定的数据
         userGroupRelaAreaDOMapper.deleteAllByUserGroupId(userGroupParam.getId());
-        doBindArea(userGroupParam.getId(),userGroupParam.getAreaIdList());
-        return ResultBean.ofSuccess(null,"更新完成");
+        doBindArea(userGroupParam.getId(), userGroupParam.getAreaIdList());
+        return ResultBean.ofSuccess(null, "更新完成");
     }
 
     /**
      * 更新用户组关联银行
+     *
      * @param userGroupParam
      * @return
      */
     @Override
     public ResultBean updateUserBank(UserGroupParam userGroupParam) {
         userGroupRelaBankDOMapper.deleteAllByUserGroupId(userGroupParam.getId());
-        doBindBank(userGroupParam.getId(),userGroupParam.getBankNameList());
-        return ResultBean.ofSuccess(null,"更新完成");
+        doBindBank(userGroupParam.getId(), userGroupParam.getBankNameList());
+        return ResultBean.ofSuccess(null, "更新完成");
     }
 
     /**

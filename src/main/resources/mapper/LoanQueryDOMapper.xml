@@ -1678,9 +1678,10 @@
                 f.express_receive_date            AS expressReceiveDate,
                 f.express_receive_man             AS expressReceiveMan,
                 f.has_mortgage_contract           AS hasMortgageContract,
+                f.info                            AS info,
+                f.contract_num                    AS contractNum,
                 f.type                            AS type,
                 f.status                          AS status,
-                f.info                            AS info,
                 f.gmt_create                      AS gmtCreate,
                 f.gmt_modify                      AS gmtModify
 

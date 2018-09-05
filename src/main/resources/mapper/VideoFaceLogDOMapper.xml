@@ -25,6 +25,7 @@
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
         <result column="bank_id" property="bankId" jdbcType="BIGINT"/>
         <result column="bank_name" property="bankName" jdbcType="VARCHAR"/>
+        <result column="video_size" property="videoSize" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.VideoFaceLogDO" extends="BaseResultMap">
@@ -35,7 +36,7 @@
         id, order_id, guarantee_company_id, guarantee_company_name, customer_id, customer_name,
         customer_id_card, path, type, auditor_id, auditor_name, action, latlon, address,
         car_detail_id, car_name, car_price, expect_loan_amount, photo_similarity_degree,
-        gmt_create, gmt_modify, bank_id, bank_name
+        gmt_create, gmt_modify, bank_id, bank_name, video_size
     </sql>
 
     <sql id="Blob_Column_List">
@@ -106,6 +107,9 @@
         <if test="photoSimilarityDegree != null">
             AND photo_similarity_degree = #{photoSimilarityDegree}
         </if>
+        <if test="videoSize != null">
+            AND video_size = #{videoSize}
+        </if>
         <if test="gmtCreateStart != null">
             <![CDATA[ AND gmt_create >= #{gmtCreateStart} ]]>
         </if>
@@ -170,7 +174,7 @@
         latlon, address, car_detail_id,
         car_name, car_price, expect_loan_amount,
         photo_similarity_degree, gmt_create, gmt_modify,
-        bank_id, bank_name, info
+        bank_id, bank_name, info,video_size
         )
         values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{guaranteeCompanyId,jdbcType=BIGINT},
         #{guaranteeCompanyName,jdbcType=VARCHAR}, #{customerId,jdbcType=BIGINT}, #{customerName,jdbcType=VARCHAR},
@@ -179,7 +183,7 @@
         #{latlon,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{carDetailId,jdbcType=BIGINT},
         #{carName,jdbcType=VARCHAR}, #{carPrice,jdbcType=DECIMAL}, #{expectLoanAmount,jdbcType=DECIMAL},
         #{photoSimilarityDegree,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{bankId,jdbcType=BIGINT}, #{bankName,jdbcType=VARCHAR}, #{info,jdbcType=LONGVARCHAR}
+        #{bankId,jdbcType=BIGINT}, #{bankName,jdbcType=VARCHAR}, #{info,jdbcType=LONGVARCHAR},#{videoSize,jdbcType=VARCHAR}
         )
     </insert>
 
@@ -262,6 +266,9 @@
             <if test="info != null">
                 info,
             </if>
+            <if test="videoSize != null">
+                video_size,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -335,6 +342,9 @@
             </if>
             <if test="info != null">
                 #{info,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="videoSize != null">
+                #{videoSize,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -411,6 +421,9 @@
             <if test="info != null">
                 info = #{info,jdbcType=LONGVARCHAR},
             </if>
+            <if test="videoSize != null">
+                video_size = #{videoSize,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -439,7 +452,8 @@
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         bank_id = #{bankId,jdbcType=BIGINT},
         bank_name = #{bankName,jdbcType=VARCHAR},
-        info = #{info,jdbcType=LONGVARCHAR}
+        info = #{info,jdbcType=LONGVARCHAR},
+        video_size=#{videoSize,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VideoFaceLogDO">
@@ -465,7 +479,8 @@
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
       bank_id = #{bankId,jdbcType=BIGINT},
-      bank_name = #{bankName,jdbcType=VARCHAR}
+      bank_name = #{bankName,jdbcType=VARCHAR},
+      video_size=#{videoSize,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
