@@ -1031,6 +1031,18 @@
         ) as submitTime,
         (
         SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_refund_apply_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as refundTime,
+        (
+        SELECT
         loan_process_log.user_name
         FROM
         loan_process_log
@@ -1057,7 +1069,7 @@
         LEFT JOIN cost_details ON orders.cost_details_id = cost_details.id
 
         where 1=1
-        and process.remit_review = 1
+        and process.remit_review IN (1,21)
         and
         case when #{maxGroupLevel} = 0 then false
         when #{maxGroupLevel} = 1 then
