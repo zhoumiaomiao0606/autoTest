@@ -302,9 +302,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     public VideoFaceFlagVO isFlag(Long orderId) {
         VideoFaceFlagVO videoFaceFlagVO = new VideoFaceFlagVO();
         VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(orderId);
-        if(videoFaceLogDO == null){
+        if (videoFaceLogDO == null) {
             videoFaceFlagVO.setFlag("0");
-        }else{
+        } else {
             videoFaceFlagVO.setFlag("1");
         }
         return videoFaceFlagVO;
@@ -372,11 +372,11 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_9 = "9、请您翻开《牡丹信用卡透支分期付款/抵押合同》 第一页确认相关信息。" +
                 "您申请信用卡汽车分期业务用于购买" + redText(videoFaceQuestionAnswerVO.getCarBrandName()) + "品牌的汽车，" +
                 "车辆交易总价" + redText(videoFaceQuestionAnswerVO.getCarPrice()) + "元，" +
-                "您自行支付的首付款" +redText(videoFaceQuestionAnswerVO.getDownPaymentMoney()) + "元，" +
-                "您申请透支金额"+redText(videoFaceQuestionAnswerVO.getLoanAmount())+"元用于支付剩余交易款项，"+
-                "申请透支金额"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal().subtract(videoFaceQuestionAnswerVO.getLoanAmount()))+"元用于支付汽车金融服务费，"+
-                "合计透支金额"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal())+"元。"+
-                "您首月需还款"+redText(videoFaceQuestionAnswerVO.getFirstMonthRepay())+"元，"+
+                "您自行支付的首付款" + redText(videoFaceQuestionAnswerVO.getDownPaymentMoney()) + "元，" +
+                "您申请透支金额" + redText(videoFaceQuestionAnswerVO.getLoanAmount()) + "元用于支付剩余交易款项，" +
+                "申请透支金额" + redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal().subtract(videoFaceQuestionAnswerVO.getLoanAmount())) + "元用于支付汽车金融服务费，" +
+                "合计透支金额" + redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal()) + "元。" +
+                "您首月需还款" + redText(videoFaceQuestionAnswerVO.getFirstMonthRepay()) + "元，" +
                 "每月还款" + redText(videoFaceQuestionAnswerVO.getEachMonthRepay()) + "元，"
                 + redText(videoFaceQuestionAnswerVO.getLoanTime() / 12) + "年" +
                 "总计需还款" + redText(videoFaceQuestionAnswerVO.getPrincipalInterestSum()) + "元。" +
