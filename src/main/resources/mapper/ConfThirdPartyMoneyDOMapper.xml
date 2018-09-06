@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ConfThirdPartyMoneyDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ConfThirdPartyMoneyDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="contact" property="contact" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="caution_money" property="cautionMoney" jdbcType="DECIMAL"/>
+        <result column="year_rate" property="yearRate" jdbcType="DECIMAL"/>
+        <result column="single_cost" property="singleCost" jdbcType="DECIMAL"/>
+        <result column="bank_id" property="bankId" jdbcType="BIGINT"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, name, contact, mobile, caution_money, year_rate, single_cost, bank_id, gmt_create, 
+    gmt_modify, status
+  </sql>
+
+    <!--query-->
+    <select id="query" parameterType="com.yunche.loan.domain.query.ConfThirdPartyMoneyQuery" resultMap="BaseResultMap">
+
+
+    </select>
+
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from conf_third_party_money
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from conf_third_party_money
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfThirdPartyMoneyDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into conf_third_party_money (id, name, contact, 
+      mobile, caution_money, year_rate, 
+      single_cost, bank_id, gmt_create, 
+      gmt_modify, status)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{contact,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{cautionMoney,jdbcType=DECIMAL}, #{yearRate,jdbcType=DECIMAL}, 
+      #{singleCost,jdbcType=DECIMAL}, #{bankId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT})
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfThirdPartyMoneyDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into conf_third_party_money
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="contact != null">
+                contact,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="cautionMoney != null">
+                caution_money,
+            </if>
+            <if test="yearRate != null">
+                year_rate,
+            </if>
+            <if test="singleCost != null">
+                single_cost,
+            </if>
+            <if test="bankId != null">
+                bank_id,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="contact != null">
+                #{contact,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="cautionMoney != null">
+                #{cautionMoney,jdbcType=DECIMAL},
+            </if>
+            <if test="yearRate != null">
+                #{yearRate,jdbcType=DECIMAL},
+            </if>
+            <if test="singleCost != null">
+                #{singleCost,jdbcType=DECIMAL},
+            </if>
+            <if test="bankId != null">
+                #{bankId,jdbcType=BIGINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfThirdPartyMoneyDO">
+        update conf_third_party_money
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="contact != null">
+                contact = #{contact,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="cautionMoney != null">
+                caution_money = #{cautionMoney,jdbcType=DECIMAL},
+            </if>
+            <if test="yearRate != null">
+                year_rate = #{yearRate,jdbcType=DECIMAL},
+            </if>
+            <if test="singleCost != null">
+                single_cost = #{singleCost,jdbcType=DECIMAL},
+            </if>
+            <if test="bankId != null">
+                bank_id = #{bankId,jdbcType=BIGINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfThirdPartyMoneyDO">
+    update conf_third_party_money
+    set name = #{name,jdbcType=VARCHAR},
+      contact = #{contact,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      caution_money = #{cautionMoney,jdbcType=DECIMAL},
+      year_rate = #{yearRate,jdbcType=DECIMAL},
+      single_cost = #{singleCost,jdbcType=DECIMAL},
+      bank_id = #{bankId,jdbcType=BIGINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
