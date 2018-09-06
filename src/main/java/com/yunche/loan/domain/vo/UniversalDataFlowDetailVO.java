@@ -47,6 +47,10 @@ public class UniversalDataFlowDetailVO {
      * 合同编号   - material_audit表中
      */
     private String contractNum;
+    /**
+     * 是否含抵押资料 (0-否;1-是;)       - material_audit表中
+     */
+    private Byte hasMortgageContract;
 
 
     private Long id;
@@ -70,8 +74,6 @@ public class UniversalDataFlowDetailVO {
     private Date expressReceiveDate;
 
     private String expressReceiveMan;
-
-    private Byte hasMortgageContract;
 
     private Byte type;
 
