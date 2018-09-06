@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yunche.loan.config.cache.DepartmentCache;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
@@ -149,10 +150,11 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         Preconditions.checkArgument(count > 0, "插入失败");
 
         // 合同编号 -保存(I/U)
-        if (null != loanDataFlowParam.getContractNum()) {
+        if (null != loanDataFlowParam.getContractNum() || null != loanDataFlowParam.getHasMortgageContract()) {
             MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
             materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
             materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
+            materialUpdateParam.setHasMortgageContract(loanDataFlowParam.getHasMortgageContract());
             materialService.update(materialUpdateParam);
         }
 
@@ -172,10 +174,11 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         Preconditions.checkArgument(count > 0, "编辑失败");
 
         // 合同编号 -保存(I/U)
-        if (null != loanDataFlowParam.getContractNum()) {
+        if (null != loanDataFlowParam.getContractNum() || null != loanDataFlowParam.getHasMortgageContract()) {
             MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
             materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
             materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
+            materialUpdateParam.setHasMortgageContract(loanDataFlowParam.getHasMortgageContract());
             materialService.update(materialUpdateParam);
         }
 
@@ -305,6 +308,9 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         // 收集数据
         List<LoanDataFlowDO> loanDataFlowDOList = Lists.newArrayList();
 
+        // orderId  --- hasMortgageContract
+        Map<String, Byte> orderId_hasMortgageContract_map = Maps.newHashMap();
+
         try {
             // readFile
             List<String[]> rowList = POIUtil.readExcelFromOSS(0, 0, ossKey);
@@ -409,7 +415,8 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
                         String row_8 = row[8].trim();
                         Preconditions.checkArgument(StringUtils.isNotBlank(row_8), "第" + rowNum + "行，第9列格式有误：[" + titleRow[8] + "]不能为空");
 
-                        loanDataFlowDO.setHasMortgageContract(convertHasMortgageContract(row_8));
+                        // put
+                        orderId_hasMortgageContract_map.put(row[1], convertHasMortgageContract(row_8));
 
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第9列格式有误：" + row[8]);
@@ -456,7 +463,31 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         // 资料流转[待邮寄]导入后，自动提交
         autoCompleteTask(loanDataFlowDOList);
 
+        // 编辑公共字段
+        batchInsert_hasMortgageContract(orderId_hasMortgageContract_map);
+
         return ResultBean.ofSuccess(count, "导入成功");
+    }
+
+    /**
+     * 编辑公共字段：是否含抵押资料
+     *
+     * @param orderId_hasMortgageContract_map
+     */
+    private void batchInsert_hasMortgageContract(Map<String, Byte> orderId_hasMortgageContract_map) {
+
+        if (CollectionUtils.isEmpty(orderId_hasMortgageContract_map)) {
+
+            orderId_hasMortgageContract_map
+                    .forEach((k, v) -> {
+
+                        MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
+                        materialUpdateParam.setOrder_id(k);
+                        materialUpdateParam.setHasMortgageContract(v);
+                        materialService.update(materialUpdateParam);
+
+                    });
+        }
     }
 
     /**
@@ -551,7 +582,6 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
      * @param loanDataFlowDOList
      * @return
      */
-
     private int batchInsert(List<LoanDataFlowDO> loanDataFlowDOList) {
 
         if (CollectionUtils.isEmpty(loanDataFlowDOList)) {

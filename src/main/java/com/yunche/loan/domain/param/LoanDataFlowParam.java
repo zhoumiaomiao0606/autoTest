@@ -11,7 +11,11 @@ import lombok.Data;
 public class LoanDataFlowParam extends LoanDataFlowDO {
 
     /**
-     * 合同编号
+     * 合同编号                         -资料流转共享字段
      */
     private String contractNum;
+    /**
+     * 是否含抵押资料 (0-否;1-是;)       -资料流转共享字段
+     */
+    private Byte hasMortgageContract;
 }

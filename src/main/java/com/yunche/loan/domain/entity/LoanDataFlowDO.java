@@ -29,8 +29,6 @@ public class LoanDataFlowDO {
 
     private String expressReceiveMan;
 
-    private Byte hasMortgageContract;
-
     private Byte type;
 
     private Byte status;
