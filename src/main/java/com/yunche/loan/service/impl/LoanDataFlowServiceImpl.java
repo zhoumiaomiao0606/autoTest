@@ -149,10 +149,12 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         Preconditions.checkArgument(count > 0, "插入失败");
 
         // 合同编号 -保存(I/U)
-        MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
-        materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
-        materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
-        materialService.update(materialUpdateParam);
+        if (null != loanDataFlowParam.getContractNum()) {
+            MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
+            materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
+            materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
+            materialService.update(materialUpdateParam);
+        }
 
         return ResultBean.ofSuccess(loanDataFlowDO.getId(), "创建成功");
     }
@@ -170,10 +172,12 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         Preconditions.checkArgument(count > 0, "编辑失败");
 
         // 合同编号 -保存(I/U)
-        MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
-        materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
-        materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
-        materialService.update(materialUpdateParam);
+        if (null != loanDataFlowParam.getContractNum()) {
+            MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
+            materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
+            materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
+            materialService.update(materialUpdateParam);
+        }
 
         return ResultBean.ofSuccess(count, "编辑成功");
     }
