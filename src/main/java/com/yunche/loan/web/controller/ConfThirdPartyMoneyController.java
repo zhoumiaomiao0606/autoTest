@@ -3,7 +3,6 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.ConfThirdPartyMoneyDO;
 import com.yunche.loan.domain.query.ConfThirdPartyMoneyQuery;
-import com.yunche.loan.domain.query.EmployeeQuery;
 import com.yunche.loan.service.ConfThirdPartyMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -50,5 +49,4 @@ public class ConfThirdPartyMoneyController {
     public ResultBean<List<ConfThirdPartyMoneyDO>> query(@RequestBody ConfThirdPartyMoneyQuery query) {
         return confThirdPartyMoneyService.query(query);
     }
-
 }

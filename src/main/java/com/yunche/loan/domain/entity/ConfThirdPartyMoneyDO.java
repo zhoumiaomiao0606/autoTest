@@ -22,6 +22,8 @@ public class ConfThirdPartyMoneyDO {
 
     private BigDecimal singleCost;
 
+    private Integer loanTime;
+
     private Long bankId;
 
     private Date gmtCreate;
