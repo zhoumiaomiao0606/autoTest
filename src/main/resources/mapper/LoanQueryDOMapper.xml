@@ -1667,6 +1667,7 @@
                 d.name                            AS departmentName,
                 p.name                            AS partnerName,
                 b.bank                            AS bankName,
+                m.contract_num                    AS contractNum,
                 f.id                              AS id,
                 f.flow_out_dept_id                AS flowOutDeptId,
                 f.flow_out_dept_name              AS flowOutDeptName,
@@ -1679,7 +1680,6 @@
                 f.express_receive_man             AS expressReceiveMan,
                 f.has_mortgage_contract           AS hasMortgageContract,
                 f.info                            AS info,
-                f.contract_num                    AS contractNum,
                 f.type                            AS type,
                 f.status                          AS status,
                 f.gmt_create                      AS gmtCreate,
@@ -1688,6 +1688,7 @@
       FROM
                 loan_order      a
       LEFT JOIN loan_data_flow  f     ON  a.id = f.order_id
+      LEFT JOIN material_audit  m     ON  m.id = a.material_audit_id
       LEFT JOIN loan_base_info  b     ON  b.id = a.loan_base_info_id
       LEFT JOIN loan_customer   c     ON  c.id = a.loan_customer_id
       LEFT JOIN employee        e     ON  e.id = b.salesman_id

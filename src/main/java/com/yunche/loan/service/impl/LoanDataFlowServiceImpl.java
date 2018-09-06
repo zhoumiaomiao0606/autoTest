@@ -13,6 +13,8 @@ import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.domain.param.LoanDataFlowParam;
+import com.yunche.loan.domain.param.MaterialUpdateParam;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
@@ -29,6 +31,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,6 +90,9 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     @Autowired
     private LoanProcessService loanProcessService;
 
+    @Autowired
+    private MaterialService materialService;
+
 
     @Override
     public LoanDataFlowDO getLastByOrderIdAndType(Long orderId, Byte type) {
@@ -116,9 +122,13 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Override
     @Transactional
-    public ResultBean<Long> create(LoanDataFlowDO loanDataFlowDO) {
-        Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getType(), "type不能为空");
-        Preconditions.checkNotNull(loanDataFlowDO.getOrderId(), "orderId不能为空");
+    public ResultBean<Long> create(LoanDataFlowParam loanDataFlowParam) {
+        Preconditions.checkArgument(null != loanDataFlowParam && null != loanDataFlowParam.getType(), "type不能为空");
+        Preconditions.checkNotNull(loanDataFlowParam.getOrderId(), "orderId不能为空");
+
+        // convert
+        LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+        BeanUtils.copyProperties(loanDataFlowParam, loanDataFlowDO);
 
         // taskKey
         String taskKey = dictService.getCodeByKey("loanDataFlowType", String.valueOf(loanDataFlowDO.getType()));
@@ -138,17 +148,32 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         int count = loanDataFlowDOMapper.insertSelective(loanDataFlowDO);
         Preconditions.checkArgument(count > 0, "插入失败");
 
+        // 合同编号 -保存(I/U)
+        MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
+        materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
+        materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
+        materialService.update(materialUpdateParam);
+
         return ResultBean.ofSuccess(loanDataFlowDO.getId(), "创建成功");
     }
 
     @Override
     @Transactional
-    public ResultBean<Integer> update(LoanDataFlowDO loanDataFlowDO) {
-        Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getId(), "id不能为空");
+    public ResultBean<Integer> update(LoanDataFlowParam loanDataFlowParam) {
+        Preconditions.checkArgument(null != loanDataFlowParam && null != loanDataFlowParam.getId(), "id不能为空");
+
+        LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+        BeanUtils.copyProperties(loanDataFlowParam, loanDataFlowDO);
 
         loanDataFlowDO.setGmtModify(new Date());
         int count = loanDataFlowDOMapper.updateByPrimaryKeySelective(loanDataFlowDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
+
+        // 合同编号 -保存(I/U)
+        MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
+        materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
+        materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
+        materialService.update(materialUpdateParam);
 
         return ResultBean.ofSuccess(count, "编辑成功");
     }
@@ -271,7 +296,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Override
     public ResultBean<Integer> imp(String ossKey) {
-            Preconditions.checkArgument(StringUtils.isNotBlank(ossKey), "ossKey不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(ossKey), "ossKey不能为空");
 
         // 收集数据
         List<LoanDataFlowDO> loanDataFlowDOList = Lists.newArrayList();

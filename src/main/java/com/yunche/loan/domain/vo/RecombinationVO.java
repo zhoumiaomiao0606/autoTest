@@ -43,6 +43,7 @@ public class RecombinationVO<T> {
     /**
      * 增补单
      */
+    @Deprecated
     private UniversalSupplementInfoVO supplement_;
     /**
      * 金融方案
@@ -97,10 +98,9 @@ public class RecombinationVO<T> {
     private List<UniversalInfoSupplementVO> supplement = Lists.newArrayList();
 
 
+    private List<UniversalLegworkReimbursement> legworkReimbursementFiles;
 
-    private  List<UniversalLegworkReimbursement> legworkReimbursementFiles;
-
-    private  LegworkReimbursementDO legworkReimbursement;
+    private LegworkReimbursementDO legworkReimbursement;
 
 
     private List<UniversalCompensationVO> loanApplyCompensation = Lists.newArrayList();
