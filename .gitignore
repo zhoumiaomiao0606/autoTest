@@ -51,3 +51,5 @@ nbdist/
 /bin/
 *.log
 
+/.project
+/.classpath

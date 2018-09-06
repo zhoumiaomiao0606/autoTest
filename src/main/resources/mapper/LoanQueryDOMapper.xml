@@ -50,9 +50,14 @@
 	        vehicle.assess_org                        as vehicle_assess_org,
 	        customer.id                               as customer_id,
             vehicle.assess_use_year                   AS vehicle_assess_use_year,
-            car.car_category                          as car_category
+            car.car_category                          as car_category,
+            bank_interface.operate_personnel          as operate_personnel,
+            bank_interface.operate_date               as operate_date,
+            current.usertask_remit_review_create_time    as remit_details_time
 
         from (select * from loan_order where id = #{orderId}) orders
+        left join (select * from bank_interface_serial where order_id = #{orderId} and trans_code='applydivigeneral' order by request_time DESC limit 1) bank_interface on 1=1
+        left join current_node_manager current on orders.id=current.order_id
         left join loan_car_info car on orders.loan_car_info_id = car.id
         left join loan_customer customer on orders.loan_customer_id = customer.id
         left join vehicle_information vehicle on vehicle.id = orders.vehicle_information_id
@@ -1662,6 +1667,7 @@
                 d.name                            AS departmentName,
                 p.name                            AS partnerName,
                 b.bank                            AS bankName,
+                m.contract_num                    AS contractNum,
                 f.id                              AS id,
                 f.flow_out_dept_id                AS flowOutDeptId,
                 f.flow_out_dept_name              AS flowOutDeptName,
@@ -1674,7 +1680,6 @@
                 f.express_receive_man             AS expressReceiveMan,
                 f.has_mortgage_contract           AS hasMortgageContract,
                 f.info                            AS info,
-                f.contract_num                    AS contractNum,
                 f.type                            AS type,
                 f.status                          AS status,
                 f.gmt_create                      AS gmtCreate,
@@ -1683,6 +1688,7 @@
       FROM
                 loan_order      a
       LEFT JOIN loan_data_flow  f     ON  a.id = f.order_id
+      LEFT JOIN material_audit  m     ON  m.id = a.material_audit_id
       LEFT JOIN loan_base_info  b     ON  b.id = a.loan_base_info_id
       LEFT JOIN loan_customer   c     ON  c.id = a.loan_customer_id
       LEFT JOIN employee        e     ON  e.id = b.salesman_id

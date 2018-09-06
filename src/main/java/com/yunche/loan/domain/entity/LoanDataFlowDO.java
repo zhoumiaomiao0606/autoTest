@@ -31,13 +31,11 @@ public class LoanDataFlowDO {
 
     private Byte hasMortgageContract;
 
-    private String info;
-
-    private String contractNum;
-
     private Byte type;
 
     private Byte status;
+
+    private String info;
 
     private Date gmtCreate;
 

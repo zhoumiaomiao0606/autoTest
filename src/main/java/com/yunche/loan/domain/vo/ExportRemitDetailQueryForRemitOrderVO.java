@@ -83,6 +83,9 @@ public class ExportRemitDetailQueryForRemitOrderVO
     //提交时间
     private String submitTime;
 
+    //
+    private String refundTime;
+
     //提交人
     private String username;
 }

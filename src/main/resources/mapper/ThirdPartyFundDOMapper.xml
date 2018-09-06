@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.ThirdPartyFundDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ThirdPartyFundDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="third_party_fund_name" jdbcType="VARCHAR" property="thirdPartyFundName" />
+    <result column="linkman" jdbcType="VARCHAR" property="linkman" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="basic_guarantee_money" jdbcType="DECIMAL" property="basicGuaranteeMoney" />
+    <result column="interest_rate_year" jdbcType="DECIMAL" property="interestRateYear" />
+    <result column="single_cost" jdbcType="DECIMAL" property="singleCost" />
+    <result column="bank_id" jdbcType="BIGINT" property="bankId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="gmt_starttime" jdbcType="TIMESTAMP" property="gmtStarttime" />
+    <result column="gmt_stoptime" jdbcType="TIMESTAMP" property="gmtStoptime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, third_party_fund_name, linkman, mobile, basic_guarantee_money, interest_rate_year, 
+    single_cost, bank_id, status, gmt_starttime, gmt_stoptime
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from third_party_fund
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from third_party_fund
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundDO">
+    insert into third_party_fund (id, third_party_fund_name, linkman, 
+      mobile, basic_guarantee_money, interest_rate_year, 
+      single_cost, bank_id, status, 
+      gmt_starttime, gmt_stoptime)
+    values (#{id,jdbcType=BIGINT}, #{thirdPartyFundName,jdbcType=VARCHAR}, #{linkman,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{basicGuaranteeMoney,jdbcType=DECIMAL}, #{interestRateYear,jdbcType=DECIMAL}, 
+      #{singleCost,jdbcType=DECIMAL}, #{bankId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}, 
+      #{gmtStarttime,jdbcType=TIMESTAMP}, #{gmtStoptime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundDO">
+    insert into third_party_fund
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="thirdPartyFundName != null">
+        third_party_fund_name,
+      </if>
+      <if test="linkman != null">
+        linkman,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="basicGuaranteeMoney != null">
+        basic_guarantee_money,
+      </if>
+      <if test="interestRateYear != null">
+        interest_rate_year,
+      </if>
+      <if test="singleCost != null">
+        single_cost,
+      </if>
+      <if test="bankId != null">
+        bank_id,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="gmtStarttime != null">
+        gmt_starttime,
+      </if>
+      <if test="gmtStoptime != null">
+        gmt_stoptime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="thirdPartyFundName != null">
+        #{thirdPartyFundName,jdbcType=VARCHAR},
+      </if>
+      <if test="linkman != null">
+        #{linkman,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="basicGuaranteeMoney != null">
+        #{basicGuaranteeMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="interestRateYear != null">
+        #{interestRateYear,jdbcType=DECIMAL},
+      </if>
+      <if test="singleCost != null">
+        #{singleCost,jdbcType=DECIMAL},
+      </if>
+      <if test="bankId != null">
+        #{bankId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtStarttime != null">
+        #{gmtStarttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtStoptime != null">
+        #{gmtStoptime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundDO">
+    update third_party_fund
+    <set>
+      <if test="thirdPartyFundName != null">
+        third_party_fund_name = #{thirdPartyFundName,jdbcType=VARCHAR},
+      </if>
+      <if test="linkman != null">
+        linkman = #{linkman,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="basicGuaranteeMoney != null">
+        basic_guarantee_money = #{basicGuaranteeMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="interestRateYear != null">
+        interest_rate_year = #{interestRateYear,jdbcType=DECIMAL},
+      </if>
+      <if test="singleCost != null">
+        single_cost = #{singleCost,jdbcType=DECIMAL},
+      </if>
+      <if test="bankId != null">
+        bank_id = #{bankId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtStarttime != null">
+        gmt_starttime = #{gmtStarttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtStoptime != null">
+        gmt_stoptime = #{gmtStoptime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundDO">
+    update third_party_fund
+    set third_party_fund_name = #{thirdPartyFundName,jdbcType=VARCHAR},
+      linkman = #{linkman,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      basic_guarantee_money = #{basicGuaranteeMoney,jdbcType=DECIMAL},
+      interest_rate_year = #{interestRateYear,jdbcType=DECIMAL},
+      single_cost = #{singleCost,jdbcType=DECIMAL},
+      bank_id = #{bankId,jdbcType=BIGINT},
+      status = #{status,jdbcType=TINYINT},
+      gmt_starttime = #{gmtStarttime,jdbcType=TIMESTAMP},
+      gmt_stoptime = #{gmtStoptime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="list" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from third_party_fund
+  </select>
+</mapper>
