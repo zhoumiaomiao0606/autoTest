@@ -165,15 +165,30 @@
                         )
                     </when>
                     <when test="serialStatus == 'back'">
-                        select DISTINCT serial.order_id from bank_interface_serial serial
-                        inner join
-                        (
-                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
-                          ','),',',1)
-                          as serial_no
-                          from bank_interface_serial GROUP BY trans_code,customer_id
-                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-                        where serial.api_status = 200 and serial.status = 3
+                        <choose>
+                            <when test="taskDefinitionKey == 'usertask_credit_apply'">
+                                select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                                ','),',',1)
+                                as serial_no
+                                from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                                where serial.api_status = 200 and serial.status in (0,3)
+                            </when>
+                            <otherwise>
+                                select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                                ','),',',1)
+                                as serial_no
+                                from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                                where serial.api_status = 200 and serial.status = 3
+                            </otherwise>
+                        </choose>
                     </when>
                     <when test="serialStatus == 'process'">
 
