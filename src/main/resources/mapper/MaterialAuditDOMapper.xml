@@ -3,7 +3,7 @@
 <mapper namespace="com.yunche.loan.mapper.MaterialAuditDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.MaterialAuditDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="complete_material_date" property="completeMaterialDate" jdbcType="DATE"/>
+        <result column="complete_material_date" property="complete_material_date" jdbcType="DATE"/>
         <result column="remark" property="remark" jdbcType="VARCHAR"/>
         <result column="contract_num" property="contractNum" jdbcType="VARCHAR"/>
         <result column="has_mortgage_contract" property="hasMortgageContract" jdbcType="TINYINT"/>
@@ -74,7 +74,7 @@
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into material_audit (id, complete_material_date, remark,
         contract_num, has_mortgage_contract)
-        values (#{id,jdbcType=BIGINT}, #{completeMaterialDate,jdbcType=DATE}, #{remark,jdbcType=VARCHAR},
+        values (#{id,jdbcType=BIGINT}, #{complete_material_date,jdbcType=DATE}, #{remark,jdbcType=VARCHAR},
         #{contractNum,jdbcType=VARCHAR}, #{hasMortgageContract,jdbcType=TINYINT})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO"
@@ -84,7 +84,7 @@
             <if test="id != null">
                 id,
             </if>
-            <if test="completeMaterialDate != null">
+            <if test="complete_material_date != null">
                 complete_material_date,
             </if>
             <if test="remark != null">
@@ -101,8 +101,8 @@
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
-            <if test="completeMaterialDate != null">
-                #{completeMaterialDate,jdbcType=DATE},
+            <if test="complete_material_date != null">
+                #{complete_material_date,jdbcType=DATE},
             </if>
             <if test="remark != null">
                 #{remark,jdbcType=VARCHAR},
@@ -118,8 +118,8 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
         update material_audit
         <set>
-            <if test="completeMaterialDate != null">
-                complete_material_date = #{completeMaterialDate,jdbcType=DATE},
+            <if test="complete_material_date != null">
+                complete_material_date = #{complete_material_date,jdbcType=DATE},
             </if>
             <if test="remark != null">
                 remark = #{remark,jdbcType=VARCHAR},
@@ -135,7 +135,7 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
         update material_audit
-        set complete_material_date = #{completeMaterialDate,jdbcType=DATE},
+        set complete_material_date = #{complete_material_date,jdbcType=DATE},
         remark = #{remark,jdbcType=VARCHAR},
         contract_num = #{contractNum,jdbcType=VARCHAR},
         has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT}
