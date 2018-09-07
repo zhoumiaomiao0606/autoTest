@@ -2,12 +2,17 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.LoanBankCardSendDO;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.vo.UniversalBankCardSendVO;
 import com.yunche.loan.mapper.LoanBankCardSendDOMapper;
+import com.yunche.loan.mapper.LoanCustomerDOMapper;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanBankCardSendService;
 import org.apache.commons.lang3.ArrayUtils;
@@ -33,11 +38,23 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
     @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
 
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
+
 
     @Override
     public ResultBean<Void> save(LoanBankCardSendDO loanBankCardSendDO) {
         Preconditions.checkNotNull(loanBankCardSendDO.getOrderId(), "订单号不能为空");
 
+
+        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(loanBankCardSendDO.getOrderId());
+        if(orderDO!=null){
+            LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(orderDO.getLoanCustomerId(), BaseConst.VALID_STATUS);
+            customerDO.setBankCardTransmitAddress(loanBankCardSendDO.getExpressSendAddress());
+            loanCustomerDOMapper.updateByPrimaryKeySelective(customerDO);
+        }
         LoanBankCardSendDO existDO = loanBankCardSendDOMapper.selectByPrimaryKey(loanBankCardSendDO.getOrderId());
 
         if (null == existDO) {
