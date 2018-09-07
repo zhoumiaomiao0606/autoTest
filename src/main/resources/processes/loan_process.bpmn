@@ -364,7 +364,7 @@
     </sequenceFlow>
     <sequenceFlow id="flow241" sourceRef="usertask_data_flow_contract_p2c_review" targetRef="exclusivegateway35"></sequenceFlow>
     <sequenceFlow id="flow242" sourceRef="usertask_data_flow_contract_c2b" targetRef="exclusivegateway36"></sequenceFlow>
-    <sequenceFlow id="flow250" name="走了另一条线" sourceRef="exclusivegateway26" targetRef="usertask_bank_lend_record">
+    <sequenceFlow id="flow250" name="走了另一条线    OR  含抵押资料为：否" sourceRef="exclusivegateway26" targetRef="usertask_bank_lend_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == 'usertask_bank_lend_record'}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow251" sourceRef="parallelgateway3" targetRef="filter_data_flow_mortgage_p2c_new"></sequenceFlow>
@@ -1532,7 +1532,7 @@
         <omgdi:waypoint x="6292.0" y="880.0"></omgdi:waypoint>
         <omgdi:waypoint x="6503.0" y="880.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="66.0" x="6283.0" y="867.0"></omgdc:Bounds>
+          <omgdc:Bounds height="48.0" width="100.0" x="6250.0" y="890.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow251" id="BPMNEdge_flow251">
