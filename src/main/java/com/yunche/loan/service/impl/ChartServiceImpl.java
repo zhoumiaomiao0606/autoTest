@@ -8,6 +8,7 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.ChartDOMapper;
 import com.yunche.loan.service.ChartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @create: 2018-09-06 17:12
  * @description: 报表统一实现类
  **/
+@Service
 public class ChartServiceImpl implements ChartService
 {
     @Autowired
