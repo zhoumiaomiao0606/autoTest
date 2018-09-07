@@ -408,7 +408,8 @@
             DATE_FORMAT(complex_log.usertask_remit_review_create_time,'%Y-%m-%d %H:%i:%S')     AS remitGmtCreate,
             DATE_FORMAT(complex_log.usertask_loan_apply_create_time,'%Y-%m-%d %H:%i:%S')       AS loanGmtCreate,
             DATE_FORMAT(complex_log.usertask_telephone_verify_create_time,'%Y-%m-%d %H:%i:%S') AS telephoneGmtCreate,
-            DATE_FORMAT(complex_log.usertask_material_print_review_create_time,'%Y-%m-%d %H:%i:%S') AS printGmtCreate
+            DATE_FORMAT(complex_log.usertask_material_print_review_create_time,'%Y-%m-%d %H:%i:%S') AS printGmtCreate,
+            DATE_FORMAT(complex_log.usertask_visit_verify_create_time,'%Y-%m-%d %H:%i:%S')     AS visitGmtCreate
             from
             (
             select task.*,
