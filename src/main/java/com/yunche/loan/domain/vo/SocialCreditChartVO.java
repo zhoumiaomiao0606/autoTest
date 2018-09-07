@@ -1,10 +1,13 @@
 package com.yunche.loan.domain.vo;
 
+import lombok.Data;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-09-06 18:07
  * @description:
  **/
+@Data
 public class SocialCreditChartVO
 {
     //业务区域
