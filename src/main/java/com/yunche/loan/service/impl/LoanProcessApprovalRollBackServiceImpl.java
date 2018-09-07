@@ -359,7 +359,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
             }
 
             // [电审]-反审 自动打回至[贷款申请]和[上门调查]
-            autoPassTask(approval.getOrderId(), TELEPHONE_VERIFY.getCode(), ACTION_REJECT_AUTO);
+            autoPassTask(approval.getOrderId(), TELEPHONE_VERIFY.getCode(), ACTION_ROLL_BACK);
 
             // update process
             LoanProcessDO loanProcessDO_ = new LoanProcessDO();

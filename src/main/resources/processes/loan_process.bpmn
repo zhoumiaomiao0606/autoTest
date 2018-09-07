@@ -417,7 +417,7 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow274" name="反审" sourceRef="exclusivegateway5" targetRef="exclusivegateway39">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == -1}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 5}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow275" name="反审" sourceRef="exclusivegateway9" targetRef="exclusivegateway39">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == -1 && target == '' }]]></conditionExpression>
@@ -1628,7 +1628,7 @@
         <omgdi:waypoint x="2264.0" y="1288.0"></omgdi:waypoint>
         <omgdi:waypoint x="2015.0" y="1095.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="22.0" x="3302.0" y="1276.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="100.0" x="3302.0" y="1276.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow275" id="BPMNEdge_flow275">
