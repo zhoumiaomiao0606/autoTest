@@ -146,8 +146,9 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
     public ResultBean<Void> save(InfoSupplementParam infoSupplementParam) {
         Preconditions.checkNotNull(infoSupplementParam.getCustomerId(), "客户ID不能为空");
         Preconditions.checkNotNull(infoSupplementParam.getSupplementOrderId(), "增补单ID不能为空");
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(infoSupplementParam.getFiles()) ||
-                StringUtils.isNotBlank(infoSupplementParam.getRemark()), "资料信息或备注为空");
+        Preconditions.checkArgument(
+                !(CollectionUtils.isEmpty(infoSupplementParam.getFiles()) && StringUtils.isNotBlank(infoSupplementParam.getRemark())),
+                "资料信息和备注不能都为空");
 
         // save remark
         LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
