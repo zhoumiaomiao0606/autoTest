@@ -50,4 +50,11 @@ public class ChartController
 
         return chartService.getMortgageOverdueChart(param);
     }
+
+    @PostMapping(value = "/materialReviewChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean materialReviewChart(@RequestBody @Validated MaterialReviewParam param)
+    {
+
+        return chartService.getMaterialReviewChart(param);
+    }
 }

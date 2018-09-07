@@ -4,10 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.*;
-import com.yunche.loan.domain.vo.BankCreditChartVO;
-import com.yunche.loan.domain.vo.FinancialDepartmentRemitDetailChartVO;
-import com.yunche.loan.domain.vo.MortgageOverdueChartVO;
-import com.yunche.loan.domain.vo.SocialCreditChartVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.ChartDOMapper;
 import com.yunche.loan.service.ChartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +55,15 @@ public class ChartServiceImpl implements ChartService
         List list = chartDOMapper.selectMortgageOverdueChartVO(param);
         // 取分页信息
         PageInfo<MortgageOverdueChartVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
+    @Override
+    public ResultBean getMaterialReviewChart(MaterialReviewParam param) {
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List list = chartDOMapper.selectMaterialReviewChartVO(param);
+        // 取分页信息
+        PageInfo<MaterialReviewChartVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(pageInfo);
     }
 

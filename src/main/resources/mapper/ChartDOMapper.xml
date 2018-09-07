@@ -472,4 +472,106 @@
     </select>
 
 
+    <!--=======================================报表资料审核明细查询=========================================-->
+    <select id="selectMaterialReviewChartVO" parameterType="com.yunche.loan.domain.param.MaterialReviewParam"  resultType="com.yunche.loan.domain.vo.MaterialReviewChartVO" >
+        SELECT
+        t.*,
+        CASE
+
+        WHEN t.express_receive_date IS NOT NULL THEN
+        floor(
+        ( UNIX_TIMESTAMP( DATE_FORMAT( t.express_receive_date, '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ) ELSE floor(
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        )
+        END AS remitOverdueTime,
+        CASE
+
+        WHEN t.complete_material_date IS NOT NULL THEN
+        floor(
+        ( UNIX_TIMESTAMP( DATE_FORMAT( t.complete_material_date, '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ) ELSE floor(
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        )
+        END AS revievOverdueTime
+        FROM
+        (
+        SELECT
+        base_area.area_name,
+        partner.NAME AS partner_name,
+        customer.NAME AS customer_name,
+        customer.id_card,
+        loan_base_info.bank,
+        loan_financial_plan.bank_period_principal,
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
+        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 2 ) AS express_receive_date,
+        material_audit.complete_material_date,
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS materialReviewSubmit,
+        CASE
+
+        WHEN loan_process.material_review = 1 THEN
+        '已提交'
+        WHEN loan_process.material_review = 2 THEN
+        '未提交'
+        WHEN loan_process.material_review = 3 THEN
+        '已打回'
+        ELSE '未知' END AS material_review,
+        ( SELECT count( 1 ) FROM loan_info_supplement WHERE loan_info_supplement.order_id = orders.id ) AS supplementCount,
+        ( SELECT GROUP_CONCAT( DATE_FORMAT( end_time, '%Y-%m-%d  ' ), content ORDER BY id DESC ) FROM loan_info_supplement WHERE loan_info_supplement.order_id = orders.id ) AS supplementContent,
+        (
+        SELECT
+        GROUP_CONCAT( DATE_FORMAT( start_time, '%Y-%m-%d至' ), DATE_FORMAT( end_time, '%Y-%m-%d' ) ORDER BY id DESC )
+        FROM
+        loan_info_supplement
+        WHERE
+        loan_info_supplement.order_id = orders.id
+        ) AS supplementTime,
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND task_definition_key = 'usertask_vehicle_information' ) AS carMaterialCreateTime,
+        ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 3 ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date
+        FROM
+        loan_order orders
+        LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+        LEFT JOIN loan_base_info ON orders.loan_base_info_id = loan_base_info.id
+        LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+        LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN remit_details ON orders.remit_details_id = remit_details.id
+        LEFT JOIN base_area ON loan_base_info.area_id = base_area.area_id
+        LEFT JOIN loan_process ON orders.id = loan_process.order_id
+        LEFT JOIN material_audit ON orders.material_audit_id = material_audit.id
+
+        <where>
+            and loan_process.material_review != 0
+            <if test="partnerList != null and partnerList.size() > 0">
+                and
+                base.partner_id in
+                <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                base.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+        </where>
+        ) t where remitdate between #{startDate} and #{endDate}
+        <if test="startDate1 != null">
+            AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{startDate1})
+        </if>
+        <if test="endDate1 != null">
+            AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{endDate1})
+        </if>
+        <if test="startDate2 != null">
+            AND TO_DAYS(t.materialReviewSubmit) &lt;= TO_DAYS(#{startDate2})
+        </if>
+        <if test="endDate2 != null">
+            AND TO_DAYS(t.materialReviewSubmit) &lt;= TO_DAYS(#{endDate2})
+        </if>
+        order by t.express_receive_date desc
+    </select>
+
 </mapper>

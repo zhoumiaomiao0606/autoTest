@@ -1,10 +1,7 @@
 package com.yunche.loan.mapper;
 
 
-import com.yunche.loan.domain.param.BankCreditChartParam;
-import com.yunche.loan.domain.param.FinancialDepartmentRemitDetailChartParam;
-import com.yunche.loan.domain.param.MortgageOverdueParam;
-import com.yunche.loan.domain.param.SocialCreditChartParam;
+import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.SocialCreditChartVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -20,4 +17,6 @@ public interface ChartDOMapper
     List selectFinancialDepartmentRemitDetailChartVO(FinancialDepartmentRemitDetailChartParam param);
 
     List selectMortgageOverdueChartVO(MortgageOverdueParam param);
+
+    List selectMaterialReviewChartVO(MaterialReviewParam param);
 }

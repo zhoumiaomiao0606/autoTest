@@ -12,4 +12,6 @@ public interface ChartService
     ResultBean getFinancialDepartmentRemitDetailChart(FinancialDepartmentRemitDetailChartParam param);
 
     ResultBean getMortgageOverdueChart(MortgageOverdueParam param);
+
+    ResultBean getMaterialReviewChart(MaterialReviewParam param);
 }
