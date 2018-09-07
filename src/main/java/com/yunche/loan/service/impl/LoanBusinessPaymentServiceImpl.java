@@ -149,7 +149,6 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
         recombinationVO.setFinancial(financialSchemeVO);
 
-
         return ResultBean.ofSuccess(recombinationVO);
     }
 
@@ -172,14 +171,20 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
             universalRemitDetails.setRemit_is_sendback(String.valueOf(K_YORN_NO));
         }
         recombinationVO.setRemit(universalRemitDetails);
+
         //共贷人信息
-        List<UniversalCustomerFileVO> totalFiles = new ArrayList<UniversalCustomerFileVO>();
+        List<UniversalCustomerFileVO> totalFiles = new ArrayList<>();
+
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {
-            if("1".equals(universalCustomerVO.getCust_type())){
+
+            if ("1".equals(universalCustomerVO.getCust_type())) {
+
                 List<UniversalCustomerFileVO> files = loanQueryDOMapper.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
-                for(UniversalCustomerFileVO file:files){
-                    if("57".equals(file.getType())){
+                for (UniversalCustomerFileVO file : files) {
+
+                    String fileType = file.getType();
+                    if ("57".equals(fileType) || "95".equals(fileType)) {
                         totalFiles.add(file);
                     }
                 }
@@ -188,6 +193,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
             }
         }
         recombinationVO.setCustomers(customers);
+
         return ResultBean.ofSuccess(recombinationVO);
     }
 }
