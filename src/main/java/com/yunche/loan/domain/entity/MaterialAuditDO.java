@@ -13,11 +13,11 @@ public class MaterialAuditDO {
 
     private String remark;
     /**
-     * 合同编号                         -资料流转共享字段
+     * 合同编号                                -资料流转共享字段
      */
     private String contractNum;
     /**
-     * 是否含抵押资料 (0-否;1-是;)       -资料流转共享字段
+     * 是否含抵押资料 (0-否;1-是;) 默认：是       -资料流转共享字段
      */
     private Byte hasMortgageContract;
 }
