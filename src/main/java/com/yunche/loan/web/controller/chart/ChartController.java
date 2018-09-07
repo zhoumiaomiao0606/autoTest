@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  **/
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/app/loanorder/chart")
+@RequestMapping("/api/v1/loanorder/chart")
 public class ChartController
 {
     @Autowired
