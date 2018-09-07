@@ -41,19 +41,19 @@ import java.util.List;
 @Transactional
 public class BankSolutionProcessServiceImpl implements BankSolutionProcessService{
     private static final Logger logger = LoggerFactory.getLogger(BankSolutionProcessServiceImpl.class);
-    @Autowired
+    @Resource
     SysConfig sysConfig;
 
-    @Autowired
+    @Resource
     OSSConfig ossConfig;
 
-    @Autowired
+    @Resource
     ICBCFeignClient icbcFeignClient;
 
-    @Autowired
+    @Resource
     ICBCFeignNormal icbcFeignFileDownLoad;
 
-    @Autowired
+    @Resource
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
     @Resource
@@ -173,15 +173,18 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             }
 
             logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
-
-            ApprovalParam approvalParam = new ApprovalParam();
-            approvalParam.setAction(new Byte("0"));
-            approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
-            approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
-            approvalParam.setNeedLog(false);
-            approvalParam.setCheckPermission(false);
-            approvalParam.setInfo(applyCreditCallback.getReq().getNote());
-            loanProcessService.approval(approvalParam);
+            try {
+                ApprovalParam approvalParam = new ApprovalParam();
+                approvalParam.setAction(new Byte("0"));
+                approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
+                approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
+                approvalParam.setNeedLog(false);
+                approvalParam.setCheckPermission(false);
+                approvalParam.setInfo(applyCreditCallback.getReq().getNote());
+                loanProcessService.approval(approvalParam);
+            }catch (Exception e){
+                logger.info("征信查询回调打回异常");
+            }
 
             logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 
@@ -209,15 +212,18 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             }
             logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 
-            ApprovalParam approvalParam = new ApprovalParam();
-            approvalParam.setAction(new Byte("0"));
-            approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
-            approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
-            approvalParam.setNeedLog(false);
-            approvalParam.setCheckPermission(false);
-            approvalParam.setInfo(applyCreditCallback.getReq().getNote());
-            loanProcessService.approval(approvalParam);
-
+            try {
+                ApprovalParam approvalParam = new ApprovalParam();
+                approvalParam.setAction(new Byte("0"));
+                approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
+                approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
+                approvalParam.setNeedLog(false);
+                approvalParam.setCheckPermission(false);
+                approvalParam.setInfo(applyCreditCallback.getReq().getNote());
+                loanProcessService.approval(approvalParam);
+            }catch (Exception e){
+                logger.info("征信查询回调打回异常");
+            }
             logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
         }else{
             throw new BizException("未知错误");
