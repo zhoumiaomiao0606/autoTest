@@ -321,7 +321,9 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
      * @param loanOrderDO
      * @param loanProcessDO
      */
-    private void doRollBackTask_loanApply(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+    @Deprecated
+    private void doRollBackTask_loanApply_(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
 
         // [业务申请] 必须已提交
         Byte loanApplyStatus = loanProcessDO.getLoanApply();
@@ -387,6 +389,37 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
 
             throw new BizException("发起[业务申请-反审]异常");
         }
+    }
+
+    /**
+     * [业务申请]-反审
+     *
+     * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
+     */
+    private void doRollBackTask_loanApply(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
+        // 被反审的节点列表
+        List<String> nextTaskKeys = Lists.newArrayList(
+                TELEPHONE_VERIFY.getCode()
+        );
+
+        // 领取校验
+        checkTaskDistribution(approval.getOrderId(), nextTaskKeys);
+
+        // 提交校验
+        checkTaskProcessStatus(loanProcessDO, nextTaskKeys, approval.getTaskDefinitionKey());
+
+        // 执行[反审]
+        doRollBack(loanOrderDO.getProcessInstId(),
+                Lists.newArrayList(),
+                Lists.newArrayList(),
+                TELEPHONE_VERIFY.getCode()
+        );
+
+        // 反审状态更新
+        updateRollBackLoanProcess(approval, nextTaskKeys);
     }
 
     /**
