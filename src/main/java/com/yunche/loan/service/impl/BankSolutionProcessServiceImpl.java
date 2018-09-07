@@ -41,19 +41,19 @@ import java.util.List;
 @Transactional
 public class BankSolutionProcessServiceImpl implements BankSolutionProcessService{
     private static final Logger logger = LoggerFactory.getLogger(BankSolutionProcessServiceImpl.class);
-    @Autowired
+    @Resource
     SysConfig sysConfig;
 
-    @Autowired
+    @Resource
     OSSConfig ossConfig;
 
-    @Autowired
+    @Resource
     ICBCFeignClient icbcFeignClient;
 
-    @Autowired
+    @Resource
     ICBCFeignNormal icbcFeignFileDownLoad;
 
-    @Autowired
+    @Resource
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
     @Resource
