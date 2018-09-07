@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.vo.FileVO;
-import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.service.LoanFileService;
 import org.apache.commons.lang3.ArrayUtils;
@@ -36,9 +35,6 @@ public class LoanFileServiceImpl implements LoanFileService {
 
     @Autowired
     private LoanFileDOMapper loanFileDOMapper;
-
-    @Autowired
-    private LoanCustomerDOMapper loanCustomerDOMapper;
 
 
     @Override
@@ -114,9 +110,6 @@ public class LoanFileServiceImpl implements LoanFileService {
 
         List<FileVO> fileVOS = typeFilesMap.values()
                 .parallelStream()
-                .map(e -> {
-                    return e;
-                })
                 .sorted(Comparator.comparing(FileVO::getType))
                 .collect(Collectors.toList());
 
@@ -178,31 +171,58 @@ public class LoanFileServiceImpl implements LoanFileService {
 
                         // get
                         List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, e.getType(), uploadType);
+
+                        // insert
                         if (CollectionUtils.isEmpty(loanFileDOS)) {
-                            // insert
-                            LoanFileDO loanFileDO = new LoanFileDO();
-                            loanFileDO.setCustomerId(customerId);
-                            loanFileDO.setType(e.getType());
-                            loanFileDO.setPath(JSON.toJSONString(e.getUrls()));
-                            loanFileDO.setUploadType(uploadType);
 
-                            ResultBean<Long> resultBean = create(loanFileDO);
-                            Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+                            List<String> urls = e.getUrls();
 
-                        } else {
-                            // update
-                            LoanFileDO loanFileDO = loanFileDOS.get(0);
-                            if (null != loanFileDO) {
-                                loanFileDO.setPath(JSON.toJSONString(e.getUrls()));
+                            if (!CollectionUtils.isEmpty(urls)) {
 
-                                ResultBean<Void> resultBean = update(loanFileDO);
+                                String path = JSON.toJSONString(urls);
+
+                                LoanFileDO loanFileDO = new LoanFileDO();
+                                loanFileDO.setCustomerId(customerId);
+                                loanFileDO.setType(e.getType());
+                                loanFileDO.setPath(path);
+                                loanFileDO.setUploadType(uploadType);
+
+                                ResultBean<Long> resultBean = create(loanFileDO);
                                 Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+                            }
+
+                        }
+                        // update
+                        else {
+
+                            LoanFileDO loanFileDO = loanFileDOS.get(0);
+
+                            if (null != loanFileDO) {
+
+                                List<String> urls = e.getUrls();
+
+                                // del
+                                if (CollectionUtils.isEmpty(urls)) {
+
+                                    delete(loanFileDO.getId());
+                                }
+                                // update
+                                else {
+
+                                    String path = JSON.toJSONString(urls);
+
+                                    loanFileDO.setPath(path);
+
+                                    ResultBean<Void> resultBean = update(loanFileDO);
+                                    Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
+                                }
+
                             }
                         }
                     });
         }
 
-        return ResultBean.ofSuccess(null);
+        return ResultBean.ofSuccess(null, "保存成功");
     }
 
     @Override
@@ -388,6 +408,16 @@ public class LoanFileServiceImpl implements LoanFileService {
             }
         }
 
+    }
+
+    /**
+     * delete
+     *
+     * @param id
+     */
+    private void delete(Long id) {
+        int count = loanFileDOMapper.deleteByPrimaryKey(id);
+        Preconditions.checkArgument(count > 0, "删除失败");
     }
 
 }
