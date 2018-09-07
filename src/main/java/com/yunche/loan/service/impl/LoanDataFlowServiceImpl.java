@@ -551,6 +551,25 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         return ResultBean.ofSuccess(count);
     }
 
+    @Override
+    public ResultBean<Long> getDataFlowId(Long orderId, String taskDefinitionKey) {
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "taskDefinitionKey不能为空");
+
+        // kvMap
+        Map<String, String> taskKey_type_map = dictService.getCodeKMap("loanDataFlowType");
+
+        // type
+        String type = taskKey_type_map.get(taskDefinitionKey);
+        Preconditions.checkArgument(StringUtils.isNotBlank(type), "taskDefinitionKey有误");
+
+        // DO
+        LoanDataFlowDO loanDataFlowDO = loanDataFlowDOMapper.getLastByOrderIdAndType(orderId, Byte.valueOf(type));
+        Preconditions.checkNotNull(loanDataFlowDO, "资料流转单不存在");
+
+        return ResultBean.ofSuccess(loanDataFlowDO.getId());
+    }
+
     /**
      * 批量提交
      *
