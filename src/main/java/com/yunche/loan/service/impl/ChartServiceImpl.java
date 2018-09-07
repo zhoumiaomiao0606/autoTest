@@ -3,7 +3,11 @@ package com.yunche.loan.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.BankCreditChartParam;
+import com.yunche.loan.domain.param.FinancialDepartmentRemitDetailChartParam;
 import com.yunche.loan.domain.param.SocialCreditChartParam;
+import com.yunche.loan.domain.vo.BankCreditChartVO;
+import com.yunche.loan.domain.vo.FinancialDepartmentRemitDetailChartVO;
 import com.yunche.loan.domain.vo.SocialCreditChartVO;
 import com.yunche.loan.mapper.ChartDOMapper;
 import com.yunche.loan.service.ChartService;
@@ -28,6 +32,24 @@ public class ChartServiceImpl implements ChartService
         List list = chartDOMapper.selectSocialCreditChartVO(param);
         // 取分页信息
         PageInfo<SocialCreditChartVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
+    @Override
+    public ResultBean getBankCreditChart(BankCreditChartParam param) {
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List list = chartDOMapper.selectBankCreditChartVO(param);
+        // 取分页信息
+        PageInfo<BankCreditChartVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
+    @Override
+    public ResultBean getFinancialDepartmentRemitDetailChart(FinancialDepartmentRemitDetailChartParam param) {
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List list = chartDOMapper.selectFinancialDepartmentRemitDetailChartVO(param);
+        // 取分页信息
+        PageInfo<FinancialDepartmentRemitDetailChartVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(pageInfo);
     }
 }
