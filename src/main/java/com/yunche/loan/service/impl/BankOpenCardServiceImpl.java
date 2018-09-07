@@ -275,6 +275,14 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
 
                 LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
                 Byte openCard = loanProcessDO.getBankOpenCard();
+                //如果开卡失败，则更新bank_interface_serial 0:失败  1：成功
+                if(StringUtils.isNotBlank(e.getHairpinFlag()) && "0".equals(e.getHairpinFlag())){
+                    LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
+                    BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+                    bankInterfaceSerialDO.setStatus(IDict.K_JYZT.FAIL);
+                    bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+                    return;
+                }
                 if (!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)) {
                     ApprovalParam approvalParam = new ApprovalParam();
                     approvalParam.setOrderId(e.getOrderId());

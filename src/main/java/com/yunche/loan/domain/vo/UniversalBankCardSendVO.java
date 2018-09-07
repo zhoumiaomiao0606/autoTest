@@ -1,9 +1,7 @@
 package com.yunche.loan.domain.vo;
 
-import com.yunche.loan.config.util.DateTimeFormatUtils;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 /**
