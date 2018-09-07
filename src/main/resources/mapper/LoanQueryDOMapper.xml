@@ -1760,6 +1760,7 @@
                   s.gmt_create                      AS gmtCreate,
                   s.gmt_modify                      AS gmtModify
 
+
       FROM
                   loan_order              a
       LEFT JOIN   loan_bank_card_send     s        ON  a.id = s.order_id

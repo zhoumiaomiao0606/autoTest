@@ -151,18 +151,25 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
                 "资料信息和备注不能都为空");
 
         // save remark
-        LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
+        String remark = infoSupplementParam.getRemark();
+        if (StringUtils.isNotBlank(remark)) {
 
-        loanInfoSupplementDO.setId(infoSupplementParam.getSupplementOrderId());
-        loanInfoSupplementDO.setRemark(infoSupplementParam.getRemark());
+            LoanInfoSupplementDO loanInfoSupplementDO = new LoanInfoSupplementDO();
 
-        int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
-        Preconditions.checkArgument(count > 0, "保存失败");
+            loanInfoSupplementDO.setId(infoSupplementParam.getSupplementOrderId());
+            loanInfoSupplementDO.setRemark(remark);
 
+            int count = loanInfoSupplementDOMapper.updateByPrimaryKeySelective(loanInfoSupplementDO);
+            Preconditions.checkArgument(count > 0, "保存失败");
+        }
 
         // save file
-        loanFileService.save(infoSupplementParam.getFiles(), infoSupplementParam.getSupplementOrderId(),
-                infoSupplementParam.getCustomerId(), UPLOAD_TYPE_SUPPLEMENT);
+        List<FileVO> files = infoSupplementParam.getFiles();
+        if (!CollectionUtils.isEmpty(files)) {
+
+            loanFileService.save(files, infoSupplementParam.getSupplementOrderId(),
+                    infoSupplementParam.getCustomerId(), UPLOAD_TYPE_SUPPLEMENT);
+        }
 
         return ResultBean.ofSuccess(null, "保存成功");
     }
