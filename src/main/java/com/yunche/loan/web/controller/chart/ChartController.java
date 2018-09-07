@@ -1,9 +1,7 @@
 package com.yunche.loan.web.controller.chart;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.BankCreditChartParam;
-import com.yunche.loan.domain.param.FinancialDepartmentRemitDetailChartParam;
-import com.yunche.loan.domain.param.SocialCreditChartParam;
+import com.yunche.loan.domain.param.*;
 import com.yunche.loan.service.ChartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -40,10 +38,16 @@ public class ChartController
     }
 
     @PostMapping(value = "/financialDepartmentRemitDetailChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean financialDepartmentRemitDetail(@RequestBody @Validated FinancialDepartmentRemitDetailChartParam param)
+    public ResultBean financialDepartmentRemitDetailChart(@RequestBody @Validated FinancialDepartmentRemitDetailChartParam param)
     {
 
-
         return chartService.getFinancialDepartmentRemitDetailChart(param);
+    }
+
+    @PostMapping(value = "/mortgageOverdueChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean mortgageOverdueChart(@RequestBody @Validated MortgageOverdueParam param)
+    {
+
+        return chartService.getMortgageOverdueChart(param);
     }
 }
