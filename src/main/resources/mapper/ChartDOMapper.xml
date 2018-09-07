@@ -278,7 +278,7 @@
     </select>
 
     <!--=======================================报表 财务垫款明细查询=========================================-->
-    <select id="exportRemitDetailQuerys" parameterType="com.yunche.loan.domain.param.FinancialDepartmentRemitDetailChartParam"  resultType="com.yunche.loan.domain.vo.FinancialDepartmentRemitDetailChartVO" >
+    <select id="selectFinancialDepartmentRemitDetailChartVO" parameterType="com.yunche.loan.domain.param.FinancialDepartmentRemitDetailChartParam"  resultType="com.yunche.loan.domain.vo.FinancialDepartmentRemitDetailChartVO" >
 
         SELECT
         base_area.area_name,
@@ -572,6 +572,36 @@
             AND TO_DAYS(t.materialReviewSubmit) &lt;= TO_DAYS(#{endDate2})
         </if>
         order by t.express_receive_date desc
+    </select>
+
+    <!--=======================================报表 待垫款明细查询=========================================-->
+    <select id="selectAwaitRemitDetailChartVO" parameterType="com.yunche.loan.domain.param.AwaitRemitDetailChartParam"  resultType="com.yunche.loan.domain.vo.AwaitRemitDetailChartVO" >
+
+        SELECT
+        customer. NAME AS customer_name,
+        customer.id_card AS customer_id_card,
+        partner. NAME AS partner_name,
+        employee. NAME AS salesman_name,
+        loan_financial_plan.sign_rate,
+        loan_financial_plan.loan_amount,
+        loan_financial_plan.bank_period_principal,
+        remit_details.remit_amount,
+        FROM
+        loan_order orders
+        LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+        LEFT JOIN loan_base_info loaninfo ON orders.loan_base_info_id = loaninfo.id
+        LEFT JOIN base_area ON loaninfo.area_id = base_area.area_id
+        LEFT JOIN loan_car_info car ON orders.loan_car_info_id = car.id
+        LEFT JOIN car_detail cardetail ON cardetail.id = car.car_detail_id
+        LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+        LEFT JOIN remit_details ON orders.remit_details_id = remit_details.id
+        LEFT JOIN loan_process process ON orders.id = process.order_id
+        LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
+        LEFT JOIN employee employee ON base.salesman_id = employee.id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        where 1=1
+        and process.remit_review = 2
+
     </select>
 
 </mapper>

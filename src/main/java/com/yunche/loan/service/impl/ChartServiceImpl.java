@@ -67,4 +67,13 @@ public class ChartServiceImpl implements ChartService
         return ResultBean.ofSuccess(pageInfo);
     }
 
+    @Override
+    public ResultBean getAwaitRemitDetailChart(AwaitRemitDetailChartParam param) {
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List list = chartDOMapper.selectAwaitRemitDetailChartVO(param);
+        // 取分页信息
+        PageInfo<AwaitRemitDetailChartVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
 }

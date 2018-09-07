@@ -19,4 +19,6 @@ public interface ChartDOMapper
     List selectMortgageOverdueChartVO(MortgageOverdueParam param);
 
     List selectMaterialReviewChartVO(MaterialReviewParam param);
+
+    List selectAwaitRemitDetailChartVO(AwaitRemitDetailChartParam param);
 }

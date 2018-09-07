@@ -14,4 +14,6 @@ public interface ChartService
     ResultBean getMortgageOverdueChart(MortgageOverdueParam param);
 
     ResultBean getMaterialReviewChart(MaterialReviewParam param);
+
+    ResultBean getAwaitRemitDetailChart(AwaitRemitDetailChartParam param);
 }
