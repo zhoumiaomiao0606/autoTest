@@ -26,10 +26,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_INIT;
@@ -419,7 +416,11 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         );
 
         // 反审状态更新
-        updateRollBackLoanProcess(approval, nextTaskKeys);
+        updateRollBackLoanProcess(
+                approval,
+                Lists.newArrayList(LOAN_APPLY.getCode(), VISIT_VERIFY.getCode()),
+                nextTaskKeys
+        );
     }
 
     /**
@@ -517,7 +518,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
     }
 
     /**
-     * 反审状态更新
+     * 反审状态更新   -反审回单个节点
      *
      * @param approval
      * @param nextTaskKeys
@@ -528,6 +529,41 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         loanProcessDO.setOrderId(approval.getOrderId());
 
         loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_TODO, approval);
+
+        if (!CollectionUtils.isEmpty(nextTaskKeys)) {
+
+            nextTaskKeys.stream()
+                    .filter(StringUtils::isNotBlank)
+                    .forEach(taskKey -> {
+
+                        loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, taskKey, TASK_PROCESS_INIT, approval);
+                    });
+        }
+
+        loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
+    }
+
+    /**
+     * 反审状态更新  -反审回多个节点
+     *
+     * @param approval
+     * @param rollBacTokTaskKeys
+     * @param nextTaskKeys
+     */
+    private void updateRollBackLoanProcess(ApprovalParam approval, List<String> rollBacTokTaskKeys, List<String> nextTaskKeys) {
+
+        LoanProcessDO loanProcessDO = new LoanProcessDO();
+        loanProcessDO.setOrderId(approval.getOrderId());
+
+        if (!CollectionUtils.isEmpty(rollBacTokTaskKeys)) {
+
+            rollBacTokTaskKeys.stream()
+                    .filter(StringUtils::isNotBlank)
+                    .forEach(taskKey -> {
+
+                        loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, taskKey, TASK_PROCESS_TODO, approval);
+                    });
+        }
 
         if (!CollectionUtils.isEmpty(nextTaskKeys)) {
 
