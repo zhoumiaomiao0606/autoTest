@@ -7,12 +7,13 @@ import java.util.List;
 
 /**
  * @author: ZhongMingxiao
- * @create: 2018-09-06 17:08
+ * @create: 2018-09-07 09:19
  * @description:
  **/
 @Data
-public class SocialCreditChartParam extends BaseQuery
+public class BankCreditChartParam  extends BaseQuery
 {
+    //银行审核时间
     private  String startDate;
     private  String endDate;
 
