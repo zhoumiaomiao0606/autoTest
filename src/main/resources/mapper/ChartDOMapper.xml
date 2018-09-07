@@ -585,7 +585,7 @@
         loan_financial_plan.sign_rate,
         loan_financial_plan.loan_amount,
         loan_financial_plan.bank_period_principal,
-        remit_details.remit_amount,
+        remit_details.remit_amount
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -600,7 +600,78 @@
         LEFT JOIN employee employee ON base.salesman_id = employee.id
         LEFT JOIN partner partner ON partner.id = base.partner_id
         where 1=1
-        and process.remit_review = 2
+        and process.usertask_business_review = 1
+
+    </select>
+
+    <!--=======================================报表 公司垫款订单明细查询=========================================-->
+    <select id="selectCompanyRemitDetailChartVO" parameterType="com.yunche.loan.domain.param.CompanyRemitDetailChartParam"  resultType="com.yunche.loan.domain.vo.CompanyRemitDetailChartVO" >
+
+        SELECT
+        base_area.area_name,
+        customer. NAME AS customer_name,
+        customer.id_card AS customer_id_card,
+        customer.mobile AS customer_mobile,
+        loaninfo.bank,
+        partner. NAME AS partner_name,
+        employee. NAME AS salesman_name,
+        case when car.car_type = 0 then '新车'
+        when car.car_type = 1 then '二手车'
+        else '其他' end as car_type,
+        loan_financial_plan.car_price AS price,
+        loan_financial_plan.sign_rate,
+        loan_financial_plan.loan_amount,
+        loan_financial_plan.down_payment_money,
+        loan_financial_plan.bank_period_principal,
+        remit_details.remit_amount,
+        orders.gmt_create,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_remit_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as submitTime,
+        (
+        SELECT
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_remit_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as username
+        FROM
+        loan_order orders
+        LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+        LEFT JOIN loan_base_info loaninfo ON orders.loan_base_info_id = loaninfo.id
+        LEFT JOIN base_area ON loaninfo.area_id = base_area.area_id
+        LEFT JOIN loan_car_info car ON orders.loan_car_info_id = car.id
+        LEFT JOIN car_detail cardetail ON cardetail.id = car.car_detail_id
+        LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+        LEFT JOIN remit_details ON orders.remit_details_id = remit_details.id
+        LEFT JOIN loan_process process ON orders.id = process.order_id
+        LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
+        LEFT JOIN employee employee ON base.salesman_id = employee.id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        where 1=1
+        and process.remit_review = 1
+        <if test="startRemitAmount !=null" >
+            and
+            remit_details.remit_amount &gt;= #{startRemitAmount}
+        </if>
+
+        <if test="endRemitAmount !=null" >
+            AND  remit_details.remit_amount &lt;= #{endRemitAmount}
+        </if>
 
     </select>
 

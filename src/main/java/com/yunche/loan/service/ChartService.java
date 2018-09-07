@@ -16,4 +16,6 @@ public interface ChartService
     ResultBean getMaterialReviewChart(MaterialReviewParam param);
 
     ResultBean getAwaitRemitDetailChart(AwaitRemitDetailChartParam param);
+
+    ResultBean getCompanyRemitDetailChart(CompanyRemitDetailChartParam param);
 }

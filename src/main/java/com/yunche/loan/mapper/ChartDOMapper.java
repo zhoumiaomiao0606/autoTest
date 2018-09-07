@@ -21,4 +21,6 @@ public interface ChartDOMapper
     List selectMaterialReviewChartVO(MaterialReviewParam param);
 
     List selectAwaitRemitDetailChartVO(AwaitRemitDetailChartParam param);
+
+    List selectCompanyRemitDetailChartVO(CompanyRemitDetailChartParam param);
 }

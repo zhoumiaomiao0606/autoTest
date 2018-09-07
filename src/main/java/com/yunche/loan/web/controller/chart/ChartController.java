@@ -116,6 +116,11 @@ public class ChartController
     * @return:  
     * @Date:  
     * @Description:   渠道部 - 公司垫款订单明细表
-    */ 
+    */
+    @PostMapping(value = "/companyRemitDetailChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean companyRemitDetailChart(@RequestBody @Validated CompanyRemitDetailChartParam param)
+    {
 
+        return chartService.getCompanyRemitDetailChart(param);
+    }
 }
