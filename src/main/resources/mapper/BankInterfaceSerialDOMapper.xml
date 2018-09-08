@@ -18,7 +18,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     serial_no, order_id, customer_id, status, request_time, callback_time, reject_reason, 
-    trans_code, api_status, api_msg, file_num, "operate_personnel", operate_date
+    trans_code, api_status, api_msg, file_num, operate_personnel, operate_date
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
@@ -34,7 +34,7 @@
     insert into bank_interface_serial (serial_no, order_id, customer_id, 
       status, request_time, callback_time, 
       reject_reason, trans_code, api_status, 
-      api_msg, file_num, "operate_personnel",
+      api_msg, file_num, operate_personnel,
       operate_date)
     values (#{serialNo,jdbcType=VARCHAR}, #{orderId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, 
       #{status,jdbcType=TINYINT}, #{requestTime,jdbcType=TIMESTAMP}, #{callbackTime,jdbcType=TIMESTAMP}, 
@@ -79,7 +79,7 @@
         file_num,
       </if>
       <if test="operatePersonnel != null">
-        "operate_personnel",
+        operate_personnel,
       </if>
       <if test="operateDate != null">
         operate_date,
@@ -161,7 +161,7 @@
         file_num = #{fileNum,jdbcType=INTEGER},
       </if>
       <if test="operatePersonnel != null">
-        "operate_personnel" = #{operatePersonnel,jdbcType=VARCHAR},
+        operate_personnel = #{operatePersonnel,jdbcType=VARCHAR},
       </if>
       <if test="operateDate != null">
         operate_date = #{operateDate,jdbcType=TIMESTAMP},
@@ -181,7 +181,7 @@
       api_status = #{apiStatus,jdbcType=INTEGER},
       api_msg = #{apiMsg,jdbcType=VARCHAR},
       file_num = #{fileNum,jdbcType=INTEGER},
-      "operate_personnel" = #{operatePersonnel,jdbcType=VARCHAR},
+      operate_personnel = #{operatePersonnel,jdbcType=VARCHAR},
       operate_date = #{operateDate,jdbcType=TIMESTAMP}
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </update>
