@@ -28,4 +28,9 @@ public class JinTouXingAccommodationApplyController {
         return null;
     }
 
+    @RequestMapping(value = "/abnormal",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean abnormalRepay(){
+        return null;
+    }
+
 }

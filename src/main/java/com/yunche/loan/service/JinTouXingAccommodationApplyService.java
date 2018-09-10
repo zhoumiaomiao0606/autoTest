@@ -7,6 +7,8 @@ import com.yunche.loan.domain.query.TaskListQuery;
 
 public interface JinTouXingAccommodationApplyService {
 
+    ResultBean applyLoan(AccommodationApplyParam param);
+
     ResultBean batchLoan(AccommodationApplyParam param);
 
     ResultBean export(TaskListQuery taskListQuery);
