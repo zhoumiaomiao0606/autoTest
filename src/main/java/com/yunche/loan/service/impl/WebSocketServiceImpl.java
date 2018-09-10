@@ -21,6 +21,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalTime;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.BankConst.*;
@@ -199,66 +200,160 @@ public class WebSocketServiceImpl implements WebSocketService {
             return true;
         }
 
-        // 若贷款银行为杭州城站支行，则进入人工面签
+        // 若贷款银行为：杭州城站支行
         if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
 
-            // nothing  -> 正常排队
+            return doWaitTeam_ICBC_HangZhou(webSocketParam, wsSessionId);
         }
 
-        // 若贷款银行为台州路桥支行，则判断：
+        // 若贷款银行为：台州路桥支行
         else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(webSocketParam.getBankId())
                 || BANK_ID_ICBC_TaiZhou_LuQiao__Branch_TEST.equals(webSocketParam.getBankId())) {
 
-            // 银行分期本金
-            double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
+            return doWaitTeam_ICBC_TaiZhou_LuQiao(webSocketParam, wsSessionId);
+        }
 
-            // a、若银行分期本金小于10万，进入机器面签
-            if (bankPeriodPrincipal < 100000) {
+        // nothing  -> 正常排队
+        return true;
+    }
 
-                // 机器面签
-                machineFace(wsSessionId, webSocketParam.getBankId());
 
-                // 退出排队
-                exitTeam(webSocketParam);
+    /**
+     * 面签排队     -台州路桥支行
+     *
+     * @param webSocketParam
+     * @param wsSessionId
+     * @return
+     */
+    private boolean doWaitTeam_ICBC_TaiZhou_LuQiao(WebSocketParam webSocketParam, String wsSessionId) {
 
-                return false;
+        // 银行分期本金
+        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
+
+        // a、若银行分期本金小于10万，进入机器面签
+        if (bankPeriodPrincipal < 100000) {
+
+            // 进行机器面签
+            return doMachineFace(webSocketParam, wsSessionId);
+        }
+
+        // b、若银行分期本金大于等于10万且小于30万，进入人工面签，人工面签等待1min后，若无应答，自动转入机器面签
+        else if (bankPeriodPrincipal >= 100000 && bankPeriodPrincipal < 300000) {
+
+            // 排队时间
+            Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
+                    webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
+
+            if (null != startWaitTime) {
+
+                // 排队时间
+                long waitTime = System.currentTimeMillis() - startWaitTime;
+
+                // 60s
+                if (waitTime >= 60000) {
+
+                    // 进行机器面签
+                    return doMachineFace(webSocketParam, wsSessionId);
+                }
             }
+        }
 
-            // b、若银行分期本金大于等于10万且小于30万，进入人工面签，人工面签等待1min后，若无应答，自动转入机器面签
-            else if (bankPeriodPrincipal >= 100000 && bankPeriodPrincipal < 300000) {
+        // c、若银行分期本金大于30万，进入人工面签，若无人应答，一直处于排队中
+        if (bankPeriodPrincipal >= 300000) {
+
+            // nothing  -> 正常排队
+            return true;
+        }
+
+        // nothing  -> 正常排队
+        return true;
+    }
+
+    /**
+     * 面签排队     -杭州城站支行
+     *
+     * @param webSocketParam
+     * @param wsSessionId
+     * @return
+     */
+    private boolean doWaitTeam_ICBC_HangZhou(WebSocketParam webSocketParam, String wsSessionId) {
+
+        // 银行分期本金
+        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
+
+        // 城站工行的配置规则为：
+
+        // 1、金额≥30万，全天，无限等待 -> 只能走人工面签
+        if (bankPeriodPrincipal >= 300000) {
+
+            // 正常排队
+            return true;
+        }
+
+        // 2、金额＜30万时，每天08:30~12:00 以及 14:00~17:30  等待时长20分钟后，自动接通机器面签; 剩余时间，等待0分钟后，走机器面签
+        else {
+
+            LocalTime now_time = LocalTime.now();
+
+            LocalTime start_time_8_30 = LocalTime.of(8, 30);
+            LocalTime end_time_12_00 = LocalTime.of(12, 00);
+            LocalTime start_time_14_00 = LocalTime.of(14, 00);
+            LocalTime end_time_17_30 = LocalTime.of(17, 30);
+
+            // 每天08:30~12:00 以及 14:00~17:30
+            boolean match_time = (now_time.isAfter(start_time_8_30) && now_time.isBefore(end_time_12_00)) ||
+                    (now_time.isAfter(start_time_14_00) && now_time.isBefore(end_time_17_30));
+
+            if (match_time) {
 
                 // 排队时间
                 Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
                         webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
 
                 if (null != startWaitTime) {
+
                     // 排队时间
                     long waitTime = System.currentTimeMillis() - startWaitTime;
 
-                    // 60s
-                    if (waitTime >= 60000) {
+                    // TODO 等待时长20分钟后，自动接通机器面签
+                    if (waitTime >= 1 * 60 * 1000) {
+//                    if (waitTime >= 20 * 60 * 1000) {
 
-                        // 机器面签
-                        machineFace(wsSessionId, webSocketParam.getBankId());
-
-                        // 退出排队
-                        exitTeam(webSocketParam);
-
-                        return false;
+                        // 进行机器面签
+                        return doMachineFace(webSocketParam, wsSessionId);
                     }
-
-                    // nothing  -> 正常排队
                 }
             }
 
-            // c、若银行分期本金大于30万，进入人工面签，若无人应答，一直处于排队中
-            if (bankPeriodPrincipal >= 300000) {
+            // 剩余时间，等待0分钟后，走机器面签
+            else {
 
-                // nothing  -> 正常排队
+                // 进行机器面签
+                return doMachineFace(webSocketParam, wsSessionId);
             }
+
         }
 
+        // nothing  -> 正常排队
         return true;
+    }
+
+    /**
+     * 进行机器面签
+     *
+     * @param webSocketParam
+     * @param wsSessionId
+     * @return
+     */
+    private boolean doMachineFace(WebSocketParam webSocketParam, String wsSessionId) {
+
+        // 机器面签
+        machineFace(wsSessionId, webSocketParam.getBankId());
+
+        // 退出排队
+        exitTeam(webSocketParam);
+
+        return false;
     }
 
     /**
