@@ -205,16 +205,16 @@
     and serial.customer_id = #{customerId} and serial.status in (0,1,2,3)
   </select>
 
-  <!-- listOrderIdOfBankCreditRecordPushFailed -->
-  <select id="listOrderIdOfBankCreditRecordPushFailed" resultType="java.lang.Long">
+  <!-- listOfBankCreditRecordPushFailed -->
+  <select id="listOfBankCreditRecordPushFailed" resultMap="BaseResultMap">
 
     SELECT
-    tmp.order_id
+    tmp.*
 
     FROM
 
     (
-    SELECT DISTINCT serial.order_id
+    SELECT DISTINCT serial.*
 
     FROM bank_interface_serial serial
 

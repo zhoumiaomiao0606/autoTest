@@ -21,6 +21,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.BankConst.*;
@@ -202,7 +205,71 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 若贷款银行为杭州城站支行，则进入人工面签
         if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(webSocketParam.getBankId())) {
 
-            // nothing  -> 正常排队
+            // 城站工行的配置规则为：
+
+
+            // 银行分期本金
+            double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
+
+            // 金额≥30万，全天，无限等待 -> 只能走人工面签
+            if (bankPeriodPrincipal >= 300000) {
+
+                // 正常排队
+                return true;
+            }
+
+            // 金额＜30万时，每天08:30~12:00 以及 14:00~17:30  等待时长20分钟后，自动接通机器面签; 剩余时间，等待0分钟后，走机器面签
+            else {
+
+
+                LocalTime nowTime = LocalTime.now();
+
+                LocalTime start_time_8_30 = LocalTime.of(8, 30);
+                LocalTime end_time_12_00 = LocalTime.of(12, 00);
+                LocalTime start_time_14_00 = LocalTime.of(14, 00);
+                LocalTime end_time_17_30 = LocalTime.of(17, 30);
+
+                // 每天08:30~12:00 以及 14:00~17:30
+                boolean match_time = (nowTime.isAfter(start_time_8_30) && nowTime.isBefore(end_time_12_00)) ||
+                        (nowTime.isAfter(start_time_14_00) && nowTime.isBefore(end_time_17_30));
+
+                if (match_time) {
+
+                    // 排队时间
+                    Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
+                            webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
+
+                    // 排队时间
+                    long waitTime = System.currentTimeMillis() - startWaitTime;
+
+                    // 等待时长20分钟后，自动接通机器面签
+                    if (waitTime >= 20) {
+
+                        // 机器面签
+                        machineFace(wsSessionId, webSocketParam.getBankId());
+
+                        // 退出排队
+                        exitTeam(webSocketParam);
+
+                        return false;
+                    }
+
+                }
+
+                // 剩余时间，等待0分钟后，走机器面签
+                else {
+
+                    // 机器面签
+                    machineFace(wsSessionId, webSocketParam.getBankId());
+
+                    // 退出排队
+                    exitTeam(webSocketParam);
+
+                    return false;
+                }
+
+            }
+
         }
 
         // 若贷款银行为台州路桥支行，则判断：
@@ -232,6 +299,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                         webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
 
                 if (null != startWaitTime) {
+
                     // 排队时间
                     long waitTime = System.currentTimeMillis() - startWaitTime;
 
@@ -258,6 +326,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             }
         }
 
+        // nothing  -> 正常排队
         return true;
     }
 
