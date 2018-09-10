@@ -315,8 +315,9 @@ public class WebSocketServiceImpl implements WebSocketService {
                     // 排队时间
                     long waitTime = System.currentTimeMillis() - startWaitTime;
 
-                    // 等待时长20分钟后，自动接通机器面签
-                    if (waitTime >= 20 * 60 * 1000) {
+                    // TODO 等待时长20分钟后，自动接通机器面签
+                    if (waitTime >= 1 * 60 * 1000) {
+//                    if (waitTime >= 20 * 60 * 1000) {
 
                         // 进行机器面签
                         return doMachineFace(webSocketParam, wsSessionId);
