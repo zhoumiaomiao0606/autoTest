@@ -18,7 +18,6 @@ import com.yunche.loan.config.util.ViolationUtil;
 import com.yunche.loan.domain.entity.BankCreditInfoDO;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
-import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ICBCApiCallbackParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceFileSerialDO;
 import com.yunche.loan.mapper.*;
@@ -27,7 +26,6 @@ import com.yunche.loan.service.LoanProcessService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -171,22 +169,22 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 up.setGmtModify(new Date());
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
+//
+//            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
+//            try {
+//                ApprovalParam approvalParam = new ApprovalParam();
+//                approvalParam.setAction(new Byte("0"));
+//                approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
+//                approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
+//                approvalParam.setNeedLog(false);
+//                approvalParam.setCheckPermission(false);
+//                approvalParam.setInfo(applyCreditCallback.getReq().getNote());
+//                loanProcessService.approval(approvalParam);
+//            }catch (Exception e){
+//                logger.info("征信查询回调打回异常");
+//            }
 
-            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
-            try {
-                ApprovalParam approvalParam = new ApprovalParam();
-                approvalParam.setAction(new Byte("0"));
-                approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
-                approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
-                approvalParam.setNeedLog(false);
-                approvalParam.setCheckPermission(false);
-                approvalParam.setInfo(applyCreditCallback.getReq().getNote());
-                loanProcessService.approval(approvalParam);
-            }catch (Exception e){
-                logger.info("征信查询回调打回异常");
-            }
-
-            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
+//            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 
 
         }else if(IDict.K_RESULT.BACK.equals(applyCreditCallback.getReq().getResult())){
@@ -210,21 +208,21 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 up.setGmtModify(new Date());
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
-            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
+//            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 
-            try {
-                ApprovalParam approvalParam = new ApprovalParam();
-                approvalParam.setAction(new Byte("0"));
-                approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
-                approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
-                approvalParam.setNeedLog(false);
-                approvalParam.setCheckPermission(false);
-                approvalParam.setInfo(applyCreditCallback.getReq().getNote());
-                loanProcessService.approval(approvalParam);
-            }catch (Exception e){
-                logger.info("征信查询回调打回异常");
-            }
-            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
+//            try {
+//                ApprovalParam approvalParam = new ApprovalParam();
+//                approvalParam.setAction(new Byte("0"));
+//                approvalParam.setOrderId(Long.parseLong(applyCreditCallback.getPub().getOrderno()));
+//                approvalParam.setTaskDefinitionKey("usertask_bank_credit_record");
+//                approvalParam.setNeedLog(false);
+//                approvalParam.setCheckPermission(false);
+//                approvalParam.setInfo(applyCreditCallback.getReq().getNote());
+//                loanProcessService.approval(approvalParam);
+//            }catch (Exception e){
+//                logger.info("征信查询回调打回异常");
+//            }
+//            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
         }else{
             throw new BizException("未知错误");
         }

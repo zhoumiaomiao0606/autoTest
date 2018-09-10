@@ -336,6 +336,7 @@
             customer.hcity                                                                          AS customer_hcity,
             customer.hcounty                                                                        AS customer_hcounty,
             customer.lend_card                                                                      AS customer_lend_card,
+            customer.open_card_status                                                               AS customer_open_card_status,
             customer.signature_type                                                                 AS customer_signature_type,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
@@ -392,14 +393,18 @@
             remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
             remit.remit_amount                                                                      AS remit_amount,
             remit.return_rate_amount                                                                AS remit_return_rate_amount,
+            remit.application_date                                                                  AS remit_application_date,
             process.apply_license_plate_deposit_info                                                AS process_apply_license_plate_deposit_info,
             process.bank_lend_record                                                                AS process_bank_lend_record,
             bank.repay_date                                                                         AS bank_repay_date,
+            bank.billing_date                                                                       AS bank_billing_date,
             car.car_category                                                                        AS car_category,
             cost.performance_fee                                                                    AS performance_fee,
-            repay.overdue_amount                                                                    AS overdue_amount
+            repay.overdue_amount                                                                    AS overdue_amount,
+            current.usertask_remit_review_create_time                                               AS remit_review_time
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
+    left join current_node_manager current on main_order.id=current.order_id
     left join loan_process process on main_order.id = process.order_id
     left join bank_card_record bank on main_order.id = bank.order_id
     left join loan_customer customer on main_order.loan_customer_id = customer.id
