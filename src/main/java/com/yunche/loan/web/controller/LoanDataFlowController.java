@@ -72,4 +72,17 @@ public class LoanDataFlowController {
     public ResultBean<Integer> batchReceived(@RequestParam String ids) {
         return loanDataFlowService.batchReceived(ids);
     }
+
+    /**
+     * 获取dataFlowId
+     *
+     * @param orderId
+     * @param taskDefinitionKey
+     * @return
+     */
+    @GetMapping(value = "/getDataFlowId")
+    public ResultBean<Long> getDataFlowId(@RequestParam Long orderId,
+                                          @RequestParam String taskDefinitionKey) {
+        return loanDataFlowService.getDataFlowId(orderId, taskDefinitionKey);
+    }
 }

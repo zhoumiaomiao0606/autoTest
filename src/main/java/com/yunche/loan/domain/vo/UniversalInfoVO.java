@@ -79,7 +79,6 @@ public class UniversalInfoVO {
     private String financial_sign_rate;
     private String financial_loan_amount;
     private String financial_first_month_repay;
-    private String financial_principal_interest_sum;
     private String financial_bank_staging_ratio;
     private String financial_cash_deposit;
     private String financial_car_price;

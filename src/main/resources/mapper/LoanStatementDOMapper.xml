@@ -561,7 +561,7 @@
             AND  remit_details.remit_amount &lt;= #{endRemitAmount}
         </if>
 
-        having submitTime between #{startDate} and #{endDate}
+        having submitTime between #{startDate} AND CONCAT(#{endDate},' 23.59.59')
         order by submitTime desc
 
     </select>

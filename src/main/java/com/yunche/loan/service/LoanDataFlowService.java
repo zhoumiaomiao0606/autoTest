@@ -33,4 +33,6 @@ public interface LoanDataFlowService {
     ResultBean<Integer> imp(String ossKey);
 
     ResultBean<Integer> batchReceived(String ids);
+
+    ResultBean<Long> getDataFlowId(Long orderId, String taskDefinitionKey);
 }

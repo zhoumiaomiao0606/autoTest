@@ -15,6 +15,7 @@ public class TaskListVO {
     private String remitAmount;
     private String telephoneGmtCreate;
     private String partnerCompensationAmount;
+    private String visitGmtCreate;
     // 已加
     private String id;
     private String salesmanId;

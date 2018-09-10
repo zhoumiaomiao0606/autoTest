@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,7 +44,6 @@ public class MaterialTask {
 
     @Scheduled(cron = "0 0/1 * * * ?")
     @DistributedLock(60)
-    @Transactional
     public void fileDownload() {
         List<MaterialDownHisDO> all = Lists.newArrayList();
         List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.PRE_TRANSACTION);
