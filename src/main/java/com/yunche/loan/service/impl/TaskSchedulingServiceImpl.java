@@ -71,12 +71,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
 
+    @Autowired
+    private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
+
 
     @Override
     public ResultBean<List<ZhonganListVO>> selectZhonganList(ZhonganListQuery query) {
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(loginUser.getId());
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        query.setPartnerId(partnerId);
         query.setMaxGroupLevel(maxGroupLevel);
         query.setJuniorIds(juniorIds);
         //获取用户可见的区域
