@@ -86,13 +86,12 @@ public class App {
                 deploy("processes/loan_process_legal.bpmn", "法务处理流程");
             }
 
-            /*
+            /**
              * 部署新流程
              *
              * @param processClassPathResource
              * @param processName
-             * */
-
+             */
             private void deploy(String processClassPathResource, String processName) {
 
                 repositoryService.createDeployment()
