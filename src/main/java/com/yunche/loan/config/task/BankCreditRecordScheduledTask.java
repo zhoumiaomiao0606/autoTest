@@ -1,10 +1,14 @@
 package com.yunche.loan.config.task;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.service.LoanProcessService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,32 +46,32 @@ public class BankCreditRecordScheduledTask {
     public void doAutoRejectTask() {
 
         // 扫描：[银行征信] - 推送失败的 所有订单ID
-        List<Long> orderIdList = listOrderIdOfBankCreditRecordPushFailed();
+        List<BankInterfaceSerialDO> bankInterfaceSerialDOS = listOfBankCreditRecordPushFailed();
 
         // 自动打回
-        doAutoReject(orderIdList);
+        doAutoReject(bankInterfaceSerialDOS);
     }
 
     /**
-     * [银行征信] - 推送失败的   所有订单ID
+     * [银行征信] - 推送失败的   所有订单-推送失败详情DO
      *
      * @return
      */
-    private List<Long> listOrderIdOfBankCreditRecordPushFailed() {
+    private List<BankInterfaceSerialDO> listOfBankCreditRecordPushFailed() {
 
-        List<Long> orderIdList = bankInterfaceSerialDOMapper.listOrderIdOfBankCreditRecordPushFailed();
+        List<BankInterfaceSerialDO> bankInterfaceSerialDOS = bankInterfaceSerialDOMapper.listOfBankCreditRecordPushFailed();
 
-        return orderIdList;
+        return bankInterfaceSerialDOS;
     }
 
     /**
      * 自动打回： [银行征信查询] -> [征信申请]
      *
-     * @param orderIdList
+     * @param bankInterfaceSerialDOS
      */
-    private void doAutoReject(List<Long> orderIdList) {
+    private void doAutoReject(List<BankInterfaceSerialDO> bankInterfaceSerialDOS) {
 
-        if (!CollectionUtils.isEmpty(orderIdList)) {
+        if (!CollectionUtils.isEmpty(bankInterfaceSerialDOS)) {
 
             ApprovalParam approval = new ApprovalParam();
             approval.setTaskDefinitionKey(BANK_CREDIT_RECORD.getCode());
@@ -77,10 +81,25 @@ public class BankCreditRecordScheduledTask {
             approval.setNeedLog(true);
             approval.setNeedPush(true);
 
-            orderIdList.parallelStream()
-                    .forEach(orderId -> {
+            bankInterfaceSerialDOS.parallelStream()
+                    .forEach(bankInterfaceSerialDO -> {
+
+                        Long orderId = bankInterfaceSerialDO.getOrderId();
 
                         approval.setOrderId(orderId);
+
+                        // {"ICBC_API_RETMSG":"success","ICBC_API_TIMESTAMP":"2018-08-27 08:23:52","pub":{"retcode":"22094","retmsg":"该客户为灰名单客户"},"ICBC_API_RETCODE":0}
+                        String apiMsg = bankInterfaceSerialDO.getApiMsg();
+                        if (StringUtils.isNotBlank(apiMsg)) {
+
+                            JSONObject jsonObject = JSON.parseObject(apiMsg);
+                            JSONObject pub = jsonObject.getJSONObject("pub");
+
+                            if (!CollectionUtils.isEmpty(pub)) {
+                                String retmsg = pub.getString("retmsg");
+                                approval.setInfo(retmsg);
+                            }
+                        }
 
                         try {
 
@@ -88,7 +107,7 @@ public class BankCreditRecordScheduledTask {
 
                             if (approvalResult.getSuccess()) {
 
-                                logger.info("自动打回成功  >>>  orderId : {}", orderId);
+                                logger.info("自动打回成功  >>>  orderId : {} , info : {} ", orderId, approval.getInfo());
 
                             } else {
 
