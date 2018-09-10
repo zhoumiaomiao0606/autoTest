@@ -107,6 +107,6 @@ public class UniversalInfoVO {
     private String hprovince;
     private String hcity;
     private String hcounty;
-
+    private String customer_ctelzone;
 
 }

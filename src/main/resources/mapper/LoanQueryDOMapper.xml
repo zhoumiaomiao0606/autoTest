@@ -161,7 +161,8 @@
              h.apply_license_plate_date         AS apply_license_plate_date,
              a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
              h.registration_certificate_number  AS registration_certificate_number,
-             h.vehicle_identification_number    AS vehicle_identification_number
+             h.vehicle_identification_number    AS vehicle_identification_number,
+             h.car_category                     AS car_category
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -337,6 +338,7 @@
             customer.hcounty                                                                        AS customer_hcounty,
             customer.lend_card                                                                      AS customer_lend_card,
             customer.signature_type                                                                 AS customer_signature_type,
+            customer.ctelzone                                                                       AS customer_ctelzone,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
@@ -1401,6 +1403,7 @@
              c.name                               AS cname,
              c.id_card                            AS id_card,
              c.signature_type                     AS customer_signature_type,
+             c.ctelzone                           AS customer_ctelzone,
              f.financial_product_name             AS financial_product_name,
              f.financial_product_id               AS financial_product_id,
              h.license_plate_number               AS license_plate_number,
@@ -1510,7 +1513,7 @@
 
     <select id="selectBankLendRecordDetail" resultType="com.yunche.loan.domain.vo.BankLendRecordVO"
             parameterType="java.lang.Long">
-        SELECT
+         SELECT
                     a.id                                        AS orderId,
                     b.id_card                                   AS idCard,
                     b.name                                      AS principalLenderName,
@@ -1518,6 +1521,7 @@
                     e. NAME                                     AS departmentName,
                     a.loan_customer_id                          AS customerId,
                     a.gmt_create                                AS gmtCreate,
+					j.bank_period_principal                     AS bankPeriodPrincipal,
                     c.bank,
                     (select
                         case when
@@ -1544,6 +1548,7 @@
             LEFT JOIN employee h ON h.id=c.salesman_id
             LEFT JOIN partner d ON c.partner_id = d.id
             LEFT JOIN department e ON d.department_id = e.id
+						LEFT JOIN loan_financial_plan j on a.loan_financial_plan_id=j.id
         WHERE
             a.id =#{orderId}
     </select>

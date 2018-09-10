@@ -178,6 +178,10 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         loanOrderDO.setBankLendRecordId((long) bankLendRecordDO.getId());
         int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
         Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
+        LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
+        loanFinancialPlanDO.setBankPeriodPrincipal(bankLendRecordVO.getBankPeriodPrincipal());
+        loanFinancialPlanDO.setId(loanOrderDO.getLoanFinancialPlanId());
+        loanFinancialPlanDOMapper.updateByPrimaryKeySelective(loanFinancialPlanDO);
         return ResultBean.ofSuccess("录入成功");
     }
 

@@ -1,15 +1,16 @@
 package com.yunche.loan.service.impl;
 
+import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.ImageUtil;
+import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.param.CustomerParam;
-import com.yunche.loan.domain.vo.CustDetailVO;
-import com.yunche.loan.domain.vo.CustomerVO;
-import com.yunche.loan.domain.vo.FileVO;
-import com.yunche.loan.domain.vo.LoanRepeatVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanFileService;
@@ -21,10 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.io.File;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
@@ -59,6 +58,12 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Autowired
+    private  LoanFileDOMapper loanFileDOMapper;
+
+    @Autowired
+    private OSSConfig ossConfig;
 
 
     @Override
@@ -316,6 +321,79 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
         return ResultBean.ofSuccess(null, "删除关联人成功");
+    }
+
+    @Override
+    public BankAndSocietyResultVO bankPicExport(List<Long> list) {
+        BankAndSocietyResultVO bankAndSocietyResultVO = new BankAndSocietyResultVO();
+        List<String> filePathString = new ArrayList<>();
+        if(list !=null){
+            if(list.size()!=0){
+                List<BankAndSocietyPicVO> fileList = loanFileDOMapper.selectFileInfoByCusId(list);
+                if(fileList !=null){
+                    for(BankAndSocietyPicVO bankAndSocietyPicVO:fileList){
+                        List<String> picPath = new ArrayList<>();
+                       String[] total = bankAndSocietyPicVO.getPath().replace("\"","").replace("[","").replace("]","").split(",");
+                       for(String s:total){
+                           if(s!=null&&!"".equals(s)){
+                               picPath.add(s);
+                           }
+                       }
+                       LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(),null);
+                       if(loanCustomerDO !=null &&picPath.size()!=0) {
+                           String fileName = loanCustomerDO.getName() + loanCustomerDO.getId()+".jpg";
+                           String retPath = ImageUtil.mergeImage2Pic(fileName, picPath);
+                           File file = new File(retPath);
+                           //上传OSS
+                           OSSClient ossClient = OSSUnit.getOSSClient();
+                           String bucketName = ossConfig.getBucketName();
+                           String diskName = "img"+File.separator+"bank";
+                           OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
+                           OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+                           filePathString.add(diskName + retPath);
+                       }
+                    }
+                }
+            }
+        }
+        bankAndSocietyResultVO.setPicList(filePathString);
+        return bankAndSocietyResultVO;
+    }
+
+    @Override
+    public BankAndSocietyResultVO societyPicExport(List<Long> list) {
+        BankAndSocietyResultVO bankAndSocietyResultVO = new BankAndSocietyResultVO();
+        List<String> filePathString = new ArrayList<>();
+        if(list !=null){
+            if(list.size()!=0){
+                List<BankAndSocietyPicVO> fileList = loanFileDOMapper.selectSocFileInfoByCusId(list);
+                if(fileList !=null){
+                    for(BankAndSocietyPicVO bankAndSocietyPicVO:fileList){ List<String> picPath = new ArrayList<>();
+                        String[] total = bankAndSocietyPicVO.getPath().replace("\"","").replace("[","").replace("]","").split(",");
+                        for(String s:total){
+                            if(s!=null&&!"".equals(s)){
+                                picPath.add(s);
+                            }
+                        }
+                        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(),null);
+                        if(loanCustomerDO !=null &&picPath.size()!=0) {
+                            String fileName = loanCustomerDO.getName() + loanCustomerDO.getId()+".jpg";
+                            String retPath = ImageUtil.mergeImage2Pic(fileName, picPath);
+                            File file = new File(retPath);
+                            //上传OSS
+                            OSSClient ossClient = OSSUnit.getOSSClient();
+                            String bucketName = ossConfig.getBucketName();
+                            String diskName = "img"+File.separator+"society";
+                            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
+                            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+                            filePathString.add(diskName + retPath);
+                        }
+                    }
+                }
+            }
+        }
+        bankAndSocietyResultVO.setPicList(filePathString);
+        return bankAndSocietyResultVO;
     }
 
     private void convertLoanCustomer(CustomerParam customerParam, LoanCustomerDO loanCustomerDO) {

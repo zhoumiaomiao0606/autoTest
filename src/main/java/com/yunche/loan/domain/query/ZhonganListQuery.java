@@ -24,4 +24,6 @@ public class ZhonganListQuery {
     private List<Long> bizAreaIdList = Lists.newArrayList();//区域合伙人ID列表
     private List<String> bankList = Lists.newArrayList();//银行name列表
     Set<String> juniorIds = Sets.newHashSet();
+
+    private Long partnerId;
 }
