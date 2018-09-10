@@ -66,7 +66,7 @@ public class App {
     }
 
 
-   /* @Bean
+    @Bean
     public CommandLineRunner init(RepositoryService repositoryService,
                                   ActivitiCache activitiCache,
                                   ActivitiService activitiService) {
@@ -88,12 +88,12 @@ public class App {
                 deploy("processes/loan_process_legal.bpmn", "法务处理流程");
             }
 
-            *//**
+            /**
              * 部署新流程
              *
              * @param processClassPathResource
              * @param processName
-             *//*
+             */
             private void deploy(String processClassPathResource, String processName) {
 
                 repositoryService.createDeployment()
@@ -109,6 +109,6 @@ public class App {
             }
         };
 
-    }*/
+    }
 }
 
