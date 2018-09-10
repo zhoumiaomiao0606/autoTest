@@ -64,7 +64,9 @@ public class App {
         LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
         return validator;
     }
-   @Bean
+
+
+   /* @Bean
     public CommandLineRunner init(RepositoryService repositoryService,
                                   ActivitiCache activitiCache,
                                   ActivitiService activitiService) {
@@ -84,16 +86,14 @@ public class App {
                 deploy("processes/loan_process_collection.bpmn", "上门催收流程");
 
                 deploy("processes/loan_process_legal.bpmn", "法务处理流程");
-
-                deploy("processes/loan_process_bridge.bpmn", "过桥资金流程");
             }
 
-            /**
+            *//**
              * 部署新流程
              *
              * @param processClassPathResource
              * @param processName
-             */
+             *//*
             private void deploy(String processClassPathResource, String processName) {
 
                 repositoryService.createDeployment()
@@ -109,6 +109,6 @@ public class App {
             }
         };
 
-    }
+    }*/
 }
 
