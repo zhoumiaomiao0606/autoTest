@@ -243,7 +243,7 @@
     </sequenceFlow>
     <userTask id="usertask_data_flow_contract_c2b" name="003-合同资料公司至银行" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨资料流转专员,南京资料流转专员,台州资料流转专员,杭州城站资料流转专员,合伙人流转专员"></userTask>
     <sequenceFlow id="flow190" sourceRef="parallelgateway9" targetRef="usertask_data_flow_contract_c2b"></sequenceFlow>
-    <userTask id="usertask_data_flow_contract_c2b_review" name="004-合同资料公司至银行-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨银行驻点,南京银行驻点,台州银行驻点,杭州城站银行驻点,城站工行驻点"></userTask>
+    <userTask id="usertask_data_flow_contract_c2b_review" name="004-合同资料公司至银行-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨银行驻点,南京银行驻点,台州银行驻点,杭州城站银行驻点,城站支行驻点"></userTask>
     <sequenceFlow id="flow191" sourceRef="exclusivegateway36" targetRef="usertask_data_flow_contract_c2b_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -265,9 +265,9 @@
     <sequenceFlow id="flow197" sourceRef="exclusivegateway26" targetRef="parallelgateway10">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == ''}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_data_flow_mortgage_b2c" name="009-抵押资料银行至公司" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨银行驻点,南京银行驻点,台州银行驻点,杭州城站银行驻点,城站工行驻点"></userTask>
+    <userTask id="usertask_data_flow_mortgage_b2c" name="009-抵押资料银行至公司" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨银行驻点,南京银行驻点,台州银行驻点,杭州城站银行驻点,城站支行驻点"></userTask>
     <sequenceFlow id="flow198" sourceRef="parallelgateway10" targetRef="usertask_data_flow_mortgage_b2c"></sequenceFlow>
-    <userTask id="usertask_data_flow_mortgage_b2c_review" name="010-抵押资料银行至公司-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,哈尔滨抵押专员,南京抵押专员,台州抵押专员,杭州城站抵押专员,城站工行驻点"></userTask>
+    <userTask id="usertask_data_flow_mortgage_b2c_review" name="010-抵押资料银行至公司-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,哈尔滨抵押专员,南京抵押专员,台州抵押专员,杭州城站抵押专员,城站支行驻点"></userTask>
     <sequenceFlow id="flow199" sourceRef="usertask_data_flow_mortgage_b2c" targetRef="usertask_data_flow_mortgage_b2c_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -302,11 +302,11 @@
     <sequenceFlow id="flow209" name="打回" sourceRef="exclusivegateway29" targetRef="usertask_data_flow_mortgage_p2c">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_data_flow_mortgage_c2b" name="007-抵押资料公司至银行" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,哈尔滨抵押专员,南京抵押专员,台州抵押专员,杭州城站抵押专员,城站工行驻点"></userTask>
+    <userTask id="usertask_data_flow_mortgage_c2b" name="007-抵押资料公司至银行" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,哈尔滨抵押专员,南京抵押专员,台州抵押专员,杭州城站抵押专员,城站支行驻点"></userTask>
     <sequenceFlow id="flow210" sourceRef="exclusivegateway29" targetRef="usertask_data_flow_mortgage_c2b">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_data_flow_mortgage_c2b_review" name="008-抵押资料公司至银行-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨银行驻点,南京银行驻点,台州银行驻点,杭州城站银行驻点,城站工行驻点"></userTask>
+    <userTask id="usertask_data_flow_mortgage_c2b_review" name="008-抵押资料公司至银行-确认接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨银行驻点,南京银行驻点,台州银行驻点,杭州城站银行驻点,城站支行驻点"></userTask>
     <sequenceFlow id="flow211" sourceRef="usertask_data_flow_mortgage_c2b" targetRef="usertask_data_flow_mortgage_c2b_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>

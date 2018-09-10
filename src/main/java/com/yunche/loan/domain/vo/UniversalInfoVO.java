@@ -44,6 +44,7 @@ public class UniversalInfoVO {
     private String customer_hcounty;
     private String customer_lend_card;
     private String customer_signature_type;
+    private String customer_open_card_status;
     private String partner_id;
     private String partner_name;
     private String partner_biz_area;
@@ -99,6 +100,7 @@ public class UniversalInfoVO {
     private String process_bank_lend_record;
     private String car_info;
     private String bank_repay_date;
+    private String bank_billing_date;
     private String car_category;
     private BigDecimal performance_fee;
     private String cprovince;
@@ -107,6 +109,8 @@ public class UniversalInfoVO {
     private String hprovince;
     private String hcity;
     private String hcounty;
+    private String remit_review_time;
+
     private String customer_ctelzone;
 
 }
