@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 @Service
 public class VisitDoorServiceImpl implements VisitDoorService {
     @Autowired
@@ -44,6 +46,12 @@ public class VisitDoorServiceImpl implements VisitDoorService {
 
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
+
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
 
     @Override
     public VisitDoorVO detail(Long orderId,Long id,Long bankRepayImpRecordId) {
@@ -79,7 +87,31 @@ public class VisitDoorServiceImpl implements VisitDoorService {
             universalCustomerVO.setFiles(files);
         }
         visitDoorVO.setCustomers(customers);
-        visitDoorVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
+
+        UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
+        String tmpApplyLicensePlateArea = null;
+        if (loanBaseInfoDO.getAreaId()!=null) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
+            //（个性化）如果上牌地是区县一级，则返回形式为 省+区
+            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+            }
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+        }
+
+        universalCarInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
+
+        visitDoorVO.setCar(universalCarInfoVO);
         visitDoorVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));
         visitDoorVO.setLitigationStateDO(litigationStateDOMapper.selectByIdAndType(orderId,"1",bankRepayImpRecordId));
         visitDoorVO.setLoanApplyCompensation(list);

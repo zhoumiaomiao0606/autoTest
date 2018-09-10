@@ -367,4 +367,234 @@
 	LEFT JOIN partner d ON b.partner_id = d.id
 	where a.id = #{orderId,jdbcType=BIGINT}
   </select>
+  <select id="businessApproval" parameterType="com.yunche.loan.domain.query.BaseQuery" resultType="com.yunche.loan.domain.vo.BusinessApprovalReportVO">
+    SELECT
+    b.id      AS id,
+    d.NAME    AS cName,
+    d.id_card AS idCArd,
+    f.NAME    AS sName,
+    e.NAME    AS pName,
+    h.user_name AS hName,
+    DATE_FORMAT(h.create_time,'%Y/%m/%d') AS gDate,
+    i.remit_amount AS remitAmount,
+    g.loan_amount  AS loanAmount,
+    g.sign_rate    AS signRate,
+    g.bank_period_principal AS bankPeriodPrincipal
+    FROM
+    loan_process a
+    LEFT JOIN loan_order b ON a.order_id = b.id
+    LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
+    LEFT JOIN loan_customer d ON b.loan_customer_id = d.id
+    LEFT JOIN partner e ON c.partner_id = e.id
+    LEFT JOIN employee f ON c.salesman_id = f.id
+    LEFT JOIN loan_financial_plan g ON b.loan_financial_plan_id = g.id
+    LEFT JOIN remit_details i ON b.remit_details_id = i.id
+    left join (select DISTINCT z.* from loan_process_log z
+    inner join
+    (
+    select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1)
+    as id
+    from loan_process_log where task_definition_key="usertask_business_review" GROUP BY order_id
+    ) d on d.id = z.id )h on h.order_id=b.id
+    WHERE
+    a.business_review = 1
+    AND a.order_status = 1
+    <if test = "gmtCreateStart != null">
+      AND h.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    </if>
+    <if test = "gmtCreateEnd != null">
+      AND h.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    </if>
+    order by h.create_time
+    limit #{startRow}, #{pageSize}
+  </select>
+  <select id="businessApprovalTotal" parameterType="com.yunche.loan.domain.query.BaseQuery" resultType="com.yunche.loan.domain.vo.BusinessApprovalReportTotalVO">
+    SELECT
+    sum(i.remit_amount) AS remitAmount,
+    sum(g.loan_amount)  AS loanAmount,
+    sum(g.bank_period_principal) AS bankPeriodPrincipal
+    FROM
+    loan_process a
+    LEFT JOIN loan_order b ON a.order_id = b.id
+    LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
+    LEFT JOIN loan_customer d ON b.loan_customer_id = d.id
+    LEFT JOIN partner e ON c.partner_id = e.id
+    LEFT JOIN employee f ON c.salesman_id = f.id
+    LEFT JOIN loan_financial_plan g ON b.loan_financial_plan_id = g.id
+    LEFT JOIN remit_details i ON b.remit_details_id = i.id
+    left join (select DISTINCT z.* from loan_process_log z
+    inner join
+    (
+    select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1)
+    as id
+    from loan_process_log where task_definition_key="usertask_business_review" GROUP BY order_id
+    ) d on d.id = z.id )h on h.order_id=b.id
+    WHERE
+    a.business_review = 1
+    AND a.order_status = 1
+    <if test = "gmtCreateStart != null">
+      AND h.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    </if>
+    <if test = "gmtCreateEnd != null">
+      AND h.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    </if>
+    order by h.create_time
+  </select>
+
+  <select id="businessApprovalExport" parameterType="com.yunche.loan.domain.query.BaseQuery" resultType="com.yunche.loan.domain.vo.BusinessApprovalReportVO">
+    SELECT
+    b.id      AS id,
+    d.NAME    AS cName,
+    d.id_card AS idCArd,
+    f.NAME    AS sName,
+    e.NAME    AS pName,
+    h.user_name AS hName,
+    DATE_FORMAT(h.create_time,'%Y/%m/%d') AS gDate,
+    i.remit_amount AS remitAmount,
+    g.loan_amount  AS loanAmount,
+    g.sign_rate    AS signRate,
+    g.bank_period_principal AS bankPeriodPrincipal
+    FROM
+    loan_process a
+    LEFT JOIN loan_order b ON a.order_id = b.id
+    LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
+    LEFT JOIN loan_customer d ON b.loan_customer_id = d.id
+    LEFT JOIN partner e ON c.partner_id = e.id
+    LEFT JOIN employee f ON c.salesman_id = f.id
+    LEFT JOIN loan_financial_plan g ON b.loan_financial_plan_id = g.id
+    LEFT JOIN remit_details i ON b.remit_details_id = i.id
+    left join (select DISTINCT z.* from loan_process_log z
+    inner join
+    (
+    select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_time desc separator ','),',',1)
+    as id
+    from loan_process_log where task_definition_key="usertask_business_review" GROUP BY order_id
+    ) d on d.id = z.id )h on h.order_id=b.id
+    WHERE
+    a.business_review = 1
+    AND a.order_status = 1
+    <if test = "gmtCreateStart != null">
+      AND h.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    </if>
+    <if test = "gmtCreateEnd != null">
+      AND h.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    </if>
+    order by h.create_time
+  </select>
+  <select id="contractSet" parameterType="com.yunche.loan.domain.query.ContractSetQuery" resultType="com.yunche.loan.domain.vo.ContractSetReportVO">
+          SELECT
+        base.bank    AS bank,
+        DATE_FORMAT(log.create_time,'%Y/%m/%d')   AS createTime,
+        emp.NAME				AS eName,
+        par.NAME       AS pName,
+        pcustomer.`name` AS cusName,
+        pcustomer.id_card  AS  cusIdCard,
+        ( SELECT subcustomer.`name` FROM loan_customer subcustomer WHERE subcustomer.principal_cust_id = pcustomer.id AND cust_relation = 1 LIMIT 1 ) AS spouseName,
+        ( SELECT subcustomer.id_card FROM loan_customer subcustomer WHERE subcustomer.principal_cust_id = pcustomer.id AND cust_relation = 1 LIMIT 1 ) AS spouseIdCard
+    FROM
+        loan_order
+        LEFT JOIN loan_process ON loan_order.id = loan_process.order_id
+        LEFT JOIN loan_customer pcustomer ON loan_customer_id = pcustomer.id
+        LEFT JOIN loan_base_info base ON loan_order.loan_base_info_id = base.id
+        LEFT JOIN (
+    SELECT DISTINCT
+        z.*
+    FROM
+        loan_process_log z
+        INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE task_definition_key = "usertask_material_print_review" GROUP BY order_id ) d ON d.id = z.id
+        ) log ON log.order_id = loan_order.id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+    WHERE
+        material_print_review = 1
+        AND order_status = 1
+    <if test = "bank != null">
+      and base.bank = #{bank,jdbcType=VARCHAR}
+    </if>
+    <if test = "userId != null">
+      AND log.user_id = #{userId,jdbcType=VARCHAR}
+    </if>
+    <if test = "gmtCreateStart != null">
+      AND log.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    </if>
+    <if test = "gmtCreateEnd != null">
+      AND log.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    </if>
+    order by log.create_time
+    limit #{startRow}, #{pageSize}
+  </select>
+  <select id="contractSetTotal" parameterType="com.yunche.loan.domain.query.ContractSetQuery" resultType="com.yunche.loan.domain.vo.ContractSetReportTotalVO">
+    SELECT
+      count(loan_order.id)  AS cusTotal
+    FROM
+    loan_order
+    LEFT JOIN loan_process ON loan_order.id = loan_process.order_id
+    LEFT JOIN loan_customer pcustomer ON loan_customer_id = pcustomer.id
+    LEFT JOIN loan_base_info base ON loan_order.loan_base_info_id = base.id
+    LEFT JOIN (
+    SELECT DISTINCT
+    z.*
+    FROM
+    loan_process_log z
+    INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE task_definition_key = "usertask_material_print_review" GROUP BY order_id ) d ON d.id = z.id
+    ) log ON log.order_id = loan_order.id
+    LEFT JOIN employee emp ON emp.id = base.salesman_id
+    LEFT JOIN partner par ON par.id = base.partner_id
+    WHERE
+    material_print_review = 1
+    AND order_status = 1
+    <if test = "bank != null">
+      and base.bank = #{bank,jdbcType=VARCHAR}
+    </if>
+    <if test = "userId != null">
+      AND log.user_id = #{userId,jdbcType=VARCHAR}
+    </if>
+    <if test = "gmtCreateStart != null">
+      AND log.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    </if>
+    <if test = "gmtCreateEnd != null">
+      AND log.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    </if>
+  </select>
+  <select id="contractSetExport" parameterType="com.yunche.loan.domain.query.ContractSetQuery" resultType="com.yunche.loan.domain.vo.ContractSetReportVO">
+    SELECT
+    base.bank    AS bank,
+    DATE_FORMAT(log.create_time,'%Y/%m/%d')   AS createTime,
+    emp.NAME				AS eName,
+    par.NAME       AS pName,
+    pcustomer.`name` AS cusName,
+    pcustomer.id_card  AS  cusIdCard,
+    ( SELECT subcustomer.`name` FROM loan_customer subcustomer WHERE subcustomer.principal_cust_id = pcustomer.id AND cust_relation = 1 LIMIT 1 ) AS spouseName,
+    ( SELECT subcustomer.id_card FROM loan_customer subcustomer WHERE subcustomer.principal_cust_id = pcustomer.id AND cust_relation = 1 LIMIT 1 ) AS spouseIdCard
+    FROM
+    loan_order
+    LEFT JOIN loan_process ON loan_order.id = loan_process.order_id
+    LEFT JOIN loan_customer pcustomer ON loan_customer_id = pcustomer.id
+    LEFT JOIN loan_base_info base ON loan_order.loan_base_info_id = base.id
+    LEFT JOIN (
+    SELECT DISTINCT
+    z.*
+    FROM
+    loan_process_log z
+    INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE task_definition_key = "usertask_material_print_review" GROUP BY order_id ) d ON d.id = z.id
+    ) log ON log.order_id = loan_order.id
+    LEFT JOIN employee emp ON emp.id = base.salesman_id
+    LEFT JOIN partner par ON par.id = base.partner_id
+    WHERE
+    material_print_review = 1
+    AND order_status = 1
+    <if test = "bank != null">
+      and base.bank = #{bank,jdbcType=VARCHAR}
+    </if>
+    <if test = "userId != null">
+      AND log.user_id = #{userId,jdbcType=VARCHAR}
+    </if>
+    <if test = "gmtCreateStart != null">
+      AND log.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    </if>
+    <if test = "gmtCreateEnd != null">
+      AND log.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    </if>
+    order by log.create_time
+  </select>
 </mapper>
