@@ -4,14 +4,18 @@ import lombok.Data;
 
 @Data
 public class AccommodationApplyVO {
-
+//"序号","委托人（购车人、借款人）", "身份证号",
+  //      "车辆品牌型号", "车价", "首付款", "代购垫资金额（借款金额）", "借款期限", "利率", "借据号", "最终放款银行"
 
     private String customer;
-
+    private String idCard;
+    private String carName;
+    private String car_price;
+    private String downPaymentMoney;
 
 
     private String orderGmtCreate;
-    private String idCard;
+
     private String mobile;
     private String remitGmtCreate;
     private String bankId;
@@ -24,7 +28,7 @@ public class AccommodationApplyVO {
     private String carType;
     private String licensePlateNumber;
     private String loanTime;
-    private String downPaymentMoney;
+
     private String overdueNum;
     private String telephoneVerifyStatus;
     private String bankRepayImpRecordId;
@@ -52,7 +56,7 @@ public class AccommodationApplyVO {
     // 已加
     private String lendDate;
     private String financial_product_name;
-    private String car_price;
+
     private String each_month_repay;
     private String repayDate;
     private String isStraighten;
@@ -66,7 +70,6 @@ public class AccommodationApplyVO {
     private String creditMan;
     private String creditDate;
     private String paymentGtCreate;
-    private String carName;
     private String carGpsNum;
     private String compensationAmount;
     private String dataFlowId;

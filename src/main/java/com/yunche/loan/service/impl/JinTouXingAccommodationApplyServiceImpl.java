@@ -53,6 +53,25 @@ public class JinTouXingAccommodationApplyServiceImpl implements JinTouXingAccomm
 
     @Autowired
     private OSSConfig ossConfig;
+
+
+    /**
+     * 批量贷款
+     * @return
+     */
+    @Override
+    public ResultBean applyLoan(AccommodationApplyParam param) {
+        Preconditions.checkNotNull(param,"参数有误");
+        Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
+        ThirdPartyFundBusinessDO aDo = new ThirdPartyFundBusinessDO();
+        aDo.setOrderId(param.getOrderId());
+        aDo.setLendDate(param.getLendDate());
+        aDo.setGmtCreate(new Date());
+
+        int count = thirdPartyFundBusinessDOMapper.insertSelective(aDo);
+        Preconditions.checkArgument(count>0,"保存失败");
+        return ResultBean.ofSuccess("借款申请成功");
+    }
     /**
      * 批量贷款
      * @return

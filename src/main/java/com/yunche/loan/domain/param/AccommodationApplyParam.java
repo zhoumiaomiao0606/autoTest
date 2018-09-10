@@ -12,4 +12,6 @@ public class AccommodationApplyParam {
     private List orderIds = Lists.newArrayList();
 
     private Date lendDate;
+
+    private Long orderId;
 }
