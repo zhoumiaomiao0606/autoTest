@@ -2304,5 +2304,6 @@
               </foreach>
           </if>
           end
+        where base.partner_id = #{partnerId}
     </select>
 </mapper>
