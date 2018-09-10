@@ -9,18 +9,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_CREDIT_RECORD;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_AUTO;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_MANUAL;
 
 /**
  * @author liuzhe
  * @date 2018/9/4
  */
-//@Component
+@Component
 public class BankCreditRecordScheduledTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BankCreditRecordScheduledTask.class);
@@ -70,7 +71,7 @@ public class BankCreditRecordScheduledTask {
 
             ApprovalParam approval = new ApprovalParam();
             approval.setTaskDefinitionKey(BANK_CREDIT_RECORD.getCode());
-            approval.setAction(ACTION_REJECT_AUTO);
+            approval.setAction(ACTION_REJECT_MANUAL);
 
             approval.setCheckPermission(false);
             approval.setNeedLog(true);

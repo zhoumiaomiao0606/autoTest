@@ -43,6 +43,14 @@ public class UniversalDataFlowDetailVO {
      * 贷款银行
      */
     private String bankName;
+    /**
+     * 合同编号   - material_audit表中
+     */
+    private String contractNum;
+    /**
+     * 是否含抵押资料 (0-否;1-是;)       - material_audit表中
+     */
+    private Byte hasMortgageContract;
 
 
     private Long id;
@@ -67,17 +75,13 @@ public class UniversalDataFlowDetailVO {
 
     private String expressReceiveMan;
 
-    private Byte hasMortgageContract;
-
-    private String info;
-
-    private String contractNum;
-
     private Byte type;
 
     private String typeText;
 
     private Byte status;
+
+    private String info;
 
     private Date gmtCreate;
 

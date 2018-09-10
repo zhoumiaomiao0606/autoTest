@@ -13,9 +13,7 @@
         <result column="express_send_date" property="expressSendDate" jdbcType="TIMESTAMP"/>
         <result column="express_receive_date" property="expressReceiveDate" jdbcType="TIMESTAMP"/>
         <result column="express_receive_man" property="expressReceiveMan" jdbcType="VARCHAR"/>
-        <result column="has_mortgage_contract" property="hasMortgageContract" jdbcType="TINYINT"/>
         <result column="info" property="info" jdbcType="VARCHAR"/>
-        <result column="contract_num" property="contractNum" jdbcType="VARCHAR"/>
         <result column="type" property="type" jdbcType="TINYINT"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
@@ -25,7 +23,7 @@
     <sql id="Base_Column_List">
         id, order_id, flow_out_dept_id, flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
         express_com, express_num, express_send_date, express_receive_date, express_receive_man,
-        has_mortgage_contract, info, contract_num, type, status, gmt_create, gmt_modify
+        info, type, status, gmt_create, gmt_modify
     </sql>
 
     <!-- getLastByOrderIdAndType -->
@@ -50,8 +48,7 @@
         flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
         express_com, express_num, express_send_date,
         express_receive_date, express_receive_man,
-        has_mortgage_contract, type, status,
-        info, gmt_create, gmt_modify
+        type, status, info, gmt_create, gmt_modify
         )
 
         VALUES
@@ -63,8 +60,7 @@
             #{item.expressCom,jdbcType=TINYINT}, #{item.expressNum,jdbcType=VARCHAR},
             #{item.expressSendDate,jdbcType=TIMESTAMP},
             #{item.expressReceiveDate,jdbcType=TIMESTAMP}, #{item.expressReceiveMan,jdbcType=VARCHAR},
-            #{item.hasMortgageContract,jdbcType=TINYINT}, #{item.type,jdbcType=TINYINT},
-            #{item.status,jdbcType=TINYINT},
+            #{item.type,jdbcType=TINYINT}, #{item.status,jdbcType=TINYINT},
             #{item.info,jdbcType=VARCHAR}, #{item.gmtCreate,jdbcType=TIMESTAMP},
             #{item.gmtModify,jdbcType=TIMESTAMP})
         </foreach>
@@ -81,7 +77,6 @@
         express_send_date = VALUES(express_send_date),
         express_receive_date = VALUES(express_receive_date),
         express_receive_man = VALUES(express_receive_man),
-        has_mortgage_contract = VALUES(has_mortgage_contract),
         /*type = VALUES(type),*/
         status = VALUES(status),
         info = VALUES(info),
@@ -95,30 +90,25 @@
         from loan_data_flow
         where id = #{id,jdbcType=BIGINT}
     </select>
-
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from loan_data_flow
         where id = #{id,jdbcType=BIGINT}
     </delete>
-
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into loan_data_flow (id, order_id, flow_out_dept_id,
         flow_out_dept_name, flow_in_dept_id, flow_in_dept_name,
         express_com, express_num, express_send_date,
         express_receive_date, express_receive_man,
-        has_mortgage_contract, info, contract_num,
-        type, status, gmt_create,
-        gmt_modify)
+        info, type, status,
+        gmt_create, gmt_modify)
         values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{flowOutDeptId,jdbcType=BIGINT},
         #{flowOutDeptName,jdbcType=VARCHAR}, #{flowInDeptId,jdbcType=BIGINT}, #{flowInDeptName,jdbcType=VARCHAR},
         #{expressCom,jdbcType=TINYINT}, #{expressNum,jdbcType=VARCHAR}, #{expressSendDate,jdbcType=TIMESTAMP},
         #{expressReceiveDate,jdbcType=TIMESTAMP}, #{expressReceiveMan,jdbcType=VARCHAR},
-        #{hasMortgageContract,jdbcType=TINYINT}, #{info,jdbcType=VARCHAR}, #{contractNum,jdbcType=VARCHAR},
-        #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP})
+        #{info,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
     </insert>
-
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanDataFlowDO"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into loan_data_flow
@@ -156,14 +146,8 @@
             <if test="expressReceiveMan != null">
                 express_receive_man,
             </if>
-            <if test="hasMortgageContract != null">
-                has_mortgage_contract,
-            </if>
             <if test="info != null">
                 info,
-            </if>
-            <if test="contractNum != null">
-                contract_num,
             </if>
             <if test="type != null">
                 type,
@@ -212,14 +196,8 @@
             <if test="expressReceiveMan != null">
                 #{expressReceiveMan,jdbcType=VARCHAR},
             </if>
-            <if test="hasMortgageContract != null">
-                #{hasMortgageContract,jdbcType=TINYINT},
-            </if>
             <if test="info != null">
                 #{info,jdbcType=VARCHAR},
-            </if>
-            <if test="contractNum != null">
-                #{contractNum,jdbcType=VARCHAR},
             </if>
             <if test="type != null">
                 #{type,jdbcType=TINYINT},
@@ -268,14 +246,8 @@
             <if test="expressReceiveMan != null">
                 express_receive_man = #{expressReceiveMan,jdbcType=VARCHAR},
             </if>
-            <if test="hasMortgageContract != null">
-                has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT},
-            </if>
             <if test="info != null">
                 info = #{info,jdbcType=VARCHAR},
-            </if>
-            <if test="contractNum != null">
-                contract_num = #{contractNum,jdbcType=VARCHAR},
             </if>
             <if test="type != null">
                 type = #{type,jdbcType=TINYINT},
@@ -304,9 +276,7 @@
         express_send_date = #{expressSendDate,jdbcType=TIMESTAMP},
         express_receive_date = #{expressReceiveDate,jdbcType=TIMESTAMP},
         express_receive_man = #{expressReceiveMan,jdbcType=VARCHAR},
-        has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT},
         info = #{info,jdbcType=VARCHAR},
-        contract_num = #{contractNum,jdbcType=VARCHAR},
         type = #{type,jdbcType=TINYINT},
         status = #{status,jdbcType=TINYINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},

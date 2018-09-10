@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CarUpdateParam;
 import com.yunche.loan.domain.param.MaterialUpdateParam;
+import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.service.MaterialService;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +25,7 @@ public class MaterialController {
      * 录入资料
      */
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String order_id) {
+    public ResultBean<RecombinationVO> detail(@RequestParam String order_id) {
         return ResultBean.ofSuccess(materialService.detail(Long.valueOf(order_id)));
     }
 

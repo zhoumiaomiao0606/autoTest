@@ -1,7 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.LoanDataFlowDO;
+import com.yunche.loan.domain.param.LoanDataFlowParam;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.UniversalCustomerOrderVO;
@@ -33,13 +33,13 @@ public class LoanDataFlowController {
     }
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> create(@RequestBody LoanDataFlowDO loanDataFlowDO) {
-        return loanDataFlowService.create(loanDataFlowDO);
+    public ResultBean<Long> create(@RequestBody LoanDataFlowParam loanDataFlowParam) {
+        return loanDataFlowService.create(loanDataFlowParam);
     }
 
     @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Integer> update(@RequestBody LoanDataFlowDO loanDataFlowDO) {
-        return loanDataFlowService.update(loanDataFlowDO);
+    public ResultBean<Integer> update(@RequestBody LoanDataFlowParam loanDataFlowParam) {
+        return loanDataFlowService.update(loanDataFlowParam);
     }
 
     @GetMapping(value = "/flowDept")
@@ -71,5 +71,18 @@ public class LoanDataFlowController {
     @GetMapping(value = "/batchReceived")
     public ResultBean<Integer> batchReceived(@RequestParam String ids) {
         return loanDataFlowService.batchReceived(ids);
+    }
+
+    /**
+     * 获取dataFlowId
+     *
+     * @param orderId
+     * @param taskDefinitionKey
+     * @return
+     */
+    @GetMapping(value = "/getDataFlowId")
+    public ResultBean<Long> getDataFlowId(@RequestParam Long orderId,
+                                          @RequestParam String taskDefinitionKey) {
+        return loanDataFlowService.getDataFlowId(orderId, taskDefinitionKey);
     }
 }

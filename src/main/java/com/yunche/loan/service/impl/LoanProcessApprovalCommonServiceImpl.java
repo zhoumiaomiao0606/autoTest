@@ -9,6 +9,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.domain.param.LoanDataFlowParam;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.TaskService;
@@ -660,12 +661,12 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
             return;
         }
 
-        LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+        LoanDataFlowParam loanDataFlowParam = new LoanDataFlowParam();
 
-        loanDataFlowDO.setOrderId(orderId);
-        loanDataFlowDO.setType(sendType);
+        loanDataFlowParam.setOrderId(orderId);
+        loanDataFlowParam.setType(sendType);
 
-        ResultBean result = loanDataFlowService.create(loanDataFlowDO);
+        ResultBean result = loanDataFlowService.create(loanDataFlowParam);
         Preconditions.checkArgument(result.getSuccess(), result.getMsg());
     }
 
@@ -698,7 +699,10 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
             loanDataFlowDO.setType(to_be_update_type);
 
-            ResultBean updateResultBean = loanDataFlowService.update(loanDataFlowDO);
+            LoanDataFlowParam loanDataFlowParam = new LoanDataFlowParam();
+            BeanUtils.copyProperties(loanDataFlowDO, loanDataFlowParam);
+
+            ResultBean updateResultBean = loanDataFlowService.update(loanDataFlowParam);
             Preconditions.checkArgument(updateResultBean.getSuccess(), updateResultBean.getMsg());
         }
     }

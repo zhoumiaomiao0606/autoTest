@@ -2,6 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
+import com.yunche.loan.domain.param.LoanDataFlowParam;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.UniversalCustomerOrderVO;
@@ -19,9 +20,9 @@ public interface LoanDataFlowService {
 
     ResultBean<UniversalDataFlowDetailVO> detail(Long id);
 
-    ResultBean<Long> create(LoanDataFlowDO loanDataFlowDO);
+    ResultBean<Long> create(LoanDataFlowParam loanDataFlowParam);
 
-    ResultBean<Integer> update(LoanDataFlowDO loanDataFlowDO);
+    ResultBean<Integer> update(LoanDataFlowParam loanDataFlowParam);
 
     ResultBean<List<BaseVO>> flowDept();
 
@@ -32,4 +33,6 @@ public interface LoanDataFlowService {
     ResultBean<Integer> imp(String ossKey);
 
     ResultBean<Integer> batchReceived(String ids);
+
+    ResultBean<Long> getDataFlowId(Long orderId, String taskDefinitionKey);
 }

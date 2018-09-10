@@ -14,6 +14,7 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.LoanProcessLogVO;
 import com.yunche.loan.domain.vo.LoanRejectLogVO;
+import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
@@ -38,7 +39,9 @@ import java.util.*;
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
 import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch;
+import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch_TEST;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
 import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_SOCIAL;
@@ -126,6 +129,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private ZhonganInfoDOMapper zhonganInfoDOMapper;
+
+    @Autowired
+    private MaterialAuditDOMapper materialAuditDOMapper;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -1078,9 +1084,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (is_credit_apply_task__and__action_pass) {
 
-            // 中国工商银行杭州城站支行 || 台州支行
+            // 中国工商银行杭州城站支行 || 台州支行 || 测试银行
             if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())
-                    || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())) {
+                    || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())
+                    || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch_TEST.equals(loanBaseInfoDO.getBank())) {
 
                 // [贷款信息登记] 是否已存在
                 Byte loanInfoRecordStatus = currentLoanProcessDO.getLoanInfoRecord();
@@ -2860,18 +2867,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         }
 
-        // [资料流转确认（合同资料 - 公司->银行）]
+        // [004-合同资料公司至银行-确认接收]
         else if (DATA_FLOW_CONTRACT_C2B_REVIEW.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
 
-            // [资料流转（抵押资料 - 合伙人->公司）]是否已存在
+            // [005-抵押资料合伙人至公司]是否已存在
             Byte dataFlowMortgageP2cStatus = loanProcessDO.getDataFlowMortgageP2c();
+
             // 是否走了另一条线    -> 新建
             boolean otherFlow = TASK_PROCESS_TODO.equals(dataFlowMortgageP2cStatus)
                     || TASK_PROCESS_DONE.equals(dataFlowMortgageP2cStatus)
                     || TASK_PROCESS_REJECT.equals(dataFlowMortgageP2cStatus);
 
-            // 是否走了另一条线
-            if (otherFlow) {
+            // 资料流转 - 含抵押资料为：否 时，只走001-004，013-016
+            boolean hasMortgageContract = hasMortgageContract(loanOrderDO.getMaterialAuditId());
+
+            // 是否走了另一条线 || 抵押资料为：否
+            if (otherFlow || !hasMortgageContract) {
                 variables.put(PROCESS_VARIABLE_TARGET, BANK_LEND_RECORD.getCode());
             } else {
                 // nothing
@@ -2879,9 +2890,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         }
 
-        // [资料流转确认（抵押资料 - 公司->银行）]
+        // [008-抵押资料公司至银行-确认接收]
         else if (DATA_FLOW_MORTGAGE_C2B_REVIEW.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
-            // 是否从前面的流程节点走过来的：  No.1 -> [资料流转（抵押资料 - 银行->公司）]
+
+            // 是否从前面的流程节点走过来的：  No.1 -> [009-抵押资料银行至公司]
             Byte dataFlowMortgageB2cStatus = loanProcessDO.getDataFlowMortgageB2c();
 
             // 是否走了另一条线    -> 新建
@@ -2896,6 +2908,32 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 variables.put(PROCESS_VARIABLE_TARGET, DATA_FLOW_MORTGAGE_B2C.getCode());
             }
         }
+    }
+
+    /**
+     * 是否含抵押资料
+     *
+     * @param materialAuditId
+     * @return
+     */
+    private boolean hasMortgageContract(Long materialAuditId) {
+
+        boolean hasMortgageContract = false;
+
+        if (null != materialAuditId) {
+
+            MaterialAuditDO materialAuditDO = materialAuditDOMapper.selectByPrimaryKey(materialAuditId);
+
+            if (null != materialAuditDO) {
+
+                Byte hasMortgageContract_val = materialAuditDO.getHasMortgageContract();
+
+                hasMortgageContract = K_YORN_YES.equals(hasMortgageContract_val) ? true : false;
+            }
+
+        }
+
+        return hasMortgageContract;
     }
 
 

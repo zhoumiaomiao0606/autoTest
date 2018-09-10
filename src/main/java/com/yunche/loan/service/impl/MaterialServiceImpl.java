@@ -180,7 +180,7 @@ public class MaterialServiceImpl implements MaterialService {
         Preconditions.checkNotNull(customerId, "主贷人不存在");
 
         if (!reGenerateZip) {
-            // 是否已经存在文件了
+            // 是否已经存在文件了        26-zip包
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), UPLOAD_TYPE_NORMAL);
             if (!CollectionUtils.isEmpty(loanFileDOS)) {
                 LoanFileDO loanFileDO = loanFileDOS.get(0);
@@ -289,6 +289,7 @@ public class MaterialServiceImpl implements MaterialService {
                         case 20:
                         case 21:
                         case 22:
+                        case 94:
                             documentType = "提车资料";
                             break;
                         case 12:
@@ -296,7 +297,8 @@ public class MaterialServiceImpl implements MaterialService {
                         case 16:
                         case 17:
                         case 18:
-                            documentType = "上门家纺";
+                        case 95:
+                            documentType = "上门家访";
                             break;
 
                         default:

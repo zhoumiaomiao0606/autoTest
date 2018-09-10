@@ -371,7 +371,12 @@
 
 -->
 
-        <table tableName="loan_data_flow" domainObjectName="LoanDataFlowDO"
+        <table tableName="conf_third_party_money" domainObjectName="ConfThirdPartyMoneyDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+
+        <table tableName="material_audit" domainObjectName="MaterialAuditDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

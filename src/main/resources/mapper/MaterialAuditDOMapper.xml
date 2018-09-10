@@ -6,10 +6,60 @@
         <result column="complete_material_date" property="complete_material_date" jdbcType="DATE"/>
         <result column="remark" property="remark" jdbcType="VARCHAR"/>
         <result column="contract_num" property="contractNum" jdbcType="VARCHAR"/>
+        <result column="has_mortgage_contract" property="hasMortgageContract" jdbcType="TINYINT"/>
     </resultMap>
+
     <sql id="Base_Column_List">
-        id, complete_material_date, remark, contract_num
+        id, complete_material_date, remark, contract_num, has_mortgage_contract
     </sql>
+
+    <!--selectDownloadMaterial-->
+    <select id="selectDownloadMaterial" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.param.MaterialDownloadParam">
+
+        SELECT
+
+        f.customer_id           AS customerId,
+        f.type                  AS type,
+        f.path                  AS path,
+        c.id_card               AS idCard,
+        c.`name`                AS name,
+        c.cust_type             AS custType
+
+        FROM
+        loan_order o,
+        loan_customer c,
+        loan_file f
+
+        LEFT JOIN   loan_info_supplement s ON s.id = f.info_supplement_id
+
+        WHERE
+
+        (o.loan_customer_id = c.id OR o.loan_customer_id = c.principal_cust_id)
+
+        AND f.customer_id = c.id
+
+        <if test="customerId != null">
+            AND f.customer_id = #{customerId}
+        </if>
+
+        AND o.id = #{orderId}
+
+        AND f.type != 26
+
+        /*资料流转已提交*/
+        AND
+        CASE
+        WHEN f.upload_type = 1 THEN
+        TRUE
+        WHEN f.upload_type = 2 THEN
+        s.status = 1
+        ELSE
+        FALSE
+        END
+
+    </select>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
@@ -20,13 +70,15 @@
         delete from material_audit
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO" useGeneratedKeys="true"  keyProperty="id" keyColumn="id">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into material_audit (id, complete_material_date, remark,
-        contract_num)
+        contract_num, has_mortgage_contract)
         values (#{id,jdbcType=BIGINT}, #{complete_material_date,jdbcType=DATE}, #{remark,jdbcType=VARCHAR},
-        #{contractNum,jdbcType=VARCHAR})
+        #{contractNum,jdbcType=VARCHAR}, #{hasMortgageContract,jdbcType=TINYINT})
     </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into material_audit
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -40,6 +92,9 @@
             </if>
             <if test="contractNum != null">
                 contract_num,
+            </if>
+            <if test="hasMortgageContract != null">
+                has_mortgage_contract,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -55,6 +110,9 @@
             <if test="contractNum != null">
                 #{contractNum,jdbcType=VARCHAR},
             </if>
+            <if test="hasMortgageContract != null">
+                #{hasMortgageContract,jdbcType=TINYINT},
+            </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.MaterialAuditDO">
@@ -69,6 +127,9 @@
             <if test="contractNum != null">
                 contract_num = #{contractNum,jdbcType=VARCHAR},
             </if>
+            <if test="hasMortgageContract != null">
+                has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -76,54 +137,8 @@
         update material_audit
         set complete_material_date = #{complete_material_date,jdbcType=DATE},
         remark = #{remark,jdbcType=VARCHAR},
-        contract_num = #{contractNum,jdbcType=VARCHAR}
+        contract_num = #{contractNum,jdbcType=VARCHAR},
+        has_mortgage_contract = #{hasMortgageContract,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
-
-    <select id="selectDownloadMaterial" parameterType="java.lang.Long"
-            resultType="com.yunche.loan.domain.param.MaterialDownloadParam">
-
-        SELECT
-
-                    f.customer_id               AS customerId,
-                    f.type                      AS type,
-                    f.path                      AS path,
-                    c.id_card                   AS idCard,
-                    c.`name`                    AS name,
-                    c.cust_type                 AS custType
-
-        FROM
-                    loan_order                  o,
-                    loan_customer               c,
-                    loan_file                   f
-
-        LEFT JOIN   loan_info_supplement 		s  ON s.id = f.info_supplement_id
-
-        WHERE
-
-        (o.loan_customer_id = c.id  OR  o.loan_customer_id = c.principal_cust_id)
-
-        AND f.customer_id = c.id
-
-        <if test="customerId != null">
-            AND f.customer_id = #{customerId}
-        </if>
-
-        AND o.id = #{orderId}
-
-        AND f.type != 26
-
-        /*资料流转已提交*/
-        AND
-            CASE
-                WHEN f.upload_type = 1 THEN
-                    TRUE
-                WHEN f.upload_type = 2 THEN
-                    s.status = 1
-            ELSE
-                    FALSE
-        END
-
-    </select>
-
 </mapper>

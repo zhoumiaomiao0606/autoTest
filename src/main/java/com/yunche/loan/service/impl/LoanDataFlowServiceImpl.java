@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yunche.loan.config.cache.DepartmentCache;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
@@ -13,6 +14,8 @@ import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.domain.param.LoanDataFlowParam;
+import com.yunche.loan.domain.param.MaterialUpdateParam;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanDataFlowDOMapper;
@@ -29,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,6 +91,9 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
     @Autowired
     private LoanProcessService loanProcessService;
 
+    @Autowired
+    private MaterialService materialService;
+
 
     @Override
     public LoanDataFlowDO getLastByOrderIdAndType(Long orderId, Byte type) {
@@ -116,9 +123,13 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Override
     @Transactional
-    public ResultBean<Long> create(LoanDataFlowDO loanDataFlowDO) {
-        Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getType(), "type不能为空");
-        Preconditions.checkNotNull(loanDataFlowDO.getOrderId(), "orderId不能为空");
+    public ResultBean<Long> create(LoanDataFlowParam loanDataFlowParam) {
+        Preconditions.checkArgument(null != loanDataFlowParam && null != loanDataFlowParam.getType(), "type不能为空");
+        Preconditions.checkNotNull(loanDataFlowParam.getOrderId(), "orderId不能为空");
+
+        // convert
+        LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+        BeanUtils.copyProperties(loanDataFlowParam, loanDataFlowDO);
 
         // taskKey
         String taskKey = dictService.getCodeByKey("loanDataFlowType", String.valueOf(loanDataFlowDO.getType()));
@@ -138,17 +149,38 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         int count = loanDataFlowDOMapper.insertSelective(loanDataFlowDO);
         Preconditions.checkArgument(count > 0, "插入失败");
 
+        // 合同编号 -保存(I/U)
+        if (null != loanDataFlowParam.getContractNum() || null != loanDataFlowParam.getHasMortgageContract()) {
+            MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
+            materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
+            materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
+            materialUpdateParam.setHasMortgageContract(loanDataFlowParam.getHasMortgageContract());
+            materialService.update(materialUpdateParam);
+        }
+
         return ResultBean.ofSuccess(loanDataFlowDO.getId(), "创建成功");
     }
 
     @Override
     @Transactional
-    public ResultBean<Integer> update(LoanDataFlowDO loanDataFlowDO) {
-        Preconditions.checkArgument(null != loanDataFlowDO && null != loanDataFlowDO.getId(), "id不能为空");
+    public ResultBean<Integer> update(LoanDataFlowParam loanDataFlowParam) {
+        Preconditions.checkArgument(null != loanDataFlowParam && null != loanDataFlowParam.getId(), "id不能为空");
+
+        LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+        BeanUtils.copyProperties(loanDataFlowParam, loanDataFlowDO);
 
         loanDataFlowDO.setGmtModify(new Date());
         int count = loanDataFlowDOMapper.updateByPrimaryKeySelective(loanDataFlowDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
+
+        // 合同编号 -保存(I/U)
+        if (null != loanDataFlowParam.getContractNum() || null != loanDataFlowParam.getHasMortgageContract()) {
+            MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
+            materialUpdateParam.setOrder_id(String.valueOf(loanDataFlowParam.getOrderId()));
+            materialUpdateParam.setContractNum(loanDataFlowParam.getContractNum());
+            materialUpdateParam.setHasMortgageContract(loanDataFlowParam.getHasMortgageContract());
+            materialService.update(materialUpdateParam);
+        }
 
         return ResultBean.ofSuccess(count, "编辑成功");
     }
@@ -271,10 +303,13 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Override
     public ResultBean<Integer> imp(String ossKey) {
-            Preconditions.checkArgument(StringUtils.isNotBlank(ossKey), "ossKey不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(ossKey), "ossKey不能为空");
 
         // 收集数据
         List<LoanDataFlowDO> loanDataFlowDOList = Lists.newArrayList();
+
+        // orderId  --- hasMortgageContract
+        Map<String, Byte> orderId_hasMortgageContract_map = Maps.newHashMap();
 
         try {
             // readFile
@@ -380,7 +415,8 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
                         String row_8 = row[8].trim();
                         Preconditions.checkArgument(StringUtils.isNotBlank(row_8), "第" + rowNum + "行，第9列格式有误：[" + titleRow[8] + "]不能为空");
 
-                        loanDataFlowDO.setHasMortgageContract(convertHasMortgageContract(row_8));
+                        // put
+                        orderId_hasMortgageContract_map.put(row[1], convertHasMortgageContract(row_8));
 
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第9列格式有误：" + row[8]);
@@ -427,7 +463,31 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         // 资料流转[待邮寄]导入后，自动提交
         autoCompleteTask(loanDataFlowDOList);
 
+        // 编辑公共字段
+        batchInsert_hasMortgageContract(orderId_hasMortgageContract_map);
+
         return ResultBean.ofSuccess(count, "导入成功");
+    }
+
+    /**
+     * 编辑公共字段：是否含抵押资料
+     *
+     * @param orderId_hasMortgageContract_map
+     */
+    private void batchInsert_hasMortgageContract(Map<String, Byte> orderId_hasMortgageContract_map) {
+
+        if (CollectionUtils.isEmpty(orderId_hasMortgageContract_map)) {
+
+            orderId_hasMortgageContract_map
+                    .forEach((k, v) -> {
+
+                        MaterialUpdateParam materialUpdateParam = new MaterialUpdateParam();
+                        materialUpdateParam.setOrder_id(k);
+                        materialUpdateParam.setHasMortgageContract(v);
+                        materialService.update(materialUpdateParam);
+
+                    });
+        }
     }
 
     /**
@@ -491,6 +551,25 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         return ResultBean.ofSuccess(count);
     }
 
+    @Override
+    public ResultBean<Long> getDataFlowId(Long orderId, String taskDefinitionKey) {
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(taskDefinitionKey), "taskDefinitionKey不能为空");
+
+        // kvMap
+        Map<String, String> taskKey_type_map = dictService.getCodeKMap("loanDataFlowType");
+
+        // type
+        String type = taskKey_type_map.get(taskDefinitionKey);
+        Preconditions.checkArgument(StringUtils.isNotBlank(type), "taskDefinitionKey有误");
+
+        // DO
+        LoanDataFlowDO loanDataFlowDO = loanDataFlowDOMapper.getLastByOrderIdAndType(orderId, Byte.valueOf(type));
+        Preconditions.checkNotNull(loanDataFlowDO, "资料流转单不存在");
+
+        return ResultBean.ofSuccess(loanDataFlowDO.getId());
+    }
+
     /**
      * 批量提交
      *
@@ -522,7 +601,6 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
      * @param loanDataFlowDOList
      * @return
      */
-
     private int batchInsert(List<LoanDataFlowDO> loanDataFlowDOList) {
 
         if (CollectionUtils.isEmpty(loanDataFlowDOList)) {

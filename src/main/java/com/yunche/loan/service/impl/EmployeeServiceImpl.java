@@ -185,8 +185,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         int count = employeeDOMapper.updateByPrimaryKeySelective(employeeDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 
-        bindBizArea(employeeDO.getId(), employeeDO.getBizAreaIds());
-
         // 刷新缓存
         employeeCache.refresh();
 
