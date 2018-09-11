@@ -227,6 +227,17 @@ public class ExportQueryServiceImpl implements ExportQueryService
     }
 
     /**
+     * 金投行过桥处理(借款申请记录)
+     * @param param
+     * @return
+     */
+    @Override
+    public String exportApplyLoanPush(ExportApplyLoanPushParam param) {
+        return null;
+    }
+
+
+    /**
      * 导出文件
      *
      * @param

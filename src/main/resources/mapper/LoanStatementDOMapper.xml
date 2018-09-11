@@ -1115,4 +1115,100 @@
 
     </select>
 
+    <select id="exportApplyLoanPush" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.ExportApplyLoanPushVO">
+    select
+        @row:=@row+1    AS rowId,
+        customer.name     AS customerName,
+        customer.id_card  AS customerIdCard,
+        car.car_detail_name  AS carDetailName,
+        financial.car_price  AS carPrice,
+        financial.down_payment_money   AS downPaymentMoney,
+        remit.remit_amount             AS remitAmount,
+        ''                             AS loanTime,
+        ''                             AS interestRate,
+        ''                             AS loanForm,
+        base.bank                      AS bank
+        from
+        (select * from loan_process where xxxx=1) process
+        LEFT JOIN (select @row:=0) r  on 1=1
+        LEFT JOIN loan_order  loan ON process.order_id = loan.id
+        LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
+        LEFT JOIN third_party_fund_business fund ON loan.id=fund.order_id
+        LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+        LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
+        LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
+        LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
+        where  1=1
+        <if test="name !=null">
+            AND customer.name=#{name}
+        </if>
+        <if test="startLendDate !=null">
+            AND fund.lend_date &gt;= #{startLendDate}
+        </if>
+        <if test="endLendDate !=null">
+            AND fund.lend_date &lt;= #{endLendDate}
+        </if>
+    </select>
+
+    <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.JinTouHangRepayInfoVO">
+        select
+            fund.lend_date            				AS lendDate,
+            fund.repay_date           				AS repayDate,
+            remit.remit_amount        				AS remitAmount,
+            customer.`name`           				AS name,
+            customer.id_card          				AS idCard,
+            financial.bank_period_principal   AS  bankPeriodPrincipal,
+            fund.repay_type                   AS repayType,
+            fund.repay_remark                 AS repayRemark
+        from
+            (select * from loan_process where xxxx=1) process
+            LEFT JOIN loan_order  loan ON process.order_id = loan.id
+            LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
+            LEFT JOIN third_party_fund_business fund ON loan.id=fund.order_id
+            LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+            LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
+            LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
+        where  1=1
+        <if test="startRepayDate !=null">
+            fund.repay_date &gt;= #{startRepayDate}
+        </if>
+        <if test="endRepayDate !=null">
+            fund.repay_date &gt;= #{endRepayDate}
+        </if>
+    </select>
+
+    <select id="JinTouHangInterestRegister" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.JinTouHangInterestRegisterVO">
+        select
+            fund.lend_date            				AS lendDate,
+            fund.repay_date           				AS repayDate,
+            remit.remit_amount        				AS remitAmount,
+            customer.`name`           				AS name,
+            customer.id_card          				AS idCard,
+            financial.bank_period_principal   AS  bankPeriodPrincipal
+        from
+            (select * from loan_process where xxxx=2) process
+            LEFT JOIN loan_order  loan ON process.order_id = loan.id
+            LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
+            LEFT JOIN third_party_fund_business fund ON loan.id=fund.order_id
+            LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+            LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
+            LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
+        where  1=1
+        <if test="startRepayDate !=null">
+            fund.repay_date &gt;= #{startRepayDate}
+        </if>
+        <if test="endRepayDate !=null">
+            fund.repay_date &gt;= #{endRepayDate}
+        </if>
+        <if test="name !=null">
+            customer.name =#{name}
+        </if>
+        <if test="startLendDate !=null">
+            AND fund.lend_date &gt;= #{startLendDate}
+        </if>
+        <if test="endLendDate !=null">
+            AND fund.lend_date &lt;= #{endLendDate}
+        </if>
+    </select>
+
 </mapper>

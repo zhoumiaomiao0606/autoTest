@@ -10,16 +10,19 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.mapper.ThirdPartyFundBusinessDOMapper;
-import com.yunche.loan.service.JinTouXingAccommodationApplyService;
+import com.yunche.loan.service.JinTouHangAccommodationApplyService;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -30,7 +33,8 @@ import java.util.stream.Collectors;
 
 
 
-public class JinTouXingAccommodationApplyServiceImpl implements JinTouXingAccommodationApplyService {
+@Service
+public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccommodationApplyService {
 
 
     @Autowired
@@ -53,6 +57,9 @@ public class JinTouXingAccommodationApplyServiceImpl implements JinTouXingAccomm
 
     @Autowired
     private OSSConfig ossConfig;
+
+    @Autowired
+    private LoanStatementDOMapper loanStatementDOMapper;
 
 
     /**
@@ -110,26 +117,54 @@ public class JinTouXingAccommodationApplyServiceImpl implements JinTouXingAccomm
     }
 
     /**
-     * 导出
+     * 金投行过桥处理 -导出
      * @return
      */
     @Override
-    public ResultBean export(TaskListQuery taskListQuery) {
+    public ResultBean export(ExportApplyLoanPushParam param) {
 
-        ResultBean<List<TaskListVO>> taskList = taskSchedulingService.queryTaskList(taskListQuery);
-        List listData = taskList.getData();
-        //TODO
+
+        List<ExportApplyLoanPushVO> voList = loanStatementDOMapper.exportApplyLoanPush(param);
         ArrayList<String> header = Lists.newArrayList("序号","委托人（购车人、借款人）", "身份证号",
                 "车辆品牌型号", "车价", "首付款", "代购垫资金额（借款金额）", "借款期限", "利率", "借据号", "最终放款银行"
         );
 
+        String ossResultKey = POIUtil.createExcelFile("购车融资业务推送清单",voList,header,ExportApplyLoanPushVO.class,ossConfig);
+        return ResultBean.ofSuccess(ossResultKey);
+    }
 
-        String ossResultKey = POIUtil.createExcelFile("购车融资业务推送清单",listData,header,AccommodationApplyVO.class,ossConfig);
+    /**
+     * 金投行还款信息 -导出
+     * @return
+     */
+    @Override
+    public ResultBean exportJinTouHangRepayInfo(ExportApplyLoanPushParam param) {
 
 
+        List<JinTouHangRepayInfoVO> voList = loanStatementDOMapper.exportJinTouHangRepayInfo(param);
+        ArrayList<String> header = Lists.newArrayList("借款时间","还款时间", "借款金额",
+                "主贷姓名", "身份证号", "分期本金", "还款类型", "备注"
+        );
+
+        String ossResultKey = POIUtil.createExcelFile("金投行还款信息",voList,header,JinTouHangRepayInfoVO.class,ossConfig);
+        return ResultBean.ofSuccess(ossResultKey);
+    }
+
+    /**
+     * 金投行息费登记 -导出
+     * @return
+     */
+    @Override
+    public ResultBean exportJinTouHangInterestRegister(ExportApplyLoanPushParam param) {
 
 
-        return null;
+        List<JinTouHangRepayInfoVO> voList = loanStatementDOMapper.exportJinTouHangRepayInfo(param);
+        ArrayList<String> header = Lists.newArrayList("借款时间","还款时间", "借款金额",
+                "主贷姓名", "身份证号", "分期本金"
+        );
+
+        String ossResultKey = POIUtil.createExcelFile("金投行还款信息",voList,header,JinTouHangRepayInfoVO.class,ossConfig);
+        return ResultBean.ofSuccess(ossResultKey);
     }
 
     @Override
@@ -158,4 +193,58 @@ public class JinTouXingAccommodationApplyServiceImpl implements JinTouXingAccomm
 
         return ResultBean.ofSuccess(recombinationVO);
     }
+
+    /**
+     * 异常还款
+     * @param param
+     * @return
+     */
+    @Override
+    public ResultBean abnormalRepay(AccommodationApplyParam param) {
+        Preconditions.checkNotNull(param,"参数有误");
+        Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
+
+        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+        thirdPartyFundBusinessDO.setOrderId(param.getOrderId());
+        thirdPartyFundBusinessDO.setRepayType(param.getRepayType());
+        thirdPartyFundBusinessDO.setRepayRemark(param.getRepayRemark());
+        thirdPartyFundBusinessDO.setRepayDate(param.getRepayDate());
+        int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+        Preconditions.checkArgument(count>0,"异常还款跟新失败");
+        return ResultBean.ofSuccess("保存成功");
+    }
+
+    /**
+     * 金投行还款信息
+     * @param taskListQuery
+     * @return
+     */
+    @Override
+    public ResultBean repayInfoExport(TaskListQuery taskListQuery) {
+        return null;
+    }
+
+    /**
+     * 金投行息费登记
+     * @param param
+     * @return
+     */
+    @Override
+    public ResultBean repayInterestRegister(AccommodationApplyParam param) {
+        Preconditions.checkNotNull(param,"参数有误");
+        Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
+        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+        thirdPartyFundBusinessDO.setOrderId(param.getOrderId());
+        thirdPartyFundBusinessDO.setInterest(param.getInterest());
+        thirdPartyFundBusinessDO.setPoundage(param.getPoundage());
+        thirdPartyFundBusinessDO.setRepayInterestDate(param.getRepayInterestDate());
+        thirdPartyFundBusinessDO.setRepayRegisterRemark(param.getRepayRegisterRemark());
+
+        int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+        Preconditions.checkArgument(count>0,"金投行还款登记失败");
+
+        return ResultBean.ofSuccess("保存成功");
+    }
+
+
 }
