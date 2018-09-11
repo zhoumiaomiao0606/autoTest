@@ -82,6 +82,35 @@
             )
         </foreach>
     </insert>
+    <select id="selectFileInfoByCusId" parameterType="java.util.List" resultType="com.yunche.loan.domain.vo.BankAndSocietyPicVO">
+        SELECT
+        a.customer_id AS customerId,
+        GROUP_CONCAT( a.path SEPARATOR ',' ) AS path
+        FROM
+        ( SELECT * FROM loan_file WHERE type IN ( 2, 3, 4, 5 ) AND customer_id IN
+        <foreach collection="cusIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        GROUP BY customer_id, type ) a
+        GROUP BY
+        a.customer_id
+    </select>
+
+    <select id="selectSocFileInfoByCusId" parameterType="java.util.List" resultType="com.yunche.loan.domain.vo.BankAndSocietyPicVO">
+        SELECT
+        a.customer_id AS customerId,
+        GROUP_CONCAT( a.path SEPARATOR ',' ) AS path
+        FROM
+        ( SELECT * FROM loan_file WHERE type IN ( 2, 3 ) AND customer_id IN
+        <foreach collection="cusIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        GROUP BY customer_id, type ) a
+        GROUP BY
+        a.customer_id
+    </select>
+
+
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select

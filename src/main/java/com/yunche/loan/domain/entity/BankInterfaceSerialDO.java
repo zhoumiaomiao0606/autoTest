@@ -6,6 +6,7 @@ import java.util.Date;
 
 @Data
 public class BankInterfaceSerialDO {
+
     private String serialNo;
 
     private Long orderId;

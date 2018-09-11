@@ -111,5 +111,6 @@ public class UniversalInfoVO {
     private String hcounty;
     private String remit_review_time;
 
+    private String customer_ctelzone;
 
 }

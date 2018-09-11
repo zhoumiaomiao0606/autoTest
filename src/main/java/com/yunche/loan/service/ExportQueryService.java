@@ -18,9 +18,5 @@ public interface ExportQueryService
 
     String expertRemitDetailQueryForRemitOrder(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam);
 
-    /**
-     * 金投行过桥处理导出
-     * @return
-     */
-    String exportApplyLoanPush(ExportApplyLoanPushParam param);
+    String exportCustomerInfo();
 }

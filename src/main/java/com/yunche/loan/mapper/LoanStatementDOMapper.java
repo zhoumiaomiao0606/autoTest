@@ -32,4 +32,6 @@ public interface LoanStatementDOMapper {
     List<JinTouHangRepayInfoVO> exportJinTouHangRepayInfo(ExportApplyLoanPushParam param);
 
     List<JinTouHangInterestRegisterVO> JinTouHangInterestRegister(ExportApplyLoanPushParam param);
+
+    List<ExportCustomerInfoVO> exportCustomerInfo();
 }
