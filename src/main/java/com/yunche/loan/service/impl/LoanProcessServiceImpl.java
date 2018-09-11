@@ -14,7 +14,6 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.LoanProcessLogVO;
 import com.yunche.loan.domain.vo.LoanRejectLogVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
@@ -197,7 +196,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
-//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
+        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -267,7 +266,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
+        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -649,26 +648,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         int count = loanRejectLogDOMapper.insertSelective(loanRejectLogDO);
         Preconditions.checkArgument(count > 0, "打回记录失败");
     }
-
-//    /**
-//     * 自动打回    - 放款审批 -> 业务审批
-//     *
-//     * @param loanProcessDO
-//     */
-//    private void autoRejectLoanReviewTask(LoanProcessDO loanProcessDO) {
-//        // 打回
-//        if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
-//
-//            ApprovalParam approvalParam = new ApprovalParam();
-//            approvalParam.setOrderId(loanProcessDO.getOrderId());
-//            approvalParam.setTaskDefinitionKey(LOAN_REVIEW.getCode());
-//            approvalParam.setAction(ACTION_REJECT_MANUAL);
-//            approvalParam.setNeedLog(false);
-//            approvalParam.setCheckPermission(false);
-//
-//            approval(approvalParam);
-//        }
-//    }
 
     /**
      * 金融方案修改审核 -审核通过

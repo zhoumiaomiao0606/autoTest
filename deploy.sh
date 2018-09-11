@@ -18,17 +18,17 @@ SPAWN_TIME_OUT=300
 START_SH_PATH="/root/yunche-biz/pub/start.sh"
 
 
-echo "发布开始 >>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+echo -e "发布开始 >>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
 
 
-echo "开始 COPY_JAR >>>>>>>>>>>>>>"
+echo -e "开始 COPY_JAR >>>>>>>>>>>>>>\n"
 
-for HOST in $HOSTS
+for HOST in ${HOSTS[@]}
 do
-    echo "[ COPY_JAR TO >>>>>>  $HOST ]"
+    echo -e "[ COPY_JAR TO >>>>>>  $HOST ]\n"
 
-/usr/bin/expect <<EOF
-set timeout $SPAWN_TIME_OUT
+    /usr/bin/expect <<EOF
+    set timeout $SPAWN_TIME_OUT
 	spawn scp $COPY_JAR_SOURCE_PATH $USERNAME@$HOST:$COPY_JAR_DEST_DIR
     expect {
      "(yes/no)?"
@@ -46,16 +46,18 @@ set timeout $SPAWN_TIME_OUT
 EOF
 done
 
-echo "结束 COPY_JAR <<<<<<<<<<<<<<"
+echo -e "结束 COPY_JAR <<<<<<<<<<<<<<\n"
 
 
-echo "开始执行远程start.sh >>>>>>>>>>>>>>"
+echo -e "开始执行远程start.sh >>>>>>>>>>>>>>\n"
 
-for HOST in $HOSTS
+for HOST in ${HOSTS[@]}
+
 do
-    echo "[ 执行远程start.sh  >>>>>>  $HOST ]"
+    echo -e "[ 执行远程start.sh  >>>>>>  $HOST ]\n"
 
-/usr/bin/expect <<EOF
+    /usr/bin/expect <<EOF
+    set timeout $SPAWN_TIME_OUT
     spawn ssh $USERNAME@$HOST "sh $START_SH_PATH"
     expect {
      "(yes/no)?"
@@ -73,10 +75,10 @@ do
 EOF
 done
 
-echo "结束执行远程start.sh <<<<<<<<<<<<<<"
+echo -e "结束执行远程start.sh <<<<<<<<<<<<<<\n"
 
 
-echo "开始执行本地start.sh >>>>>>>>>>>>>>"
+echo -e "开始执行本地start.sh >>>>>>>>>>>>>>\n"
 
 KILL_PROCESS="server.port=7002"
 JAR_PATH="/root/yunche-biz/pub/yunche-biz.jar"
@@ -87,7 +89,7 @@ JAR_PROFILES="pub"
 PIDS=`ps -ef|grep $KILL_PROCESS | grep -v grep|grep -v PPID|awk '{print $2}'`
 for PID in $PIDS
 do
-  echo "Kill the $KILL_PROCESS process [ $PID ]"
+  echo -e "Kill the $KILL_PROCESS process [ $PID ]"
   kill -9 $PID
 done
 
@@ -96,10 +98,10 @@ nohup  java -jar $JAR_PATH --server.port=$JAR_PORT --spring.profiles.active=$JAR
 
 rm -rf nohup.out
 
-echo "结束执行本地start.sh <<<<<<<<<<<<<<"
+echo -e "结束执行本地start.sh <<<<<<<<<<<<<<\n"
 
 
-echo "发布成功 <<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+echo -e "发布成功 <<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"
 
 
 
