@@ -1135,7 +1135,7 @@
         ''                             AS loanForm,
         base.bank                      AS bank
         from
-        (select * from loan_process where xxxx=1) process
+        (select * from loan_process where bridge_handle=1) process
         LEFT JOIN (select @row:=0) r  on 1=1
         LEFT JOIN loan_order  loan ON process.order_id = loan.id
         LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
@@ -1167,7 +1167,7 @@
             fund.repay_type                   AS repayType,
             fund.repay_remark                 AS repayRemark
         from
-            (select * from loan_process where xxxx=1) process
+            (select * from loan_process where bridge_repay_info=1) process
             LEFT JOIN loan_order  loan ON process.order_id = loan.id
             LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
             LEFT JOIN third_party_fund_business fund ON loan.id=fund.order_id
@@ -1192,7 +1192,7 @@
             customer.id_card          				AS idCard,
             financial.bank_period_principal   AS  bankPeriodPrincipal
         from
-            (select * from loan_process where xxxx=2) process
+            (select * from loan_process where bridge_interest_record=2) process
             LEFT JOIN loan_order  loan ON process.order_id = loan.id
             LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
             LEFT JOIN third_party_fund_business fund ON loan.id=fund.order_id
