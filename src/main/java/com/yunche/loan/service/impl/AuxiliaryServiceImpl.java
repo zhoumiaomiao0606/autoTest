@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 @Service
 public class AuxiliaryServiceImpl implements AuxiliaryService {
 
@@ -50,6 +52,12 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
 
     @Autowired
     private LoanQueryService loanQueryService;
+
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
 
     @Resource
     private PartnerDOMapper partnerDOMapper;
@@ -220,8 +228,30 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
             }
         }
         gpsDetailTotal.setCredits(credits);
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
+        String tmpApplyLicensePlateArea = null;
+        if (loanBaseInfoDO.getAreaId()!=null) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
+            //（个性化）如果上牌地是区县一级，则返回形式为 省+区
+            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+            }
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+        }
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+        universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
         //贷款信息
-        gpsDetailTotal.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        gpsDetailTotal.setInfo(universalInfoVO);
         return gpsDetailTotal;
     }
 

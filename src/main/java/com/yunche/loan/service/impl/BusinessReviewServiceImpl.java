@@ -2,9 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
-import com.yunche.loan.domain.entity.CostDetailsDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.RemitDetailsDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
 import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
 import com.yunche.loan.domain.vo.*;
@@ -20,6 +18,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.BUSINESS_REVIEW;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
@@ -45,6 +44,12 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     @Autowired
     private LoanQueryService loanQueryService;
 
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -54,9 +59,31 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
+        String tmpApplyLicensePlateArea = null;
+        if (loanBaseInfoDO.getAreaId()!=null) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
+            //（个性化）如果上牌地是区县一级，则返回形式为 省+区
+            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+            }
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+        }
+
+        universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
 
         RecombinationVO recombinationVO = new RecombinationVO();
-        recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));

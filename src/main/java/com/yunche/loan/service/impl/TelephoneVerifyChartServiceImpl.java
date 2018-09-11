@@ -1,5 +1,8 @@
 package com.yunche.loan.service.impl;
 
+import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.TelephoneVerifyChartByOperatorChartParam;
+import com.yunche.loan.mapper.LoanProcessLogDOMapper;
 import com.yunche.loan.service.TelephoneVerifyChartService;
 import org.activiti.engine.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +19,17 @@ public class TelephoneVerifyChartServiceImpl implements TelephoneVerifyChartServ
     @Autowired
     private HistoryService historyService;
 
-    public void getTelephoneVerifyChart()
+    private LoanProcessLogDOMapper loanProcessLogDOMapper;
+
+    @Override
+    public ResultBean getTelephoneVerifyChartByOperatorChart(TelephoneVerifyChartByOperatorChartParam param)
     {
-        /*historyService.createHistoricTaskInstanceQuery()
-                .taskDefinitionKey("filter_loan_apply_visit_verify")*/
+        //时间内 选定经办人
+
+        //电审结果-打回
+        //电审结果资料增补
+        //电审结果-通过
+        //电审结果-弃单
+        return null;
     }
 }

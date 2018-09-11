@@ -1,7 +1,11 @@
 package com.yunche.loan.service.impl;
 
+import com.yunche.loan.domain.entity.BaseAreaDO;
+import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.entity.LoanProcessLogDO;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.BaseAreaDOMapper;
+import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.FinanceService;
 import com.yunche.loan.service.LoanProcessLogService;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.BUSINESS_REVIEW;
 import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_REVIEW;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
@@ -25,6 +30,12 @@ public class FinanceServiceImpl implements FinanceService {
 
     @Autowired
     private LoanQueryService loanQueryService;
+
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
 
 
     @Override
@@ -43,8 +54,31 @@ public class FinanceServiceImpl implements FinanceService {
             }
         }
 
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
+        String tmpApplyLicensePlateArea = null;
+        if (loanBaseInfoDO.getAreaId()!=null) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
+            //（个性化）如果上牌地是区县一级，则返回形式为 省+区
+            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+            }
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+        }
+
+        universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
+
         RecombinationVO recombinationVO = new RecombinationVO();
-        recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+        recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
         recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(LOAN_REVIEW.getCode(), orderId));

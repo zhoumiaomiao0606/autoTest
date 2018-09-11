@@ -2267,13 +2267,13 @@
 
         from
         (
-          select DISTINCT serial.* from zhongan_info serial
-          inner join
-          (
-          select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_date desc separator ','),',',1)
-          as serial_no
-          from zhongan_info GROUP BY id_card,order_id
-          ) orderdata on orderdata.serial_no = serial.id
+        select DISTINCT serial.* from zhongan_info serial
+        inner join
+        (
+        select SUBSTRING_INDEX(GROUP_CONCAT(id order by create_date desc separator ','),',',1)
+        as serial_no
+        from zhongan_info GROUP BY id_card,order_id
+        ) orderdata on orderdata.serial_no = serial.id
         ) z
         left join loan_order o on o.id = z.order_id
         left join loan_base_info base on o.loan_base_info_id = base.id
@@ -2283,30 +2283,30 @@
         when #{maxGroupLevel} = 1 then
         base.salesman_id in
         <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-              #{item}
-          </foreach>
-          else true end
-          and
-          case when #{maxGroupLevel} = 3 then 1=1
-          else 1=1
-          <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
-              and
-              base.partner_id in
-              <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
-                  #{item}
-              </foreach>
-          </if>
-          <if test="bankList != null and bankList.size() > 0">
-              and
-              base.bank in
-              <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
-                  #{item}
-              </foreach>
-          </if>
-          end
+            #{item}
+        </foreach>
+        else true end
+        and
+        case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and
+            base.partner_id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
         where 1=1
         <if test="partnerId !=null">
-           and base.partner_id = #{partnerId}
+            and base.partner_id = #{partnerId}
         </if>
     </select>
 </mapper>

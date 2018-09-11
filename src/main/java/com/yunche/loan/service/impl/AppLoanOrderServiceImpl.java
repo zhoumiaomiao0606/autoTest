@@ -1023,11 +1023,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(loginUser.getId());
         loanBaseInfoDO.setPartnerId(partnerId);
 
-        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(partnerId, null);
+        /*PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(partnerId, null);
         if (null != partnerDO) {
             loanBaseInfoDO.setAreaId(partnerDO.getAreaId());
-        }
-
+        }*/
+        loanBaseInfoDO.setAreaId(param.getLoanBaseInfo().getArea().getId());
         convertLoanBaseInfo(param.getLoanBaseInfo(), loanBaseInfoDO);
 
         ResultBean<Long> resultBean = loanBaseInfoService.create(loanBaseInfoDO);
@@ -1113,6 +1113,13 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         vehicleInformationService.update(vehicleInformationUpdateParam);
 
+        String s = loanCarInfoParam.getApplyLicensePlateAreaId();
+        LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
+        loanBaseInfoDO.setAreaId(Long.valueOf(s));
+        LoanBaseInfoDO loanBaseInfoDO1 = loanBaseInfoDOMapper.getTotalInfoByOrderId(loanCarInfoParam.getOrderId());
+        loanBaseInfoDO.setId(loanBaseInfoDO1.getId());
+        loanBaseInfoDOMapper.updateByPrimaryKeySelective(loanBaseInfoDO);
+
         return ResultBean.ofSuccess(createResultBean.getData(), "创建成功");
     }
 
@@ -1135,6 +1142,13 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
         vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
         vehicleInformationService.update(vehicleInformationUpdateParam);
+
+        String s = loanCarInfoParam.getApplyLicensePlateAreaId();
+        LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
+        loanBaseInfoDO.setAreaId(Long.valueOf(s));
+        LoanBaseInfoDO loanBaseInfoDO1 = loanBaseInfoDOMapper.getTotalInfoByOrderId(loanCarInfoParam.getOrderId());
+        loanBaseInfoDO.setId(loanBaseInfoDO1.getId());
+        loanBaseInfoDOMapper.updateByPrimaryKeySelective(loanBaseInfoDO);
 
         return resultBean;
     }
@@ -1164,27 +1178,51 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         }
 
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
         if (vehicleInformationDO != null) {
-            String tmpApplyLicensePlateArea = null;
-            if (StringUtils.isNotBlank(vehicleInformationDO.getApply_license_plate_area())) {
-                BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
-                loanCarInfoVO.setApplyLicensePlateAreaId(baseAreaDO.getAreaId());
-                if (baseAreaDO != null) {
-                    if (baseAreaDO.getParentAreaName() != null) {
-                        tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
-                    } else {
-                        tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
-                    }
-                }
-            }
 
-            loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());
         }
+        /*String tmpApplyLicensePlateArea = null;
+        if (loanBaseInfoDO.getAreaId()!=null) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
+            loanCarInfoVO.setApplyLicensePlateAreaId(baseAreaDO.getAreaId());
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+        }
 
+        loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);*/
+
+        String tmpApplyLicensePlateArea = null;
+        if (loanBaseInfoDO.getAreaId()!=null) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
+            //（个性化）如果上牌地是区县一级，则返回形式为 省+区
+            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+            }
+            //loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
+
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+        }
+        loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
+        loanCarInfoVO.setApplyLicensePlateAreaId(loanBaseInfoDO.getAreaId());
         return ResultBean.ofSuccess(loanCarInfoVO);
     }
 

@@ -3,10 +3,7 @@ package com.yunche.loan.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
-import com.yunche.loan.domain.entity.ApplyLicensePlateDepositInfoDO;
-import com.yunche.loan.domain.entity.BaseAreaDO;
-import com.yunche.loan.domain.entity.LoanFileDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApplyLicensePlateDepositInfoUpdateParam;
 import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
@@ -66,19 +63,26 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
             universalCustomerVO.setFiles(files);
         }
 
-
+        String tmpApplyLicensePlateArea = null;
         if (applyLicensePlateDepositInfoVO.getApply_license_plate_area() != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(applyLicensePlateDepositInfoVO.getApply_license_plate_area()), VALID_STATUS);
+            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+            }
             applyLicensePlateDepositInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
-            String tmpApplyLicensePlateArea = null;
-            if (baseAreaDO.getParentAreaName() != null) {
-                tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
-            } else {
-                tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
             }
             applyLicensePlateDepositInfoVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
         }
-
         RecombinationVO<ApplyLicensePlateDepositInfoVO> recombinationVO = new RecombinationVO<ApplyLicensePlateDepositInfoVO>();
         recombinationVO.setInfo(applyLicensePlateDepositInfoVO);
         recombinationVO.setCustomers(customers);

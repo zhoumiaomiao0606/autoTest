@@ -78,4 +78,6 @@ public class FinancialSchemeVO {
     private String appraisal;//基准评估价
 
     private Byte customer_signature_type;//签单类型
+
+    private String customer_ctelzone;//客户单位区号
 }

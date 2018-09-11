@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  **/
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/app/loanorder/chart")
+@RequestMapping("/api/v1/loanorder/chart")
 public class ChartController
 {
     @Autowired
@@ -116,6 +116,11 @@ public class ChartController
     * @return:  
     * @Date:  
     * @Description:   渠道部 - 公司垫款订单明细表
-    */ 
+    */
+    @PostMapping(value = "/companyRemitDetailChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean companyRemitDetailChart(@RequestBody @Validated CompanyRemitDetailChartParam param)
+    {
 
+        return chartService.getCompanyRemitDetailChart(param);
+    }
 }

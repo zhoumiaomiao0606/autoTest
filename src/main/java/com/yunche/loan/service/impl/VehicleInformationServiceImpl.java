@@ -72,8 +72,14 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
 
             if (vehicleInformationVO.getApply_license_plate_area() != null) {
                 BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationVO.getApply_license_plate_area()), VALID_STATUS);
-                vehicleInformationVO.setHasApplyLicensePlateArea(baseAreaDO);
                 String tmpApplyLicensePlateArea = null;
+                if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                    Long parentAreaId = baseAreaDO.getParentAreaId();
+                    BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                    baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                    baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+                }
+                vehicleInformationVO.setHasApplyLicensePlateArea(baseAreaDO);
                 if (baseAreaDO.getParentAreaName() != null) {
                     tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
                 } else {
@@ -140,6 +146,13 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
                 vehicleInformationDOMapper.updateByPrimaryKeySelective(V);
             }
         }
+
+        String s = param.getApply_license_plate_area();
+        LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
+        loanBaseInfoDO.setAreaId(Long.valueOf(s));
+        LoanBaseInfoDO loanBaseInfoDO1 = loanBaseInfoDOMapper.getTotalInfoByOrderId(Long.valueOf(param.getOrder_id()));
+        loanBaseInfoDO.setId(loanBaseInfoDO1.getId());
+        loanBaseInfoDOMapper.updateByPrimaryKeySelective(loanBaseInfoDO);
 
 
         Long customerId = loanOrderDO.getLoanCustomerId();

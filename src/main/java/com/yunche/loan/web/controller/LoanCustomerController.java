@@ -4,6 +4,7 @@ import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.param.CustomerParam;
+import com.yunche.loan.domain.vo.BankAndSocietyExportVO;
 import com.yunche.loan.domain.vo.CustDetailVO;
 import com.yunche.loan.domain.vo.LoanRepeatVO;
 import com.yunche.loan.service.LoanCustomerService;
@@ -22,6 +23,7 @@ public class LoanCustomerController {
 
     @Autowired
     private LoanCustomerService loanCustomerService;
+
 
 
     /**
@@ -95,5 +97,23 @@ public class LoanCustomerController {
     public ResultBean<LoanRepeatVO> checkRepeat(@RequestParam String idCard,
                                                 @RequestParam(required = false) Long orderId) {
         return loanCustomerService.checkRepeat(idCard, orderId);
+    }
+
+    /**
+     * 客户银行图片导出
+     *
+     */
+    @PostMapping(value = "/bankpicexport")
+    public ResultBean bankPicExport(@RequestBody BankAndSocietyExportVO bankAndSocietyExport) {
+        return ResultBean.ofSuccess(loanCustomerService.bankPicExport(bankAndSocietyExport.getCusList()));
+    }
+
+    /**
+     * 客户社会图片导出
+     *
+     */
+    @PostMapping(value = "/societypicexport")
+    public ResultBean societyPicExport(@RequestBody BankAndSocietyExportVO bankAndSocietyExport) {
+        return ResultBean.ofSuccess(loanCustomerService.societyPicExport(bankAndSocietyExport.getCusList()));
     }
 }

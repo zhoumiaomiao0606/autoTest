@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_AREA;
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 
 /**
@@ -140,8 +141,14 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
             area.setId(baseAreaDO.getAreaId());
             String areaName = baseAreaDO.getAreaName();
             cascadeAreaId.add(baseAreaDO.getAreaId());
-
-            if (LEVEL_CITY.equals(baseAreaDO.getLevel())) {
+            if(LEVEL_AREA.equals(baseAreaDO.getLevel())){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                areaName = cityDO.getParentAreaName() + areaName;
+                cascadeAreaId.add(cityDO.getParentAreaId());
+                Collections.reverse(cascadeAreaId);
+            }
+            /*if (LEVEL_CITY.equals(baseAreaDO.getLevel())) {
                 BaseAreaDO parentAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), null);
                 if (null != parentAreaDO) {
                     areaName = parentAreaDO.getAreaName() + areaName;
@@ -149,7 +156,7 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
                     cascadeAreaId.add(parentAreaDO.getAreaId());
                     Collections.reverse(cascadeAreaId);
                 }
-            }
+            }*/
             area.setName(areaName);
         }
         loanBaseInfoVO.setArea(area);

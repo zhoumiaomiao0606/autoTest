@@ -30,7 +30,7 @@ public class ExpertController
      * EXCEl导出社会征信查询
      */
     @PostMapping(value = "/exportSocialCreditQuery")
-    public ResultBean expertSocialCreditQuery(@RequestBody ExportSocialCreditQueryVerifyParam exportSocialCreditQueryVerifyParam)
+    public ResultBean expertSocialCreditQuery(@RequestBody @Validated ExportSocialCreditQueryVerifyParam exportSocialCreditQueryVerifyParam)
     {
         return ResultBean.ofSuccess(exportQueryService.expertSocialCreditQuery(exportSocialCreditQueryVerifyParam));
     }

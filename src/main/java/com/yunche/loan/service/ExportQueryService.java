@@ -17,4 +17,6 @@ public interface ExportQueryService
     String exportOrders(ExportOrdersParam exportOrdersParam);
 
     String expertRemitDetailQueryForRemitOrder(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam);
+
+    String exportCustomerInfo();
 }

@@ -38,34 +38,39 @@ public class CacheTest extends BaseTest {
     @Resource
     AppLoanOrderService appLoanOrderService;
 
-    @Test
+   // @Test
 
     public void getAAA(){
        File f =new File("/Users/admin/Desktop/有意义.xlsx");
        System.out.println(f.length());
     }
+    @Test
+    public void doV(){
+        String s="da\"sdas";
+        System.out.println(s);
+        System.out.println(s.replace("\"",""));
+    }
 
-   //@Test
+  // @Test
     public void doA1123(){
         try {
-            /*ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
+            ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
             zhongAnQueryParam.setOrder_id("123");
             List<ZhongAnCusParam> customers = Lists.newArrayList();
             ZhongAnCusParam zhongAnCusParam = new ZhongAnCusParam();
-            zhongAnCusParam.setIdcard("341226198404016579");
-            zhongAnCusParam.setName("武军");
+            zhongAnCusParam.setIdcard("362228199206074083");
+            zhongAnCusParam.setName("易翠");
             zhongAnCusParam.setCustomertype("主贷人");
             zhongAnCusParam.setRalationship("1");
-            zhongAnCusParam.setTel("15658880777");
+            zhongAnCusParam.setTel("15757871316");
             zhongAnCusParam.setLoanmoney("1");
             customers.add(zhongAnCusParam);
             zhongAnQueryParam.setCustomers(customers);
-            appLoanOrderService.zhongAnQuery(zhongAnQueryParam);*/
+            appLoanOrderService.zhongAnQuery(zhongAnQueryParam);
            // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","999967");
 
             // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","99993");
-           ZhongAnHttpUtil.queryInfo("文秋生","17985865856","36078119860618513X","1","2","3333","","98811");
-
+//
         } catch (Exception e) {
             e.printStackTrace();
         }
