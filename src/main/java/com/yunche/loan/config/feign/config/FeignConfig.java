@@ -1,5 +1,6 @@
 package com.yunche.loan.config.feign.config;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yunche.loan.config.constant.IConstant;
@@ -8,6 +9,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.response.base.BasicResponse;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
+import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
@@ -17,6 +19,7 @@ import feign.codec.DecodeException;
 import feign.codec.Decoder;
 import feign.codec.ErrorDecoder;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.CollectionUtils;
 
@@ -30,6 +33,9 @@ import java.util.Map;
 import static com.yunche.loan.config.constant.BaseExceptionEnum.EC00000200;
 
 public class FeignConfig {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FeignConfig.class);
+
 
     @Resource
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
@@ -50,6 +56,7 @@ public class FeignConfig {
         return new RequestInterceptor() {
             @Override
             public void apply(RequestTemplate template) {
+
                 //获取请求body中的内容
                 String req = new String(template.body());
                 if (StringUtils.isBlank(req)) {
@@ -101,7 +108,15 @@ public class FeignConfig {
 
                 //锁表
                 BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(cmpseq.toString());
+
+
+                logger.info("V : {}", JSON.toJSONString(V));
+
+
                 BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
+
+                logger.info("1111  ------  DO : {}", JSON.toJSONString(DO));
+
                 DO.setSerialNo(cmpseq.toString());
                 DO.setOrderId(Long.valueOf(orderno.toString()));
                 DO.setCustomerId(Long.valueOf(customerId.toString()));
@@ -110,15 +125,49 @@ public class FeignConfig {
                 DO.setFileNum(Integer.parseInt(fileNum.toString()));
                 DO.setApiStatus(200);
 
+                logger.info("2222  ------  DO : {}", JSON.toJSONString(DO));
+
                 if (V != null) {
+
+
+                    logger.info("33333  ------  DO : {}", JSON.toJSONString(DO));
+
+
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
+
+
+                    logger.info("4444  ------  DO : {}", JSON.toJSONString(DO));
+
+
                 } else {
+
+                    logger.info("55555  ------  DO : {}", JSON.toJSONString(DO));
+
+
                     //当前操作人
-                    DO.setOperatePersonnel(SessionUtils.getLoginUser().getName());
+                    EmployeeDO loginUser = SessionUtils.getLoginUser();
+                    if (null != loginUser) {
+
+
+                        logger.info("6666  ------  DO : {}", JSON.toJSONString(DO));
+
+                        DO.setOperatePersonnel(loginUser.getName());
+
+                        logger.info("77777  ------  DO : {}", JSON.toJSONString(DO));
+
+                        logger.info("loginUserName : {}", loginUser.getName());
+                        logger.info("operatePersonnel : {}", DO.getOperatePersonnel());
+                    }
+
+                    logger.info("8888  ------  DO : {}", JSON.toJSONString(DO));
+
                     //操作时间
                     DO.setOperateDate(new Date());
 
                     bankInterfaceSerialDOMapper.insertSelective(DO);
+
+                    logger.info("99999  ------  DO : {}", JSON.toJSONString(DO));
+
                 }
             }
         };

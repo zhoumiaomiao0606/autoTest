@@ -177,7 +177,7 @@
     <sequenceFlow id="flow163" name="提交" sourceRef="exclusivegateway41" targetRef="usertask_apply_license_plate_deposit_info">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="servicetask_financial_scheme" name="金融方案" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,渠道经理,总监,财务经理,催收主管,客服,江浙大区经理,华中大区经理,华东大区经理,华南大区经理,华北大区经理,西南大区经理,西北大区经理,东北大区经理,看车网大区经理,哈尔滨GPS专员,GPS专员,哈尔滨客户信息,南京客户信息,台州客户信息,杭州城站客户信息,客户信息,合伙人客户信息"></userTask>
+    <userTask id="servicetask_financial_scheme" name="金融方案" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,渠道经理,总监,财务经理,财务助理,催收主管,客服,江浙大区经理,华中大区经理,华东大区经理,华南大区经理,华北大区经理,西南大区经理,西北大区经理,东北大区经理,看车网大区经理,哈尔滨GPS专员,GPS专员,哈尔滨客户信息,南京客户信息,台州客户信息,杭州城站客户信息,客户信息,合伙人客户信息"></userTask>
     <endEvent id="endevent28" name="End"></endEvent>
     <sequenceFlow id="flow164" name="提交" sourceRef="usertask_customer_repay_plan" targetRef="endevent28">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
