@@ -26,4 +26,6 @@ public interface LoanStatementDOMapper {
     List<ExportOrdersVO> exportOrders(ExportOrdersParam exportOrdersParam);
 
     List<ExportRemitDetailQueryForRemitOrderVO> exportRemitDetailForRemitOrderQuerys(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam);
+
+    List<ExportCustomerInfoVO> exportCustomerInfo();
 }
