@@ -87,7 +87,7 @@ public class App {
 
                 deploy("processes/loan_process_legal.bpmn", "法务处理流程");
 
-                deploy("processes/loan_process_bridge.bpmn", "过桥资金流程");
+//                deploy("processes/loan_process_bridge.bpmn", "过桥资金流程");
             }
 
             /**
