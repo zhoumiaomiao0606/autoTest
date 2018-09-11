@@ -226,16 +226,22 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
-    /**
-     * 金投行过桥处理(借款申请记录)
-     * @param param
-     * @return
-     */
     @Override
-    public String exportApplyLoanPush(ExportApplyLoanPushParam param) {
-        return null;
-    }
+    public String exportCustomerInfo()
+    {
 
+        List<ExportCustomerInfoVO> list = loanStatementDOMapper.exportCustomerInfo();
+
+        ArrayList<String> header = Lists.newArrayList("业务区域","客户姓名", "身份证号",
+                "手机号", "贷款银行", "业务团队", "业务员", "车型", "车价", "执行利率", "首付款", "贷款金额", "银行分期本金", "打款金额",
+                "公司收益","履约金","上牌押金","GPS使用费","风险金","公正评估费","上省外牌","基础保证金","其他","返利不内扣","返利金额","额外费用",
+                "创建时间","垫款时间","退款时间","提交人"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("客户信息",list,header,ExportCustomerInfoVO.class,ossConfig);
+        return ossResultKey;
+    }
 
     /**
      * 导出文件
