@@ -183,7 +183,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 //            }catch (Exception e){
 //                logger.info("征信查询回调打回异常");
 //            }
-//
+
 //            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 
 
@@ -209,7 +209,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
 //            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
-//
+
 //            try {
 //                ApprovalParam approvalParam = new ApprovalParam();
 //                approvalParam.setAction(new Byte("0"));

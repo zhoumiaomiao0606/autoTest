@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.ThirdPartyFundBusinessDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="lend_date" jdbcType="TIMESTAMP" property="lendDate" />
+    <result column="repay_type" jdbcType="TINYINT" property="repayType" />
+    <result column="repay_remark" jdbcType="VARCHAR" property="repayRemark" />
+    <result column="interest" jdbcType="DECIMAL" property="interest" />
+    <result column="poundage" jdbcType="DECIMAL" property="poundage" />
+    <result column="repay_interest_date" jdbcType="TIMESTAMP" property="repayInterestDate" />
+    <result column="repay_register_remark" jdbcType="VARCHAR" property="repayRegisterRemark" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, lend_date, repay_type, repay_remark, interest, poundage, repay_interest_date, 
+    repay_register_remark, gmt_create, gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from third_party_fund_business
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from third_party_fund_business
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
+    insert into third_party_fund_business (order_id, lend_date, repay_type, 
+      repay_remark, interest, poundage, 
+      repay_interest_date, repay_register_remark, 
+      gmt_create, gmt_modify)
+    values (#{orderId,jdbcType=BIGINT}, #{lendDate,jdbcType=TIMESTAMP}, #{repayType,jdbcType=TINYINT}, 
+      #{repayRemark,jdbcType=VARCHAR}, #{interest,jdbcType=DECIMAL}, #{poundage,jdbcType=DECIMAL}, 
+      #{repayInterestDate,jdbcType=TIMESTAMP}, #{repayRegisterRemark,jdbcType=VARCHAR}, 
+      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
+    insert into third_party_fund_business
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="lendDate != null">
+        lend_date,
+      </if>
+      <if test="repayType != null">
+        repay_type,
+      </if>
+      <if test="repayRemark != null">
+        repay_remark,
+      </if>
+      <if test="interest != null">
+        interest,
+      </if>
+      <if test="poundage != null">
+        poundage,
+      </if>
+      <if test="repayInterestDate != null">
+        repay_interest_date,
+      </if>
+      <if test="repayRegisterRemark != null">
+        repay_register_remark,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="lendDate != null">
+        #{lendDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="repayType != null">
+        #{repayType,jdbcType=TINYINT},
+      </if>
+      <if test="repayRemark != null">
+        #{repayRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="interest != null">
+        #{interest,jdbcType=DECIMAL},
+      </if>
+      <if test="poundage != null">
+        #{poundage,jdbcType=DECIMAL},
+      </if>
+      <if test="repayInterestDate != null">
+        #{repayInterestDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="repayRegisterRemark != null">
+        #{repayRegisterRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
+    update third_party_fund_business
+    <set>
+      <if test="lendDate != null">
+        lend_date = #{lendDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="repayType != null">
+        repay_type = #{repayType,jdbcType=TINYINT},
+      </if>
+      <if test="repayRemark != null">
+        repay_remark = #{repayRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="interest != null">
+        interest = #{interest,jdbcType=DECIMAL},
+      </if>
+      <if test="poundage != null">
+        poundage = #{poundage,jdbcType=DECIMAL},
+      </if>
+      <if test="repayInterestDate != null">
+        repay_interest_date = #{repayInterestDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="repayRegisterRemark != null">
+        repay_register_remark = #{repayRegisterRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
+    update third_party_fund_business
+    set lend_date = #{lendDate,jdbcType=TIMESTAMP},
+      repay_type = #{repayType,jdbcType=TINYINT},
+      repay_remark = #{repayRemark,jdbcType=VARCHAR},
+      interest = #{interest,jdbcType=DECIMAL},
+      poundage = #{poundage,jdbcType=DECIMAL},
+      repay_interest_date = #{repayInterestDate,jdbcType=TIMESTAMP},
+      repay_register_remark = #{repayRegisterRemark,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+
+  <!-- batchInsert -->
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into third_party_fund_business (order_id, lend_date, repay_type,
+    repay_remark, interest, poundage,
+    repay_interest_date, repay_register_remark,
+    gmt_create, gmt_modify)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.orderId,jdbcType=BIGINT}, #{item.lendDate,jdbcType=TIMESTAMP}, #{item.repayType,jdbcType=TINYINT},
+      #{item.repayRemark,jdbcType=VARCHAR}, #{item.interest,jdbcType=DECIMAL}, #{item.poundage,jdbcType=DECIMAL},
+      #{item.repayInterestDate,jdbcType=TIMESTAMP}, #{item.repayRegisterRemark,jdbcType=VARCHAR},
+      #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+</mapper>

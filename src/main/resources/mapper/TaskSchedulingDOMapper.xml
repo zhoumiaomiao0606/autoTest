@@ -2298,15 +2298,11 @@
           </if>
           <if test="bankList != null and bankList.size() > 0">
               and
-              base.bank in
+              base.partner_id in
               <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
                   #{item}
               </foreach>
           </if>
           end
-        where 1=1
-        <if test="partnerId !=null">
-           and base.partner_id = #{partnerId}
-        </if>
     </select>
 </mapper>

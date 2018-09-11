@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanFileDO;
+import com.yunche.loan.domain.vo.BankAndSocietyPicVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -50,4 +51,8 @@ public interface LoanFileDOMapper {
      * @return
      */
     int deleteByInfoSupplementId(Long infoSupplementId);
+
+    List<BankAndSocietyPicVO> selectFileInfoByCusId(@Param("cusIds") List<Long> cusIds);
+
+    List<BankAndSocietyPicVO> selectSocFileInfoByCusId(@Param("cusIds") List<Long> cusIds);
 }
