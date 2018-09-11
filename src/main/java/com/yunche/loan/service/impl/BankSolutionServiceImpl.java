@@ -680,7 +680,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCustomer(customer);
         applyDiviGeneral.setPictures(pictures);
         violationUtil.violation(applyDiviGeneral, ApplyDiviGeneralValidated.class);
-
+        //预先插入一条流水记录
+        addEmptySerial(applyDiviGeneral.getCmpseq());
 
         asyncUpload.execute(new Process() {
             @Override
@@ -817,6 +818,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //走你
         violationUtil.violation(applyCredit, ApplyCreditValidated.class);
 
+        //预先插入一条流水记录
+        addEmptySerial(applyCredit.getCmpseq());
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
@@ -828,6 +831,19 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     }
 
+    /**
+     *在bank_interface_serial 中先插入当前记录流水、操作人以及操作时间
+     * @param cmpseq
+     */
+    private void addEmptySerial(String cmpseq) {
+        String operatePersonnel = SessionUtils.getLoginUser().getName();
+        BankInterfaceSerialDO serialDO = new BankInterfaceSerialDO();
+        serialDO.setSerialNo(cmpseq);
+        serialDO.setOperatePersonnel(operatePersonnel);
+        serialDO.setOperateDate(new Date());
+        int count = bankInterfaceSerialDOMapper.insertSelective(serialDO);
+        Preconditions.checkArgument(count>0,"银行流水记录异常");
+    }
     /**
      * 银行拒绝直接打回到征信申请（待定）
      * @param orderId
@@ -1021,6 +1037,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //参数校验
         violationUtil.violation(applyBankOpenCard);
         violationUtil.violation(customer);
+        //预先插入一条流水记录
+        addEmptySerial(applyBankOpenCard.getCmpseq());
 
         asyncUpload.execute(new Process() {
 
