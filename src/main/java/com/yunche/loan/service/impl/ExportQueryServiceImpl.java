@@ -226,128 +226,20 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
-    /**
-     * 导出文件
-     *
-     * @param
-     * @return
-     */
-   /* private String createExcelFile(ExpertBankCreditQueryVerifyParam expertBankCreditQueryVerifyParam) {
+    @Override
+    public String exportCustomerInfo()
+    {
 
-        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        Long id = SessionUtils.getLoginUser().getId();
-        String fileName = timestamp + id + ".xlsx";
-        //创建workbook
-        File file = new File("D:" + File.separator + fileName);
-        FileOutputStream out = null;
-        XSSFWorkbook workbook = null;
-        try {
+        List<ExportCustomerInfoVO> list = loanStatementDOMapper.exportCustomerInfo();
 
-            out = new FileOutputStream(file);
-
-            workbook = new XSSFWorkbook();
-            XSSFSheet sheet = workbook.createSheet();
+        ArrayList<String> header = Lists.newArrayList("业务区域","客户姓名", "身份证号",
+                "手机号", "贷款银行", "业务团队", "业务员", "车型", "车价", "执行利率", "首付款", "贷款金额", "银行分期本金", "打款金额",
+                "公司收益","履约金","上牌押金","GPS使用费","风险金","公正评估费","上省外牌","基础保证金","其他","返利不内扣","返利金额","额外费用",
+                "创建时间","垫款时间","退款时间","提交人"
+        );
 
 
-
-            //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
-            XSSFRow headRow = sheet.createRow(0);
-            for (int i = 0; i < header.size(); i++) {
-                XSSFCell cell = headRow.createCell(i);
-                cell.setCellValue(header.get(i));
-            }
-            XSSFRow row = null;
-            XSSFCell cell = null;
-            for (int i = 0; i < list.size(); i++) {
-                ExpertBankCreditQueryVO expertBankCreditQueryVO = list.get(i);
-                //创建行
-                row = sheet.createRow(i + 1);
-
-                cell = row.createCell(0);
-                cell.setCellValue(expertBankCreditQueryVO.getArea_name());
-
-                cell = row.createCell(1);
-                cell.setCellValue(expertBankCreditQueryVO.getCustomer_name());
-                //
-
-                cell = row.createCell(2);
-                cell.setCellValue(expertBankCreditQueryVO.getCust_type());
-
-                cell = row.createCell(3);
-                cell.setCellValue(expertBankCreditQueryVO.getCustomer_name());
-
-                cell = row.createCell(4);
-                cell.setCellValue(expertBankCreditQueryVO.getCustomer_id_card());
-
-                cell = row.createCell(5);
-                cell.setCellValue(expertBankCreditQueryVO.getCustomer_mobile());
-
-                cell = row.createCell(6);
-                cell.setCellValue(expertBankCreditQueryVO.getPrincipal_base());
-
-                cell = row.createCell(7);
-                cell.setCellValue(expertBankCreditQueryVO.getBank());
-
-                cell = row.createCell(8);
-                cell.setCellValue(expertBankCreditQueryVO.getPartner_name());
-
-                cell = row.createCell(9);
-                cell.setCellValue(expertBankCreditQueryVO.getSalesman_name());
-
-                cell = row.createCell(10);
-                cell.setCellValue(expertBankCreditQueryVO.getPrincipal_name());
-
-                cell = row.createCell(11);
-                cell.setCellValue(expertBankCreditQueryVO.getCredit_result());
-
-                cell = row.createCell(12);
-                cell.setCellValue(expertBankCreditQueryVO.getCredit_apply_time());
-
-
-                cell = row.createCell(13);
-                cell.setCellValue(expertBankCreditQueryVO.getCredit_query_time());
-
-                cell = row.createCell(14);
-                cell.setCellValue(expertBankCreditQueryVO.getOp_info());
-
-
-            }
-            //文件宽度自适应
-            sheet.autoSizeColumn((short) 0);
-            sheet.autoSizeColumn((short) 1);
-            sheet.autoSizeColumn((short) 2);
-            sheet.autoSizeColumn((short) 3);
-            sheet.autoSizeColumn((short) 4);
-            sheet.autoSizeColumn((short) 5);
-            sheet.autoSizeColumn((short) 6);
-            sheet.autoSizeColumn((short) 7);
-            sheet.autoSizeColumn((short) 8);
-            sheet.autoSizeColumn((short) 9);
-            sheet.autoSizeColumn((short) 10);
-            sheet.autoSizeColumn((short) 11);
-            sheet.autoSizeColumn((short) 12);
-            sheet.autoSizeColumn((short) 13);
-            sheet.autoSizeColumn((short) 14);
-
-            workbook.write(out);
-            //上传OSS
-            OSSClient ossClient = OSSUnit.getOSSClient();
-            String bucketName = ossConfig.getBucketName();
-            String diskName = ossConfig.getDownLoadDiskName();
-            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName);
-            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
-        } catch (Exception e) {
-            Preconditions.checkArgument(false, e.getMessage());
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                Preconditions.checkArgument(false, e.getMessage());
-            }
-        }
-
-        return ossConfig.getDownLoadDiskName() + File.separator + fileName;
-    }*/
+        String ossResultKey = POIUtil.createExcelFile("客户信息",list,header,ExportCustomerInfoVO.class,ossConfig);
+        return ossResultKey;
+    }
 }
