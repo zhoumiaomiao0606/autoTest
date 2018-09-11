@@ -13,7 +13,6 @@ public class ExportSocialCreditQueryVerifyParam
     private  String startDate;
     private  String endDate;
 
-    @NotEmpty
     private Byte  state;
 
     //征信申请时间

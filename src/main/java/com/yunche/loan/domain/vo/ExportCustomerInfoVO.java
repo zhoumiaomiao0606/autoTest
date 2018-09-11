@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-09-10 15:14
@@ -61,15 +63,7 @@ public class ExportCustomerInfoVO
     //汽车权属人姓名
     //申请人与抵押物权属人关系
 
-    //关联人证件号码
-    //客户姓名
-    //性别
-    //证件是否长期有效
-    //证件有效期截止日
-    //与申请人关系
-    //个人年收入
-    //住宅地址
-    //单位名称
-    //单位地址
-    //手机号
+
+    private List<ExportLinkManVO> linkManList;
+
 }
