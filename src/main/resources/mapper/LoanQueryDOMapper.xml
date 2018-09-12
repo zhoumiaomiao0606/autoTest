@@ -805,7 +805,7 @@
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
-    left join loan_customer c on o.loan_customer_id= c.id or o.loan_customer_id = c.principal_cust_id
+    left join loan_customer c     on o.loan_customer_id= c.id or o.loan_customer_id = c.principal_cust_id
 
     left join loan_credit_info cb on cb.customer_id = c.id and cb.type = 1
 

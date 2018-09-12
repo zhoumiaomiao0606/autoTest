@@ -6,7 +6,7 @@
 
     <settings>
         <!--<setting name="logImpl" value="STDOUT_LOGGING" />-->
-        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--<setting name="mapUnderscoreToCamelCase" value="true"/>-->
         <setting name="defaultFetchSize" value="100"/>
         <setting name="defaultStatementTimeout" value="30"/>
     </settings>
