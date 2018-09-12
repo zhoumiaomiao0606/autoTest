@@ -2508,7 +2508,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                                 + convertActionText(e.getAction())
                                 + " "
                                 + convertTaskDefKeyText(e.getTaskDefinitionKey())
-                                + getRejectInfo(e.getAction(), e.getInfo());
+                                + getInfo(e.getAction(), e.getInfo());
 
                         historyList.add(history);
                     });
@@ -2549,15 +2549,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 打回理由
+     * 打回/弃单 理由
      *
      * @param action
      * @param info
      * @return
      */
-    private String getRejectInfo(Byte action, String info) {
+    private String getInfo(Byte action, String info) {
 
-        if (ACTION_REJECT_MANUAL.equals(action)) {
+        if (ACTION_REJECT_MANUAL.equals(action)
+                || ACTION_REJECT_AUTO.equals(action)
+                || ACTION_CANCEL.equals(action)) {
+
             return "    理由：" + (StringUtils.isBlank(info) ? "" : info);
         }
 
