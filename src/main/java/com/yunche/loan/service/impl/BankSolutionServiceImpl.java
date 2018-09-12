@@ -683,7 +683,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCustomer(customer);
         applyDiviGeneral.setPictures(pictures);
         violationUtil.violation(applyDiviGeneral, ApplyDiviGeneralValidated.class);
-
+        //预先插入一条流水记录
+        addEmptySerial(applyDiviGeneral.getCmpseq());
 
         asyncUpload.execute(new Process() {
             @Override
@@ -820,7 +821,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //走你
         violationUtil.violation(applyCredit, ApplyCreditValidated.class);
 
-
         //预先插入一条流水记录
         addEmptySerial(applyCredit.getCmpseq());
 
@@ -836,7 +836,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     /**
-     *在bank_interface_serial 中先插入当前记录流水、操作人以及操作时间
+     * 在bank_interface_serial 中先插入当前记录流水、操作人以及操作时间
+     *
      * @param cmpseq
      */
     private void addEmptySerial(String cmpseq) {
@@ -846,19 +847,20 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         serialDO.setOperatePersonnel(operatePersonnel);
         serialDO.setOperateDate(new Date());
         int count = bankInterfaceSerialDOMapper.insertSelective(serialDO);
-        Preconditions.checkArgument(count>0,"银行流水记录异常");
+        Preconditions.checkArgument(count > 0, "银行流水记录异常");
     }
 
     /**
      * 银行拒绝直接打回到征信申请（待定）
+     *
      * @param orderId
      * @param customers
      */
     private void back2creditpply(Long orderId, List<LoanCustomerDO> customers) {
 
-        for(LoanCustomerDO customerDO:customers){
+        for (LoanCustomerDO customerDO : customers) {
             UniversalBankInterfaceSerialVO universalBankInterfaceSerialVO = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(customerDO.getId(), IDict.K_TRANS_CODE.APPLYCREDIT);
-            if(!"2".equals(universalBankInterfaceSerialVO.getStatus()) && !"1".equals(universalBankInterfaceSerialVO.getStatus())){
+            if (!"2".equals(universalBankInterfaceSerialVO.getStatus()) && !"1".equals(universalBankInterfaceSerialVO.getStatus())) {
                 LOG.info("征信查询 自动打回开始 ===============================================================");
                 ApprovalParam approvalParam = new ApprovalParam();
                 approvalParam.setAction(new Byte("0"));
@@ -1042,6 +1044,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //参数校验
         violationUtil.violation(applyBankOpenCard);
         violationUtil.violation(customer);
+        //预先插入一条流水记录
+        addEmptySerial(applyBankOpenCard.getCmpseq());
 
         //预先插入一条流水记录
         addEmptySerial(applyBankOpenCard.getCmpseq());
