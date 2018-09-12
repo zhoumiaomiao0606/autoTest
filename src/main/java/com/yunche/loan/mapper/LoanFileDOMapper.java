@@ -60,4 +60,6 @@ public interface LoanFileDOMapper {
     List<BankAndSocietyPicVO> selectFileInfoByCusId(@Param("cusIds") List<Long> cusIds);
 
     List<BankAndSocietyPicVO> selectSocFileInfoByCusId(@Param("cusIds") List<Long> cusIds);
+
+    List<LoanFileDO> selectAllSupFileByOrderId(@Param("orderId")Long orderId);
 }

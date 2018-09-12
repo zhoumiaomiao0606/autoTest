@@ -289,4 +289,19 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
+    <select id="selectAllSupFileByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+       SELECT
+            b.*
+        FROM
+            loan_info_supplement a
+            LEFT JOIN loan_file b ON a.id = b.info_supplement_id
+        WHERE
+            a.order_id = #{orderId}
+            AND b.upload_type = 2
+            AND b.type = 26
+            AND b.`status` = 0
+        ORDER BY
+            b.id
+    </select>
+
 </mapper>
