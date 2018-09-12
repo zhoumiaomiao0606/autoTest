@@ -129,7 +129,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
-    @Limiter(value = "/api/v1/taskscheduling/queryTaskList", limit = 2)
+//    @Limiter(value = "/api/v1/taskscheduling/queryTaskList", limit = 2)
     @PostMapping(value = "/queryTaskList")
     public ResultBean<List<TaskListVO>> scheduleTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.queryTaskList(taskListQuery);

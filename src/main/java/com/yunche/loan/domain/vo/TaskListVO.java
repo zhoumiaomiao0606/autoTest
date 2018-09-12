@@ -118,6 +118,10 @@ public class TaskListVO {
     private String refund_start_time;
 
     private String lendCard;
+
+    private String bridgeRepayRemark;
+    private String bridgeLendDate;
+
 }
 
 

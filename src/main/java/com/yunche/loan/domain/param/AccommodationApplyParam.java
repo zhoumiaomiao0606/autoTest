@@ -10,23 +10,23 @@ import java.util.List;
 @Data
 public class AccommodationApplyParam {
 
-    private List orderIds = Lists.newArrayList();
+    private List orderIds = Lists.newArrayList();//业务单号列表
 
-    private Date lendDate;
+    private Date lendDate;//借款日期
 
-    private Long orderId;
+    private Long orderId;//业务单号  单条处理时使用
 
-    private Byte repayType;
+    private Byte repayType;//还款类型
 
-    private Date repayDate;
+    private Date repayDate;//还款日期
 
-    private String repayRemark;
+    private String repayRemark;//还款备注
 
-    private BigDecimal interest;
+    private BigDecimal interest;//利息
 
-    private BigDecimal poundage;
+    private BigDecimal poundage;//手续费
 
-    private Date repayInterestDate;
+    private Date repayInterestDate;//还息日期
 
-    private String repayRegisterRemark;
+    private String repayRegisterRemark;//登记备注
 }
