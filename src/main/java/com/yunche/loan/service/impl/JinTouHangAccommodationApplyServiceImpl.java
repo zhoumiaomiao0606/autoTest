@@ -11,7 +11,6 @@ import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
-import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
@@ -158,12 +157,12 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     public ResultBean exportJinTouHangInterestRegister(ExportApplyLoanPushParam param) {
 
 
-        List<JinTouHangRepayInfoVO> voList = loanStatementDOMapper.exportJinTouHangRepayInfo(param);
+        List<JinTouHangInterestRegisterVO> voList = loanStatementDOMapper.exportJinTouHangInterestRegister(param);
         ArrayList<String> header = Lists.newArrayList("借款时间","还款时间", "借款金额",
                 "主贷姓名", "身份证号", "分期本金"
         );
 
-        String ossResultKey = POIUtil.createExcelFile("金投行还款信息",voList,header,JinTouHangRepayInfoVO.class,ossConfig);
+        String ossResultKey = POIUtil.createExcelFile("金投行息费登记",voList,header,JinTouHangInterestRegisterVO.class,ossConfig);
         return ResultBean.ofSuccess(ossResultKey);
     }
 
@@ -212,16 +211,6 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
         Preconditions.checkArgument(count>0,"异常还款跟新失败");
         return ResultBean.ofSuccess("保存成功");
-    }
-
-    /**
-     * 金投行还款信息
-     * @param taskListQuery
-     * @return
-     */
-    @Override
-    public ResultBean repayInfoExport(TaskListQuery taskListQuery) {
-        return null;
     }
 
     /**

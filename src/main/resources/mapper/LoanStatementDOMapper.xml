@@ -1183,7 +1183,7 @@
         </if>
     </select>
 
-    <select id="JinTouHangInterestRegister" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.JinTouHangInterestRegisterVO">
+    <select id="exportJinTouHangInterestRegister" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.JinTouHangInterestRegisterVO">
         select
             fund.lend_date            				AS lendDate,
             fund.repay_date           				AS repayDate,

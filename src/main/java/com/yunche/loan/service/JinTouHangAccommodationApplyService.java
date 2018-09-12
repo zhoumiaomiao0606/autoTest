@@ -4,7 +4,6 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
-import com.yunche.loan.domain.query.TaskListQuery;
 
 public interface JinTouHangAccommodationApplyService {
 
@@ -18,7 +17,7 @@ public interface JinTouHangAccommodationApplyService {
 
     ResultBean abnormalRepay(AccommodationApplyParam param);
 
-    ResultBean repayInfoExport(TaskListQuery taskListQuery);
+
 
     ResultBean repayInterestRegister(AccommodationApplyParam param);
 
