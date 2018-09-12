@@ -79,6 +79,8 @@ public class TaskListVO {
     private String currentTask;
     private String creditMan;
     private String creditDate;
+    private String bankCreditDate;
+    private String socialCreditDate;
     private String paymentGtCreate;
     private String carName;
     private String carGpsNum;

@@ -60,6 +60,42 @@
 
     </select>
 
+    <!--selectDownloadMaterial-->
+    <select id="selectDownloadMaterialSupId" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.param.MaterialDownloadParam">
+
+        SELECT
+
+        f.customer_id           AS customerId,
+        f.type                  AS type,
+        f.path                  AS path,
+        c.id_card               AS idCard,
+        c.`name`                AS name,
+        c.cust_type             AS custType
+
+        FROM
+        loan_order o,
+        loan_customer c,
+        loan_file f
+
+        LEFT JOIN   loan_info_supplement s ON s.id = f.info_supplement_id
+
+        WHERE f.info_supplement_id = #{infoSupplementId} and f.upload_type = 2 and
+
+        (o.loan_customer_id = c.id OR o.loan_customer_id = c.principal_cust_id)
+
+        AND f.customer_id = c.id
+
+        <if test="customerId != null">
+            AND f.customer_id = #{customerId}
+        </if>
+
+        AND o.id = #{orderId}
+
+        AND f.type != 26
+
+    </select>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>

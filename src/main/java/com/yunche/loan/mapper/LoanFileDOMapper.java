@@ -36,6 +36,11 @@ public interface LoanFileDOMapper {
                                              @Param("type") Byte type,
                                              @Param("uploadType") Byte uploadType);
 
+
+    List<LoanFileDO> listBySupplementIdAndType(@Param("infoSupplementId") Long infoSupplementId,
+                                               @Param("type") Byte type,
+                                               @Param("uploadType") Byte uploadType);
+
     /**
      * 批量插入
      *
