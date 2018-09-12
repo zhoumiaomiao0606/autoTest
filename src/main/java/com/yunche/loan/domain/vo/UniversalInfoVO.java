@@ -112,5 +112,8 @@ public class UniversalInfoVO {
     private String remit_review_time;
 
     private String customer_ctelzone;
+    private String remit_application_date;
+
+
 
 }

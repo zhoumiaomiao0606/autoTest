@@ -8,6 +8,7 @@ import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.LoanQueryService;
+import com.yunche.loan.service.MaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,9 @@ public class UniversalController {
 
     @Autowired
     private DictMapCache dictMapCache;
+
+    @Autowired
+    private MaterialService materialService;
 
 
     @GetMapping(value = "/customer")
@@ -62,6 +66,11 @@ public class UniversalController {
     public ResultBean refreshDictMap(){
         dictMapCache.refreshAll();
        return ResultBean.ofSuccess(null,"刷新成功");
+    }
+
+    @GetMapping("/jjq")
+    public ResultBean test1(){
+       return  materialService.downSupplementFiles2OSS(Long.valueOf("1809051406599576357"), true, Long.valueOf("193"));
     }
 
 }
