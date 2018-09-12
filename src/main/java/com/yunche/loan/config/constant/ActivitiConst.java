@@ -22,4 +22,8 @@ public class ActivitiConst {
      * 代偿流程-KEY
      */
     public static final String LOAN_PROCESS_INSTEAD_PAY_KEY = "loan_process_instead_pay";
+    /**
+     * 三方过桥资金-KEY
+     */
+    public static final String LOAN_PROCESS_BRIDGE_KEY = "loan_process_bridge";
 }

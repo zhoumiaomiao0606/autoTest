@@ -34,6 +34,7 @@ public enum LoanProcessEnum {
     CAR_INSURANCE("usertask_car_insurance", "车辆保险"),
     INSTALL_GPS("usertask_install_gps", "GPS安装"),
     COMMIT_KEY("usertask_commit_key", "待收钥匙"),
+    VIDEO_REVIEW("usertask_video_review", "视频审核"),
 
     MATERIAL_REVIEW("usertask_material_review", "资料审核"),
     MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),

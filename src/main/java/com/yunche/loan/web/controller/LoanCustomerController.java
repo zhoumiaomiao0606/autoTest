@@ -54,7 +54,7 @@ public class LoanCustomerController {
      * @param param
      * @return
      */
-    @Limiter("/api/v1/loanorder/customer/addrela")
+    @Limiter
     @PostMapping(value = "/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> addRelaCustomer(@RequestBody CustomerParam param) {
         return loanCustomerService.addRelaCustomer(param);

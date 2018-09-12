@@ -2208,12 +2208,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         List<TaskEntityImpl> insteadPayTaskList = activitiDeploymentMapper.listInsteadPayTaskByOrderId(orderId);
         List<TaskEntityImpl> collectionTaskList = activitiDeploymentMapper.listCollectionTaskByOrderId(orderId);
         List<TaskEntityImpl> legalTaskList = activitiDeploymentMapper.listLegalTaskByOrderId(orderId);
+        List<TaskEntityImpl> bridgeTaskList = activitiDeploymentMapper.listBridgeTaskByOrderId(orderId);
 
         List<Task> runTaskList = Lists.newArrayList();
         runTaskList.addAll(insteadPayTaskList);
         runTaskList.addAll(collectionTaskList);
         runTaskList.addAll(loanProcessTaskList);
         runTaskList.addAll(legalTaskList);
+        runTaskList.addAll(bridgeTaskList);
 
         List<TaskStateVO> taskStateVOS = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(runTaskList)) {

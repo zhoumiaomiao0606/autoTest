@@ -49,7 +49,7 @@ public class FinancialSchemeController {
     /**
      * 金融方案修改详情
      */
-    @Limiter("/api/v1/loanorder/financialscheme/modifyUpdate")
+    @Limiter
     @PostMapping(value = "/modifyUpdate", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> modifyUpdate(@RequestBody @Validated FinancialSchemeModifyUpdateParam param) {
         return financialSchemeService.modifyUpdate(param);

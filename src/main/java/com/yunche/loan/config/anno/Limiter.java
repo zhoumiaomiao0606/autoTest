@@ -6,6 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 用户级别限流
+ *
  * @author liuzhe
  * @date 2018/4/16
  */
@@ -13,19 +15,19 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Limiter {
 
-    /**
-     * 限流route
-     *
-     * @return
-     */
-    String value();
+//    /**
+//     * 限流route      默认取当前servletPath
+//     *
+//     * @return
+//     */
+//    String value() default "";
 
     /**
      * 限流次数，配合expire使用      默认：1次/s
      *
      * @return
      */
-    int limit() default 1;
+    int value() default 1;
 
     /**
      * 限流时间跨度 （单位：秒）      默认：1s

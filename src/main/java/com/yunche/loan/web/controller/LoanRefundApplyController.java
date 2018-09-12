@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanrefundapply")
+@RequestMapping(value = {"/api/v1/loanrefundapply", "/api/v1/app/loanrefundapply"})
 public class LoanRefundApplyController {
 
     @Resource
@@ -30,9 +30,9 @@ public class LoanRefundApplyController {
     }
 
     /**
-     * 退款单更新
+     * 退款单更新 -save(创建/更新)
      */
-    @Limiter("/api/v1/loanrefundapply/update")
+    @Limiter
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> update(@RequestBody @Validated LoanRefundApplyParam param) {
         return loanRefundApplyService.update(param);

@@ -89,6 +89,38 @@ public class TaskListVO {
     private String dataFlowType;
     private String dataFlowTypeText;
     private String visitDoorId;
+
+    //////////////////////////[金融方案修改申请单]/////////////////////////
+    /**
+     * [金融方案修改申请单] ID
+     */
+    private Long his_id;
+    /**
+     * [金融方案修改申请单] 创建时间
+     */
+    private String his_start_time;
+    //////////////////////////[金融方案修改申请单]/////////////////////////
+
+    //////////////////////////[退款申请单]////////////////////////////////
+    /**
+     * [退款申请单] ID
+     */
+    private Long refund_id;
+    /**
+     * [退款申请单] 创建时间
+     */
+    private String refund_start_time;
+    /**
+     * [退款申请单] 通过时间
+     */
+    private String refund_end_time;
+    /**
+     * 退款金额
+     */
+    private String refund_amount;
+    //////////////////////////[退款申请单]////////////////////////////////
+
+
     // 未加
     /**
      * 任务类型：1-已提交;  2-未提交;  3-打回;
@@ -102,22 +134,6 @@ public class TaskListVO {
      * 订单总状态：1-进行中;2-结单;3-已弃单;
      */
     private String orderStatus;
-    /**
-     * [金融方案修改申请单] ID
-     */
-    private Long his_id;
-    /**
-     * [金融方案修改申请单] 创建时间
-     */
-    private String his_start_time;
-    /**
-     * [退款申请单] ID
-     */
-    private Long refund_id;
-    /**
-     * [退款申请单] 创建时间
-     */
-    private String refund_start_time;
 
     private String lendCard;
 
